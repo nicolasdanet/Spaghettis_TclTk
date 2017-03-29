@@ -16,18 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_gobj          *canvas_getHitObject                    (t_glist *glist, int a, int b, t_rectangle *r);
-
-int             canvas_hasLine                          (t_glist *glist,
-                                                            t_object *objectOut,
-                                                            int m,
-                                                            t_object *objectIn,
-                                                            int n);
-                                                            
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            canvas_redraw                           (t_glist *glist);
 void            canvas_redrawGraphOnParent              (t_glist *glist);
 void            canvas_drawLines                        (t_glist *glist);

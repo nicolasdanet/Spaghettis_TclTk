@@ -33,8 +33,8 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     int previousX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
     int previousY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
     
-    t_gobj *yA = canvas_getHitObject (glist, previousX, previousY, &r1);
-    t_gobj *yB = canvas_getHitObject (glist, positionX, positionY, &r2);
+    t_gobj *yA = glist_objectHit (glist, previousX, previousY, &r1);
+    t_gobj *yB = glist_objectHit (glist, positionX, positionY, &r2);
     
     if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", glist_getView (glist)); }
     else {
@@ -71,7 +71,7 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     PD_ASSERT (closest1 >= 0 && closest1 < numberOfOutlets);
     PD_ASSERT (closest2 >= 0 && closest2 < numberOfInlets);
 
-    if (!canvas_hasLine (glist, object1, closest1, object2, closest2)) {
+    if (!glist_lineExist (glist, object1, closest1, object2, closest2)) {
     //
     if (object_isSignalOutlet (object1, closest1) && !object_isSignalInlet (object2, closest2)) { }
     else {
@@ -130,7 +130,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     int previousX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
     int previousY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
     
-    t_gobj *y = canvas_getHitObject (glist, previousX, previousY, &r);
+    t_gobj *y = glist_objectHit (glist, previousX, previousY, &r);
         
     if (y) {
     //
@@ -272,7 +272,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
 {
     t_rectangle r;
     
-    t_gobj *y = canvas_getHitObject (glist, positionX, positionY, &r);
+    t_gobj *y = glist_objectHit (glist, positionX, positionY, &r);
         
     if (!y) { return 0; }
     else {

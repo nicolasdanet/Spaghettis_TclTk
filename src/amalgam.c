@@ -94,7 +94,6 @@
 #include "g_cord.c"
 #include "g_editor.c"
 #include "g_glist.c"
-#include "g_base.c"
 #include "g_draw.c"
 #include "g_select.c"
 #include "g_edit.c"

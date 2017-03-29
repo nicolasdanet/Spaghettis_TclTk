@@ -72,25 +72,6 @@ void    glist_unbind                    (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_objectMake                (t_glist *glist, int a, int b, int w, int selected, t_buffer *t);
-void    glist_objectAddNext             (t_glist *glist, t_gobj *first, t_gobj *next);
-void    glist_objectAdd                 (t_glist *glist, t_gobj *y);
-void    glist_objectRemove              (t_glist *glist, t_gobj *y);
-void    glist_objectRemoveByTemplate    (t_glist *glist, t_template *tmpl);
-void    glist_objectRemoveAll           (t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_gobj  *glist_objectGetAt              (t_glist *glist, int n);
-
-int     glist_objectGetIndexOf          (t_glist *glist, t_gobj *y);
-int     glist_objectGetNumberOf         (t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int     glist_fileExist                 (t_glist *glist, char *name, char *extension, t_fileproperties *p);
 int     glist_fileOpen                  (t_glist *glist, char *name, char *extension, t_fileproperties *p);
                                                             
@@ -108,6 +89,32 @@ void    glist_setDirty                  (t_glist *glist, int n);
 void    glist_updateTitle               (t_glist *glist);
 void    glist_updateCursor              (t_glist *glist, int type);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    glist_objectMake                (t_glist *glist, int a, int b, int w, int selected, t_buffer *t);
+void    glist_objectAddNext             (t_glist *glist, t_gobj *first, t_gobj *next);
+void    glist_objectAdd                 (t_glist *glist, t_gobj *y);
+void    glist_objectRemove              (t_glist *glist, t_gobj *y);
+void    glist_objectRemoveByTemplate    (t_glist *glist, t_template *tmpl);
+void    glist_objectRemoveAll           (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_gobj  *glist_objectGetAt              (t_glist *glist, int n);
+t_gobj  *glist_objectHit                (t_glist *glist, int a, int b, t_rectangle *r);
+
+int     glist_objectGetIndexOf          (t_glist *glist, t_gobj *y);
+int     glist_objectGetNumberOf         (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int     glist_lineExist                 (t_glist *glist, t_object *o, int m, t_object *i, int n);
+                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

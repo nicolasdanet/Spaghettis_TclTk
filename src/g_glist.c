@@ -134,6 +134,55 @@ void glist_setDirty (t_glist *glist, int n)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void glist_bind (t_glist *glist)
+{
+    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
+        pd_bind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
+    }
+}
+
+void glist_unbind (t_glist *glist)
+{
+    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
+        pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Files are searching in the directory of the patch first. */
+/* Without success it tries to find it using the search path. */
+/* Note that it always contains at first the "extras" folder. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int glist_fileExist (t_glist *glist, char *name, char *extension, t_fileproperties *p)
+{
+    int f = glist_fileOpen (glist, name, extension, p);
+    
+    if (f >= 0) { close (f); return 1; }
+    
+    return 0;
+}
+
+/* Caller is responsible to close the file. */
+
+int glist_fileOpen (t_glist *glist, char *name, char *extension, t_fileproperties *p)
+{
+    char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
+    
+    int f = file_openConsideringSearchPath (directory, name, extension, p);
+        
+    return f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void glist_updateTitle (t_glist *glist)
 {
     if (glist_hasWindow (glist)) {
@@ -171,23 +220,6 @@ void glist_updateCursor (t_glist *glist, int type)
     lastType = type; lastGlist = glist;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void glist_bind (t_glist *glist)
-{
-    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
-        pd_bind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
-    }
-}
-
-void glist_unbind (t_glist *glist)
-{
-    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
-        pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
-    }
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -382,6 +414,47 @@ t_gobj *glist_objectGetAt (t_glist *glist, int n)
     return NULL;
 }
 
+t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
+{
+    t_gobj *y = NULL;
+    t_gobj *object = NULL;
+    
+    t_rectangle t;
+    
+    rectangle_set (r, 0, 0, 0, 0);
+    
+    if (canvas_getNumberOfSelectedObjects (glist) > 1) {
+    //
+    t_selection *s = NULL;
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
+    //
+    if (gobj_hit (selection_getObject (s), glist, a, b, &t)) {
+        rectangle_setCopy (r, &t);
+        object = selection_getObject (s); 
+    }
+    //
+    }
+    //
+    }
+    
+    if (!object) {
+    //
+    int k = -PD_INT_MAX;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (gobj_hit (y, glist, a, b, &t)) {
+            if (rectangle_getTopLeftX (&t) > k) {
+                rectangle_setCopy (r, &t);
+                object = y; k = rectangle_getTopLeftX (&t);
+            }
+        }
+    }
+    //
+    }
+
+    return object;
+}
+
 int glist_objectGetIndexOf (t_glist *glist, t_gobj *y)
 {
     t_gobj *t = NULL;
@@ -401,33 +474,19 @@ int glist_objectGetNumberOf (t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* Files are searching in the directory of the patch first. */
-/* Without success it tries to find it using the search path. */
-/* Note that it always contains at first the "extras" folder. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int glist_fileExist (t_glist *glist, char *name, char *extension, t_fileproperties *p)
+int glist_lineExist (t_glist *glist, t_object *o, int m, t_object *i, int n)
 {
-    int f = glist_fileOpen (glist, name, extension, p);
+    t_outconnect *connection = NULL;
     
-    if (f >= 0) { close (f); return 1; }
+    t_traverser t;
+    
+    traverser_start (&t, glist);
+    
+    while ((connection = traverser_next (&t))) { if (traverser_isLineBetween (&t, o, m, i, n)) { return 1; } }
     
     return 0;
-}
-
-/* Caller is responsible to close the file. */
-
-int glist_fileOpen (t_glist *glist, char *name, char *extension, t_fileproperties *p)
-{
-    char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
-    
-    int f = file_openConsideringSearchPath (directory, name, extension, p);
-        
-    return f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
