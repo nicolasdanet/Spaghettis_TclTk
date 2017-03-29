@@ -16,42 +16,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void canvas_updateTitle (t_glist *glist)
-{
-    sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",  // --
-                    glist,
-                    environment_getDirectoryAsString (glist_getEnvironment (glist)),
-                    glist_getName (glist)->s_name,
-                    glist_getDirty (glist));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void canvas_setCursorType (t_glist *glist, int type)
-{
-    static t_glist *lastGlist = NULL;           /* Static. */
-    static int lastType = CURSOR_NOTHING;       /* Static. */
-    static char *cursors[] =                    /* Static. */
-        {
-            "left_ptr",             // CURSOR_NOTHING
-            "hand2",                // CURSOR_CLICK
-            "sb_v_double_arrow",    // CURSOR_THICKEN
-            "plus",                 // CURSOR_ADD
-            "circle",               // CURSOR_CONNECT
-            "sb_h_double_arrow"     // CURSOR_RESIZE
-        };
-    
-    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE);
-    
-    if (lastGlist != glist || lastType != type) {
-        sys_vGui (".x%lx configure -cursor %s\n", glist, cursors[type]);
-        lastType  = type;
-        lastGlist = glist;
-    }
-}
 
 t_gobj *canvas_getHitObject (t_glist *glist, int positionX, int positionY, t_rectangle *r)
 {

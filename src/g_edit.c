@@ -91,7 +91,7 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
         glist_setDirty (glist, 1);
         
     } else { 
-        canvas_setCursorType (glist, CURSOR_CONNECT);
+        glist_updateCursor (glist, CURSOR_CONNECT);
     }
     
     return;
@@ -106,7 +106,7 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     //
     }
     
-    canvas_setCursorType (glist, CURSOR_NOTHING);
+    glist_updateCursor (glist, CURSOR_NOTHING);
 }
 
 static void canvas_makeLineStart (t_glist *glist, int positionX, int positionY)
@@ -218,9 +218,9 @@ static void canvas_proceedMouseClick (t_glist *glist, int positionX, int positio
     }
     
     if (!clicked) {
-        if (y && k) { canvas_setCursorType (glist, k); }
+        if (y && k) { glist_updateCursor (glist, k); }
         else {
-            canvas_setCursorType (glist, CURSOR_NOTHING);
+            glist_updateCursor (glist, CURSOR_NOTHING);
         }
     }
 }
@@ -310,7 +310,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
         
         if (canvas_proceedMouseHitResizeZone (object, positionX, positionY, c, d)) {
         
-            if (!clicked) { canvas_setCursorType (glist, CURSOR_RESIZE); }
+            if (!clicked) { glist_updateCursor (glist, CURSOR_RESIZE); }
             else {
                 canvas_selectObjectIfNotSelected (glist, y);
                 editor_startAction (glist_getEditor (glist), ACTION_RESIZE);
@@ -319,7 +319,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
                                              
         } else if ((n = canvas_proceedMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
             
-            if (!clicked) { canvas_setCursorType (glist, CURSOR_CONNECT); }
+            if (!clicked) { glist_updateCursor (glist, CURSOR_CONNECT); }
             else {
                 editor_startAction (glist_getEditor (glist), ACTION_CONNECT);
                 drag_setStart (editor_getDrag (glist_getEditor (glist)), h, d);
@@ -349,7 +349,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             }
             
         } else { 
-            canvas_setCursorType (glist, CURSOR_NOTHING);
+            glist_updateCursor (glist, CURSOR_NOTHING);
         }
     }
     //
@@ -431,7 +431,7 @@ static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int
                 }
             }
             
-            canvas_setCursorType (glist, CURSOR_NOTHING);
+            glist_updateCursor (glist, CURSOR_NOTHING);
         }
     }
 }

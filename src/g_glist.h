@@ -105,6 +105,13 @@ void    glist_setDirty                  (t_glist *glist, int n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    glist_updateTitle               (t_glist *glist);
+void    glist_updateCursor              (t_glist *glist, int type);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline void glist_setMapped (t_glist *glist, int n)
 {
     glist->gl_isMapped = (n != 0);

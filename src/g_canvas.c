@@ -404,10 +404,10 @@ void canvas_visible (t_glist *glist, t_float f)
                             rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
                             rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
                             glist_hasEditMode (glist));
-                        
-            canvas_updateTitle (glist);
-            
+                            
             glist_setWindow (glist, 1);
+            
+            glist_updateTitle (glist);
         }
         
     } else {

@@ -16,9 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_updateTitle                      (t_glist *glist);
-void            canvas_setCursorType                    (t_glist *glist, int type);
-
 t_gobj          *canvas_getHitObject                    (t_glist *glist, int a, int b, t_rectangle *r);
 
 int             canvas_hasLine                          (t_glist *glist,
