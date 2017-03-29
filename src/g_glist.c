@@ -363,6 +363,7 @@ int glist_objectGetNumberOf (t_glist *glist)
 
 /* Files are searching in the directory of the patch first. */
 /* Without success it tries to find it using the search path. */
+/* Note that it always contains at first the "extras" folder. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

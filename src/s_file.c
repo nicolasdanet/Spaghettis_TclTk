@@ -17,6 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_symbol *main_directoryHelp;
+extern t_symbol *main_directoryExtras;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -133,6 +134,10 @@ int file_openConsideringSearchPath (const char *directory,
     int f = file_openWithDirectoryAndName (directory, name, extension, p);
     
     if (f < 0) {
+        f = file_openWithDirectoryAndName (main_directoryExtras->s_name, name, extension, p);
+    }
+    
+    if (f < 0) {
         t_pathlist *l = instance_getSearchPath();
         while (l) {
             char *path = pathlist_getPath (l);
@@ -150,7 +155,8 @@ int file_openConsideringSearchPath (const char *directory,
 #pragma mark -
 
 /* First consider the sibling files of the object. */
-/* Then look for in the application help folder. */
+/* Then look for in the application "help" folder. */
+/* Then look for in the application "extras" folder. */
 /* And last in the defined search path. */
 
 void file_openHelp (const char *directory, const char *name)
@@ -158,13 +164,10 @@ void file_openHelp (const char *directory, const char *name)
     t_fileproperties p;
     int f = -1;
     
-    if (*directory != 0) { 
-        f = file_openWithDirectoryAndName (directory, name, PD_HELP, &p);
-    }
+    if (*directory != 0) { f = file_openWithDirectoryAndName (directory, name, PD_HELP, &p); }
     
-    if (f < 0) {
-        char *help = main_directoryHelp->s_name;
-        f = file_openConsideringSearchPath (help, name, PD_HELP, &p);
+    if (f < 0) { 
+        f = file_openConsideringSearchPath (main_directoryHelp->s_name, name, PD_HELP, &p); 
     }
     
     if (f < 0) { error_canNotFind (gensym (name), sym_help); }
