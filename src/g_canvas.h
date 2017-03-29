@@ -16,7 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_redraw                           (t_glist *glist);
 void            canvas_redrawGraphOnParent              (t_glist *glist);
 void            canvas_drawLines                        (t_glist *glist);
 void            canvas_updateLinesByObject              (t_glist *glist, t_object *o);

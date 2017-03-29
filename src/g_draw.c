@@ -17,21 +17,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define DRAW_GRAPH_ON_PARENT_COLOR      "#ff8080"       /* Red. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void text_behaviorGetRectangle  (t_gobj *, t_glist *, t_rectangle *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_redraw (t_glist *glist)
+void glist_drawUpdateWindow (t_glist *glist)
 {
-    if (glist_isOnScreen (glist)) { canvas_map (glist, 0); canvas_map (glist, 1); }
+    if (glist_isWindowable (glist) && glist_isOnScreen (glist)) { 
+        canvas_map (glist, 0); 
+        canvas_map (glist, 1); 
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -449,7 +446,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     
     sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
                     " -dash {2 4}"  // --
-                    " -fill " DRAW_GRAPH_ON_PARENT_COLOR
+                    " -fill #%06x"
                     " -tags RECTANGLE\n",
                     glist_getView (glist),
                     a,
@@ -461,7 +458,8 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
                     a,
                     d,
                     a,
-                    b);
+                    b, 
+                    COLOR_GOP);
     }
     //
     }

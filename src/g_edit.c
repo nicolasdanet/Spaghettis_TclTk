@@ -620,9 +620,7 @@ void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     rectangle_setByAtoms (glist_getWindowGeometry (glist), argc, argv);
     
-    /* Redraw a GOP opened in its own window (required for graph arrays). */
-    
-    if (glist_isWindowable (glist) && glist_isArray (glist)) { canvas_redraw (glist); }
+    if (glist_isArray (glist)) { glist_drawUpdateWindow (glist); }
     //
     }
 }

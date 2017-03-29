@@ -683,7 +683,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     glist_setDirty (glist, 1);
     
-    if (glist_hasWindow (glist)) { canvas_redraw (glist); }
+    if (glist_hasWindow (glist)) { glist_drawUpdateWindow (glist); }
     else {
         if (glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
