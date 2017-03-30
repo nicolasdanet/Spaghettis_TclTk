@@ -24,6 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 /* Everything related to the text contained in boxes. */
+/* Note that comments have borders only in edit mode. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -303,6 +304,30 @@ static void box_drawBox (t_glist *glist, t_object *o, char *tag, int create)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void box_eraseBox (t_glist *glist, t_object *o, char *tag)
+{
+    t_glist *view = glist_getView (glist);
+    
+    if (!object_isComment (o) || glist_hasEditMode (glist)) {
+    //
+    int m = object_getNumberOfInlets (o);
+    int n = object_getNumberOfOutlets (o);
+    int i;
+    
+    for (i = 0; i < m; i++) { sys_vGui ("%s.c delete %sINLET%d\n",  glist_getTagAsString (view), tag, i); }
+    for (i = 0; i < n; i++) { sys_vGui ("%s.c delete %sOUTLET%d\n", glist_getTagAsString (view), tag, i); }
+    
+    sys_vGui ("%s.c delete %sBORDER\n", glist_getTagAsString (view), tag);
+    //
+    }
+    
+    sys_vGui ("%s.c delete %s\n", glist_getTagAsString (view), tag);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 char *box_getTag (t_box *x)
 {
     return x->box_tag;
@@ -343,7 +368,8 @@ t_box *box_fetch (t_glist *glist, t_object *object)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+
+/* Update content and borders. */
 
 void box_retext (t_box *x)
 {
@@ -354,31 +380,40 @@ void box_retext (t_box *x)
     if (glist_isOnScreen (x->box_owner)) { box_send (x, BOX_UPDATE, 0, 0); } 
 }
 
-/* Due to loadbang the content is set here (instead that in constructor). */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void box_create (t_box *x)
+void box_create (t_box *x)      /* Draw content and borders. */
 {
     PD_MEMORY_FREE (x->box_string);
+    
+    /* Due to loadbang the content is lazely set here. */
     
     buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
     
     box_send (x, BOX_CREATE, 0, 0);
+    
+    box_draw (x);
 }
 
-void box_draw (t_box *x)
+void box_erase (t_box *x)       /* Erase content and borders. */
+{
+    box_eraseBox (x->box_owner, x->box_object, x->box_tag);
+}
+
+void box_draw (t_box *x)        /* Draw borders. */
 {
     box_drawBox (x->box_owner, x->box_object, x->box_tag, 1);
 }
 
-void box_update (t_box *x)
+void box_update (t_box *x)      /* Update borders. */
 {
     box_drawBox (x->box_owner, x->box_object, x->box_tag, 0);
 }
 
-void box_erase (t_box *x)
-{
-    sys_vGui ("%s.c delete %s\n", glist_getTagAsString (glist_getView (x->box_owner)), x->box_tag);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void box_displace (t_box *x, int deltaX, int deltaY)
 {
@@ -387,6 +422,8 @@ void box_displace (t_box *x, int deltaX, int deltaY)
                     x->box_tag, 
                     deltaX, 
                     deltaY);
+    
+    box_update (x);
 }
 
 void box_select (t_box *x, int isSelected)

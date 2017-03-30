@@ -145,30 +145,6 @@ void glist_eraseLine (t_glist *glist, t_outconnect *connection)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_eraseInletsAndOutlets (t_glist *glist, t_object *o, char *tag)
-{
-    int i;
-    int m = object_getNumberOfInlets (o);
-    int n = object_getNumberOfOutlets (o);
-    
-    for (i = 0; i < m; i++) { sys_vGui (".x%lx.c delete %sINLET%d\n",  glist_getView (glist), tag, i); }
-    for (i = 0; i < n; i++) { sys_vGui (".x%lx.c delete %sOUTLET%d\n", glist_getView (glist), tag, i); }
-}
-
-void canvas_eraseBox (t_glist *glist, t_object *o, char *tag)
-{
-    if (!object_isComment (o) || glist_hasEditMode (glist)) {   /* Comments have borders only in edit mode. */
-    //
-    sys_vGui (".x%lx.c delete %sBORDER\n", glist_getView (glist), tag); 
-    canvas_eraseInletsAndOutlets (glist, o, tag);
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
     if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {

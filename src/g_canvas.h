@@ -18,8 +18,6 @@
 
 void            canvas_redrawGraphOnParent              (t_glist *glist);
 
-void            canvas_eraseBox                         (t_glist *glist, t_object *o, char *tag);
-
 void            canvas_drawGraphOnParentRectangle       (t_glist *glist);
 void            canvas_updateGraphOnParentRectangle     (t_glist *glist);
 
