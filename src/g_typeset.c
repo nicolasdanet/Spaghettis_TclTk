@@ -376,13 +376,11 @@ int box_send (t_box *x, int action, int a, int b)
         
     if (action == BOX_CHECK)       { x->box_checked = 1;     }   /* Required only once at creation time. */
     else if (action == BOX_CREATE) { box_sendCreate (x, &p); }
-    else if (action == BOX_UPDATE) {
+    else if (action == BOX_UPDATE) { 
     
-        box_sendUpdate (x, &p); 
-        
-        if (resized) {
-            canvas_drawBox (x->box_owner, x->box_object, x->box_tag, 0); 
-        }
+        box_sendUpdate (x, &p);     
+            
+        if (resized) { box_update (x); }
     }
 
     box_typesetFree (&p);

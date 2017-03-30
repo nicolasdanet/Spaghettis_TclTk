@@ -28,7 +28,276 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int box_send (t_box *x, int, int, int);
+void text_behaviorGetRectangle  (t_gobj *, t_glist *, t_rectangle *);
+int box_send                    (t_box *x, int, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void box_drawObject (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+{
+    char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";  // --
+    
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
+    if (create) {
+    
+        sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
+                        " -dash %s"
+                        " -tags %sBORDER\n",
+                        glist_getTagAsString (view),
+                        a,
+                        b,
+                        c,
+                        b, 
+                        c, 
+                        d, 
+                        a, 
+                        d,  
+                        a, 
+                        b,  
+                        pattern,        /* Dashes for badly created boxes. */
+                        tag);
+                        
+    } else {
+    
+        sys_vGui ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        a,
+                        b,
+                        c,
+                        b,
+                        c,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b);
+                        
+        sys_vGui ("%s.c itemconfigure %sBORDER -dash %s\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        pattern);
+    }
+}
+
+static void box_drawMessage (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+{
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
+    if (create) {
+    
+        sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
+                        " -tags %sBORDER\n",
+                        glist_getTagAsString (view),
+                        a,
+                        b,
+                        c + 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d - 4,
+                        c + 4,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b,
+                        tag);
+                    
+    } else {
+    
+        sys_vGui ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        a,
+                        b,
+                        c + 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d - 4,
+                        c + 4,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b);
+    }
+}
+
+static void box_drawAtom (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+{
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
+    if (create) {
+    
+        sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d %d %d"
+                        " -tags %sBORDER\n",
+                        glist_getTagAsString (view),
+                        a,
+                        b,
+                        c - 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b,
+                        tag);
+                        
+    } else {
+    
+        sys_vGui ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        a,
+                        b,
+                        c - 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d,
+                        a,
+                        d,
+                        a,
+                        b);
+    }
+}
+
+static void box_drawComment (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+{
+    if (glist_hasEditMode (view)) {
+    //
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
+    if (create) {
+    
+        sys_vGui ("%s.c create line %d %d %d %d"
+                        " -tags [list %sBORDER COMMENTBAR]\n",      // --
+                        glist_getTagAsString (view),
+                        c,
+                        b,
+                        c,
+                        d,
+                        tag);
+                        
+    } else {
+    
+        sys_vGui ("%s.c coords %sBORDER %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        c,
+                        b,
+                        c,
+                        d);
+    }
+    //
+    }
+}
+
+static void box_drawInletsAndOutlets (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+{
+    int i;
+    int m = object_getNumberOfInlets (o);
+    int n = object_getNumberOfOutlets (o);
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    int c = rectangle_getBottomRightX (r);
+    int d = rectangle_getBottomRightY (r);
+    
+    for (i = 0; i < m; i++) {
+    //
+    int offset = a + inlet_offset ((c - a), i, m);
+    
+    if (create) {
+    
+        sys_vGui ("%s.c create rectangle %d %d %d %d -tags %sINLET%d\n",
+                        glist_getTagAsString (view),
+                        offset,
+                        b,
+                        offset + INLET_WIDTH,
+                        b + INLET_HEIGHT,
+                        tag,
+                        i);
+                        
+    } else {
+    
+        sys_vGui ("%s.c coords %sINLET%d %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        i,
+                        offset,
+                        b,
+                        offset + INLET_WIDTH,
+                        b + INLET_HEIGHT);
+    }
+    //
+    }
+    
+    for (i = 0; i < n; i++) {
+    //
+    int offset = a + inlet_offset ((c - a), i, n);
+    
+    if (create) {
+    
+        sys_vGui ("%s.c create rectangle %d %d %d %d -tags %sOUTLET%d\n",
+                        glist_getTagAsString (view),
+                        offset,
+                        d - INLET_HEIGHT,
+                        offset + INLET_WIDTH,
+                        d,
+                        tag,
+                        i);
+                        
+    } else {
+    
+        sys_vGui ("%s.c coords %sOUTLET%d %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        i,
+                        offset,
+                        d - INLET_HEIGHT,
+                        offset + INLET_WIDTH,
+                        d);
+    }
+    //
+    }
+}
+
+static void box_drawBox (t_glist *glist, t_object *o, char *tag, int create)
+{
+    t_glist *view = glist_getView (glist);
+    
+    t_rectangle r;
+    
+    text_behaviorGetRectangle (cast_gobj (o), glist, &r);
+
+    if (object_isObject (o))            { box_drawObject (view, o, tag, create, &r);           }
+    else if (object_isMessage (o))      { box_drawMessage (view, o, tag, create, &r);          }
+    else if (object_isAtom (o))         { box_drawAtom (view, o, tag, create, &r);             }
+    else if (object_isComment (o))      { box_drawComment (view, o, tag, create, &r);          }
+    if (cast_objectIfConnectable (o))   { box_drawInletsAndOutlets (view, o, tag, create, &r); }
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -72,10 +341,12 @@ t_box *box_fetch (t_glist *glist, t_object *object)
     return editor_boxFetch (glist_getEditor (glist), object);
 }
 
-void box_update (t_box *x)
-{
-    PD_ASSERT (x);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
+void box_retext (t_box *x)
+{
     PD_MEMORY_FREE (x->box_string);
     
     buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
@@ -83,13 +354,9 @@ void box_update (t_box *x)
     if (glist_isOnScreen (x->box_owner)) { box_send (x, BOX_UPDATE, 0, 0); } 
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 /* Due to loadbang the content is set here (instead that in constructor). */
 
-void box_draw (t_box *x)
+void box_create (t_box *x)
 {
     PD_MEMORY_FREE (x->box_string);
     
@@ -98,11 +365,19 @@ void box_draw (t_box *x)
     box_send (x, BOX_CREATE, 0, 0);
 }
 
+void box_draw (t_box *x)
+{
+    box_drawBox (x->box_owner, x->box_object, x->box_tag, 1);
+}
+
+void box_update (t_box *x)
+{
+    box_drawBox (x->box_owner, x->box_object, x->box_tag, 0);
+}
+
 void box_erase (t_box *x)
 {
-    sys_vGui ("%s.c delete %s\n", 
-                    glist_getTagAsString (glist_getView (x->box_owner)), 
-                    x->box_tag);
+    sys_vGui ("%s.c delete %s\n", glist_getTagAsString (glist_getView (x->box_owner)), x->box_tag);
 }
 
 void box_displace (t_box *x, int deltaX, int deltaY)
@@ -124,7 +399,7 @@ void box_select (t_box *x, int isSelected)
 
 void box_activate (t_box *x, int isActivated)
 {
-    PD_ASSERT (glist_hasWindow (x->box_owner));
+    PD_ASSERT (glist_hasWindow (x->box_owner));     /* Can't be activate in GOP. */
     
     if (isActivated) {
 

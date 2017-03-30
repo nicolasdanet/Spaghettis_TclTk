@@ -646,8 +646,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     for (y = glist->gl_graphics; y; y = y->g_next) {
         t_object *o = NULL;
         if ((o = cast_objectIfConnectable (y)) && object_isComment (o)) {
-            t_box *text = box_fetch (glist, o);
-            canvas_drawBox (glist, o, box_getTag (text), 1);
+            box_draw (box_fetch (glist, o));
         }
     }
     //

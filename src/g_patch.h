@@ -195,8 +195,10 @@ int         box_getHeight                   (t_box *x);
 void        box_getText                     (t_box *x, char **p, int *size);
 void        box_getSelection                (t_box *x, char **p, int *size);
 
-void        box_update                      (t_box *x);
+void        box_retext                      (t_box *x);
+void        box_create                      (t_box *x);
 void        box_draw                        (t_box *x);
+void        box_update                      (t_box *x);
 void        box_erase                       (t_box *x);
 void        box_displace                    (t_box *x, int deltaX, int deltaY);
 void        box_select                      (t_box *x, int isSelected);
