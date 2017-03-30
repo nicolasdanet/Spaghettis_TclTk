@@ -637,33 +637,13 @@ void canvas_editmode (t_glist *glist, t_float f)
     //
     glist_setEditMode (glist, state);
     
-    if (state) {
-    //
-    if (glist_isOnScreen (glist) && glist_isWindowable (glist)) {
-    //
-    t_gobj *y = NULL;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        t_object *o = NULL;
-        if ((o = cast_objectIfConnectable (y)) && object_isComment (o)) {
-            box_draw (box_fetch (glist, o));
-        }
-    }
-    //
-    }
-    //
-    } else {
-    //
-    canvas_deselectAll (glist);
-    
-    if (glist_isOnScreen (glist) && glist_isWindowable (glist)) {
-        sys_vGui (".x%lx.c delete COMMENTBAR\n", glist_getView (glist));
-    }
-    //
+    if (state) { glist_drawAllCommentBars (glist); }
+    else {
+        canvas_deselectAll (glist); glist_eraseAllCommentBars (glist);
     }
     
     if (glist_isOnScreen (glist)) {
-        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", glist, glist_hasEditMode (glist));
+        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), glist_hasEditMode (glist));
     }
     //
     }

@@ -125,12 +125,14 @@ void    glist_updateLines               (t_glist *glist, t_object *o);
 #pragma mark -
 
 void    glist_drawAllLines              (t_glist *glist);
+void    glist_drawAllCommentBars        (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void    glist_eraseLine                 (t_glist *glist, t_outconnect *connection);
+void    glist_eraseAllCommentBars       (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

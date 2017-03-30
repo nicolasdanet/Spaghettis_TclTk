@@ -64,6 +64,9 @@ void glist_updateWindow (t_glist *glist)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 void glist_updateLines (t_glist *glist, t_object *o)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
@@ -102,12 +105,13 @@ void glist_updateLines (t_glist *glist, t_object *o)
 
 void glist_drawAllLines (t_glist *glist)
 {
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
     t_outconnect *connection = NULL;
     t_traverser t;
 
-    PD_ASSERT (glist_hasWindow (glist));        /* Not shown in GOP. */
-    PD_ASSERT (glist_isOnScreen (glist));
-    
     traverser_start (&t, glist);
     
     while ((connection = traverser_next (&t))) {
@@ -120,6 +124,30 @@ void glist_drawAllLines (t_glist *glist)
                     traverser_getEndY (&t), 
                     (outlet_isSignal (traverser_getOutlet (&t)) ? 2 : 1),
                     connection);
+    //
+    }
+    //
+    }
+    //
+    }
+}
+
+void glist_drawAllCommentBars (t_glist *glist)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        t_object *o = NULL;
+        if ((o = cast_objectIfConnectable (y)) && object_isComment (o)) {
+            box_draw (box_fetch (glist, o));
+        }
+    }
+    //
+    }
     //
     }
 }
@@ -135,6 +163,19 @@ void glist_eraseLine (t_glist *glist, t_outconnect *connection)
     if (glist_isOnScreen (glist)) {
     //
     sys_vGui ("%s.c delete %lxLINE\n", glist_getTagAsString (glist), connection);
+    //
+    }
+    //
+    }
+}
+
+void glist_eraseAllCommentBars (t_glist *glist)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c delete COMMENTBAR\n", glist_getTagAsString (glist));
     //
     }
     //
