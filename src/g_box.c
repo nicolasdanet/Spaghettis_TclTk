@@ -100,15 +100,15 @@ void box_draw (t_box *x)
 
 void box_erase (t_box *x)
 {
-    sys_vGui (".x%lx.c delete %s\n", 
-                    glist_getView (x->box_owner), 
+    sys_vGui ("%s.c delete %s\n", 
+                    glist_getTagAsString (glist_getView (x->box_owner)), 
                     x->box_tag);
 }
 
 void box_displace (t_box *x, int deltaX, int deltaY)
 {
-    sys_vGui (".x%lx.c move %s %d %d\n", 
-                    glist_getView (x->box_owner), 
+    sys_vGui ("%s.c move %s %d %d\n", 
+                    glist_getTagAsString (glist_getView (x->box_owner)), 
                     x->box_tag, 
                     deltaX, 
                     deltaY);
@@ -116,17 +116,19 @@ void box_displace (t_box *x, int deltaX, int deltaY)
 
 void box_select (t_box *x, int isSelected)
 {
-    sys_vGui (".x%lx.c itemconfigure %s -fill #%06x\n",
-                    glist_getView (x->box_owner), 
+    sys_vGui ("%s.c itemconfigure %s -fill #%06x\n",
+                    glist_getTagAsString (glist_getView (x->box_owner)), 
                     x->box_tag, 
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
 
 void box_activate (t_box *x, int isActivated)
 {
+    PD_ASSERT (glist_hasWindow (x->box_owner));
+    
     if (isActivated) {
 
-        sys_vGui ("::ui_box::setEditing .x%lx %s 1\n", x->box_owner, x->box_tag);
+        sys_vGui ("::ui_box::setEditing %s %s 1\n", glist_getTagAsString (x->box_owner), x->box_tag);
                         
         editor_boxSelect (glist_getEditor (x->box_owner), x);
         
@@ -137,7 +139,7 @@ void box_activate (t_box *x, int isActivated)
 
     } else {
 
-        sys_vGui ("::ui_box::setEditing .x%lx {} 0\n", x->box_owner);   // --
+        sys_vGui ("::ui_box::setEditing %s {} 0\n", glist_getTagAsString (x->box_owner));   // --
         
         editor_boxUnselect (glist_getEditor (x->box_owner), x);
         
