@@ -36,8 +36,10 @@ int box_send                    (t_box *x, int, int, int);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void box_drawObject (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
+    t_glist *view = glist_getView (glist);
+    
     char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";  // --
     
     int a = rectangle_getTopLeftX (r);
@@ -87,8 +89,10 @@ static void box_drawObject (t_glist *view, t_object *o, char *tag, int create, t
     }
 }
 
-static void box_drawMessage (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+static void box_drawMessage (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
+    t_glist *view = glist_getView (glist);
+    
     int a = rectangle_getTopLeftX (r);
     int b = rectangle_getTopLeftY (r);
     int c = rectangle_getBottomRightX (r);
@@ -137,8 +141,10 @@ static void box_drawMessage (t_glist *view, t_object *o, char *tag, int create, 
     }
 }
 
-static void box_drawAtom (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+static void box_drawAtom (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
+    t_glist *view = glist_getView (glist);
+    
     int a = rectangle_getTopLeftX (r);
     int b = rectangle_getTopLeftY (r);
     int c = rectangle_getBottomRightX (r);
@@ -183,9 +189,11 @@ static void box_drawAtom (t_glist *view, t_object *o, char *tag, int create, t_r
     }
 }
 
-static void box_drawComment (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+static void box_drawCommentBar (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
-    if (glist_hasEditMode (view)) {
+    if (glist_hasWindow (glist))   {            /* Not shown in GOP. */
+    //
+    if (glist_hasEditMode (glist)) {
     //
     int b = rectangle_getTopLeftY (r);
     int c = rectangle_getBottomRightX (r);
@@ -195,7 +203,7 @@ static void box_drawComment (t_glist *view, t_object *o, char *tag, int create, 
     
         sys_vGui ("%s.c create line %d %d %d %d"
                         " -tags [list %sBORDER COMMENTBAR]\n",      // --
-                        glist_getTagAsString (view),
+                        glist_getTagAsString (glist),
                         c,
                         b,
                         c,
@@ -205,7 +213,7 @@ static void box_drawComment (t_glist *view, t_object *o, char *tag, int create, 
     } else {
     
         sys_vGui ("%s.c coords %sBORDER %d %d %d %d\n",
-                        glist_getTagAsString (view),
+                        glist_getTagAsString (glist),
                         tag,
                         c,
                         b,
@@ -214,17 +222,21 @@ static void box_drawComment (t_glist *view, t_object *o, char *tag, int create, 
     }
     //
     }
+    //
+    }
 }
 
-static void box_drawInletsAndOutlets (t_glist *view, t_object *o, char *tag, int create, t_rectangle *r)
+static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, int create, t_rectangle *r)
 {
-    int i;
+    t_glist *view = glist_getView (glist);
+    
     int m = object_getNumberOfInlets (o);
     int n = object_getNumberOfOutlets (o);
     int a = rectangle_getTopLeftX (r);
     int b = rectangle_getTopLeftY (r);
     int c = rectangle_getBottomRightX (r);
     int d = rectangle_getBottomRightY (r);
+    int i;
     
     for (i = 0; i < m; i++) {
     //
@@ -287,17 +299,15 @@ static void box_drawInletsAndOutlets (t_glist *view, t_object *o, char *tag, int
 
 static void box_drawBox (t_glist *glist, t_object *o, char *tag, int create)
 {
-    t_glist *view = glist_getView (glist);
-    
     t_rectangle r;
     
     text_behaviorGetRectangle (cast_gobj (o), glist, &r);
 
-    if (object_isObject (o))            { box_drawObject (view, o, tag, create, &r);           }
-    else if (object_isMessage (o))      { box_drawMessage (view, o, tag, create, &r);          }
-    else if (object_isAtom (o))         { box_drawAtom (view, o, tag, create, &r);             }
-    else if (object_isComment (o))      { box_drawComment (view, o, tag, create, &r);          }
-    if (cast_objectIfConnectable (o))   { box_drawInletsAndOutlets (view, o, tag, create, &r); }
+    if (object_isObject (o))            { box_drawObject (glist, o, tag, create, &r);           }
+    else if (object_isMessage (o))      { box_drawMessage (glist, o, tag, create, &r);          }
+    else if (object_isAtom (o))         { box_drawAtom (glist, o, tag, create, &r);             }
+    else if (object_isComment (o))      { box_drawCommentBar (glist, o, tag, create, &r);       }
+    if (cast_objectIfConnectable (o))   { box_drawInletsAndOutlets (glist, o, tag, create, &r); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
