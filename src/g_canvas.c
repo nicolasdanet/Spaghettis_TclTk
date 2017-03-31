@@ -416,7 +416,7 @@ void canvas_visible (t_glist *glist, t_float f)
 
             t_glist *t = NULL;
             
-            canvas_deselectAll (glist);
+            glist_deselectAll (glist);
             if (glist_isOnScreen (glist)) { canvas_map (glist, 0); }
 
             sys_vGui ("destroy .x%lx\n", glist);
@@ -769,7 +769,7 @@ void canvas_free (t_glist *glist)
     int dspstate = dsp_suspend();
     t_gobj *y = NULL;
         
-    canvas_deselectAll (glist);
+    glist_deselectAll (glist);
     
     while ((y = glist->gl_graphics)) { glist_objectRemove (glist, y); }
     if (glist == glist_getView (glist)) { canvas_visible (glist, 0); }

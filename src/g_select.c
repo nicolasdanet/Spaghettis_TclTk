@@ -18,28 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void glist_deselectAllRecursive (t_gobj *y)
-{
-    if (pd_class (y) == canvas_class) { 
-    //
-    t_gobj *o = NULL;
-    for (o = cast_glist (y)->gl_graphics; o; o = o->g_next) { glist_deselectAllRecursive (o); }
-    canvas_deselectAll (cast_glist (y));
-    //
-    }
-}
-
-static void glist_deselectLine (t_glist *glist)
-{
-    glist_updateLineSelected (glist, 0);
-    editor_selectedLineReset (glist_getEditor (glist));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
+static void glist_selectLassoProceed (t_glist *glist, int a, int b, int end)
 {
     if (end) {
     
@@ -67,14 +46,57 @@ static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
     }
 }
 
-void canvas_selectingByLassoStart (t_glist *glist, int positionX, int positionY)
+void glist_selectLassoBegin (t_glist *glist, int a, int b)
 {
-    canvas_selectingByLasso (glist, positionX, positionY, 0);
+    glist_selectLassoProceed (glist, a, b, 0);
 }
 
-void canvas_selectingByLassoEnd (t_glist *glist, int positionX, int positionY)
+void glist_selectLassoEnd (t_glist *glist, int a, int b)
 {
-    canvas_selectingByLasso (glist, positionX, positionY, 1);
+    glist_selectLassoProceed (glist, a, b, 1);
+}
+
+void glist_selectLine (t_glist *glist, t_outconnect *connection, int m, int i, int n, int j)
+{
+    glist_deselectAll (glist);
+    editor_selectedLineSet (glist_getEditor (glist), connection, m, i, n, j);
+    glist_updateLineSelected (glist, 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void glist_deselectLine (t_glist *glist)
+{
+    glist_updateLineSelected (glist, 0);
+    editor_selectedLineReset (glist_getEditor (glist));
+}
+
+static void glist_deselectAllRecursive (t_gobj *y)
+{
+    if (pd_class (y) == canvas_class) { 
+    //
+    t_gobj *o = NULL;
+    for (o = cast_glist (y)->gl_graphics; o; o = o->g_next) { glist_deselectAllRecursive (o); }
+    glist_deselectAll (cast_glist (y));
+    //
+    }
+}
+
+int glist_deselectAll (t_glist *glist)
+{
+    int k = 0;
+    
+    while (editor_getSelection (glist_getEditor (glist))) {
+    //
+    k |= canvas_deselectObject (glist, selection_getObject (editor_getSelection (glist_getEditor (glist))));
+    //
+    }
+
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_deselectLine (glist); }
+    
+    return k;   /* Return 1 if an object has been recreated. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -112,20 +134,9 @@ void canvas_selectObject (t_glist *glist, t_gobj *y)
 void canvas_selectObjectIfNotSelected (t_glist *glist, t_gobj *y)
 {
     if (!glist_objectIsSelected (glist, y)) {
-        canvas_deselectAll (glist);
+        glist_deselectAll (glist);
         canvas_selectObject (glist, y);
     }
-}
-
-void canvas_selectLine (t_glist *glist, t_outconnect *connection, int m, int i, int n, int j)
-{
-    canvas_deselectAll (glist);
-    
-    editor_selectedLineSet (glist_getEditor (glist), connection, m, i, n, j);
-    
-    sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
-                    glist_getView (glist),
-                    editor_getSelectedLineConnection (glist_getEditor (glist)));  
 }
 
 /* Split selected object from uneselected ones and move them to the end. */
@@ -209,21 +220,6 @@ int canvas_deselectObjectIfSelected (t_glist *glist, t_gobj *y)
     if (glist_objectIsSelected (glist, y)) { return canvas_deselectObject (glist, y); }
     
     return 0;
-}
-
-int canvas_deselectAll (t_glist *glist)
-{
-    int k = 0;
-    
-    while (editor_getSelection (glist_getEditor (glist))) {
-    //
-    k |= canvas_deselectObject (glist, selection_getObject (editor_getSelection (glist_getEditor (glist))));
-    //
-    }
-
-    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_deselectLine (glist); }
-    
-    return k;   /* Return 1 if an object has been recreated. */
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -178,7 +178,7 @@ static void canvas_proceedMouseClickRight (t_glist *glist, t_gobj *y, int positi
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
     int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
     
-    canvas_deselectAll (glist);
+    glist_deselectAll (glist);
     
     sys_vGui ("::ui_menu::showPopup .x%lx %d %d %d %d\n",
                     glist, 
@@ -370,7 +370,7 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
     //
     if (cord_hit (traverser_getCord (&t), positionX, positionY)) {
         if (clicked) {
-            canvas_selectLine (canvas, 
+            glist_selectLine (canvas, 
                 connection, 
                 glist_objectGetIndexOf (canvas, cast_gobj (traverser_getSource (&t))), 
                 traverser_getIndexOfOutlet (&t),
@@ -390,7 +390,7 @@ static void canvas_proceedMouseLassoStart (t_glist *glist, int positionX, int po
 {
     int newlyCreated = 0;
     
-    if (!(modifier & MODIFIER_SHIFT)) { newlyCreated = canvas_deselectAll (glist); }
+    if (!(modifier & MODIFIER_SHIFT)) { newlyCreated = glist_deselectAll (glist); }
     
     if (!newlyCreated) {
     //
@@ -568,7 +568,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         canvas_makeLineStart (glist, a, b);
         
     } else if (action == ACTION_REGION)  {
-        canvas_selectingByLassoStart (glist, a, b);
+        glist_selectLassoBegin (glist, a, b);
         
     } else if (action == ACTION_PASS)    {
         editor_motionProceed (glist_getEditor (glist), deltaX, deltaY, m);
@@ -602,7 +602,7 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int action = editor_getAction (glist_getEditor (glist));
     
     if (action == ACTION_CONNECT)     { canvas_makeLineEnd (glist, a, b); }
-    else if (action == ACTION_REGION) { canvas_selectingByLassoEnd (glist, a, b); }
+    else if (action == ACTION_REGION) { glist_selectLassoEnd (glist, a, b); }
     else if (action == ACTION_MOVE)   {
     //
     if (glist_objectGetNumberOfSelected (glist) == 1) {
@@ -639,7 +639,7 @@ void canvas_editmode (t_glist *glist, t_float f)
     
     if (state) { glist_drawAllCommentBars (glist); }
     else {
-        canvas_deselectAll (glist); glist_eraseAllCommentBars (glist);
+        glist_deselectAll (glist); glist_eraseAllCommentBars (glist);
     }
     
     if (glist_isOnScreen (glist)) {

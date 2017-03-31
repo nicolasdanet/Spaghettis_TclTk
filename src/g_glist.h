@@ -116,7 +116,22 @@ void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *
 #pragma mark -
 
 int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
-void    glist_lineDeleteSelected            (t_glist *glist);
+void    glist_lineDeleteSelected            (t_glist *g);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    glist_selectLassoBegin              (t_glist *g, int a, int b);
+void    glist_selectLassoEnd                (t_glist *g, int a, int b);
+void    glist_selectLine                    (t_glist *g, t_outconnect *c, int m, int i, int n, int j);
+                                                            
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    glist_deselectLine                  (t_glist *g);
+int     glist_deselectAll                   (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

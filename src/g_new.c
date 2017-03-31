@@ -76,7 +76,7 @@ static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
     t_atom a;
         
     instance_getDefaultCoordinates (glist, &positionX, &positionY);
-    canvas_deselectAll (glist);
+    glist_deselectAll (glist);
     SET_SYMBOL (&a, name);
     buffer_deserialize (b, 1, &a);
     glist_objectMake (glist, positionX, positionY, 0, 1, b);
@@ -162,7 +162,7 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         t_buffer *b = buffer_new();
             
         instance_getDefaultCoordinates (glist, &positionX, &positionY);
-        canvas_deselectAll (glist);
+        glist_deselectAll (glist);
         glist_objectMake (glist, positionX, positionY, 0, 1, b);
     }
 }
@@ -210,7 +210,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         int positionY = 0;
 
         instance_getDefaultCoordinates (glist, &positionX, &positionY);
-        canvas_deselectAll (glist);
+        glist_deselectAll (glist);
             
         object_setX (x, positionX);
         object_setY (x, positionY);

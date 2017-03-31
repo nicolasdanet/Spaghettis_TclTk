@@ -502,7 +502,7 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         int positionY = 0;
 
         instance_getDefaultCoordinates (glist, &positionX, &positionY);
-        canvas_deselectAll (glist);
+        glist_deselectAll (glist);
         
         object_setX (cast_object (x), positionX);
         object_setY (cast_object (x), positionY);

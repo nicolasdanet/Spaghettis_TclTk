@@ -16,22 +16,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_selectingByLassoStart            (t_glist *glist, int a, int b);
-void            canvas_selectingByLassoEnd              (t_glist *glist, int a, int b);
-
 void            canvas_selectObjectsInRectangle         (t_glist *glist, t_rectangle *r);
 void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
 void            canvas_selectObjectIfNotSelected        (t_glist *glist, t_gobj *y);
-void            canvas_selectLine                       (t_glist *glist, 
-                                                            t_outconnect *connection,
-                                                            int m,
-                                                            int i,
-                                                            int n,
-                                                            int j);
-                                                            
+
 int             canvas_deselectObject                   (t_glist *glist, t_gobj *y);
 int             canvas_deselectObjectIfSelected         (t_glist *glist, t_gobj *y);
-int             canvas_deselectAll                      (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

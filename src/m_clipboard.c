@@ -74,7 +74,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     
-    canvas_deselectAll (glist);
+    glist_deselectAll (glist);
     
     snippet_addOffsetToLine (x->cb_buffer, alreadyThere);
     

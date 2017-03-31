@@ -480,7 +480,7 @@ void glist_objectRemoveSelected (t_glist *glist)
 {
     /* If box text is selected, deselecting it might recreate the object. */ 
     
-    if (editor_hasSelectedBox (glist_getEditor (glist))) { canvas_deselectAll (glist); }
+    if (editor_hasSelectedBox (glist_getEditor (glist))) { glist_deselectAll (glist); }
     else {
     //
     t_gobj *t1 = NULL;
