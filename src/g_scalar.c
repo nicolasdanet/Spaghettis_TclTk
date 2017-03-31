@@ -314,7 +314,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         }
     }
     
-    if (canvas_isObjectSelected (glist, cast_gobj (x))) {
+    if (glist_objectIsSelected (glist, cast_gobj (x))) {
         scalar_drawSelectRectangle (x, glist, 0);
         scalar_drawSelectRectangle (x, glist, 1);
     }

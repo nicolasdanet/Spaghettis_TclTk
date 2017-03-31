@@ -16,12 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_putSelectedObjectsAtLast         (t_glist *glist);
-void            canvas_removeSelectedObjects            (t_glist *glist);
-void            canvas_removeSelectedLine               (t_glist *glist);
-void            canvas_displaceSelectedObjects          (t_glist *glist, int deltaX, int deltaY);
-
-int             canvas_isObjectSelected                 (t_glist *glist, t_gobj *y);
 void            canvas_selectingByLassoStart            (t_glist *glist, int a, int b);
 void            canvas_selectingByLassoEnd              (t_glist *glist, int a, int b);
 

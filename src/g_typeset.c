@@ -312,7 +312,7 @@ static int box_typeset (t_box *x, t_typesethelper *p)
 static void box_sendCreate (t_box *x, t_typesethelper *p)
 {
     t_glist *glist = glist_getView (x->box_owner);
-    int isSelected = canvas_isObjectSelected (x->box_owner, cast_gobj (x->box_object));
+    int isSelected = glist_objectIsSelected (x->box_owner, cast_gobj (x->box_object));
     
     sys_vGui ("::ui_box::newText %s.c %s %d %d {%s} %d #%06x\n",        // --
                     glist_getTagAsString (glist),

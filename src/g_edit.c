@@ -296,7 +296,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
             
         } else {
-            if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y); }
+            if (glist_objectIsSelected (glist, y)) { canvas_deselectObject (glist, y); }
             else { 
                 canvas_selectObject (glist, y);
             }
@@ -724,7 +724,7 @@ void canvas_selectAll (t_glist *glist)
     t_gobj *y = NULL;
 
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (!canvas_isObjectSelected (glist, y)) { canvas_selectObject (glist, y); }
+        if (!glist_objectIsSelected (glist, y)) { canvas_selectObject (glist, y); }
     }
     //
     }

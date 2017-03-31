@@ -145,8 +145,8 @@ void editor_selectionCacheLines (t_editor *x)
     
     while ((connection = traverser_next (&t))) {
     //
-    int s1 = canvas_isObjectSelected (x->e_owner, cast_gobj (traverser_getSource (&t)));
-    int s2 = canvas_isObjectSelected (x->e_owner, cast_gobj (traverser_getDestination (&t)));
+    int s1 = glist_objectIsSelected (x->e_owner, cast_gobj (traverser_getSource (&t)));
+    int s2 = glist_objectIsSelected (x->e_owner, cast_gobj (traverser_getDestination (&t)));
     
     if (s1 != s2) {
     //

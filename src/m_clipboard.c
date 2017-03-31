@@ -37,23 +37,23 @@ void clipboard_copy (t_clipboard *x, t_glist *glist)
     x->cb_count = 0;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (canvas_isObjectSelected (glist, y)) { gobj_save (y, b); }
+        if (glist_objectIsSelected (glist, y)) { gobj_save (y, b); }
     }
     
     traverser_start (&t, glist);
     
     while ((connection = traverser_next (&t))) {
     //
-    int m = canvas_isObjectSelected (glist, cast_gobj (traverser_getSource (&t)));
-    int n = canvas_isObjectSelected (glist, cast_gobj (traverser_getDestination (&t)));
+    int m = glist_objectIsSelected (glist, cast_gobj (traverser_getSource (&t)));
+    int n = glist_objectIsSelected (glist, cast_gobj (traverser_getDestination (&t)));
     
     if (m && n) {
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X, 
             sym_connect,
-            glist_objectGetIndexOfSelected (glist, cast_gobj (traverser_getSource (&t))),
+            glist_objectGetIndexAmongSelected (glist, cast_gobj (traverser_getSource (&t))),
             traverser_getIndexOfOutlet (&t),
-            glist_objectGetIndexOfSelected (glist, cast_gobj (traverser_getDestination (&t))),
+            glist_objectGetIndexAmongSelected (glist, cast_gobj (traverser_getDestination (&t))),
             traverser_getIndexOfInlet (&t));
     }
     //

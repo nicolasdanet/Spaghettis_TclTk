@@ -295,7 +295,7 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
     
     editor_motionUnset (glist_getEditor (glist), y);
     
-    if (canvas_isObjectSelected (glist, y)) { canvas_deselectObject (glist, y); }
+    if (glist_objectIsSelected (glist, y)) { canvas_deselectObject (glist, y); }
     if (needToRepaint) { paint_erase(); }
     if (glist_isOnScreen (view)) { gobj_visibilityChanged (y, glist, 0); }
     
@@ -417,6 +417,19 @@ t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
     return object;
 }
 
+int glist_objectIsSelected (t_glist *glist, t_gobj *y)
+{
+    t_selection *s = NULL;
+    
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
+        if (selection_getObject (s) == y) { 
+            return 1; 
+        }
+    }
+    
+    return 0;
+}
+
 int glist_objectGetIndexOf (t_glist *glist, t_gobj *y)
 {
     t_gobj *t = NULL;
@@ -440,7 +453,7 @@ static int glist_objectGetIndexOfAmong (t_glist *glist, t_gobj *y, int selected)
     int n = 0;
 
     for (t = glist->gl_graphics; t && t != y; t = t->g_next) {
-        if (selected == canvas_isObjectSelected (glist, t)) { 
+        if (selected == glist_objectIsSelected (glist, t)) { 
             n++; 
         }
     }
@@ -448,14 +461,14 @@ static int glist_objectGetIndexOfAmong (t_glist *glist, t_gobj *y, int selected)
     return n;
 }
 
-int glist_objectGetIndexOfSelected (t_glist *glist, t_gobj *y)
+int glist_objectGetIndexAmongSelected (t_glist *glist, t_gobj *y)
 {
     return glist_objectGetIndexOfAmong (glist, y, 1);
 }
 
 int glist_objectGetNumberOfSelected (t_glist *glist)
 {
-    return glist_objectGetIndexOfSelected (glist, NULL);
+    return glist_objectGetIndexAmongSelected (glist, NULL);
 }
 
 void glist_objectDeleteLines (t_glist *glist, t_object *o)
