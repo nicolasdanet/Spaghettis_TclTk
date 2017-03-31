@@ -471,6 +471,58 @@ int glist_objectGetNumberOfSelected (t_glist *glist)
     return glist_objectGetIndexAmongSelected (glist, NULL);
 }
 
+void glist_objectRemoveSelected (t_glist *glist)
+{
+    t_gobj *t1 = NULL;
+    t_gobj *t2 = NULL;
+        
+    int state = dsp_suspend();
+    
+    /* If box text is selected, deselecting it might recreate the object. */ 
+    /* Workaround by deselecting it first and looking for a "new" object next. */
+        
+    if (editor_hasSelectedBox (glist_getEditor (glist))) {
+        instance_setNewestObject (NULL);
+        canvas_deselectAll (glist);
+        if (instance_getNewestObject()) {
+            for (t1 = glist->gl_graphics; t1; t1 = t1->g_next) {
+                if (cast_pd (t1) == instance_getNewestObject()) { canvas_selectObject (glist, t1); }
+            }
+        }
+    }
+    
+    for (t1 = glist->gl_graphics; t1; t1 = t2) {
+        t2 = t1->g_next;
+        if (glist_objectIsSelected (glist, t1)) { glist_objectRemove (glist, t1); }
+    }
+
+    dsp_resume (state);
+    
+    glist_setDirty (glist, 1);
+}
+
+void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
+{
+    t_selection *y = NULL;
+    
+    int resortInlets  = 0;
+    int resortOutlets = 0;
+    int isDirty = 0;
+    
+    for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
+    
+        gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
+        
+        resortInlets  |= (pd_class (selection_getObject (y)) == vinlet_class);
+        resortOutlets |= (pd_class (selection_getObject (y)) == voutlet_class);
+        isDirty = 1;
+    }
+    
+    if (resortInlets)  { canvas_resortInlets (glist);  }
+    if (resortOutlets) { canvas_resortOutlets (glist); }
+    if (isDirty)       { glist_setDirty (glist, 1);    }
+}
+
 void glist_objectDeleteLines (t_glist *glist, t_object *o)
 {
     t_outconnect *connection = NULL;
@@ -529,6 +581,14 @@ int glist_lineExist (t_glist *glist, t_object *o, int m, t_object *i, int n)
     while ((connection = traverser_next (&t))) { if (traverser_isLineBetween (&t, o, m, i, n)) { return 1; } }
     
     return 0;
+}
+
+void glist_lineDeleteSelected (t_glist *glist)
+{
+    if (editor_hasSelectedLine (glist_getEditor (glist))) {
+        editor_selectedLineDisconnect (glist_getEditor (glist));
+        glist_setDirty (glist, 1);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

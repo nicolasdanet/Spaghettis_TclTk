@@ -104,20 +104,18 @@ int     glist_objectGetIndexOf              (t_glist *g, t_gobj *y);
 int     glist_objectGetIndexAmongSelected   (t_glist *g, t_gobj *y);
 int     glist_objectGetNumberOf             (t_glist *g);
 int     glist_objectGetNumberOfSelected     (t_glist *g);
+void    glist_objectRemoveSelected          (t_glist *glist);
+void    glist_objectDisplaceSelected        (t_glist *glist, int deltaX, int deltaY);
 void    glist_objectDeleteLines             (t_glist *g, t_object *o);
 void    glist_objectDeleteLinesByInlet      (t_glist *g, t_object *o, t_inlet *inlet);
 void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *outlet);
-
-void    canvas_putSelectedObjectsAtLast     (t_glist *glist);
-void    canvas_removeSelectedObjects        (t_glist *glist);
-void    canvas_removeSelectedLine           (t_glist *glist);
-void    canvas_displaceSelectedObjects      (t_glist *glist, int deltaX, int deltaY);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
+void    glist_lineDeleteSelected            (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

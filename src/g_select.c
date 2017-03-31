@@ -42,104 +42,6 @@ static void canvas_deselectLine (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Split selected object from uneselected ones and move them to the end. */
-
-void canvas_putSelectedObjectsAtLast (t_glist *glist)
-{
-    t_gobj *selectedHead = NULL;
-    t_gobj *selectedTail = NULL;
-    t_gobj *unselectedHead = NULL;
-    t_gobj *unselectedTail = NULL;
-    t_gobj *yA = NULL;
-    t_gobj *yB = NULL;
-
-    for (yA = glist->gl_graphics; yA; yA = yB) {
-    //
-    yB = yA->g_next;
-    
-    if (glist_objectIsSelected (glist, yA)) {
-        if (selectedTail) { selectedTail->g_next = yA; selectedTail = yA; yA->g_next = NULL; }
-        else {
-            selectedHead = selectedTail = yA; selectedTail->g_next = NULL;
-        }
-    } else {
-        if (unselectedTail) { unselectedTail->g_next = yA; unselectedTail = yA; yA->g_next = NULL; }
-        else {
-            unselectedHead = unselectedTail = yA; unselectedTail->g_next = NULL;
-        }
-    }
-    //
-    }
-
-    if (!unselectedHead) { glist->gl_graphics = selectedHead; }
-    else {
-        glist->gl_graphics = unselectedHead; unselectedTail->g_next = selectedHead; 
-    }
-}
-
-void canvas_removeSelectedObjects (t_glist *glist)
-{
-    t_gobj *yA = NULL;
-    t_gobj *yB = NULL;
-        
-    int state = dsp_suspend();
-    
-    /* If box text is selected, deselecting it might recreate the object. */ 
-    /* Workaround by deselecting it first and looking for a "new" object next. */
-        
-    if (editor_hasSelectedBox (glist_getEditor (glist))) {
-        instance_setNewestObject (NULL);
-        canvas_deselectAll (glist);
-        if (instance_getNewestObject()) {
-            for (yA = glist->gl_graphics; yA; yA = yA->g_next) {
-                if (cast_pd (yA) == instance_getNewestObject()) { canvas_selectObject (glist, yA); }
-            }
-        }
-    }
-    
-    for (yA = glist->gl_graphics; yA; yA = yB) {
-        yB = yA->g_next;
-        if (glist_objectIsSelected (glist, yA)) { glist_objectRemove (glist, yA); }
-    }
-
-    dsp_resume (state);
-    
-    glist_setDirty (glist, 1);
-}
-
-void canvas_removeSelectedLine (t_glist *glist)
-{
-    if (editor_hasSelectedLine (glist_getEditor (glist))) {
-        editor_selectedLineDisconnect (glist_getEditor (glist));
-        glist_setDirty (glist, 1);
-    }
-}
-
-void canvas_displaceSelectedObjects (t_glist *glist, int deltaX, int deltaY)
-{
-    t_selection *y = NULL;
-    
-    int needToResortInlets  = 0;
-    int needToResortOutlets = 0;
-    int isDirty = 0;
-    
-    for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
-        gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
-        if (pd_class (selection_getObject (y)) == vinlet_class)  { needToResortInlets  = 1; }
-        if (pd_class (selection_getObject (y)) == voutlet_class) { needToResortOutlets = 1; }
-        isDirty = 1;
-    }
-    
-    if (needToResortInlets)  { canvas_resortInlets (glist);  }
-    if (needToResortOutlets) { canvas_resortOutlets (glist); }
-        
-    if (isDirty) { glist_setDirty (glist, 1); }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_selectingByLasso (t_glist *glist, int a, int b, int end)
 {
     if (end) {
@@ -227,6 +129,41 @@ void canvas_selectLine (t_glist *glist, t_outconnect *connection, int m, int i, 
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
                     glist_getView (glist),
                     editor_getSelectedLineConnection (glist_getEditor (glist)));  
+}
+
+/* Split selected object from uneselected ones and move them to the end. */
+
+static void canvas_putSelectedObjectsAtLast (t_glist *glist)
+{
+    t_gobj *selectedHead = NULL;
+    t_gobj *selectedTail = NULL;
+    t_gobj *unselectedHead = NULL;
+    t_gobj *unselectedTail = NULL;
+    t_gobj *yA = NULL;
+    t_gobj *yB = NULL;
+
+    for (yA = glist->gl_graphics; yA; yA = yB) {
+    //
+    yB = yA->g_next;
+    
+    if (glist_objectIsSelected (glist, yA)) {
+        if (selectedTail) { selectedTail->g_next = yA; selectedTail = yA; yA->g_next = NULL; }
+        else {
+            selectedHead = selectedTail = yA; selectedTail->g_next = NULL;
+        }
+    } else {
+        if (unselectedTail) { unselectedTail->g_next = yA; unselectedTail = yA; yA->g_next = NULL; }
+        else {
+            unselectedHead = unselectedTail = yA; unselectedTail->g_next = NULL;
+        }
+    }
+    //
+    }
+
+    if (!unselectedHead) { glist->gl_graphics = selectedHead; }
+    else {
+        glist->gl_graphics = unselectedHead; unselectedTail->g_next = selectedHead; 
+    }
 }
 
 /* Note that deselecting an object with its text active might recreate it. */
