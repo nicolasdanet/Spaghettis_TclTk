@@ -105,15 +105,13 @@ void glist_updateLines (t_glist *glist, t_object *o)
     }
 }
 
-void glist_updateGraph (t_glist *glist)
+void glist_updateGraphOnParent (t_glist *glist)
 {  
     if (glist_isOnScreen (glist)) {
     //
     if (glist_hasWindow (glist)) { glist_updateWindow (glist); }
     else {
-
         PD_ASSERT (glist_hasParentOnScreen (glist));
-        
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     }
@@ -126,8 +124,11 @@ void glist_updateRectangle (t_glist *glist)
     if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {
     //
     if (!glist_isArray (glist)) {
-        sys_vGui (".x%lx.c delete RECTANGLE\n", glist_getView (glist));
-        glist_drawRectangle (glist);
+    //
+    sys_vGui ("%s.c delete RECTANGLE\n", glist_getTagAsString (glist));
+    
+    glist_drawRectangle (glist);
+    //
     }
     //
     }
@@ -197,11 +198,11 @@ void glist_drawRectangle (t_glist *glist)
     int c = rectangle_getBottomRightX (glist_getGraphGeometry (glist));
     int d = rectangle_getBottomRightY (glist_getGraphGeometry (glist));
     
-    sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
+    sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
                     " -dash {2 4}"  // --
                     " -fill #%06x"
                     " -tags RECTANGLE\n",
-                    glist_getView (glist),
+                    glist_getTagAsString (glist),
                     a,
                     b,
                     c,
