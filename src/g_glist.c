@@ -473,32 +473,35 @@ int glist_objectGetNumberOfSelected (t_glist *glist)
 
 void glist_objectRemoveSelected (t_glist *glist)
 {
+    /* If box text is selected, deselecting it might recreate the object. */ 
+    
+    if (editor_hasSelectedBox (glist_getEditor (glist))) { canvas_deselectAll (glist); }
+    else {
+    //
     t_gobj *t1 = NULL;
     t_gobj *t2 = NULL;
-        
-    int state = dsp_suspend();
     
-    /* If box text is selected, deselecting it might recreate the object. */ 
-    /* Workaround by deselecting it first and looking for a "new" object next. */
-        
-    if (editor_hasSelectedBox (glist_getEditor (glist))) {
-        instance_setNewestObject (NULL);
-        canvas_deselectAll (glist);
-        if (instance_getNewestObject()) {
-            for (t1 = glist->gl_graphics; t1; t1 = t1->g_next) {
-                if (cast_pd (t1) == instance_getNewestObject()) { canvas_selectObject (glist, t1); }
-            }
-        }
-    }
+    int dspState = 0;
+    int dspSuspended = 0;
     
     for (t1 = glist->gl_graphics; t1; t1 = t2) {
-        t2 = t1->g_next;
-        if (glist_objectIsSelected (glist, t1)) { glist_objectRemove (glist, t1); }
+    //
+    t2 = t1->g_next;
+    
+    if (glist_objectIsSelected (glist, t1)) {
+        if (!dspSuspended) { 
+            if (class_hasDSP (pd_class (t1))) { dspState = dsp_suspend(); dspSuspended = 1; }
+        } 
+        glist_objectRemove (glist, t1); 
+    }
+    //
     }
 
-    dsp_resume (state);
-    
     glist_setDirty (glist, 1);
+    
+    if (dspSuspended) { dsp_resume (dspState); }
+    //
+    }
 }
 
 void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
@@ -510,9 +513,7 @@ void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
     int isDirty = 0;
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
-    
         gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
-        
         resortInlets  |= (pd_class (selection_getObject (y)) == vinlet_class);
         resortOutlets |= (pd_class (selection_getObject (y)) == voutlet_class);
         isDirty = 1;
