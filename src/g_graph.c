@@ -232,7 +232,7 @@ void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     t_error err = bounds_setByAtoms (glist_getBounds (glist), argc, argv);
     
-    if (!err) { glist_updateGraphOnParent (glist); }
+    if (!err) { glist_updateGraph (glist); }
     else {
         error_invalid (sym_graph, sym_bounds); 
     }
@@ -384,7 +384,7 @@ void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY
     else {
         object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
         object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
-        glist_updateGraphOnParent (x);
+        glist_updateGraph (x);
         glist_updateLines (glist, cast_object (z));
     }
 }

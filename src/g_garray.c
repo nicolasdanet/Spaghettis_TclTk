@@ -182,7 +182,7 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
 
 static void garray_updateGraphName (t_garray *x)
 {
-    glist_updateGraphOnParent (x->x_owner); glist_setName (x->x_owner, x->x_name);
+    glist_updateGraph (x->x_owner); glist_setName (x->x_owner, x->x_name);
 }
 
 void garray_resizeWithInteger (t_garray *x, int n)
