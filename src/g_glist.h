@@ -119,6 +119,8 @@ void    glist_updateTitle               (t_glist *glist);
 void    glist_updateCursor              (t_glist *glist, int type);
 void    glist_updateWindow              (t_glist *glist);
 void    glist_updateLines               (t_glist *glist, t_object *o);
+void    glist_updateGraphOnParent       (t_glist *glist);
+void    glist_updateRectangle           (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -126,6 +128,7 @@ void    glist_updateLines               (t_glist *glist, t_object *o);
 
 void    glist_drawAllLines              (t_glist *glist);
 void    glist_drawAllCommentBars        (t_glist *glist);
+void    glist_drawRectangle             (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

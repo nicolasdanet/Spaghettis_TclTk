@@ -22,13 +22,13 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_behaviorGetRectangle         (t_gobj *, t_glist *, t_rectangle *);
-static void canvas_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
-static void canvas_behaviorSelected             (t_gobj *, t_glist *, int);
-static void canvas_behaviorActivated            (t_gobj *, t_glist *, int);
-static void canvas_behaviorDeleted              (t_gobj *, t_glist *);
-static void canvas_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
-static int  canvas_behaviorMouse                (t_gobj *, t_glist *, t_mouse *);
+void canvas_behaviorGetRectangle        (t_gobj *, t_glist *, t_rectangle *);
+void canvas_behaviorDisplaced           (t_gobj *, t_glist *, int, int);
+void canvas_behaviorSelected            (t_gobj *, t_glist *, int);
+void canvas_behaviorActivated           (t_gobj *, t_glist *, int);
+void canvas_behaviorDeleted             (t_gobj *, t_glist *);
+void canvas_behaviorVisibilityChanged   (t_gobj *, t_glist *, int);
+int  canvas_behaviorMouse               (t_gobj *, t_glist *, t_mouse *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -226,31 +226,13 @@ void canvas_resortOutlets (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_redrawGraphOnParent (t_glist *glist)
-{  
-    if (glist_isOnScreen (glist)) {
-    //
-    glist_updateWindow (glist);
-    
-    if (glist_hasParentOnScreen (glist)) {
-        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
-        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
     t_error err = bounds_setByAtoms (glist_getBounds (glist), argc, argv);
     
-    if (!err) { canvas_redrawGraphOnParent (glist); }
+    if (!err) { glist_updateGraphOnParent (glist); }
     else {
         error_invalid (sym_graph, sym_bounds); 
     }
@@ -384,7 +366,7 @@ t_float canvas_valueForOnePixelY (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
+void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_glist *x = cast_glist (z);
     
@@ -394,7 +376,7 @@ static void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
     }
 }
 
-static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
+void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_glist *x = cast_glist (z);
     
@@ -402,12 +384,12 @@ static void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     else {
         object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
         object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
-        canvas_redrawGraphOnParent (x);
+        glist_updateGraphOnParent (x);
         glist_updateLines (glist, cast_object (z));
     }
 }
 
-static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
+void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_glist *x = cast_glist (z);
     
@@ -425,14 +407,14 @@ static void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     }
 }
 
-static void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
+void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 {
     t_glist *x = cast_glist (z);
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnActivated (z, glist, isActivated); }
 }
 
-static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
+void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
     t_glist *x = cast_glist (z);
     t_gobj *y  = NULL;
@@ -442,7 +424,7 @@ static void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
     text_widgetBehavior.w_fnDeleted (z, glist);
 }
 
-static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
+void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_glist *x = cast_glist (z);
 
@@ -553,7 +535,7 @@ static void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     }
 }
 
-static int canvas_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
+int canvas_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_glist *x = cast_glist (z);
 

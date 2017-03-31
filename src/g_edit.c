@@ -159,7 +159,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     drag_setEnd (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
     glist_updateLines (glist, object);
     gobj_visibilityChanged (y, glist, 1);
-    canvas_updateGraphOnParentRectangle (t);
+    glist_updateRectangle (t);
     glist_setDirty (glist, 1);
     //
     }

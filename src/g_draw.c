@@ -17,6 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void canvas_behaviorVisibilityChanged   (t_gobj *, t_glist *, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void glist_updateTitle (t_glist *glist)
 {
     if (glist_hasWindow (glist)) {
@@ -59,8 +65,8 @@ void glist_updateCursor (t_glist *glist, int type)
 void glist_updateWindow (t_glist *glist)
 {
     if (glist_isWindowable (glist) && glist_isOnScreen (glist)) { 
-        canvas_map (glist, 0); 
-        canvas_map (glist, 1); 
+        canvas_map (glist, 0);
+        canvas_map (glist, 1);
     }
 }
 
@@ -94,6 +100,32 @@ void glist_updateLines (t_glist *glist, t_object *o)
     //
     }
     //
+    }
+    //
+    }
+}
+
+void glist_updateGraphOnParent (t_glist *glist)
+{  
+    if (glist_isOnScreen (glist)) {
+    //
+    glist_updateWindow (glist);
+    
+    if (glist_hasParentOnScreen (glist)) {
+        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
+        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+    }
+    //
+    }
+}
+
+void glist_updateRectangle (t_glist *glist)
+{
+    if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {
+    //
+    if (!glist_isArray (glist)) {
+        sys_vGui (".x%lx.c delete RECTANGLE\n", glist_getView (glist));
+        glist_drawRectangle (glist);
     }
     //
     }
@@ -152,41 +184,7 @@ void glist_drawAllCommentBars (t_glist *glist)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void glist_eraseLine (t_glist *glist, t_outconnect *connection)
-{
-    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
-    //
-    if (glist_isOnScreen (glist)) {
-    //
-    sys_vGui ("%s.c delete %lxLINE\n", glist_getTagAsString (glist), connection);
-    //
-    }
-    //
-    }
-}
-
-void glist_eraseAllCommentBars (t_glist *glist)
-{
-    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
-    //
-    if (glist_isOnScreen (glist)) {
-    //
-    sys_vGui ("%s.c delete COMMENTBAR\n", glist_getTagAsString (glist));
-    //
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_drawGraphOnParentRectangle (t_glist *glist)
+void glist_drawRectangle (t_glist *glist)
 {
     if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {
     //
@@ -218,13 +216,31 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     }
 }
 
-void canvas_updateGraphOnParentRectangle (t_glist *glist)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void glist_eraseLine (t_glist *glist, t_outconnect *connection)
 {
-    if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
     //
-    if (!glist_isArray (glist)) {
-        sys_vGui (".x%lx.c delete RECTANGLE\n", glist_getView (glist));
-        canvas_drawGraphOnParentRectangle (glist);
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c delete %lxLINE\n", glist_getTagAsString (glist), connection);
+    //
+    }
+    //
+    }
+}
+
+void glist_eraseAllCommentBars (t_glist *glist)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c delete COMMENTBAR\n", glist_getTagAsString (glist));
+    //
     }
     //
     }

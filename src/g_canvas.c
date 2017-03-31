@@ -457,7 +457,7 @@ void canvas_map (t_glist *glist, t_float f)
         glist_setMapped (glist, 1);
         
         glist_drawAllLines (glist);
-        canvas_drawGraphOnParentRectangle (glist);
+        glist_drawRectangle (glist);
     }
     //
     }

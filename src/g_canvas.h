@@ -16,15 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_redrawGraphOnParent              (t_glist *glist);
-
-void            canvas_drawGraphOnParentRectangle       (t_glist *glist);
-void            canvas_updateGraphOnParentRectangle     (t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            canvas_putSelectedObjectsAtLast         (t_glist *glist);
 void            canvas_removeSelectedObjects            (t_glist *glist);
 void            canvas_removeSelectedLine               (t_glist *glist);
