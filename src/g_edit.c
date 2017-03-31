@@ -605,7 +605,7 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     else if (action == ACTION_REGION) { canvas_selectingByLassoEnd (glist, a, b); }
     else if (action == ACTION_MOVE)   {
     //
-    if (canvas_getNumberOfSelectedObjects (glist) == 1) {
+    if (glist_objectGetNumberOfSelected (glist) == 1) {
         gobj_activated (selection_getObject (editor_getSelection (glist_getEditor (glist))), glist, 1);
     }
     //

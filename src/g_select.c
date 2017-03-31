@@ -18,20 +18,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int canvas_getIndexOfObjectAmong (t_glist *glist, t_gobj *y, int selected)
-{
-    t_gobj *t = NULL;
-    int n = 0;
-
-    for (t = glist->gl_graphics; t && t != y; t = t->g_next) {
-        if (selected == canvas_isObjectSelected (glist, t)) { 
-            n++; 
-        }
-    }
-    
-    return n;
-}
-
 static void canvas_deselectAllRecursive (t_gobj *y)
 {
     if (pd_class (y) == canvas_class) { 
@@ -319,34 +305,6 @@ int canvas_deselectAll (t_glist *glist)
     if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_deselectLine (glist); }
     
     return k;   /* Return 1 if an object has been recreated. */
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int canvas_getNumberOfSelectedObjects (t_glist *glist)
-{
-    return canvas_getIndexOfObjectAmongSelected (glist, NULL);
-}
-
-int canvas_getNumberOfUnselectedObjects (t_glist *glist)
-{
-    return canvas_getIndexOfObjectAmongUnselected (glist, NULL);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int canvas_getIndexOfObjectAmongSelected (t_glist *glist, t_gobj *y)
-{
-    return canvas_getIndexOfObjectAmong (glist, y, 1);
-}
-
-int canvas_getIndexOfObjectAmongUnselected (t_glist *glist, t_gobj *y)
-{
-    return canvas_getIndexOfObjectAmong (glist, y, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

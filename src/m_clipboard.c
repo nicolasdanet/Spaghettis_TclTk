@@ -51,9 +51,9 @@ void clipboard_copy (t_clipboard *x, t_glist *glist)
         buffer_vAppend (b, "ssiiii;", 
             sym___hash__X, 
             sym_connect,
-            canvas_getIndexOfObjectAmongSelected (glist, cast_gobj (traverser_getSource (&t))),
+            glist_objectGetIndexOfSelected (glist, cast_gobj (traverser_getSource (&t))),
             traverser_getIndexOfOutlet (&t),
-            canvas_getIndexOfObjectAmongSelected (glist, cast_gobj (traverser_getDestination (&t))),
+            glist_objectGetIndexOfSelected (glist, cast_gobj (traverser_getDestination (&t))),
             traverser_getIndexOfInlet (&t));
     }
     //

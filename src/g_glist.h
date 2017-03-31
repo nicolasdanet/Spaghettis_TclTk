@@ -44,98 +44,100 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *glist_getTop           (t_glist *glist);
-t_environment   *glist_getEnvironment   (t_glist *glist);
-t_glist         *glist_getView          (t_glist *glist);
+t_glist         *glist_getTop               (t_glist *g);
+t_environment   *glist_getEnvironment       (t_glist *g);
+t_glist         *glist_getView              (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     glist_isRoot                    (t_glist *glist);
-int     glist_isTop                     (t_glist *glist);
-int     glist_isAbstraction             (t_glist *glist);
-int     glist_isSubpatch                (t_glist *glist);
-int     glist_isArray                   (t_glist *glist);
-int     glist_isDirty                   (t_glist *glist);
-int     glist_isOnScreen                (t_glist *glist);
-int     glist_isWindowable              (t_glist *glist);
+int     glist_isRoot                        (t_glist *g);
+int     glist_isTop                         (t_glist *g);
+int     glist_isAbstraction                 (t_glist *g);
+int     glist_isSubpatch                    (t_glist *g);
+int     glist_isArray                       (t_glist *g);
+int     glist_isDirty                       (t_glist *g);
+int     glist_isOnScreen                    (t_glist *g);
+int     glist_isWindowable                  (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_bind                      (t_glist *glist);
-void    glist_unbind                    (t_glist *glist);
+void    glist_bind                          (t_glist *g);
+void    glist_unbind                        (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     glist_fileExist                 (t_glist *glist, char *name, char *extension, t_fileproperties *p);
-int     glist_fileOpen                  (t_glist *glist, char *name, char *extension, t_fileproperties *p);
+int     glist_fileExist                     (t_glist *g, char *name, char *extension, t_fileproperties *p);
+int     glist_fileOpen                      (t_glist *g, char *name, char *extension, t_fileproperties *p);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_setName                   (t_glist *glist, t_symbol *name);
-void    glist_setDirty                  (t_glist *glist, int n);
+void    glist_setName                       (t_glist *g, t_symbol *name);
+void    glist_setDirty                      (t_glist *g, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_objectMake                (t_glist *glist, int a, int b, int w, int selected, t_buffer *t);
-void    glist_objectAddNext             (t_glist *glist, t_gobj *first, t_gobj *next);
-void    glist_objectAdd                 (t_glist *glist, t_gobj *y);
-void    glist_objectRemove              (t_glist *glist, t_gobj *y);
-void    glist_objectRemoveByTemplate    (t_glist *glist, t_template *tmpl);
-void    glist_objectRemoveAll           (t_glist *glist);
+void    glist_objectMake                    (t_glist *g, int a, int b, int w, int selected, t_buffer *t);
+void    glist_objectAddNext                 (t_glist *g, t_gobj *first, t_gobj *next);
+void    glist_objectAdd                     (t_glist *g, t_gobj *y);
+void    glist_objectRemove                  (t_glist *g, t_gobj *y);
+void    glist_objectRemoveByTemplate        (t_glist *g, t_template *tmpl);
+void    glist_objectRemoveAll               (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_gobj  *glist_objectGetAt              (t_glist *glist, int n);
-t_gobj  *glist_objectHit                (t_glist *glist, int a, int b, t_rectangle *r);
+t_gobj  *glist_objectGetAt                  (t_glist *g, int n);
+t_gobj  *glist_objectHit                    (t_glist *g, int a, int b, t_rectangle *r);
 
-int     glist_objectGetIndexOf          (t_glist *glist, t_gobj *y);
-int     glist_objectGetNumberOf         (t_glist *glist);
-void    glist_objectDeleteLines         (t_glist *glist, t_object *o);
-void    glist_objectDeleteLinesByInlet  (t_glist *glist, t_object *o, t_inlet *inlet);
-void    glist_objectDeleteLinesByOutlet (t_glist *glist, t_object *o, t_outlet *outlet);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int     glist_lineExist                 (t_glist *glist, t_object *o, int m, t_object *i, int n);
+int     glist_objectGetIndexOf              (t_glist *g, t_gobj *y);
+int     glist_objectGetIndexOfSelected      (t_glist *g, t_gobj *y);
+int     glist_objectGetNumberOf             (t_glist *g);
+int     glist_objectGetNumberOfSelected     (t_glist *g);
+void    glist_objectDeleteLines             (t_glist *g, t_object *o);
+void    glist_objectDeleteLinesByInlet      (t_glist *g, t_object *o, t_inlet *inlet);
+void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *outlet);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_updateTitle               (t_glist *glist);
-void    glist_updateCursor              (t_glist *glist, int type);
-void    glist_updateWindow              (t_glist *glist);
-void    glist_updateLines               (t_glist *glist, t_object *o);
-void    glist_updateGraphOnParent       (t_glist *glist);
-void    glist_updateRectangle           (t_glist *glist);
+int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_drawAllLines              (t_glist *glist);
-void    glist_drawAllCommentBars        (t_glist *glist);
-void    glist_drawRectangle             (t_glist *glist);
+void    glist_updateTitle                   (t_glist *g);
+void    glist_updateCursor                  (t_glist *g, int type);
+void    glist_updateWindow                  (t_glist *g);
+void    glist_updateLines                   (t_glist *g, t_object *o);
+void    glist_updateGraphOnParent           (t_glist *g);
+void    glist_updateRectangle               (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_eraseLine                 (t_glist *glist, t_outconnect *connection);
-void    glist_eraseAllCommentBars       (t_glist *glist);
+void    glist_drawAllLines                  (t_glist *g);
+void    glist_drawAllCommentBars            (t_glist *g);
+void    glist_drawRectangle                 (t_glist *g);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    glist_eraseLine                     (t_glist *g, t_outconnect *connection);
+void    glist_eraseAllCommentBars           (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -385,7 +385,7 @@ t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
     
     rectangle_set (r, 0, 0, 0, 0);
     
-    if (canvas_getNumberOfSelectedObjects (glist) > 1) {
+    if (glist_objectGetNumberOfSelected (glist) > 1) {
     //
     t_selection *s = NULL;
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
@@ -432,6 +432,30 @@ int glist_objectGetIndexOf (t_glist *glist, t_gobj *y)
 int glist_objectGetNumberOf (t_glist *glist)
 {
     return glist_objectGetIndexOf (glist, NULL);
+}
+
+static int glist_objectGetIndexOfAmong (t_glist *glist, t_gobj *y, int selected)
+{
+    t_gobj *t = NULL;
+    int n = 0;
+
+    for (t = glist->gl_graphics; t && t != y; t = t->g_next) {
+        if (selected == canvas_isObjectSelected (glist, t)) { 
+            n++; 
+        }
+    }
+    
+    return n;
+}
+
+int glist_objectGetIndexOfSelected (t_glist *glist, t_gobj *y)
+{
+    return glist_objectGetIndexOfAmong (glist, y, 1);
+}
+
+int glist_objectGetNumberOfSelected (t_glist *glist)
+{
+    return glist_objectGetIndexOfSelected (glist, NULL);
 }
 
 void glist_objectDeleteLines (t_glist *glist, t_object *o)
