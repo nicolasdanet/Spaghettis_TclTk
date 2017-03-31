@@ -308,7 +308,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
             
             gpointer_setByCopy (&drawpolygon_gpointer, gp);
             
-            canvas_setMotionFunction (glist, z, (t_motionfn)drawpolygon_motion, m->m_x, m->m_y);
+            glist_setMotion (glist, z, (t_motionfn)drawpolygon_motion, m->m_x, m->m_y);
         }
     
         return 1;

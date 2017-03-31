@@ -105,6 +105,26 @@ void glist_updateLines (t_glist *glist, t_object *o)
     }
 }
 
+void glist_updateLineSelected (t_glist *glist, int isSelected)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (isSelected) {
+    
+        sys_vGui ("%s.c itemconfigure %lxLINE -fill blue\n",
+                        glist_getTagAsString (glist),
+                        editor_getSelectedLineConnection (glist_getEditor (glist)));
+                    
+    } else {
+    
+        sys_vGui ("%s.c itemconfigure %lxLINE -fill black\n",
+                        glist_getTagAsString (glist),
+                        editor_getSelectedLineConnection (glist_getEditor (glist)));
+    }
+    //
+    }
+}
+
 void glist_updateGraphOnParent (t_glist *glist)
 {  
     if (glist_isOnScreen (glist)) {

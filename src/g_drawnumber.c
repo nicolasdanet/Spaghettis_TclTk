@@ -239,7 +239,7 @@ static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
 
         gpointer_setByCopy (&drawnumber_gpointer, gp);
         
-        canvas_setMotionFunction (gpointer_getView (gp), z, (t_motionfn)drawnumber_motion, a, b);
+        glist_setMotion (gpointer_getView (gp), z, (t_motionfn)drawnumber_motion, a, b);
     }
     
     return 1;

@@ -33,12 +33,6 @@ int             canvas_deselectObject                   (t_glist *glist, t_gobj 
 int             canvas_deselectObjectIfSelected         (t_glist *glist, t_gobj *y);
 int             canvas_deselectAll                      (t_glist *glist);
 
-void            canvas_setMotionFunction                (t_glist *glist,
-                                                            t_gobj *y,
-                                                            t_motionfn callback,
-                                                            int a,
-                                                            int b);
-                                    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

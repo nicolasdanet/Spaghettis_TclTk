@@ -130,6 +130,11 @@ void glist_setDirty (t_glist *glist, int n)
     }
 }
 
+void glist_setMotion (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)
+{
+    editor_motionSet (glist_getEditor (glist_getView (glist)), y, callback, a, b);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

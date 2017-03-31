@@ -81,7 +81,8 @@ int     glist_fileOpen                      (t_glist *g, char *name, char *exten
 
 void    glist_setName                       (t_glist *g, t_symbol *name);
 void    glist_setDirty                      (t_glist *g, int n);
-
+void    glist_setMotion                     (t_glist *g, t_gobj *y, t_motionfn fn, int a, int b);
+                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -125,6 +126,7 @@ void    glist_updateTitle                   (t_glist *g);
 void    glist_updateCursor                  (t_glist *g, int type);
 void    glist_updateWindow                  (t_glist *g);
 void    glist_updateLines                   (t_glist *g, t_object *o);
+void    glist_updateLineSelected            (t_glist *g, int isSelected);
 void    glist_updateGraphOnParent           (t_glist *g);
 void    glist_updateRectangle               (t_glist *g);
 

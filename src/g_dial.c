@@ -476,7 +476,7 @@ static void dial_click (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     t_float a = atom_getFloatAtIndex (0, argc, argv);
     t_float b = atom_getFloatAtIndex (1, argc, argv);
     
-    canvas_setMotionFunction (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)dial_motion, a, b);
+    glist_setMotion (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)dial_motion, a, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------

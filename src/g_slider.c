@@ -422,7 +422,7 @@ static void slider_click (t_slider *x, t_symbol *s, int argc, t_atom *argv)
         (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     }
     
-    canvas_setMotionFunction (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)slider_motion, a, b);
+    glist_setMotion (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)slider_motion, a, b);
     
     slider_out (x);
 }

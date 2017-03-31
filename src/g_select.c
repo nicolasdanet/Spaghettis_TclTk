@@ -18,23 +18,20 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_deselectAllRecursive (t_gobj *y)
+static void glist_deselectAllRecursive (t_gobj *y)
 {
     if (pd_class (y) == canvas_class) { 
     //
     t_gobj *o = NULL;
-    for (o = cast_glist (y)->gl_graphics; o; o = o->g_next) { canvas_deselectAllRecursive (o); }
+    for (o = cast_glist (y)->gl_graphics; o; o = o->g_next) { glist_deselectAllRecursive (o); }
     canvas_deselectAll (cast_glist (y));
     //
     }
 }
 
-static void canvas_deselectLine (t_glist *glist)
+static void glist_deselectLine (t_glist *glist)
 {
-    sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
-                    glist_getView (glist),
-                    editor_getSelectedLineConnection (glist_getEditor (glist)));
-                    
+    glist_updateLineSelected (glist, 0);
     editor_selectedLineReset (glist_getEditor (glist));
 }
 
@@ -103,7 +100,7 @@ void canvas_selectObjectsInRectangle (t_glist *glist, t_rectangle *r)
 
 void canvas_selectObject (t_glist *glist, t_gobj *y)
 {
-    if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_deselectLine (glist); }
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_deselectLine (glist); }
 
     PD_ASSERT (!glist_objectIsSelected (glist, y));    /* Must NOT be already selected. */
     
@@ -186,7 +183,7 @@ int canvas_deselectObject (t_glist *glist, t_gobj *y)
                 z = text;
                 canvas_putSelectedObjectsAtLast (glist);
                 editor_selectionCacheLines (glist_getEditor (glist_getView (glist)));
-                canvas_deselectAllRecursive (y);
+                glist_deselectAllRecursive (y);
             }
             gobj_activated (y, glist, 0);
         }
@@ -224,18 +221,9 @@ int canvas_deselectAll (t_glist *glist)
     //
     }
 
-    if (editor_hasSelectedLine (glist_getEditor (glist))) { canvas_deselectLine (glist); }
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_deselectLine (glist); }
     
     return k;   /* Return 1 if an object has been recreated. */
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_setMotionFunction (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)
-{
-    editor_motionSet (glist_getEditor (glist_getView (glist)), y, callback, a, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------

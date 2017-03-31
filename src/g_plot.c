@@ -749,7 +749,7 @@ static int plot_behaviorMouseMatch (t_plot *x,
     if (plot_thickness == PLOT_THICKNESS_UP   && plot_cumulativeY >= 0.0) { plot_direction = (t_float)-1.0; }
     if (plot_thickness == PLOT_THICKNESS_DOWN && plot_cumulativeY <= 0.0) { plot_direction = (t_float)-1.0; }
         
-    canvas_setMotionFunction (gpointer_getView (&plot_gpointer), 
+    glist_setMotion (gpointer_getView (&plot_gpointer), 
         NULL, 
         (t_motionfn)plot_motion, 
         m->m_x, 
@@ -830,7 +830,7 @@ static int plot_behaviorMouseSingle (t_plot *x, t_plotproperties *p, t_mouse *m)
 
         array_setFloatAtIndexByDescriptor (p->p_array, i, &x->x_fieldY, valueY);
         
-        canvas_setMotionFunction (gpointer_getView (&plot_gpointer), 
+        glist_setMotion (gpointer_getView (&plot_gpointer), 
             NULL, 
             (t_motionfn)plot_motion, 
             m->m_x, 
