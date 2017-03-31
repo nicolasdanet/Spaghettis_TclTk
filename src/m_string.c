@@ -239,6 +239,11 @@ int string_indexOfFirstOccurrenceFrom (char *s, const char *c, int n)
     return k;
 }
 
+int string_indexOfFirstOccurrenceFromEnd (char *s, const char *c)
+{
+    return string_indexOfFirstOccurrenceFrom (s, c, (int)strlen (s));
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

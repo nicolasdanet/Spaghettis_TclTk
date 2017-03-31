@@ -61,6 +61,7 @@ int         string_contains                             (const char *s, const ch
         
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, int n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, int n);
+int         string_indexOfFirstOccurrenceFromEnd        (char *s, const char *c);
 void        string_replaceCharacter                     (char *s, char toBeReplaced, char c);
 
 void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfColumns, int *numberOfLines);
@@ -98,6 +99,7 @@ t_symbol    *utils_dash                                 (void);
 t_symbol    *utils_empty                                (void); 
 t_symbol    *utils_substituteIfEmpty                    (t_symbol *s, int asDash);
 
+t_symbol    *utils_removeExtension                      (t_symbol *s);
 t_symbol    *utils_makeBindSymbol                       (t_symbol *s);
 t_symbol    *utils_makeTemplateIdentifier               (t_symbol *s);
 t_symbol    *utils_stripBindSymbol                      (t_symbol *s);

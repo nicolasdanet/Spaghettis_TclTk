@@ -136,15 +136,19 @@ void glist_setDirty (t_glist *glist, int n)
 
 void glist_bind (t_glist *glist)
 {
-    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
-        pd_bind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
+    t_symbol *s = utils_removeExtension (glist_getName (glist));
+    
+    if (utils_isNameAllowedForWindow (s)) {
+        pd_bind (cast_pd (glist), utils_makeBindSymbol (s));
     }
 }
 
 void glist_unbind (t_glist *glist)
 {
-    if (utils_isNameAllowedForWindow (glist_getName (glist))) {
-        pd_unbind (cast_pd (glist), utils_makeBindSymbol (glist_getName (glist)));
+    t_symbol *s = utils_removeExtension (glist_getName (glist));
+    
+    if (utils_isNameAllowedForWindow (s)) {
+        pd_unbind (cast_pd (glist), utils_makeBindSymbol (s));
     }
 }
 

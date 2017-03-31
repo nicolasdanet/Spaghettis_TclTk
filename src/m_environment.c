@@ -19,8 +19,8 @@
 
 void instance_environmentSetFile (t_symbol *name, t_symbol *directory)
 {
-    instance_get()->pd_environment.env_fileName  = name;
     instance_get()->pd_environment.env_directory = directory;
+    instance_get()->pd_environment.env_fileName  = name;
 }
 
 void instance_environmentSetArguments (int argc, t_atom *argv)
