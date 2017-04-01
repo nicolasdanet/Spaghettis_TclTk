@@ -16,7 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_selectObjectsInRectangle         (t_glist *glist, t_rectangle *r);
 void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
 void            canvas_selectObjectIfNotSelected        (t_glist *glist, t_gobj *y);
 

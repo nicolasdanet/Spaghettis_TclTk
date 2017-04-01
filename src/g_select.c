@@ -18,31 +18,39 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void glist_selectLassoOverlap (t_glist *glist, t_rectangle *r)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+
+        t_rectangle t;
+        
+        gobj_getRectangle (y, glist, &t);
+        
+        if (rectangle_overlap (r, &t) && !glist_objectIsSelected (glist, y)) {
+            canvas_selectObject (glist, y);
+        }
+    }
+}
+
 static void glist_selectLassoProceed (t_glist *glist, int a, int b, int end)
 {
-    if (end) {
+    if (!end) { glist_drawLasso (glist, a, b); }
+    else {
+    //
+    t_rectangle r;
     
-        t_rectangle r;
-        
-        rectangle_set (&r, 
-            drag_getStartX (editor_getDrag (glist_getEditor (glist))), 
-            drag_getStartY (editor_getDrag (glist_getEditor (glist))), 
-            a, 
-            b);
-        
-        canvas_selectObjectsInRectangle (glist, &r);
-        
-        editor_resetAction (glist_getEditor (glist));
-        
-        sys_vGui (".x%lx.c delete TEMPORARY\n", glist_getView (glist));
-        
-    } else {
-        sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
-                        glist_getView (glist),
-                        drag_getStartX (editor_getDrag (glist_getEditor (glist))),
-                        drag_getStartY (editor_getDrag (glist_getEditor (glist))),
-                        a,
-                        b);
+    rectangle_set (&r, 
+        drag_getStartX (editor_getDrag (glist_getEditor (glist))), 
+        drag_getStartY (editor_getDrag (glist_getEditor (glist))), 
+        a, 
+        b);
+    
+    glist_selectLassoOverlap (glist, &r);
+    editor_resetAction (glist_getEditor (glist));
+    glist_eraseLasso (glist);
+    //
     }
 }
 
@@ -55,6 +63,10 @@ void glist_selectLassoEnd (t_glist *glist, int a, int b)
 {
     glist_selectLassoProceed (glist, a, b, 1);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void glist_selectLine (t_glist *glist, t_outconnect *connection, int m, int i, int n, int j)
 {
@@ -87,14 +99,15 @@ static void glist_deselectAllRecursive (t_gobj *y)
 int glist_deselectAll (t_glist *glist)
 {
     int k = 0;
+    t_selection *s = NULL;
     
-    while (editor_getSelection (glist_getEditor (glist))) {
-    //
-    k |= canvas_deselectObject (glist, selection_getObject (editor_getSelection (glist_getEditor (glist))));
-    //
+    while ((s = editor_getSelection (glist_getEditor (glist)))) {
+        k |= canvas_deselectObject (glist, selection_getObject (s));
     }
 
-    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_deselectLine (glist); }
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { 
+        glist_deselectLine (glist);
+    }
     
     return k;   /* Return 1 if an object has been recreated. */
 }
@@ -102,23 +115,6 @@ int glist_deselectAll (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void canvas_selectObjectsInRectangle (t_glist *glist, t_rectangle *r)
-{
-    t_gobj *y;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-    //
-    t_rectangle t;
-    
-    gobj_getRectangle (y, glist, &t);
-    
-    if (rectangle_overlap (r, &t) && !glist_objectIsSelected (glist, y)) {
-        canvas_selectObject (glist, y);
-    }
-    //
-    }
-}
 
 void canvas_selectObject (t_glist *glist, t_gobj *y)
 {

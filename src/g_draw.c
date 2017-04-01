@@ -239,6 +239,24 @@ void glist_drawRectangle (t_glist *glist)
     }
 }
 
+void glist_drawLasso (t_glist *glist, int a, int b)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c coords TEMPORARY %d %d %d %d\n",
+                    glist_getTagAsString (glist),
+                    drag_getStartX (editor_getDrag (glist_getEditor (glist))),
+                    drag_getStartY (editor_getDrag (glist_getEditor (glist))),
+                    a,
+                    b);
+    //
+    }
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -263,6 +281,19 @@ void glist_eraseAllCommentBars (t_glist *glist)
     if (glist_isOnScreen (glist)) {
     //
     sys_vGui ("%s.c delete COMMENTBAR\n", glist_getTagAsString (glist));
+    //
+    }
+    //
+    }
+}
+
+void glist_eraseLasso (t_glist *glist)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c delete TEMPORARY\n", glist_getTagAsString (glist));
     //
     }
     //

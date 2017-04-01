@@ -152,6 +152,7 @@ void    glist_updateRectangle               (t_glist *g);
 void    glist_drawAllLines                  (t_glist *g);
 void    glist_drawAllCommentBars            (t_glist *g);
 void    glist_drawRectangle                 (t_glist *g);
+void    glist_drawLasso                     (t_glist *g, int a, int b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -159,6 +160,7 @@ void    glist_drawRectangle                 (t_glist *g);
 
 void    glist_eraseLine                     (t_glist *g, t_outconnect *connection);
 void    glist_eraseAllCommentBars           (t_glist *g);
+void    glist_eraseLasso                    (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
