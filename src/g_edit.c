@@ -369,15 +369,7 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
     while ((connection = traverser_next (&t))) {
     //
     if (cord_hit (traverser_getCord (&t), positionX, positionY)) {
-        if (clicked) {
-            glist_lineSelect (canvas, 
-                connection, 
-                glist_objectGetIndexOf (canvas, cast_gobj (traverser_getSource (&t))), 
-                traverser_getIndexOfOutlet (&t),
-                glist_objectGetIndexOf (canvas, cast_gobj (traverser_getDestination (&t))), 
-                traverser_getIndexOfInlet (&t));
-        }
-        
+        if (clicked) { glist_lineSelect (canvas, &t); }
         return 1;
     }
     //

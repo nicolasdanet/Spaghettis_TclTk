@@ -152,6 +152,7 @@ typedef struct _cord {
 typedef struct _traverser {
     t_glist             *tr_owner;
     t_outconnect        *tr_connectionCached;
+    t_outconnect        *tr_connectionCurrent;
     t_object            *tr_srcObject;
     t_outlet            *tr_srcOutlet;
     t_object            *tr_destObject;
@@ -301,6 +302,11 @@ static inline int traverser_getEndX (t_traverser *t)
 static inline int traverser_getEndY (t_traverser *t)
 {
     return t->tr_cord.tr_lineEndY;
+}
+
+static inline t_outconnect *traverser_getConnection (t_traverser *t)
+{
+    return t->tr_connectionCurrent;
 }
 
 static inline t_object *traverser_getSource (t_traverser *t)

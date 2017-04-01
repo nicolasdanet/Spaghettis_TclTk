@@ -70,6 +70,7 @@ void traverser_start (t_traverser *t, t_glist *glist)
 {
     t->tr_owner                 = glist;
     t->tr_connectionCached      = NULL;
+    t->tr_connectionCurrent     = NULL;
     t->tr_srcObject             = NULL;
     t->tr_srcIndexOfNextOutlet  = 0;
     t->tr_srcNumberOfOutlets    = 0;
@@ -164,6 +165,8 @@ t_outconnect *traverser_next (t_traverser *t)
         cord_init (&t->tr_cord);
     }
     
+    t->tr_connectionCurrent = connection;
+    
     return connection;
 }
 
@@ -175,10 +178,6 @@ void traverser_disconnect (t_traverser *t)
 {
     object_disconnect (t->tr_srcObject, t->tr_srcIndexOfOutlet, t->tr_destObject, t->tr_destIndexOfInlet);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 int traverser_isLineBetween (t_traverser *t, t_object *src, int m, t_object *dest, int n)
 {

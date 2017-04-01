@@ -486,10 +486,17 @@ void glist_objectDeleteLinesByOutlet (t_glist *glist, t_object *o, t_outlet *out
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_lineSelect (t_glist *glist, t_outconnect *connection, int m, int i, int n, int j)
+void glist_lineSelect (t_glist *glist, t_traverser *t)
 {
     glist_deselectAll (glist);
-    editor_selectedLineSet (glist_getEditor (glist), connection, m, i, n, j);
+                
+    editor_selectedLineSet (glist_getEditor (glist),
+        traverser_getConnection (t),
+        glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (t))), 
+        traverser_getIndexOfOutlet (t),
+        glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (t))), 
+        traverser_getIndexOfInlet (t));
+        
     glist_updateLineSelected (glist, 1);
 }
 
