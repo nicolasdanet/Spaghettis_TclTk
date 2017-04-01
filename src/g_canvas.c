@@ -66,7 +66,7 @@ static void canvas_loadbangSubpatches (t_glist *glist)
 static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
 {
     int isGraphOnParent = (flags & 1) != 0;
-    //int hideText        = (flags & 2) != 0;
+    // int hideText     = (flags & 2) != 0;
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist_isGraphOnParent (glist));
     
     if (needToUpdate) {
@@ -649,7 +649,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
         
         /* Activated text box triggering recreation. */
         
-        err = canvas_deselectObjectIfSelected (glist_getParent (glist), cast_gobj (glist));
+        err = glist_objectDeselectIfSelected (glist_getParent (glist), cast_gobj (glist));
     }
     
     PD_ASSERT (argc == 11);

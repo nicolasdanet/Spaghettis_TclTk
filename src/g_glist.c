@@ -300,7 +300,7 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
     
     editor_motionUnset (glist_getEditor (glist), y);
     
-    if (glist_objectIsSelected (glist, y)) { canvas_deselectObject (glist, y); }
+    if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
     if (needToRepaint) { paint_erase(); }
     if (glist_isOnScreen (view)) { gobj_visibilityChanged (y, glist, 0); }
     

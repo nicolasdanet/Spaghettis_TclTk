@@ -296,7 +296,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
             
         } else {
-            if (glist_objectIsSelected (glist, y)) { canvas_deselectObject (glist, y); }
+            if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
             else { 
                 glist_objectSelect (glist, y);
             }
@@ -532,7 +532,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
-        if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_lineDeleteSelected (glist); }
+        if (editor_hasSelectedLine (glist_getEditor (glist)))   { glist_lineDeleteSelected (glist); }
         else if (editor_hasSelection (glist_getEditor (glist))) { 
             glist_objectRemoveSelected (glist); 
         }

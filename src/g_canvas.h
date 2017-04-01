@@ -16,13 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int             canvas_deselectObject                   (t_glist *glist, t_gobj *y);
-int             canvas_deselectObjectIfSelected         (t_glist *glist, t_gobj *y);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void            canvas_fromArrayDialog                  (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeArray                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_makeObject                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
