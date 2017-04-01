@@ -217,7 +217,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
         buffer_deserialize (object_getBuffer (x), 1, &a);
         glist_objectAdd (glist, cast_gobj (x));
-        canvas_selectObject (glist, cast_gobj (x));
+        glist_objectSelect (glist, cast_gobj (x));
     }
 }
 

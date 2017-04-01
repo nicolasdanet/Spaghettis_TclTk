@@ -29,7 +29,7 @@ static void glist_selectLassoOverlap (t_glist *glist, t_rectangle *r)
         gobj_getRectangle (y, glist, &t);
         
         if (rectangle_overlap (r, &t) && !glist_objectIsSelected (glist, y)) {
-            canvas_selectObject (glist, y);
+            glist_objectSelect (glist, y);
         }
     }
 }
@@ -68,23 +68,6 @@ void glist_selectLassoEnd (t_glist *glist, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_selectLine (t_glist *glist, t_outconnect *connection, int m, int i, int n, int j)
-{
-    glist_deselectAll (glist);
-    editor_selectedLineSet (glist_getEditor (glist), connection, m, i, n, j);
-    glist_updateLineSelected (glist, 1);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void glist_deselectLine (t_glist *glist)
-{
-    glist_updateLineSelected (glist, 0);
-    editor_selectedLineReset (glist_getEditor (glist));
-}
-
 static void glist_deselectAllRecursive (t_gobj *y)
 {
     if (pd_class (y) == canvas_class) { 
@@ -106,7 +89,7 @@ int glist_deselectAll (t_glist *glist)
     }
 
     if (editor_hasSelectedLine (glist_getEditor (glist))) { 
-        glist_deselectLine (glist);
+        glist_lineDeselect (glist);
     }
     
     return k;   /* Return 1 if an object has been recreated. */
@@ -116,24 +99,115 @@ int glist_deselectAll (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_selectObject (t_glist *glist, t_gobj *y)
+void glist_objectSelect (t_glist *glist, t_gobj *y)
 {
-    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_deselectLine (glist); }
-
-    PD_ASSERT (!glist_objectIsSelected (glist, y));    /* Must NOT be already selected. */
+    PD_ASSERT (!glist_objectIsSelected (glist, y));                     /* Must NOT be already selected. */
+    
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_lineDeselect (glist); }
     
     editor_selectionAdd (glist_getEditor (glist), y);
     
     gobj_selected (y, glist, 1);
 }
 
-void canvas_selectObjectIfNotSelected (t_glist *glist, t_gobj *y)
+void glist_objectSelectIfNotSelected (t_glist *glist, t_gobj *y)
 {
-    if (!glist_objectIsSelected (glist, y)) {
-        glist_deselectAll (glist);
-        canvas_selectObject (glist, y);
+    if (!glist_objectIsSelected (glist, y)) { glist_deselectAll (glist); glist_objectSelect (glist, y); }
+}
+
+int glist_objectIsSelected (t_glist *glist, t_gobj *y)
+{
+    t_selection *s = NULL;
+    
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
+        if (selection_getObject (s) == y) { 
+            return 1; 
+        }
+    }
+    
+    return 0;
+}
+
+static int glist_objectGetIndexAmong (t_glist *glist, t_gobj *y, int selected)
+{
+    t_gobj *t = NULL;
+    int n = 0;
+
+    for (t = glist->gl_graphics; t && t != y; t = t->g_next) {
+        if (selected == glist_objectIsSelected (glist, t)) { 
+            n++; 
+        }
+    }
+    
+    return n;
+}
+
+int glist_objectGetIndexAmongSelected (t_glist *glist, t_gobj *y)
+{
+    return glist_objectGetIndexAmong (glist, y, 1);
+}
+
+int glist_objectGetNumberOfSelected (t_glist *glist)
+{
+    return glist_objectGetIndexAmongSelected (glist, NULL);
+}
+
+void glist_objectRemoveSelected (t_glist *glist)
+{
+    /* If box text is selected, deselecting it might recreate the object. */ 
+    
+    if (editor_hasSelectedBox (glist_getEditor (glist))) { glist_deselectAll (glist); }
+    else {
+    //
+    t_gobj *t1 = NULL;
+    t_gobj *t2 = NULL;
+    
+    int dspState = 0;
+    int dspSuspended = 0;
+    
+    for (t1 = glist->gl_graphics; t1; t1 = t2) {
+    //
+    t2 = t1->g_next;
+    
+    if (glist_objectIsSelected (glist, t1)) {
+        if (!dspSuspended) { 
+            if (class_hasDSP (pd_class (t1))) { dspState = dsp_suspend(); dspSuspended = 1; }
+        } 
+        glist_objectRemove (glist, t1); 
+    }
+    //
+    }
+
+    glist_setDirty (glist, 1);
+    
+    if (dspSuspended) { dsp_resume (dspState); }
+    //
     }
 }
+
+void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
+{
+    t_selection *y = NULL;
+    
+    int resortInlets  = 0;
+    int resortOutlets = 0;
+    int isDirty = 0;
+    
+    for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
+        gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
+        resortInlets  |= (pd_class (selection_getObject (y)) == vinlet_class);
+        resortOutlets |= (pd_class (selection_getObject (y)) == voutlet_class);
+        isDirty = 1;
+    }
+    
+    if (resortInlets)  { canvas_resortInlets (glist);  }
+    if (resortOutlets) { canvas_resortOutlets (glist); }
+    if (isDirty)       { glist_setDirty (glist, 1);    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* Split selected object from uneselected ones and move them to the end. */
 

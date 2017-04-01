@@ -228,7 +228,7 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
     
     if (isSelected) {
     //
-    canvas_selectObject (glist, cast_gobj (x));
+    glist_objectSelect (glist, cast_gobj (x));
     gobj_activated (cast_gobj (x), glist, 1);
     //
     }
@@ -422,19 +422,6 @@ t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
     return object;
 }
 
-int glist_objectIsSelected (t_glist *glist, t_gobj *y)
-{
-    t_selection *s = NULL;
-    
-    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
-        if (selection_getObject (s) == y) { 
-            return 1; 
-        }
-    }
-    
-    return 0;
-}
-
 int glist_objectGetIndexOf (t_glist *glist, t_gobj *y)
 {
     t_gobj *t = NULL;
@@ -450,83 +437,6 @@ int glist_objectGetIndexOf (t_glist *glist, t_gobj *y)
 int glist_objectGetNumberOf (t_glist *glist)
 {
     return glist_objectGetIndexOf (glist, NULL);
-}
-
-static int glist_objectGetIndexOfAmong (t_glist *glist, t_gobj *y, int selected)
-{
-    t_gobj *t = NULL;
-    int n = 0;
-
-    for (t = glist->gl_graphics; t && t != y; t = t->g_next) {
-        if (selected == glist_objectIsSelected (glist, t)) { 
-            n++; 
-        }
-    }
-    
-    return n;
-}
-
-int glist_objectGetIndexAmongSelected (t_glist *glist, t_gobj *y)
-{
-    return glist_objectGetIndexOfAmong (glist, y, 1);
-}
-
-int glist_objectGetNumberOfSelected (t_glist *glist)
-{
-    return glist_objectGetIndexAmongSelected (glist, NULL);
-}
-
-void glist_objectRemoveSelected (t_glist *glist)
-{
-    /* If box text is selected, deselecting it might recreate the object. */ 
-    
-    if (editor_hasSelectedBox (glist_getEditor (glist))) { glist_deselectAll (glist); }
-    else {
-    //
-    t_gobj *t1 = NULL;
-    t_gobj *t2 = NULL;
-    
-    int dspState = 0;
-    int dspSuspended = 0;
-    
-    for (t1 = glist->gl_graphics; t1; t1 = t2) {
-    //
-    t2 = t1->g_next;
-    
-    if (glist_objectIsSelected (glist, t1)) {
-        if (!dspSuspended) { 
-            if (class_hasDSP (pd_class (t1))) { dspState = dsp_suspend(); dspSuspended = 1; }
-        } 
-        glist_objectRemove (glist, t1); 
-    }
-    //
-    }
-
-    glist_setDirty (glist, 1);
-    
-    if (dspSuspended) { dsp_resume (dspState); }
-    //
-    }
-}
-
-void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
-{
-    t_selection *y = NULL;
-    
-    int resortInlets  = 0;
-    int resortOutlets = 0;
-    int isDirty = 0;
-    
-    for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
-        gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
-        resortInlets  |= (pd_class (selection_getObject (y)) == vinlet_class);
-        resortOutlets |= (pd_class (selection_getObject (y)) == voutlet_class);
-        isDirty = 1;
-    }
-    
-    if (resortInlets)  { canvas_resortInlets (glist);  }
-    if (resortOutlets) { canvas_resortOutlets (glist); }
-    if (isDirty)       { glist_setDirty (glist, 1);    }
 }
 
 void glist_objectDeleteLines (t_glist *glist, t_object *o)
@@ -575,6 +485,19 @@ void glist_objectDeleteLinesByOutlet (t_glist *glist, t_object *o, t_outlet *out
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void glist_lineSelect (t_glist *glist, t_outconnect *connection, int m, int i, int n, int j)
+{
+    glist_deselectAll (glist);
+    editor_selectedLineSet (glist_getEditor (glist), connection, m, i, n, j);
+    glist_updateLineSelected (glist, 1);
+}
+
+void glist_lineDeselect (t_glist *glist)
+{
+    glist_updateLineSelected (glist, 0);
+    editor_selectedLineReset (glist_getEditor (glist));
+}
 
 int glist_lineExist (t_glist *glist, t_object *o, int m, t_object *i, int n)
 {

@@ -94,12 +94,11 @@ void    glist_objectRemove                  (t_glist *g, t_gobj *y);
 void    glist_objectRemoveByTemplate        (t_glist *g, t_template *tmpl);
 void    glist_objectRemoveAll               (t_glist *g);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_gobj  *glist_objectGetAt                  (t_glist *g, int n);
 t_gobj  *glist_objectHit                    (t_glist *g, int a, int b, t_rectangle *r);
 
+void    glist_objectSelect                  (t_glist *g, t_gobj *y);
+void    glist_objectSelectIfNotSelected     (t_glist *g, t_gobj *y);
 int     glist_objectIsSelected              (t_glist *g, t_gobj *y);
 int     glist_objectGetIndexOf              (t_glist *g, t_gobj *y);
 int     glist_objectGetIndexAmongSelected   (t_glist *g, t_gobj *y);
@@ -116,6 +115,8 @@ void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *
 #pragma mark -
 
 int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
+void    glist_lineSelect                    (t_glist *g, t_outconnect *c, int m, int i, int n, int j);
+void    glist_lineDeselect                  (t_glist *g);
 void    glist_lineDeleteSelected            (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -124,13 +125,11 @@ void    glist_lineDeleteSelected            (t_glist *g);
 
 void    glist_selectLassoBegin              (t_glist *g, int a, int b);
 void    glist_selectLassoEnd                (t_glist *g, int a, int b);
-void    glist_selectLine                    (t_glist *g, t_outconnect *c, int m, int i, int n, int j);
-                                                            
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_deselectLine                  (t_glist *g);
 int     glist_deselectAll                   (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------

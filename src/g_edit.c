@@ -298,7 +298,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
         } else {
             if (glist_objectIsSelected (glist, y)) { canvas_deselectObject (glist, y); }
             else { 
-                canvas_selectObject (glist, y);
+                glist_objectSelect (glist, y);
             }
         }
         //
@@ -312,7 +312,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
         
             if (!clicked) { glist_updateCursor (glist, CURSOR_RESIZE); }
             else {
-                canvas_selectObjectIfNotSelected (glist, y);
+                glist_objectSelectIfNotSelected (glist, y);
                 editor_startAction (glist_getEditor (glist), ACTION_RESIZE);
                 drag_set (editor_getDrag (glist_getEditor (glist)), a, b, positionX, positionY);
             }  
@@ -344,7 +344,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
                 drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
                 
             } else {
-                canvas_selectObjectIfNotSelected (glist, y);
+                glist_objectSelectIfNotSelected (glist, y);
                 editor_startAction (glist_getEditor (glist), ACTION_MOVE);
             }
             
@@ -370,7 +370,7 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
     //
     if (cord_hit (traverser_getCord (&t), positionX, positionY)) {
         if (clicked) {
-            glist_selectLine (canvas, 
+            glist_lineSelect (canvas, 
                 connection, 
                 glist_objectGetIndexOf (canvas, cast_gobj (traverser_getSource (&t))), 
                 traverser_getIndexOfOutlet (&t),
@@ -724,7 +724,7 @@ void canvas_selectAll (t_glist *glist)
     t_gobj *y = NULL;
 
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (!glist_objectIsSelected (glist, y)) { canvas_selectObject (glist, y); }
+        if (!glist_objectIsSelected (glist, y)) { glist_objectSelect (glist, y); }
     }
     //
     }

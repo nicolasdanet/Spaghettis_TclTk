@@ -16,9 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
-void            canvas_selectObjectIfNotSelected        (t_glist *glist, t_gobj *y);
-
 int             canvas_deselectObject                   (t_glist *glist, t_gobj *y);
 int             canvas_deselectObjectIfSelected         (t_glist *glist, t_gobj *y);
 

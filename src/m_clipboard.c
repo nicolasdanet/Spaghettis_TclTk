@@ -83,7 +83,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     snippet_substractOffsetToLine (x->cb_buffer, alreadyThere);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (i >= alreadyThere) { canvas_selectObject (glist, y); }
+        if (i >= alreadyThere) { glist_objectSelect (glist, y); }
         i++;
     }
     

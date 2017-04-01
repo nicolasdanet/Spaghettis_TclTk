@@ -510,7 +510,7 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
                 
         glist_objectAdd (glist, cast_gobj (x));
-        canvas_selectObject (glist, cast_gobj (x));
+        glist_objectSelect (glist, cast_gobj (x));
     }
 }
 

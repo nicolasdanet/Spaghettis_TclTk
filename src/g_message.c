@@ -233,7 +233,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         object_setY (cast_object (x), positionY);
         
         glist_objectAdd (glist, cast_gobj (x));
-        canvas_selectObject (glist, cast_gobj (x));
+        glist_objectSelect (glist, cast_gobj (x));
         gobj_activated (cast_gobj (x), glist, 1);
     }
 }
