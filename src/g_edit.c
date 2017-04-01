@@ -386,7 +386,7 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
     return 0;
 }
 
-static void canvas_proceedMouseLassoStart (t_glist *glist, int positionX, int positionY, int modifier)
+static void canvas_proceedMouseLassoStart (t_glist *glist, int a, int b, int modifier)
 {
     int newlyCreated = 0;
     
@@ -394,15 +394,9 @@ static void canvas_proceedMouseLassoStart (t_glist *glist, int positionX, int po
     
     if (!newlyCreated) {
     //
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -tags TEMPORARY\n",
-                    glist_getView (glist),
-                    positionX,
-                    positionY,
-                    positionX,
-                    positionY);
-
+    glist_drawLasso (glist, a, b);
     editor_startAction (glist_getEditor (glist), ACTION_REGION);
-    drag_setStart (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
+    drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
     //
     }
 }

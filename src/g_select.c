@@ -11,7 +11,6 @@
 
 #include "m_pd.h"
 #include "m_core.h"
-#include "s_system.h"
 #include "g_graphics.h"
 #include "d_dsp.h"
 
@@ -78,7 +77,7 @@ static void glist_selectLassoOverlap (t_glist *glist, t_rectangle *r)
 
 static void glist_selectLassoProceed (t_glist *glist, int a, int b, int end)
 {
-    if (!end) { glist_drawLasso (glist, a, b); }
+    if (!end) { glist_updateLasso (glist, a, b); }
     else {
     //
     t_rectangle r;

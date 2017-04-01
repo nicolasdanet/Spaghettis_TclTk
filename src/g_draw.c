@@ -154,6 +154,24 @@ void glist_updateRectangle (t_glist *glist)
     }
 }
 
+void glist_updateLasso (t_glist *glist, int a, int b)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c coords TEMPORARY %d %d %d %d\n",
+                    glist_getTagAsString (glist),
+                    drag_getStartX (editor_getDrag (glist_getEditor (glist))),
+                    drag_getStartY (editor_getDrag (glist_getEditor (glist))),
+                    a,
+                    b);
+    //
+    }
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -245,10 +263,10 @@ void glist_drawLasso (t_glist *glist, int a, int b)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c coords TEMPORARY %d %d %d %d\n",
+    sys_vGui ("%s.c create rectangle %d %d %d %d -tags TEMPORARY\n",
                     glist_getTagAsString (glist),
-                    drag_getStartX (editor_getDrag (glist_getEditor (glist))),
-                    drag_getStartY (editor_getDrag (glist_getEditor (glist))),
+                    a,
+                    b,
                     a,
                     b);
     //
