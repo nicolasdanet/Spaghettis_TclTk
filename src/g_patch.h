@@ -116,6 +116,11 @@ static inline int inlet_nearby (int x, int a, int b, int n)
     return (((x - a) * (n - 1) + ((b - a) / 2)) / (b - a));
 }
 
+static inline int inlet_closest (int x, int n, t_rectangle *r)
+{
+    return inlet_nearby (x, rectangle_getTopLeftX (r), rectangle_getBottomRightX (r), n);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

@@ -25,69 +25,47 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int create)
+static void glist_makeLineProceed (t_glist *glist, int a, int b, int end)
 {
+    int startX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
+    int startY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
+    
     t_rectangle r1;
     t_rectangle r2;
     
-    int previousX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
-    int previousY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
+    t_gobj *t1 = glist_objectHit (glist, startX, startY, &r1);
+    t_gobj *t2 = glist_objectHit (glist, a, b, &r2);
     
-    t_gobj *yA = glist_objectHit (glist, previousX, previousY, &r1);
-    t_gobj *yB = glist_objectHit (glist, positionX, positionY, &r2);
-    
-    if (create) { glist_eraseTemporary (glist); }
+    if (end) { glist_eraseTemporary (glist); }
     else {
-        glist_updateTemporary (glist, previousX, previousY, positionX, positionY);
+        glist_updateTemporary (glist, startX, startY, a, b);
     }
 
-    if (yA && yB) {
+    if (t1 && t2) {
     //
-    t_object *object1 = cast_objectIfConnectable (yA);
-    t_object *object2 = cast_objectIfConnectable (yB);
+    t_object *o1 = cast_objectIfConnectable (t1);
+    t_object *o2 = cast_objectIfConnectable (t2);
     
-    if (object1 && object2 && object1 != object2) {
+    if (o1 && o2 && o1 != o2) {
     //
-    int numberOfOutlets = object_getNumberOfOutlets (object1);
-    int numberOfInlets  = object_getNumberOfInlets (object2);
+    int numberOfOutlets = object_getNumberOfOutlets (o1);
+    int numberOfInlets  = object_getNumberOfInlets (o2);
     
     if (numberOfOutlets && numberOfInlets) {
     //
-    int a = rectangle_getTopLeftX (&r1);
-    int c = rectangle_getBottomRightX (&r1);
-    //int d = rectangle_getBottomRightY (&r1);
-    int m = rectangle_getTopLeftX (&r2);
-    //int n = rectangle_getTopLeftY (&r2);
-    int o = rectangle_getBottomRightX (&r2);
-    
-    int closest1 = inlet_nearby (previousX, a, c, numberOfOutlets);
-    int closest2 = inlet_nearby (positionX, m, o, numberOfInlets);
-    
-    PD_ASSERT (closest1 >= 0 && closest1 < numberOfOutlets);
-    PD_ASSERT (closest2 >= 0 && closest2 < numberOfInlets);
+    int k1 = inlet_closest (startX, numberOfOutlets, &r1);
+    int k2 = inlet_closest (a, numberOfInlets, &r2);
 
-    if (!glist_lineExist (glist, object1, closest1, object2, closest2)) {
+    if (!glist_lineExist (glist, o1, k1, o2, k2)) {
     //
-    if (object_isSignalOutlet (object1, closest1) && !object_isSignalInlet (object2, closest2)) { }
+    if (object_isSignalOutlet (o1, k1) && !object_isSignalInlet (o2, k2)) { }
     else {
     //
-    if (create) {
-    
-        t_cord t;
-
-        cord_make (&t, 
-            object_connect (object1, closest1, object2, closest2),
-            object1, 
-            closest1, 
-            object2, 
-            closest2,
-            glist);
-        
+    if (!end) { glist_updateCursor (glist, CURSOR_CONNECT); }
+    else {
+        t_cord t; cord_make (&t, object_connect (o1, k1, o2, k2), o1, k1, o2, k2, glist);
         glist_drawLine (glist, &t);
         glist_setDirty (glist, 1);
-        
-    } else { 
-        glist_updateCursor (glist, CURSOR_CONNECT);
     }
     
     return;
@@ -99,20 +77,20 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     }
     //
     }
-    //
+
     }
     
     glist_updateCursor (glist, CURSOR_NOTHING);
 }
 
-static void canvas_makeLineStart (t_glist *glist, int a, int b)
+static void glist_makeLineStart (t_glist *glist, int a, int b)
 {
-    canvas_makeLine (glist, a, b, 0);
+    glist_makeLineProceed (glist, a, b, 0);
 }
 
-static void canvas_makeLineEnd (t_glist *glist, int a, int b)
+static void glist_makeLineEnd (t_glist *glist, int a, int b)
 {
-    canvas_makeLine (glist, a, b, 1);
+    glist_makeLineProceed (glist, a, b, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -540,7 +518,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
     
     } else if (action == ACTION_CONNECT) {
-        canvas_makeLineStart (glist, a, b);
+        glist_makeLineStart (glist, a, b);
         
     } else if (action == ACTION_REGION)  {
         glist_selectLassoBegin (glist, a, b);
@@ -576,7 +554,7 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
     int action = editor_getAction (glist_getEditor (glist));
     
-    if (action == ACTION_CONNECT)     { canvas_makeLineEnd (glist, a, b); }
+    if (action == ACTION_CONNECT)     { glist_makeLineEnd (glist, a, b); }
     else if (action == ACTION_REGION) { glist_selectLassoEnd (glist, a, b); }
     else if (action == ACTION_MOVE)   {
     //
