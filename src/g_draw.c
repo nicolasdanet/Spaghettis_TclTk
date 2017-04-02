@@ -120,6 +120,24 @@ void glist_updateLasso (t_glist *glist, int a, int b)
     }
 }
 
+void glist_updateTemporary (t_glist *glist, int a, int b, int c, int d)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c coords TEMPORARY %d %d %d %d\n",
+                    glist_getTagAsString (glist),
+                    a,
+                    b,
+                    c,
+                    d);
+    //
+    }
+    //
+    }
+}
+
 void glist_updateLineSelected (t_glist *glist, int isSelected)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
@@ -242,6 +260,25 @@ void glist_drawLasso (t_glist *glist, int a, int b)
     }
 }
 
+void glist_drawTemporary (t_glist *glist, int a, int b, int isSignal)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
+                    glist_getTagAsString (glist),
+                    a,
+                    b,
+                    a,
+                    b,
+                    isSignal ? 2 : 1);
+    //
+    }
+    //
+    }
+}
+
 void glist_drawLine (t_glist *glist, t_cord *c)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
@@ -311,6 +348,19 @@ void glist_eraseLasso (t_glist *glist)
     if (glist_isOnScreen (glist)) {
     //
     sys_vGui ("%s.c delete LASSO\n", glist_getTagAsString (glist));
+    //
+    }
+    //
+    }
+}
+
+void glist_eraseTemporary (t_glist *glist)
+{
+    if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
+    //
+    if (glist_isOnScreen (glist)) {
+    //
+    sys_vGui ("%s.c delete TEMPORARY\n", glist_getTagAsString (glist));
     //
     }
     //

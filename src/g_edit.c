@@ -36,14 +36,9 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     t_gobj *yA = glist_objectHit (glist, previousX, previousY, &r1);
     t_gobj *yB = glist_objectHit (glist, positionX, positionY, &r2);
     
-    if (create) { sys_vGui (".x%lx.c delete TEMPORARY\n", glist_getView (glist)); }
+    if (create) { glist_eraseTemporary (glist); }
     else {
-        sys_vGui (".x%lx.c coords TEMPORARY %d %d %d %d\n",
-                        glist_getView (glist),
-                        previousX,
-                        previousY,
-                        positionX,
-                        positionY);
+        glist_updateTemporary (glist, previousX, previousY, positionX, positionY);
     }
 
     if (yA && yB) {
@@ -110,14 +105,14 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     glist_updateCursor (glist, CURSOR_NOTHING);
 }
 
-static void canvas_makeLineStart (t_glist *glist, int positionX, int positionY)
+static void canvas_makeLineStart (t_glist *glist, int a, int b)
 {
-    canvas_makeLine (glist, positionX, positionY, 0);
+    canvas_makeLine (glist, a, b, 0);
 }
 
-static void canvas_makeLineEnd (t_glist *glist, int positionX, int positionY)
+static void canvas_makeLineEnd (t_glist *glist, int a, int b)
 {
-    canvas_makeLine (glist, positionX, positionY, 1);
+    canvas_makeLine (glist, a, b, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -324,14 +319,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             else {
                 editor_startAction (glist_getEditor (glist), ACTION_CONNECT);
                 drag_setStart (editor_getDrag (glist_getEditor (glist)), h, d);
-                
-                sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
-                                glist_getView (glist),
-                                h,
-                                d,
-                                h,
-                                d,
-                                (object_isSignalOutlet (object, n) ? 2 : 1));
+                glist_drawTemporary (glist, h, d, object_isSignalOutlet (object, n));
             }                                   
                 
         } else if (clicked) {
