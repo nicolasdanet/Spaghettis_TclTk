@@ -178,9 +178,9 @@ void traverser_disconnect (t_traverser *t)
 int traverser_isLineBetween (t_traverser *t, t_object *src, int m, t_object *dest, int n)
 {
     if (t->tr_srcObject == src && t->tr_destObject == dest) {
-        if (t->tr_srcIndexOfOutlet == m && t->tr_destIndexOfInlet == n) { 
-            return 1;
-        }
+    //
+    if (t->tr_srcIndexOfOutlet == m && t->tr_destIndexOfInlet == n) { return 1; }
+    //
     }
     
     return 0;

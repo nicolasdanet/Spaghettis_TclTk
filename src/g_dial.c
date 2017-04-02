@@ -705,7 +705,7 @@ static void dial_fromDialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
     (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
     
-    glist_updateLines (x->x_gui.iem_owner, cast_object (x));
+    glist_updateLinesForObject (x->x_gui.iem_owner, cast_object (x));
     //
     }
 }

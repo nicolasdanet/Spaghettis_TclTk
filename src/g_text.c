@@ -82,7 +82,7 @@ void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     //
     t_box *text = box_fetch (glist, x);
     box_displace (text, deltaX, deltaY);
-    glist_updateLines (glist, x);
+    glist_updateLinesForObject (glist, x);
     //
     }
 }

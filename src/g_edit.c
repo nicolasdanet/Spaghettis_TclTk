@@ -77,17 +77,18 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     else {
     //
     if (create) {
-        t_outconnect *connection = object_connect (object1, closest1, object2, closest2);
+    
+        t_cord t;
         
-        sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                        glist_getView (glist),
-                        a + inlet_middle ((c - a), closest1, numberOfOutlets),
-                        d,
-                        m + inlet_middle ((o - m), closest2, numberOfInlets),
-                        n,
-                        (object_isSignalOutlet (object1, closest1) ? 2 : 1),
-                        connection);
-                        
+        cord_set (&t,
+            a + inlet_middle ((c - a), closest1, numberOfOutlets),
+            d,
+            m + inlet_middle ((o - m), closest2, numberOfInlets),
+            n,
+            object_isSignalOutlet (object1, closest1),
+            object_connect (object1, closest1, object2, closest2));
+            
+        glist_drawLine (glist, &t);
         glist_setDirty (glist, 1);
         
     } else { 
@@ -144,7 +145,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     int w = (int)((positionX - a) / font_getHostFontWidth (glist_getFontSize (glist)));
     object_setWidth (object, PD_MAX (1, w));
     gobj_visibilityChanged (y, glist, 0);
-    glist_updateLines (glist, object);
+    glist_updateLinesForObject (glist, object);
     gobj_visibilityChanged (y, glist, 1);
     glist_setDirty (glist, 1);
     //
@@ -157,7 +158,7 @@ static void canvas_motionResize (t_glist *glist, t_float positionX, t_float posi
     rectangle_setWidth (glist_getGraphGeometry (t), rectangle_getWidth (glist_getGraphGeometry (t)) + w);
     rectangle_setHeight (glist_getGraphGeometry (t), rectangle_getHeight (glist_getGraphGeometry (t)) + h);
     drag_setEnd (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
-    glist_updateLines (glist, object);
+    glist_updateLinesForObject (glist, object);
     gobj_visibilityChanged (y, glist, 1);
     glist_updateRectangle (t);
     glist_setDirty (glist, 1);

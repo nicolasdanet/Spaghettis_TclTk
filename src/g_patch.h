@@ -286,9 +286,34 @@ int         traverser_isLineBetween         (t_traverser *t, t_object *src, int 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline int cord_getStartX (t_cord *c)
+{
+    return c->tr_lineStartX;
+}
+
+static inline int cord_getStartY (t_cord *c)
+{
+    return c->tr_lineStartY;
+}
+
+static inline int cord_getEndX (t_cord *c)
+{
+    return c->tr_lineEndX;
+}
+
+static inline int cord_getEndY (t_cord *c)
+{
+    return c->tr_lineEndY;
+}
+
 static inline t_outconnect *cord_getConnection (t_cord *c)
 {
     return c->tr_lineConnection;
+}
+
+static inline int cord_isSignal (t_cord *c)
+{
+    return c->tr_lineIsSignal;
 }
 
 // -----------------------------------------------------------------------------------------------------------

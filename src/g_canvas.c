@@ -95,7 +95,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     if (needToUpdate) {
         if (!glist_isLoading (glist) && glist_hasParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            glist_updateLines (glist_getParent (glist), cast_object (glist));
+            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
         }
     }
 }
@@ -243,15 +243,10 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     if (glist_isOnScreen (glist)) {
     
-        sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                        glist_getView (glist),
-                        0,
-                        0,
-                        0,
-                        0,
-                        (object_isSignalOutlet (srcObject, m) ? 2 : 1), connection);
-                        
-        glist_updateLines (glist, srcObject);
+        t_cord t;
+        cord_set (&t, 0, 0, 0, 0, object_isSignalOutlet (srcObject, m), connection);    /* ??? */
+        glist_drawLine (glist, &t);
+        glist_updateLinesForObject (glist, srcObject);
     }
     
     return;
@@ -288,7 +283,7 @@ void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             int n = glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t)));
 
             if (m == indexOfObjectOut && n == indexOfObjectIn) {
-                sys_vGui (".x%lx.c delete %lxLINE\n", glist_getView (glist), connection);
+                glist_eraseLine (glist, traverser_getCord (&t));
                 traverser_disconnect (&t);
                 break;
             }
