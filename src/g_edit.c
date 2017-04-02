@@ -79,17 +79,15 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     if (create) {
     
         t_cord t;
-        
-        cord_setByBoxes (&t, 
+
+        cord_make (&t, 
             object_connect (object1, closest1, object2, closest2),
-            object_isSignalOutlet (object1, closest1),
-            &r1, 
-            &r2, 
-            numberOfOutlets, 
-            closest1,
-            numberOfInlets, 
-            closest2);
-            
+            object1, 
+            closest1, 
+            object2, 
+            closest2,
+            glist);
+        
         glist_drawLine (glist, &t);
         glist_setDirty (glist, 1);
         

@@ -491,7 +491,7 @@ void glist_lineSelect (t_glist *glist, t_traverser *t)
     glist_deselectAll (glist);
                 
     editor_selectedLineSet (glist_getEditor (glist),
-        traverser_getConnection (t),
+        cord_getConnection (traverser_getCord (t)),
         glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (t))), 
         traverser_getIndexOfOutlet (t),
         glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (t))), 
@@ -515,7 +515,11 @@ int glist_lineExist (t_glist *glist, t_object *o, int m, t_object *i, int n)
     
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) { if (traverser_isLineBetween (&t, o, m, i, n)) { return 1; } }
+    while ((connection = traverser_next (&t))) { 
+        if (traverser_isItLineBetween (&t, o, m, i, n)) { 
+            return 1; 
+        } 
+    }
     
     return 0;
 }

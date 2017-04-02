@@ -159,12 +159,10 @@ typedef struct _traverser {
     t_object            *tr_destObject;
     t_inlet             *tr_destInlet;
     int                 tr_srcIndexOfOutlet;
-    int                 tr_srcIndexOfNextOutlet;
     int                 tr_srcNumberOfOutlets;
     int                 tr_destIndexOfInlet;
     int                 tr_destNumberOfInlets;
-    t_rectangle         tr_srcBox;
-    t_rectangle         tr_destBox;
+    int                 tr_srcIndexOfNextOutlet;
     t_cord              tr_cord;
     } t_traverser;
 
@@ -264,22 +262,8 @@ int         voutlet_isSignal                (t_voutlet *x);
 #pragma mark -
 
 int         cord_hit                        (t_cord *x, int a, int b);
-
-void        cord_set                        (t_cord *x, t_outconnect *connection, int isSignal,
-                                                int a,
-                                                int b, 
-                                                int c, 
-                                                int d);
-                                                
-void        cord_setByBoxes                 (t_cord *x, t_outconnect *connection, int isSignal,
-                                                t_rectangle *srcBox,
-                                                t_rectangle *destBox,
-                                                int m, 
-                                                int i, 
-                                                int n,
-                                                int j);
-                                                
-void        cord_setByObjects               (t_cord *x, t_outconnect *connection, 
+void        cord_init                       (t_cord *x, t_outconnect *connection);
+void        cord_make                       (t_cord *x, t_outconnect *connection, 
                                                 t_object *src,
                                                 int i,
                                                 t_object *dest, 
@@ -294,7 +278,7 @@ t_outconnect    *traverser_next             (t_traverser *t);
 
 void        traverser_start                 (t_traverser *t, t_glist *glist);
 void        traverser_disconnect            (t_traverser *t);
-int         traverser_isLineBetween         (t_traverser *t, t_object *src, int m, t_object *dest, int n);
+int         traverser_isItLineBetween       (t_traverser *t, t_object *src, int m, t_object *dest, int n);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -337,31 +321,6 @@ static inline int cord_isSignal (t_cord *c)
 static inline t_cord *traverser_getCord (t_traverser *t)
 {
     return &t->tr_cord;
-}
-
-static inline int traverser_getStartX (t_traverser *t)
-{
-    return t->tr_cord.tr_lineStartX;
-}
-
-static inline int traverser_getStartY (t_traverser *t)
-{
-    return t->tr_cord.tr_lineStartY;
-}
-
-static inline int traverser_getEndX (t_traverser *t)
-{
-    return t->tr_cord.tr_lineEndX;
-}
-
-static inline int traverser_getEndY (t_traverser *t)
-{
-    return t->tr_cord.tr_lineEndY;
-}
-
-static inline t_outconnect *traverser_getConnection (t_traverser *t)
-{
-    return t->tr_cord.tr_lineConnection;
 }
 
 static inline t_object *traverser_getSource (t_traverser *t)

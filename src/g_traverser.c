@@ -75,24 +75,6 @@ void traverser_start (t_traverser *t, t_glist *glist)
     t->tr_srcNumberOfOutlets    = 0;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void traverser_nextSetCord (t_traverser *t, t_outconnect *connection)
-{
-    int isSignal = object_isSignalOutlet (t->tr_srcObject, t->tr_srcIndexOfOutlet);
-    
-    int m = t->tr_srcNumberOfOutlets;
-    int i = t->tr_srcIndexOfOutlet;
-    int n = t->tr_destNumberOfInlets;
-    int j = t->tr_destIndexOfInlet;
-    
-    gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &t->tr_destBox);
-    
-    cord_setByBoxes (&t->tr_cord, connection, isSignal, &t->tr_srcBox, &t->tr_destBox, m, i, n, j);
-}
-
 /* Get the cords outlet per outlet, object per object. */
 /* Coordinates are set at the same time. */
 
@@ -123,11 +105,6 @@ t_outconnect *traverser_next (t_traverser *t)
     t->tr_srcObject          = o;
     t->tr_srcNumberOfOutlets = object_getNumberOfOutlets (o);
     n = 0;
-    
-    if (glist_isOnScreen (t->tr_owner)) { gobj_getRectangle (y, t->tr_owner, &t->tr_srcBox); }
-    else {
-        rectangle_set (&t->tr_srcBox, 0, 0, 0, 0);
-    }
     //
     }
     
@@ -146,9 +123,17 @@ t_outconnect *traverser_next (t_traverser *t)
     
     PD_ASSERT (t->tr_destNumberOfInlets);
     
-    if (glist_isOnScreen (t->tr_owner)) { traverser_nextSetCord (t, connection); }
+    if (!glist_isOnScreen (t->tr_owner)) { cord_init (&t->tr_cord, connection); }
     else {
-        rectangle_set (&t->tr_destBox, 0, 0, 0, 0); cord_set (&t->tr_cord, connection, 0, 0, 0, 0, 0);
+    //
+    cord_make (&t->tr_cord, 
+        connection, 
+        t->tr_srcObject, 
+        t->tr_srcIndexOfOutlet,
+        t->tr_destObject,
+        t->tr_destIndexOfInlet,
+        t->tr_owner);
+    //
     }
     
     return connection;
@@ -163,7 +148,7 @@ void traverser_disconnect (t_traverser *t)
     object_disconnect (t->tr_srcObject, t->tr_srcIndexOfOutlet, t->tr_destObject, t->tr_destIndexOfInlet);
 }
 
-int traverser_isLineBetween (t_traverser *t, t_object *src, int m, t_object *dest, int n)
+int traverser_isItLineBetween (t_traverser *t, t_object *src, int m, t_object *dest, int n)
 {
     if (t->tr_srcObject == src && t->tr_destObject == dest) {
     //

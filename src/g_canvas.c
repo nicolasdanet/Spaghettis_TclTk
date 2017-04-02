@@ -242,12 +242,7 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if ((connection = object_connect (srcObject, m, destObject, n))) {
     //
     if (glist_isOnScreen (glist)) {
-        /*
-        t_cord t; cord_set (&t, connection, 0, 0, 0, 0, 0);
-        glist_drawLine (glist, &t);
-        glist_updateLinesForObject (glist, srcObject);
-        */
-        t_cord t; cord_setByObjects (&t, connection, srcObject, m, destObject, n, glist);
+        t_cord t; cord_make (&t, connection, srcObject, m, destObject, n, glist);
         glist_drawLine (glist, &t);
     }
     
