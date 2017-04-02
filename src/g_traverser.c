@@ -70,7 +70,6 @@ void traverser_start (t_traverser *t, t_glist *glist)
 {
     t->tr_owner                 = glist;
     t->tr_connectionCached      = NULL;
-    t->tr_connectionCurrent     = NULL;
     t->tr_srcObject             = NULL;
     t->tr_srcIndexOfNextOutlet  = 0;
     t->tr_srcNumberOfOutlets    = 0;
@@ -80,30 +79,30 @@ void traverser_start (t_traverser *t, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void traverser_nextSetCord (t_traverser *t)
+static void traverser_nextSetCord (t_traverser *t, int isSignal, t_outconnect *connection)
 {
     gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &t->tr_destBox);
     
+    int a, b, c, d;
+    
     {
-    //
-    int w = rectangle_getWidth (&t->tr_srcBox);
-    int i = t->tr_srcIndexOfOutlet;
-    int j = t->tr_srcNumberOfOutlets;
-        
-    t->tr_cord.tr_lineStartX = rectangle_getTopLeftX (&t->tr_srcBox) + inlet_middle (w, i, j);
-    t->tr_cord.tr_lineStartY = rectangle_getBottomRightY (&t->tr_srcBox);
-    //
+        int w = rectangle_getWidth (&t->tr_srcBox);
+        int i = t->tr_srcIndexOfOutlet;
+        int j = t->tr_srcNumberOfOutlets;
+            
+        a = rectangle_getTopLeftX (&t->tr_srcBox) + inlet_middle (w, i, j);
+        b = rectangle_getBottomRightY (&t->tr_srcBox);
     }
     {
-    //
-    int w = rectangle_getWidth (&t->tr_destBox);
-    int i = t->tr_destIndexOfInlet;
-    int j = t->tr_destNumberOfInlets;
-        
-    t->tr_cord.tr_lineEndX = rectangle_getTopLeftX (&t->tr_destBox) + inlet_middle (w, i, j);
-    t->tr_cord.tr_lineEndY = rectangle_getTopLeftY (&t->tr_destBox);
-    //
+        int w = rectangle_getWidth (&t->tr_destBox);
+        int i = t->tr_destIndexOfInlet;
+        int j = t->tr_destNumberOfInlets;
+            
+        c = rectangle_getTopLeftX (&t->tr_destBox) + inlet_middle (w, i, j);
+        d = rectangle_getTopLeftY (&t->tr_destBox);
     }
+    
+    cord_set (&t->tr_cord, a, b, c, d, isSignal, connection);
 }
 
 /* Get the cords outlet per outlet, object per object. */
@@ -159,13 +158,10 @@ t_outconnect *traverser_next (t_traverser *t)
     
     PD_ASSERT (t->tr_destNumberOfInlets);
     
-    if (glist_isOnScreen (t->tr_owner)) { traverser_nextSetCord (t); }
+    if (glist_isOnScreen (t->tr_owner)) { traverser_nextSetCord (t, 0, connection); }
     else {
-        rectangle_set (&t->tr_destBox, 0, 0, 0, 0);
-        cord_init (&t->tr_cord);
+        rectangle_set (&t->tr_destBox, 0, 0, 0, 0); cord_set (&t->tr_cord, 0, 0, 0, 0, 0, connection);
     }
-    
-    t->tr_connectionCurrent = connection;
     
     return connection;
 }

@@ -116,10 +116,10 @@ void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
 void    glist_lineSelect                    (t_glist *g, t_traverser *t);
 void    glist_lineDeselect                  (t_glist *g);
 void    glist_lineDeleteSelected            (t_glist *g);
+int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

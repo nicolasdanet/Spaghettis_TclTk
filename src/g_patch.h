@@ -147,12 +147,13 @@ typedef struct _cord {
     int                 tr_lineStartY;
     int                 tr_lineEndX;
     int                 tr_lineEndY;
+    int                 tr_isSignal;
+    t_outconnect        *tr_connection;
     } t_cord;
     
 typedef struct _traverser {
     t_glist             *tr_owner;
     t_outconnect        *tr_connectionCached;
-    t_outconnect        *tr_connectionCurrent;
     t_object            *tr_srcObject;
     t_outlet            *tr_srcOutlet;
     t_object            *tr_destObject;
@@ -211,8 +212,14 @@ void        box_key                         (t_box *x, t_keycode n, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        cord_init                       (t_cord *c);
-int         cord_hit                        (t_cord *c, int a, int b);
+int         cord_hit                        (t_cord *x, int a, int b);
+void        cord_set                        (t_cord *x, 
+                                                int a,
+                                                int b, 
+                                                int c, 
+                                                int d,
+                                                int isSignal,
+                                                t_outconnect *connection);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -306,7 +313,7 @@ static inline int traverser_getEndY (t_traverser *t)
 
 static inline t_outconnect *traverser_getConnection (t_traverser *t)
 {
-    return t->tr_connectionCurrent;
+    return t->tr_cord.tr_connection;
 }
 
 static inline t_object *traverser_getSource (t_traverser *t)

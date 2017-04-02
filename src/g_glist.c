@@ -503,6 +503,7 @@ void glist_lineSelect (t_glist *glist, t_traverser *t)
 void glist_lineDeselect (t_glist *glist)
 {
     glist_updateLineSelected (glist, 0);
+    
     editor_selectedLineReset (glist_getEditor (glist));
 }
 
