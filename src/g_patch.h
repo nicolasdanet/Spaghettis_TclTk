@@ -147,8 +147,8 @@ typedef struct _cord {
     int                 tr_lineStartY;
     int                 tr_lineEndX;
     int                 tr_lineEndY;
-    int                 tr_isSignal;
-    t_outconnect        *tr_connection;
+    int                 tr_lineIsSignal;
+    t_outconnect        *tr_lineConnection;
     } t_cord;
     
 typedef struct _traverser {
@@ -286,6 +286,15 @@ int         traverser_isLineBetween         (t_traverser *t, t_object *src, int 
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline t_outconnect *cord_getConnection (t_cord *c)
+{
+    return c->tr_lineConnection;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline t_cord *traverser_getCord (t_traverser *t)
 {
     return &t->tr_cord;
@@ -313,7 +322,7 @@ static inline int traverser_getEndY (t_traverser *t)
 
 static inline t_outconnect *traverser_getConnection (t_traverser *t)
 {
-    return t->tr_cord.tr_connection;
+    return t->tr_cord.tr_lineConnection;
 }
 
 static inline t_object *traverser_getSource (t_traverser *t)

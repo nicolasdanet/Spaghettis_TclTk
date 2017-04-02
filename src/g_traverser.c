@@ -79,11 +79,11 @@ void traverser_start (t_traverser *t, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void traverser_nextSetCord (t_traverser *t, int isSignal, t_outconnect *connection)
+static void traverser_nextSetCord (t_traverser *t, t_outconnect *connection)
 {
     gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &t->tr_destBox);
     
-    int a, b, c, d;
+    int a, b, c, d, isSignal = object_isSignalOutlet (t->tr_srcObject, t->tr_srcIndexOfOutlet);
     
     {
         int w = rectangle_getWidth (&t->tr_srcBox);
@@ -158,7 +158,7 @@ t_outconnect *traverser_next (t_traverser *t)
     
     PD_ASSERT (t->tr_destNumberOfInlets);
     
-    if (glist_isOnScreen (t->tr_owner)) { traverser_nextSetCord (t, 0, connection); }
+    if (glist_isOnScreen (t->tr_owner)) { traverser_nextSetCord (t, connection); }
     else {
         rectangle_set (&t->tr_destBox, 0, 0, 0, 0); cord_set (&t->tr_cord, 0, 0, 0, 0, 0, connection);
     }

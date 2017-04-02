@@ -279,13 +279,13 @@ void glist_drawLasso (t_glist *glist, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_eraseLine (t_glist *glist, t_outconnect *connection)
+void glist_eraseLine (t_glist *glist, t_cord *c)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c delete %lxLINE\n", glist_getTagAsString (glist), connection);
+    sys_vGui ("%s.c delete %lxLINE\n", glist_getTagAsString (glist), cord_getConnection (c));
     //
     }
     //

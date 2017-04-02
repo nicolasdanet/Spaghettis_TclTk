@@ -448,7 +448,7 @@ void glist_objectDeleteLines (t_glist *glist, t_object *o)
     
     while ((connection = traverser_next (&t))) {
         if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
-            glist_eraseLine (glist, connection); traverser_disconnect (&t);
+            glist_eraseLine (glist, traverser_getCord (&t)); traverser_disconnect (&t);
         }
     }
 }
@@ -466,7 +466,7 @@ static void glist_objectDeleteLinesByInlets (t_glist *glist, t_object *o, t_inle
     int n = (traverser_getDestination (&t) == o && traverser_getInlet (&t) == inlet);
     
     if (m || n) { 
-        glist_eraseLine (glist, connection); traverser_disconnect (&t); 
+        glist_eraseLine (glist, traverser_getCord (&t)); traverser_disconnect (&t); 
     }
     //
     }

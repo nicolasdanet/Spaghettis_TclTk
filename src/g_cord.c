@@ -24,12 +24,12 @@
 
 void cord_set (t_cord *x, int a, int b, int c, int d, int isSignal, t_outconnect *connection)
 {
-    x->tr_lineStartX = a;
-    x->tr_lineStartY = b;
-    x->tr_lineEndX   = c;
-    x->tr_lineEndY   = d;
-    x->tr_isSignal   = isSignal;
-    x->tr_connection = connection;
+    x->tr_lineStartX        = a;
+    x->tr_lineStartY        = b;
+    x->tr_lineEndX          = c;
+    x->tr_lineEndY          = d;
+    x->tr_lineIsSignal      = isSignal;
+    x->tr_lineConnection    = connection;
 }
 
 int cord_hit (t_cord *x, int positionX, int positionY)
