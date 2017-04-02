@@ -60,9 +60,9 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     //
     int a = rectangle_getTopLeftX (&r1);
     int c = rectangle_getBottomRightX (&r1);
-    int d = rectangle_getBottomRightY (&r1);
+    //int d = rectangle_getBottomRightY (&r1);
     int m = rectangle_getTopLeftX (&r2);
-    int n = rectangle_getTopLeftY (&r2);
+    //int n = rectangle_getTopLeftY (&r2);
     int o = rectangle_getBottomRightX (&r2);
     
     int closest1 = inlet_nearby (previousX, a, c, numberOfOutlets);
@@ -80,13 +80,15 @@ static void canvas_makeLine (t_glist *glist, int positionX, int positionY, int c
     
         t_cord t;
         
-        cord_set (&t,
-            a + inlet_middle ((c - a), closest1, numberOfOutlets),
-            d,
-            m + inlet_middle ((o - m), closest2, numberOfInlets),
-            n,
+        cord_setByBoxes (&t, 
+            object_connect (object1, closest1, object2, closest2),
             object_isSignalOutlet (object1, closest1),
-            object_connect (object1, closest1, object2, closest2));
+            &r1, 
+            &r2, 
+            numberOfOutlets, 
+            closest1,
+            numberOfInlets, 
+            closest2);
             
         glist_drawLine (glist, &t);
         glist_setDirty (glist, 1);

@@ -22,16 +22,55 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void cord_set (t_cord *x, int a, int b, int c, int d, int isSignal, t_outconnect *connection)
+void cord_set (t_cord *x, t_outconnect *connection, int isSignal, int a, int b, int c, int d)
 {
-    x->tr_lineStartX        = a;
-    x->tr_lineStartY        = b;
-    x->tr_lineEndX          = c;
-    x->tr_lineEndY          = d;
-    x->tr_lineIsSignal      = isSignal;
-    x->tr_lineConnection    = connection;
+    x->tr_lineStartX     = a;
+    x->tr_lineStartY     = b;
+    x->tr_lineEndX       = c;
+    x->tr_lineEndY       = d;
+    x->tr_lineIsSignal   = isSignal;
+    x->tr_lineConnection = connection;
 }
 
+void cord_setByBoxes (t_cord *x, 
+    t_outconnect *connection, 
+    int isSignal,
+    t_rectangle *srcBox,
+    t_rectangle *destBox,
+    int m, 
+    int i, 
+    int n,
+    int j)
+{
+    int a = rectangle_getTopLeftX (srcBox) + inlet_middle (rectangle_getWidth (srcBox), i, m);
+    int b = rectangle_getBottomRightY (srcBox);
+    int c = rectangle_getTopLeftX (destBox) + inlet_middle (rectangle_getWidth (destBox), j, n);
+    int d = rectangle_getTopLeftY (destBox);
+    
+    cord_set (x, connection, isSignal, a, b, c, d);
+}
+
+void cord_setByObjects (t_cord *x, 
+    t_outconnect *connection,
+    t_object *src,
+    int i,
+    t_object *dest, 
+    int j, 
+    t_glist *owner)
+{
+    int isSignal = object_isSignalOutlet (src, i);
+    int m        = object_getNumberOfOutlets (src);
+    int n        = object_getNumberOfInlets (dest);
+    
+    t_rectangle srcBox;
+    t_rectangle destBox;
+    
+    gobj_getRectangle (cast_gobj (src), owner, &srcBox);
+    gobj_getRectangle (cast_gobj (dest), owner, &destBox);
+    
+    cord_setByBoxes (x, connection, isSignal, &srcBox, &destBox, m, i, n, j);
+}   
+                                                
 int cord_hit (t_cord *x, int positionX, int positionY)
 {
     t_float a = x->tr_lineStartX;

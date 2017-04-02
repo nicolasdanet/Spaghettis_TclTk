@@ -212,7 +212,7 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int indexOfObjectOut = (int)atom_getFloat (argv + 0);
     int indexOfOutlet    = (int)atom_getFloat (argv + 1);
     int indexOfObjectIn  = (int)atom_getFloat (argv + 2);
-    int indexOfOInlet    = (int)atom_getFloat (argv + 3);
+    int indexOfInlet     = (int)atom_getFloat (argv + 3);
     
     t_gobj *src  = glist_objectGetAt (glist, indexOfObjectOut);
     t_gobj *dest = glist_objectGetAt (glist, indexOfObjectIn);
@@ -222,7 +222,7 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if (srcObject && destObject) {
     //
     int m = indexOfOutlet;
-    int n = indexOfOInlet;
+    int n = indexOfInlet;
     t_outconnect *connection = NULL;
     
     /* Creates dummy outlets and inlets (failure at object creation). */
@@ -242,11 +242,13 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if ((connection = object_connect (srcObject, m, destObject, n))) {
     //
     if (glist_isOnScreen (glist)) {
-    
-        t_cord t;
-        cord_set (&t, 0, 0, 0, 0, object_isSignalOutlet (srcObject, m), connection);    /* ??? */
+        /*
+        t_cord t; cord_set (&t, connection, 0, 0, 0, 0, 0);
         glist_drawLine (glist, &t);
         glist_updateLinesForObject (glist, srcObject);
+        */
+        t_cord t; cord_setByObjects (&t, connection, srcObject, m, destObject, n, glist);
+        glist_drawLine (glist, &t);
     }
     
     return;

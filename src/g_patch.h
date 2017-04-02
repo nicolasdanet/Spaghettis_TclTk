@@ -212,19 +212,6 @@ void        box_key                         (t_box *x, t_keycode n, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int         cord_hit                        (t_cord *x, int a, int b);
-void        cord_set                        (t_cord *x, 
-                                                int a,
-                                                int b, 
-                                                int c, 
-                                                int d,
-                                                int isSignal,
-                                                t_outconnect *connection);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void        message_makeObject              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void        message_click                   (t_message *x, t_symbol *s, int argc, t_atom *argv);
                                                             
@@ -272,6 +259,33 @@ t_outlet    *voutlet_getOutlet              (t_pd *x);
 int         vinlet_isSignal                 (t_vinlet *x);
 int         voutlet_isSignal                (t_voutlet *x);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int         cord_hit                        (t_cord *x, int a, int b);
+
+void        cord_set                        (t_cord *x, t_outconnect *connection, int isSignal,
+                                                int a,
+                                                int b, 
+                                                int c, 
+                                                int d);
+                                                
+void        cord_setByBoxes                 (t_cord *x, t_outconnect *connection, int isSignal,
+                                                t_rectangle *srcBox,
+                                                t_rectangle *destBox,
+                                                int m, 
+                                                int i, 
+                                                int n,
+                                                int j);
+                                                
+void        cord_setByObjects               (t_cord *x, t_outconnect *connection, 
+                                                t_object *src,
+                                                int i,
+                                                t_object *dest, 
+                                                int j, 
+                                                t_glist *owner);
+                                                
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

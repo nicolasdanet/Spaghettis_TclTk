@@ -81,28 +81,16 @@ void traverser_start (t_traverser *t, t_glist *glist)
 
 static void traverser_nextSetCord (t_traverser *t, t_outconnect *connection)
 {
+    int isSignal = object_isSignalOutlet (t->tr_srcObject, t->tr_srcIndexOfOutlet);
+    
+    int m = t->tr_srcNumberOfOutlets;
+    int i = t->tr_srcIndexOfOutlet;
+    int n = t->tr_destNumberOfInlets;
+    int j = t->tr_destIndexOfInlet;
+    
     gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner, &t->tr_destBox);
     
-    int a, b, c, d, isSignal = object_isSignalOutlet (t->tr_srcObject, t->tr_srcIndexOfOutlet);
-    
-    {
-        int w = rectangle_getWidth (&t->tr_srcBox);
-        int i = t->tr_srcIndexOfOutlet;
-        int j = t->tr_srcNumberOfOutlets;
-            
-        a = rectangle_getTopLeftX (&t->tr_srcBox) + inlet_middle (w, i, j);
-        b = rectangle_getBottomRightY (&t->tr_srcBox);
-    }
-    {
-        int w = rectangle_getWidth (&t->tr_destBox);
-        int i = t->tr_destIndexOfInlet;
-        int j = t->tr_destNumberOfInlets;
-            
-        c = rectangle_getTopLeftX (&t->tr_destBox) + inlet_middle (w, i, j);
-        d = rectangle_getTopLeftY (&t->tr_destBox);
-    }
-    
-    cord_set (&t->tr_cord, a, b, c, d, isSignal, connection);
+    cord_setByBoxes (&t->tr_cord, connection, isSignal, &t->tr_srcBox, &t->tr_destBox, m, i, n, j);
 }
 
 /* Get the cords outlet per outlet, object per object. */
@@ -160,7 +148,7 @@ t_outconnect *traverser_next (t_traverser *t)
     
     if (glist_isOnScreen (t->tr_owner)) { traverser_nextSetCord (t, connection); }
     else {
-        rectangle_set (&t->tr_destBox, 0, 0, 0, 0); cord_set (&t->tr_cord, 0, 0, 0, 0, 0, connection);
+        rectangle_set (&t->tr_destBox, 0, 0, 0, 0); cord_set (&t->tr_cord, connection, 0, 0, 0, 0, 0);
     }
     
     return connection;
