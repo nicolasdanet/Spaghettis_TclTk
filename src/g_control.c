@@ -16,30 +16,11 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void canvas_cut (t_glist *glist)
-{
-    if (!glist_hasEditMode (glist)) { return; }
-    else {
-    //
-    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_lineDeleteSelected (glist); }
-    else if (editor_hasSelectedBox (glist_getEditor (glist))) {
-        canvas_copy (glist);
-        box_key (editor_getSelectedBox (glist_getEditor (glist)), (t_keycode)127, sym_Delete);
-        glist_setDirty (glist, 1);
-        
-    } else if (editor_hasSelection (glist_getEditor (glist))) {
-        canvas_copy (glist);
-        glist_objectRemoveSelected (glist);
-    }
-    //
-    }
-}
+#pragma mark -
 
 void canvas_copy (t_glist *glist)
 {
-    if (!glist_hasEditMode (glist)) { return; }
-    else {
+    if (glist_hasEditMode (glist)) {
     //
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
         char *t = NULL;
@@ -55,13 +36,33 @@ void canvas_copy (t_glist *glist)
     }
 }
 
-void canvas_paste (t_glist *glist)
+void canvas_cut (t_glist *glist)
 {
-    if (!glist_hasEditMode (glist)) { return; }
+    if (glist_hasEditMode (glist)) {
+    //
+    if (editor_hasSelectedLine (glist_getEditor (glist))) { glist_lineDeleteSelected (glist); }
     else {
     //
+    canvas_copy (glist);
+    
+    if (editor_hasSelectedBox (glist_getEditor (glist)))  {
+        box_key (editor_getSelectedBox (glist_getEditor (glist)), (t_keycode)127, sym_Delete);
+    
+    } else {
+        glist_objectRemoveSelected (glist);
+    }
+    //
+    }
+    //
+    }
+}
+
+void canvas_paste (t_glist *glist)
+{
+    if (glist_hasEditMode (glist)) { 
+    //
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
-        sys_vGui ("::ui_bind::pasteText .x%lx\n", glist);
+        sys_vGui ("::ui_bind::pasteText %s\n", glist_getTagAsString (glist));
     } else {
         clipboard_paste (instance_getClipboard(), glist);
     }
@@ -71,8 +72,7 @@ void canvas_paste (t_glist *glist)
 
 void canvas_duplicate (t_glist *glist)
 {
-    if (!glist_hasEditMode (glist)) { return; }
-    else {
+    if (glist_hasEditMode (glist)) {
     //
     canvas_copy (glist);
     clipboard_paste (instance_getClipboard(), glist);
@@ -82,8 +82,7 @@ void canvas_duplicate (t_glist *glist)
 
 void canvas_selectAll (t_glist *glist)
 {
-    if (!glist_hasEditMode (glist)) { return; }
-    else {
+    if (glist_hasEditMode (glist)) {
     //
     t_gobj *y = NULL;
 

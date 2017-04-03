@@ -81,12 +81,6 @@ void            canvas_close                            (t_glist *glist, t_float
 void            canvas_visible                          (t_glist *glist, t_float f);
 void            canvas_map                              (t_glist *glist, t_float f);
 
-void            canvas_cut                              (t_glist *glist);
-void            canvas_copy                             (t_glist *glist);
-void            canvas_paste                            (t_glist *glist);
-void            canvas_duplicate                        (t_glist *glist);
-void            canvas_selectAll                        (t_glist *glist);
-
 void            canvas_save                             (t_glist *glist, float destroy);
 void            canvas_saveAs                           (t_glist *glist, float destroy);
 void            canvas_saveToFile                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);

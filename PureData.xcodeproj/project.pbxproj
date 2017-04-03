@@ -1306,8 +1306,8 @@
 			isa = PBXGroup;
 			children = (
 				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
-				37321C9B1E9244F2009C1EE0 /* g_interface.c */,
 				37321C9A1E9244F2009C1EE0 /* g_control.c */,
+				37321C9B1E9244F2009C1EE0 /* g_interface.c */,
 				378971CD1C4F716700263434 /* g_file.c */,
 				377899481CFED1B10056BE61 /* g_new.c */,
 				378971C41C4F716700263434 /* g_graph.c */,
