@@ -34,68 +34,25 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     if (argc > 1) { 
     //
     int isDown = ((int)(atom_getFloat (argv + 0)) != 0);
-    int k = 0;
     
     t_symbol *s = sym__dummy;
     
     /* Assume key number is UTF-32. */
-    
-    UCS4_CODE_POINT n = IS_FLOAT (argv + 1) ? (UCS4_CODE_POINT)(GET_FLOAT (argv + 1)) : 0;
-    
-    /* Forbid following characters to avoid mislead interpretations at script level. */
-    
-    k |= (n == '{');    // --
-    k |= (n == '}');    // --
-    k |= (n == '\\');
-    
-    if (k) { error_ignored (sym_key); return; }
+    /* All 32-bit integers can NOT be represented with a single precision float. */
 
-    /* Parse special keys. */
+    t_keycode n = (UCS4_CODE_POINT)(atom_getFloat (argv + 1));
     
-    if (IS_SYMBOL (argv + 1)) { 
-    //
-    s = GET_SYMBOL (argv + 1); 
+    PD_ASSERT (n < (1 << 24));
     
-    if (s == sym_Enter)         { n = 3;   }
-    if (s == sym_BackSpace)     { n = 8;   }
-    if (s == sym_Tab)           { n = 9;   }
-    if (s == sym_Return)        { n = 10;  }
-    if (s == sym_Escape)        { n = 27;  }
-    if (s == sym_Space)         { n = 32;  }
-    if (s == sym_Delete)        { n = 127; }
+    if (utils_isKeyCodeAllowed ((t_keycode)n)) {
     //
-    }
-    
-    if (IS_FLOAT (argv + 1)) {
-    //
-    switch (n) {
-    //
-    case 3   : s = sym_Enter;       break;
-    case 8   : s = sym_BackSpace;   break;
-    case 9   : s = sym_Tab;         break;
-    case 10  : s = sym_Return;      break;
-    case 13  : s = sym_Return;      break;
-    case 27  : s = sym_Escape;      break;
-    case 32  : s = sym_Space;       break;
-    case 127 : s = sym_Delete;      break;
-    //
-    }
-    
-    /* Encode UTF-32 as UTF-8. */
-    
-    if (s == sym__dummy) {
-        char t[UTF8_MAXIMUM_BYTES + 1] = { 0 };
-        int size = u8_wc_toutf8 (t, n); 
-        t[size] = 0;
-        s = gensym (t);     
-    }
-    //
-    }
+    if (IS_FLOAT (argv + 1))  { s = utils_getSymbolWithKeyCode ((t_keycode)n); }
+    if (IS_SYMBOL (argv + 1)) { s = GET_SYMBOL (argv + 1); utils_parseSymbolToKeyCode (s, &n); }
 
     /* Report keystrokes to bounded objects. */
     
-    if (pd_isThingQuiet (sym__key) && isDown && n)      { pd_float (pd_getThing (sym__key),   (t_float)n); }
-    if (pd_isThingQuiet (sym__keyup) && !isDown && n)   { pd_float (pd_getThing (sym__keyup), (t_float)n); }
+    if (n && pd_isThingQuiet (sym__key) && isDown)    { pd_float (pd_getThing (sym__key),   (t_float)n); }
+    if (n && pd_isThingQuiet (sym__keyup) && !isDown) { pd_float (pd_getThing (sym__keyup), (t_float)n); }
     
     if (pd_isThingQuiet (sym__keyname)) {
         t_atom a[2];
@@ -106,26 +63,13 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     /* Handle the event. */
     
-    if (glist && isDown) {
+    if (glist && isDown) { glist_key (glist, n, s); }
+    
+    return;
     //
-    if (editor_getAction (glist_getEditor (glist)) == ACTION_MOVE) { 
-        editor_resetAction (glist_getEditor (glist)); 
     }
     
-    if (editor_hasSelectedBox (glist_getEditor (glist))) {
-        box_key (editor_getSelectedBox (glist_getEditor (glist)), (t_keycode)n, s);
-        if (editor_hasSelectedBoxDirty (glist_getEditor (glist))) { 
-            glist_setDirty (glist, 1); 
-        }
-        
-    } else if (s == sym_Delete || s == sym_BackSpace) {
-        if (editor_hasSelectedLine (glist_getEditor (glist)))   { glist_lineDeleteSelected (glist); }
-        else if (editor_hasSelection (glist_getEditor (glist))) { 
-            glist_objectRemoveSelected (glist); 
-        }
-    }
-    //
-    }
+    error_ignored (sym_key);
     //
     }
 }

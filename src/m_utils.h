@@ -92,6 +92,9 @@ t_symbol    *utils_gensymWithAtoms                      (int argc, t_atom *argv)
 t_symbol    *utils_getFirstAtomOfObjectAsSymbol         (t_object *x);
 t_symbol    *utils_getFirstAtomOfBufferAsSymbol         (t_buffer *x);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 t_symbol    *utils_dollarToHash                         (t_symbol *s);
 t_symbol    *utils_hashToDollar                         (t_symbol *s);
 t_symbol    *utils_decode                               (t_symbol *s);
@@ -106,6 +109,10 @@ t_symbol    *utils_stripBindSymbol                      (t_symbol *s);
 t_symbol    *utils_stripTemplateIdentifier              (t_symbol *s);
 
 t_symbol    *utils_getDefaultBindName                   (t_class *c, t_symbol *prefix);
+
+t_symbol    *utils_getSymbolWithKeyCode                 (t_keycode n);
+int         utils_isKeyCodeAllowed                      (t_keycode n);
+int         utils_parseSymbolToKeyCode                  (t_symbol *s, t_keycode *n);
 
 int         utils_isNameAllowedForWindow                (t_symbol *s);
 

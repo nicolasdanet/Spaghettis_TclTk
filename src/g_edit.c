@@ -152,6 +152,30 @@ void glist_motionResize (t_glist *glist, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void glist_key (t_glist *glist, t_keycode n, t_symbol *s)
+{
+    if (editor_getAction (glist_getEditor (glist)) == ACTION_MOVE) { 
+        editor_resetAction (glist_getEditor (glist)); 
+    }
+    
+    if (editor_hasSelectedBox (glist_getEditor (glist))) {
+        box_key (editor_getSelectedBox (glist_getEditor (glist)), n, s);
+        if (editor_hasSelectedBoxDirty (glist_getEditor (glist))) { 
+            glist_setDirty (glist, 1); 
+        }
+        
+    } else if (s == sym_Delete || s == sym_BackSpace) {
+        if (editor_hasSelectedLine (glist_getEditor (glist)))   { glist_lineDeleteSelected (glist); }
+        else if (editor_hasSelection (glist_getEditor (glist))) { 
+            glist_objectRemoveSelected (glist); 
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void canvas_proceedMouseClickRight (t_glist *glist, t_gobj *y, int positionX, int positionY)
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
