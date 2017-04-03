@@ -97,6 +97,8 @@
 #include "g_draw.c"
 #include "g_select.c"
 #include "g_edit.c"
+#include "g_control.c"
+#include "g_interface.c"
 #include "g_file.c"
 #include "g_new.c"
 #include "g_graph.c"

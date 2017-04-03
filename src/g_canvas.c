@@ -133,6 +133,17 @@ static void *subpatch_new (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 4) {
+    //
+    rectangle_setByAtoms (glist_getWindowGeometry (glist), argc, argv);
+    
+    if (glist_isArray (glist)) { glist_updateWindow (glist); }
+    //
+    }
+}
+
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     int flags   = (int)atom_getFloatAtIndex (6, argc, argv);
@@ -310,6 +321,26 @@ static void canvas_requireArrayDialog (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static void canvas_editmode (t_glist *glist, t_float f)
+{
+    int state = (int)(f != 0.0);
+     
+    if (glist_hasEditMode (glist) != state) {
+    //
+    glist_setEditMode (glist, state);
+    
+    if (state) { glist_drawAllCommentBars (glist); }
+    else {
+        glist_deselectAll (glist); glist_eraseAllCommentBars (glist);
+    }
+    
+    if (glist_isOnScreen (glist)) {
+        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), glist_hasEditMode (glist));
+    }
+    //
+    }
+}
 
 /* Messy ping-pong required in order to check saving sequentially. */
 
