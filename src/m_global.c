@@ -17,6 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_key                     (t_glist *, t_symbol *, int, t_atom *);
 void interface_quit                 (void *);
 void audio_requireDialog            (void *);
 void midi_requireDialog             (void *);

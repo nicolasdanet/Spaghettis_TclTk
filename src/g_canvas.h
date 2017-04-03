@@ -67,13 +67,8 @@ t_glist         *canvas_new                             (void *dummy, t_symbol *
 
 void            canvas_free                             (t_glist *glist);
 
-void            canvas_click                            (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_motion                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_mouse                            (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_mouseUp                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_connect                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_disconnect                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_key                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_rename                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);

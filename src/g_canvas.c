@@ -28,6 +28,11 @@ t_class *canvas_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void canvas_key             (t_glist *, t_symbol *, int, t_atom *);
+void canvas_click           (t_glist *, t_symbol *, int, t_atom *);
+void canvas_motion          (t_glist *, t_symbol *, int, t_atom *);
+void canvas_mouse           (t_glist *, t_symbol *, int, t_atom *);
+void canvas_mouseUp         (t_glist *, t_symbol *, int, t_atom *);
 void canvas_cut             (t_glist *);
 void canvas_copy            (t_glist *);
 void canvas_paste           (t_glist *);

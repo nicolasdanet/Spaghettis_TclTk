@@ -18,261 +18,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define EDITOR_GRIP_SIZE    4
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void glist_makeLineBegin    (t_glist *, int, int);
 void glist_makeLineEnd      (t_glist *, int, int);
+void glist_makeLineBegin    (t_glist *, int, int);
 void glist_motionResize     (t_glist *, int, int);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_proceedMouseClickRight (t_glist *glist, t_gobj *y, int positionX, int positionY)
-{
-    int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
-    int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
-    
-    glist_deselectAll (glist);
-    
-    sys_vGui ("::ui_menu::showPopup .x%lx %d %d %d %d\n",
-                    glist, 
-                    positionX, 
-                    positionY, 
-                    canProperties, 
-                    canOpen);
-}
-
-static void canvas_proceedMouseClick (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
-{
-    t_gobj *y = NULL;
-    
-    int k = 0;
-        
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-    //
-    t_rectangle t;
-    
-    if (gobj_hit (y, glist, positionX, positionY, &t)) {
-    
-        t_mouse m;
-        
-        m.m_x       = positionX;
-        m.m_y       = positionY;
-        m.m_shift   = (modifier & MODIFIER_SHIFT);
-        m.m_ctrl    = (modifier & MODIFIER_CTRL);
-        m.m_alt     = (modifier & MODIFIER_ALT);
-        m.m_dbl     = (modifier & MODIFIER_DOUBLE);
-        m.m_clicked = clicked;
-    
-        k = gobj_mouse (y, glist, &m);
-                
-        if (k) { break; }
-    }
-    //
-    }
-    
-    if (!clicked) {
-        if (y && k) { glist_updateCursor (glist, k); }
-        else {
-            glist_updateCursor (glist, CURSOR_NOTHING);
-        }
-    }
-}
-
-static int canvas_proceedMouseHitResizeZone (t_object *object, int positionX, int positionY, int c, int d)
-{
-    if (object) {
-        if (object_isViewAsBox (object) || (pd_class (object) == canvas_class)) {
-            if (positionX > (c - EDITOR_GRIP_SIZE) && positionY < (d - EDITOR_GRIP_SIZE)) {
-                return 1;
-            }
-        }
-    }
-     
-    return 0;
-}
-
-static int canvas_proceedMouseHitOutlets (t_object *object,
-    int positionX,
-    int positionY,
-    int a,  
-    int c, 
-    int d, 
-    int *h)
-{
-    if (object) {
-    //
-    int numberOfOutlets = object_getNumberOfOutlets (object);
-    
-    if (numberOfOutlets && (positionY >= d - EDITOR_GRIP_SIZE)) {
-    //
-    int closest = inlet_nearby (positionX, a, c, numberOfOutlets);
-    int hotspot = a + inlet_middle ((c - a), closest, numberOfOutlets);
-
-    PD_ASSERT (closest >= 0 && closest < numberOfOutlets);
-    
-    if ((positionX > (hotspot - EDITOR_GRIP_SIZE)) && (positionX < (hotspot + EDITOR_GRIP_SIZE))) {
-        *h = hotspot; return closest;
-    }
-    //
-    }
-    //
-    }
-    
-    return -1;
-}
-
-static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
-{
-    t_rectangle r;
-    
-    t_gobj *y = glist_objectHit (glist, positionX, positionY, &r);
-        
-    if (!y) { return 0; }
-    else {
-    //
-    t_object *object = cast_objectIfConnectable (y);
-    int a = rectangle_getTopLeftX (&r);
-    int b = rectangle_getTopLeftY (&r);
-    int c = rectangle_getBottomRightX (&r);
-    int d = rectangle_getBottomRightY (&r);
-        
-    if (modifier & MODIFIER_RIGHT) { canvas_proceedMouseClickRight (glist, y, positionX, positionY); }
-    else if (modifier & MODIFIER_SHIFT) {
-    
-        if (clicked) {
-        //
-        t_box *text = editor_getSelectedBox (glist_getEditor (glist));
-        
-        if (object && text && (text == box_fetch (glist, object))) {
-            box_mouse (text, positionX - a, positionY - b, BOX_SHIFT);
-            editor_startAction (glist_getEditor (glist), ACTION_DRAG);
-            drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
-            
-        } else {
-            if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
-            else { 
-                glist_objectSelect (glist, y);
-            }
-        }
-        //
-        }
-        
-    } else {
-        
-        int n, h;
-        
-        if (canvas_proceedMouseHitResizeZone (object, positionX, positionY, c, d)) {
-        
-            if (!clicked) { glist_updateCursor (glist, CURSOR_RESIZE); }
-            else {
-                glist_objectSelectIfNotSelected (glist, y);
-                editor_startAction (glist_getEditor (glist), ACTION_RESIZE);
-                drag_set (editor_getDrag (glist_getEditor (glist)), a, b, positionX, positionY);
-            }  
-                                             
-        } else if ((n = canvas_proceedMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
-            
-            if (!clicked) { glist_updateCursor (glist, CURSOR_CONNECT); }
-            else {
-                editor_startAction (glist_getEditor (glist), ACTION_CONNECT);
-                drag_setStart (editor_getDrag (glist_getEditor (glist)), h, d);
-                glist_drawTemporary (glist, h, d, object_isSignalOutlet (object, n));
-            }                                   
-                
-        } else if (clicked) {
-        
-            t_box *text = editor_getSelectedBox (glist_getEditor (glist));
-            
-            if (object && text && (text == box_fetch (glist, object))) {
-                int flag = (modifier & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN;
-                box_mouse (text, positionX - a, positionY - b, flag);
-                editor_startAction (glist_getEditor (glist), ACTION_DRAG);
-                drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
-                
-            } else {
-                glist_objectSelectIfNotSelected (glist, y);
-                editor_startAction (glist_getEditor (glist), ACTION_MOVE);
-            }
-            
-        } else { 
-            glist_updateCursor (glist, CURSOR_NOTHING);
-        }
-    }
-    //
-    }
-    
-    return 1;
-}
-
-static int canvas_proceedMouseLines (t_glist *glist, int positionX, int positionY, int clicked)
-{
-    t_glist *canvas = glist_getView (glist);
-    t_outconnect *connection = NULL;
-    t_traverser t;
-        
-    traverser_start (&t, canvas);
-    
-    while ((connection = traverser_next (&t))) {
-    //
-    if (cord_hit (traverser_getCord (&t), positionX, positionY)) {
-        if (clicked) { glist_lineSelect (canvas, &t); }
-        return 1;
-    }
-    //
-    }
-    
-    return 0;
-}
-
-static void canvas_proceedMouseLassoStart (t_glist *glist, int a, int b, int modifier)
-{
-    int newlyCreated = 0;
-    
-    if (!(modifier & MODIFIER_SHIFT)) { newlyCreated = glist_deselectAll (glist); }
-    
-    if (!newlyCreated) {
-    //
-    glist_drawLasso (glist, a, b);
-    editor_startAction (glist_getEditor (glist), ACTION_REGION);
-    drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
-    //
-    }
-}
-
-static void canvas_proceedMouse (t_glist *glist, int a, int b, int modifier, int clicked)
-{
-    int hasShift     = (modifier & MODIFIER_SHIFT);
-    int isRightClick = (modifier & MODIFIER_RIGHT);
-    int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist_hasEditMode (glist));
-    
-    if (clicked) { editor_motionReset (glist_getEditor (glist)); }
-
-    if (!editor_hasAction (glist_getEditor (glist))) {
-
-        drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
-
-        if (isRunMode && !isRightClick) { canvas_proceedMouseClick (glist, a, b, modifier, clicked); }
-        else if (canvas_proceedMouseHit (glist, a, b, modifier, clicked)) { } 
-        else {
-        
-            if (isRightClick)    { canvas_proceedMouseClickRight (glist, NULL, a, b); }
-            else if (!isRunMode) {
-                if (!hasShift && canvas_proceedMouseLines (glist, a, b, clicked)) {
-                } else if (clicked) {
-                    canvas_proceedMouseLassoStart (glist, a, b, modifier);
-                }
-            }
-            
-            glist_updateCursor (glist, CURSOR_NOTHING);
-        }
-    }
-}
+void glist_mouse            (t_glist *, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -381,6 +130,10 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_visible (glist, 1);
@@ -420,7 +173,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         glist_motionResize (glist, a, b);
 
     } else {
-        canvas_proceedMouse (glist, a, b, m, 0);
+        glist_mouse (glist, a, b, m, 0);
     }
 }
 
@@ -430,7 +183,7 @@ void canvas_mouse (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
     int m = (int)atom_getFloatAtIndex (2, argc, argv);
 
-    canvas_proceedMouse (glist, a, b, m, 1);
+    glist_mouse (glist, a, b, m, 1);
 }
 
 void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
