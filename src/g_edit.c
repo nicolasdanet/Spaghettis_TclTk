@@ -77,13 +77,13 @@ static void glist_makeLineProceed (t_glist *glist, int a, int b, int end)
     }
     //
     }
-
+    //
     }
     
     glist_updateCursor (glist, CURSOR_NOTHING);
 }
 
-static void glist_makeLineStart (t_glist *glist, int a, int b)
+static void glist_makeLineBegin (t_glist *glist, int a, int b)
 {
     glist_makeLineProceed (glist, a, b, 0);
 }
@@ -97,50 +97,57 @@ static void glist_makeLineEnd (t_glist *glist, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_motionResize (t_glist *glist, t_float positionX, t_float positionY)
+static void glist_motionResizeBox (t_glist *glist, t_gobj *y, int width)
 {
-    t_rectangle r;
+    int w = (int)(width / font_getHostFontWidth (glist_getFontSize (glist)));
     
-    int previousX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
-    int previousY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
-    
-    t_gobj *y = glist_objectHit (glist, previousX, previousY, &r);
-        
-    if (y) {
-    //
-    t_object *object = cast_objectIfConnectable (y);
-    
-    if (object) {
-    //
-    if (object_isViewAsBox (object)) {
-    //
-    int a = rectangle_getTopLeftX (&r);
-    int w = (int)((positionX - a) / font_getHostFontWidth (glist_getFontSize (glist)));
-    object_setWidth (object, PD_MAX (1, w));
     gobj_visibilityChanged (y, glist, 0);
-    glist_updateLinesForObject (glist, object);
+    object_setWidth (cast_object (y), PD_MAX (1, w));
+    glist_updateLinesForObject (glist, cast_object (y));
+    gobj_visibilityChanged (y, glist, 1);
+    glist_setDirty (glist, 1);
+}
+
+static void glist_motionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
+{
+    if (pd_class (y) != canvas_class) { PD_BUG; }
+    else {
+    //
+    t_rectangle *r = glist_getGraphGeometry (cast_glist (y));
+    
+    gobj_visibilityChanged (y, glist, 0);
+    rectangle_setWidth (r, rectangle_getWidth (r) + deltaX);
+    rectangle_setHeight (r, rectangle_getHeight (r) + deltaY);
+    glist_updateLinesForObject (glist, cast_object (y));
+    glist_updateRectangle (cast_glist (y));
     gobj_visibilityChanged (y, glist, 1);
     glist_setDirty (glist, 1);
     //
-    } else if (pd_class (object) == canvas_class) {
-    //
-    t_glist *t = cast_glist (object);
-    int w = positionX - drag_getEndX (editor_getDrag (glist_getEditor (glist)));
-    int h = positionY - drag_getEndY (editor_getDrag (glist_getEditor (glist)));
-    gobj_visibilityChanged (y, glist, 0);
-    rectangle_setWidth (glist_getGraphGeometry (t), rectangle_getWidth (glist_getGraphGeometry (t)) + w);
-    rectangle_setHeight (glist_getGraphGeometry (t), rectangle_getHeight (glist_getGraphGeometry (t)) + h);
-    drag_setEnd (editor_getDrag (glist_getEditor (glist)), positionX, positionY);
-    glist_updateLinesForObject (glist, object);
-    gobj_visibilityChanged (y, glist, 1);
-    glist_updateRectangle (t);
-    glist_setDirty (glist, 1);
-    //
     }
-    //
+}
+
+static void glist_motionResize (t_glist *glist, int a, int b)
+{
+    t_rectangle dummy;
+    
+    /* Points below are the coordinates of the box of the resized object. */
+    
+    int startX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
+    int startY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
+    int endX   = drag_getEndX (editor_getDrag (glist_getEditor (glist)));
+    int endY   = drag_getEndY (editor_getDrag (glist_getEditor (glist)));
+
+    t_gobj *y  = glist_objectHit (glist, startX, startY, &dummy);
+
+    if (y && cast_objectIfConnectable (y)) {
+    
+        if (object_isViewAsBox (cast_object (y))) { glist_motionResizeBox (glist, y, a - startX); }
+        else {
+            glist_motionResizeGraph (glist, y, a - endX, b - endY);
+        }
     }
-    //
-    }
+    
+    drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -518,7 +525,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
     
     } else if (action == ACTION_CONNECT) {
-        glist_makeLineStart (glist, a, b);
+        glist_makeLineBegin (glist, a, b);
         
     } else if (action == ACTION_REGION)  {
         glist_selectLassoBegin (glist, a, b);
@@ -532,7 +539,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         if (text) { box_mouse (text, deltaX, deltaY, BOX_DRAG); }
                 
     } else if (action == ACTION_RESIZE)  {
-        canvas_motionResize (glist, a, b);
+        glist_motionResize (glist, a, b);
 
     } else {
         canvas_proceedMouse (glist, a, b, m, 0);
