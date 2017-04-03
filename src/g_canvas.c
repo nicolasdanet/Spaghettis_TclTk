@@ -29,7 +29,6 @@ t_class *canvas_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 void canvas_key             (t_glist *, t_symbol *, int, t_atom *);
-void canvas_click           (t_glist *, t_symbol *, int, t_atom *);
 void canvas_motion          (t_glist *, t_symbol *, int, t_atom *);
 void canvas_mouse           (t_glist *, t_symbol *, int, t_atom *);
 void canvas_mouseUp         (t_glist *, t_symbol *, int, t_atom *);
@@ -147,6 +146,11 @@ static void *subpatch_new (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    canvas_visible (glist, 1);
+}
 
 static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {

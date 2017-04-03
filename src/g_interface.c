@@ -78,10 +78,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_visible (glist, 1);
-}
+/* Moving (drag included). */
 
 void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
@@ -121,6 +118,8 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+/* Click down. */
+
 void canvas_mouse (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     int a = (int)atom_getFloatAtIndex (0, argc, argv);
@@ -129,6 +128,8 @@ void canvas_mouse (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
     glist_mouse (glist, a, b, m, 1);
 }
+
+/* Click up.*/
 
 void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
