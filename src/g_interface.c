@@ -18,8 +18,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void glist_makeLineEnd      (t_glist *, int, int);
-void glist_motion           (t_glist *, int, int, int);
+void glist_motionAction     (t_glist *, int, int, int);
+void glist_motionEnd        (t_glist *, int, int);
 void glist_mouse            (t_glist *, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -77,22 +77,6 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Moving (drag included). */
-
-void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    int a = atom_getFloatAtIndex (0, argc, argv);
-    int b = atom_getFloatAtIndex (1, argc, argv);
-    int m = atom_getFloatAtIndex (2, argc, argv);
-    
-    instance_setDefaultCoordinates (glist, a, b);
-    
-    if (editor_getAction (glist_getEditor (glist))) { glist_motion (glist, a, b, m); }
-    else {
-        glist_mouse (glist, a, b, m, 0);
-    }
-}
-
 /* Click down. */
 
 void canvas_mouseDown (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -110,19 +94,26 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     int a = (int)atom_getFloatAtIndex (0, argc, argv);
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
-    int action = editor_getAction (glist_getEditor (glist));
     
-    if (action == ACTION_CONNECT)     { glist_makeLineEnd (glist, a, b); }
-    else if (action == ACTION_REGION) { glist_selectLassoEnd (glist, a, b); }
-    else if (action == ACTION_MOVE)   {
-    //
-    if (glist_objectGetNumberOfSelected (glist) == 1) {
-        gobj_activated (selection_getObject (editor_getSelection (glist_getEditor (glist))), glist, 1);
-    }
-    //
-    }
-
+    glist_motionEnd (glist, a, b);
+    
     editor_resetAction (glist_getEditor (glist));
+}
+
+/* Moving (drag included). */
+
+void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    int a = atom_getFloatAtIndex (0, argc, argv);
+    int b = atom_getFloatAtIndex (1, argc, argv);
+    int m = atom_getFloatAtIndex (2, argc, argv);
+    
+    instance_setDefaultCoordinates (glist, a, b);
+    
+    if (editor_getAction (glist_getEditor (glist))) { glist_motionAction (glist, a, b, m); }
+    else {
+        glist_mouse (glist, a, b, m, 0);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

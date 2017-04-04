@@ -147,7 +147,7 @@ void glist_motionResize (t_glist *glist, int a, int b)
     drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
 }
 
-void glist_motion (t_glist *glist, int a, int b, int m)
+void glist_motionAction (t_glist *glist, int a, int b, int m)
 {
     int action = editor_getAction (glist_getEditor (glist));
     int deltaX = a - drag_getStartX (editor_getDrag (glist_getEditor (glist)));
@@ -173,6 +173,21 @@ void glist_motion (t_glist *glist, int a, int b, int m)
                 
     } else if (action == ACTION_RESIZE)  {
         glist_motionResize (glist, a, b);
+    }
+}
+
+void glist_motionEnd (t_glist *glist, int a, int b)
+{
+    int action = editor_getAction (glist_getEditor (glist));
+    
+    if (action == ACTION_CONNECT)     { glist_makeLineEnd (glist, a, b); }
+    else if (action == ACTION_REGION) { glist_selectLassoEnd (glist, a, b); }
+    else if (action == ACTION_MOVE)   {
+    //
+    if (glist_objectGetNumberOfSelected (glist) == 1) {
+        gobj_activated (selection_getObject (editor_getSelection (glist_getEditor (glist))), glist, 1);
+    }
+    //
     }
 }
 
