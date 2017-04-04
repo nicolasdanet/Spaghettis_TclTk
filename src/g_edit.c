@@ -138,7 +138,6 @@ void glist_motionResize (t_glist *glist, int a, int b)
     t_gobj *y  = glist_objectHit (glist, startX, startY, &dummy);
 
     if (y && cast_objectIfConnectable (y)) {
-    
         if (object_isViewAsBox (cast_object (y))) { glist_motionResizeBox (glist, y, a - startX); }
         else {
             glist_motionResizeGraph (glist, y, a - endX, b - endY);
@@ -183,19 +182,19 @@ void glist_motion (t_glist *glist, int a, int b, int m)
 
 void glist_key (t_glist *glist, t_keycode n, t_symbol *s)
 {
-    if (editor_getAction (glist_getEditor (glist)) == ACTION_MOVE) { 
-        editor_resetAction (glist_getEditor (glist)); 
-    }
+    t_editor *e = glist_getEditor (glist);
     
-    if (editor_hasSelectedBox (glist_getEditor (glist))) {
-        box_key (editor_getSelectedBox (glist_getEditor (glist)), n, s);
-        if (editor_hasSelectedBoxDirty (glist_getEditor (glist))) { 
+    if (editor_getAction (e) == ACTION_MOVE) { editor_resetAction (e); }
+    
+    if (editor_hasSelectedBox (e)) {
+        box_key (editor_getSelectedBox (e), n, s);
+        if (editor_hasSelectedBoxDirty (e)) { 
             glist_setDirty (glist, 1); 
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
-        if (editor_hasSelectedLine (glist_getEditor (glist)))   { glist_lineDeleteSelected (glist); }
-        else if (editor_hasSelection (glist_getEditor (glist))) { 
+        if (editor_hasSelectedLine (e))   { glist_lineDeleteSelected (glist); }
+        else if (editor_hasSelection (e)) { 
             glist_objectRemoveSelected (glist); 
         }
     }
