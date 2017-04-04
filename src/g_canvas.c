@@ -30,7 +30,7 @@ t_class *canvas_class;      /* Shared. */
 
 void canvas_key             (t_glist *, t_symbol *, int, t_atom *);
 void canvas_motion          (t_glist *, t_symbol *, int, t_atom *);
-void canvas_mouse           (t_glist *, t_symbol *, int, t_atom *);
+void canvas_mouseDown       (t_glist *, t_symbol *, int, t_atom *);
 void canvas_mouseUp         (t_glist *, t_symbol *, int, t_atom *);
 void canvas_cut             (t_glist *);
 void canvas_copy            (t_glist *);
@@ -851,7 +851,7 @@ void canvas_setup (void)
     
     class_addMethod (c, (t_method)canvas_key,                   sym_key,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_motion,                sym_motion,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mouse,                 sym_mouse,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mouseDown,             sym_mouse,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_window,                sym_window,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_coords,                sym_coords,         A_GIMME, A_NULL);

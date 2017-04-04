@@ -148,6 +148,35 @@ void glist_motionResize (t_glist *glist, int a, int b)
     drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
 }
 
+void glist_motion (t_glist *glist, int a, int b, int m)
+{
+    int action = editor_getAction (glist_getEditor (glist));
+    int deltaX = a - drag_getStartX (editor_getDrag (glist_getEditor (glist)));
+    int deltaY = b - drag_getStartY (editor_getDrag (glist_getEditor (glist)));
+    
+    if (action == ACTION_MOVE) {
+        editor_selectionDeplace (glist_getEditor (glist));
+        drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
+    
+    } else if (action == ACTION_CONNECT) {
+        glist_makeLineBegin (glist, a, b);
+        
+    } else if (action == ACTION_REGION)  {
+        glist_selectLassoBegin (glist, a, b);
+        
+    } else if (action == ACTION_PASS)    {
+        editor_motionProceed (glist_getEditor (glist), deltaX, deltaY, m);
+        drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
+        
+    } else if (action == ACTION_DRAG)    {
+        t_box *text = editor_getSelectedBox (glist_getEditor (glist));
+        if (text) { box_mouse (text, deltaX, deltaY, BOX_DRAG); }
+                
+    } else if (action == ACTION_RESIZE)  {
+        glist_motionResize (glist, a, b);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
