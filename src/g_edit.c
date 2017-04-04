@@ -358,7 +358,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             else {
                 glist_objectSelectIfNotSelected (glist, y);
                 editor_startAction (glist_getEditor (glist), ACTION_RESIZE);
-                drag_set (editor_getDrag (glist_getEditor (glist)), a, b, positionX, positionY);
+                drag_begin (editor_getDrag (glist_getEditor (glist)), a, b);
             }  
                                              
         } else if ((n = canvas_proceedMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
