@@ -95,7 +95,7 @@ void glist_makeLineEnd (t_glist *glist, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void glist_motionResizeBox (t_glist *glist, t_gobj *y, int width)
+static void glist_actionResizeBox (t_glist *glist, t_gobj *y, int width)
 {
     int w = (int)(width / font_getHostFontWidth (glist_getFontSize (glist)));
     
@@ -106,7 +106,7 @@ static void glist_motionResizeBox (t_glist *glist, t_gobj *y, int width)
     glist_setDirty (glist, 1);
 }
 
-static void glist_motionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
+static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
 {
     if (pd_class (y) != canvas_class) { PD_BUG; }
     else {
@@ -124,59 +124,28 @@ static void glist_motionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int 
     }
 }
 
-void glist_motionResize (t_glist *glist, int a, int b)
+static void glist_actionResize (t_glist *glist, int a, int b)
 {
-    t_rectangle dummy;
+    t_rectangle r;
     
-    /* Points below are the coordinates of the box of the resized object. */
+    /* Points below are the top left coordinates of the box of the resized object. */
     
     int startX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
     int startY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
-    int endX   = drag_getEndX (editor_getDrag (glist_getEditor (glist)));
-    int endY   = drag_getEndY (editor_getDrag (glist_getEditor (glist)));
-
-    t_gobj *y  = glist_objectHit (glist, startX, startY, &dummy);
+    
+    t_gobj *y  = glist_objectHit (glist, startX, startY, &r);
 
     if (y && cast_objectIfConnectable (y)) {
-        if (object_isViewAsBox (cast_object (y))) { glist_motionResizeBox (glist, y, a - startX); }
+        if (object_isViewAsBox (cast_object (y))) { glist_actionResizeBox (glist, y, a - startX); }
         else {
-            glist_motionResizeGraph (glist, y, a - endX, b - endY);
+            int c = rectangle_getBottomRightX (&r);
+            int d = rectangle_getBottomRightY (&r);
+            glist_actionResizeGraph (glist, y, a - c, b - d);
         }
     }
-    
-    drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
 }
 
-void glist_motionAction (t_glist *glist, int a, int b, int m)
-{
-    int action = editor_getAction (glist_getEditor (glist));
-    int deltaX = a - drag_getStartX (editor_getDrag (glist_getEditor (glist)));
-    int deltaY = b - drag_getStartY (editor_getDrag (glist_getEditor (glist)));
-    
-    if (action == ACTION_MOVE) {
-        editor_selectionDeplace (glist_getEditor (glist));
-        drag_setEnd (editor_getDrag (glist_getEditor (glist)), a, b);
-    
-    } else if (action == ACTION_CONNECT) {
-        glist_makeLineBegin (glist, a, b);
-        
-    } else if (action == ACTION_REGION)  {
-        glist_selectLassoBegin (glist, a, b);
-        
-    } else if (action == ACTION_PASS)    {
-        editor_motionProceed (glist_getEditor (glist), deltaX, deltaY, m);
-        drag_setStart (editor_getDrag (glist_getEditor (glist)), a, b);
-        
-    } else if (action == ACTION_DRAG)    {
-        t_box *text = editor_getSelectedBox (glist_getEditor (glist));
-        if (text) { box_mouse (text, deltaX, deltaY, BOX_DRAG); }
-                
-    } else if (action == ACTION_RESIZE)  {
-        glist_motionResize (glist, a, b);
-    }
-}
-
-void glist_motionEnd (t_glist *glist, int a, int b)
+void glist_actionEnd (t_glist *glist, int a, int b)
 {
     int action = editor_getAction (glist_getEditor (glist));
     
@@ -189,6 +158,38 @@ void glist_motionEnd (t_glist *glist, int a, int b)
     }
     //
     }
+}
+
+void glist_action (t_glist *glist, int a, int b, int m)
+{
+    t_editor *e = glist_getEditor (glist);
+    
+    int action = editor_getAction (e);
+    int deltaX = a - drag_getStartX (editor_getDrag (e));
+    int deltaY = b - drag_getStartY (editor_getDrag (e));
+    
+    if (action == ACTION_MOVE) {
+        editor_selectionDeplace (e);
+    
+    } else if (action == ACTION_CONNECT) {
+        glist_makeLineBegin (glist, a, b);
+        
+    } else if (action == ACTION_REGION)  {
+        glist_selectLassoBegin (glist, a, b);
+        
+    } else if (action == ACTION_PASS)    {
+        editor_motionProceed (e, deltaX, deltaY, m);
+        drag_setStart (editor_getDrag (e), a, b);
+        
+    } else if (action == ACTION_DRAG)    {
+        t_box *text = editor_getSelectedBox (e);
+        if (text) { box_mouse (text, deltaX, deltaY, BOX_DRAG); }
+                
+    } else if (action == ACTION_RESIZE)  {
+        glist_actionResize (glist, a, b);
+    }
+    
+    drag_setEnd (editor_getDrag (e), a, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------

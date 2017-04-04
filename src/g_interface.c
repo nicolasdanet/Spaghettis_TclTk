@@ -18,8 +18,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void glist_motionAction     (t_glist *, int, int, int);
-void glist_motionEnd        (t_glist *, int, int);
+void glist_actionEnd        (t_glist *, int, int);
+void glist_action           (t_glist *, int, int, int);
 void glist_mouse            (t_glist *, int, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int a = (int)atom_getFloatAtIndex (0, argc, argv);
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
     
-    glist_motionEnd (glist, a, b);
+    glist_actionEnd (glist, a, b);
     
     editor_resetAction (glist_getEditor (glist));
 }
@@ -110,7 +110,7 @@ void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     instance_setDefaultCoordinates (glist, a, b);
     
-    if (editor_getAction (glist_getEditor (glist))) { glist_motionAction (glist, a, b, m); }
+    if (editor_getAction (glist_getEditor (glist))) { glist_action (glist, a, b, m); }
     else {
         glist_mouse (glist, a, b, m, 0);
     }
