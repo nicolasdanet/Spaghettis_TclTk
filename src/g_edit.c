@@ -195,57 +195,24 @@ void glist_action (t_glist *glist, int a, int b, int m)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_proceedMouseClickRight (t_glist *glist, t_gobj *y, int positionX, int positionY)
+static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
     int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
     
     glist_deselectAll (glist);
     
-    sys_vGui ("::ui_menu::showPopup .x%lx %d %d %d %d\n",
-                    glist, 
-                    positionX, 
-                    positionY, 
+    sys_vGui ("::ui_menu::showPopup %s %d %d %d %d\n",
+                    glist_getTagAsString (glist), 
+                    a, 
+                    b, 
                     canProperties, 
                     canOpen);
 }
 
-static void canvas_proceedMouseClick (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
-{
-    t_gobj *y = NULL;
-    
-    int k = 0;
-        
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-    //
-    t_rectangle t;
-    
-    if (gobj_hit (y, glist, positionX, positionY, &t)) {
-    
-        t_mouse m;
-        
-        m.m_x       = positionX;
-        m.m_y       = positionY;
-        m.m_shift   = (modifier & MODIFIER_SHIFT);
-        m.m_ctrl    = (modifier & MODIFIER_CTRL);
-        m.m_alt     = (modifier & MODIFIER_ALT);
-        m.m_dbl     = (modifier & MODIFIER_DOUBLE);
-        m.m_clicked = clicked;
-    
-        k = gobj_mouse (y, glist, &m);
-                
-        if (k) { break; }
-    }
-    //
-    }
-    
-    if (!clicked) {
-        if (y && k) { glist_updateCursor (glist, k); }
-        else {
-            glist_updateCursor (glist, CURSOR_NOTHING);
-        }
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static int canvas_proceedMouseHitResizeZone (t_object *object, int positionX, int positionY, int c, int d)
 {
@@ -290,7 +257,7 @@ static int canvas_proceedMouseHitOutlets (t_object *object,
     return -1;
 }
 
-static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
+static int glist_mouseOverEditMode (t_glist *glist, int positionX, int positionY, int modifier, int clicked)
 {
     t_rectangle r;
     
@@ -305,7 +272,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
     int c = rectangle_getBottomRightX (&r);
     int d = rectangle_getBottomRightY (&r);
         
-    if (modifier & MODIFIER_RIGHT) { canvas_proceedMouseClickRight (glist, y, positionX, positionY); }
+    if (modifier & MODIFIER_RIGHT) { glist_popUp (glist, y, positionX, positionY); }
     else if (modifier & MODIFIER_SHIFT) {
     
         if (clicked) {
@@ -369,7 +336,44 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
     return 1;
 }
 
-static int canvas_proceedMouseLines (t_glist *glist, int positionX, int positionY, int clicked)
+static void glist_mouseOverRunMode (t_glist *glist, int a, int b, int modifier, int clicked)
+{
+    t_gobj *y = NULL;
+    
+    int k = 0;
+        
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    t_rectangle t;
+    
+    if (gobj_hit (y, glist, a, b, &t)) {
+    
+        t_mouse m;
+        
+        m.m_x       = a;
+        m.m_y       = b;
+        m.m_shift   = (modifier & MODIFIER_SHIFT);
+        m.m_ctrl    = (modifier & MODIFIER_CTRL);
+        m.m_alt     = (modifier & MODIFIER_ALT);
+        m.m_dbl     = (modifier & MODIFIER_DOUBLE);
+        m.m_clicked = clicked;
+    
+        k = gobj_mouse (y, glist, &m);
+                
+        if (k) { break; }
+    }
+    //
+    }
+    
+    if (!clicked) {
+        if (y && k) { glist_updateCursor (glist, k); }
+        else {
+            glist_updateCursor (glist, CURSOR_NOTHING);
+        }
+    }
+}
+
+static int glist_mouseHitLines (t_glist *glist, int positionX, int positionY, int clicked)
 {
     t_glist *canvas = glist_getView (glist);
     t_outconnect *connection = NULL;
@@ -389,7 +393,7 @@ static int canvas_proceedMouseLines (t_glist *glist, int positionX, int position
     return 0;
 }
 
-static void canvas_proceedMouseLassoStart (t_glist *glist, int a, int b, int modifier)
+static void glist_mouseLasso (t_glist *glist, int a, int b, int modifier)
 {
     int newlyCreated = 0;
     
@@ -415,19 +419,20 @@ void glist_mouse (t_glist *glist, int a, int b, int m, int clicked)
 
     PD_ASSERT (!editor_hasAction (e));
     
-    if (isRunMode && !isRightClick) { canvas_proceedMouseClick (glist, a, b, m, clicked); }
-    else if (canvas_proceedMouseHit (glist, a, b, m, clicked)) { } 
+    if (isRunMode && !isRightClick) { glist_mouseOverRunMode (glist, a, b, m, clicked); }
+    else if (glist_mouseOverEditMode (glist, a, b, m, clicked)) { } 
     else {
-    
-        if (isRightClick)    { canvas_proceedMouseClickRight (glist, NULL, a, b); }
-        else if (!isRunMode) {
-            if (!hasShift && canvas_proceedMouseLines (glist, a, b, clicked)) {
-            } else if (clicked) {
-                canvas_proceedMouseLassoStart (glist, a, b, m);
-            }
+    //
+    if (isRightClick)    { glist_popUp (glist, NULL, a, b); }
+    else if (!isRunMode) {
+        if (!hasShift && glist_mouseHitLines (glist, a, b, clicked)) { }
+        else {
+            if (clicked) { glist_mouseLasso (glist, a, b, m); }
         }
-        
-        glist_updateCursor (glist, CURSOR_NOTHING);
+    }
+    
+    glist_updateCursor (glist, CURSOR_NOTHING);
+    //
     }
 }
 
