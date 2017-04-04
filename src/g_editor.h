@@ -153,9 +153,9 @@ static inline void editor_setSelectedBoxDirty (t_editor *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline void editor_startAction (t_editor *x, int n)
+static inline void editor_startAction (t_editor *x, int n, int a, int b)
 {
-    x->e_action = n;
+    x->e_action = n; drag_begin (editor_getDrag (x), a, b);
 }
 
 static inline void editor_resetAction (t_editor *x)

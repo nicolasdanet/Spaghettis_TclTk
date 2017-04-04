@@ -207,12 +207,10 @@ void editor_motionSet (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b
 {
     PD_ASSERT (callback);
     
-    editor_startAction (x, ACTION_PASS);
+    editor_startAction (x, ACTION_PASS, a, b);
     
     x->e_grabbed  = y;
     x->e_fnMotion = callback;
-    
-    drag_begin (editor_getDrag (x), a, b);
 }
 
 void editor_motionReset (t_editor *x)

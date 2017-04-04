@@ -195,30 +195,6 @@ void glist_action (t_glist *glist, int a, int b, int m)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_key (t_glist *glist, t_keycode n, t_symbol *s)
-{
-    t_editor *e = glist_getEditor (glist);
-    
-    if (editor_getAction (e) == ACTION_MOVE) { editor_resetAction (e); }
-    
-    if (editor_hasSelectedBox (e)) {
-        box_key (editor_getSelectedBox (e), n, s);
-        if (editor_hasSelectedBoxDirty (e)) { 
-            glist_setDirty (glist, 1); 
-        }
-        
-    } else if (s == sym_Delete || s == sym_BackSpace) {
-        if (editor_hasSelectedLine (e))   { glist_lineDeleteSelected (glist); }
-        else if (editor_hasSelection (e)) { 
-            glist_objectRemoveSelected (glist); 
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_proceedMouseClickRight (t_glist *glist, t_gobj *y, int positionX, int positionY)
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
@@ -338,8 +314,7 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
         
         if (object && text && (text == box_fetch (glist, object))) {
             box_mouse (text, positionX - a, positionY - b, BOX_SHIFT);
-            editor_startAction (glist_getEditor (glist), ACTION_DRAG);
-            drag_begin (editor_getDrag (glist_getEditor (glist)), a, b);
+            editor_startAction (glist_getEditor (glist), ACTION_DRAG, a, b);
             
         } else {
             if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
@@ -359,16 +334,14 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             if (!clicked) { glist_updateCursor (glist, CURSOR_RESIZE); }
             else {
                 glist_objectSelectIfNotSelected (glist, y);
-                editor_startAction (glist_getEditor (glist), ACTION_RESIZE);
-                drag_begin (editor_getDrag (glist_getEditor (glist)), a, b);
+                editor_startAction (glist_getEditor (glist), ACTION_RESIZE, a, b);
             }  
                                              
         } else if ((n = canvas_proceedMouseHitOutlets (object, positionX, positionY, a, c, d, &h)) != -1) {
             
             if (!clicked) { glist_updateCursor (glist, CURSOR_CONNECT); }
             else {
-                editor_startAction (glist_getEditor (glist), ACTION_CONNECT);
-                drag_begin (editor_getDrag (glist_getEditor (glist)), h, d);
+                editor_startAction (glist_getEditor (glist), ACTION_CONNECT, h, d);
                 glist_drawTemporary (glist, h, d, object_isSignalOutlet (object, n));
             }                                   
                 
@@ -379,12 +352,11 @@ static int canvas_proceedMouseHit (t_glist *glist, int positionX, int positionY,
             if (object && text && (text == box_fetch (glist, object))) {
                 int flag = (modifier & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN;
                 box_mouse (text, positionX - a, positionY - b, flag);
-                editor_startAction (glist_getEditor (glist), ACTION_DRAG);
-                drag_begin (editor_getDrag (glist_getEditor (glist)), a, b);
+                editor_startAction (glist_getEditor (glist), ACTION_DRAG, a, b);
                 
             } else {
                 glist_objectSelectIfNotSelected (glist, y);
-                editor_startAction (glist_getEditor (glist), ACTION_MOVE);
+                editor_startAction (glist_getEditor (glist), ACTION_MOVE, positionX, positionY);
             }
             
         } else { 
@@ -426,37 +398,59 @@ static void canvas_proceedMouseLassoStart (t_glist *glist, int a, int b, int mod
     if (!newlyCreated) {
     //
     glist_drawLasso (glist, a, b);
-    editor_startAction (glist_getEditor (glist), ACTION_REGION);
-    drag_begin (editor_getDrag (glist_getEditor (glist)), a, b);
+    editor_startAction (glist_getEditor (glist), ACTION_REGION, a, b);
     //
     }
 }
 
-void glist_mouse (t_glist *glist, int a, int b, int modifier, int clicked)
+void glist_mouse (t_glist *glist, int a, int b, int m, int clicked)
 {
-    int hasShift     = (modifier & MODIFIER_SHIFT);
-    int isRightClick = (modifier & MODIFIER_RIGHT);
-    int isRunMode    = (modifier & MODIFIER_CTRL) || (!glist_hasEditMode (glist));
+    t_editor *e = glist_getEditor (glist);
     
-    if (clicked) { editor_motionReset (glist_getEditor (glist)); }
+    int hasShift     = (m & MODIFIER_SHIFT);
+    int isRightClick = (m & MODIFIER_RIGHT);
+    int isRunMode    = (m & MODIFIER_CTRL) || (!glist_hasEditMode (glist));
+    
+    if (clicked) { editor_motionReset (e); }
 
-    if (!editor_hasAction (glist_getEditor (glist))) {
-
-        drag_begin (editor_getDrag (glist_getEditor (glist)), a, b);
-
-        if (isRunMode && !isRightClick) { canvas_proceedMouseClick (glist, a, b, modifier, clicked); }
-        else if (canvas_proceedMouseHit (glist, a, b, modifier, clicked)) { } 
-        else {
-        
-            if (isRightClick)    { canvas_proceedMouseClickRight (glist, NULL, a, b); }
-            else if (!isRunMode) {
-                if (!hasShift && canvas_proceedMouseLines (glist, a, b, clicked)) {
-                } else if (clicked) {
-                    canvas_proceedMouseLassoStart (glist, a, b, modifier);
-                }
+    PD_ASSERT (!editor_hasAction (e));
+    
+    if (isRunMode && !isRightClick) { canvas_proceedMouseClick (glist, a, b, m, clicked); }
+    else if (canvas_proceedMouseHit (glist, a, b, m, clicked)) { } 
+    else {
+    
+        if (isRightClick)    { canvas_proceedMouseClickRight (glist, NULL, a, b); }
+        else if (!isRunMode) {
+            if (!hasShift && canvas_proceedMouseLines (glist, a, b, clicked)) {
+            } else if (clicked) {
+                canvas_proceedMouseLassoStart (glist, a, b, m);
             }
-            
-            glist_updateCursor (glist, CURSOR_NOTHING);
+        }
+        
+        glist_updateCursor (glist, CURSOR_NOTHING);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void glist_key (t_glist *glist, t_keycode n, t_symbol *s)
+{
+    t_editor *e = glist_getEditor (glist);
+    
+    if (editor_getAction (e) == ACTION_MOVE) { editor_resetAction (e); }
+    
+    if (editor_hasSelectedBox (e)) {
+        box_key (editor_getSelectedBox (e), n, s);
+        if (editor_hasSelectedBoxDirty (e)) { 
+            glist_setDirty (glist, 1); 
+        }
+        
+    } else if (s == sym_Delete || s == sym_BackSpace) {
+        if (editor_hasSelectedLine (e))   { glist_lineDeleteSelected (glist); }
+        else if (editor_hasSelection (e)) { 
+            glist_objectRemoveSelected (glist); 
         }
     }
 }
