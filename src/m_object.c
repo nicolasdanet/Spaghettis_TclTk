@@ -54,7 +54,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         
         glist_objectRemove (glist, cast_gobj (x));
         glist_objectMake (glist, a, b, w, 0, t);
-        editor_selectionRestoreLines (glist_getEditor (glist_getView (glist)));
+        editor_selectionRestoreLines (glist_getEditor (glist));
         
         /* Loadbang if the new object is an abstraction. */
         

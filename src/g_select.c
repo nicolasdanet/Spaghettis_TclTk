@@ -172,7 +172,7 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y)
         if (editor_hasSelectedBoxDirty (glist_getEditor (glist))) {
             z = box;
             glist_sortSelected (glist);
-            editor_selectionCacheLines (glist_getEditor (glist_getView (glist)));
+            editor_selectionCacheLines (glist_getEditor (glist));
             glist_deselectAllRecursive (y);
         }
         gobj_activated (y, glist, 0);
