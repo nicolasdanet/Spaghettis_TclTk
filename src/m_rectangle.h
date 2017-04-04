@@ -158,6 +158,11 @@ static inline void drag_set (t_drag *x, int a, int b, int c, int d)
     drag_setStart (x, a, b); drag_setEnd (x, c, d);
 }
 
+static inline void drag_begin (t_drag *x, int a, int b)
+{
+    drag_set (x, a, b, a, b);
+}
+
 static inline void drag_close (t_drag *x)
 {
     x->d_startX = x->d_endX;

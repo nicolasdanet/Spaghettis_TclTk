@@ -475,10 +475,13 @@ void box_activate (t_box *x, int isActivated)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Note that mouse position is relative to the origin of the object. */
+/* Coordinates are relative to the origin of the object or the drag action. */
 
 void box_mouse (t_box *x, int a, int b, int flag)
 {
+    if (!x) { PD_BUG; }
+    else {
+    //
     int i = box_send (x, BOX_CHECK, a, b);
     
     if (flag == BOX_DOWN) { 
@@ -516,6 +519,8 @@ void box_mouse (t_box *x, int a, int b, int flag)
     }
     
     box_send (x, BOX_UPDATE, a, b);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
