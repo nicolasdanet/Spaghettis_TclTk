@@ -96,8 +96,6 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int b = (int)atom_getFloatAtIndex (1, argc, argv);
     
     glist_actionEnd (glist, a, b);
-    
-    editor_resetAction (glist_getEditor (glist));
 }
 
 /* Moving (drag included). */

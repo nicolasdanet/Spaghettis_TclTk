@@ -147,22 +147,27 @@ static void glist_actionResize (t_glist *glist, int a, int b)
 
 void glist_actionEnd (t_glist *glist, int a, int b)
 {
-    int action = editor_getAction (glist_getEditor (glist));
+    t_editor *e = glist_getEditor (glist);
     
-    if (action == ACTION_CONNECT)     { glist_makeLineEnd (glist, a, b); }
+    int action = editor_getAction (e);
+    
+    if (action == ACTION_CONNECT)     { glist_makeLineEnd (glist, a, b);    }
     else if (action == ACTION_REGION) { glist_selectLassoEnd (glist, a, b); }
     else if (action == ACTION_MOVE)   {
     //
     if (glist_objectGetNumberOfSelected (glist) == 1) {
-        gobj_activated (selection_getObject (editor_getSelection (glist_getEditor (glist))), glist, 1);
+        gobj_activated (selection_getObject (editor_getSelection (e)), glist, 1);
     }
     //
     }
+    
+    editor_resetAction (e);
 }
 
 void glist_action (t_glist *glist, int a, int b, int m)
 {
     t_editor *e = glist_getEditor (glist);
+    
     t_box *box  = editor_getSelectedBox (e);
     int startX  = drag_getStartX (editor_getDrag (e));
     int startY  = drag_getStartY (editor_getDrag (e));
