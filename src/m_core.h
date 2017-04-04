@@ -33,6 +33,8 @@ typedef struct _mouse {
     } t_mouse;
 
 typedef struct _drag {
+    int         d_originX;
+    int         d_originY;
     int         d_startX;
     int         d_startY;
     int         d_endX;
