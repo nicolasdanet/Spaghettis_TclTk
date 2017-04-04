@@ -73,11 +73,11 @@ void global_shouldQuit (void *dummy)
     //
     if (glist_isDirty (glist)) {
     //
-    sys_vGui ("::ui_confirm::checkClose .x%lx"
+    sys_vGui ("::ui_confirm::checkClose %s"
                     " { ::ui_interface::pdsend $top save 2 }"
                     " { ::ui_interface::pdsend $top close 2 }"
                     " {}\n",    // --
-                    glist);
+                    glist_getTagAsString (glist));
     return;
     //
     }

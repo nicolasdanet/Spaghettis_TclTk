@@ -55,7 +55,7 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
     
     if (pd_isThingQuiet (sym__keyname)) {
         t_atom a[2];
-        SET_FLOAT (a + 0, isDown);
+        SET_FLOAT  (a + 0, isDown);
         SET_SYMBOL (a + 1, s);
         pd_list (pd_getThing (sym__keyname), 2, a);
     }
