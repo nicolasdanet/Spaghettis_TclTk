@@ -101,24 +101,29 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline int inlet_offset (int width, int i, int n)
+static inline int inlet_offset (int i, int n, t_rectangle *r)
 {
-    return (((width - INLET_WIDTH) * i) / ((n == 1) ? 1 : (n - 1)));
+    int a = rectangle_getTopLeftX (r);
+    int w = rectangle_getWidth (r);
+    
+    return (a + (((w - INLET_WIDTH) * i) / ((n == 1) ? 1 : (n - 1))));
 }
 
-static inline int inlet_middle (int width, int i, int n)
+static inline int inlet_middle (int i, int n, t_rectangle *r)
 {
-    return (inlet_offset (width, i, n) + ((INLET_WIDTH - 1) / 2));
-}
-
-static inline int inlet_nearby (int x, int a, int b, int n)
-{
-    return (((x - a) * (n - 1) + ((b - a) / 2)) / (b - a));
+    return (inlet_offset (i, n, r) + ((INLET_WIDTH - 1) / 2));
 }
 
 static inline int inlet_closest (int x, int n, t_rectangle *r)
 {
-    return inlet_nearby (x, rectangle_getTopLeftX (r), rectangle_getBottomRightX (r), n);
+    int a = rectangle_getTopLeftX (r);
+    int w = rectangle_getWidth (r);
+    
+    int i = (((x - a) * (n - 1) + (w / 2)) / w);
+    
+    PD_ASSERT (i >= 0 && i < n);
+    
+    return i;
 }
 
 // -----------------------------------------------------------------------------------------------------------

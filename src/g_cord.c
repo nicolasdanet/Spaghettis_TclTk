@@ -54,9 +54,9 @@ void cord_make (t_cord *x, t_outconnect *connection, t_object *src, int i, t_obj
     
     {
     //
-    int a = rectangle_getTopLeftX (&srcBox) + inlet_middle (rectangle_getWidth (&srcBox), i, m);
+    int a = inlet_middle (i, m, &srcBox);
     int b = rectangle_getBottomRightY (&srcBox);
-    int c = rectangle_getTopLeftX (&destBox) + inlet_middle (rectangle_getWidth (&destBox), j, n);
+    int c = inlet_middle (j, n, &destBox);
     int d = rectangle_getTopLeftY (&destBox);
     
     cord_set (x, connection, isSignal, a, b, c, d);

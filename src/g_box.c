@@ -232,15 +232,13 @@ static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, in
     
     int m = object_getNumberOfInlets (o);
     int n = object_getNumberOfOutlets (o);
-    int a = rectangle_getTopLeftX (r);
     int b = rectangle_getTopLeftY (r);
-    int c = rectangle_getBottomRightX (r);
     int d = rectangle_getBottomRightY (r);
     int i;
     
     for (i = 0; i < m; i++) {
     //
-    int offset = a + inlet_offset ((c - a), i, m);
+    int offset = inlet_offset (i, m, r);
     
     if (create) {
     
@@ -269,7 +267,7 @@ static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, in
     
     for (i = 0; i < n; i++) {
     //
-    int offset = a + inlet_offset ((c - a), i, n);
+    int offset = inlet_offset (i, n, r);
     
     if (create) {
     

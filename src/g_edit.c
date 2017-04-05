@@ -214,36 +214,6 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int canvas_proceedMouseHitOutlets (t_object *object,
-    int positionX,
-    int positionY,
-    int a,  
-    int c, 
-    int d, 
-    int *h)
-{
-    if (object) {
-    //
-    int numberOfOutlets = object_getNumberOfOutlets (object);
-    
-    if (numberOfOutlets && (positionY >= d - EDIT_GRIP_SIZE)) {
-    //
-    int closest = inlet_nearby (positionX, a, c, numberOfOutlets);
-    int hotspot = a + inlet_middle ((c - a), closest, numberOfOutlets);
-
-    PD_ASSERT (closest >= 0 && closest < numberOfOutlets);
-    
-    if ((positionX > (hotspot - EDIT_GRIP_SIZE)) && (positionX < (hotspot + EDIT_GRIP_SIZE))) {
-        *h = hotspot; return closest;
-    }
-    //
-    }
-    //
-    }
-    
-    return -1;
-}
-
 static void glist_mouseOverEditShift (t_glist *glist, t_gobj *y, int a, int b, int clicked, t_rectangle *r)
 {
     if (clicked) {
@@ -300,6 +270,39 @@ static int glist_mouseOverEditResize (t_glist *glist, t_gobj *y, int a, int b, i
     return k;
 }
 
+static int glist_mouseOverEditLine (t_glist *glist, t_gobj *y, int a, int b, int clicked, t_rectangle *r)
+{
+    t_editor *e = glist_getEditor (glist);
+    
+    int n, outlet = -1;
+    
+    if (cast_objectIfConnectable (y)) {
+    if ((n = object_getNumberOfOutlets (cast_object (y)))) {
+    if ((b >= rectangle_getBottomRightY (r) - EDIT_GRIP_SIZE)) {
+    //
+    int closest = inlet_closest (a, n, r);
+    int hotspot = inlet_middle (closest, n, r);
+
+    if (PD_ABS (a - hotspot) < EDIT_GRIP_SIZE) {
+    
+        outlet = closest;
+        
+        if (!clicked) { glist_updateCursor (glist, CURSOR_CONNECT); }
+        else {
+            int t1 = hotspot;
+            int t2 = rectangle_getBottomRightY (r);
+            glist_drawTemporary (glist, t1, t2, object_isSignalOutlet (cast_object (y), outlet));
+            editor_startAction (e, ACTION_CONNECT, t1, t2);
+        }
+    }
+    //
+    }
+    }
+    }
+    
+    return (outlet != -1);
+}
+
 static int glist_mouseOverEdit (t_glist *glist, int a, int b, int m, int clicked)
 {
     t_editor *e = glist_getEditor (glist);
@@ -314,25 +317,13 @@ static int glist_mouseOverEdit (t_glist *glist, int a, int b, int m, int clicked
     t_object *object = cast_objectIfConnectable (y);
     int t1 = rectangle_getTopLeftX (&r);
     int t2 = rectangle_getTopLeftY (&r);
-    int t3 = rectangle_getBottomRightX (&r);
-    int t4 = rectangle_getBottomRightY (&r);
         
     if (m & MODIFIER_RIGHT)      { glist_popUp (glist, y, a, b); }
     else if (m & MODIFIER_SHIFT) { glist_mouseOverEditShift (glist, y, a, b, clicked, &r); }
     else {
-        
-        int n, h;
-        
-        if (glist_mouseOverEditResize (glist, y, a, b, clicked, &r)) { }
-        else if ((n = canvas_proceedMouseHitOutlets (object, a, b, t1, t3, t4, &h)) != -1) {
-            
-            if (!clicked) { glist_updateCursor (glist, CURSOR_CONNECT); }
-            else {
-                editor_startAction (e, ACTION_CONNECT, h, t4);
-                glist_drawTemporary (glist, h, t4, object_isSignalOutlet (object, n));
-            }                                   
-                
-        } else if (clicked) {
+        if (glist_mouseOverEditResize (glist, y, a, b, clicked, &r))    { }
+        else if (glist_mouseOverEditLine (glist, y, a, b, clicked, &r)) { }
+        else if (clicked) {
         
             t_box *text = editor_getSelectedBox (e);
             
