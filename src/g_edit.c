@@ -214,6 +214,15 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void glist_mouseOverEditDrag (t_glist *glist, t_box *box, int a, int b, int flag, t_rectangle *r)
+{
+    t_editor *e = glist_getEditor (glist);
+    int t1 = rectangle_getTopLeftX (r);
+    int t2 = rectangle_getTopLeftY (r);
+    box_mouse (box, a - t1, b - t2, flag);
+    editor_startAction (e, ACTION_DRAG, t1, t2);
+}
+
 static void glist_mouseOverEditShift (t_glist *glist, t_gobj *y, int a, int b, int clicked, t_rectangle *r)
 {
     if (clicked) {
@@ -225,10 +234,7 @@ static void glist_mouseOverEditShift (t_glist *glist, t_gobj *y, int a, int b, i
     
     if (!isText) { glist_objectSwapSelected (glist, y); }
     else {
-        int t1 = rectangle_getTopLeftX (r);
-        int t2 = rectangle_getTopLeftY (r);
-        box_mouse (box, a - t1, b - t2, BOX_SHIFT);
-        editor_startAction (e, ACTION_DRAG, t1, t2);
+        glist_mouseOverEditDrag (glist, box, a, b, BOX_SHIFT, r);
     }
     //
     }
@@ -303,48 +309,46 @@ static int glist_mouseOverEditLine (t_glist *glist, t_gobj *y, int a, int b, int
     return (outlet != -1);
 }
 
-static int glist_mouseOverEdit (t_glist *glist, int a, int b, int m, int clicked)
+static void glist_mouseOverEditMove (t_glist *glist, t_gobj *y, int a, int b, int m, t_rectangle *r)
 {
     t_editor *e = glist_getEditor (glist);
+    t_box *box  = editor_getSelectedBox (e);
     
+    int isText = cast_objectIfConnectable (y) && box && (box == box_fetch (glist, cast_object (y)));
+    
+    if (!isText) { glist_objectSelectIfNotSelected (glist, y); editor_startAction (e, ACTION_MOVE, a, b); }
+    else {
+        glist_mouseOverEditDrag (glist, box, a, b, (m & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN, r);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static int glist_mouseOverEdit (t_glist *glist, int a, int b, int m, int clicked)
+{
     t_rectangle r;
     
     t_gobj *y = glist_objectHit (glist, a, b, &r);
         
-    if (!y) { return 0; }
-    else {
+    if (y) {
     //
-    t_object *object = cast_objectIfConnectable (y);
-    int t1 = rectangle_getTopLeftX (&r);
-    int t2 = rectangle_getTopLeftY (&r);
-        
     if (m & MODIFIER_RIGHT)      { glist_popUp (glist, y, a, b); }
     else if (m & MODIFIER_SHIFT) { glist_mouseOverEditShift (glist, y, a, b, clicked, &r); }
     else {
         if (glist_mouseOverEditResize (glist, y, a, b, clicked, &r))    { }
         else if (glist_mouseOverEditLine (glist, y, a, b, clicked, &r)) { }
-        else if (clicked) {
-        
-            t_box *text = editor_getSelectedBox (e);
-            
-            if (object && text && (text == box_fetch (glist, object))) {
-                int flag = (m & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN;
-                box_mouse (text, a - t1, b - t2, flag);
-                editor_startAction (e, ACTION_DRAG, t1, t2);
-                
-            } else {
-                glist_objectSelectIfNotSelected (glist, y);
-                editor_startAction (e, ACTION_MOVE, a, b);
-            }
-            
-        } else { 
+        else if (clicked) { glist_mouseOverEditMove (glist, y, a, b, m, &r); } 
+        else { 
             glist_updateCursor (glist, CURSOR_NOTHING);
         }
     }
+    
+    return 1;
     //
     }
     
-    return 1;
+    return 0;
 }
 
 static void glist_mouseOverRun (t_glist *glist, int a, int b, int m, int clicked)
