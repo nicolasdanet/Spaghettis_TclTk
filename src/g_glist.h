@@ -108,6 +108,7 @@ void    glist_objectSelectIfNotSelected     (t_glist *g, t_gobj *y);
 int     glist_objectDeselect                (t_glist *g, t_gobj *y);
 int     glist_objectDeselectIfSelected      (t_glist *g, t_gobj *y);
 int     glist_objectIsSelected              (t_glist *g, t_gobj *y);
+void    glist_objectSwapSelected            (t_glist *g, t_gobj *y);
 int     glist_objectGetIndexOf              (t_glist *g, t_gobj *y);
 int     glist_objectGetIndexAmongSelected   (t_glist *g, t_gobj *y);
 int     glist_objectGetNumberOf             (t_glist *g);

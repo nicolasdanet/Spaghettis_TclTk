@@ -226,6 +226,14 @@ int glist_objectIsSelected (t_glist *glist, t_gobj *y)
     return 0;
 }
 
+void glist_objectSwapSelected (t_glist *glist, t_gobj *y)
+{
+    if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
+    else { 
+        glist_objectSelect (glist, y);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
