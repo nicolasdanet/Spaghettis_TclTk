@@ -73,7 +73,6 @@ void    glist_unbind                        (t_glist *g);
 #pragma mark -
 
 void    glist_serialize                     (t_glist *g, t_buffer *b);
-t_error glist_deserializeScalar             (t_glist *g, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -101,6 +100,7 @@ void    glist_key                           (t_glist *g, t_keycode n, t_symbol *
 #pragma mark -
 
 void    glist_objectMake                    (t_glist *g, int a, int b, int w, int selected, t_buffer *t);
+void    glist_objectMakeScalar              (t_glist *g, int argc, t_atom *argv);
 void    glist_objectAddNext                 (t_glist *g, t_gobj *first, t_gobj *next);
 void    glist_objectAdd                     (t_glist *g, t_gobj *y);
 void    glist_objectRemove                  (t_glist *g, t_gobj *y);
