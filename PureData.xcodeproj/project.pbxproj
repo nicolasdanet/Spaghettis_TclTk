@@ -1468,6 +1468,7 @@
 				370939431CC92BF300827F75 /* g_draw.c */,
 				379920471CD2649B00750527 /* g_select.c */,
 				378971C31C4F716700263434 /* g_edit.c */,
+				374A76321CF5FA81001A57EB /* g_serialize.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
 				3735D9701E5995B300858959 /* Objects */,
 			);
@@ -1489,7 +1490,6 @@
 				379C1BDF1D3796B800C4D92C /* g_struct.c */,
 				378971CF1C4F716700263434 /* g_scalar.c */,
 				371430B01D0D46BC00E68D11 /* g_paint.c */,
-				374A76321CF5FA81001A57EB /* g_serialize.c */,
 				3715DB131E560F7D002B5FB7 /* Objects */,
 			);
 			name = Scalars;

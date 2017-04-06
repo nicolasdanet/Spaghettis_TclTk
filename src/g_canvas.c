@@ -555,24 +555,18 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
     
     if (glist_isAbstraction (cast_glist (x))) { needToSaveContents = 0; }
 
-    if (needToSaveContents) { 
-        canvas_serialize (cast_glist (x), b);
-        buffer_vAppend (b, "ssii",
-            sym___hash__X,
-            sym_restore,
-            object_getX (cast_object (x)),
-            object_getY (cast_object (x)));
-    } else {
+    if (needToSaveContents) { glist_serialize (cast_glist (x), b); }
+    else {
         buffer_vAppend (b, "ssii",
             sym___hash__X,
             sym_obj,
             object_getX (cast_object (x)),
             object_getY (cast_object (x)));
+        
+        buffer_serialize (b, object_getBuffer (cast_object (x)));
+        buffer_appendSemicolon (b);
+        object_saveWidth (cast_object (x), b);
     }
-    
-    buffer_serialize (b, object_getBuffer (cast_object (x)));
-    buffer_appendSemicolon (b);
-    object_saveWidth (cast_object (x), b);
 }
 
 static void canvas_functionProperties (t_gobj *x, t_glist *dummy)

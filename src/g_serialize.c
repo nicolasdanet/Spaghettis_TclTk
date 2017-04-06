@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_findTemplatesAppendProceed (t_symbol *templateIdentifier, int *n, t_symbol ***v)
+static void glist_findTemplatesAppendProceed (t_symbol *templateIdentifier, int *n, t_symbol ***v)
 {
     int t = *n;
     t_symbol **templates = *v;
@@ -40,30 +40,30 @@ static void canvas_findTemplatesAppendProceed (t_symbol *templateIdentifier, int
     }
 }
 
-static void canvas_findTemplatesAppendRecursive (t_template *tmpl, int *n, t_symbol ***v)
+static void glist_findTemplatesAppendRecursive (t_template *tmpl, int *n, t_symbol ***v)
 {
     int i;
 
-    canvas_findTemplatesAppendProceed (template_getTemplateIdentifier (tmpl), n, v);
+    glist_findTemplatesAppendProceed (template_getTemplateIdentifier (tmpl), n, v);
 
     for (i = 0; i < template_getSize (tmpl); i++) {
         t_template *t = template_getTemplateIfArrayAtIndex (tmpl, i);
         if (t) {
-            canvas_findTemplatesAppendRecursive (t, n, v);
+            glist_findTemplatesAppendRecursive (t, n, v);
         }
     }
 }
 
-static void canvas_findTemplatesRecursive (t_glist *glist, int *n, t_symbol ***v)
+static void glist_findTemplatesRecursive (t_glist *glist, int *n, t_symbol ***v)
 {
     t_gobj *y = NULL;
 
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (pd_class (y) == scalar_class) {
-            canvas_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), n, v);
+            glist_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), n, v);
         }
         if (pd_class (y) == canvas_class) { 
-            canvas_findTemplatesRecursive (cast_glist (y), n, v);
+            glist_findTemplatesRecursive (cast_glist (y), n, v);
         }
     }
 }
@@ -72,12 +72,12 @@ static void canvas_findTemplatesRecursive (t_glist *glist, int *n, t_symbol ***v
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
+static void glist_serializeTemplates (t_glist *glist, t_buffer *b)
 {
     t_symbol **v = PD_MEMORY_GET (0);
     int i, n = 0;
     
-    canvas_findTemplatesRecursive (glist, &n, &v);
+    glist_findTemplatesRecursive (glist, &n, &v);
     
     for (i = 0; i < n; i++) { template_serialize (template_findByIdentifier (v[i]), b); }
     
@@ -88,7 +88,121 @@ void canvas_serializeTemplates (t_glist *glist, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error canvas_deserializeScalar (t_glist *glist, int argc, t_atom *argv)
+static void glist_serializeHeader (t_glist *glist, t_buffer *b)
+{
+    if (glist_isSubpatch (glist)) {
+    
+        /* Note that the name of a subpatch could be an A_DOLLARSYMBOL type. */
+        
+        t_buffer *z = buffer_new();
+        t_symbol *s = NULL;
+        buffer_serialize (z, object_getBuffer (cast_object (glist)));
+        s = atom_getSymbolAtIndex (1, buffer_size (z), buffer_atoms (z));   /* Fetch unexpanded name. */
+        buffer_free (z);
+        
+        buffer_vAppend (b, "ssiiiisi;", 
+            sym___hash__N, 
+            sym_canvas,
+            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
+            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
+            rectangle_getWidth (glist_getWindowGeometry (glist)),
+            rectangle_getHeight (glist_getWindowGeometry (glist)),
+            (s != &s_ ? s : sym_Patch),
+            glist_getMapped (glist));
+            
+    } else {
+    
+        glist_serializeTemplates (glist, b);
+    
+        buffer_vAppend (b, "ssiiiii;", 
+            sym___hash__N,
+            sym_canvas,
+            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
+            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
+            rectangle_getWidth (glist_getWindowGeometry (glist)),
+            rectangle_getHeight (glist_getWindowGeometry (glist)),
+            (int)glist_getFontSize (glist));
+    }
+}
+
+static void glist_serializeObjects (t_glist *glist, t_buffer *b)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) { gobj_save (y, b); }
+}
+
+static void glist_serializeLines (t_glist *glist, t_buffer *b)
+{
+    t_outconnect *connection = NULL;
+    t_traverser t;
+    
+    traverser_start (&t, glist);
+    
+    while ((connection = traverser_next (&t))) {
+    
+        buffer_vAppend (b, "ssiiii;", 
+            sym___hash__X,
+            sym_connect,
+            glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (&t))), 
+            traverser_getIndexOfOutlet (&t), 
+            glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t))), 
+            traverser_getIndexOfInlet (&t));
+    }
+}
+
+/* For compatibility with legacy, top left coordinates must be serialized last. */
+
+static void glist_serializeGraph (t_glist *glist, t_buffer *b)
+{
+    buffer_vAppend (b, "ssfffffffff;", 
+            sym___hash__X, 
+            sym_coords,
+            bounds_getLeft (glist_getBounds (glist)),
+            bounds_getTop (glist_getBounds (glist)),
+            bounds_getRight (glist_getBounds (glist)),
+            bounds_getBottom (glist_getBounds (glist)),
+            (double)(rectangle_getWidth (glist_getGraphGeometry (glist))), 
+            (double)(rectangle_getHeight (glist_getGraphGeometry (glist))),
+            (double)(glist_isGraphOnParent (glist) ? 1 : 0),
+            (double)(rectangle_getTopLeftX (glist_getGraphGeometry (glist))),
+            (double)(rectangle_getTopLeftY (glist_getGraphGeometry (glist))));
+}
+
+static void glist_serializeFooter (t_glist *glist, t_buffer *b)
+{
+    if (glist_isSubpatch (glist)) {
+    
+        buffer_vAppend (b, "ssii",
+            sym___hash__X,
+            sym_restore,
+            object_getX (cast_object (glist)),
+            object_getY (cast_object (glist)));
+        
+        buffer_serialize (b, object_getBuffer (cast_object (glist)));
+        buffer_appendSemicolon (b);
+        object_saveWidth (cast_object (glist), b);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void glist_serialize (t_glist *glist, t_buffer *b)
+{
+    glist_serializeHeader (glist, b);
+    glist_serializeObjects (glist, b);
+    glist_serializeLines (glist, b);
+    glist_serializeGraph (glist, b);
+    glist_serializeFooter (glist, b);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error glist_deserializeScalar (t_glist *glist, int argc, t_atom *argv)
 {
     if (argc > 0 && IS_SYMBOL (argv)) {
     //

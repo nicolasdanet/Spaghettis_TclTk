@@ -72,6 +72,13 @@ void    glist_unbind                        (t_glist *g);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    glist_serialize                     (t_glist *g, t_buffer *b);
+t_error glist_deserializeScalar             (t_glist *g, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int     glist_fileExist                     (t_glist *g, char *name, char *extension, t_fileproperties *p);
 int     glist_fileOpen                      (t_glist *g, char *name, char *extension, t_fileproperties *p);
                                                             

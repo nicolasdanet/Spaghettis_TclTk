@@ -17,77 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_serialize (t_glist *glist, t_buffer *b)
-{
-    t_gobj *y = NULL;
-    t_outconnect *connection = NULL;
-    t_traverser t;
-    
-    if (glist_isSubpatch (glist)) {
-    
-        t_buffer *z = buffer_new();
-        t_symbol *s = NULL;
-        buffer_serialize (z, object_getBuffer (cast_object (glist)));
-        s = atom_getSymbolAtIndex (1, buffer_size (z), buffer_atoms (z));
-        buffer_free (z);
-        
-        buffer_vAppend (b, "ssiiiisi;", 
-            sym___hash__N, 
-            sym_canvas,
-            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
-            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
-            rectangle_getWidth (glist_getWindowGeometry (glist)),
-            rectangle_getHeight (glist_getWindowGeometry (glist)),
-            (s != &s_ ? s : sym_Patch),
-            glist_getMapped (glist));
-            
-    } else {
-    
-        buffer_vAppend (b, "ssiiiii;", 
-            sym___hash__N,
-            sym_canvas,
-            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
-            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
-            rectangle_getWidth (glist_getWindowGeometry (glist)),
-            rectangle_getHeight (glist_getWindowGeometry (glist)),
-            (int)glist_getFontSize (glist));
-    }
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) { gobj_save (y, b); }
-
-    traverser_start (&t, glist);
-    
-    while ((connection = traverser_next (&t))) {
-    
-        buffer_vAppend (b, "ssiiii;", 
-            sym___hash__X,
-            sym_connect,
-            glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (&t))), 
-            traverser_getIndexOfOutlet (&t), 
-            glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t))), 
-            traverser_getIndexOfInlet (&t));
-    }
-    
-    {
-        buffer_vAppend (b, "ssfffffffff;", 
-            sym___hash__X, 
-            sym_coords,
-            bounds_getLeft (glist_getBounds (glist)),
-            bounds_getTop (glist_getBounds (glist)),
-            bounds_getRight (glist_getBounds (glist)),
-            bounds_getBottom (glist_getBounds (glist)),
-            (double)rectangle_getWidth (glist_getGraphGeometry (glist)), 
-            (double)rectangle_getHeight (glist_getGraphGeometry (glist)),
-            (double)(glist_isGraphOnParent (glist) ? 1 : 0),
-            (double)rectangle_getTopLeftX (glist_getGraphGeometry (glist)),
-            (double)rectangle_getTopLeftY (glist_getGraphGeometry (glist)));
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_save (t_glist *glist, t_float destroy)
 {
     t_glist *root = glist_getTop (glist);
@@ -127,8 +56,7 @@ void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     t_buffer *b = buffer_new();
     
-    canvas_serializeTemplates (glist, b);
-    canvas_serialize (glist, b);
+    glist_serialize (glist, b);
     
     if (buffer_write (b, name, directory)) { PD_BUG; }
     else {
