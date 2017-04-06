@@ -23,6 +23,37 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void glist_updateCursor (t_glist *glist, int type)
+{
+    static t_glist *lastGlist = NULL;           /* Static. */
+    static int lastType = CURSOR_NOTHING;       /* Static. */
+    static char *cursors[] =                    /* Static. */
+        {
+            "left_ptr",             // CURSOR_NOTHING
+            "hand2",                // CURSOR_CLICK
+            "sb_v_double_arrow",    // CURSOR_THICKEN
+            "plus",                 // CURSOR_ADD
+            "circle",               // CURSOR_CONNECT
+            "sb_h_double_arrow"     // CURSOR_RESIZE
+        };
+    
+    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE);
+    
+    PD_ASSERT (glist_hasWindow (glist));
+    
+    if (lastGlist != glist || lastType != type) {
+    //
+    sys_vGui ("%s configure -cursor %s\n", glist_getTagAsString (glist), cursors[type]);
+    //
+    }
+    
+    lastType = type; lastGlist = glist;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void glist_makeLineProceed (t_glist *glist, int a, int b, int end)
 {
     int startX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
