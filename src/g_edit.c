@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define EDIT_GRIP_SIZE      4
+#define EDIT_GRIP_SIZE      5
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -144,9 +144,12 @@ static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int 
     //
     t_rectangle *r = glist_getGraphGeometry (cast_glist (y));
     
+    int w = rectangle_getWidth (r) + deltaX;
+    int h = rectangle_getHeight (r) + deltaY;
+    
     gobj_visibilityChanged (y, glist, 0);
-    rectangle_setWidth (r, rectangle_getWidth (r) + deltaX);
-    rectangle_setHeight (r, rectangle_getHeight (r) + deltaY);
+    rectangle_setWidth (r, PD_MAX (EDIT_GRIP_SIZE, w));
+    rectangle_setHeight (r, PD_MAX (EDIT_GRIP_SIZE, h));
     glist_updateLinesForObject (glist, cast_object (y));
     glist_updateRectangle (cast_glist (y));
     gobj_visibilityChanged (y, glist, 1);
