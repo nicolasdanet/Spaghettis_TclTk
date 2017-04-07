@@ -861,7 +861,7 @@ void canvas_setup (void)
     
     class_addMethod (c, (t_method)canvas_save,                  sym_save,           A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,         A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_saveToFile,            sym_savetofile,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,    A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)canvas_bounds,                sym_bounds,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,   A_GIMME, A_NULL);

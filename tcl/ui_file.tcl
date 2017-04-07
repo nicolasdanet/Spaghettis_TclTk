@@ -110,7 +110,7 @@ proc saveAs {target filename directory destroy} {
     if {$filename ne ""} {
         set basename  [file tail $filename]
         set directory [file normalize [file dirname $filename]]
-        ::ui_interface::pdsend "$target savetofile [::escaped $basename] [::escaped $directory] $destroy"
+        ::ui_interface::pdsend "$target _savetofile [::escaped $basename] [::escaped $directory] $destroy"
         set directoryNew $directory
     }
 }
