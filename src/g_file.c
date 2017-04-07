@@ -23,66 +23,44 @@ void interface_quit (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Messy ping-pong required in order to check saving sequentially. */
+void canvas_close (t_glist *, t_float);
 
-/* Messy ping-pong required in order to check saving sequentially. */
-/* Furthermore it avoids the application to quit before responding. */
-/* Note that patches not dirty are closed later. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-void canvas_quit (void)
+/* While quitting application a messy ping-pong is required. */
+/* The dirty state of patch is checked sequentially. */
+/* It avoids the executable to quit before user responses. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+enum {
+    DESTROY  = 1,
+    QUITTING = 2,
+    CONTINUE = 3
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_saveProceed (t_glist *glist, t_symbol *name, t_symbol *directory, int destroy)
 {
-    t_glist *glist = NULL;
+    t_buffer *b = buffer_new();
     
-    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) {
-    //
-    if (glist_isDirty (glist)) {
-    //
-    sys_vGui ("::ui_confirm::checkClose %s"
-                    " { ::ui_interface::pdsend $top save 2 }"
-                    " { ::ui_interface::pdsend $top close 2 }"
-                    " {}\n",    // --
-                    glist_getTagAsString (glist));
-    return;
-    //
-    }
-    //
-    }
+    glist_serialize (glist, b);
     
-    interface_quit();
-}
-
-void canvas_close (t_glist *glist, t_float f)
-{
-    int k = (int)f;
-    
-    if (k == 2) { glist_setDirty (glist, 0); canvas_quit(); }  /* While quitting application. */
+    if (buffer_write (b, name, directory)) { error_failsToWrite (name); }
     else {
-    //
-    if (glist_hasParent (glist)) { canvas_visible (glist, 0); }     /* Hide subpatches and abstractions. */
-    else {
-    //
-    if (k == 1 || k == 3) {                                         /* Has been saved right before. */
-
-        pd_free (cast_pd (glist)); if (k == 3) { canvas_quit(); }  
-        
-    } else {
-        if (glist_isDirty (glist)) {
-            
-            sys_vGui ("::ui_confirm::checkClose .x%lx"
-                            " { ::ui_interface::pdsend $top save 1 }"
-                            " { ::ui_interface::pdsend $top close 1 }"
-                            " {}\n",    // --
-                            glist);
-            return;
-            
-        } else {
-            pd_free (cast_pd (glist));
+        post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
+        glist_setDirty (glist, 0);
+        if (destroy) {
+            canvas_close (glist, (t_float)(destroy == QUITTING ? CONTINUE : DESTROY)); 
         }
     }
-    //
-    }
-    //
-    }
+    
+    buffer_free (b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -91,25 +69,12 @@ void canvas_close (t_glist *glist, t_float f)
 
 void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc >= 2) {
-    //
-    t_symbol *name      = atom_getSymbol (argv + 0);
-    t_symbol *directory = atom_getSymbol (argv + 1);
+    if (argc > 2) {
     
-    int destroy = (int)atom_getFloatAtIndex (2, argc, argv);
-    
-    t_buffer *b = buffer_new();
-    
-    glist_serialize (glist, b);
-    
-    if (!buffer_write (b, name, directory)) {
-        post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
-        glist_setDirty (glist, 0);
-        if (destroy) { canvas_close (glist, (t_float)(destroy == 2 ? 3 : 1)); }
-    }
-    
-    buffer_free (b);
-    //
+        t_symbol *name      = atom_getSymbol (argv + 0);
+        t_symbol *directory = atom_getSymbol (argv + 1);
+        
+        canvas_saveProceed (glist, name, directory, (int)atom_getFloat (argv + 2));
     }
 }
 
@@ -117,8 +82,8 @@ void canvas_saveAs (t_glist *glist, t_float destroy)
 {
     t_glist *root = glist_getTop (glist);
     
-    sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n",     // --
-                    root,
+    sys_vGui ("::ui_file::saveAs %s {%s} {%s} %d\n",     // --
+                    glist_getTagAsString (root),
                     glist_getName (root)->s_name,
                     environment_getDirectoryAsString (glist_getEnvironment (root)), 
                     (int)destroy);
@@ -130,15 +95,91 @@ void canvas_save (t_glist *glist, t_float destroy)
     
     if (glist_getName (root) == &s_) { canvas_saveAs (root, destroy); }
     else {
-    //
-    t_atom t[3];
     
-    SET_SYMBOL (t + 0, glist_getName (root));
-    SET_SYMBOL (t + 1, environment_getDirectory (glist_getEnvironment (root)));
-    SET_FLOAT  (t + 2, destroy);
+        t_symbol *name      = glist_getName (root);
+        t_symbol *directory = environment_getDirectory (glist_getEnvironment (root));
+        
+        canvas_saveProceed (root, name, directory, destroy);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_quit (void)
+{
+    t_glist *glist = NULL;
     
-    canvas_saveToFile (root, NULL, 3, t);
+    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) {
     //
+    if (glist_isDirty (glist)) {
+    //
+    sys_vGui ("::ui_confirm::checkClose %s"
+                    " { ::ui_interface::pdsend $top save %d  }"
+                    " { ::ui_interface::pdsend $top close %d }"
+                    " {}\n",    // --
+                    glist_getTagAsString (glist), 
+                    QUITTING, 
+                    QUITTING);
+    return;
+    //
+    }
+    //
+    }
+    
+    interface_quit();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_unsetDirtyAndContinue (t_glist *glist)      /* Note that patches not dirty are closed later. */
+{
+    glist_setDirty (glist, 0); canvas_quit();
+}
+
+void canvas_hideSubpatchOrAbstraction (t_glist *glist)
+{
+    canvas_visible (glist, 0);
+}
+
+void canvas_destroyAlreadyChecked (t_glist *glist, int destroy)
+{
+    pd_free (cast_pd (glist)); if (destroy == CONTINUE) { canvas_quit(); } 
+}
+
+void canvas_destroyOrCheckIfNecessary (t_glist *glist)
+{
+    if (glist_isDirty (glist)) {
+            
+        sys_vGui ("::ui_confirm::checkClose %s"
+                        " { ::ui_interface::pdsend $top save %d  }"
+                        " { ::ui_interface::pdsend $top close %d }"
+                        " {}\n",    // --
+                        glist_getTagAsString (glist), 
+                        DESTROY,
+                        DESTROY);
+
+    } else {
+        pd_free (cast_pd (glist));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_close (t_glist *glist, t_float f)
+{
+    int destroy = (int)f;
+    
+    if (glist_hasParent (glist))  { canvas_hideSubpatchOrAbstraction (glist); }
+    else if (destroy == QUITTING) { canvas_unsetDirtyAndContinue (glist); }
+    else if (destroy)             { canvas_destroyAlreadyChecked (glist, destroy); }
+    else {
+        canvas_destroyOrCheckIfNecessary (glist);
     }
 }
 
