@@ -135,22 +135,22 @@ void canvas_quit (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_unsetDirtyAndContinue (t_glist *glist)      /* Note that patches not dirty are closed later. */
+void canvas_closeUnsetDirtyAndContinue (t_glist *glist)
 {
-    glist_setDirty (glist, 0); canvas_quit();
+    glist_setDirty (glist, 0); canvas_quit();   /* Note that patches not dirty are closed later. */
 }
 
-void canvas_hideSubpatchOrAbstraction (t_glist *glist)
+void canvas_closeHideSubpatchOrAbstraction (t_glist *glist)
 {
     canvas_visible (glist, 0);
 }
 
-void canvas_destroyAlreadyChecked (t_glist *glist, int destroy)
+void canvas_closeDestroyAlreadyChecked (t_glist *glist, int destroy)
 {
     pd_free (cast_pd (glist)); if (destroy == CONTINUE) { canvas_quit(); } 
 }
 
-void canvas_destroyOrCheckIfNecessary (t_glist *glist)
+void canvas_closeDestroyOrCheckIfNecessary (t_glist *glist)
 {
     if (glist_isDirty (glist)) {
             
@@ -175,11 +175,11 @@ void canvas_close (t_glist *glist, t_float f)
 {
     int destroy = (int)f;
     
-    if (glist_hasParent (glist))  { canvas_hideSubpatchOrAbstraction (glist); }
-    else if (destroy == QUITTING) { canvas_unsetDirtyAndContinue (glist); }
-    else if (destroy)             { canvas_destroyAlreadyChecked (glist, destroy); }
+    if (glist_hasParent (glist))  { canvas_closeHideSubpatchOrAbstraction (glist); }
+    else if (destroy == QUITTING) { canvas_closeUnsetDirtyAndContinue (glist); }
+    else if (destroy)             { canvas_closeDestroyAlreadyChecked (glist, destroy); }
     else {
-        canvas_destroyOrCheckIfNecessary (glist);
+        canvas_closeDestroyOrCheckIfNecessary (glist);
     }
 }
 
