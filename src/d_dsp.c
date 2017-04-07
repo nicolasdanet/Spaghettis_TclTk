@@ -17,12 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
+void dsp_state (int n)
 {
-    if (argc) {
-    //
-    int n = (int)atom_getFloatAtIndex (0, argc, argv);
-    
     if (n != instance_getDspState()) {
     //
     if (n) { if (audio_start() == PD_ERROR_NONE) { instance_dspStart(); } }
@@ -31,8 +27,6 @@ void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
     }
     
     sys_vGui ("set ::var(isDsp) %d\n", instance_getDspState());     // --
-    //
-    }
     //
     }
 }

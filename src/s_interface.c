@@ -331,7 +331,7 @@ t_error interface_start (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void interface_quit (void *dummy)
+void interface_quit (void)
 {
     scheduler_needToExit();
 }

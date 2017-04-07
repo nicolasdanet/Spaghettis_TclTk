@@ -118,7 +118,7 @@ void preferences_load (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-void preferences_save (void *dummy)
+void preferences_save (void)
 {
     t_devicesproperties midi;    
     t_devicesproperties audio;   

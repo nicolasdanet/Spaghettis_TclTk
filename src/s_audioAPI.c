@@ -222,7 +222,7 @@ static t_error audio_requireDialogInitialize (void)
     return err;
 }
 
-void audio_requireDialog (void *dummy)
+void audio_requireDialog (void)
 {
     t_error err = audio_requireDialogInitialize();
     
@@ -289,7 +289,7 @@ void audio_requireDialog (void *dummy)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
+void audio_fromDialog (int argc, t_atom *argv)
 {
     t_devicesproperties audio; devices_initAsAudio (&audio);
     

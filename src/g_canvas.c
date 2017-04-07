@@ -37,6 +37,10 @@ void canvas_copy            (t_glist *);
 void canvas_paste           (t_glist *);
 void canvas_duplicate       (t_glist *);
 void canvas_selectAll       (t_glist *);
+void canvas_close           (t_glist *, t_float);
+void canvas_save            (t_glist *, t_float);
+void canvas_saveAs          (t_glist *, t_float);
+void canvas_saveToFile      (t_glist *, t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -356,41 +360,6 @@ static void canvas_editmode (t_glist *glist, t_float f)
     
     if (glist_isOnScreen (glist)) {
         sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), glist_hasEditMode (glist));
-    }
-    //
-    }
-}
-
-/* Messy ping-pong required in order to check saving sequentially. */
-
-void canvas_close (t_glist *glist, t_float f)
-{
-    int k = (int)f;
-    
-    if (k == 2) { glist_setDirty (glist, 0); global_shouldQuit (NULL); }    /* While quitting application. */
-    else {
-    //
-    if (glist_hasParent (glist)) { canvas_visible (glist, 0); }     /* Hide subpatches and abstractions. */
-    else {
-    //
-    if (k == 1 || k == 3) {                                                 /* Has been saved right before. */
-        pd_free (cast_pd (glist)); if (k == 3) { global_shouldQuit (NULL); }  
-        
-    } else {
-        if (glist_isDirty (glist)) {
-            
-            sys_vGui ("::ui_confirm::checkClose .x%lx"
-                            " { ::ui_interface::pdsend $top save 1 }"
-                            " { ::ui_interface::pdsend $top close 1 }"
-                            " {}\n",    // --
-                            glist);
-            return;
-            
-        } else {
-            pd_free (cast_pd (glist));
-        }
-    }
-    //
     }
     //
     }

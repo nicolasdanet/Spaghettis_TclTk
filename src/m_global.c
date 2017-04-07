@@ -17,15 +17,16 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void dsp_state                      (int n);
 void canvas_key                     (t_glist *, t_symbol *, int, t_atom *);
-void interface_quit                 (void *);
-void audio_requireDialog            (void *);
-void midi_requireDialog             (void *);
-void preferences_save               (void *);
-void dsp_state                      (void *, t_symbol *, int, t_atom *);
-void font_withHostMeasured          (void *, t_symbol *, int, t_atom *);
-void audio_fromDialog               (void *, t_symbol *, int, t_atom *);
-void midi_fromDialog                (void *, t_symbol *, int, t_atom *);
+void interface_quit                 (void);
+void font_withHostMeasured          (int, t_atom *);
+void audio_requireDialog            (void);
+void audio_fromDialog               (int, t_atom *);
+void midi_requireDialog             (void);
+void midi_fromDialog                (int, t_atom *);
+void canvas_quit                    (void);
+void preferences_save               (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -36,19 +37,73 @@ t_pd global_object;                 /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void global_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
+void global_newPatch (void *x, t_symbol *name, t_symbol *directory)
 {
     instance_makePatch (name, directory);
 }
 
-static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
+static void global_open (void *x, t_symbol *name, t_symbol *directory)
 {
     buffer_fileOpen (name, directory);
 }
 
-static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
+static void global_dsp (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) { dsp_state ((int)atom_getFloatAtIndex (0, argc, argv)); }
+}
+
+static void global_key (void *x, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_key (NULL, s, argc, argv);
+}
+
+static void global_quit (void *x)
+{
+    interface_quit();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void global_font (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    font_withHostMeasured (argc, argv);
+}
+
+static void global_audioProperties (void *x)
+{
+    audio_requireDialog();
+}
+
+static void global_audioDialog (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    audio_fromDialog (argc, argv);
+}
+
+static void global_midiProperties (void *x)
+{
+    midi_requireDialog();
+}
+
+static void global_midiDialog (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    midi_fromDialog (argc, argv);
+}
+
+static void global_setSearchPath (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    instance_searchPathSetEncoded (argc, argv);
+}
+
+static void global_shouldQuit (void *x)
+{
+    canvas_quit();
+}
+
+static void global_savePreferences (void *x)
+{
+    preferences_save();
 }
 
 static void global_default (void *x, t_symbol *s, int argc, t_atom *argv)
@@ -56,38 +111,7 @@ static void global_default (void *x, t_symbol *s, int argc, t_atom *argv)
     error_unknownMethod (class_getName (pd_class (x)), s);
 }
 
-static void global_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    instance_searchPathSetEncoded (argc, argv);
-}
-
-/* Messy ping-pong required in order to check saving sequentially. */
-/* Furthermore it avoids the application to quit before responding. */
-/* Note that patches not dirty are closed later. */
-
-void global_shouldQuit (void *dummy)
-{
-    t_glist *glist = NULL;
-    
-    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) {
-    //
-    if (glist_isDirty (glist)) {
-    //
-    sys_vGui ("::ui_confirm::checkClose %s"
-                    " { ::ui_interface::pdsend $top save 2 }"
-                    " { ::ui_interface::pdsend $top close 2 }"
-                    " {}\n",    // --
-                    glist_getTagAsString (glist));
-    return;
-    //
-    }
-    //
-    }
-    
-    interface_quit (NULL);
-}
-
-static void global_dummy (void *dummy)
+static void global_dummy (void *x)
 {
 }
 
@@ -108,23 +132,23 @@ void global_setup (void)
 
     class_addMethod (c, (t_method)global_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_open,                  sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dsp_state,                    sym_dsp,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_dsp,                   sym_dsp,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_key,                   sym_key,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)interface_quit,               sym_quit,   A_NULL);
+    class_addMethod (c, (t_method)global_quit,                  sym_quit,   A_NULL);
     
-    class_addMethod (c, (t_method)font_withHostMeasured,        sym__font,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)audio_requireDialog,          sym__audioproperties,   A_NULL);
-    class_addMethod (c, (t_method)audio_fromDialog,             sym__audiodialog,       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)midi_requireDialog,           sym__midiproperties,    A_NULL);
-    class_addMethod (c, (t_method)midi_fromDialog,              sym__mididialog,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_font,                  sym__font,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_audioProperties,       sym__audioproperties,   A_NULL);
+    class_addMethod (c, (t_method)global_audioDialog,           sym__audiodialog,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_midiProperties,        sym__midiproperties,    A_NULL);
+    class_addMethod (c, (t_method)global_midiDialog,            sym__mididialog,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_setSearchPath,         sym__path,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_shouldQuit,            sym__quit,              A_NULL);
-    class_addMethod (c, (t_method)preferences_save,             sym__savepreferences,   A_NULL);
+    class_addMethod (c, (t_method)global_savePreferences,       sym__savepreferences,   A_NULL);
     class_addMethod (c, (t_method)global_dummy,                 sym__dummy,             A_NULL);
     
     #if PD_WATCHDOG
     
-    class_addMethod (c, (t_method)interface_watchdog, sym__watchdog, A_NULL);
+    class_addMethod (c, (t_method)interface_watchdog,           sym__watchdog,          A_NULL);
         
     #endif
 

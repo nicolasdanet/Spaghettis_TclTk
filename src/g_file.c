@@ -17,20 +17,98 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_save (t_glist *glist, t_float destroy)
+void interface_quit (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Messy ping-pong required in order to check saving sequentially. */
+
+/* Messy ping-pong required in order to check saving sequentially. */
+/* Furthermore it avoids the application to quit before responding. */
+/* Note that patches not dirty are closed later. */
+
+void canvas_quit (void)
 {
-    t_glist *root = glist_getTop (glist);
+    t_glist *glist = NULL;
     
-    if (glist_getName (root) == &s_) { canvas_saveAs (root, destroy); }
+    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) {
+    //
+    if (glist_isDirty (glist)) {
+    //
+    sys_vGui ("::ui_confirm::checkClose %s"
+                    " { ::ui_interface::pdsend $top save 2 }"
+                    " { ::ui_interface::pdsend $top close 2 }"
+                    " {}\n",    // --
+                    glist_getTagAsString (glist));
+    return;
+    //
+    }
+    //
+    }
+    
+    interface_quit();
+}
+
+void canvas_close (t_glist *glist, t_float f)
+{
+    int k = (int)f;
+    
+    if (k == 2) { glist_setDirty (glist, 0); canvas_quit(); }  /* While quitting application. */
     else {
     //
-    t_atom t[3];
+    if (glist_hasParent (glist)) { canvas_visible (glist, 0); }     /* Hide subpatches and abstractions. */
+    else {
+    //
+    if (k == 1 || k == 3) {                                         /* Has been saved right before. */
+
+        pd_free (cast_pd (glist)); if (k == 3) { canvas_quit(); }  
+        
+    } else {
+        if (glist_isDirty (glist)) {
+            
+            sys_vGui ("::ui_confirm::checkClose .x%lx"
+                            " { ::ui_interface::pdsend $top save 1 }"
+                            " { ::ui_interface::pdsend $top close 1 }"
+                            " {}\n",    // --
+                            glist);
+            return;
+            
+        } else {
+            pd_free (cast_pd (glist));
+        }
+    }
+    //
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc >= 2) {
+    //
+    t_symbol *name      = atom_getSymbol (argv + 0);
+    t_symbol *directory = atom_getSymbol (argv + 1);
     
-    SET_SYMBOL (t + 0, glist_getName (root));
-    SET_SYMBOL (t + 1, environment_getDirectory (glist_getEnvironment (root)));
-    SET_FLOAT  (t + 2, destroy);
+    int destroy = (int)atom_getFloatAtIndex (2, argc, argv);
     
-    canvas_saveToFile (root, NULL, 3, t);
+    t_buffer *b = buffer_new();
+    
+    glist_serialize (glist, b);
+    
+    if (!buffer_write (b, name, directory)) {
+        post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
+        glist_setDirty (glist, 0);
+        if (destroy) { canvas_close (glist, (t_float)(destroy == 2 ? 3 : 1)); }
+    }
+    
+    buffer_free (b);
     //
     }
 }
@@ -46,30 +124,20 @@ void canvas_saveAs (t_glist *glist, t_float destroy)
                     (int)destroy);
 }
 
-void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_save (t_glist *glist, t_float destroy)
 {
-    if (argc == 3) {
-    //
-    t_symbol *name      = atom_getSymbol (argv + 0);
-    t_symbol *directory = atom_getSymbol (argv + 1);
-    t_float destroy     = atom_getFloat (argv + 2);
+    t_glist *root = glist_getTop (glist);
     
-    t_buffer *b = buffer_new();
-    
-    glist_serialize (glist, b);
-    
-    if (buffer_write (b, name, directory)) { PD_BUG; }
+    if (glist_getName (root) == &s_) { canvas_saveAs (root, destroy); }
     else {
-        post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
-        glist_setDirty (glist, 0);
-        if (destroy != 0.0) {
-            t_atom t;
-            SET_FLOAT (&t, (t_float)(destroy == 2.0 ? 3.0 : 1.0));
-            pd_message (cast_pd (glist), sym_close, 1, &t); 
-        }
-    }
+    //
+    t_atom t[3];
     
-    buffer_free (b);
+    SET_SYMBOL (t + 0, glist_getName (root));
+    SET_SYMBOL (t + 1, environment_getDirectory (glist_getEnvironment (root)));
+    SET_FLOAT  (t + 2, destroy);
+    
+    canvas_saveToFile (root, NULL, 3, t);
     //
     }
 }

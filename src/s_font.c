@@ -119,7 +119,7 @@ double font_getHostFontHeight (t_fontsize fontSize)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void font_withHostMeasured (void *dummy, t_symbol *s, int argc, t_atom *argv)
+void font_withHostMeasured (int argc, t_atom *argv)
 {
     int i, j;
     int n = argc / 3;

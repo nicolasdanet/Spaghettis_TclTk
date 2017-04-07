@@ -172,7 +172,7 @@ static t_error midi_requireDialogInitialize (void)
     return err;
 }
 
-void midi_requireDialog (void *dummy)
+void midi_requireDialog (void)
 {
     t_error err = midi_requireDialogInitialize();
     
@@ -230,7 +230,7 @@ void midi_requireDialog (void *dummy)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
+void midi_fromDialog (int argc, t_atom *argv)
 {
     t_devicesproperties midi; devices_initAsMidi (&midi);
     
