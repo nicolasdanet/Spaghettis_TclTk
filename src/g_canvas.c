@@ -28,19 +28,36 @@ t_class *canvas_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_key             (t_glist *, t_symbol *, int, t_atom *);
-void canvas_motion          (t_glist *, t_symbol *, int, t_atom *);
-void canvas_mouseDown       (t_glist *, t_symbol *, int, t_atom *);
-void canvas_mouseUp         (t_glist *, t_symbol *, int, t_atom *);
-void canvas_cut             (t_glist *);
-void canvas_copy            (t_glist *);
-void canvas_paste           (t_glist *);
-void canvas_duplicate       (t_glist *);
-void canvas_selectAll       (t_glist *);
-void canvas_close           (t_glist *, t_float);
-void canvas_save            (t_glist *, t_float);
-void canvas_saveAs          (t_glist *, t_float);
-void canvas_saveToFile      (t_glist *, t_symbol *, int, t_atom *);
+void canvas_key                     (t_glist *, t_symbol *, int, t_atom *);
+void canvas_motion                  (t_glist *, t_symbol *, int, t_atom *);
+void canvas_mouseDown               (t_glist *, t_symbol *, int, t_atom *);
+void canvas_mouseUp                 (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeObject              (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeMessage             (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeArray               (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeArrayFromDialog     (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeFloatAtom           (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeSymbolAtom          (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeComment             (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeScalar              (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeBang                (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeToggle              (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeVerticalSlider      (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeHorizontalSlider    (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeHorizontalRadio     (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeVerticalRadio       (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeVu                  (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makePanel               (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeDial                (t_glist *, t_symbol *, int, t_atom *);
+void canvas_cut                     (t_glist *);
+void canvas_copy                    (t_glist *);
+void canvas_paste                   (t_glist *);
+void canvas_duplicate               (t_glist *);
+void canvas_selectAll               (t_glist *);
+void canvas_close                   (t_glist *, t_float);
+void canvas_save                    (t_glist *, t_float);
+void canvas_saveAs                  (t_glist *, t_float);
+void canvas_saveToFile              (t_glist *, t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -826,6 +843,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeObject,            sym_obj,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeMessage,           sym_msg,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeArray,             sym_array,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeArrayFromDialog,   sym__arraydialog,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeFloatAtom,         sym_floatatom,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeSymbolAtom,        sym_symbolatom,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeComment,           sym_comment,        A_GIMME, A_NULL);
@@ -865,7 +883,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,    A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)canvas_bounds,                sym_bounds,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,   A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)canvas_fromDialog,

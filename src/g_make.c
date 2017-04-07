@@ -17,33 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
-{
-    if (glist_isOnScreen (glist)) {                                         /* Interactive creation. */
-    //
-    t_buffer *b = buffer_new();
-    int positionX = 0;
-    int positionY = 0;
-    t_atom a;
-        
-    instance_getDefaultCoordinates (glist, &positionX, &positionY);
-    glist_deselectAll (glist);
-    SET_SYMBOL (&a, name);
-    buffer_deserialize (b, 1, &a);
-    glist_objectMake (glist, positionX, positionY, 0, 1, b);
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static t_glist *canvas_newGraphOnParent (t_glist *glist,
     t_float valueStart,
     t_float valueUp,
@@ -90,7 +63,7 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     return x;
 }
 
-void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 3) {
     //
@@ -250,50 +223,73 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_makeIEM (t_glist *glist, t_symbol *name)
+{
+    if (glist_isOnScreen (glist)) {                                         /* Interactive creation. */
+    //
+    t_buffer *b = buffer_new();
+    int positionX = 0;
+    int positionY = 0;
+    t_atom a;
+        
+    instance_getDefaultCoordinates (glist, &positionX, &positionY);
+    glist_deselectAll (glist);
+    SET_SYMBOL (&a, name);
+    buffer_deserialize (b, 1, &a);
+    glist_objectMake (glist, positionX, positionY, 0, 1, b);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_makeBang (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_bng);
+    canvas_makeIEM (glist, sym_bng);
 }
 
 void canvas_makeToggle (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_tgl);
+    canvas_makeIEM (glist, sym_tgl);
 }
 
 void canvas_makeVerticalSlider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_vslider);
+    canvas_makeIEM (glist, sym_vslider);
 }
 
 void canvas_makeHorizontalSlider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_hslider);
+    canvas_makeIEM (glist, sym_hslider);
 }
 
 void canvas_makeHorizontalRadio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_hradio);
+    canvas_makeIEM (glist, sym_hradio);
 }
 
 void canvas_makeVerticalRadio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_vradio);
+    canvas_makeIEM (glist, sym_vradio);
 }
 
 void canvas_makeVu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_vu);
+    canvas_makeIEM (glist, sym_vu);
 }
 
 void canvas_makePanel (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_cnv);
+    canvas_makeIEM (glist, sym_cnv);
 }
 
 void canvas_makeDial (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemObject (glist, sym_nbx);
+    canvas_makeIEM (glist, sym_nbx);
 }
 
 // -----------------------------------------------------------------------------------------------------------

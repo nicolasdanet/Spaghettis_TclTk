@@ -16,28 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_fromArrayDialog                  (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeArray                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeObject                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeMessage                      (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeFloatAtom                    (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeSymbolAtom                   (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeComment                      (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeScalar                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeBang                         (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeToggle                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeVerticalSlider               (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeHorizontalSlider             (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeHorizontalRadio              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeVerticalRadio                (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeVu                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makePanel                        (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_makeDial                         (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_inlet         *canvas_addInlet                        (t_glist *glist, t_pd *receiver, t_symbol *s);
 t_outlet        *canvas_addOutlet                       (t_glist *glist, t_symbol *s);
 
