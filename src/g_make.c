@@ -17,6 +17,33 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
+{
+    if (glist_isOnScreen (glist)) {                                         /* Interactive creation. */
+    //
+    t_buffer *b = buffer_new();
+    int positionX = 0;
+    int positionY = 0;
+    t_atom a;
+        
+    instance_getDefaultCoordinates (glist, &positionX, &positionY);
+    glist_deselectAll (glist);
+    SET_SYMBOL (&a, name);
+    buffer_deserialize (b, 1, &a);
+    glist_objectMake (glist, positionX, positionY, 0, 1, b);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static t_glist *canvas_newGraphOnParent (t_glist *glist,
     t_float valueStart,
     t_float valueUp,
@@ -63,31 +90,6 @@ static t_glist *canvas_newGraphOnParent (t_glist *glist,
     return x;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static void canvas_makeIemObject (t_glist *glist, t_symbol *name)
-{
-    if (glist_isOnScreen (glist)) {                                         /* Interactive creation. */
-    //
-    t_buffer *b = buffer_new();
-    int positionX = 0;
-    int positionY = 0;
-    t_atom a;
-        
-    instance_getDefaultCoordinates (glist, &positionX, &positionY);
-    glist_deselectAll (glist);
-    SET_SYMBOL (&a, name);
-    buffer_deserialize (b, 1, &a);
-    glist_objectMake (glist, positionX, positionY, 0, 1, b);
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 3) {
@@ -119,21 +121,6 @@ void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv
     garray_makeObject (g, utils_hashToDollar (name), n, flags);
     
     glist_setDirty (glist, 1);
-    //
-    }
-}
-
-void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc > 1) {
-    //
-    t_symbol *name = atom_getSymbol (argv + 0);
-    t_float size   = atom_getFloat (argv + 1);
-    t_float flags  = atom_getFloatAtIndex (3, argc, argv);
-    
-    if (name != &s_) {
-        garray_makeObject (glist, name, size, flags); 
-    }
     //
     }
 }
@@ -170,6 +157,21 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 void canvas_makeMessage (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     message_makeObject (glist, s, argc, argv);
+}
+
+void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc > 1) {
+    //
+    t_symbol *name = atom_getSymbol (argv + 0);
+    t_float size   = atom_getFloat (argv + 1);
+    t_float flags  = atom_getFloatAtIndex (3, argc, argv);
+    
+    if (name != &s_) {
+        garray_makeObject (glist, name, size, flags); 
+    }
+    //
+    }
 }
 
 void canvas_makeFloatAtom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)

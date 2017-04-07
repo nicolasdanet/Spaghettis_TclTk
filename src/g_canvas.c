@@ -822,8 +822,10 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_width,                 sym_f,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_connect,               sym_connect,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_disconnect,            sym_disconnect,     A_GIMME, A_NULL);
+    
     class_addMethod (c, (t_method)canvas_makeObject,            sym_obj,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeMessage,           sym_msg,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeArray,             sym_array,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeFloatAtom,         sym_floatatom,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeSymbolAtom,        sym_symbolatom,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeComment,           sym_comment,        A_GIMME, A_NULL);
@@ -837,7 +839,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeVu,                sym_vu,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeArray,             sym_array,          A_GIMME, A_NULL);
             
     class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,         A_NULL);
 

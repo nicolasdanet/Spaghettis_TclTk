@@ -100,7 +100,7 @@
 #include "g_control.c"
 #include "g_interface.c"
 #include "g_file.c"
-#include "g_new.c"
+#include "g_make.c"
 #include "g_graph.c"
 #include "g_canvas.c"
 #include "g_message.c"
