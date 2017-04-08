@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_makeObjectFromFile (t_glist *glist, int argc, t_atom *argv)
+static void canvas_makeObjectFile (t_glist *glist, int argc, t_atom *argv)
 {
     int a = (int)atom_getFloat (argv + 0);
     int b = (int)atom_getFloat (argv + 1);
@@ -29,7 +29,7 @@ static void canvas_makeObjectFromFile (t_glist *glist, int argc, t_atom *argv)
     glist_objectMake (glist, a, b, 0, 0, t);
 }
 
-static void canvas_makeObjectFromMenu (t_glist *glist)
+static void canvas_makeObjectMenu (t_glist *glist)
 {
     if (glist_isOnScreen (glist)) {
     //
@@ -45,7 +45,54 @@ static void canvas_makeObjectFromMenu (t_glist *glist)
     }
 }
 
-static void canvas_makeIemFromMenu (t_glist *glist, t_symbol *name)
+static void canvas_makeCommentFile (t_glist *glist, int argc, t_atom *argv)
+{
+    t_object *x = (t_object *)pd_new (text_class);
+    
+    int a = (int)atom_getFloat (argv + 0);
+    int b = (int)atom_getFloat (argv + 1);
+    
+    t_buffer *t = buffer_new();
+
+    if (argc > 2) { buffer_deserialize (t, argc - 2, argv + 2); }
+    else {
+        buffer_appendSymbol (t, sym_comment);
+    }
+    
+    object_setBuffer (x, t);
+    object_setX (x, a);
+    object_setY (x, b);
+    object_setType (x, TYPE_COMMENT);
+    
+    glist_objectAdd (glist, cast_gobj (x));
+}
+
+void canvas_makeCommentMenu (t_glist *glist)
+{
+    if (glist_isOnScreen (glist)) {
+    //
+    t_object *x = (t_object *)pd_new (text_class);
+    
+    int a = instance_getDefaultX (glist);
+    int b = instance_getDefaultY (glist);
+    
+    t_buffer *t = buffer_new();
+
+    buffer_appendSymbol (t, sym_comment);
+    
+    object_setBuffer (x, t);
+    object_setX (x, a);
+    object_setY (x, b);
+    object_setType (x, TYPE_COMMENT);
+
+    glist_deselectAll (glist);
+    glist_objectAdd (glist, cast_gobj (x));
+    glist_objectSelect (glist, cast_gobj (x));
+    //
+    }
+}
+
+static void canvas_makeIemMenu (t_glist *glist, t_symbol *name)
 {
     if (glist_isOnScreen (glist)) {
     //
@@ -67,9 +114,9 @@ static void canvas_makeIemFromMenu (t_glist *glist, t_symbol *name)
 
 void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc >= 2) { canvas_makeObjectFromFile (glist, argc, argv); }
+    if (argc >= 2) { canvas_makeObjectFile (glist, argc, argv); }
     else {
-        PD_ASSERT (!argc); canvas_makeObjectFromMenu (glist);
+        canvas_makeObjectMenu (glist);
     }
 }
 
@@ -149,39 +196,9 @@ void canvas_makeSymbolAtom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_object *x = (t_object *)pd_new (text_class);
-    
-    t_atom a; SET_SYMBOL (&a, sym_comment);
-
-    object_setBuffer (x, buffer_new());
-    object_setWidth (x, 0);
-    object_setType (x, TYPE_COMMENT);
-    
-    if (argc > 1) {                                                          /* File creation. */
-        
-        object_setX (x, atom_getFloatAtIndex (0, argc, argv));
-        object_setY (x, atom_getFloatAtIndex (1, argc, argv));
-        
-        if (argc > 2) { buffer_deserialize (object_getBuffer (x), argc - 2, argv + 2); }
-        else {
-            buffer_deserialize (object_getBuffer (x), 1, &a);
-        }
-        
-        glist_objectAdd (glist, cast_gobj (x));
-        
-    } else if (glist_isOnScreen (glist)) {                                      /* Interactive creation. */
-    
-        int positionX = instance_getDefaultX (glist);
-        int positionY = instance_getDefaultY (glist);
-
-        glist_deselectAll (glist);
-            
-        object_setX (x, positionX);
-        object_setY (x, positionY);
-        
-        buffer_deserialize (object_getBuffer (x), 1, &a);
-        glist_objectAdd (glist, cast_gobj (x));
-        glist_objectSelect (glist, cast_gobj (x));
+    if (argc >= 2) { canvas_makeCommentFile (glist, argc, argv); }
+    else {
+        canvas_makeCommentMenu (glist);
     }
 }
 
@@ -210,53 +227,49 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_makeBang (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_bng);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_bng);
 }
 
 void canvas_makeToggle (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_tgl);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_tgl);
 }
 
 void canvas_makeSliderVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_vslider);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_vslider);
 }
 
 void canvas_makeSliderHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_hslider);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_hslider);
 }
 
 void canvas_makeRadioVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_vradio);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_vradio);
 }
 
 void canvas_makeRadioHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_hradio);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_hradio);
 }
 
 void canvas_makeVu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_vu);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_vu);
 }
 
 void canvas_makePanel (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_cnv);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_cnv);
 }
 
 void canvas_makeDial (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_nbx);
+    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_nbx);
 }
 
 // -----------------------------------------------------------------------------------------------------------
