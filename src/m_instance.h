@@ -188,7 +188,8 @@ void            instance_environmentResetFile           (void);
 void            instance_environmentResetArguments      (void);
 
 void            instance_setDefaultCoordinates          (t_glist *glist, int a, int b);
-void            instance_getDefaultCoordinates          (t_glist *glist, int *a, int *b);
+int             instance_getDefaultX                    (t_glist *glist);
+int             instance_getDefaultY                    (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

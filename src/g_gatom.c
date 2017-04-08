@@ -498,10 +498,9 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         
     } else {                                                                    /* Interactive creation. */
     
-        int positionX = 0;
-        int positionY = 0;
+        int positionX = instance_getDefaultX (glist);
+        int positionY = instance_getDefaultY (glist);
 
-        instance_getDefaultCoordinates (glist, &positionX, &positionY);
         glist_deselectAll (glist);
         
         object_setX (cast_object (x), positionX);

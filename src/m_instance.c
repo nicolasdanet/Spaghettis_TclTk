@@ -381,12 +381,18 @@ void instance_setDefaultCoordinates (t_glist *glist, int a, int b)
     instance_get()->pd_locate.p_y     = b;
 }
 
-void instance_getDefaultCoordinates (t_glist *glist, int *a, int *b)
+int instance_getDefaultX (t_glist *glist)
 {
     t_glist *t = instance_get()->pd_locate.p_glist;
     
-    *a = (t == glist) ? instance_get()->pd_locate.p_x : 40;
-    *b = (t == glist) ? instance_get()->pd_locate.p_y : 40;
+    return ((t == glist) ? instance_get()->pd_locate.p_x : 40);
+}
+
+int instance_getDefaultY (t_glist *glist)
+{
+    t_glist *t = instance_get()->pd_locate.p_glist;
+    
+    return ((t == glist) ? instance_get()->pd_locate.p_y : 40);
 }
 
 // -----------------------------------------------------------------------------------------------------------

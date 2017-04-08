@@ -223,10 +223,9 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
     } else if (glist_isOnScreen (glist)) {                                  /* Interactive creation. */
 
-        int positionX = 0;
-        int positionY = 0;
+        int positionX = instance_getDefaultX (glist);
+        int positionY = instance_getDefaultY (glist);
         
-        instance_getDefaultCoordinates (glist, &positionX, &positionY);
         glist_deselectAll (glist);
     
         object_setX (cast_object (x), positionX);

@@ -17,30 +17,37 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void canvas_makeObjectFile (t_glist *glist, int argc, t_atom *argv)
+{
+    int a = (int)atom_getFloat (argv + 0);
+    int b = (int)atom_getFloat (argv + 1);
+    
+    t_buffer *t = buffer_new();
+    
+    buffer_deserialize (t, argc - 2, argv + 2); glist_objectMake (glist, a, b, 0, 0, t);
+}
+
+static void canvas_makeObjectMenu (t_glist *glist)
+{
+    int a = instance_getDefaultX (glist);
+    int b = instance_getDefaultY (glist);
+    
+    t_buffer *t = buffer_new();
+    
+    glist_deselectAll (glist); glist_objectMake (glist, a, b, 0, 1, t);
+}
+
 void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    int positionX = 0;
-    int positionY = 0;
-    
-    if (argc >= 2) {                                                            /* File creation. */
-    
-        t_buffer *b = buffer_new();     /* Will be owned by the object. */
-            
-        positionX = (int)atom_getFloatAtIndex (0, argc, argv);
-        positionY = (int)atom_getFloatAtIndex (1, argc, argv);
-        
-        buffer_deserialize (b, argc - 2, argv + 2);
-        glist_objectMake (glist, positionX, positionY, 0, 0, b);
-    
-    } else if (glist_isOnScreen (glist)) {                                      /* Interactive creation. */
-        
-        t_buffer *b = buffer_new();
-            
-        instance_getDefaultCoordinates (glist, &positionX, &positionY);
-        glist_deselectAll (glist);
-        glist_objectMake (glist, positionX, positionY, 0, 1, b);
+    if (argc >= 2) { canvas_makeObjectFile (glist, argc, argv); }
+    else {
+        if (glist_isOnScreen (glist)) { PD_ASSERT (!argc); canvas_makeObjectMenu (glist); }
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_makeMessage (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
@@ -72,15 +79,13 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     
     t_rectangle r1, r2; t_bounds bounds;
     
-    int a = 0;
-    int b = 0;
+    int a = instance_getDefaultX (glist);
+    int b = instance_getDefaultY (glist);
     
     bounds_set (&bounds, 0, 1, n, -1);
     rectangle_set (&r1,  0, 0, 200, 140);
     rectangle_set (&r2,  0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT);
-    
-    instance_getDefaultCoordinates (glist, &a, &b);
-    
+        
     PD_ASSERT (name);
     
     {
@@ -124,7 +129,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     object_setWidth (x, 0);
     object_setType (x, TYPE_COMMENT);
     
-    if (argc > 1) {                                                             /* File creation. */
+    if (argc > 1) {                                                          /* File creation. */
         
         object_setX (x, atom_getFloatAtIndex (0, argc, argv));
         object_setY (x, atom_getFloatAtIndex (1, argc, argv));
@@ -138,10 +143,9 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
         
     } else if (glist_isOnScreen (glist)) {                                      /* Interactive creation. */
     
-        int positionX = 0;
-        int positionY = 0;
+        int positionX = instance_getDefaultX (glist);
+        int positionY = instance_getDefaultY (glist);
 
-        instance_getDefaultCoordinates (glist, &positionX, &positionY);
         glist_deselectAll (glist);
             
         object_setX (x, positionX);
@@ -178,20 +182,15 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_makeIEM (t_glist *glist, t_symbol *name)
 {
     if (glist_isOnScreen (glist)) {                                         /* Interactive creation. */
     //
     t_buffer *b = buffer_new();
-    int positionX = 0;
-    int positionY = 0;
+    int positionX = instance_getDefaultX (glist);
+    int positionY = instance_getDefaultY (glist);
     t_atom a;
         
-    instance_getDefaultCoordinates (glist, &positionX, &positionY);
     glist_deselectAll (glist);
     SET_SYMBOL (&a, name);
     buffer_deserialize (b, 1, &a);
@@ -199,10 +198,6 @@ static void canvas_makeIEM (t_glist *glist, t_symbol *name)
     //
     }
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void canvas_makeBang (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
@@ -214,24 +209,24 @@ void canvas_makeToggle (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     canvas_makeIEM (glist, sym_tgl);
 }
 
-void canvas_makeVerticalSlider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeSliderVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIEM (glist, sym_vslider);
 }
 
-void canvas_makeHorizontalSlider (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeSliderHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIEM (glist, sym_hslider);
 }
 
-void canvas_makeHorizontalRadio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_makeIEM (glist, sym_hradio);
-}
-
-void canvas_makeVerticalRadio (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+void canvas_makeRadioVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIEM (glist, sym_vradio);
+}
+
+void canvas_makeRadioHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    canvas_makeIEM (glist, sym_hradio);
 }
 
 void canvas_makeVu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
