@@ -18,6 +18,7 @@
 
 t_error bounds_set          (t_bounds *b, t_float left, t_float top, t_float right, t_float bottom);
 t_error bounds_setByAtoms   (t_bounds *b, int argc, t_atom *argv);
+void    bounds_setCopy      (t_bounds *b, t_bounds *toCopy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -18,6 +18,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_glist *glist_new (t_glist *owner, t_symbol *name, t_bounds *b, t_rectangle *r1, t_rectangle *r2)
+{
+    t_glist *x = (t_glist *)pd_new (canvas_class);
+    
+    x->gl_holder            = gmaster_createWithGlist (x);
+    x->gl_parent            = owner;
+    x->gl_name              = name;
+    x->gl_editor            = editor_new (x);
+    x->gl_uniqueIdentifier  = utils_unique();
+    x->gl_fontSize          = (owner ? glist_getFontSize (owner) : font_getDefaultFontSize());
+    
+    if (b)  { bounds_setCopy (&x->gl_bounds, b);             }
+    if (r1) { rectangle_setCopy (&x->gl_geometryGraph, r1);  }
+    if (r2) { rectangle_setCopy (&x->gl_geometryWindow, r2); }
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* A root has no parent and an environment. */
 /* An abstraction has a parent and an environment. */
 /* A subpatch has a parent also but no environment. */

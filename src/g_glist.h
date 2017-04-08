@@ -44,6 +44,16 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_glist         *glist_new                  (t_glist *owner, 
+                                                t_symbol *name,
+                                                t_bounds *bounds, 
+                                                t_rectangle *graph, 
+                                                t_rectangle *window);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_glist         *glist_getTop               (t_glist *g);
 t_environment   *glist_getEnvironment       (t_glist *g);
 t_glist         *glist_getView              (t_glist *g);

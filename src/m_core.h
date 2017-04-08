@@ -155,6 +155,7 @@ void        buffer_vAppend                              (t_buffer *x, char *fmt,
 void        buffer_appendAtom                           (t_buffer *x, t_atom *a);
 void        buffer_appendBuffer                         (t_buffer *x, t_buffer *y);
 void        buffer_appendFloat                          (t_buffer *x, t_float f);
+void        buffer_appendSymbol                         (t_buffer *x, t_symbol *s);
 void        buffer_appendSemicolon                      (t_buffer *x);
 t_error     buffer_resizeAtBetween                      (t_buffer *x, int n, int start, int end);
 t_error     buffer_getAtomAtIndex                       (t_buffer *x, int n, t_atom *a);
