@@ -16,90 +16,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static t_glist *canvas_newGraphOnParent (t_glist *glist,
-    t_float valueStart,
-    t_float valueUp,
-    t_float valueEnd,
-    t_float valueDown,
-    t_float topLeftX,
-    t_float topLeftY,
-    t_float width,
-    t_float height)
-{
-    t_glist *x = (t_glist *)pd_new (canvas_class);
-    
-    t_glist *current = instance_contextGetCurrent();
-    t_fontsize fontSize = current ? glist_getFontSize (current) : font_getDefaultFontSize();
-
-    object_setBuffer (cast_object (x), buffer_new());
-    object_setX (cast_object (x), topLeftX);
-    object_setY (cast_object (x), topLeftY);
-    object_setType (cast_object (x), TYPE_OBJECT);
-    
-    x->gl_holder            = gmaster_createWithGlist (x);
-    x->gl_parent            = glist;
-    x->gl_editor            = editor_new (x);
-    x->gl_name              = utils_getDefaultBindName (canvas_class, sym__graph);
-    x->gl_uniqueIdentifier  = utils_unique();
-    x->gl_fontSize          = fontSize;
-    
-    glist_setGraphOnParent (x, 1);
-    
-    bounds_set (glist_getBounds (x), valueStart, valueUp, valueEnd, valueDown);
-    rectangle_setByWidthAndHeight (glist_getGraphGeometry (x), 0, 0, width, height); 
-    rectangle_set (glist_getWindowGeometry (x), 
-        0,
-        WINDOW_HEADER,
-        WINDOW_WIDTH,
-        WINDOW_HEIGHT + WINDOW_HEADER);
-    
-    glist_bind (x);
-    
-    buffer_vAppend (object_getBuffer (cast_object (x)), "s", sym_graph);
-    
-    glist_objectAdd (glist, cast_gobj (x));
-    
-    return x;
-}
-
-void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == 3) {
-    //
-    t_symbol *name = atom_getSymbol (argv + 0);
-    t_float size   = atom_getFloat (argv + 1);
-    t_float flags  = atom_getFloat (argv + 2);
-    
-    t_float n = (t_float)PD_MAX (1.0, size);
-    int positionX = 0;
-    int positionY = 0;
-    t_glist *g = NULL;
-    
-    PD_ASSERT (name);
-    
-    instance_getDefaultCoordinates (glist, &positionX, &positionY);
-    
-    { 
-        t_float a      = (t_float)positionX;
-        t_float b      = (t_float)positionY;
-        t_float start  = (t_float)0.0;
-        t_float up     = (t_float)1.0;
-        t_float width  = (t_float)200.0;
-        t_float height = (t_float)140.0;
-        
-        g = canvas_newGraphOnParent (glist, start, up, n, -up, a, b, width, height);
-    }
-    
-    garray_makeObject (g, utils_hashToDollar (name), n, flags);
-    
-    glist_setDirty (glist, 1);
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -143,6 +59,62 @@ void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if (name != &s_) {
         garray_makeObject (glist, name, size, flags); 
     }
+    //
+    }
+}
+
+void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 3) {
+    //
+    t_symbol *name = atom_getSymbol (argv + 0);
+    t_float size   = atom_getFloat (argv + 1);
+    t_float flags  = atom_getFloat (argv + 2);
+    
+    t_float width  = (t_float)200.0;
+    t_float height = (t_float)140.0;
+    t_float start  = (t_float)0.0;
+    t_float up     = (t_float)1.0;
+    t_float n      = (t_float)PD_MAX (1.0, size);
+    
+    int a = 0;
+    int b = 0;
+    
+    PD_ASSERT (name);
+    
+    instance_getDefaultCoordinates (glist, &a, &b);
+    
+    t_glist *x = (t_glist *)pd_new (canvas_class);
+    
+    x->gl_holder            = gmaster_createWithGlist (x);
+    x->gl_parent            = glist;
+    x->gl_name              = utils_getDefaultBindName (canvas_class, sym__graph);
+    x->gl_editor            = editor_new (x);
+    x->gl_uniqueIdentifier  = utils_unique();
+    x->gl_fontSize          = glist_getFontSize (glist);
+    
+    bounds_set (glist_getBounds (x), start, up, n, -up);
+    
+    rectangle_setByWidthAndHeight (glist_getGraphGeometry (x), 0, 0, width, height);
+    
+    rectangle_set (glist_getWindowGeometry (x), 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT);
+    
+    glist_setGraphOnParent (x, 1);
+    
+    object_setBuffer (cast_object (x), buffer_new());
+    object_setX (cast_object (x), a);
+    object_setY (cast_object (x), b);
+    object_setType (cast_object (x), TYPE_OBJECT);
+    
+    buffer_vAppend (object_getBuffer (cast_object (x)), "s", sym_graph);
+    
+    glist_bind (x);
+    
+    glist_objectAdd (glist, cast_gobj (x));
+    
+    garray_makeObject (x, utils_hashToDollar (name), n, flags);
+    
+    glist_setDirty (glist, 1);
     //
     }
 }

@@ -741,6 +741,8 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
         width       = (int)atom_getFloatAtIndex (2, argc, argv);
         height      = (int)atom_getFloatAtIndex (3, argc, argv);
         fontSize    = (int)atom_getFloatAtIndex (4, argc, argv);
+        
+        fontSize    = font_getNearestValidFontSize (fontSize);
     }
     
     /* Subpatch. */
@@ -770,7 +772,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_environment   = instance_environmentFetchIfAny();
     x->gl_editor        = editor_new (x);
     x->gl_name          = (name != &s_ ? name : environment_getFileName (x->gl_environment));
-    x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
+    x->gl_fontSize      = fontSize;
     
     bounds_set (glist_getBounds (x), (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
     rectangle_set (glist_getWindowGeometry (x), topLeftX, topLeftY, topLeftX + width, topLeftY + height);
