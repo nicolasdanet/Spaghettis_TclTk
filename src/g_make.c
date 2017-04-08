@@ -17,31 +17,47 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_makeObjectFile (t_glist *glist, int argc, t_atom *argv)
+static void canvas_makeObjectFromFile (t_glist *glist, int argc, t_atom *argv)
 {
     int a = (int)atom_getFloat (argv + 0);
     int b = (int)atom_getFloat (argv + 1);
     
     t_buffer *t = buffer_new();
     
-    buffer_deserialize (t, argc - 2, argv + 2); glist_objectMake (glist, a, b, 0, 0, t);
+    buffer_deserialize (t, argc - 2, argv + 2); 
+    
+    glist_objectMake (glist, a, b, 0, 0, t);
 }
 
-static void canvas_makeObjectMenu (t_glist *glist)
+static void canvas_makeObjectFromMenu (t_glist *glist)
 {
+    if (glist_isOnScreen (glist)) {
+    //
     int a = instance_getDefaultX (glist);
     int b = instance_getDefaultY (glist);
     
     t_buffer *t = buffer_new();
     
-    glist_deselectAll (glist); glist_objectMake (glist, a, b, 0, 1, t);
+    glist_deselectAll (glist); 
+    
+    glist_objectMake (glist, a, b, 0, 1, t);
+    //
+    }
 }
 
-void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+static void canvas_makeIemFromMenu (t_glist *glist, t_symbol *name)
 {
-    if (argc >= 2) { canvas_makeObjectFile (glist, argc, argv); }
-    else {
-        if (glist_isOnScreen (glist)) { PD_ASSERT (!argc); canvas_makeObjectMenu (glist); }
+    if (glist_isOnScreen (glist)) {
+    //
+    int a = instance_getDefaultX (glist);
+    int b = instance_getDefaultY (glist);
+    
+    t_buffer *t = buffer_new();
+    
+    glist_deselectAll (glist); buffer_appendSymbol (t, name); 
+    
+    glist_objectMake (glist, a, b, 0, 1, t);
+    //
     }
 }
 
@@ -49,10 +65,20 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc >= 2) { canvas_makeObjectFromFile (glist, argc, argv); }
+    else {
+        PD_ASSERT (!argc); canvas_makeObjectFromMenu (glist);
+    }
+}
+
 void canvas_makeMessage (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     message_makeObject (glist, s, argc, argv);
 }
+
+/* Note that the third argument is not used. */
 
 void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
@@ -61,6 +87,8 @@ void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     t_symbol *name = atom_getSymbol (argv + 0);
     t_float size   = atom_getFloat (argv + 1);
     t_float flags  = atom_getFloatAtIndex (3, argc, argv);
+    
+    PD_ASSERT (argc < 3 || atom_getSymbolAtIndex (2, argc, argv) == sym_float);
     
     if (name != &s_) {
         garray_makeObject (glist, name, size, flags); 
@@ -182,66 +210,53 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void canvas_makeIEM (t_glist *glist, t_symbol *name)
-{
-    if (glist_isOnScreen (glist)) {                                         /* Interactive creation. */
-    //
-    t_buffer *b = buffer_new();
-    int positionX = instance_getDefaultX (glist);
-    int positionY = instance_getDefaultY (glist);
-    t_atom a;
-        
-    glist_deselectAll (glist);
-    SET_SYMBOL (&a, name);
-    buffer_deserialize (b, 1, &a);
-    glist_objectMake (glist, positionX, positionY, 0, 1, b);
-    //
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_makeBang (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_bng);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_bng);
 }
 
 void canvas_makeToggle (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_tgl);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_tgl);
 }
 
 void canvas_makeSliderVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_vslider);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_vslider);
 }
 
 void canvas_makeSliderHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_hslider);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_hslider);
 }
 
 void canvas_makeRadioVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_vradio);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_vradio);
 }
 
 void canvas_makeRadioHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_hradio);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_hradio);
 }
 
 void canvas_makeVu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_vu);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_vu);
 }
 
 void canvas_makePanel (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_cnv);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_cnv);
 }
 
 void canvas_makeDial (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIEM (glist, sym_nbx);
+    PD_ASSERT (!argc); canvas_makeIemFromMenu (glist, sym_nbx);
 }
 
 // -----------------------------------------------------------------------------------------------------------

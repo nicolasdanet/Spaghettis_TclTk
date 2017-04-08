@@ -269,6 +269,7 @@ t_symbol *sym_file__dot____percent__d;
 t_symbol *sym_filledcurve;
 t_symbol *sym_filledpolygon;
 t_symbol *sym_flashtime;
+t_symbol *sym_float;
 t_symbol *sym_floatatom;
 t_symbol *sym_floatinlet;
 t_symbol *sym_flush;
@@ -850,6 +851,7 @@ void symbols_initialize (void)
     sym_filledcurve                             = gensym ("filledcurve");
     sym_filledpolygon                           = gensym ("filledpolygon");
     sym_flashtime                               = gensym ("flashtime");
+    sym_float                                   = gensym ("float");
     sym_floatatom                               = gensym ("floatatom");
     sym_floatinlet                              = gensym ("floatinlet");
     sym_flush                                   = gensym ("flush");

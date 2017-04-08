@@ -269,6 +269,7 @@ extern t_symbol *sym_file__dot____percent__d;
 extern t_symbol *sym_filledcurve;
 extern t_symbol *sym_filledpolygon;
 extern t_symbol *sym_flashtime;
+extern t_symbol *sym_float;
 extern t_symbol *sym_floatatom;
 extern t_symbol *sym_floatinlet;
 extern t_symbol *sym_flush;
