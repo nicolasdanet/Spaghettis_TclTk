@@ -77,7 +77,7 @@ void instance_stackPopPatch (t_glist *glist, int visible)
 {
     instance_stackPop (glist);
     
-    canvas_resortInlets (glist); canvas_resortOutlets (glist);
+    glist_inletResort (glist); glist_outletResort (glist);
     
     glist_loadEnd (glist);
     

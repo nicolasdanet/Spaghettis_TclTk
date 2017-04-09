@@ -81,7 +81,7 @@ static void *voutlet_newSignal (t_symbol *s)
     x->vo_buffer     = (t_sample *)PD_MEMORY_GET (0);
     x->vo_bufferEnd  = x->vo_buffer;
     x->vo_owner      = instance_contextGetCurrent();
-    x->vo_outlet     = canvas_addOutlet (x->vo_owner, &s_signal);
+    x->vo_outlet     = glist_outletAdd (x->vo_owner, &s_signal);
     
     inlet_newSignal (cast_object (x));
 
@@ -93,7 +93,7 @@ static void *voutlet_new (t_symbol *s)
     t_voutlet *x = (t_voutlet *)pd_new (voutlet_class);
     
     x->vo_owner  = instance_contextGetCurrent();
-    x->vo_outlet = canvas_addOutlet (x->vo_owner, &s_anything);
+    x->vo_outlet = glist_outletAdd (x->vo_owner, &s_anything);
     
     inlet_new (cast_object (x), cast_pd (x), NULL, NULL);
 
@@ -102,7 +102,7 @@ static void *voutlet_new (t_symbol *s)
 
 static void voutlet_free (t_voutlet *x)
 {
-    canvas_removeOutlet (x->vo_owner, x->vo_outlet);
+    glist_outletRemove (x->vo_owner, x->vo_outlet);
     
     if (x->vo_buffer) { PD_MEMORY_FREE (x->vo_buffer); }
     

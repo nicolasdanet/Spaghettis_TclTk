@@ -16,15 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet         *canvas_addInlet                        (t_glist *glist, t_pd *receiver, t_symbol *s);
-t_outlet        *canvas_addOutlet                       (t_glist *glist, t_symbol *s);
-
-void            canvas_removeInlet                      (t_glist *glist, t_inlet *inlet);
-void            canvas_removeOutlet                     (t_glist *glist, t_outlet *outlet);
-
-void            canvas_resortInlets                     (t_glist *glist);
-void            canvas_resortOutlets                    (t_glist *glist);
-
 void            canvas_bounds                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
                                                             
 t_float         canvas_valueToPixelX                    (t_glist *glist, t_float f);

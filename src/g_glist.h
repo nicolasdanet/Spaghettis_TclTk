@@ -140,6 +140,23 @@ void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_inlet     *glist_inletAdd                 (t_glist *g, t_pd *receiver, t_symbol *s);
+
+void        glist_inletRemove               (t_glist *g, t_inlet *inlet);
+void        glist_inletResort               (t_glist *g);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_outlet    *glist_outletAdd                (t_glist *g, t_symbol *s);
+
+void        glist_outletRemove              (t_glist *g, t_outlet *outlet);
+void        glist_outletResort              (t_glist *g);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void    glist_lineSelect                    (t_glist *g, t_traverser *t);
 void    glist_lineDeselect                  (t_glist *g);
 void    glist_lineDeleteSelected            (t_glist *g);

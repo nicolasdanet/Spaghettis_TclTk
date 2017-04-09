@@ -82,7 +82,7 @@ static void *vinlet_newSignal (t_symbol *s)
     x->vi_bufferEnd    = x->vi_buffer;
     x->vi_owner        = instance_contextGetCurrent();
     x->vi_outlet       = outlet_new (cast_object (x), &s_signal);
-    x->vi_inlet        = canvas_addInlet (x->vi_owner, cast_pd (x), &s_signal);
+    x->vi_inlet        = glist_inletAdd (x->vi_owner, cast_pd (x), &s_signal);
     x->vi_directSignal = NULL;
     
     return x;
@@ -94,14 +94,14 @@ static void *vinlet_new (t_symbol *s)
     
     x->vi_owner  = instance_contextGetCurrent();
     x->vi_outlet = outlet_new (cast_object (x), &s_anything);
-    x->vi_inlet  = canvas_addInlet (x->vi_owner, cast_pd (x), NULL);
+    x->vi_inlet  = glist_inletAdd (x->vi_owner, cast_pd (x), NULL);
     
     return x;
 }
 
 static void vinlet_free (t_vinlet *x)
 {
-    canvas_removeInlet (x->vi_owner, x->vi_inlet);
+    glist_inletRemove (x->vi_owner, x->vi_inlet);
     
     if (x->vi_buffer) { PD_MEMORY_FREE (x->vi_buffer); }
     

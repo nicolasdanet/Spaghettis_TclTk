@@ -314,9 +314,9 @@ void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
         isDirty = 1;
     }
     
-    if (resortInlets)  { canvas_resortInlets (glist);  }
-    if (resortOutlets) { canvas_resortOutlets (glist); }
-    if (isDirty)       { glist_setDirty (glist, 1);    }
+    if (resortInlets)  { glist_inletResort (glist);  }
+    if (resortOutlets) { glist_outletResort (glist); }
+    if (isDirty)       { glist_setDirty (glist, 1);  }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -229,47 +229,47 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_makeBang (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_bng);
+    canvas_makeIemMenu (glist, sym_bng);
 }
 
 void canvas_makeToggle (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_tgl);
+    canvas_makeIemMenu (glist, sym_tgl);
 }
 
 void canvas_makeSliderVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_vslider);
+    canvas_makeIemMenu (glist, sym_vslider);
 }
 
 void canvas_makeSliderHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_hslider);
+    canvas_makeIemMenu (glist, sym_hslider);
 }
 
 void canvas_makeRadioVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_vradio);
+    canvas_makeIemMenu (glist, sym_vradio);
 }
 
 void canvas_makeRadioHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_hradio);
+    canvas_makeIemMenu (glist, sym_hradio);
 }
 
 void canvas_makeVu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_vu);
+    canvas_makeIemMenu (glist, sym_vu);
 }
 
 void canvas_makePanel (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_cnv);
+    canvas_makeIemMenu (glist, sym_cnv);
 }
 
 void canvas_makeDial (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (!argc); canvas_makeIemMenu (glist, sym_nbx);
+    canvas_makeIemMenu (glist, sym_nbx);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -255,8 +255,8 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
     //
     }
     
-    if (pd_class (x) == vinlet_class)  { canvas_resortInlets (glist_getView (glist));  }
-    if (pd_class (x) == voutlet_class) { canvas_resortOutlets (glist_getView (glist)); }
+    if (pd_class (x) == vinlet_class)  { glist_inletResort (glist_getView (glist));  }
+    if (pd_class (x) == voutlet_class) { glist_outletResort (glist_getView (glist)); }
     //
     }
     
@@ -527,6 +527,184 @@ void glist_objectDeleteLinesByInlet (t_glist *glist, t_object *o, t_inlet *inlet
 void glist_objectDeleteLinesByOutlet (t_glist *glist, t_object *o, t_outlet *outlet)
 {
     glist_objectDeleteLinesByInlets (glist, o, NULL, outlet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_inlet *glist_inletAdd (t_glist *glist, t_pd *receiver, t_symbol *s)
+{
+    t_inlet *inlet = inlet_new (cast_object (glist), receiver, s, NULL);
+    
+    if (!glist_isLoading (glist)) {
+    
+        if (glist_hasParentOnScreen (glist)) {
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
+        }
+    
+        glist_inletResort (glist);
+    }
+    
+    return inlet;
+}
+
+t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
+{
+    t_outlet *outlet = outlet_new (cast_object (glist), s);
+    
+    if (!glist_isLoading (glist)) {
+    
+        if (glist_hasParentOnScreen (glist)) {
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
+        }
+        
+        glist_outletResort (glist);
+    }
+    
+    return outlet;
+}
+
+void glist_inletRemove (t_glist *glist, t_inlet *inlet)
+{
+    t_glist *o = glist_getParent (glist);
+    
+    int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
+    
+    if (o) { glist_objectDeleteLinesByInlet (o, cast_object (glist), inlet); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
+        
+    inlet_free (inlet);
+    
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
+    if (o) { glist_updateLinesForObject (o, cast_object (glist)); }
+}
+
+void glist_outletRemove (t_glist *glist, t_outlet *outlet)
+{
+    t_glist *o = glist_getParent (glist);
+    
+    int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
+    
+    if (o) { glist_objectDeleteLinesByOutlet (o, cast_object (glist), outlet); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
+
+    outlet_free (outlet);
+    
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
+    if (o) { glist_updateLinesForObject (o, cast_object (glist)); }
+}
+
+void glist_inletResort (t_glist *glist)
+{
+    int numberOfInlets = 0;
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    // 
+    if (pd_class (y) == vinlet_class) { numberOfInlets++; }
+    //
+    }
+
+    if (numberOfInlets > 1) {
+    //
+    int i;
+    t_gobj **inlets = (t_gobj **)PD_MEMORY_GET (numberOfInlets * sizeof (t_gobj *));
+    t_gobj **t = inlets;
+        
+    for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == vinlet_class) { *t++ = y; } }
+    
+    /* Take the most right inlet and put it first. */
+    /* Remove it from the list. */
+    /* Do it again. */
+    
+    for (i = numberOfInlets; i > 0; i--) {
+    //
+    int j = numberOfInlets;
+    int maximumX = -PD_INT_MAX;
+    t_gobj **mostRightObject = NULL;
+    
+    for (t = inlets; j--; t++) {
+        if (*t) {
+            t_rectangle r;
+            gobj_getRectangle (*t, glist, &r);
+            if (rectangle_getTopLeftX (&r) > maximumX) {
+                maximumX = rectangle_getTopLeftX (&r); mostRightObject = t; 
+            }
+        }
+    }
+    
+    if (mostRightObject) {
+        inlet_moveFirst (vinlet_getInlet (cast_pd (*mostRightObject))); *mostRightObject = NULL;
+    }
+    //
+    }
+    
+    PD_MEMORY_FREE (inlets);
+    
+    if (glist_hasParentOnScreen (glist)) {
+        glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
+    }
+    //
+    }
+}
+
+void glist_outletResort (t_glist *glist)
+{
+    int numberOfOutlets = 0;
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    if (pd_class (y) == voutlet_class) { numberOfOutlets++; }
+    //
+    }
+
+    if (numberOfOutlets > 1) {
+    //
+    int i;
+    t_gobj **outlets = (t_gobj **)PD_MEMORY_GET (numberOfOutlets * sizeof (t_gobj *));
+    t_gobj **t = outlets;
+        
+    for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == voutlet_class) { *t++ = y; } }
+    
+    /* Take the most right outlet and put it first. */
+    /* Remove it from the list. */
+    /* Do it again. */
+    
+    for (i = numberOfOutlets; i > 0; i--) {
+    //
+    int j = numberOfOutlets;
+    int maximumX = -PD_INT_MAX;
+    t_gobj **mostRightObject = NULL;
+    
+    for (t = outlets; j--; t++) {
+        if (*t) {
+            t_rectangle r;
+            gobj_getRectangle (*t, glist, &r);
+            if (rectangle_getTopLeftX (&r) > maximumX) {
+                maximumX = rectangle_getTopLeftX (&r); mostRightObject = t; 
+            }
+        }
+    }
+    
+    if (mostRightObject) {
+        outlet_moveFirst (voutlet_getOutlet (cast_pd (*mostRightObject))); *mostRightObject = NULL;
+    }
+    //
+    }
+    
+    PD_MEMORY_FREE (outlets);
+    
+    if (glist_hasParentOnScreen (glist)) {
+        glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
