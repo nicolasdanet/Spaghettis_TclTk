@@ -533,9 +533,9 @@ void glist_objectDeleteLinesByOutlet (t_glist *glist, t_object *o, t_outlet *out
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet *glist_inletAdd (t_glist *glist, t_pd *receiver, t_symbol *s)
+t_inlet *glist_inletAdd (t_glist *glist, t_pd *receiver, int isSignal)
 {
-    t_inlet *inlet = inlet_new (cast_object (glist), receiver, s, NULL);
+    t_inlet *inlet = inlet_new (cast_object (glist), receiver, (isSignal ? &s_signal : NULL), NULL);
     
     if (!glist_isLoading (glist)) {
     
@@ -551,24 +551,6 @@ t_inlet *glist_inletAdd (t_glist *glist, t_pd *receiver, t_symbol *s)
     return inlet;
 }
 
-t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
-{
-    t_outlet *outlet = outlet_new (cast_object (glist), s);
-    
-    if (!glist_isLoading (glist)) {
-    
-        if (glist_hasParentOnScreen (glist)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
-        }
-        
-        glist_outletResort (glist);
-    }
-    
-    return outlet;
-}
-
 void glist_inletRemove (t_glist *glist, t_inlet *inlet)
 {
     t_glist *o = glist_getParent (glist);
@@ -579,21 +561,6 @@ void glist_inletRemove (t_glist *glist, t_inlet *inlet)
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
         
     inlet_free (inlet);
-    
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
-    if (o) { glist_updateLinesForObject (o, cast_object (glist)); }
-}
-
-void glist_outletRemove (t_glist *glist, t_outlet *outlet)
-{
-    t_glist *o = glist_getParent (glist);
-    
-    int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
-    
-    if (o) { glist_objectDeleteLinesByOutlet (o, cast_object (glist), outlet); }
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
-
-    outlet_free (outlet);
     
     if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
     if (o) { glist_updateLinesForObject (o, cast_object (glist)); }
@@ -651,6 +618,39 @@ void glist_inletResort (t_glist *glist)
     }
     //
     }
+}
+
+t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
+{
+    t_outlet *outlet = outlet_new (cast_object (glist), s);
+    
+    if (!glist_isLoading (glist)) {
+    
+        if (glist_hasParentOnScreen (glist)) {
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
+        }
+        
+        glist_outletResort (glist);
+    }
+    
+    return outlet;
+}
+
+void glist_outletRemove (t_glist *glist, t_outlet *outlet)
+{
+    t_glist *o = glist_getParent (glist);
+    
+    int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
+    
+    if (o) { glist_objectDeleteLinesByOutlet (o, cast_object (glist), outlet); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
+
+    outlet_free (outlet);
+    
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
+    if (o) { glist_updateLinesForObject (o, cast_object (glist)); }
 }
 
 void glist_outletResort (t_glist *glist)

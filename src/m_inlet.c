@@ -274,7 +274,7 @@ t_inlet *inlet_new (t_object *owner, t_pd *receiver, t_symbol *type, t_symbol *m
     x->i_type     = type;
     x->i_next     = NULL;
     
-    if (type != &s_signal) { x->i_un.i_method = method; }
+    if (type != &s_signal) { x->i_un.i_method = method; PD_ASSERT (!type || method); }
     else {
         x->i_un.i_signal = (t_float)0.0; 
     }

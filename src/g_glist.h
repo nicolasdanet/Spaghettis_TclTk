@@ -140,7 +140,7 @@ void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet     *glist_inletAdd                 (t_glist *g, t_pd *receiver, t_symbol *s);
+t_inlet     *glist_inletAdd                 (t_glist *g, t_pd *receiver, int isSignal);
 
 void        glist_inletRemove               (t_glist *g, t_inlet *inlet);
 void        glist_inletResort               (t_glist *g);
