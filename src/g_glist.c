@@ -344,17 +344,16 @@ void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
 
 void glist_objectRemove (t_glist *glist, t_gobj *y)
 {
-    t_glist *view     = glist_getView (glist);
     int needToRebuild = class_hasDSP (pd_class (y));
     int needToRepaint = class_hasPainterWidgetBehavior (pd_class (y)) || (pd_class (y) == struct_class);
     
-    glist_deleteBegin (view);
+    glist_deleteBegin (glist);
     
     editor_motionUnset (glist_getEditor (glist), y);
     
     if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
     if (needToRepaint) { paint_erase(); }
-    if (glist_isOnScreen (view)) { gobj_visibilityChanged (y, glist, 0); }
+    if (glist_isOnScreen (glist)) { gobj_visibilityChanged (y, glist, 0); }
     
     {
         t_box *box = NULL;
@@ -375,7 +374,7 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
     
     glist->gl_uniqueIdentifier = utils_unique();    /* Invalidate all pointers. */
     
-    glist_deleteEnd (view);
+    glist_deleteEnd (glist);
 }
 
 /* If needed the DSP is suspended to avoid multiple rebuilds. */
@@ -559,17 +558,17 @@ t_inlet *glist_inletAdd (t_glist *glist, t_pd *receiver, int isSignal)
 
 void glist_inletRemove (t_glist *glist, t_inlet *inlet)
 {
-    t_glist *o = glist_getParent (glist);
+    t_glist *owner = glist_getParent (glist);
     
-    int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
+    int redraw = (owner && !glist_isDeleting (owner) && glist_isOnScreen (owner));
     
-    if (o) { glist_objectDeleteLinesByInlet (o, cast_object (glist), inlet); }
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
+    if (owner)  { glist_objectDeleteLinesByInlet (owner, cast_object (glist), inlet); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 0); }
         
     inlet_free (inlet);
     
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
-    if (o) { glist_updateLinesForObject (o, cast_object (glist)); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 1); }
+    if (owner)  { glist_updateLinesForObject (owner, cast_object (glist)); }
 }
 
 void glist_inletResort (t_glist *glist)

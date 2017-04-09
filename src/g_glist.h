@@ -265,12 +265,12 @@ static inline void glist_loadEnd (t_glist *g)
 
 static inline void glist_deleteBegin (t_glist *g)
 {
-    g->gl_isDeleting++;
+    g->gl_isDeleting = 1;
 }
 
 static inline void glist_deleteEnd (t_glist *g)
 {
-    g->gl_isDeleting--;
+    g->gl_isDeleting = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -372,7 +372,7 @@ static inline int glist_isLoading (t_glist *g)
 
 static inline int glist_isDeleting (t_glist *g)
 {
-    return (g->gl_isDeleting > 0);
+    return g->gl_isDeleting;
 }
 
 static inline int glist_isSelected (t_glist *g)
