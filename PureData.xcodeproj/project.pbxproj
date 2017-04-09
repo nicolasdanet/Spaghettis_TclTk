@@ -144,6 +144,8 @@
 		3762D2BD1E051E2700385DB9 /* d_writesf.c in Sources */ = {isa = PBXBuildFile; fileRef = 3762D2BC1E051E2700385DB9 /* d_writesf.c */; };
 		3762D2FD1E05308C00385DB9 /* d_readsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 3762D2FC1E05308C00385DB9 /* d_readsf.c */; };
 		3762D32E1E0531D900385DB9 /* d_soundfiler.c in Sources */ = {isa = PBXBuildFile; fileRef = 3762D32D1E0531D900385DB9 /* d_soundfiler.c */; };
+		37640DA01E9A667400B7B901 /* g_behavior.c in Sources */ = {isa = PBXBuildFile; fileRef = 37640D9E1E9A667400B7B901 /* g_behavior.c */; };
+		37640DA11E9A667400B7B901 /* g_geometry.c in Sources */ = {isa = PBXBuildFile; fileRef = 37640D9F1E9A667400B7B901 /* g_geometry.c */; };
 		376963301DBFB4C4001B91B5 /* d_perform.c in Sources */ = {isa = PBXBuildFile; fileRef = 3769632F1DBFB4C4001B91B5 /* d_perform.c */; };
 		3770AD8A1DC2338300ADAE26 /* d_block.c in Sources */ = {isa = PBXBuildFile; fileRef = 3770AD891DC2338300ADAE26 /* d_block.c */; };
 		3770AE001DC2396E00ADAE26 /* d_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 3770ADFF1DC2396E00ADAE26 /* d_dsp.c */; };
@@ -183,7 +185,6 @@
 		378972241C4F716800263434 /* g_bang.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C01C4F716700263434 /* g_bang.c */; };
 		378972251C4F716800263434 /* g_canvas.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C11C4F716700263434 /* g_canvas.c */; };
 		378972261C4F716800263434 /* g_edit.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C31C4F716700263434 /* g_edit.c */; };
-		378972271C4F716800263434 /* g_graph.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C41C4F716700263434 /* g_graph.c */; };
 		3789722A1C4F716800263434 /* g_slider.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C71C4F716700263434 /* g_slider.c */; };
 		3789722B1C4F716800263434 /* g_iem.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C81C4F716700263434 /* g_iem.c */; };
 		3789722D1C4F716800263434 /* g_panel.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CB1C4F716700263434 /* g_panel.c */; };
@@ -544,6 +545,8 @@
 		3762D2BC1E051E2700385DB9 /* d_writesf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_writesf.c; path = src/d_writesf.c; sourceTree = "<group>"; };
 		3762D2FC1E05308C00385DB9 /* d_readsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_readsf.c; path = src/d_readsf.c; sourceTree = "<group>"; };
 		3762D32D1E0531D900385DB9 /* d_soundfiler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_soundfiler.c; path = src/d_soundfiler.c; sourceTree = "<group>"; };
+		37640D9E1E9A667400B7B901 /* g_behavior.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_behavior.c; path = src/g_behavior.c; sourceTree = "<group>"; };
+		37640D9F1E9A667400B7B901 /* g_geometry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_geometry.c; path = src/g_geometry.c; sourceTree = "<group>"; };
 		376962D01DBFAF50001B91B5 /* d_dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_dsp.h; path = src/d_dsp.h; sourceTree = "<group>"; };
 		3769632F1DBFB4C4001B91B5 /* d_perform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_perform.c; path = src/d_perform.c; sourceTree = "<group>"; };
 		376CF0681E4CBB0400B17967 /* s_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_apis.h; path = src/s_apis.h; sourceTree = "<group>"; };
@@ -632,7 +635,6 @@
 		378971C11C4F716700263434 /* g_canvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_canvas.c; path = src/g_canvas.c; sourceTree = "<group>"; };
 		378971C21C4F716700263434 /* g_graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_graphics.h; path = src/g_graphics.h; sourceTree = "<group>"; };
 		378971C31C4F716700263434 /* g_edit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_edit.c; path = src/g_edit.c; sourceTree = "<group>"; };
-		378971C41C4F716700263434 /* g_graph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_graph.c; path = src/g_graph.c; sourceTree = "<group>"; };
 		378971C71C4F716700263434 /* g_slider.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_slider.c; path = src/g_slider.c; sourceTree = "<group>"; };
 		378971C81C4F716700263434 /* g_iem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_iem.c; path = src/g_iem.c; sourceTree = "<group>"; };
 		378971C91C4F716700263434 /* g_iem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_iem.h; path = src/g_iem.h; sourceTree = "<group>"; };
@@ -1310,7 +1312,7 @@
 				37321C9B1E9244F2009C1EE0 /* g_interface.c */,
 				378971CD1C4F716700263434 /* g_file.c */,
 				377899481CFED1B10056BE61 /* g_make.c */,
-				378971C41C4F716700263434 /* g_graph.c */,
+				37640D9E1E9A667400B7B901 /* g_behavior.c */,
 				378971C11C4F716700263434 /* g_canvas.c */,
 			);
 			name = Canvas;
@@ -1468,6 +1470,7 @@
 				370939431CC92BF300827F75 /* g_draw.c */,
 				379920471CD2649B00750527 /* g_select.c */,
 				378971C31C4F716700263434 /* g_edit.c */,
+				37640D9F1E9A667400B7B901 /* g_geometry.c */,
 				374A76321CF5FA81001A57EB /* g_serialize.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
 				3735D9701E5995B300858959 /* Objects */,
@@ -1883,7 +1886,6 @@
 				378972241C4F716800263434 /* g_bang.c in Sources */,
 				378972251C4F716800263434 /* g_canvas.c in Sources */,
 				378972261C4F716800263434 /* g_edit.c in Sources */,
-				378972271C4F716800263434 /* g_graph.c in Sources */,
 				3789722A1C4F716800263434 /* g_slider.c in Sources */,
 				3789722B1C4F716800263434 /* g_iem.c in Sources */,
 				3789722D1C4F716800263434 /* g_panel.c in Sources */,
@@ -2172,6 +2174,8 @@
 				373F12291E82548300508FE3 /* h_snippet.c in Sources */,
 				37321C9C1E9244F2009C1EE0 /* g_control.c in Sources */,
 				37321C9D1E9244F2009C1EE0 /* g_interface.c in Sources */,
+				37640DA01E9A667400B7B901 /* g_behavior.c in Sources */,
+				37640DA11E9A667400B7B901 /* g_geometry.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

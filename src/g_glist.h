@@ -27,7 +27,7 @@ struct _glist {
     t_unique        gl_uniqueIdentifier;
     t_bounds        gl_bounds;
     t_rectangle     gl_geometryGraph;
-    t_rectangle     gl_geometryWindow;
+    t_rectangle     gl_geometryWindow;                      /* Screen coordinates. */
     t_fontsize      gl_fontSize;
     int             gl_hasWindow;
     int             gl_isMapped;
@@ -211,6 +211,20 @@ void    glist_eraseAllCommentBars           (t_glist *g);
 void    glist_eraseLasso                    (t_glist *g);
 void    glist_eraseTemporary                (t_glist *g);
 void    glist_eraseLine                     (t_glist *g, t_cord *c);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float glist_pixelToValueX                 (t_glist *g, t_float f);
+t_float glist_pixelToValueY                 (t_glist *g, t_float f);
+t_float glist_valueToPixelX                 (t_glist *g, t_float f);
+t_float glist_valueToPixelY                 (t_glist *g, t_float f);
+
+t_float canvas_valueForDeltaInPixelX        (t_glist *g, t_float f);
+t_float canvas_valueForDeltaInPixelY        (t_glist *g, t_float f);
+t_float canvas_valueForOnePixelX            (t_glist *g);
+t_float canvas_valueForOnePixelY            (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

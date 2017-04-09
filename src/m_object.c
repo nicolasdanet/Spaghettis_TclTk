@@ -77,7 +77,7 @@ int object_getPixelX (t_object *x, t_glist *glist)
     if (glist_isWindowable (glist)) { return object_getX (x); }
     else {
     //
-    int n = canvas_valueToPixelX (glist, bounds_getLeft (glist_getBounds (glist)));
+    int n = glist_valueToPixelX (glist, bounds_getLeft (glist_getBounds (glist)));
     
     n -= rectangle_getTopLeftX (glist_getGraphGeometry (glist));
     n += object_getX (x);
@@ -92,7 +92,7 @@ int object_getPixelY (t_object *x, t_glist *glist)
     if (glist_isWindowable (glist)) { return object_getY (x); }
     else {
     //
-    int n = canvas_valueToPixelY (glist, bounds_getTop (glist_getBounds (glist)));
+    int n = glist_valueToPixelY (glist, bounds_getTop (glist_getBounds (glist)));
     
     n -= rectangle_getTopLeftY (glist_getGraphGeometry (glist));
     n += object_getY (x);

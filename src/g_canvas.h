@@ -16,20 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float         canvas_valueToPixelX                    (t_glist *glist, t_float f);
-t_float         canvas_valueToPixelY                    (t_glist *glist, t_float f);
-t_float         canvas_pixelToValueX                    (t_glist *glist, t_float f);
-t_float         canvas_pixelToValueY                    (t_glist *glist, t_float f);
-
-t_float         canvas_valueForDeltaInPixelX            (t_glist *glist, t_float f);
-t_float         canvas_valueForDeltaInPixelY            (t_glist *glist, t_float f);
-t_float         canvas_valueForOnePixelX                (t_glist *glist);
-t_float         canvas_valueForOnePixelY                (t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_free                             (t_glist *glist);

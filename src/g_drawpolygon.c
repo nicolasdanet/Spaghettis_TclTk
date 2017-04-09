@@ -172,8 +172,8 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
         
     for (i = 0; i < x->x_size; i += 2) {
     //
-    int a = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
-    int b = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
+    int a = glist_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
+    int b = glist_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
     
     rectangle_boundingBoxAddPoint (r, a, b);
     //
@@ -224,8 +224,8 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     //
     int a, b;
     
-    a = canvas_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
-    b = canvas_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
+    a = glist_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
+    b = glist_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
         
     heapstring_addSprintf (t, " %d %d", a, b);
     //
@@ -281,8 +281,8 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
     //
     int valueX = gpointer_getFloatByDescriptor (gp, fd + i);
     int valueY = gpointer_getFloatByDescriptor (gp, fd + i + 1);
-    int pixelX = canvas_valueToPixelX (glist, baseX + valueX);
-    int pixelY = canvas_valueToPixelY (glist, baseY + valueY);
+    int pixelX = glist_valueToPixelX (glist, baseX + valueX);
+    int pixelY = glist_valueToPixelY (glist, baseY + valueY);
     int error  = (int)math_euclideanDistance (pixelX, pixelY, m->m_x, m->m_y);
     
     if (error < bestError) {

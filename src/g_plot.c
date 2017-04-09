@@ -232,9 +232,9 @@ static void plot_getPixelsAtIndex (t_plotproperties *p,
     /* Convert to pixels. */
     
     {
-        t_float pixelX = canvas_valueToPixelX (view, c->p_x);
-        t_float pixelY = canvas_valueToPixelY (view, c->p_y);
-        t_float pixelW = canvas_valueToPixelY (view, c->p_y + c->p_w) - pixelY;
+        t_float pixelX = glist_valueToPixelX (view, c->p_x);
+        t_float pixelY = glist_valueToPixelY (view, c->p_y);
+        t_float pixelW = glist_valueToPixelY (view, c->p_y + c->p_w) - pixelY;
 
         pixelW = (t_float)PD_ABS (pixelW);
         pixelW = (t_float)PD_MAX (pixelW, maximumWidth - 1.0);
@@ -806,8 +806,8 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
 
 static int plot_behaviorMouseSingle (t_plot *x, t_plotproperties *p, t_mouse *m)
 {
-    t_float valueX = canvas_pixelToValueX (gpointer_getView (&plot_gpointer), m->m_x);
-    t_float valueY = canvas_pixelToValueY (gpointer_getView (&plot_gpointer), m->m_y);
+    t_float valueX = glist_pixelToValueX (gpointer_getView (&plot_gpointer), m->m_x);
+    t_float valueY = glist_pixelToValueY (gpointer_getView (&plot_gpointer), m->m_y);
     
     PD_ASSERT (plot_relativeX  == 0.0);
     PD_ASSERT (plot_relativeY  == 0.0);

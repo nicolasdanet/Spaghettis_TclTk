@@ -203,8 +203,8 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
     
     if (rectangle_isNothing (r)) {
     
-        int a = canvas_valueToPixelX (glist, baseX);
-        int b = canvas_valueToPixelY (glist, baseY);
+        int a = glist_valueToPixelX (glist, baseX);
+        int b = glist_valueToPixelY (glist, baseY);
         int c = a + SCALAR_WRONG_SIZE;
         int d = b + SCALAR_WRONG_SIZE;
         
@@ -276,8 +276,8 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         
         if (isVisible) {
         
-            int a = canvas_valueToPixelX (glist, baseX);
-            int b = canvas_valueToPixelY (glist, baseY);
+            int a = glist_valueToPixelX (glist, baseX);
+            int b = glist_valueToPixelY (glist, baseY);
             
             sys_vGui (".x%lx.c create rectangle %d %d %d %d"
                             " -outline #%06x"
