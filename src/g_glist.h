@@ -69,6 +69,7 @@ int     glist_isSubpatch                    (t_glist *g);
 int     glist_isArray                       (t_glist *g);
 int     glist_isDirty                       (t_glist *g);
 int     glist_isOnScreen                    (t_glist *g);
+int     glist_isParentOnScreen              (t_glist *g);
 int     glist_isWindowable                  (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -213,185 +214,180 @@ void    glist_eraseLine                     (t_glist *g, t_cord *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline void glist_setMapped (t_glist *glist, int n)
+static inline void glist_setMapped (t_glist *g, int n)
 {
-    glist->gl_isMapped = (n != 0);
+    g->gl_isMapped = (n != 0);
 }
 
-static inline void glist_setWindow (t_glist *glist, int n)
+static inline void glist_setWindow (t_glist *g, int n)
 {
-    glist->gl_hasWindow = (n != 0);
+    g->gl_hasWindow = (n != 0);
 }
 
-static inline void glist_setEditMode (t_glist *glist, int n)
+static inline void glist_setEditMode (t_glist *g, int n)
 {
-    glist->gl_isEditing = (n != 0);
+    g->gl_isEditing = (n != 0);
 }
 
-static inline void glist_setNext (t_glist *glist, t_glist *next)
+static inline void glist_setNext (t_glist *g, t_glist *next)
 {
-    glist->gl_next = next;
+    g->gl_next = next;
 }
 
-static inline void glist_setSelected (t_glist *glist, int n)
+static inline void glist_setSelected (t_glist *g, int n)
 {
-    glist->gl_isSelected = n;
+    g->gl_isSelected = n;
 }
 
-static inline void glist_setGraphOnParent (t_glist *glist, int n)
+static inline void glist_setGraphOnParent (t_glist *g, int n)
 {
-    glist->gl_isGraphOnParent = n;
+    g->gl_isGraphOnParent = n;
 }
 
-static inline void glist_setOpenedAtLoad (t_glist *glist, int n)
+static inline void glist_setOpenedAtLoad (t_glist *g, int n)
 {
-    glist->gl_isOpenedAtLoad = n;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static inline void glist_loadBegin (t_glist *glist)
-{
-    glist->gl_isLoading = 1;
-}
-
-static inline void glist_loadEnd (t_glist *glist)
-{
-    glist->gl_isLoading = 0;
-}
-
-static inline void glist_deleteBegin (t_glist *glist)
-{
-    glist->gl_isDeleting++;
-}
-
-static inline void glist_deleteEnd (t_glist *glist)
-{
-    glist->gl_isDeleting--;
+    g->gl_isOpenedAtLoad = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline t_glist *glist_getParent (t_glist *glist)
+static inline void glist_loadBegin (t_glist *g)
 {
-    return glist->gl_parent;
+    g->gl_isLoading = 1;
 }
 
-static inline t_glist *glist_getNext (t_glist *glist)
+static inline void glist_loadEnd (t_glist *g)
 {
-    return glist->gl_next;
+    g->gl_isLoading = 0;
 }
 
-static inline t_symbol *glist_getName (t_glist *glist)
+static inline void glist_deleteBegin (t_glist *g)
 {
-    return glist->gl_name;
+    g->gl_isDeleting++;
 }
 
-static inline t_editor *glist_getEditor (t_glist *glist)
+static inline void glist_deleteEnd (t_glist *g)
 {
-    return glist->gl_editor;
-}
-
-static inline t_bounds *glist_getBounds (t_glist *glist)
-{
-    return &glist->gl_bounds;
-}
-
-static inline t_rectangle *glist_getGraphGeometry (t_glist *glist)
-{
-    return &glist->gl_geometryGraph;
-}
-
-static inline t_rectangle *glist_getWindowGeometry (t_glist *glist)
-{
-    return &glist->gl_geometryWindow;
-}
-
-static inline t_gmaster *glist_getMaster (t_glist *glist)
-{
-    return glist->gl_holder;
-}
-
-static inline t_unique glist_getIdentifier (t_glist *glist)
-{
-    return glist->gl_uniqueIdentifier;
-}
-
-static inline t_fontsize glist_getFontSize (t_glist *glist)
-{
-    return glist->gl_fontSize;
-}
-
-static inline int glist_getMapped (t_glist *glist)
-{
-    return glist->gl_isMapped;
-}
-
-static inline int glist_getDirty (t_glist *glist)
-{
-    return glist->gl_isDirty;
-}
-
-static inline char *glist_getTagAsString (t_glist *glist)
-{
-    return editor_getTagAsString (glist_getEditor (glist));
+    g->gl_isDeleting--;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline int glist_hasParent (t_glist *glist)
+static inline t_glist *glist_getParent (t_glist *g)
 {
-    return (glist->gl_parent != NULL);
+    return g->gl_parent;
 }
 
-static inline int glist_hasParentOnScreen (t_glist *glist)
+static inline t_glist *glist_getNext (t_glist *g)
 {
-    return (glist_hasParent (glist) && glist_isOnScreen (glist_getParent (glist)));
+    return g->gl_next;
 }
 
-static inline int glist_hasWindow (t_glist *glist)
+static inline t_symbol *glist_getName (t_glist *g)
 {
-    return glist->gl_hasWindow;
+    return g->gl_name;
 }
 
-static inline int glist_hasEditMode (t_glist *glist)
+static inline t_editor *glist_getEditor (t_glist *g)
 {
-    return glist->gl_isEditing;
+    return g->gl_editor;
+}
+
+static inline t_bounds *glist_getBounds (t_glist *g)
+{
+    return &g->gl_bounds;
+}
+
+static inline t_rectangle *glist_getGraphGeometry (t_glist *g)
+{
+    return &g->gl_geometryGraph;
+}
+
+static inline t_rectangle *glist_getWindowGeometry (t_glist *g)
+{
+    return &g->gl_geometryWindow;
+}
+
+static inline t_gmaster *glist_getMaster (t_glist *g)
+{
+    return g->gl_holder;
+}
+
+static inline t_unique glist_getIdentifier (t_glist *g)
+{
+    return g->gl_uniqueIdentifier;
+}
+
+static inline t_fontsize glist_getFontSize (t_glist *g)
+{
+    return g->gl_fontSize;
+}
+
+static inline int glist_getMapped (t_glist *g)
+{
+    return g->gl_isMapped;
+}
+
+static inline int glist_getDirty (t_glist *g)
+{
+    return g->gl_isDirty;
+}
+
+static inline char *glist_getTagAsString (t_glist *g)
+{
+    return editor_getTagAsString (glist_getEditor (g));
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static inline int glist_isLoading (t_glist *glist)
+static inline int glist_hasParent (t_glist *g)
 {
-    return glist->gl_isLoading;
+    return (g->gl_parent != NULL);
 }
 
-static inline int glist_isDeleting (t_glist *glist)
+static inline int glist_hasWindow (t_glist *g)
 {
-    return (glist->gl_isDeleting > 0);
+    return g->gl_hasWindow;
 }
 
-static inline int glist_isSelected (t_glist *glist)
+static inline int glist_hasEditMode (t_glist *g)
 {
-    return glist->gl_isSelected;
+    return g->gl_isEditing;
 }
 
-static inline int glist_isGraphOnParent (t_glist *glist)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static inline int glist_isLoading (t_glist *g)
 {
-    return glist->gl_isGraphOnParent;
+    return g->gl_isLoading;
 }
 
-static inline int glist_isOpenedAtLoad (t_glist *glist)
+static inline int glist_isDeleting (t_glist *g)
 {
-    return glist->gl_isOpenedAtLoad;
+    return (g->gl_isDeleting > 0);
+}
+
+static inline int glist_isSelected (t_glist *g)
+{
+    return g->gl_isSelected;
+}
+
+static inline int glist_isGraphOnParent (t_glist *g)
+{
+    return g->gl_isGraphOnParent;
+}
+
+static inline int glist_isOpenedAtLoad (t_glist *g)
+{
+    return g->gl_isOpenedAtLoad;
 }
 
 // -----------------------------------------------------------------------------------------------------------

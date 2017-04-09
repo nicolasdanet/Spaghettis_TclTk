@@ -97,6 +97,11 @@ int glist_isOnScreen (t_glist *glist)
     return (!glist_isLoading (glist) && glist_getView (glist)->gl_isMapped);
 }
 
+int glist_isParentOnScreen (t_glist *g)
+{
+    return (!glist_isLoading (g) && glist_hasParent (g) && glist_isOnScreen (glist_getParent (g)));
+}
+
 int glist_isWindowable (t_glist *glist)
 {
     return (!glist_isGraphOnParent (glist) || glist_hasWindow (glist));
@@ -538,14 +543,15 @@ t_inlet *glist_inletAdd (t_glist *glist, t_pd *receiver, int isSignal)
     t_inlet *inlet = inlet_new (cast_object (glist), receiver, (isSignal ? &s_signal : NULL), NULL);
     
     if (!glist_isLoading (glist)) {
+    //
+    if (glist_isParentOnScreen (glist)) {
+        gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+        gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+        glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
+    }
     
-        if (glist_hasParentOnScreen (glist)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
-        }
-    
-        glist_inletResort (glist);
+    glist_inletResort (glist);
+    //
     }
     
     return inlet;
@@ -613,7 +619,7 @@ void glist_inletResort (t_glist *glist)
     
     PD_MEMORY_FREE (inlets);
     
-    if (glist_hasParentOnScreen (glist)) {
+    if (glist_isParentOnScreen (glist)) {
         glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
     }
     //
@@ -626,7 +632,7 @@ t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
     
     if (!glist_isLoading (glist)) {
     
-        if (glist_hasParentOnScreen (glist)) {
+        if (glist_isParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
             glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
@@ -700,7 +706,7 @@ void glist_outletResort (t_glist *glist)
     
     PD_MEMORY_FREE (outlets);
     
-    if (glist_hasParentOnScreen (glist)) {
+    if (glist_isParentOnScreen (glist)) {
         glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
     }
     //

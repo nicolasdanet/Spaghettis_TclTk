@@ -105,7 +105,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist_isGraphOnParent (glist));
     
     if (needToUpdate) {
-        if (!glist_isLoading (glist) && glist_hasParentOnScreen (glist)) {
+        if (glist_isParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
         }
     }
@@ -128,7 +128,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     #endif
     
     if (needToUpdate) {
-        if (!glist_isLoading (glist) && glist_hasParentOnScreen (glist)) {
+        if (glist_isParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
             glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
         }
@@ -706,7 +706,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     if (glist_hasWindow (glist)) { glist_updateWindow (glist); }
     else {
-        if (glist_hasParentOnScreen (glist)) {
+        if (glist_isParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
         }

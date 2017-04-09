@@ -52,7 +52,7 @@ void glist_updateGraphOnParent (t_glist *glist)
     //
     if (glist_hasWindow (glist)) { glist_updateWindow (glist); }
     else {
-        PD_ASSERT (glist_hasParentOnScreen (glist));
+        PD_ASSERT (glist_isParentOnScreen (glist));
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
         canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     }
