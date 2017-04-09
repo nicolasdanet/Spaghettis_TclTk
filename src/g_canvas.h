@@ -16,8 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_bounds                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-                                                            
 t_float         canvas_valueToPixelX                    (t_glist *glist, t_float f);
 t_float         canvas_valueToPixelY                    (t_glist *glist, t_float f);
 t_float         canvas_pixelToValueX                    (t_glist *glist, t_float f);

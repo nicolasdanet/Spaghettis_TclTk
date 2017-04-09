@@ -48,24 +48,6 @@ t_widgetbehavior canvas_widgetbehavior =        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == 4) {
-    //
-    t_error err = bounds_setByAtoms (glist_getBounds (glist), argc, argv);
-    
-    if (!err) { glist_updateGraphOnParent (glist); }
-    else {
-        error_invalid (sym_graph, sym_bounds); 
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_glist *x = cast_glist (z);
