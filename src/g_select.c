@@ -303,20 +303,20 @@ void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
 {
     t_selection *y = NULL;
     
-    int resortInlets  = 0;
-    int resortOutlets = 0;
+    int sortInlets  = 0;
+    int sortOutlets = 0;
     int isDirty = 0;
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
         gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
-        resortInlets  |= (pd_class (selection_getObject (y)) == vinlet_class);
-        resortOutlets |= (pd_class (selection_getObject (y)) == voutlet_class);
+        sortInlets  |= (pd_class (selection_getObject (y)) == vinlet_class);
+        sortOutlets |= (pd_class (selection_getObject (y)) == voutlet_class);
         isDirty = 1;
     }
     
-    if (resortInlets)  { glist_inletResort (glist);  }
-    if (resortOutlets) { glist_outletResort (glist); }
-    if (isDirty)       { glist_setDirty (glist, 1);  }
+    if (sortInlets)  { glist_inletSort (glist);   }
+    if (sortOutlets) { glist_outletSort (glist);  }
+    if (isDirty)     { glist_setDirty (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

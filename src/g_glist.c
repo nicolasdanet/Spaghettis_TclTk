@@ -260,8 +260,8 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
     //
     }
     
-    if (pd_class (x) == vinlet_class)  { glist_inletResort (glist_getView (glist));  }
-    if (pd_class (x) == voutlet_class) { glist_outletResort (glist_getView (glist)); }
+    if (pd_class (x) == vinlet_class)  { glist_inletSort (glist_getView (glist));  }
+    if (pd_class (x) == voutlet_class) { glist_outletSort (glist_getView (glist)); }
     //
     }
     
@@ -549,7 +549,7 @@ t_inlet *glist_inletAdd (t_glist *glist, t_pd *receiver, int isSignal)
         glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
     }
     
-    glist_inletResort (glist);
+    glist_inletSort (glist);
     //
     }
     
@@ -571,23 +571,31 @@ void glist_inletRemove (t_glist *glist, t_inlet *inlet)
     if (owner)  { glist_updateLinesForObject (owner, cast_object (glist)); }
 }
 
-void glist_inletResort (t_glist *glist)
+int glist_inletNumberOf (t_glist *glist)
 {
-    int numberOfInlets = 0;
+    int n = 0;
+    
     t_gobj *y = NULL;
     
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-    // 
-    if (pd_class (y) == vinlet_class) { numberOfInlets++; }
-    //
-    }
+    for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == vinlet_class) { n++; } }
+    
+    return n;
+}
+
+void glist_inletSort (t_glist *glist)
+{
+    int numberOfInlets = glist_inletNumberOf (glist);
 
     if (numberOfInlets > 1) {
     //
     int i;
+    t_gobj *y = NULL;
+    
+    /* Fetch all inlets into a list. */
+    
     t_gobj **inlets = (t_gobj **)PD_MEMORY_GET (numberOfInlets * sizeof (t_gobj *));
     t_gobj **t = inlets;
-        
+    
     for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == vinlet_class) { *t++ = y; } }
     
     /* Take the most right inlet and put it first. */
@@ -598,20 +606,20 @@ void glist_inletResort (t_glist *glist)
     //
     int j = numberOfInlets;
     int maximumX = -PD_INT_MAX;
-    t_gobj **mostRightObject = NULL;
+    t_gobj **mostRightInlet = NULL;
     
     for (t = inlets; j--; t++) {
         if (*t) {
             t_rectangle r;
             gobj_getRectangle (*t, glist, &r);
             if (rectangle_getTopLeftX (&r) > maximumX) {
-                maximumX = rectangle_getTopLeftX (&r); mostRightObject = t; 
+                maximumX = rectangle_getTopLeftX (&r); mostRightInlet = t; 
             }
         }
     }
     
-    if (mostRightObject) {
-        inlet_moveFirst (vinlet_getInlet (cast_pd (*mostRightObject))); *mostRightObject = NULL;
+    if (mostRightInlet) {
+        inlet_moveFirst (vinlet_getInlet (cast_pd (*mostRightInlet))); *mostRightInlet = NULL;
     }
     //
     }
@@ -630,14 +638,15 @@ t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
     t_outlet *outlet = outlet_new (cast_object (glist), s);
     
     if (!glist_isLoading (glist)) {
+    //
+    if (glist_isParentOnScreen (glist)) {
+        gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+        gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+        glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
+    }
     
-        if (glist_isParentOnScreen (glist)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
-        }
-        
-        glist_outletResort (glist);
+    glist_outletSort (glist);
+    //
     }
     
     return outlet;
@@ -645,33 +654,41 @@ t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
 
 void glist_outletRemove (t_glist *glist, t_outlet *outlet)
 {
-    t_glist *o = glist_getParent (glist);
+    t_glist *owner = glist_getParent (glist);
     
-    int redraw = (o && !glist_isDeleting (o) && glist_isOnScreen (o) && glist_isWindowable (o));
+    int redraw = (owner && !glist_isDeleting (owner) && glist_isOnScreen (owner));
     
-    if (o) { glist_objectDeleteLinesByOutlet (o, cast_object (glist), outlet); }
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 0); }
+    if (owner)  { glist_objectDeleteLinesByOutlet (owner, cast_object (glist), outlet); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 0); }
 
     outlet_free (outlet);
     
-    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), o, 1); }
-    if (o) { glist_updateLinesForObject (o, cast_object (glist)); }
+    if (redraw) { gobj_visibilityChanged (cast_gobj (glist), owner, 1); }
+    if (owner)  { glist_updateLinesForObject (owner, cast_object (glist)); }
 }
 
-void glist_outletResort (t_glist *glist)
+int glist_outletNumberOf (t_glist *glist)
 {
-    int numberOfOutlets = 0;
+    int n = 0;
+    
     t_gobj *y = NULL;
     
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-    //
-    if (pd_class (y) == voutlet_class) { numberOfOutlets++; }
-    //
-    }
+    for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == voutlet_class) { n++; } }
+    
+    return n;
+}
 
+void glist_outletSort (t_glist *glist)
+{
+    int numberOfOutlets = glist_outletNumberOf (glist);
+    
     if (numberOfOutlets > 1) {
     //
     int i;
+    t_gobj *y = NULL;
+    
+    /* Fetch all outlets into a list. */
+    
     t_gobj **outlets = (t_gobj **)PD_MEMORY_GET (numberOfOutlets * sizeof (t_gobj *));
     t_gobj **t = outlets;
         
@@ -685,20 +702,20 @@ void glist_outletResort (t_glist *glist)
     //
     int j = numberOfOutlets;
     int maximumX = -PD_INT_MAX;
-    t_gobj **mostRightObject = NULL;
+    t_gobj **mostRightOutlet = NULL;
     
     for (t = outlets; j--; t++) {
         if (*t) {
             t_rectangle r;
             gobj_getRectangle (*t, glist, &r);
             if (rectangle_getTopLeftX (&r) > maximumX) {
-                maximumX = rectangle_getTopLeftX (&r); mostRightObject = t; 
+                maximumX = rectangle_getTopLeftX (&r); mostRightOutlet = t; 
             }
         }
     }
     
-    if (mostRightObject) {
-        outlet_moveFirst (voutlet_getOutlet (cast_pd (*mostRightObject))); *mostRightObject = NULL;
+    if (mostRightOutlet) {
+        outlet_moveFirst (voutlet_getOutlet (cast_pd (*mostRightOutlet))); *mostRightOutlet = NULL;
     }
     //
     }
