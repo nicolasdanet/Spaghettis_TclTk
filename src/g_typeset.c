@@ -317,8 +317,8 @@ static void box_sendCreate (t_box *x, t_typesethelper *p)
     sys_vGui ("::ui_box::newText %s.c %s %d %d {%s} %d #%06x\n",        // --
                     glist_getTagAsString (glist),
                     x->box_tag,
-                    (int)(object_getPixelX (x->box_object, x->box_owner) + BOX_MARGIN_LEFT), 
-                    (int)(object_getPixelY (x->box_object, x->box_owner) + BOX_MARGIN_TOP),
+                    (int)(glist_getPixelX (x->box_owner, x->box_object) + BOX_MARGIN_LEFT), 
+                    (int)(glist_getPixelY (x->box_owner, x->box_object) + BOX_MARGIN_TOP),
                     p->p_typeset, 
                     font_getHostFontSize (p->p_fontSize),
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));

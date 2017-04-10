@@ -300,8 +300,8 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
     
         if (m->m_clicked) {
         
-            drawpolygon_stepX       = canvas_valueForOnePixelX (glist);
-            drawpolygon_stepY       = canvas_valueForOnePixelY (glist);
+            drawpolygon_stepX       = glist_valueForOnePixelX (glist);
+            drawpolygon_stepY       = glist_valueForOnePixelY (glist);
             drawpolygon_cumulativeX = (t_float)0.0;
             drawpolygon_cumulativeY = (t_float)0.0;
             drawpolygon_field       = bestField;

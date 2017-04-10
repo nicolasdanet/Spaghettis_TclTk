@@ -225,14 +225,14 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     if (template_fieldIsFloat (template, sym_x)) {
 
         t_float f = word_getFloat (x->sc_element, template, sym_x);
-        f += canvas_valueForDeltaInPixelX (glist, deltaX);
+        f += glist_valueForDeltaInPixelX (glist, deltaX);
         word_setFloat (x->sc_element, template, sym_x, f);
     }
     
     if (template_fieldIsFloat (template, sym_y)) {
 
         t_float f = word_getFloat (x->sc_element, template, sym_y);
-        f += canvas_valueForDeltaInPixelY (glist, deltaY);
+        f += glist_valueForDeltaInPixelY (glist, deltaY);
         word_setFloat (x->sc_element, template, sym_y, f);
     }
     

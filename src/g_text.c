@@ -65,8 +65,8 @@ void text_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
     t_box *text = box_fetch (glist, x);
     int width   = box_getWidth (text);
     int height  = box_getHeight (text);
-    int a       = object_getPixelX (x, glist);
-    int b       = object_getPixelY (x, glist);
+    int a       = glist_getPixelX (glist, x);
+    int b       = glist_getPixelY (glist, x);
     
     rectangle_set (r, a, b, a + width, b + height);
 }

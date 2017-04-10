@@ -119,8 +119,8 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
     
     if (!isGraphOnParent) {
     
-        t_float scaleX = canvas_valueForOnePixelX (glist);
-        t_float scaleY = canvas_valueForOnePixelY (glist);
+        t_float scaleX = glist_valueForOnePixelX (glist);
+        t_float scaleY = glist_valueForOnePixelY (glist);
         
         bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }

@@ -852,8 +852,8 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
     
     if (!plot_fetchProperties (x, gp, &p) && (p.p_visible != 0)) {
 
-        plot_stepX      = canvas_valueForOnePixelX (glist);
-        plot_stepY      = canvas_valueForOnePixelY (glist);
+        plot_stepX      = glist_valueForOnePixelX (glist);
+        plot_stepY      = glist_valueForOnePixelY (glist);
         plot_relativeX  = plot_getRelativeX (&p, baseX);
         plot_relativeY  = plot_getRelativeY (&p, baseY);
         plot_incrementX = p.p_incrementX;

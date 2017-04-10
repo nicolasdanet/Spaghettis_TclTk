@@ -55,8 +55,8 @@ void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, t_rectangle *r
     
     PD_ASSERT (pd_class (z) == canvas_class);
     
-    int a = object_getPixelX (cast_object (x), glist);
-    int b = object_getPixelY (cast_object (x), glist);
+    int a = glist_getPixelX (glist, cast_object (x));
+    int b = glist_getPixelY (glist, cast_object (x));
     int c = a + rectangle_getWidth (glist_getGraphGeometry (x));
     int d = b + rectangle_getHeight (glist_getGraphGeometry (x));
     

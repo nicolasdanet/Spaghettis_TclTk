@@ -72,40 +72,6 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int object_getPixelX (t_object *x, t_glist *glist)
-{
-    if (glist_isWindowable (glist)) { return object_getX (x); }
-    else {
-    //
-    int n = glist_valueToPixelX (glist, bounds_getLeft (glist_getBounds (glist)));
-    
-    n -= rectangle_getTopLeftX (glist_getGraphGeometry (glist));
-    n += object_getX (x);
-    
-    return n;
-    //
-    }
-}
-
-int object_getPixelY (t_object *x, t_glist *glist)
-{
-    if (glist_isWindowable (glist)) { return object_getY (x); }
-    else {
-    //
-    int n = glist_valueToPixelY (glist, bounds_getTop (glist_getBounds (glist)));
-    
-    n -= rectangle_getTopLeftY (glist_getGraphGeometry (glist));
-    n += object_getY (x);
-    
-    return n;
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)
 {
     if (argc) { 

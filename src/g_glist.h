@@ -221,10 +221,17 @@ t_float glist_pixelToValueY                 (t_glist *g, t_float f);
 t_float glist_valueToPixelX                 (t_glist *g, t_float f);
 t_float glist_valueToPixelY                 (t_glist *g, t_float f);
 
-t_float canvas_valueForDeltaInPixelX        (t_glist *g, t_float f);
-t_float canvas_valueForDeltaInPixelY        (t_glist *g, t_float f);
-t_float canvas_valueForOnePixelX            (t_glist *g);
-t_float canvas_valueForOnePixelY            (t_glist *g);
+t_float glist_valueForDeltaInPixelX         (t_glist *g, t_float f);
+t_float glist_valueForDeltaInPixelY         (t_glist *g, t_float f);
+t_float glist_valueForOnePixelX             (t_glist *g);
+t_float glist_valueForOnePixelY             (t_glist *g);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int     glist_getPixelX                     (t_glist *g, t_object *x);
+int     glist_getPixelY                     (t_glist *g, t_object *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -64,8 +64,6 @@ t_outconnect    *object_connect                     (t_object *src, int m, t_obj
 void        object_disconnect                       (t_object *src, int m, t_object *dest, int n);
 
 void        object_setFromEntry                     (t_object *x, t_glist *glist, t_box *z);
-int         object_getPixelX                        (t_object *x, t_glist *glist);
-int         object_getPixelY                        (t_object *x, t_glist *glist);
 
 int         object_getNumberOfInlets                (t_object *x);
 int         object_getNumberOfOutlets               (t_object *x);

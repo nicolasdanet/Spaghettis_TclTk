@@ -261,8 +261,8 @@ void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
                         glist_getView (iem->iem_owner),
                         x,
-                        object_getPixelX (cast_object (x), iem->iem_owner) + iem->iem_labelX,
-                        object_getPixelY (cast_object (x), iem->iem_owner) + iem->iem_labelY);
+                        glist_getPixelX (iem->iem_owner, cast_object (x)) + iem->iem_labelX,
+                        glist_getPixelY (iem->iem_owner, cast_object (x)) + iem->iem_labelY);
     }
     //
     }
