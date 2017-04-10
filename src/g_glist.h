@@ -221,8 +221,6 @@ t_float glist_pixelToValueY                 (t_glist *g, t_float f);
 t_float glist_valueToPixelX                 (t_glist *g, t_float f);
 t_float glist_valueToPixelY                 (t_glist *g, t_float f);
 
-t_float glist_valueForDeltaInPixelX         (t_glist *g, t_float f);
-t_float glist_valueForDeltaInPixelY         (t_glist *g, t_float f);
 t_float glist_valueForOnePixelX             (t_glist *g);
 t_float glist_valueForOnePixelY             (t_glist *g);
 
