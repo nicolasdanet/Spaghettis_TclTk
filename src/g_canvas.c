@@ -115,18 +115,6 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
         glist_setGraphOnParent (glist, 1);
     }
         
-    #if PD_WITH_LEGACY
-    
-    if (!isGraphOnParent) {
-    
-        t_float scaleX = glist_valueForOnePixelX (glist);
-        t_float scaleY = glist_valueForOnePixelY (glist);
-        
-        bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
-    }
-    
-    #endif
-    
     if (needToUpdate) {
         if (glist_isParentOnScreen (glist)) {
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
@@ -193,6 +181,18 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int height  = (int)atom_getFloatAtIndex (5, argc, argv);
     
     bounds_setByAtoms (glist_getBounds (glist), argc, argv);
+    
+    #if PD_WITH_LEGACY
+    
+    if (!(flags & 1)) {
+    
+        t_float scaleX = glist_valueForOnePixelX (glist);
+        t_float scaleY = glist_valueForOnePixelY (glist);
+        
+        bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
+    }
+    
+    #endif
     
     rectangle_setByWidthAndHeight (glist_getGraphGeometry (glist), a, b, width, height);
     

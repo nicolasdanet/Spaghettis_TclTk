@@ -16,7 +16,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_getGraphOnParentRectangle (t_gobj *, t_glist *, t_rectangle *);
+void canvas_getGraphOnParentRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
+{
+    t_glist *x = cast_glist (z);
+    
+    PD_ASSERT (pd_class (z) == canvas_class);
+    
+    int a = glist_getPixelX (glist, cast_object (x));
+    int b = glist_getPixelY (glist, cast_object (x));
+    int c = a + rectangle_getWidth (glist_getGraphGeometry (x));
+    int d = b + rectangle_getHeight (glist_getGraphGeometry (x));
+    
+    rectangle_set (r, a, b, c, d);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -118,11 +130,12 @@ t_float glist_valueForOnePixelY (t_glist *glist)
 
 int glist_getPixelX (t_glist *glist, t_object *x)
 {
+    PD_ASSERT (!glist_isArray (glist));
+    
     if (glist_isWindowable (glist)) { return object_getX (x); }
     else {
     //
-    int n = glist_valueToPixelX (glist, bounds_getLeft (glist_getBounds (glist)));
-    
+    int n = glist_valueToPixelX (glist, (t_float)0.0);
     n -= rectangle_getTopLeftX (glist_getGraphGeometry (glist));
     n += object_getX (x);
     
@@ -133,11 +146,12 @@ int glist_getPixelX (t_glist *glist, t_object *x)
 
 int glist_getPixelY (t_glist *glist, t_object *x)
 {
+    PD_ASSERT (!glist_isArray (glist));
+    
     if (glist_isWindowable (glist)) { return object_getY (x); }
     else {
     //
-    int n = glist_valueToPixelY (glist, bounds_getTop (glist_getBounds (glist)));
-    
+    int n = glist_valueToPixelY (glist, (t_float)0.0);
     n -= rectangle_getTopLeftY (glist_getGraphGeometry (glist));
     n += object_getY (x);
     
