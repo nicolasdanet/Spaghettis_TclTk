@@ -102,6 +102,20 @@ t_float glist_valueToPixelY (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_float glist_valueForOnePixelX (t_glist *glist)
+{
+    return (glist_pixelToValueX (glist, (t_float)1.0) - glist_pixelToValueX (glist, (t_float)0.0));
+}
+
+t_float glist_valueForOnePixelY (t_glist *glist)
+{
+    return (glist_pixelToValueY (glist, (t_float)1.0) - glist_pixelToValueY (glist, (t_float)0.0));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int glist_getPixelX (t_glist *glist, t_object *x)
 {
     if (glist_isWindowable (glist)) { return object_getX (x); }
@@ -130,30 +144,6 @@ int glist_getPixelY (t_glist *glist, t_object *x)
     return n;
     //
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_float glist_valueForDeltaInPixelX (t_glist *glist, t_float f)
-{ 
-    return (f * glist_valueForOnePixelX (glist));
-}
-
-t_float glist_valueForDeltaInPixelY (t_glist *glist, t_float f)
-{
-    return (f * glist_valueForOnePixelY (glist));
-}
-
-t_float glist_valueForOnePixelX (t_glist *glist)
-{
-    return (glist_pixelToValueX (glist, (t_float)1.0) - glist_pixelToValueX (glist, (t_float)0.0));
-}
-
-t_float glist_valueForOnePixelY (t_glist *glist)
-{
-    return (glist_pixelToValueY (glist, (t_float)1.0) - glist_pixelToValueY (glist, (t_float)0.0));
 }
 
 // -----------------------------------------------------------------------------------------------------------
