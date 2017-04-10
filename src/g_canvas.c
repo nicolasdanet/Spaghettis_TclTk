@@ -579,34 +579,21 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
     
-    if (glist_isGraphOnParent (g)) {
-        err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                                    0.0,
-                                    0.0,
-                                    glist_isGraphOnParent (g),
-                                    bounds_getLeft (glist_getBounds (g)),
-                                    bounds_getTop (glist_getBounds (g)),
-                                    bounds_getRight (glist_getBounds (g)),
-                                    bounds_getBottom (glist_getBounds (g)), 
-                                    rectangle_getWidth (glist_getGraphGeometry (g)),
-                                    rectangle_getHeight (glist_getGraphGeometry (g)),
-                                    rectangle_getTopLeftX (glist_getGraphGeometry (g)),
-                                    rectangle_getTopLeftY (glist_getGraphGeometry (g)));
-    } else {
-        err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                                    canvas_valueForOnePixelX (g),
-                                    canvas_valueForOnePixelY (g),
-                                    glist_isGraphOnParent (g),
-                                    0.0,
-                                    1.0,
-                                    1.0,
-                                   -1.0, 
-                                    rectangle_getWidth (glist_getGraphGeometry (g)),
-                                    rectangle_getHeight (glist_getGraphGeometry (g)),
-                                    rectangle_getTopLeftX (glist_getGraphGeometry (g)),
-                                    rectangle_getTopLeftY (glist_getGraphGeometry (g)));
-    }
+    int isArray = glist_isArray (g);
     
+    err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+            isArray ?  0.0 : canvas_valueForOnePixelX (g),
+            isArray ?  0.0 : canvas_valueForOnePixelY (g),
+            glist_isGraphOnParent (g),
+            !isArray ? 0.0 : bounds_getLeft (glist_getBounds (g)),
+            !isArray ? 0.0 : bounds_getTop (glist_getBounds (g)),
+            !isArray ? 0.0 : bounds_getRight (glist_getBounds (g)),
+            !isArray ? 0.0 : bounds_getBottom (glist_getBounds (g)), 
+            rectangle_getWidth (glist_getGraphGeometry (g)),
+            rectangle_getHeight (glist_getGraphGeometry (g)),
+            rectangle_getTopLeftX (glist_getGraphGeometry (g)),
+            rectangle_getTopLeftY (glist_getGraphGeometry (g)));
+
     PD_ASSERT (!err);
     
     stub_new (cast_pd (g), (void *)g, t);
@@ -701,7 +688,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     t_float up      = atom_getFloatAtIndex (4, argc, argv);
     t_float end     = atom_getFloatAtIndex (5, argc, argv);
     t_float down    = atom_getFloatAtIndex (6, argc, argv);
-    int flags       = (int)atom_getFloatAtIndex (2, argc,  argv);
+    int isGOP       = (int)atom_getFloatAtIndex (2, argc,  argv);
     int width       = (int)atom_getFloatAtIndex (7, argc,  argv);
     int height      = (int)atom_getFloatAtIndex (8, argc,  argv);
     int marginX     = (int)atom_getFloatAtIndex (9, argc,  argv);
@@ -711,13 +698,13 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 
     if (scaleX == 0.0) { scaleX = (t_float)1.0; }
     if (scaleY == 0.0) { scaleY = (t_float)1.0; }
-
-    if (flags & 1) { bounds_set (glist_getBounds (glist), start, up, end, down); }
+    
+    if (glist_isArray (glist)) { isGOP = 1; bounds_set (glist_getBounds (glist), start, up, end, down); }
     else {
         bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
     
-    canvas_setAsGraphOnParent (glist, flags);
+    canvas_setAsGraphOnParent (glist, isGOP);
     
     glist_setDirty (glist, 1);
     
