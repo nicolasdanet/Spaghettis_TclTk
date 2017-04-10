@@ -162,7 +162,7 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
 {
     t_glist *glist = x->x_owner;
         
-    if (garray_isSingle (glist))  {
+    if (glist_isArray (glist))  {
     //
     if (!glist_isLoading (glist)) {
     //

@@ -84,7 +84,11 @@ int glist_isSubpatch (t_glist *glist)
 
 int glist_isArray (t_glist *glist)
 {
-    return (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph);
+    int k = (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph);
+    
+    PD_ASSERT (!k || garray_isSingle (glist));
+    
+    return k;
 }
 
 int glist_isDirty (t_glist *glist)

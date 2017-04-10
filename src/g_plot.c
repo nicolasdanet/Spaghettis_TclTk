@@ -396,7 +396,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         
     rectangle_setNothing (r);
     
-    if (garray_isSingle (glist)) { rectangle_setEverything (r); }
+    if (glist_isArray (glist)) { rectangle_setEverything (r); }
     else {
     //
     t_plotproperties p;
@@ -866,7 +866,7 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
         
         /* The garray case is handled differently. */
         
-        if (garray_isSingle (glist)) { return plot_behaviorMouseSingle (x, &p, m); }
+        if (glist_isArray (glist)) { return plot_behaviorMouseSingle (x, &p, m); }
         else {
             return plot_behaviorMouseGrab (x, &p, m);
         }
