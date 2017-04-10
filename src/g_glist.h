@@ -231,6 +231,8 @@ t_float glist_valueForOnePixelY             (t_glist *g);
 int     glist_getPixelX                     (t_glist *g, t_object *x);
 int     glist_getPixelY                     (t_glist *g, t_object *x);
 
+void    glist_getRectangleOnParent          (t_glist *g, t_rectangle *r);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

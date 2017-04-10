@@ -47,11 +47,6 @@ t_widgetbehavior canvas_widgetbehavior =        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void canvas_getGraphOnParentRectangle (t_gobj *, t_glist *, t_rectangle *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
@@ -60,7 +55,7 @@ void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnGetRectangle (z, glist, r); }
     else {
-        canvas_getGraphOnParentRectangle (z, glist, r);
+        glist_getRectangleOnParent (x, r);
     }
 }
 
