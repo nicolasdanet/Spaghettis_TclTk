@@ -97,12 +97,12 @@ t_float glist_valueToPixelY (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float glist_valueForOnePixelX (t_glist *glist)
+t_float glist_getValueForOnePixelX (t_glist *glist)
 {
     return (glist_pixelToValueX (glist, (t_float)1.0) - glist_pixelToValueX (glist, (t_float)0.0));
 }
 
-t_float glist_valueForOnePixelY (t_glist *glist)
+t_float glist_getValueForOnePixelY (t_glist *glist)
 {
     return (glist_pixelToValueY (glist, (t_float)1.0) - glist_pixelToValueY (glist, (t_float)0.0));
 }

@@ -186,8 +186,8 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (!(flags & 1)) {
     
-        t_float scaleX = glist_valueForOnePixelX (glist);
-        t_float scaleY = glist_valueForOnePixelY (glist);
+        t_float scaleX = glist_getValueForOnePixelX (glist);
+        t_float scaleY = glist_getValueForOnePixelY (glist);
         
         bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
