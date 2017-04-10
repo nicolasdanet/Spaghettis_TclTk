@@ -539,9 +539,13 @@ static void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
+    if (glist_isArray (glist)) {
+    //
     t_error err = bounds_setByAtoms (glist_getBounds (glist), argc, argv);
     
     if (!err) { glist_updateGraphOnParent (glist); return; }
+    //
+    }
     //
     }
     
@@ -582,8 +586,8 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
     int isArray = glist_isArray (g);
     
     err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-            isArray ?  0.0 : canvas_valueForOnePixelX (g),
-            isArray ?  0.0 : canvas_valueForOnePixelY (g),
+            isArray ?  0.0 : bounds_getRight (glist_getBounds (g)),
+            isArray ?  0.0 : bounds_getBottom (glist_getBounds (g)),
             glist_isGraphOnParent (g),
             !isArray ? 0.0 : bounds_getLeft (glist_getBounds (g)),
             !isArray ? 0.0 : bounds_getTop (glist_getBounds (g)),
