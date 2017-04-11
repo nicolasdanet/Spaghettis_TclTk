@@ -47,7 +47,6 @@ t_widgetbehavior canvas_widgetbehavior =        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
@@ -65,10 +64,16 @@ void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
     else {
-        object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
-        object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
-        glist_updateGraphOnParent (x);
-        glist_updateLinesForObject (glist, cast_object (z));
+    //
+    if (glist_isParentOnScreen (x)) { canvas_behaviorVisibilityChanged (z, glist, 0); }
+    
+    object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
+    object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
+    
+    if (glist_isParentOnScreen (x)) { canvas_behaviorVisibilityChanged (z, glist, 1); }
+    
+    glist_updateLinesForObject (glist, cast_object (z));
+    //
     }
 }
 
