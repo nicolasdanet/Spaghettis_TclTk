@@ -331,6 +331,8 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
         plot_cumulativeX += deltaX * plot_stepX;
         plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : (t_float)1.0);
         
+        gpointer_erase (&plot_gpointer);
+        
         if (plot_fieldDescriptorX)      { plot_motionHorizontal (array); }
         else if (plot_fieldDescriptorY) { plot_motionVertical (array); }
         
@@ -346,7 +348,7 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
                 NULL);
         }
         
-        gpointer_redraw (&plot_gpointer);
+        gpointer_draw (&plot_gpointer);
     }
     //
     }
@@ -804,7 +806,7 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
     }
 }
 
-static int plot_behaviorMouseSingle (t_plot *x, t_plotproperties *p, t_mouse *m)
+static int plot_behaviorMouseArray (t_plot *x, t_plotproperties *p, t_mouse *m)
 {
     t_float valueX = glist_pixelToValueX (gpointer_getView (&plot_gpointer), m->m_x);
     t_float valueY = glist_pixelToValueY (gpointer_getView (&plot_gpointer), m->m_y);
@@ -866,7 +868,7 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
         
         /* The garray case is handled differently. */
         
-        if (glist_isArray (glist)) { return plot_behaviorMouseSingle (x, &p, m); }
+        if (glist_isArray (glist)) { return plot_behaviorMouseArray (x, &p, m); }
         else {
             return plot_behaviorMouseGrab (x, &p, m);
         }

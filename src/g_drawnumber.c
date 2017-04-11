@@ -109,6 +109,8 @@ static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float 
     //
     drawnumber_cumulativeY -= deltaY;
     
+    gpointer_erase (&drawnumber_gpointer);
+    
     gpointer_setFloat (&drawnumber_gpointer, x->x_fieldName, drawnumber_cumulativeY);
     
     PD_ASSERT (gpointer_isScalar (&drawnumber_gpointer));
@@ -120,7 +122,7 @@ static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float 
         0,
         NULL);
 
-    gpointer_redraw (&drawnumber_gpointer);
+    gpointer_draw (&drawnumber_gpointer);
     //
     }
 }

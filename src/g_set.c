@@ -46,6 +46,8 @@ static void set_bang (t_set *x)
     //
     int i;
     
+    gpointer_erase (&x->x_gpointer);
+    
     for (i = 0; i < x->x_fieldsSize; i++) {
     //
     t_symbol *s = x->x_fields[i].sv_fieldName;
@@ -62,7 +64,7 @@ static void set_bang (t_set *x)
     //
     }
 
-    gpointer_redraw (&x->x_gpointer);
+    gpointer_draw (&x->x_gpointer);
     //
     } else { error_invalid (sym_set, &s_pointer); }
 }

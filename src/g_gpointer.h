@@ -68,8 +68,10 @@ t_template  *gpointer_getTemplate               (t_gpointer *gp);
 
 int         gpointer_isInstanceOf               (t_gpointer *gp, t_symbol *templateIdentifier);
 int         gpointer_isValidInstanceOf          (t_gpointer *gp, t_symbol *templateIdentifier);
+
+void        gpointer_erase                      (t_gpointer *gp);
+void        gpointer_draw                       (t_gpointer *gp);
 void        gpointer_redraw                     (t_gpointer *gp);
-void        gpointer_setVisibility              (t_gpointer *gp, int isVisible);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

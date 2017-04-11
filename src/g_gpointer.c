@@ -333,9 +333,14 @@ void gpointer_redraw (t_gpointer *gp)
     scalar_redraw (gpointer_getBase (gp), gpointer_getView (gp));
 }
 
-void gpointer_setVisibility (t_gpointer *gp, int isVisible)
+void gpointer_erase (t_gpointer *gp)
 {
-    gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), gpointer_getView (gp), isVisible); 
+    gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), gpointer_getView (gp), 0);
+}
+
+void gpointer_draw (t_gpointer *gp)
+{
+    gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), gpointer_getView (gp), 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------

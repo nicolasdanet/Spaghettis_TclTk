@@ -126,6 +126,8 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
     t_float positionX = drawpolygon_valueX + (drawpolygon_cumulativeX * drawpolygon_stepX);
     t_float positionY = drawpolygon_valueY + (drawpolygon_cumulativeY * drawpolygon_stepY);
     
+    gpointer_erase (&drawpolygon_gpointer);
+    
     if (field_isVariable (fd + 0)) {
         gpointer_setFloatByDescriptor (&drawpolygon_gpointer, fd + 0, positionX); 
     }
@@ -143,7 +145,7 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
         0,
         NULL);
     
-    gpointer_redraw (&drawpolygon_gpointer);
+    gpointer_draw (&drawpolygon_gpointer);
     //
     }
 }
