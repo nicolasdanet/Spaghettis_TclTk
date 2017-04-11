@@ -21,14 +21,15 @@ t_float glist_pixelToValueX (t_glist *glist, t_float f)
     t_float range = bounds_getRangeX (glist_getBounds (glist));
     t_float v = (t_float)0.0;
         
-    if (!glist_isGraphOnParent (glist)) { v = f; }      /* Scalars. */
-    else {
-        if (glist_hasWindow (glist)) { v = f / rectangle_getWidth (glist_getWindowGeometry (glist)); }
-        else {
-            t_rectangle r;
-            glist_getRectangleOnParent (glist, &r);
-            v = (f - rectangle_getTopLeftX (&r)) / rectangle_getWidth (&r);
-        }
+    if (glist_isWindowable (glist)) { 
+        v = f; 
+        if (glist_isArray (glist))  { v /= rectangle_getWidth (glist_getWindowGeometry (glist)); }
+        
+    } else {
+        t_rectangle r;
+        glist_getRectangleOnParent (glist, &r);
+        v = (f - rectangle_getTopLeftX (&r));
+        if (glist_isArray (glist))  { v /= rectangle_getWidth (&r); }
     }
 
     return (bounds_getLeft (glist_getBounds (glist)) + (range * v));
@@ -39,18 +40,23 @@ t_float glist_pixelToValueY (t_glist *glist, t_float f)
     t_float range = bounds_getRangeY (glist_getBounds (glist));
     t_float v = (t_float)0.0;
         
-    if (!glist_isGraphOnParent (glist)) { v = f; }      /* Scalars. */
-    else {
-        if (glist_hasWindow (glist)) { v = f / rectangle_getHeight (glist_getWindowGeometry (glist)); }
-        else {
-            t_rectangle r;
-            glist_getRectangleOnParent (glist, &r);
-            v = (f - rectangle_getTopLeftY (&r)) / rectangle_getHeight (&r);
-        }
+    if (glist_isWindowable (glist)) {
+        v = f;
+        if (glist_isArray (glist))  { v /= rectangle_getHeight (glist_getWindowGeometry (glist)); }
+        
+    } else {
+        t_rectangle r;
+        glist_getRectangleOnParent (glist, &r);
+        v = (f - rectangle_getTopLeftY (&r));
+        if (glist_isArray (glist))  { v /= rectangle_getHeight (&r); }
     }
     
     return (bounds_getTop (glist_getBounds (glist)) + (range * v));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_float glist_valueToPixelX (t_glist *glist, t_float f)
 {
@@ -58,15 +64,14 @@ t_float glist_valueToPixelX (t_glist *glist, t_float f)
     t_float v = (t_float)1.0;
     t_float x = (t_float)0.0;
     
-    if (!glist_isGraphOnParent (glist)) { }     /* Scalars. */
-    else {
-        if (glist_hasWindow (glist)) { v = rectangle_getWidth (glist_getWindowGeometry (glist)); }
-        else {
-            t_rectangle r;
-            glist_getRectangleOnParent (glist, &r);
-            x = rectangle_getTopLeftX (&r);
-            v = rectangle_getWidth (&r);
-        }
+    if (glist_isWindowable (glist)) {
+        if (glist_isArray (glist))  { v = rectangle_getWidth (glist_getWindowGeometry (glist)); }
+        
+    } else {
+        t_rectangle r;
+        glist_getRectangleOnParent (glist, &r);
+        x = rectangle_getTopLeftX (&r);
+        if (glist_isArray (glist))  { v = rectangle_getWidth (&r); }
     }
     
     return (x + (v * ((f - bounds_getLeft (glist_getBounds (glist))) / range)));
@@ -78,15 +83,14 @@ t_float glist_valueToPixelY (t_glist *glist, t_float f)
     t_float v = (t_float)1.0;
     t_float x = (t_float)0.0;
     
-    if (!glist_isGraphOnParent (glist)) { }     /* Scalars. */
-    else {
-        if (glist_hasWindow (glist)) { v = rectangle_getHeight (glist_getWindowGeometry (glist)); }
-        else {
-            t_rectangle r;
-            glist_getRectangleOnParent (glist, &r);
-            x = rectangle_getTopLeftY (&r);
-            v = rectangle_getHeight (&r);
-        }
+    if (glist_isWindowable (glist)) {
+        if (glist_isArray (glist))  { v = rectangle_getHeight (glist_getWindowGeometry (glist)); }
+    
+    } else {
+        t_rectangle r;
+        glist_getRectangleOnParent (glist, &r);
+        x = rectangle_getTopLeftY (&r);
+        if (glist_isArray (glist))  { v = rectangle_getHeight (&r); }
     }
     
     return (x + (v * ((f - bounds_getTop (glist_getBounds (glist))) / range)));
