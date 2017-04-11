@@ -133,8 +133,8 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     
     if (!gobj_isVisible (cast_gobj (owner), glist_getParent (owner))) { return 0; }
     
-    if (pd_class (x) == scalar_class)      { return 1; }    /* Always true. */
-    else if (pd_class (x) == garray_class) { return 1; }    /* Ditto. */
+    if (pd_class (x) == garray_class) { return 1; }                             /* Always true. */
+    if (pd_class (x) == scalar_class && glist_isArray (owner)) { return 1; }    /* Ditto. */
     else {
     //
     
