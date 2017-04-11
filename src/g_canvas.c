@@ -98,7 +98,7 @@ static void canvas_loadbangSubpatches (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
+static void canvas_setAsGraphOnParent (t_glist *glist, int flags, t_rectangle *r)
 {
     int isGraphOnParent = (flags & 1) != 0;
     // int hideText     = (flags & 2) != 0;
@@ -109,6 +109,8 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags)
             gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
         }
     }
+    
+    rectangle_setCopy (glist_getGraphGeometry (glist), r);
     
     if (!isGraphOnParent) { glist_setGraphOnParent (glist, 0); } 
     else {
@@ -180,6 +182,8 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int width   = (int)atom_getFloatAtIndex (4, argc, argv);
     int height  = (int)atom_getFloatAtIndex (5, argc, argv);
     
+    t_rectangle r;
+    
     bounds_setByAtoms (glist_getBounds (glist), argc, argv);
     
     #if PD_WITH_LEGACY
@@ -194,9 +198,9 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     #endif
     
-    rectangle_setByWidthAndHeight (glist_getGraphGeometry (glist), a, b, width, height);
+    rectangle_setByWidthAndHeight (&r, a, b, width, height);
     
-    canvas_setAsGraphOnParent (glist, flags);
+    canvas_setAsGraphOnParent (glist, flags, &r);
 }
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -698,7 +702,9 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     int marginX     = (int)atom_getFloatAtIndex (9, argc,  argv);
     int marginY     = (int)atom_getFloatAtIndex (10, argc, argv);
     
-    rectangle_setByWidthAndHeight (glist_getGraphGeometry (glist), marginX, marginY, width, height);
+    t_rectangle r;
+    
+    rectangle_setByWidthAndHeight (&r, marginX, marginY, width, height);
 
     if (scaleX == 0.0) { scaleX = (t_float)1.0; }
     if (scaleY == 0.0) { scaleY = (t_float)1.0; }
@@ -708,7 +714,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
         bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
     
-    canvas_setAsGraphOnParent (glist, isGOP);
+    canvas_setAsGraphOnParent (glist, isGOP, &r);
     
     glist_setDirty (glist, 1);
     
