@@ -70,6 +70,29 @@ static void glist_behaviorSelectedProceed (t_glist *x, t_glist *owner, int isSel
     glist_updateGraph (x);
 }
 
+static int glist_behaviorMouseProceed (t_glist *x, t_glist *owner, t_mouse *m)
+{
+    if (glist_hasWindow (x)) { return 0; }
+    else {
+        int k = 0;
+        int a = m->m_x;
+        int b = m->m_y;
+        
+        t_gobj *y = NULL;
+            
+        for (y = x->gl_graphics; y; y = y->g_next) {
+            t_rectangle t;
+            if (gobj_hit (y, x, a, b, &t)) {
+                if ((k = gobj_mouse (y, x, m))) {
+                    break;
+                }
+            }
+        }
+
+        return k; 
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -116,9 +139,8 @@ void glist_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 void glist_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
     t_glist *x = cast_glist (z);
-    t_gobj *y  = NULL;
-    
-    while ((y = x->gl_graphics)) { glist_objectRemove (x, y); }
+
+    glist_objectRemoveAll (x);
     
     text_widgetBehavior.w_fnDeleted (z, glist);
 }
@@ -238,29 +260,9 @@ int glist_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_glist *x = cast_glist (z);
 
-    if (!glist_isGraphOnParent (x)) { return (text_widgetBehavior.w_fnMouse (z, glist, m)); }
+    if (!glist_isGraphOnParent (x)) { return text_widgetBehavior.w_fnMouse (z, glist, m); }
     else {
-    //
-    if (glist_hasWindow (x)) { return 0; }
-    else {
-        int k = 0;
-        int a = m->m_x;
-        int b = m->m_y;
-        
-        t_gobj *y = NULL;
-            
-        for (y = x->gl_graphics; y; y = y->g_next) {
-            t_rectangle t;
-            if (gobj_hit (y, x, a, b, &t)) {
-                if ((k = gobj_mouse (y, x, m))) {
-                    break;
-                }
-            }
-        }
-
-        return k; 
-    }
-    //
+        return glist_behaviorMouseProceed (x, glist, m);
     }
 }
 
