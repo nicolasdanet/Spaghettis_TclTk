@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_behaviorVisibilityChanged   (t_gobj *, t_glist *, int);
+void glist_behaviorVisibilityChanged   (t_gobj *, t_glist *, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -53,8 +53,8 @@ void glist_updateGraphOnParent (t_glist *glist)
     if (glist_hasWindow (glist)) { glist_updateWindow (glist); }
     else {
         PD_ASSERT (glist_isParentOnScreen (glist));
-        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
-        canvas_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+        glist_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
+        glist_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
     }
     //
     }

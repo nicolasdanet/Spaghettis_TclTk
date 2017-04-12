@@ -1312,7 +1312,6 @@
 				37321C9B1E9244F2009C1EE0 /* g_interface.c */,
 				378971CD1C4F716700263434 /* g_file.c */,
 				377899481CFED1B10056BE61 /* g_make.c */,
-				37640D9E1E9A667400B7B901 /* g_behavior.c */,
 				378971C11C4F716700263434 /* g_canvas.c */,
 			);
 			name = Canvas;
@@ -1471,6 +1470,7 @@
 				379920471CD2649B00750527 /* g_select.c */,
 				378971C31C4F716700263434 /* g_edit.c */,
 				37640D9F1E9A667400B7B901 /* g_geometry.c */,
+				37640D9E1E9A667400B7B901 /* g_behavior.c */,
 				374A76321CF5FA81001A57EB /* g_serialize.c */,
 				3777AEA71E5B2844003F61A1 /* Canvas */,
 				3735D9701E5995B300858959 /* Objects */,

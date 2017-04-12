@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_widgetbehavior     canvas_widgetbehavior;
+extern t_widgetbehavior     glist_widgetbehavior;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -924,7 +924,7 @@ void canvas_setup (void)
 
     #endif
     
-    class_setWidgetBehavior (c, &canvas_widgetbehavior);
+    class_setWidgetBehavior (c, &glist_widgetbehavior);
     class_setSaveFunction (c, canvas_functionSave);
     class_setPropertiesFunction (c, canvas_functionProperties);
 

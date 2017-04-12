@@ -22,33 +22,33 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_behaviorGetRectangle        (t_gobj *, t_glist *, t_rectangle *);
-void canvas_behaviorDisplaced           (t_gobj *, t_glist *, int, int);
-void canvas_behaviorSelected            (t_gobj *, t_glist *, int);
-void canvas_behaviorActivated           (t_gobj *, t_glist *, int);
-void canvas_behaviorDeleted             (t_gobj *, t_glist *);
-void canvas_behaviorVisibilityChanged   (t_gobj *, t_glist *, int);
-int  canvas_behaviorMouse               (t_gobj *, t_glist *, t_mouse *);
+void glist_behaviorGetRectangle             (t_gobj *, t_glist *, t_rectangle *);
+void glist_behaviorDisplaced                (t_gobj *, t_glist *, int, int);
+void glist_behaviorSelected                 (t_gobj *, t_glist *, int);
+void glist_behaviorActivated                (t_gobj *, t_glist *, int);
+void glist_behaviorDeleted                  (t_gobj *, t_glist *);
+void glist_behaviorVisibilityChanged        (t_gobj *, t_glist *, int);
+int  glist_behaviorMouse                    (t_gobj *, t_glist *, t_mouse *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_widgetbehavior canvas_widgetbehavior =        /* Shared. */
+t_widgetbehavior glist_widgetbehavior =     /* Shared. */
     {
-        canvas_behaviorGetRectangle,
-        canvas_behaviorDisplaced,
-        canvas_behaviorSelected,
-        canvas_behaviorActivated,
-        canvas_behaviorDeleted,
-        canvas_behaviorVisibilityChanged,
-        canvas_behaviorMouse,
+        glist_behaviorGetRectangle,
+        glist_behaviorDisplaced,
+        glist_behaviorSelected,
+        glist_behaviorActivated,
+        glist_behaviorDeleted,
+        glist_behaviorVisibilityChanged,
+        glist_behaviorMouse,
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
+void glist_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_glist *x = cast_glist (z);
     
@@ -58,26 +58,26 @@ void canvas_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
     }
 }
 
-void canvas_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
+void glist_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_glist *x = cast_glist (z);
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
     else {
     //
-    if (glist_isParentOnScreen (x)) { canvas_behaviorVisibilityChanged (z, glist, 0); }
+    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (z, glist, 0); }
     
     object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
     object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
     
-    if (glist_isParentOnScreen (x)) { canvas_behaviorVisibilityChanged (z, glist, 1); }
+    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (z, glist, 1); }
     
     glist_updateLinesForObject (glist, cast_object (z));
     //
     }
 }
 
-void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
+void glist_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_glist *x = cast_glist (z);
     
@@ -95,14 +95,14 @@ void canvas_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     }
 }
 
-void canvas_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
+void glist_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 {
     t_glist *x = cast_glist (z);
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnActivated (z, glist, isActivated); }
 }
 
-void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
+void glist_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
     t_glist *x = cast_glist (z);
     t_gobj *y  = NULL;
@@ -112,7 +112,7 @@ void canvas_behaviorDeleted (t_gobj *z, t_glist *glist)
     text_widgetBehavior.w_fnDeleted (z, glist);
 }
 
-void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
+void glist_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_glist *x = cast_glist (z);
 
@@ -123,7 +123,7 @@ void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     
     t_rectangle r;
     
-    canvas_behaviorGetRectangle (z, glist, &r);
+    glist_behaviorGetRectangle (z, glist, &r);
     
     if (!err) {
     //
@@ -223,7 +223,7 @@ void canvas_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     }
 }
 
-int canvas_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
+int glist_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_glist *x = cast_glist (z);
 
