@@ -113,6 +113,9 @@ typedef struct _plotproperties {
     } t_plotproperties;
 
 typedef struct _plotpixels {
+    t_float     p_pixelX;
+    t_float     p_pixelY;
+    t_float     p_pixelW;
     t_float     p_x;
     t_float     p_y;
     t_float     p_w;
@@ -224,24 +227,24 @@ static void plot_getPixelsAtIndex (t_plotproperties *p,
             valueW = (t_float)0.0;
         }
         
-        c->p_x = relativeX + valueX;
-        c->p_y = relativeY + valueY;
-        c->p_w = valueW;
+        c->p_x = c->p_pixelX = relativeX + valueX;
+        c->p_y = c->p_pixelY = relativeY + valueY;
+        c->p_w = c->p_pixelW = valueW;
     }
     
     /* Convert to pixels. */
     
     {
-        t_float pixelX = glist_valueToPixelX (view, c->p_x);
-        t_float pixelY = glist_valueToPixelY (view, c->p_y);
-        t_float pixelW = glist_valueToPixelY (view, c->p_y + c->p_w) - pixelY;
+        t_float pixelX = glist_valueToPixelX (view, c->p_pixelX);
+        t_float pixelY = glist_valueToPixelY (view, c->p_pixelY);
+        t_float pixelW = glist_valueToPixelY (view, c->p_pixelY + c->p_pixelW) - pixelY;
 
         pixelW = (t_float)PD_ABS (pixelW);
         pixelW = (t_float)PD_MAX (pixelW, maximumWidth - 1.0);
         
-        c->p_x = pixelX;
-        c->p_y = pixelY;
-        c->p_w = pixelW;
+        c->p_pixelX = pixelX;
+        c->p_pixelY = pixelY;
+        c->p_pixelW = pixelW;
     }
 }
     
@@ -421,12 +424,10 @@ static void plot_behaviorGetRectangle (t_gobj *z,
             p.p_width, 
             &c);
         
-        rectangle_boundingBoxAddPoint (r, c.p_x, c.p_y - c.p_w);
-        rectangle_boundingBoxAddPoint (r, c.p_x, c.p_y + c.p_w);
+        rectangle_boundingBoxAddPoint (r, c.p_pixelX, c.p_pixelY - c.p_pixelW);
+        rectangle_boundingBoxAddPoint (r, c.p_pixelX, c.p_pixelY + c.p_pixelW);
         
-        if (view) {
-            plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, r);
-        }
+        if (view) { plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, r); }
     }
     //
     }
@@ -462,10 +463,10 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
     
     plot_getPixelsAtIndex (p, relativeX, relativeY, i + 1, glist, p->p_width, &next);
     
-    minY = PD_MIN (minY, here.p_y);
-    maxY = PD_MAX (maxY, here.p_y);
+    minY = PD_MIN (minY, here.p_pixelY);
+    maxY = PD_MAX (maxY, here.p_pixelY);
 
-    if (p->p_fieldX || i == size - 1 || (int)here.p_x != (int)next.p_x) {
+    if (p->p_fieldX || i == size - 1 || (int)here.p_pixelX != (int)next.p_pixelX) {
 
         sys_vGui (".x%lx.c create rectangle %d %d %d %d"
                         " -width %d"
@@ -473,9 +474,9 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
                         " -outline %s"
                         " -tags %lxPLOT\n",
                         glist_getView (glist),
-                        (p->p_fieldX == NULL) ? (int)here.p_x : (int)here.p_x - 1,
+                        (p->p_fieldX == NULL) ? (int)here.p_pixelX : (int)here.p_pixelX - 1,
                         (int)minY,
-                        (p->p_fieldX == NULL) ? (int)next.p_x : (int)here.p_x + 1,
+                        (p->p_fieldX == NULL) ? (int)next.p_pixelX : (int)here.p_pixelX + 1,
                         (int)maxY,
                         (int)PD_MAX (0, p->p_width - 1.0),
                         color->s_name,
@@ -512,14 +513,14 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     
     plot_getPixelsAtIndex (p, relativeX, relativeY, i, glist, p->p_width, &c);
     
-    if (p->p_fieldX || (int)c.p_x != previous) {
-        cX[elementsDrawn] = (int)(c.p_x);
-        cL[elementsDrawn] = (int)(c.p_y - c.p_w);
-        cH[elementsDrawn] = (int)(c.p_y + c.p_w);
+    if (p->p_fieldX || (int)c.p_pixelX != previous) {
+        cX[elementsDrawn] = (int)(c.p_pixelX);
+        cL[elementsDrawn] = (int)(c.p_pixelY - c.p_pixelW);
+        cH[elementsDrawn] = (int)(c.p_pixelY + c.p_pixelW);
         if (++elementsDrawn >= PLOT_MAXIMUM_DRAWN) { PD_BUG; break; }
     }
 
-    previous = (int)c.p_x;
+    previous = (int)c.p_pixelX;
     //
     }
     
@@ -579,10 +580,10 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
 
     plot_getPixelsAtIndex (p, relativeX, relativeY, i, glist, p->p_width, &c);
     
-    if (p->p_fieldX || (int)c.p_x != previous) {
-        heapstring_addSprintf (t, " %d %d", (int)c.p_x, (int)c.p_y);
+    if (p->p_fieldX || (int)c.p_pixelX != previous) {
+        heapstring_addSprintf (t, " %d %d", (int)c.p_pixelX, (int)c.p_pixelY);
         elementsDrawn++;
-        previous = (int)c.p_x;
+        previous = (int)c.p_pixelX;
     }
     //
     }
@@ -788,9 +789,9 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
     /* Compute the distance between the mouse and this point. */
     /* Up and down width is also considered. */
     
-    dY = (int)math_euclideanDistance (c.p_x, c.p_y, m->m_x, m->m_y);
-    dL = (int)math_euclideanDistance (c.p_x, c.p_y - c.p_w, m->m_x, m->m_y);
-    dH = (int)math_euclideanDistance (c.p_x, c.p_y + c.p_w, m->m_x, m->m_y);
+    dY = (int)math_euclideanDistance (c.p_pixelX, c.p_pixelY, m->m_x, m->m_y);
+    dL = (int)math_euclideanDistance (c.p_pixelX, c.p_pixelY - c.p_pixelW, m->m_x, m->m_y);
+    dH = (int)math_euclideanDistance (c.p_pixelX, c.p_pixelY + c.p_pixelW, m->m_x, m->m_y);
     
     /* The nearest point is matched. */
     
