@@ -60,6 +60,17 @@ void glist_updateGraphOnParent (t_glist *glist)
     }
 }
 
+void glist_updateGraph (t_glist *glist)
+{   
+    int isSelected = glist_isSelected (glist);
+    int hasWindow  = glist_hasWindow (glist);
+    
+    sys_vGui ("%s.c itemconfigure %lxGRAPH -fill #%06x\n",
+                    glist_getTagAsString (glist_getView (glist)),
+                    glist,
+                    hasWindow ? COLOR_MASKED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
+}
+
 void glist_updateRectangle (t_glist *glist)
 {
     if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {

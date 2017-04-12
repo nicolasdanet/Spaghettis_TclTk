@@ -48,13 +48,39 @@ t_widgetbehavior glist_widgetbehavior =     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void glist_behaviorGetRectangleProceed (t_glist *x, t_glist *owner, t_rectangle *r)
+{
+    glist_getRectangleOnParent (x, r);
+}
+
+static void glist_behaviorDisplacedProceed (t_glist *x, t_glist *owner, int deltaX, int deltaY)
+{
+    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (cast_gobj (x), owner, 0); }
+    
+    object_setX (cast_object (x), object_getX (cast_object (x)) + deltaX);
+    object_setY (cast_object (x), object_getY (cast_object (x)) + deltaY);
+    
+    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (cast_gobj (x), owner, 1); }
+    
+    glist_updateLinesForObject (owner, cast_object (x));
+}
+
+static void glist_behaviorSelectedProceed (t_glist *x, t_glist *owner, int isSelected)
+{
+    glist_updateGraph (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void glist_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_glist *x = cast_glist (z);
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnGetRectangle (z, glist, r); }
     else {
-        glist_getRectangleOnParent (x, r);
+        glist_behaviorGetRectangleProceed (x, glist, r);
     }
 }
 
@@ -64,16 +90,7 @@ void glist_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
     else {
-    //
-    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (z, glist, 0); }
-    
-    object_setX (cast_object (z), object_getX (cast_object (z)) + deltaX);
-    object_setY (cast_object (z), object_getY (cast_object (z)) + deltaY);
-    
-    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (z, glist, 1); }
-    
-    glist_updateLinesForObject (glist, cast_object (z));
-    //
+        glist_behaviorDisplacedProceed (x, glist, deltaX, deltaY);
     }
 }
 
@@ -85,13 +102,7 @@ void glist_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
     else {
-    
-    int color = glist_hasWindow (x) ? COLOR_MASKED : (glist_isSelected (x) ? COLOR_SELECTED : COLOR_NORMAL);
-    
-    sys_vGui (".x%lx.c itemconfigure %lxGRAPH -fill #%06x\n",
-                    glist_getView (glist),
-                    x,
-                    color);
+        glist_behaviorSelectedProceed (x, glist, isSelected);
     }
 }
 
