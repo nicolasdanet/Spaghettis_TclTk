@@ -187,7 +187,7 @@ void    glist_updateWindow                  (t_glist *g);
 void    glist_updateLinesForObject          (t_glist *g, t_object *o);
 void    glist_updateLineSelected            (t_glist *g, int isSelected);
 void    glist_updateGraphOnParent           (t_glist *g);
-void    glist_updateGraph                   (t_glist *g);
+void    glist_updateRectangleOnParent       (t_glist *g);
 void    glist_updateRectangle               (t_glist *g);
 void    glist_updateLasso                   (t_glist *g, int a, int b);
 void    glist_updateTemporary               (t_glist *g, int a, int b, int c, int d);
@@ -199,6 +199,7 @@ void    glist_updateLine                    (t_glist *g, t_cord *c);
 
 void    glist_drawAllLines                  (t_glist *g);
 void    glist_drawAllCommentBars            (t_glist *g);
+void    glist_drawRectangleOnParent         (t_glist *g);
 void    glist_drawRectangle                 (t_glist *g);
 void    glist_drawLasso                     (t_glist *g, int a, int b);
 void    glist_drawTemporary                 (t_glist *g, int a, int b, int isSignal);
@@ -208,6 +209,7 @@ void    glist_drawLine                      (t_glist *g, t_cord *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    glist_eraseRectangleOnParent        (t_glist *g);
 void    glist_eraseAllCommentBars           (t_glist *g);
 void    glist_eraseLasso                    (t_glist *g);
 void    glist_eraseTemporary                (t_glist *g);

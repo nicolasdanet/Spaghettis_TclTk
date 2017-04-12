@@ -67,7 +67,25 @@ static void glist_behaviorDisplacedProceed (t_glist *x, t_glist *owner, int delt
 
 static void glist_behaviorSelectedProceed (t_glist *x, t_glist *owner, int isSelected)
 {
-    glist_updateGraph (x);
+    glist_updateRectangleOnParent (x);
+}
+
+static void glist_behaviorVisibilityChangedProceed (t_glist *x, t_glist *owner, int isVisible)
+{
+    if (isVisible) { glist_drawRectangleOnParent (x); } 
+    else {
+        glist_eraseRectangleOnParent (x);
+    }
+        
+    if (!glist_hasWindow (x)) {
+    //
+    t_gobj *y = NULL; 
+        
+    for (y = x->gl_graphics; y; y = y->g_next) { 
+        gobj_visibilityChanged (y, x, isVisible); 
+    }
+    //
+    }
 }
 
 static int glist_behaviorMouseProceed (t_glist *x, t_glist *owner, t_mouse *m)
@@ -151,108 +169,7 @@ void glist_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnVisibilityChanged (z, glist, isVisible); }
     else {
-    //
-    char tag[PD_STRING] = { 0 }; t_error err = string_sprintf (tag, PD_STRING, "%lxGRAPH", x);
-    
-    t_rectangle r;
-    
-    glist_behaviorGetRectangle (z, glist, &r);
-    
-    if (!err) {
-    //
-    int a = rectangle_getTopLeftX (&r);
-    int b = rectangle_getTopLeftY (&r);
-    int c = rectangle_getBottomRightX (&r);
-    int d = rectangle_getBottomRightY (&r);
-        
-    if (glist_hasWindow (x)) {
-    //
-    if (isVisible) {
-        
-        sys_vGui (".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d"
-                        " -fill #%06x"
-                        " -tags %s\n",
-                        glist_getView (glist_getParent (x)),
-                        a,
-                        b,
-                        a,
-                        d,
-                        c,
-                        d,
-                        c,
-                        b,
-                        a,
-                        b,
-                        COLOR_MASKED,
-                        tag);
-    } else {
-                
-        sys_vGui (".x%lx.c delete %s\n",
-                        glist_getView (glist_getParent (x)),
-                        tag);
-    }
-    //
-    } else {
-    //
-    t_gobj *y = NULL;
-                
-    if (isVisible) {
-        
-        int i = 0;
-
-        sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
-                        " -fill #%06x"
-                        " -tags %s\n",
-                        glist_getView (glist_getParent (x)),
-                        a,
-                        b,
-                        a,
-                        d,
-                        c,
-                        d,
-                        c,
-                        b,
-                        a,
-                        b,
-                        (glist_isSelected (x) ? COLOR_SELECTED : COLOR_NORMAL),
-                        tag);
-        
-        for (y = x->gl_graphics; y; y = y->g_next) {
-        //
-        if (pd_class (y) == garray_class) {
-        //
-        sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
-                        " -anchor nw"
-                        " -font [::getFont %d]"             // --
-                        " -fill #%06x"
-                        " -tags %s\n",
-                        glist_getView (glist_getParent (x)),
-                        a,
-                        b - (++i) * (int)font_getHostFontHeight (glist_getFontSize (x)),
-                        garray_getName ((t_garray *)y)->s_name,
-                        font_getHostFontSize (glist_getFontSize (x)),
-                        (glist_isSelected (x) ? COLOR_SELECTED : COLOR_NORMAL),
-                        tag);
-        //
-        }
-        //
-        }
-        
-        for (y = x->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, x, 1); }
-            
-    } else {
-    
-        sys_vGui (".x%lx.c delete %s\n",
-                    glist_getView (glist_getParent (x)),
-                    tag);
-                    
-        for (y = x->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, x, 0); }
-    }
-    //
-    }
-    //
-    }
-    //
+        glist_behaviorVisibilityChangedProceed (x, glist, isVisible);
     }
 }
 

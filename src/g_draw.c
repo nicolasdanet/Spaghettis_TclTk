@@ -60,16 +60,23 @@ void glist_updateGraphOnParent (t_glist *glist)
     }
 }
 
-void glist_updateGraph (t_glist *glist)
+/* The rectangle drawn onto the parent. */
+
+void glist_updateRectangleOnParent (t_glist *glist)
 {   
     int isSelected = glist_isSelected (glist);
     int hasWindow  = glist_hasWindow (glist);
+    int color      = hasWindow ? COLOR_MASKED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
+    
+    t_glist *view  = glist_getView (glist_getParent (glist));
     
     sys_vGui ("%s.c itemconfigure %lxGRAPH -fill #%06x\n",
-                    glist_getTagAsString (glist_getView (glist)),
+                    glist_getTagAsString (view),
                     glist,
-                    hasWindow ? COLOR_MASKED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
+                    color);
 }
+
+/* The dashed rectangle drawn to show the area. */
 
 void glist_updateRectangle (t_glist *glist)
 {
@@ -193,6 +200,96 @@ void glist_updateLinesForObject (t_glist *glist, t_object *o)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+/* For compatibility several names can be rendered. */
+
+static void glist_drawArrayName (t_glist *glist)
+{
+    if (glist_isArray (glist)) {
+    //
+    int isSelected = glist_isSelected (glist);
+    int color      = isSelected ? COLOR_SELECTED : COLOR_NORMAL;
+    
+    t_glist *view  = glist_getView (glist_getParent (glist));
+    
+    t_rectangle r;
+
+    glist_getRectangleOnParent (glist, &r);
+
+    {
+        int a = rectangle_getTopLeftX (&r);
+        int b = rectangle_getTopLeftY (&r);
+        int k = font_getHostFontSize (glist_getFontSize (view));
+        int h = (int)font_getHostFontHeight (glist_getFontSize (view));
+        int i = 0;
+        
+        t_gobj *y = NULL;
+        
+        for (y = glist->gl_graphics; y; y = y->g_next) {
+        //
+        if (pd_class (y) == garray_class) {
+        //
+        sys_vGui ("%s.c create text %d %d -text {%s}"   // --
+                        " -anchor nw"
+                        " -font [::getFont %d]"         // --
+                        " -fill #%06x"
+                        " -tags %lxGRAPH\n",
+                        glist_getTagAsString (view),
+                        a,
+                        b - (++i) * h,
+                        garray_getName ((t_garray *)y)->s_name,
+                        k,
+                        color,
+                        glist);
+        //
+        }
+        //
+        }
+    }
+    //
+    }
+}
+
+void glist_drawRectangleOnParent (t_glist *glist)
+{
+    int isSelected   = glist_isSelected (glist);
+    int hasWindow    = glist_hasWindow (glist);
+    int color        = hasWindow ? COLOR_MASKED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
+    const char *type = hasWindow ? "polygon" : "line";
+    
+    t_glist *view = glist_getView (glist_getParent (glist));
+    
+    t_rectangle r;
+    
+    glist_getRectangleOnParent (glist, &r);
+    
+    {
+        int a = rectangle_getTopLeftX (&r);
+        int b = rectangle_getTopLeftY (&r);
+        int c = rectangle_getBottomRightX (&r);
+        int d = rectangle_getBottomRightY (&r);
+        
+        sys_vGui ("%s.c create %s %d %d %d %d %d %d %d %d %d %d"
+                        " -fill #%06x"
+                        " -tags %lxGRAPH\n",
+                        glist_getTagAsString (view),
+                        type,
+                        a,
+                        b,
+                        a,
+                        d,
+                        c,
+                        d,
+                        c,
+                        b,
+                        a,
+                        b,
+                        color,
+                        glist);
+    }
+    
+    if (!hasWindow) { glist_drawArrayName (glist); }
+}
 
 void glist_drawRectangle (t_glist *glist)
 {
@@ -324,6 +421,13 @@ void glist_drawAllCommentBars (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void glist_eraseRectangleOnParent (t_glist *glist)
+{
+    t_glist *view = glist_getView (glist_getParent (glist));
+    
+    sys_vGui ("%s.c delete %lxGRAPH\n", glist_getTagAsString (view), glist);
+}
 
 void glist_eraseLasso (t_glist *glist)
 {
