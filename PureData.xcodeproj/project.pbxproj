@@ -1307,7 +1307,6 @@
 		3777AEA71E5B2844003F61A1 /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
-				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
 				37321C9A1E9244F2009C1EE0 /* g_control.c */,
 				37321C9B1E9244F2009C1EE0 /* g_interface.c */,
 				378971CD1C4F716700263434 /* g_file.c */,
@@ -1459,6 +1458,7 @@
 				3742465E1E59AAE3009E8DC1 /* g_patch.h */,
 				373303351E7EE9D9000DF74C /* g_editor.h */,
 				3713CCB51E83A2E100B6867D /* g_glist.h */,
+				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				37F6E1711E7C3D6100A42588 /* g_typeset.c */,
 				378971CE1C4F716700263434 /* g_box.c */,
