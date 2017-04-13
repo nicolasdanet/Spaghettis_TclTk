@@ -25,6 +25,7 @@ t_glist *glist_new (t_glist *owner, t_symbol *name, t_bounds *b, t_rectangle *r1
     x->gl_holder            = gmaster_createWithGlist (x);
     x->gl_parent            = owner;
     x->gl_name              = name;
+    x->gl_environment       = instance_environmentFetchIfAny();
     x->gl_editor            = editor_new (x);
     x->gl_uniqueIdentifier  = utils_unique();
     x->gl_fontSize          = (owner ? glist_getFontSize (owner) : font_getDefaultFontSize());
@@ -34,6 +35,24 @@ t_glist *glist_new (t_glist *owner, t_symbol *name, t_bounds *b, t_rectangle *r1
     if (r2) { rectangle_setCopy (&x->gl_geometryWindow, r2); }
     
     return x;
+}
+
+void glist_free (t_glist *glist)
+{
+    glist_deselectAll (glist);
+    glist_objectRemoveAll (glist);
+    
+    if (glist_hasView (glist)) { canvas_visible (glist, 0); }
+    
+    stub_destroyWithKey ((void *)glist);
+    
+    glist_unbind (glist);
+
+    editor_free (glist_getEditor (glist));
+    environment_free (glist->gl_environment);
+    gmaster_reset (glist_getMaster (glist));
+    
+    if (glist_isRoot (glist)) { instance_rootsRemove (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

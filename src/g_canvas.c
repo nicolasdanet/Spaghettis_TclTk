@@ -129,35 +129,6 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags, t_rectangle *r
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *canvas_newSubpatch (t_symbol *s)
-{
-    t_atom a[6];
-    t_glist *x = NULL;
-    t_glist *z = instance_contextGetCurrent();
-    
-    if (!utils_isNameAllowedForWindow (s)) { warning_badName (sym_pd, s); }
-    
-    if (s == &s_) { s = sym_Patch; }
-    
-    SET_FLOAT  (a + 0, (t_float)0.0);
-    SET_FLOAT  (a + 1, WINDOW_HEADER);
-    SET_FLOAT  (a + 2, WINDOW_WIDTH);
-    SET_FLOAT  (a + 3, WINDOW_HEIGHT);
-    SET_SYMBOL (a + 4, s);
-    SET_FLOAT  (a + 5, (t_float)1.0);
-    
-    x = canvas_new (NULL, NULL, 6, a);
-    x->gl_parent = z;
-    
-    instance_stackPopPatch (x, 1);
-    
-    return x;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_visible (glist, 1);
@@ -734,6 +705,31 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void *canvas_newSubpatch (t_symbol *s)
+{
+    t_atom a[6];
+    t_glist *x = NULL;
+    t_glist *z = instance_contextGetCurrent();
+    
+    if (!utils_isNameAllowedForWindow (s)) { warning_badName (sym_pd, s); }
+    
+    if (s == &s_) { s = sym_Patch; }
+    
+    SET_FLOAT  (a + 0, (t_float)0.0);
+    SET_FLOAT  (a + 1, WINDOW_HEADER);
+    SET_FLOAT  (a + 2, WINDOW_WIDTH);
+    SET_FLOAT  (a + 3, WINDOW_HEIGHT);
+    SET_SYMBOL (a + 4, s);
+    SET_FLOAT  (a + 5, (t_float)1.0);
+    
+    x = canvas_new (NULL, NULL, 6, a);
+    x->gl_parent = z;
+    
+    instance_stackPopPatch (x, 1);
+    
+    return x;
+}
+
 t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     t_glist *x          = (t_glist *)pd_new (canvas_class);
@@ -805,25 +801,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_free (t_glist *glist)
 {
-    int dspstate = dsp_suspend();
-    t_gobj *y = NULL;
-        
-    glist_deselectAll (glist);
-    
-    while ((y = glist->gl_graphics)) { glist_objectRemove (glist, y); }
-    if (glist == glist_getView (glist)) { canvas_visible (glist, 0); }
-    
-    glist_unbind (glist);
-
-    environment_free (glist->gl_environment);
-    editor_free (glist_getEditor (glist));
-    
-    dsp_resume (dspstate);
-    
-    gmaster_reset (glist_getMaster (glist));
-    stub_destroyWithKey ((void *)glist);
-    
-    if (!glist_hasParent (glist)) { instance_rootsRemove (glist); }
+    glist_free (glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------

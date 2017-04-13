@@ -45,10 +45,12 @@ struct _glist {
 #pragma mark -
 
 t_glist         *glist_new                  (t_glist *owner, 
-                                                t_symbol *name,
-                                                t_bounds *bounds, 
+                                                t_symbol    *name,
+                                                t_bounds    *bounds, 
                                                 t_rectangle *graph, 
                                                 t_rectangle *window);
+
+void            glist_free                  (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -371,6 +373,11 @@ static inline char *glist_getTagAsString (t_glist *g)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static inline int glist_hasView (t_glist *g)
+{
+    return (g == glist_getView (g));
+}
 
 static inline int glist_hasParent (t_glist *g)
 {
