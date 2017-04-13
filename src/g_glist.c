@@ -24,12 +24,12 @@ t_glist *glist_new (t_glist *owner, t_symbol *name, t_bounds *b, t_rectangle *r1
     
     x->gl_holder            = gmaster_createWithGlist (x);
     x->gl_parent            = owner;
-    x->gl_name              = name;
     x->gl_environment       = instance_environmentFetchIfAny();
+    x->gl_name              = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_editor            = editor_new (x);
     x->gl_uniqueIdentifier  = utils_unique();
     x->gl_fontSize          = (owner ? glist_getFontSize (owner) : font_getDefaultFontSize());
-    
+
     if (b)  { bounds_setCopy (&x->gl_bounds, b);             }
     if (r1) { rectangle_setCopy (&x->gl_geometryGraph, r1);  }
     if (r2) { rectangle_setCopy (&x->gl_geometryWindow, r2); }
@@ -174,6 +174,11 @@ void glist_setDirty (t_glist *glist, int n)
     glist_updateTitle (y);
     //
     }
+}
+
+void glist_setFontSize (t_glist *g, int n)
+{
+    g->gl_fontSize = font_getNearestValidFontSize (n);
 }
 
 void glist_setMotion (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)

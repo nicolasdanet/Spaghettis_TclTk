@@ -61,6 +61,7 @@ static inline t_float bounds_getRangeY (t_bounds *b)
 void        rectangle_set                               (t_rectangle *r, int a, int b, int c, int d);
 void        rectangle_setByWidthAndHeight               (t_rectangle *r, int a, int b, int width, int height);
 void        rectangle_setByAtoms                        (t_rectangle *r, int argc, t_atom *argv);
+void        rectangle_setByAtomsByWidthAndHeight        (t_rectangle *r, int argc, t_atom *argv);
 void        rectangle_setEverything                     (t_rectangle *r);
 void        rectangle_setNothing                        (t_rectangle *r);
 void        rectangle_setCopy                           (t_rectangle *r, t_rectangle *toCopy);

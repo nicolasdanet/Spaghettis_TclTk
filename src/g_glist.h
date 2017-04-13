@@ -100,6 +100,7 @@ int     glist_fileOpen                      (t_glist *g, char *name, char *exten
 
 void    glist_setName                       (t_glist *g, t_symbol *name);
 void    glist_setDirty                      (t_glist *g, int n);
+void    glist_setFontSize                   (t_glist *g, int n);
 void    glist_setMotion                     (t_glist *g, t_gobj *y, t_motionfn fn, int a, int b);
 
 // -----------------------------------------------------------------------------------------------------------

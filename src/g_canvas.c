@@ -718,7 +718,7 @@ static void *canvas_newSubpatch (t_symbol *s)
     SET_FLOAT  (a + 0, (t_float)0.0);
     SET_FLOAT  (a + 1, WINDOW_HEADER);
     SET_FLOAT  (a + 2, WINDOW_WIDTH);
-    SET_FLOAT  (a + 3, WINDOW_HEIGHT);
+    SET_FLOAT  (a + 3, WINDOW_HEIGHT + WINDOW_HEADER);
     SET_SYMBOL (a + 4, s);
     SET_FLOAT  (a + 5, (t_float)1.0);
     
@@ -732,71 +732,42 @@ static void *canvas_newSubpatch (t_symbol *s)
 
 t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    t_glist *x          = (t_glist *)pd_new (canvas_class);
-    t_glist *owner      = instance_contextGetCurrent();
-    t_symbol *name      = &s_;
+    t_glist *owner  = instance_contextGetCurrent();
+    t_symbol *name  = &s_;
+    int visible     = 0;
+    int fontSize    = 0;
     
-    int visible         = 0;
-    int width           = WINDOW_WIDTH;
-    int height          = WINDOW_HEIGHT;
-    int topLeftX        = 0;
-    int topLeftY        = WINDOW_HEADER;
-    t_fontsize fontSize = (owner ? glist_getFontSize (owner) : font_getDefaultFontSize());
+    t_rectangle r1, r2; t_bounds bounds;
     
-    /* Top. */
+    t_error err = bounds_set (&bounds, 0, 0, 1, 1);
+    rectangle_set (&r1, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    rectangle_set (&r2, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
     
-    if (argc == 5) {
-                                                  
-        topLeftX    = (int)atom_getFloatAtIndex (0, argc, argv);
-        topLeftY    = (int)atom_getFloatAtIndex (1, argc, argv);
-        width       = (int)atom_getFloatAtIndex (2, argc, argv);
-        height      = (int)atom_getFloatAtIndex (3, argc, argv);
-        fontSize    = (int)atom_getFloatAtIndex (4, argc, argv);
-        
-        fontSize    = font_getNearestValidFontSize (fontSize);
-    }
+    if (argc >= 4) { rectangle_setByAtomsByWidthAndHeight (&r2, argc, argv); }
+    if (argc == 5) { fontSize = (int)atom_getFloat (argv + 4); }
+    if (argc == 6) { name = atom_getSymbol (argv + 4); visible = (int)atom_getFloat (argv + 5); }
     
-    /* Subpatch. */
-    
-    if (argc == 6)  {
-    
-        topLeftX    = (int)atom_getFloatAtIndex (0, argc, argv);
-        topLeftY    = (int)atom_getFloatAtIndex (1, argc, argv);
-        width       = (int)atom_getFloatAtIndex (2, argc, argv);
-        height      = (int)atom_getFloatAtIndex (3, argc, argv);
-        name        = atom_getSymbolAtIndex (4, argc, argv);
-        visible     = (int)atom_getFloatAtIndex (5, argc, argv);
-    }
-
-    topLeftX = PD_MAX (topLeftX, 0);
-    topLeftY = PD_MAX (topLeftY, WINDOW_HEADER);
+    if (!err) {
+    //
+    t_glist *x = glist_new (owner, name, &bounds, &r1, &r2);
     
     object_setType (cast_object (x), TYPE_OBJECT);
     
-    x->gl_holder = gmaster_createWithGlist (x);
-    x->gl_parent = owner;
+    if (fontSize) { glist_setFontSize (x, fontSize); }
     
-    x->gl_uniqueIdentifier = utils_unique();
-    
-    if (!owner) { instance_rootsAdd (x); }
-    
-    x->gl_environment   = instance_environmentFetchIfAny();
-    x->gl_editor        = editor_new (x);
-    x->gl_name          = (name != &s_ ? name : environment_getFileName (x->gl_environment));
-    x->gl_fontSize      = fontSize;
-    
-    bounds_set (glist_getBounds (x), (t_float)0.0, (t_float)0.0, (t_float)1.0, (t_float)1.0);
-    rectangle_set (glist_getWindowGeometry (x), topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     glist_setEditMode (x, 0);
     glist_setOpenedAtLoad (x, visible);
-    
-    glist_loadBegin (x);
-    
     glist_bind (x);
     
-    instance_stackPush (x);
+    if (glist_isRoot (x)) { instance_rootsAdd (x); }
+    
+    glist_loadBegin (x); instance_stackPush (x);
     
     return x;
+    //
+    }
+    
+    return NULL;
 }
 
 void canvas_free (t_glist *glist)
