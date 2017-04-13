@@ -335,12 +335,16 @@ void gpointer_redraw (t_gpointer *gp)
 
 void gpointer_erase (t_gpointer *gp)
 {
-    gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), gpointer_getView (gp), 0);
+    t_glist *view = gpointer_getView (gp);
+    
+    if (glist_isOnScreen (view)) { gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), view, 0); }
 }
 
 void gpointer_draw (t_gpointer *gp)
 {
-    gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), gpointer_getView (gp), 1);
+    t_glist *view = gpointer_getView (gp);
+        
+    if (glist_isOnScreen (view)) { gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), view, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
