@@ -722,7 +722,7 @@ static void *canvas_newSubpatch (t_symbol *s)
     SET_SYMBOL (a + 4, s);
     SET_FLOAT  (a + 5, (t_float)1.0);
     
-    x = canvas_new (NULL, NULL, 6, a);
+    x = canvas_newPatch (6, a);
     x->gl_parent = z;
     
     instance_stackPopPatch (x, 1);
@@ -730,7 +730,7 @@ static void *canvas_newSubpatch (t_symbol *s)
     return x;
 }
 
-t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
+t_glist *canvas_newPatch (int argc, t_atom *argv)
 {
     t_glist *owner  = instance_contextGetCurrent();
     t_symbol *name  = &s_;
@@ -768,6 +768,11 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     }
     
     return NULL;
+}
+
+t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    return canvas_newPatch (argc, argv);
 }
 
 void canvas_free (t_glist *glist)

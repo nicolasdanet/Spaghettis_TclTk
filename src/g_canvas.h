@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
+t_glist         *canvas_newPatch                        (int argc, t_atom *argv);
 
 void            canvas_free                             (t_glist *glist);
 
