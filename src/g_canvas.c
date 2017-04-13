@@ -129,7 +129,7 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags, t_rectangle *r
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *subpatch_new (t_symbol *s)
+static void *canvas_newSubpatch (t_symbol *s)
 {
     t_atom a[6];
     t_glist *x = NULL;
@@ -351,41 +351,6 @@ void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_requireArrayDialog (t_glist *glist)
-{
-    char t[PD_STRING] = { 0 };
-    t_symbol *s = utils_getDefaultBindName (garray_class, sym_array);
-    t_error err = string_sprintf (t, PD_STRING, "::ui_array::show %%s %s 100 3\n", s->s_name);
-    
-    PD_ASSERT (!err);
-    
-    stub_new (cast_pd (glist), (void *)glist, t);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_editmode (t_glist *glist, t_float f)
-{
-    int state = (int)(f != 0.0);
-     
-    if (glist_hasEditMode (glist) != state) {
-    //
-    glist_setEditMode (glist, state);
-    
-    if (state) { glist_drawAllCommentBars (glist); }
-    else {
-        glist_deselectAll (glist); glist_eraseAllCommentBars (glist);
-    }
-    
-    if (glist_isOnScreen (glist)) {
-        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), glist_hasEditMode (glist));
-    }
-    //
-    }
-}
-
 static void canvas_open (t_glist *glist)
 {
     /* Opening a GOP in its own window. */
@@ -413,6 +378,26 @@ void canvas_loadbang (t_glist *glist)
 {
     canvas_loadbangAbstractions (glist);
     canvas_loadbangSubpatches (glist);
+}
+
+static void canvas_editmode (t_glist *glist, t_float f)
+{
+    int state = (int)(f != 0.0);
+     
+    if (glist_hasEditMode (glist) != state) {
+    //
+    glist_setEditMode (glist, state);
+    
+    if (state) { glist_drawAllCommentBars (glist); }
+    else {
+        glist_deselectAll (glist); glist_eraseAllCommentBars (glist);
+    }
+    
+    if (glist_isOnScreen (glist)) {
+        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), glist_hasEditMode (glist));
+    }
+    //
+    }
 }
 
 void canvas_dirty (t_glist *glist, t_float f)
@@ -498,9 +483,9 @@ void canvas_map (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_remove (t_glist *glist, t_symbol *s)
+void canvas_remove (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *t = utils_makeTemplateIdentifier (s);
+    t_symbol *t = utils_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
     
     if (!template_isPrivate (t)) {
     //
@@ -555,6 +540,22 @@ static void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     error_invalid (sym_graph, sym_bounds); 
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_requireArrayDialog (t_glist *glist)
+{
+    char t[PD_STRING] = { 0 };
+    t_symbol *s = utils_getDefaultBindName (garray_class, sym_array);
+    t_error err = string_sprintf (t, PD_STRING, "::ui_array::show %%s %s 100 3\n", s->s_name);
+    
+    PD_ASSERT (!err);
+    
+    stub_new (cast_pd (glist), (void *)glist, t);
+}
+
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -840,87 +841,84 @@ void canvas_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
 
-    class_addCreator ((t_newmethod)subpatch_new, sym_pd, A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)canvas_newSubpatch, sym_pd, A_DEFSYMBOL, A_NULL);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addCreator ((t_newmethod)canvas_newSubpatch, sym_page, A_DEFSYMBOL, A_NULL);
+        
+    #endif
     
     class_addDSP (c, (t_method)canvas_dsp);
     class_addClick (c, (t_method)canvas_click);
     
-    class_addMethod (c, (t_method)canvas_key,                   sym_key,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_motion,                sym_motion,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mouseDown,             sym_mouse,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_window,                sym_window,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_coords,                sym_coords,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_restore,               sym_restore,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_width,                 sym_f,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_connect,               sym_connect,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_disconnect,            sym_disconnect,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_coords,                sym_coords,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_restore,               sym_restore,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_width,                 sym_f,                  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_connect,               sym_connect,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_disconnect,            sym_disconnect,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_rename,                sym_rename,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeObject,            sym_obj,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeMessage,           sym_msg,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeArray,             sym_array,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeFloatAtom,         sym_floatatom,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeSymbolAtom,        sym_symbolatom,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeComment,           sym_comment,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeScalar,            sym_scalar,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeBang,              sym_bng,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeToggle,            sym_tgl,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeSliderVertical,    sym_vslider,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeSliderHorizontal,  sym_hslider,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeRadioVertical,     sym_vradio,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeRadioHorizontal,   sym_hradio,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeVu,                sym_vu,                 A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,                A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)canvas_makeObject,            sym_obj,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeMessage,           sym_msg,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeArray,             sym_array,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeArrayFromDialog,   sym__arraydialog,   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeFloatAtom,         sym_floatatom,      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeSymbolAtom,        sym_symbolatom,     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeComment,           sym_comment,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeScalar,            sym_scalar,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeBang,              sym_bng,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeToggle,            sym_tgl,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeSliderVertical,    sym_vslider,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeSliderHorizontal,  sym_hslider,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeRadioVertical,     sym_vradio,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeRadioHorizontal,   sym_hradio,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeVu,                sym_vu,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,            A_GIMME, A_NULL);
-            
-    class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,         A_NULL);
+    class_addMethod (c, (t_method)canvas_key,                   sym_key,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_motion,                sym_motion,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mouseDown,             sym_mouse,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_window,                sym_window,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_bounds,                sym_bounds,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_remove,                sym_destroy,            A_GIMME, A_NULL);
+    
+    class_addMethod (c, (t_method)canvas_save,                  sym_save,               A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,             A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_close,                 sym_close,              A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_open,                  sym_open,               A_NULL);
+    class_addMethod (c, (t_method)canvas_loadbang,              sym_loadbang,           A_NULL);
+    class_addMethod (c, (t_method)canvas_clear,                 sym_clear,              A_NULL);
+    class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,           A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,              A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_visible,               sym_visible,            A_FLOAT, A_NULL);
 
-    class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,       A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_close,                 sym_close,          A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_open,                  sym_open,           A_NULL);
-    class_addMethod (c, (t_method)canvas_loadbang,              sym_loadbang,       A_NULL);
-    class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,          A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_visible,               sym_visible,        A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_map,                   sym__map,           A_FLOAT, A_NULL);
-
-    class_addMethod (c, (t_method)canvas_cut,                   sym__cut,           A_NULL);
-    class_addMethod (c, (t_method)canvas_copy,                  sym__copy,          A_NULL);
-    class_addMethod (c, (t_method)canvas_paste,                 sym__paste,         A_NULL);
-    class_addMethod (c, (t_method)canvas_duplicate,             sym__duplicate,     A_NULL);
-    class_addMethod (c, (t_method)canvas_selectAll,             sym__selectall,     A_NULL);
+    class_addMethod (c, (t_method)canvas_map,                   sym__map,               A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_cut,                   sym__cut,               A_NULL);
+    class_addMethod (c, (t_method)canvas_copy,                  sym__copy,              A_NULL);
+    class_addMethod (c, (t_method)canvas_paste,                 sym__paste,             A_NULL);
+    class_addMethod (c, (t_method)canvas_duplicate,             sym__duplicate,         A_NULL);
+    class_addMethod (c, (t_method)canvas_selectAll,             sym__selectall,         A_NULL);
     
-    class_addMethod (c, (t_method)canvas_remove,                sym_destroy,        A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)canvas_clear,                 sym_clear,          A_NULL);
-    class_addMethod (c, (t_method)canvas_rename,                sym_rename,         A_GIMME, A_NULL);
-    
-    class_addMethod (c, (t_method)canvas_save,                  sym_save,           A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,         A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,    A_GIMME, A_NULL);
-        
-    class_addMethod (c, (t_method)canvas_bounds,                sym_bounds,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,   A_GIMME, A_NULL);
-        
-    class_addMethod (c, (t_method)canvas_fromDialog,
-        sym__canvasdialog,
-        A_GIMME,
-        A_NULL);
+    class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,             A_NULL);
+    class_addMethod (c, (t_method)canvas_makeArrayFromDialog,   sym__arraydialog,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_fromDialog,            sym__canvasdialog,      A_GIMME, A_NULL);
    
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)canvas_open,                  sym_menu__dash__open,   A_NULL);
-    class_addMethod (c, (t_method)canvas_close,                 sym_menuclose,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_makeComment,           sym_text,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeToggle,            sym_toggle,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeVu,                sym_vumeter,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makePanel,             sym_mycnv,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_numbox,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_visible,               sym_vis,                A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_close,                 sym_menuclose,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_save,                  sym_menusave,           A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,                sym_menusaveas,         A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym_menuarray,          A_NULL);
-
-    class_addCreator ((t_newmethod)subpatch_new, sym_page, A_DEFSYMBOL, A_NULL);
 
     #endif
     
