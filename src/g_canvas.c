@@ -707,13 +707,9 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 
 static void *canvas_newSubpatch (t_symbol *s)
 {
-    t_glist *x = NULL;
-    t_glist *z = instance_contextGetCurrent();
+    t_glist *x = canvas_newPatch (s, NULL, 1, 0);
     
     if (!utils_isNameAllowedForWindow (s)) { warning_badName (sym_pd, s); }
-    
-    x = canvas_newPatch (s, NULL, 1, 0);
-    x->gl_parent = z;
     
     instance_stackPopPatch (x, 1);
     
@@ -758,8 +754,8 @@ t_glist *canvas_newPatch (t_symbol *name, t_rectangle *window, int isVisible, in
 
 void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *name = atom_getSymbolAtIndex (4, argc, argv);
-    int fontSize   = (int)atom_getFloatAtIndex (4, argc, argv);
+    t_symbol *name = atom_getSymbolAtIndex (4, argc, argv);         /* Subpatch. */
+    int fontSize   = (int)atom_getFloatAtIndex (4, argc, argv);     /* Top. */
     int isVisible  = (int)atom_getFloatAtIndex (5, argc, argv);
         
     t_rectangle r;
