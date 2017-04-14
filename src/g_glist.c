@@ -18,20 +18,29 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist *glist_newSubpatch (t_symbol *name)
+t_glist *glist_newPop (t_symbol *name,
+    t_bounds    *bounds, 
+    t_rectangle *graph,
+    t_rectangle *window, 
+    int isVisible, 
+    int fontSize)
 {
-    t_glist *x = glist_newPatch (name, NULL, NULL, NULL, 0, 0);
-    
     if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
     
+    {
+    //
+    t_glist *x = glist_new (name, bounds, graph, window, isVisible, fontSize);
+        
     PD_ASSERT (instance_contextGetCurrent() == x);
     
     instance_stackPopPatch (x, glist_isOpenedAtLoad (x));
     
     return x;
+    //
+    }
 }
 
-t_glist *glist_newPatch (t_symbol *name,
+t_glist *glist_new (t_symbol *name,
     t_bounds    *bounds, 
     t_rectangle *graph,
     t_rectangle *window, 
@@ -52,7 +61,7 @@ t_glist *glist_newPatch (t_symbol *name,
     
     {
     //
-    t_glist *x = glist_new (owner, name, &t1, &t2, &t3);
+    t_glist *x = glist_newProceed (owner, name, &t1, &t2, &t3);
     
     object_setType (cast_object (x), TYPE_OBJECT);
     
@@ -71,7 +80,7 @@ t_glist *glist_newPatch (t_symbol *name,
     }
 }
 
-t_glist *glist_new (t_glist *owner, 
+t_glist *glist_newProceed (t_glist *owner, 
     t_symbol    *name, 
     t_bounds    *bounds, 
     t_rectangle *graph, 

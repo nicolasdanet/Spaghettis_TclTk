@@ -705,6 +705,11 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void *canvas_newSubpatch (t_symbol *s)
+{
+    return glist_newPop (s, NULL, NULL, NULL, 0, 0);
+}
+
 void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = atom_getSymbolAtIndex (4, argc, argv);         /* Subpatch. */
@@ -715,7 +720,7 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     rectangle_setByAtomsByWidthAndHeight (&r, argc, argv);
     
-    glist_newPatch (name, NULL, NULL, &r, isVisible, fontSize);
+    glist_new (name, NULL, NULL, &r, isVisible, fontSize);
 }
 
 static void canvas_free (t_glist *glist)
@@ -738,11 +743,11 @@ void canvas_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
 
-    class_addCreator ((t_newmethod)glist_newSubpatch, sym_pd, A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)canvas_newSubpatch, sym_pd, A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addCreator ((t_newmethod)glist_newSubpatch, sym_page, A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)canvas_newSubpatch, sym_page, A_DEFSYMBOL, A_NULL);
         
     #endif
     

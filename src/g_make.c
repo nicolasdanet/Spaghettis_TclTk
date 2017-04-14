@@ -165,7 +165,7 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     
     {
     //
-    t_glist *x  = glist_new (glist, utils_getDefaultBindName (canvas_class, sym__graph), &bounds, &r1, &r2);
+    t_glist *x  = glist_newProceed (glist, utils_getDefaultBindName (canvas_class, sym__graph), &bounds, &r1, &r2);
     
     t_buffer *t = buffer_new(); buffer_appendSymbol (t, sym_graph);
     
