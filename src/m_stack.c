@@ -198,8 +198,9 @@ void instance_loadSnippet (t_glist *glist, t_buffer *b)
 void instance_makePatch (t_symbol *name, t_symbol *directory)
 {
     instance_environmentSetFile (name, directory);
-    glist_new (&s_, NULL, NULL, NULL, 0, 0);
-    instance_stackPopPatch (instance_contextGetCurrent(), 1);
+    
+    glist_newPop (&s_, NULL, NULL, NULL, 1, 0);
+    
     instance_environmentResetFile();
 }
 
