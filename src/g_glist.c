@@ -20,31 +20,39 @@
 
 t_glist *glist_newSubpatch (t_symbol *name)
 {
-    t_glist *x = glist_newPatch (name, NULL, 0, 0);
+    t_glist *x = glist_newPatch (name, NULL, NULL, NULL, 0, 0);
     
     if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
+    
+    PD_ASSERT (instance_contextGetCurrent() == x);
     
     instance_stackPopPatch (x, glist_isOpenedAtLoad (x));
     
     return x;
 }
 
-t_glist *glist_newPatch (t_symbol *name, t_rectangle *window, int isVisible, int fontSize)
+t_glist *glist_newPatch (t_symbol *name,
+    t_bounds    *bounds, 
+    t_rectangle *graph,
+    t_rectangle *window, 
+    int isVisible, 
+    int fontSize)
 {
     t_glist *owner = instance_contextGetCurrent();
     
-    t_rectangle r1, r2; t_bounds bounds;
+    t_bounds t1; t_rectangle t2, t3;
     
-    t_error err = bounds_set (&bounds, 0, 0, 1, 1);
+    bounds_set (&t1, 0, 0, 1, 1);
+    rectangle_set (&t2, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    rectangle_set (&t3, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
     
-    rectangle_set (&r1, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-    rectangle_set (&r2, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
+    if (bounds) { bounds_setCopy (&t1, bounds);    }
+    if (graph)  { rectangle_setCopy (&t2, graph);  }
+    if (window) { rectangle_setCopy (&t3, window); }
     
-    if (window) { rectangle_setCopy (&r2, window); }
-    
-    if (!err) {
+    {
     //
-    t_glist *x = glist_new (owner, name, &bounds, &r1, &r2);
+    t_glist *x = glist_new (owner, name, &t1, &t2, &t3);
     
     object_setType (cast_object (x), TYPE_OBJECT);
     
@@ -61,11 +69,13 @@ t_glist *glist_newPatch (t_symbol *name, t_rectangle *window, int isVisible, int
     return x;
     //
     }
-    
-    return NULL;
 }
 
-t_glist *glist_new (t_glist *owner, t_symbol *name, t_bounds *b, t_rectangle *r1, t_rectangle *r2)
+t_glist *glist_new (t_glist *owner, 
+    t_symbol    *name, 
+    t_bounds    *bounds, 
+    t_rectangle *graph, 
+    t_rectangle *window)
 {
     t_glist *x = (t_glist *)pd_new (canvas_class);
     
@@ -77,9 +87,9 @@ t_glist *glist_new (t_glist *owner, t_symbol *name, t_bounds *b, t_rectangle *r1
     x->gl_uniqueIdentifier  = utils_unique();
     x->gl_fontSize          = (owner ? glist_getFontSize (owner) : font_getDefaultFontSize());
 
-    if (b)  { bounds_setCopy (&x->gl_bounds, b);             }
-    if (r1) { rectangle_setCopy (&x->gl_geometryGraph, r1);  }
-    if (r2) { rectangle_setCopy (&x->gl_geometryWindow, r2); }
+    if (bounds) { bounds_setCopy (&x->gl_bounds, bounds);            }
+    if (graph)  { rectangle_setCopy (&x->gl_geometryGraph, graph);   }
+    if (window) { rectangle_setCopy (&x->gl_geometryWindow, window); }
     
     return x;
 }

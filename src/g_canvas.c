@@ -715,7 +715,7 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     rectangle_setByAtomsByWidthAndHeight (&r, argc, argv);
     
-    glist_newPatch (name, &r, isVisible, fontSize);
+    glist_newPatch (name, NULL, NULL, &r, isVisible, fontSize);
 }
 
 static void canvas_free (t_glist *glist)

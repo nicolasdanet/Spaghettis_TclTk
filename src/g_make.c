@@ -157,13 +157,13 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     int a = instance_getDefaultX (glist);
     int b = instance_getDefaultY (glist);
     
-    t_error err = bounds_set (&bounds, 0, 1, n, -1);
+    bounds_set (&bounds, 0, 1, n, -1);
     rectangle_set (&r1, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
     rectangle_set (&r2, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
         
     PD_ASSERT (name);
     
-    if (!err) {
+    {
     //
     t_glist *x  = glist_new (glist, utils_getDefaultBindName (canvas_class, sym__graph), &bounds, &r1, &r2);
     
