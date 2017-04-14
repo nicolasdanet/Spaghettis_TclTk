@@ -16,7 +16,10 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *canvas_newPatch                        (int argc, t_atom *argv);
+t_glist         *canvas_newPatch                        (t_symbol *name, 
+                                                            t_rectangle *window, 
+                                                            int isVisible, 
+                                                            int fontSize);
 
 void            canvas_free                             (t_glist *glist);
 

@@ -707,22 +707,12 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 
 static void *canvas_newSubpatch (t_symbol *s)
 {
-    t_atom a[6];
     t_glist *x = NULL;
     t_glist *z = instance_contextGetCurrent();
     
     if (!utils_isNameAllowedForWindow (s)) { warning_badName (sym_pd, s); }
     
-    if (s == &s_) { s = sym_Patch; }
-    
-    SET_FLOAT  (a + 0, (t_float)0.0);
-    SET_FLOAT  (a + 1, WINDOW_HEADER);
-    SET_FLOAT  (a + 2, WINDOW_WIDTH);
-    SET_FLOAT  (a + 3, WINDOW_HEIGHT + WINDOW_HEADER);
-    SET_SYMBOL (a + 4, s);
-    SET_FLOAT  (a + 5, (t_float)1.0);
-    
-    x = canvas_newPatch (6, a);
+    x = canvas_newPatch (s, NULL, 1, 0);
     x->gl_parent = z;
     
     instance_stackPopPatch (x, 1);
@@ -730,22 +720,18 @@ static void *canvas_newSubpatch (t_symbol *s)
     return x;
 }
 
-t_glist *canvas_newPatch (int argc, t_atom *argv)
+t_glist *canvas_newPatch (t_symbol *name, t_rectangle *window, int isVisible, int fontSize)
 {
-    t_glist *owner  = instance_contextGetCurrent();
-    t_symbol *name  = &s_;
-    int visible     = 0;
-    int fontSize    = 0;
+    t_glist *owner = instance_contextGetCurrent();
     
     t_rectangle r1, r2; t_bounds bounds;
     
     t_error err = bounds_set (&bounds, 0, 0, 1, 1);
+    
     rectangle_set (&r1, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
     rectangle_set (&r2, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
     
-    if (argc >= 4) { rectangle_setByAtomsByWidthAndHeight (&r2, argc, argv); }
-    if (argc == 5) { fontSize = (int)atom_getFloat (argv + 4); }
-    if (argc == 6) { name = atom_getSymbol (argv + 4); visible = (int)atom_getFloat (argv + 5); }
+    if (window) { rectangle_setCopy (&r2, window); }
     
     if (!err) {
     //
@@ -756,7 +742,7 @@ t_glist *canvas_newPatch (int argc, t_atom *argv)
     if (fontSize) { glist_setFontSize (x, fontSize); }
     
     glist_setEditMode (x, 0);
-    glist_setOpenedAtLoad (x, visible);
+    glist_setOpenedAtLoad (x, isVisible);
     glist_bind (x);
     
     if (glist_isRoot (x)) { instance_rootsAdd (x); }
@@ -770,9 +756,17 @@ t_glist *canvas_newPatch (int argc, t_atom *argv)
     return NULL;
 }
 
-t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
+void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    return canvas_newPatch (argc, argv);
+    t_symbol *name = atom_getSymbolAtIndex (4, argc, argv);
+    int fontSize   = (int)atom_getFloatAtIndex (4, argc, argv);
+    int isVisible  = (int)atom_getFloatAtIndex (5, argc, argv);
+        
+    t_rectangle r;
+    
+    rectangle_setByAtomsByWidthAndHeight (&r, argc, argv);
+    
+    canvas_newPatch (name, &r, isVisible, fontSize);
 }
 
 void canvas_free (t_glist *glist)
