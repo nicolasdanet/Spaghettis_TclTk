@@ -16,13 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *canvas_newPatch                        (t_symbol *name, 
-                                                            t_rectangle *window, 
-                                                            int isVisible, 
-                                                            int fontSize);
-
-void            canvas_free                             (t_glist *glist);
-
 void            canvas_disconnect                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_rename                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);

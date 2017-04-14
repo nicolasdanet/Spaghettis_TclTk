@@ -18,6 +18,53 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_glist *glist_newSubpatch (t_symbol *name)
+{
+    t_glist *x = glist_newPatch (name, NULL, 0, 0);
+    
+    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
+    
+    instance_stackPopPatch (x, glist_isOpenedAtLoad (x));
+    
+    return x;
+}
+
+t_glist *glist_newPatch (t_symbol *name, t_rectangle *window, int isVisible, int fontSize)
+{
+    t_glist *owner = instance_contextGetCurrent();
+    
+    t_rectangle r1, r2; t_bounds bounds;
+    
+    t_error err = bounds_set (&bounds, 0, 0, 1, 1);
+    
+    rectangle_set (&r1, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    rectangle_set (&r2, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
+    
+    if (window) { rectangle_setCopy (&r2, window); }
+    
+    if (!err) {
+    //
+    t_glist *x = glist_new (owner, name, &bounds, &r1, &r2);
+    
+    object_setType (cast_object (x), TYPE_OBJECT);
+    
+    if (fontSize) { glist_setFontSize (x, fontSize); }
+    
+    glist_setEditMode (x, 0);
+    glist_setOpenedAtLoad (x, isVisible);
+    glist_bind (x);
+    
+    if (glist_isRoot (x)) { instance_rootsAdd (x); }
+    
+    glist_loadBegin (x); instance_stackPush (x);
+    
+    return x;
+    //
+    }
+    
+    return NULL;
+}
+
 t_glist *glist_new (t_glist *owner, t_symbol *name, t_bounds *b, t_rectangle *r1, t_rectangle *r2)
 {
     t_glist *x = (t_glist *)pd_new (canvas_class);

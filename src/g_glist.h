@@ -44,6 +44,12 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_glist         *glist_newSubpatch          (t_symbol *name);
+t_glist         *glist_newPatch             (t_symbol *name,
+                                                t_rectangle *window, 
+                                                int isVisible, 
+                                                int fontSize);
+                                                            
 t_glist         *glist_new                  (t_glist *owner, 
                                                 t_symbol    *name,
                                                 t_bounds    *bounds, 

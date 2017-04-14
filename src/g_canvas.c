@@ -705,53 +705,6 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *canvas_newSubpatch (t_symbol *s)
-{
-    t_glist *x = canvas_newPatch (s, NULL, 1, 0);
-    
-    if (!utils_isNameAllowedForWindow (s)) { warning_badName (sym_pd, s); }
-    
-    instance_stackPopPatch (x, 1);
-    
-    return x;
-}
-
-t_glist *canvas_newPatch (t_symbol *name, t_rectangle *window, int isVisible, int fontSize)
-{
-    t_glist *owner = instance_contextGetCurrent();
-    
-    t_rectangle r1, r2; t_bounds bounds;
-    
-    t_error err = bounds_set (&bounds, 0, 0, 1, 1);
-    
-    rectangle_set (&r1, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-    rectangle_set (&r2, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
-    
-    if (window) { rectangle_setCopy (&r2, window); }
-    
-    if (!err) {
-    //
-    t_glist *x = glist_new (owner, name, &bounds, &r1, &r2);
-    
-    object_setType (cast_object (x), TYPE_OBJECT);
-    
-    if (fontSize) { glist_setFontSize (x, fontSize); }
-    
-    glist_setEditMode (x, 0);
-    glist_setOpenedAtLoad (x, isVisible);
-    glist_bind (x);
-    
-    if (glist_isRoot (x)) { instance_rootsAdd (x); }
-    
-    glist_loadBegin (x); instance_stackPush (x);
-    
-    return x;
-    //
-    }
-    
-    return NULL;
-}
-
 void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *name = atom_getSymbolAtIndex (4, argc, argv);         /* Subpatch. */
@@ -762,10 +715,10 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     rectangle_setByAtomsByWidthAndHeight (&r, argc, argv);
     
-    canvas_newPatch (name, &r, isVisible, fontSize);
+    glist_newPatch (name, &r, isVisible, fontSize);
 }
 
-void canvas_free (t_glist *glist)
+static void canvas_free (t_glist *glist)
 {
     glist_free (glist);
 }
@@ -785,11 +738,11 @@ void canvas_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
 
-    class_addCreator ((t_newmethod)canvas_newSubpatch, sym_pd, A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)glist_newSubpatch, sym_pd, A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addCreator ((t_newmethod)canvas_newSubpatch, sym_page, A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)glist_newSubpatch, sym_page, A_DEFSYMBOL, A_NULL);
         
     #endif
     
