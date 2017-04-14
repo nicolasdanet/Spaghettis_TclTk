@@ -22,14 +22,15 @@ t_glist *glist_newPop (t_symbol *name,
     t_bounds    *bounds, 
     t_rectangle *graph,
     t_rectangle *window, 
-    int isVisible, 
+    int isVisible,
+    int isGOP,
     int fontSize)
 {
     if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
     
     {
     //
-    t_glist *x = glist_new (name, bounds, graph, window, isVisible, fontSize);
+    t_glist *x = glist_new (name, bounds, graph, window, isVisible, isGOP, fontSize);
         
     PD_ASSERT (instance_contextGetCurrent() == x);
     
@@ -44,7 +45,8 @@ t_glist *glist_new (t_symbol *name,
     t_bounds    *bounds, 
     t_rectangle *graph,
     t_rectangle *window, 
-    int isVisible, 
+    int isVisible,
+    int isGOP,
     int fontSize)
 {
     t_glist *owner = instance_contextGetCurrent();
@@ -66,7 +68,8 @@ t_glist *glist_new (t_symbol *name,
     object_setType (cast_object (x), TYPE_OBJECT);
     
     if (fontSize) { glist_setFontSize (x, fontSize); }
-    
+
+    glist_setGraphOnParent (x, (isGOP != 0));
     glist_setEditMode (x, 0);
     glist_setOpenedAtLoad (x, isVisible);
     glist_bind (x);

@@ -199,7 +199,7 @@ void instance_makePatch (t_symbol *name, t_symbol *directory)
 {
     instance_environmentSetFile (name, directory);
     
-    glist_newPop (&s_, NULL, NULL, NULL, 1, 0);
+    glist_newPop (&s_, NULL, NULL, NULL, 1, 0, 0);
     
     instance_environmentResetFile();
 }

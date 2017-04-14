@@ -48,14 +48,16 @@ t_glist         *glist_newPop               (t_symbol *name,
                                                 t_bounds    *bounds, 
                                                 t_rectangle *graph,
                                                 t_rectangle *window, 
-                                                int isVisible, 
+                                                int isVisible,
+                                                int isGOP,
                                                 int fontSize);
 
 t_glist         *glist_new                  (t_symbol *name,
                                                 t_bounds    *bounds, 
                                                 t_rectangle *graph,
                                                 t_rectangle *window, 
-                                                int isVisible, 
+                                                int isVisible,
+                                                int isGOP,
                                                 int fontSize);
                                                             
 t_glist         *glist_newProceed           (t_glist *owner, 
