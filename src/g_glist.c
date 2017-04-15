@@ -38,25 +38,24 @@ static t_glist *glist_new (t_glist *owner,
     if (graph)  { rectangle_setCopy (&x->gl_geometryGraph, graph);   }
     if (window) { rectangle_setCopy (&x->gl_geometryWindow, window); }
     
+    glist_bind (x);
+    
+    if (glist_isRoot (x)) { instance_rootsAdd (x); }
+        
     return x;
 }
 
 void glist_free (t_glist *glist)
 {
-    glist_deselectAll (glist);
-    glist_objectRemoveAll (glist);
+    PD_ASSERT (!glist_objectGetNumberOf (glist));
     
-    if (glist_hasView (glist)) { canvas_visible (glist, 0); }
-    
-    stub_destroyWithKey ((void *)glist);
+    if (glist_isRoot (glist)) { instance_rootsRemove (glist); }
     
     glist_unbind (glist);
-
+    
     editor_free (glist_getEditor (glist));
     environment_free (glist->gl_environment);
     gmaster_reset (glist_getMaster (glist));
-    
-    if (glist_isRoot (glist)) { instance_rootsRemove (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -112,14 +111,10 @@ t_glist *glist_newPatch (t_symbol *name,
     
     object_setType (cast_object (x), TYPE_OBJECT);
     
-    if (fontSize) { glist_setFontSize (x, fontSize); }
-
+    glist_setFontSize (x, fontSize);
     glist_setGraphOnParent (x, (isGOP != 0));
     glist_setEditMode (x, 0);
     glist_setOpenedAtLoad (x, isOpened);
-    glist_bind (x);
-    
-    if (glist_isRoot (x)) { instance_rootsAdd (x); }
     
     glist_loadBegin (x); instance_stackPush (x);
     
@@ -251,7 +246,7 @@ void glist_setDirty (t_glist *glist, int n)
 
 void glist_setFontSize (t_glist *g, int n)
 {
-    g->gl_fontSize = font_getNearestValidFontSize (n);
+    if (n > 0) { g->gl_fontSize = font_getNearestValidFontSize (n); }
 }
 
 void glist_setMotion (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)

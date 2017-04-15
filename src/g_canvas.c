@@ -725,6 +725,13 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_free (t_glist *glist)
 {
+    if (glist_hasView (glist)) { canvas_visible (glist, 0); } 
+    
+    stub_destroyWithKey ((void *)glist);
+    
+    glist_deselectAll (glist);
+    glist_objectRemoveAll (glist);
+    
     glist_free (glist);
 }
 
