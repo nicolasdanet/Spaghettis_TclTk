@@ -44,28 +44,22 @@ struct _glist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *glist_newPop               (t_symbol *name,
+t_glist         *glist_newPatchPop          (t_symbol *name,
                                                 t_bounds    *bounds, 
                                                 t_rectangle *graph,
                                                 t_rectangle *window, 
-                                                int isVisible,
+                                                int isOpened,
                                                 int isGOP,
                                                 int fontSize);
 
-t_glist         *glist_new                  (t_symbol *name,
+t_glist         *glist_newPatch             (t_symbol *name,
                                                 t_bounds    *bounds, 
                                                 t_rectangle *graph,
                                                 t_rectangle *window, 
-                                                int isVisible,
+                                                int isOpened,
                                                 int isGOP,
                                                 int fontSize);
                                                             
-t_glist         *glist_newProceed           (t_glist *owner, 
-                                                t_symbol    *name,
-                                                t_bounds    *bounds, 
-                                                t_rectangle *graph, 
-                                                t_rectangle *window);
-
 void            glist_free                  (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------

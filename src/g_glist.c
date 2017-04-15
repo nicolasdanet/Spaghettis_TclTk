@@ -18,72 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist *glist_newPop (t_symbol *name,
-    t_bounds    *bounds, 
-    t_rectangle *graph,
-    t_rectangle *window, 
-    int isVisible,
-    int isGOP,
-    int fontSize)
-{
-    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
-    
-    {
-    //
-    t_glist *x = glist_new (name, bounds, graph, window, isVisible, isGOP, fontSize);
-        
-    PD_ASSERT (instance_contextGetCurrent() == x);
-    
-    instance_stackPopPatch (x, glist_isOpenedAtLoad (x));
-    
-    return x;
-    //
-    }
-}
-
-t_glist *glist_new (t_symbol *name,
-    t_bounds    *bounds, 
-    t_rectangle *graph,
-    t_rectangle *window, 
-    int isVisible,
-    int isGOP,
-    int fontSize)
-{
-    t_glist *owner = instance_contextGetCurrent();
-    
-    t_bounds t1; t_rectangle t2, t3;
-    
-    bounds_set (&t1, 0, 0, 1, 1);
-    rectangle_set (&t2, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-    rectangle_set (&t3, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
-    
-    if (bounds) { bounds_setCopy (&t1, bounds);    }
-    if (graph)  { rectangle_setCopy (&t2, graph);  }
-    if (window) { rectangle_setCopy (&t3, window); }
-    
-    {
-    //
-    t_glist *x = glist_newProceed (owner, name, &t1, &t2, &t3);
-    
-    object_setType (cast_object (x), TYPE_OBJECT);
-    
-    if (fontSize) { glist_setFontSize (x, fontSize); }
-
-    glist_setGraphOnParent (x, (isGOP != 0));
-    glist_setEditMode (x, 0);
-    glist_setOpenedAtLoad (x, isVisible);
-    glist_bind (x);
-    
-    if (glist_isRoot (x)) { instance_rootsAdd (x); }
-    
-    glist_loadBegin (x); instance_stackPush (x);
-    
-    return x;
-    //
-    }
-}
-
-t_glist *glist_newProceed (t_glist *owner, 
+static t_glist *glist_new (t_glist *owner, 
     t_symbol    *name, 
     t_bounds    *bounds, 
     t_rectangle *graph, 
@@ -122,6 +57,75 @@ void glist_free (t_glist *glist)
     gmaster_reset (glist_getMaster (glist));
     
     if (glist_isRoot (glist)) { instance_rootsRemove (glist); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_glist *glist_newPatchPop (t_symbol *name,
+    t_bounds    *bounds, 
+    t_rectangle *graph,
+    t_rectangle *window, 
+    int isOpened,
+    int isGOP,
+    int fontSize)
+{
+    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
+    
+    {
+    //
+    t_glist *x = glist_newPatch (name, bounds, graph, window, isOpened, isGOP, fontSize);
+        
+    PD_ASSERT (instance_contextGetCurrent() == x);
+    
+    instance_stackPopPatch (x, glist_isOpenedAtLoad (x));
+    
+    return x;
+    //
+    }
+}
+
+t_glist *glist_newPatch (t_symbol *name,
+    t_bounds    *bounds, 
+    t_rectangle *graph,
+    t_rectangle *window, 
+    int isOpened,
+    int isGOP,
+    int fontSize)
+{
+    t_glist *owner = instance_contextGetCurrent();
+    
+    t_bounds t1; t_rectangle t2, t3;
+    
+    bounds_set (&t1, 0, 0, 1, 1);
+    rectangle_set (&t2, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    rectangle_set (&t3, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
+    
+    if (bounds) { bounds_setCopy (&t1, bounds);    }
+    if (graph)  { rectangle_setCopy (&t2, graph);  }
+    if (window) { rectangle_setCopy (&t3, window); }
+    
+    {
+    //
+    t_glist *x = glist_new (owner, name, &t1, &t2, &t3);
+    
+    object_setType (cast_object (x), TYPE_OBJECT);
+    
+    if (fontSize) { glist_setFontSize (x, fontSize); }
+
+    glist_setGraphOnParent (x, (isGOP != 0));
+    glist_setEditMode (x, 0);
+    glist_setOpenedAtLoad (x, isOpened);
+    glist_bind (x);
+    
+    if (glist_isRoot (x)) { instance_rootsAdd (x); }
+    
+    glist_loadBegin (x); instance_stackPush (x);
+    
+    return x;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

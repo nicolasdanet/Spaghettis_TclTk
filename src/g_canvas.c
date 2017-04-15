@@ -707,7 +707,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 
 static void *canvas_newSubpatch (t_symbol *s)
 {
-    return glist_newPop (s, NULL, NULL, NULL, 0, 0, 0);
+    return glist_newPatchPop (s, NULL, NULL, NULL, 0, 0, 0);
 }
 
 void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
@@ -720,7 +720,7 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     rectangle_setByAtomsByWidthAndHeight (&r, argc, argv);
     
-    glist_new (name, NULL, NULL, &r, isVisible, 0, fontSize);
+    glist_newPatch (name, NULL, NULL, &r, isVisible, 0, fontSize);
 }
 
 static void canvas_free (t_glist *glist)
