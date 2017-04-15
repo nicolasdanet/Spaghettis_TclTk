@@ -140,7 +140,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 static void instance_loadPatchLoadbang (void)
 {
     if (instance_get()->pd_stack.s_popped) { 
-        canvas_loadbang (instance_get()->pd_stack.s_popped);
+        glist_loadbang (instance_get()->pd_stack.s_popped);
         instance_get()->pd_stack.s_popped = NULL;
     }
 }

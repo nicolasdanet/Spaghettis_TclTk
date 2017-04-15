@@ -72,41 +72,6 @@ static void canvas_functionProperties (t_gobj *, t_glist *);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_loadbangAbstractions (t_glist *glist)
-{
-    t_gobj *y = NULL;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == canvas_class) {
-            if (glist_isAbstraction (cast_glist (y))) { canvas_loadbang (cast_glist (y)); }
-            else {
-                canvas_loadbangAbstractions (cast_glist (y));
-            }
-        }
-    }
-}
-
-static void canvas_loadbangSubpatches (t_glist *glist)
-{
-    t_gobj *y = NULL;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == canvas_class) {
-            if (!glist_isAbstraction (cast_glist (y))) { canvas_loadbangSubpatches (cast_glist (y)); }
-        }
-    }
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if ((pd_class (y) != canvas_class) && class_hasMethod (pd_class (y), sym_loadbang)) {
-            pd_message (cast_pd (y), sym_loadbang, 0, NULL);
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_setAsGraphOnParent (t_glist *glist, int flags, t_rectangle *r)
 {
     int isGraphOnParent = (flags & 1) != 0;
@@ -399,10 +364,9 @@ static void canvas_open (t_glist *glist)
     canvas_visible (glist, 1);
 }
 
-void canvas_loadbang (t_glist *glist)
+static void canvas_loadbang (t_glist *glist)
 {
-    canvas_loadbangAbstractions (glist);
-    canvas_loadbangSubpatches (glist);
+    glist_loadbang (glist);
 }
 
 void canvas_clear (t_glist *glist)

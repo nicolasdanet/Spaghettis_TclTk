@@ -278,6 +278,47 @@ void glist_unbind (t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void glist_loadbangAbstractions (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == canvas_class) {
+            if (glist_isAbstraction (cast_glist (y))) { glist_loadbang (cast_glist (y)); }
+            else {
+                glist_loadbangAbstractions (cast_glist (y));
+            }
+        }
+    }
+}
+
+static void glist_loadbangSubpatches (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == canvas_class) {
+            if (!glist_isAbstraction (cast_glist (y))) { glist_loadbangSubpatches (cast_glist (y)); }
+        }
+    }
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if ((pd_class (y) != canvas_class) && class_hasMethod (pd_class (y), sym_loadbang)) {
+            pd_message (cast_pd (y), sym_loadbang, 0, NULL);
+        }
+    }
+}
+
+void glist_loadbang (t_glist *glist)
+{
+    glist_loadbangAbstractions (glist);
+    glist_loadbangSubpatches (glist);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* Files are searching in the directory of the patch first. */
 /* Without success it tries to find it using the search path. */

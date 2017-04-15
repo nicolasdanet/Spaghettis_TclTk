@@ -59,7 +59,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         /* Loadbang if the new object is an abstraction. */
         
         if (instance_getNewestObject() && pd_class (instance_getNewestObject()) == canvas_class) {
-            canvas_loadbang (cast_glist (instance_getNewestObject())); 
+            glist_loadbang (cast_glist (instance_getNewestObject())); 
         }
     }
     //
