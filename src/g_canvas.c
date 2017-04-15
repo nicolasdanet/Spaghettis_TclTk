@@ -72,37 +72,6 @@ static void canvas_functionProperties (t_gobj *, t_glist *);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_setAsGraphOnParent (t_glist *glist, int flags, t_rectangle *r)
-{
-    int isGraphOnParent = (flags & 1) != 0;
-    // int hideText     = (flags & 2) != 0;
-    int needToUpdate    = isGraphOnParent || (!isGraphOnParent && glist_isGraphOnParent (glist));
-    
-    if (needToUpdate) {
-        if (glist_isParentOnScreen (glist)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
-        }
-    }
-    
-    rectangle_setCopy (glist_getGraphGeometry (glist), r);
-    
-    if (!isGraphOnParent) { glist_setGraphOnParent (glist, 0); } 
-    else {
-        glist_setGraphOnParent (glist, 1);
-    }
-        
-    if (needToUpdate) {
-        if (glist_isParentOnScreen (glist)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_visible (glist, 1);
@@ -116,13 +85,15 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     int width   = (int)atom_getFloatAtIndex (4, argc, argv);
     int height  = (int)atom_getFloatAtIndex (5, argc, argv);
     
+    int isGOP   = (flags & 1);
+    
     t_rectangle r;
     
     bounds_setByAtoms (glist_getBounds (glist), argc, argv);
     
     #if PD_WITH_LEGACY
     
-    if (!(flags & 1)) {
+    if (!isGOP) {
     
         t_float scaleX = glist_getValueForOnePixelX (glist);
         t_float scaleY = glist_getValueForOnePixelY (glist);
@@ -134,7 +105,7 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     rectangle_setByWidthAndHeight (&r, a, b, width, height);
     
-    canvas_setAsGraphOnParent (glist, flags, &r);
+    glist_setGraph (glist, &r, isGOP);
 }
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -588,7 +559,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
         bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
     
-    canvas_setAsGraphOnParent (glist, isGOP, &r);
+    glist_setGraph (glist, &r, isGOP);
     
     glist_setDirty (glist, 1);
     
