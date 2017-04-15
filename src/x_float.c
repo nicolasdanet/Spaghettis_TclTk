@@ -52,7 +52,7 @@ static void float_send (t_floatobject *x, t_symbol *s)
 
 /* Called by the t_floatmethod of the object maker class. */
 
-static void *float_newBySlot (t_pd *dummy, t_float f)
+static void *float_newByTyped (t_pd *dummy, t_float f)
 {
     t_floatobject *x = (t_floatobject *)pd_new (float_class);
     
@@ -68,7 +68,7 @@ static void *float_newBySlot (t_pd *dummy, t_float f)
 
 static void *float_newByRegular (t_float f)
 {
-    return float_newBySlot (NULL, f);
+    return float_newByTyped (NULL, f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ void float_setup (void)
     t_class *c = NULL;
     
     c = class_new (&s_float,
-            (t_newmethod)float_newBySlot,
+            (t_newmethod)float_newByTyped,
             NULL,
             sizeof (t_floatobject),
             CLASS_DEFAULT,
