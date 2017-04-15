@@ -28,10 +28,6 @@ t_class *canvas_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_key                     (t_glist *, t_symbol *, int, t_atom *);
-void canvas_motion                  (t_glist *, t_symbol *, int, t_atom *);
-void canvas_mouseDown               (t_glist *, t_symbol *, int, t_atom *);
-void canvas_mouseUp                 (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeObject              (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeMessage             (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeArray               (t_glist *, t_symbol *, int, t_atom *);
@@ -49,15 +45,28 @@ void canvas_makeRadioHorizontal     (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeVu                  (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makePanel               (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeDial                (t_glist *, t_symbol *, int, t_atom *);
+
+void canvas_key                     (t_glist *, t_symbol *, int, t_atom *);
+void canvas_motion                  (t_glist *, t_symbol *, int, t_atom *);
+void canvas_mouseDown               (t_glist *, t_symbol *, int, t_atom *);
+void canvas_mouseUp                 (t_glist *, t_symbol *, int, t_atom *);
+
+void canvas_close                   (t_glist *, t_float);
+void canvas_save                    (t_glist *, t_float);
+void canvas_saveAs                  (t_glist *, t_float);
+void canvas_saveToFile              (t_glist *, t_symbol *, int, t_atom *);
+
 void canvas_cut                     (t_glist *);
 void canvas_copy                    (t_glist *);
 void canvas_paste                   (t_glist *);
 void canvas_duplicate               (t_glist *);
 void canvas_selectAll               (t_glist *);
-void canvas_close                   (t_glist *, t_float);
-void canvas_save                    (t_glist *, t_float);
-void canvas_saveAs                  (t_glist *, t_float);
-void canvas_saveToFile              (t_glist *, t_symbol *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_functionProperties (t_gobj *, t_glist *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -132,17 +141,6 @@ static void canvas_setAsGraphOnParent (t_glist *glist, int flags, t_rectangle *r
 static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_visible (glist, 1);
-}
-
-static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == 4) {
-    //
-    rectangle_setByAtoms (glist_getWindowGeometry (glist), argc, argv);
-    
-    if (glist_isArray (glist)) { glist_updateWindow (glist); }
-    //
-    }
 }
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -318,9 +316,65 @@ void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    t_symbol *name = &s_;
+    
+    if (argc) {
+    //
+    name = dollar_getSymbolExpandedIfRequiered (argv, glist);
+    if (name != &s_) { argc--; argv++; }
+    if (argc) { warning_unusedArguments (class_getName (pd_class (glist)), argc, argv); }
+    //
+    }
+    
+    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
+    
+    glist_setName (glist, (name == &s_ ? sym_Patch : name));
+}
+
+static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 4) {
+    //
+    rectangle_setByAtoms (glist_getWindowGeometry (glist), argc, argv);
+    
+    if (glist_isArray (glist)) { glist_updateWindow (glist); }
+    //
+    }
+}
+
+static void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 4) {
+    //
+    if (glist_isArray (glist)) {
+    //
+    t_error err = bounds_setByAtoms (glist_getBounds (glist), argc, argv);
+    
+    if (!err) { glist_updateGraphOnParent (glist); return; }
+    //
+    }
+    //
+    }
+    
+    error_invalid (sym_graph, sym_bounds); 
+}
+
+void canvas_remove (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    t_symbol *t = utils_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
+    
+    if (!template_isPrivate (t)) {
+    //
+    t_template *template = template_findByIdentifier (t);
+    
+    if (template) {
+        glist_objectRemoveByTemplate (glist, template); 
+    }
+    //
+    }
+}
 
 static void canvas_open (t_glist *glist)
 {
@@ -349,6 +403,11 @@ void canvas_loadbang (t_glist *glist)
 {
     canvas_loadbangAbstractions (glist);
     canvas_loadbangSubpatches (glist);
+}
+
+void canvas_clear (t_glist *glist)
+{
+    glist_objectRemoveAll (glist);
 }
 
 static void canvas_editmode (t_glist *glist, t_float f)
@@ -420,10 +479,6 @@ void canvas_visible (t_glist *glist, t_float f)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void canvas_map (t_glist *glist, t_float f)
 {
     int isMapped = (f != 0.0);
@@ -454,68 +509,6 @@ void canvas_map (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_remove (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    t_symbol *t = utils_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
-    
-    if (!template_isPrivate (t)) {
-    //
-    t_template *template = template_findByIdentifier (t);
-    
-    if (template) {
-        glist_objectRemoveByTemplate (glist, template); 
-    }
-    //
-    }
-}
-
-void canvas_clear (t_glist *glist)
-{
-    glist_objectRemoveAll (glist);
-}
-
-void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    t_symbol *name = &s_;
-    
-    if (argc) {
-    //
-    name = dollar_getSymbolExpandedIfRequiered (argv, glist);
-    if (name != &s_) { argc--; argv++; }
-    if (argc) { warning_unusedArguments (class_getName (pd_class (glist)), argc, argv); }
-    //
-    }
-    
-    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
-    
-    glist_setName (glist, (name == &s_ ? sym_Patch : name));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == 4) {
-    //
-    if (glist_isArray (glist)) {
-    //
-    t_error err = bounds_setByAtoms (glist_getBounds (glist), argc, argv);
-    
-    if (!err) { glist_updateGraphOnParent (glist); return; }
-    //
-    }
-    //
-    }
-    
-    error_invalid (sym_graph, sym_bounds); 
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void canvas_requireArrayDialog (t_glist *glist)
 {
     char t[PD_STRING] = { 0 };
@@ -527,65 +520,10 @@ static void canvas_requireArrayDialog (t_glist *glist)
     stub_new (cast_pd (glist), (void *)glist, t);
 }
 
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_functionSave (t_gobj *x, t_buffer *b)
+static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    int needToSaveContents = 1;
-    
-    if (glist_isAbstraction (cast_glist (x))) { needToSaveContents = 0; }
-
-    if (needToSaveContents) { glist_serialize (cast_glist (x), b); }
-    else {
-        buffer_vAppend (b, "ssii",
-            sym___hash__X,
-            sym_obj,
-            object_getX (cast_object (x)),
-            object_getY (cast_object (x)));
-        
-        buffer_serialize (b, object_getBuffer (cast_object (x)));
-        buffer_appendSemicolon (b);
-        object_saveWidth (cast_object (x), b);
-    }
+    canvas_makeArrayFromDialog (glist, s, argc, argv);
 }
-
-static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
-{
-    t_gobj *y = NULL;
-    t_glist *g = cast_glist (x);
-    t_error err = PD_ERROR_NONE;
-    char t[PD_STRING] = { 0 };
-    
-    int isArray = glist_isArray (g);
-    
-    err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-            isArray ?  0.0 : bounds_getRight (glist_getBounds (g)),
-            isArray ?  0.0 : bounds_getBottom (glist_getBounds (g)),
-            glist_isGraphOnParent (g),
-            !isArray ? 0.0 : bounds_getLeft (glist_getBounds (g)),
-            !isArray ? 0.0 : bounds_getTop (glist_getBounds (g)),
-            !isArray ? 0.0 : bounds_getRight (glist_getBounds (g)),
-            !isArray ? 0.0 : bounds_getBottom (glist_getBounds (g)), 
-            rectangle_getWidth (glist_getGraphGeometry (g)),
-            rectangle_getHeight (glist_getGraphGeometry (g)),
-            rectangle_getTopLeftX (glist_getGraphGeometry (g)),
-            rectangle_getTopLeftY (glist_getGraphGeometry (g)));
-
-    PD_ASSERT (!err);
-    
-    stub_new (cast_pd (g), (void *)g, t);
-
-    for (y = g->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == garray_class) { garray_functionProperties ((t_garray *)y); }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
@@ -705,22 +643,79 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void canvas_functionSave (t_gobj *x, t_buffer *b)
+{
+    int needToSaveContents = 1;
+    
+    if (glist_isAbstraction (cast_glist (x))) { needToSaveContents = 0; }
+
+    if (needToSaveContents) { glist_serialize (cast_glist (x), b); }
+    else {
+        buffer_vAppend (b, "ssii",
+            sym___hash__X,
+            sym_obj,
+            object_getX (cast_object (x)),
+            object_getY (cast_object (x)));
+        
+        buffer_serialize (b, object_getBuffer (cast_object (x)));
+        buffer_appendSemicolon (b);
+        object_saveWidth (cast_object (x), b);
+    }
+}
+
+static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
+{
+    t_gobj *y = NULL;
+    t_glist *g = cast_glist (x);
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    
+    int isArray = glist_isArray (g);
+    
+    err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+            isArray ?  0.0 : bounds_getRight (glist_getBounds (g)),
+            isArray ?  0.0 : bounds_getBottom (glist_getBounds (g)),
+            glist_isGraphOnParent (g),
+            !isArray ? 0.0 : bounds_getLeft (glist_getBounds (g)),
+            !isArray ? 0.0 : bounds_getTop (glist_getBounds (g)),
+            !isArray ? 0.0 : bounds_getRight (glist_getBounds (g)),
+            !isArray ? 0.0 : bounds_getBottom (glist_getBounds (g)), 
+            rectangle_getWidth (glist_getGraphGeometry (g)),
+            rectangle_getHeight (glist_getGraphGeometry (g)),
+            rectangle_getTopLeftX (glist_getGraphGeometry (g)),
+            rectangle_getTopLeftY (glist_getGraphGeometry (g)));
+
+    PD_ASSERT (!err);
+    
+    stub_new (cast_pd (g), (void *)g, t);
+
+    for (y = g->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == garray_class) { garray_functionProperties ((t_garray *)y); }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void *canvas_newSubpatch (t_symbol *s)
 {
     return glist_newPatchPop (s, NULL, NULL, NULL, 0, 0, 0);
 }
 
 void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    t_symbol *name = atom_getSymbolAtIndex (4, argc, argv);         /* Subpatch. */
-    int fontSize   = (int)atom_getFloatAtIndex (4, argc, argv);     /* Top. */
-    int isVisible  = (int)atom_getFloatAtIndex (5, argc, argv);
-        
+{  
     t_rectangle r;
     
     rectangle_setByAtomsByWidthAndHeight (&r, argc, argv);
     
-    glist_newPatch (name, NULL, NULL, &r, isVisible, 0, fontSize);
+    glist_newPatch (atom_getSymbolAtIndex (4, argc, argv), 
+        NULL, 
+        NULL, 
+        &r, 
+        (int)atom_getFloatAtIndex (5, argc, argv), 
+        0, 
+        (int)atom_getFloatAtIndex (4, argc, argv));
 }
 
 static void canvas_free (t_glist *glist)
@@ -783,7 +778,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeVu,                sym_vu,                 A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,                A_GIMME, A_NULL);
-    
     class_addMethod (c, (t_method)canvas_key,                   sym_key,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_motion,                sym_motion,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseDown,             sym_mouse,              A_GIMME, A_NULL);
@@ -795,6 +789,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_save,                  sym_save,               A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,             A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_close,              A_DEFFLOAT, A_NULL);
+    
     class_addMethod (c, (t_method)canvas_open,                  sym_open,               A_NULL);
     class_addMethod (c, (t_method)canvas_loadbang,              sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)canvas_clear,                 sym_clear,              A_NULL);
@@ -811,7 +806,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_selectAll,             sym__selectall,         A_NULL);
     
     class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,             A_NULL);
-    class_addMethod (c, (t_method)canvas_makeArrayFromDialog,   sym__arraydialog,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromDialog,            sym__canvasdialog,      A_GIMME, A_NULL);
    
