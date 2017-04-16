@@ -46,11 +46,11 @@ void editor_boxAdd (t_editor *x, t_object *object)
 {
     t_box *box = (t_box *)PD_MEMORY_GET (sizeof (t_box));
 
-    box->box_next               = x->e_boxes;
-    box->box_object             = object;
-    box->box_owner              = x->e_owner;
-    box->box_string             = (char *)PD_MEMORY_GET (0);
-    box->box_stringSizeInBytes  = 0;
+    box->box_next   = x->e_boxes;
+    box->box_object = object;
+    box->box_owner  = x->e_owner;
+    
+    buffer_toStringUnzeroed (object_getBuffer (object), &box->box_string, &box->box_stringSizeInBytes);
     
     {
     //

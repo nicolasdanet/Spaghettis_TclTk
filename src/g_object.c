@@ -137,26 +137,29 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     if (pd_class (x) == scalar_class && glist_isArray (owner)) { return 1; }    /* Ditto. */
     else {
     //
-    
-    /* Falling outside the graph rectangle? */
-    
-    t_rectangle r1, r2;
-    gobj_getRectangle (cast_gobj (owner), glist_getParent (owner), &r1);
-    gobj_getRectangle (x, owner, &r2);
-    if (!rectangle_containsRectangle (&r1, &r2)) {
-        return 0; 
-    }
-    //
-    }
-    
-    /* In GOP the only regular box type shown is comment. */
-    
-    if ((object = cast_objectIfConnectable (x))) {
-        if (object_isViewAsBox (object)) {
-            if (!object_isComment (object)) {
-                return 0; 
+    {
+        /* In GOP the only regular box type shown is comment. */
+        
+        if ((object = cast_objectIfConnectable (x))) {
+            if (object_isViewAsBox (object)) {
+                if (!object_isComment (object)) {
+                    return 0; 
+                }
             }
         }
+    }
+    {
+        /* Falling outside the graph rectangle? */
+        
+        t_rectangle r1, r2;
+        gobj_getRectangle (cast_gobj (owner), glist_getParent (owner), &r1);
+        gobj_getRectangle (x, owner, &r2);
+        
+        if (!rectangle_containsRectangle (&r1, &r2)) {
+            return 0; 
+        }
+    }
+    //
     }
     //
     }

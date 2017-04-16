@@ -396,7 +396,7 @@ void box_create (t_box *x)      /* Draw content and borders. */
 {
     PD_MEMORY_FREE (x->box_string);
     
-    /* Due to loadbang the content is lazely set here. */
+    /* Due to loadbang cases the content is set again here. */
     
     buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
     
