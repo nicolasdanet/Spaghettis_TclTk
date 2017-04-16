@@ -254,28 +254,24 @@ void glist_setMotion (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int
     editor_motionSet (glist_getEditor (glist_getView (glist)), y, callback, a, b);
 }
 
-void glist_setGraph (t_glist *glist, t_rectangle *r, int isGOP)
-{
-    int needToUpdate = isGOP || (!isGOP && glist_isGraphOnParent (glist));
+void glist_setGraphGeometry (t_glist *glist, t_rectangle *r, int isGOP)
+{   
+    int update = glist_isParentOnScreen (glist);
     
-    if (needToUpdate) {
-        if (glist_isParentOnScreen (glist)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
-        }
+    if (update) {
+    //
+    gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+    //
     }
     
     rectangle_setCopy (glist_getGraphGeometry (glist), r);
-    
-    if (!isGOP) { glist_setGraphOnParent (glist, 0); } 
-    else {
-        glist_setGraphOnParent (glist, 1);
-    }
+    glist_setGraphOnParent (glist, isGOP);
         
-    if (needToUpdate) {
-        if (glist_isParentOnScreen (glist)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-            glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
-        }
+    if (update) {
+    //
+    gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+    glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
+    //
     }
 }
 

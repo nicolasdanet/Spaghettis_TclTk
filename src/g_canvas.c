@@ -105,7 +105,7 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     rectangle_setByWidthAndHeight (&r, a, b, width, height);
     
-    glist_setGraph (glist, &r, isGOP);
+    glist_setGraphGeometry (glist, &r, isGOP);
 }
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -559,17 +559,11 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
         bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     }
     
-    glist_setGraph (glist, &r, isGOP);
+    glist_setGraphGeometry (glist, &r, isGOP);
     
     glist_setDirty (glist, 1);
     
     if (glist_hasWindow (glist)) { glist_updateWindow (glist); }
-    else {
-        if (glist_isParentOnScreen (glist)) {
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
-            gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-        }
-    }
     //
     }
 }
