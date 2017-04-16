@@ -28,6 +28,8 @@ t_class *canvas_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void canvas_dsp                     (t_glist *, t_signal **);
+
 void canvas_makeObject              (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeMessage             (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeArray               (t_glist *, t_symbol *, int, t_atom *);
@@ -455,6 +457,10 @@ static void canvas_requireArrayDialog (t_glist *glist)
     stub_new (cast_pd (glist), (void *)glist, t);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeArrayFromDialog (glist, s, argc, argv);
@@ -594,32 +600,40 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
 
 static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
 {
-    t_gobj *y = NULL;
-    t_glist *g = cast_glist (x);
-    t_error err = PD_ERROR_NONE;
-    char t[PD_STRING] = { 0 };
+    t_glist *glist = cast_glist (x);
     
-    int isArray = glist_isArray (g);
+    if (glist_isArray (glist)) {
     
-    err = string_sprintf (t, PD_STRING, "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-            isArray ?  0.0 : bounds_getRight (glist_getBounds (g)),
-            isArray ?  0.0 : bounds_getBottom (glist_getBounds (g)),
-            glist_isGraphOnParent (g),
-            !isArray ? 0.0 : bounds_getLeft (glist_getBounds (g)),
-            !isArray ? 0.0 : bounds_getTop (glist_getBounds (g)),
-            !isArray ? 0.0 : bounds_getRight (glist_getBounds (g)),
-            !isArray ? 0.0 : bounds_getBottom (glist_getBounds (g)), 
-            rectangle_getWidth (glist_getGraphGeometry (g)),
-            rectangle_getHeight (glist_getGraphGeometry (g)),
-            rectangle_getTopLeftX (glist_getGraphGeometry (g)),
-            rectangle_getTopLeftY (glist_getGraphGeometry (g)));
+        t_gobj *y = NULL;
+            
+        for (y = glist->gl_graphics; y; y = y->g_next) {
+            if (pd_class (y) == garray_class) { garray_functionProperties ((t_garray *)y); }
+        }
+        
+    } else {
+    
+        char t[PD_STRING] = { 0 };
+        
+        t_bounds *bounds  = glist_getBounds (glist);
+        t_rectangle *r    = glist_getGraphGeometry (glist);
+        
+        t_error err = string_sprintf (t, PD_STRING, 
+                            "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+                            bounds_getRight (bounds),
+                            bounds_getBottom (bounds),
+                            glist_isGraphOnParent (glist),
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.0, 
+                            rectangle_getWidth (r),
+                            rectangle_getHeight (r),
+                            rectangle_getTopLeftX (r),
+                            rectangle_getTopLeftY (r));
 
-    PD_ASSERT (!err);
+        PD_ASSERT (!err);
     
-    stub_new (cast_pd (g), (void *)g, t);
-
-    for (y = g->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == garray_class) { garray_functionProperties ((t_garray *)y); }
+        stub_new (cast_pd (glist), (void *)glist, t);
     }
 }
 
