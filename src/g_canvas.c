@@ -580,11 +580,9 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 
 static void canvas_functionSave (t_gobj *x, t_buffer *b)
 {
-    int needToSaveContents = 1;
+    int saveContents = !(glist_isAbstraction (cast_glist (x)));
     
-    if (glist_isAbstraction (cast_glist (x))) { needToSaveContents = 0; }
-
-    if (needToSaveContents) { glist_serialize (cast_glist (x), b); }
+    if (saveContents) { glist_serialize (cast_glist (x), b); }
     else {
         buffer_vAppend (b, "ssii",
             sym___hash__X,
