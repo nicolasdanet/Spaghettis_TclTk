@@ -12,6 +12,7 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "s_utf8.h"
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -154,12 +155,7 @@ int file_openConsideringSearchPath (const char *directory,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* First consider the sibling files of the object. */
-/* Then look for in the application "help" folder. */
-/* Then look for in the application "extras" folder. */
-/* And last in the defined search path. */
-
-void file_openHelp (const char *directory, const char *name)
+static void file_openHelp (const char *directory, const char *name)
 {
     t_fileproperties p;
     int f = -1;
@@ -177,6 +173,31 @@ void file_openHelp (const char *directory, const char *name)
         close (f); 
         buffer_fileOpen (s1, s2);
     }
+}
+
+/* First consider the sibling files of the object (or abstraction). */
+/* Then look for in the application "help" folder. */
+/* Then look for in the application "extras" folder. */
+/* And last in the defined search path. */
+
+void file_openHelpPatch (t_gobj *y)
+{
+    char *directory = NULL;
+    char name[PD_STRING] = { 0 };
+    t_error err = PD_ERROR_NONE;
+    
+    if (pd_class (y) == canvas_class && glist_isTop (cast_glist (y))) {
+        if (!(err = (buffer_size (object_getBuffer (cast_object (y))) < 1))) {
+            atom_toString (buffer_atoms (object_getBuffer (cast_object (y))), name, PD_STRING);
+            directory = environment_getDirectoryAsString (glist_getEnvironment (cast_glist (y)));
+        }
+        
+    } else {
+        err = string_copy (name, PD_STRING, class_getHelpNameAsString (pd_class (y)));
+        directory = class_getExternalDirectoryAsString (pd_class (y));
+    }
+
+    if (!err) { file_openHelp (directory, name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

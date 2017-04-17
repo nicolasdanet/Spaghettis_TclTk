@@ -244,7 +244,7 @@ int         file_openConsideringSearchPath          (const char *directory,
                                                         const char *extension,
                                                         t_fileproperties *p);
 
-void        file_openHelp                           (const char *directory, const char *name);
+void        file_openHelpPatch                      (t_gobj *y);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

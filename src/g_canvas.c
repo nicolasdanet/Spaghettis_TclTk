@@ -72,6 +72,15 @@ static void canvas_functionProperties (t_gobj *, t_glist *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+enum {
+    POPUP_PROPERTIES    = 0,
+    POPUP_OPEN          = 1,
+    POPUP_HELP          = 2
+    };
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -487,47 +496,25 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     t_rectangle t;
     
     if (gobj_hit (y, glist, a, b, &t)) {
-    //
-    if (k == 0) {                                                                  /* Properties. */
-        if (class_hasPropertiesFunction (pd_class (y))) {
-            (*class_getPropertiesFunction (pd_class (y))) (y, glist); return;
-        }
-    } 
-    if (k == 1) {                                                                  /* Open. */
-        if (class_hasMethod (pd_class (y), sym_open)) {
-            pd_message (cast_pd (y), sym_open, 0, NULL); return;
-        }
-    }
-    if (k == 2) {                                                                  /* Help. */
-    //
-    char *directory = NULL;
-    char name[PD_STRING] = { 0 };
-    t_error err = PD_ERROR_NONE;
-    
-    if (pd_class (y) == canvas_class && glist_isTop (cast_glist (y))) {
-        int ac = buffer_size (object_getBuffer (cast_object (y)));
-        t_atom *av = buffer_atoms (object_getBuffer (cast_object (y)));
-        if (!(err = (ac < 1))) {
-            atom_toString (av, name, PD_STRING);
-            directory = environment_getDirectoryAsString (glist_getEnvironment (cast_glist (y)));
-        }
-        
-    } else {
-        err = string_copy (name, PD_STRING, class_getHelpNameAsString (pd_class (y)));
-        directory = class_getExternalDirectoryAsString (pd_class (y));
-    }
 
-    if (!err) { file_openHelp (directory, name); }
+        if (k == POPUP_PROPERTIES) {
+            if (class_hasPropertiesFunction (pd_class (y))) {
+                (*class_getPropertiesFunction (pd_class (y))) (y, glist); return;
+            }
+        } 
+        if (k == POPUP_OPEN) {
+            if (class_hasMethod (pd_class (y), sym_open)) {
+                pd_message (cast_pd (y), sym_open, 0, NULL); return;
+            }
+        }
+        if (k == POPUP_HELP) {
+            file_openHelpPatch (y); return;
+        }
+    }
+    //
+    }
     
-    return;
-    //
-    }
-    //
-    }
-    //
-    }
-    
-    if (k == 0) { canvas_functionProperties (cast_gobj (glist), NULL); }
+    if (k == POPUP_PROPERTIES) { canvas_functionProperties (cast_gobj (glist), NULL); }
     //
     }
 }
