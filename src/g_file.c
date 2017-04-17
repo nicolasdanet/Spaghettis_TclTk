@@ -142,7 +142,7 @@ void canvas_closeUnsetDirtyAndContinue (t_glist *glist)
 
 void canvas_closeSubpatchOrAbstraction (t_glist *glist)
 {
-    glist_windowClose (glist);
+    if (glist_hasWindow (glist)) { glist_windowClose (glist); }
 }
 
 void canvas_closeDestroyAlreadyChecked (t_glist *glist, int destroy)

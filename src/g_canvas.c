@@ -331,24 +331,6 @@ void canvas_remove (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_open (t_glist *glist)
 {
-    /* Opening a GOP in its own window. */
-    
-    if (glist_isOnScreen (glist) && !glist_isWindowable (glist)) {      
-    //
-    PD_ASSERT (!glist_hasWindow (glist));
-    
-    gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
-    
-    /* Temporary force the window state in order to properly drawn the content below. */
-    
-    glist_setWindow (glist, 1); 
-    
-    gobj_visibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-    
-    glist_setWindow (glist, 0);
-    //
-    }
-    
     glist_windowOpen (glist);
 }
 
@@ -563,7 +545,7 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_free (t_glist *glist)
 {
-    if (glist_hasView (glist)) { glist_windowClose (glist); } 
+    if (glist_hasView (glist) && glist_hasWindow (glist)) { glist_windowClose (glist); } 
     
     stub_destroyWithKey ((void *)glist);
     

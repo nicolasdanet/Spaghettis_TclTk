@@ -552,17 +552,32 @@ void glist_windowMapped (t_glist *glist, int isMapped)
 
 void glist_windowOpen (t_glist *glist)
 {
+    /* If a GOP is opened in its own window content needs to be redrawn on parent. */
+    /* Temporary force the window state in order to properly drawn it. */
+    
+    if (glist_isOnScreen (glist) && !glist_isWindowable (glist)) {      
+
+        t_glist *t = glist_getParent (glist);
+        
+        if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
+        glist_setWindow (glist, 1); 
+        if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
+        glist_setWindow (glist, 0);
+    }
+    
+    /* Create or deiconify the window. */
+    
     if (glist_hasWindow (glist)) { sys_vGui ("::bringToFront %s\n", glist_getTagAsString (glist)); }
     else {
     //
-    t_rectangle *t = glist_getWindowGeometry (glist);
+    t_rectangle *r = glist_getWindowGeometry (glist);
     
     sys_vGui ("::ui_patch::create %s %d %d +%d+%d %d\n",    // --
                     glist_getTagAsString (glist),
-                    rectangle_getWidth (t),
-                    rectangle_getHeight (t),
-                    rectangle_getTopLeftX (t),
-                    rectangle_getTopLeftY (t),
+                    rectangle_getWidth (r),
+                    rectangle_getHeight (r),
+                    rectangle_getTopLeftX (r),
+                    rectangle_getTopLeftY (r),
                     glist_hasEditMode (glist));
                     
     glist_setWindow (glist, 1); glist_updateTitle (glist);
@@ -572,8 +587,8 @@ void glist_windowOpen (t_glist *glist)
 
 void glist_windowClose (t_glist *glist)
 {
-    if (glist_hasWindow (glist)) { 
-    //
+    /* Erase everything first and destroy the window. */
+    
     glist_deselectAll (glist);
     
     if (glist_isOnScreen (glist)) { glist_windowMapped (glist, 0); }
@@ -581,22 +596,20 @@ void glist_windowClose (t_glist *glist)
     sys_vGui ("destroy %s\n", glist_getTagAsString (glist));
     
     /* If it is a GOP opened in its own window it needs to be redrawn on parent. */
-    /* Note that the window state influence the way it is rendered. */
+    /* Note that as above the window state influence the way it is rendered. */
     
-    if (glist_isGraphOnParent (glist)) {
-    if (glist_hasParent (glist)) {
+    if (glist_isGraphOnParent (glist) && glist_hasParent (glist)) {
+
         t_glist *t = glist_getParent (glist);
+        
         if (!glist_isDeleting (t)) {
-            if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
+            if (glist_isOnScreen (t))  { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
             glist_setWindow (glist, 0);
-            if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
+            if (glist_isOnScreen (t))  { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
         }
-    }
     }
     
     glist_setWindow (glist, 0);
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
