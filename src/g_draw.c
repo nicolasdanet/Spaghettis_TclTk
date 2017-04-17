@@ -551,31 +551,29 @@ void glist_windowOpen (t_glist *glist)
 void glist_windowClose (t_glist *glist)
 {
     if (glist_hasWindow (glist)) { 
+    //
+    glist_deselectAll (glist);
+    
+    if (glist_isOnScreen (glist)) { glist_windowMapped (glist, 0); }
 
-        t_glist *t = NULL;
-        
-        glist_deselectAll (glist);
-        if (glist_isOnScreen (glist)) { glist_windowMapped (glist, 0); }
-
-        sys_vGui ("destroy .x%lx\n", glist);
-        
-        if (glist_isGraphOnParent (glist) && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
+    sys_vGui ("destroy %s\n", glist_getTagAsString (glist));
+    
+    /* If it is a GOP opened in its own window it needs to be redrawn on parent. */
+    /* Note that the window state influence the way it is rendered. */
+    
+    if (glist_isGraphOnParent (glist)) {
+    if (glist_hasParent (glist)) {
+        t_glist *t = glist_getParent (glist);
+        if (!glist_isDeleting (t)) {
             if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
             glist_setWindow (glist, 0);
             if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
-        } else {
-            glist_setWindow (glist, 0);
         }
     }
-}
-
-/* Open / close a patch in its own window. */
-
-void glist_visible (t_glist *glist, int isVisible)
-{
-    if (isVisible) { glist_windowOpen (glist); }
-    else {
-        glist_windowClose (glist);
+    }
+    
+    glist_setWindow (glist, 0);
+    //
     }
 }
 

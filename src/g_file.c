@@ -140,9 +140,9 @@ void canvas_closeUnsetDirtyAndContinue (t_glist *glist)
     glist_setDirty (glist, 0); canvas_quit();   /* Note that patches not dirty are closed later. */
 }
 
-void canvas_closeHideSubpatchOrAbstraction (t_glist *glist)
+void canvas_closeSubpatchOrAbstraction (t_glist *glist)
 {
-    glist_visible (glist, 0);
+    glist_windowClose (glist);
 }
 
 void canvas_closeDestroyAlreadyChecked (t_glist *glist, int destroy)
@@ -175,7 +175,7 @@ void canvas_close (t_glist *glist, t_float f)
 {
     int destroy = (int)f;
     
-    if (glist_hasParent (glist))  { canvas_closeHideSubpatchOrAbstraction (glist); }
+    if (glist_hasParent (glist))  { canvas_closeSubpatchOrAbstraction (glist); }
     else if (destroy == QUITTING) { canvas_closeUnsetDirtyAndContinue (glist); }
     else if (destroy)             { canvas_closeDestroyAlreadyChecked (glist, destroy); }
     else {

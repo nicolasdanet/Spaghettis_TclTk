@@ -81,7 +81,7 @@ void instance_stackPopPatch (t_glist *glist, int visible)
     
     glist_loadEnd (glist);
     
-    if (visible) { glist_visible (glist, 1); }
+    if (visible) { glist_windowOpen (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

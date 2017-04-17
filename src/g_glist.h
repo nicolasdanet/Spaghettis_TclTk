@@ -245,8 +245,6 @@ void    glist_windowMapped                  (t_glist *g, int isMapped);
 void    glist_windowOpen                    (t_glist *g);
 void    glist_windowClose                   (t_glist *g);
 
-void    glist_visible                       (t_glist *g, int isVisible);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

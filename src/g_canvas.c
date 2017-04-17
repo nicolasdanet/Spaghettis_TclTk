@@ -85,7 +85,7 @@ enum {
 
 static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    glist_visible (glist, 1);
+    glist_windowOpen (glist);
 }
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -349,7 +349,7 @@ static void canvas_open (t_glist *glist)
     //
     }
     
-    glist_visible (glist, 1);
+    glist_windowOpen (glist);
 }
 
 static void canvas_loadbang (t_glist *glist)
@@ -387,10 +387,9 @@ void canvas_dirty (t_glist *glist, t_float f)
     glist_setDirty (glist, (int)f);
 }
 
-void canvas_visible (t_glist *glist, t_float f)
-{
-    glist_visible (glist, (f != 0.0));
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_map (t_glist *glist, t_float f)
 {
@@ -579,7 +578,7 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_free (t_glist *glist)
 {
-    if (glist_hasView (glist)) { glist_visible (glist, 0); } 
+    if (glist_hasView (glist)) { glist_windowClose (glist); } 
     
     stub_destroyWithKey ((void *)glist);
     
@@ -654,7 +653,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_clear,                 sym_clear,              A_NULL);
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,           A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,              A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_visible,               sym_visible,            A_FLOAT, A_NULL);
 
     class_addMethod (c, (t_method)canvas_map,                   sym__map,               A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,        A_GIMME, A_NULL);
@@ -677,7 +675,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeVu,                sym_vumeter,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makePanel,             sym_mycnv,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_numbox,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_visible,               sym_vis,                A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_menuclose,          A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_save,                  sym_menusave,           A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,                sym_menusaveas,         A_DEFFLOAT, A_NULL);
