@@ -254,7 +254,12 @@ void glist_setMotion (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int
     editor_motionSet (glist_getEditor (glist_getView (glist)), y, callback, a, b);
 }
 
-void glist_setGraphGeometry (t_glist *glist, t_rectangle *r, int isGOP)
+void glist_setBounds (t_glist *glist, t_bounds *bounds)
+{
+    bounds_setCopy (glist_getBounds (glist), bounds);
+}
+
+void glist_setGraphGeometry (t_glist *glist, t_rectangle *r, t_bounds *bounds, int isGOP)
 {   
     int update = glist_isParentOnScreen (glist);
     
@@ -265,6 +270,7 @@ void glist_setGraphGeometry (t_glist *glist, t_rectangle *r, int isGOP)
     }
     
     rectangle_setCopy (glist_getGraphGeometry (glist), r);
+    bounds_setCopy (glist_getBounds (glist), bounds);
     glist_setGraphOnParent (glist, isGOP);
         
     if (update) {

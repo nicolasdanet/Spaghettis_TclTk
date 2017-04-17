@@ -89,25 +89,29 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     int isGOP   = (flags & 1);
     
-    t_rectangle r;
+    t_rectangle r; t_bounds bounds;
     
-    bounds_setByAtoms (glist_getBounds (glist), argc, argv);
+    bounds_setByAtoms (&bounds, argc, argv);
     
     #if PD_WITH_LEGACY
     
     if (!isGOP) {
     
-        t_float scaleX = glist_getValueForOnePixelX (glist);
-        t_float scaleY = glist_getValueForOnePixelY (glist);
+        glist_setBounds (glist, &bounds);
+            
+        {
+            t_float scaleX = glist_getValueForOnePixelX (glist);
+            t_float scaleY = glist_getValueForOnePixelY (glist);
         
-        bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
+            bounds_set (&bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
+        }
     }
     
     #endif
     
     rectangle_setByWidthAndHeight (&r, a, b, width, height);
     
-    glist_setGraphGeometry (glist, &r, isGOP);
+    glist_setGraphGeometry (glist, &r, &bounds, isGOP);
 }
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -528,45 +532,29 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_error err = PD_ERROR_NONE;
-    
-    if (glist_hasParent (glist)) {
-        
-        /* Activated text box triggering recreation. */
-        
-        err = glist_objectDeselectIfSelected (glist_getParent (glist), cast_gobj (glist));
-    }
-    
     PD_ASSERT (argc == 11);
-        
-    if (!err) {
+    PD_ASSERT (!glist_isArray (glist));
+    
+    {
     //
-    t_float scaleX  = atom_getFloatAtIndex (0, argc, argv);
-    t_float scaleY  = atom_getFloatAtIndex (1, argc, argv);
-    t_float start   = atom_getFloatAtIndex (3, argc, argv);
-    t_float up      = atom_getFloatAtIndex (4, argc, argv);
-    t_float end     = atom_getFloatAtIndex (5, argc, argv);
-    t_float down    = atom_getFloatAtIndex (6, argc, argv);
-    int isGOP       = (int)atom_getFloatAtIndex (2, argc,  argv);
-    int width       = (int)atom_getFloatAtIndex (7, argc,  argv);
-    int height      = (int)atom_getFloatAtIndex (8, argc,  argv);
-    int marginX     = (int)atom_getFloatAtIndex (9, argc,  argv);
-    int marginY     = (int)atom_getFloatAtIndex (10, argc, argv);
+    t_float scaleX  = atom_getFloat (argv + 0);
+    t_float scaleY  = atom_getFloat (argv + 1);
+    int isGOP       = (int)atom_getFloat (argv + 2);
+    int a           = (int)atom_getFloat (argv + 9);
+    int b           = (int)atom_getFloat (argv + 10);
+    int width       = (int)atom_getFloat (argv + 7);
+    int height      = (int)atom_getFloat (argv + 8);
     
-    t_rectangle r;
+    t_rectangle r; t_bounds bounds;
     
-    rectangle_setByWidthAndHeight (&r, marginX, marginY, width, height);
+    rectangle_setByWidthAndHeight (&r, a, b, width, height);
 
     if (scaleX == 0.0) { scaleX = (t_float)1.0; }
     if (scaleY == 0.0) { scaleY = (t_float)1.0; }
     
-    if (glist_isArray (glist)) { isGOP = 1; bounds_set (glist_getBounds (glist), start, up, end, down); }
-    else {
-        bounds_set (glist_getBounds (glist), (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
-    }
+    bounds_set (&bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     
-    glist_setGraphGeometry (glist, &r, isGOP);
-    
+    glist_setGraphGeometry (glist, &r, &bounds, isGOP);
     glist_setDirty (glist, 1);
     
     if (glist_hasWindow (glist)) { glist_updateWindow (glist); }

@@ -118,7 +118,9 @@ void    glist_setName                       (t_glist *g, t_symbol *name);
 void    glist_setDirty                      (t_glist *g, int n);
 void    glist_setFontSize                   (t_glist *g, int n);
 void    glist_setMotion                     (t_glist *g, t_gobj *y, t_motionfn fn, int a, int b);
-void    glist_setGraphGeometry              (t_glist *g, t_rectangle *r, int isGOP);
+void    glist_setBounds                     (t_glist *g, t_bounds *bounds);
+void    glist_setGraphGeometry              (t_glist *g, t_rectangle *r, t_bounds *bounds, int isGOP);
+void    glist_setWindowGeometry             (t_glist *g, t_rectangle *r);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
