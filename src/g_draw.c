@@ -38,8 +38,8 @@ void glist_updateTitle (t_glist *glist)
 void glist_updateWindow (t_glist *glist)
 {
     if (glist_isWindowable (glist) && glist_isOnScreen (glist)) { 
-        canvas_map (glist, 0);
-        canvas_map (glist, 1);
+        glist_mapped (glist, 0);
+        glist_mapped (glist, 1);
     }
 }
 
@@ -476,6 +476,52 @@ void glist_eraseAllCommentBars (t_glist *glist)
     //
     sys_vGui ("%s.c delete COMMENTBAR\n", glist_getTagAsString (glist));
     //
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void glist_eraseAll (t_glist *glist)
+{
+    sys_vGui ("%s.c delete all\n", glist_getTagAsString (glist)); 
+    
+    glist_setMapped (glist, 0);
+}
+
+static void glist_drawAll (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    t_selection *s = NULL;
+    
+    //if (!glist_hasWindow (glist)) { PD_BUG; canvas_visible (glist, 1); }
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
+        gobj_selected (selection_getObject (s), glist, 1);
+    }
+
+    glist_setMapped (glist, 1);
+    glist_drawAllLines (glist);
+    glist_drawRectangle (glist);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void glist_mapped (t_glist *glist, int isMapped)
+{
+    if (isMapped != glist_isOnScreen (glist)) {
+    //
+    PD_ASSERT (glist_hasWindow (glist));
+    
+    if (isMapped) { glist_drawAll (glist); }
+    else {
+        glist_eraseAll (glist);
     }
     //
     }

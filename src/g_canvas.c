@@ -416,7 +416,7 @@ void canvas_visible (t_glist *glist, t_float f)
             t_glist *t = NULL;
             
             glist_deselectAll (glist);
-            if (glist_isOnScreen (glist)) { canvas_map (glist, 0); }
+            if (glist_isOnScreen (glist)) { glist_mapped (glist, 0); }
 
             sys_vGui ("destroy .x%lx\n", glist);
             
@@ -433,28 +433,7 @@ void canvas_visible (t_glist *glist, t_float f)
 
 void canvas_map (t_glist *glist, t_float f)
 {
-    int isMapped = (f != 0.0);
-
-    if (isMapped != glist_isOnScreen (glist)) {
-    //
-    if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist_getView (glist)); glist_setMapped (glist, 0); }
-    else {
-    
-        t_gobj *y = NULL;
-        t_selection *s = NULL;
-        
-        if (!glist_hasWindow (glist)) { PD_BUG; canvas_visible (glist, 1); }
-        for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
-        for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
-            gobj_selected (selection_getObject (s), glist, 1);
-        }
-
-        glist_setMapped (glist, 1);
-        glist_drawAllLines (glist);
-        glist_drawRectangle (glist);
-    }
-    //
-    }
+    glist_mapped (glist, (f != 0.0));
 }
 
 // -----------------------------------------------------------------------------------------------------------

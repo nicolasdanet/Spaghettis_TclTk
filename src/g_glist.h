@@ -241,6 +241,12 @@ void    glist_eraseLine                     (t_glist *g, t_cord *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    glist_mapped                        (t_glist *g, int isMapped);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_float glist_pixelToValueX                 (t_glist *g, t_float f);
 t_float glist_pixelToValueY                 (t_glist *g, t_float f);
 t_float glist_valueToPixelX                 (t_glist *g, t_float f);
