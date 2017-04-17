@@ -281,6 +281,11 @@ void glist_setGraphGeometry (t_glist *glist, t_rectangle *r, t_bounds *bounds, i
     }
 }
 
+void glist_setWindowGeometry (t_glist *glist, t_rectangle *r)
+{
+    rectangle_setCopy (glist_getWindowGeometry (glist), r);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

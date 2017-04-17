@@ -279,7 +279,9 @@ static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
-    rectangle_setByAtoms (glist_getWindowGeometry (glist), argc, argv);
+    t_rectangle r; rectangle_setByAtoms (&r, argc, argv);
+    
+    glist_setWindowGeometry (glist, &r);
     
     if (glist_isArray (glist)) { glist_updateWindow (glist); }
     //
@@ -292,9 +294,9 @@ static void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     if (glist_isArray (glist)) {
     //
-    t_error err = bounds_setByAtoms (glist_getBounds (glist), argc, argv);
+    t_bounds bounds; t_error err = bounds_setByAtoms (&bounds, argc, argv);
     
-    if (!err) { glist_updateGraphOnParent (glist); return; }
+    if (!err) { glist_setBounds (glist, &bounds); glist_updateGraphOnParent (glist); return; }
     //
     }
     //
