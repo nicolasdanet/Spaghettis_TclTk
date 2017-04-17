@@ -398,7 +398,7 @@ void glist_drawAllLines (t_glist *glist)
     }
 }
 
-void glist_drawAllCommentBars (t_glist *glist)
+static void glist_drawAllCommentBars (t_glist *glist)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
     //
@@ -468,7 +468,7 @@ void glist_eraseLine (t_glist *glist, t_cord *c)
     }
 }
 
-void glist_eraseAllCommentBars (t_glist *glist)
+static void glist_eraseAllCommentBars (t_glist *glist)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
     //
@@ -476,6 +476,28 @@ void glist_eraseAllCommentBars (t_glist *glist)
     //
     sys_vGui ("%s.c delete COMMENTBAR\n", glist_getTagAsString (glist));
     //
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void glist_windowEdit (t_glist *glist, int isEditMode)
+{
+    if (isEditMode != glist_hasEditMode (glist)) {
+    //
+    glist_setEditMode (glist, isEditMode);
+    
+    if (isEditMode) { glist_drawAllCommentBars (glist); }
+    else {
+        glist_deselectAll (glist); glist_eraseAllCommentBars (glist);
+    }
+    
+    if (glist_isOnScreen (glist)) {
+        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), glist_hasEditMode (glist));
     }
     //
     }

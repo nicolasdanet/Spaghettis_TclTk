@@ -220,7 +220,6 @@ void    glist_updateLine                    (t_glist *g, t_cord *c);
 #pragma mark -
 
 void    glist_drawAllLines                  (t_glist *g);
-void    glist_drawAllCommentBars            (t_glist *g);
 void    glist_drawRectangleOnParent         (t_glist *g);
 void    glist_drawRectangle                 (t_glist *g);
 void    glist_drawLasso                     (t_glist *g, int a, int b);
@@ -232,7 +231,6 @@ void    glist_drawLine                      (t_glist *g, t_cord *c);
 #pragma mark -
 
 void    glist_eraseRectangleOnParent        (t_glist *g);
-void    glist_eraseAllCommentBars           (t_glist *g);
 void    glist_eraseLasso                    (t_glist *g);
 void    glist_eraseTemporary                (t_glist *g);
 void    glist_eraseLine                     (t_glist *g, t_cord *c);
@@ -241,6 +239,7 @@ void    glist_eraseLine                     (t_glist *g, t_cord *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    glist_windowEdit                    (t_glist *g, int isEditMode);
 void    glist_windowMapped                  (t_glist *g, int isMapped);
 void    glist_windowOpen                    (t_glist *g);
 void    glist_windowClose                   (t_glist *g);

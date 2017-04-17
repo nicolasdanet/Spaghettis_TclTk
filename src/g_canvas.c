@@ -364,25 +364,10 @@ void canvas_clear (t_glist *glist)
 
 static void canvas_editmode (t_glist *glist, t_float f)
 {
-    int state = (int)(f != 0.0);
-     
-    if (glist_hasEditMode (glist) != state) {
-    //
-    glist_setEditMode (glist, state);
-    
-    if (state) { glist_drawAllCommentBars (glist); }
-    else {
-        glist_deselectAll (glist); glist_eraseAllCommentBars (glist);
-    }
-    
-    if (glist_isOnScreen (glist)) {
-        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), glist_hasEditMode (glist));
-    }
-    //
-    }
+    glist_windowEdit (glist, (f != 0.0));
 }
 
-void canvas_dirty (t_glist *glist, t_float f)
+static void canvas_dirty (t_glist *glist, t_float f)
 {
     glist_setDirty (glist, (int)f);
 }
@@ -391,7 +376,7 @@ void canvas_dirty (t_glist *glist, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_map (t_glist *glist, t_float f)
+static void canvas_map (t_glist *glist, t_float f)
 {
     glist_windowMapped (glist, (f != 0.0));
 }
