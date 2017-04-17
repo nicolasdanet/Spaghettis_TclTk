@@ -85,7 +85,7 @@ enum {
 
 static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_visible (glist, 1);
+    glist_visible (glist, 1);
 }
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -349,7 +349,7 @@ static void canvas_open (t_glist *glist)
     //
     }
     
-    canvas_visible (glist, 1);
+    glist_visible (glist, 1);
 }
 
 static void canvas_loadbang (t_glist *glist)
@@ -389,51 +389,12 @@ void canvas_dirty (t_glist *glist, t_float f)
 
 void canvas_visible (t_glist *glist, t_float f)
 {
-    int isVisible = (f != 0.0);
-    
-    if (isVisible) {
-
-        if (glist_hasWindow (glist)) { sys_vGui ("::bringToFront .x%lx\n", glist); }
-        else {
-            
-            sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",     // --
-                            glist,
-                            rectangle_getWidth (glist_getWindowGeometry (glist)),
-                            rectangle_getHeight (glist_getWindowGeometry (glist)),
-                            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
-                            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
-                            glist_hasEditMode (glist));
-                            
-            glist_setWindow (glist, 1);
-            
-            glist_updateTitle (glist);
-        }
-        
-    } else {
-
-        if (glist_hasWindow (glist)) { 
-
-            t_glist *t = NULL;
-            
-            glist_deselectAll (glist);
-            if (glist_isOnScreen (glist)) { glist_mapped (glist, 0); }
-
-            sys_vGui ("destroy .x%lx\n", glist);
-            
-            if (glist_isGraphOnParent (glist) && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
-                if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
-                glist_setWindow (glist, 0);
-                if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
-            } else {
-                glist_setWindow (glist, 0);
-            }
-        }
-    }
+    glist_visible (glist, (f != 0.0));
 }
 
 void canvas_map (t_glist *glist, t_float f)
 {
-    glist_mapped (glist, (f != 0.0));
+    glist_windowMapped (glist, (f != 0.0));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -618,7 +579,7 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_free (t_glist *glist)
 {
-    if (glist_hasView (glist)) { canvas_visible (glist, 0); } 
+    if (glist_hasView (glist)) { glist_visible (glist, 0); } 
     
     stub_destroyWithKey ((void *)glist);
     

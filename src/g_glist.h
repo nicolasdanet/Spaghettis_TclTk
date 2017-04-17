@@ -241,7 +241,11 @@ void    glist_eraseLine                     (t_glist *g, t_cord *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    glist_mapped                        (t_glist *g, int isMapped);
+void    glist_windowMapped                  (t_glist *g, int isMapped);
+void    glist_windowOpen                    (t_glist *g);
+void    glist_windowClose                   (t_glist *g);
+
+void    glist_visible                       (t_glist *g, int isVisible);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

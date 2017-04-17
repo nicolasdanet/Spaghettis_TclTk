@@ -38,8 +38,8 @@ void glist_updateTitle (t_glist *glist)
 void glist_updateWindow (t_glist *glist)
 {
     if (glist_isWindowable (glist) && glist_isOnScreen (glist)) { 
-        glist_mapped (glist, 0);
-        glist_mapped (glist, 1);
+        glist_windowMapped (glist, 0);
+        glist_windowMapped (glist, 1);
     }
 }
 
@@ -485,19 +485,17 @@ void glist_eraseAllCommentBars (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void glist_eraseAll (t_glist *glist)
+static void glist_windowMappedEraseContent (t_glist *glist)
 {
     sys_vGui ("%s.c delete all\n", glist_getTagAsString (glist)); 
     
     glist_setMapped (glist, 0);
 }
 
-static void glist_drawAll (t_glist *glist)
+static void glist_windowMappedDrawContent (t_glist *glist)
 {
     t_gobj *y = NULL;
     t_selection *s = NULL;
-    
-    //if (!glist_hasWindow (glist)) { PD_BUG; canvas_visible (glist, 1); }
     
     for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
@@ -509,21 +507,75 @@ static void glist_drawAll (t_glist *glist)
     glist_drawRectangle (glist);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+/* When a window is put or removed from screen. */
+/* It can result from normal, withdrawn or iconic states. */
 
-void glist_mapped (t_glist *glist, int isMapped)
+void glist_windowMapped (t_glist *glist, int isMapped)
 {
     if (isMapped != glist_isOnScreen (glist)) {
     //
     PD_ASSERT (glist_hasWindow (glist));
     
-    if (isMapped) { glist_drawAll (glist); }
+    if (isMapped) { glist_windowMappedDrawContent (glist); }
     else {
-        glist_eraseAll (glist);
+        glist_windowMappedEraseContent (glist);
     }
     //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void glist_windowOpen (t_glist *glist)
+{
+    if (glist_hasWindow (glist)) { sys_vGui ("::bringToFront %s\n", glist_getTagAsString (glist)); }
+    else {
+    //
+    t_rectangle *t = glist_getWindowGeometry (glist);
+    
+    sys_vGui ("::ui_patch::create %s %d %d +%d+%d %d\n",    // --
+                    glist_getTagAsString (glist),
+                    rectangle_getWidth (t),
+                    rectangle_getHeight (t),
+                    rectangle_getTopLeftX (t),
+                    rectangle_getTopLeftY (t),
+                    glist_hasEditMode (glist));
+                    
+    glist_setWindow (glist, 1); glist_updateTitle (glist);
+    //
+    }
+}
+
+void glist_windowClose (t_glist *glist)
+{
+    if (glist_hasWindow (glist)) { 
+
+        t_glist *t = NULL;
+        
+        glist_deselectAll (glist);
+        if (glist_isOnScreen (glist)) { glist_windowMapped (glist, 0); }
+
+        sys_vGui ("destroy .x%lx\n", glist);
+        
+        if (glist_isGraphOnParent (glist) && (t = glist_getParent (glist)) && (!glist_isDeleting (t))) {
+            if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
+            glist_setWindow (glist, 0);
+            if (glist_isOnScreen (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
+        } else {
+            glist_setWindow (glist, 0);
+        }
+    }
+}
+
+/* Open / close a patch in its own window. */
+
+void glist_visible (t_glist *glist, int isVisible)
+{
+    if (isVisible) { glist_windowOpen (glist); }
+    else {
+        glist_windowClose (glist);
     }
 }
 

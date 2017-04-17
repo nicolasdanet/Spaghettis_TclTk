@@ -142,7 +142,7 @@ void canvas_closeUnsetDirtyAndContinue (t_glist *glist)
 
 void canvas_closeHideSubpatchOrAbstraction (t_glist *glist)
 {
-    canvas_visible (glist, 0);
+    glist_visible (glist, 0);
 }
 
 void canvas_closeDestroyAlreadyChecked (t_glist *glist, int destroy)

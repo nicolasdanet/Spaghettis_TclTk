@@ -18,7 +18,6 @@
 
 void            canvas_disconnect                       (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_rename                           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void            canvas_visible                          (t_glist *glist, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
