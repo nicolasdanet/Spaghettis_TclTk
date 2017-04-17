@@ -464,8 +464,10 @@ void canvas_map (t_glist *glist, t_float f)
 static void canvas_requireArrayDialog (t_glist *glist)
 {
     char t[PD_STRING] = { 0 };
-    t_symbol *s = utils_getDefaultBindName (garray_class, sym_array);
-    t_error err = string_sprintf (t, PD_STRING, "::ui_array::show %%s %s 100 3\n", s->s_name);
+    
+    t_error err = string_sprintf (t, PD_STRING, 
+                        "::ui_array::show %%s %s 100 3\n", 
+                        utils_getDefaultBindName (garray_class, sym_array)->s_name);
     
     PD_ASSERT (!err);
     
@@ -483,40 +485,39 @@ static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_ato
 
 static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 3) {
-    //
-    int k = (int)atom_getFloat (argv + 0);
-    int a = (int)atom_getFloat (argv + 1);
-    int b = (int)atom_getFloat (argv + 2);
+    int k = (int)atom_getFloatAtIndex (0, argc, argv);
+    int a = (int)atom_getFloatAtIndex (1, argc, argv);
+    int b = (int)atom_getFloatAtIndex (2, argc, argv);
     
     t_gobj *y = NULL;
+    
+    PD_ASSERT (argc == 3);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
     t_rectangle t;
     
     if (gobj_hit (y, glist, a, b, &t)) {
-
-        if (k == POPUP_PROPERTIES) {
-            if (class_hasPropertiesFunction (pd_class (y))) {
-                (*class_getPropertiesFunction (pd_class (y))) (y, glist); return;
-            }
-        } 
-        if (k == POPUP_OPEN) {
-            if (class_hasMethod (pd_class (y), sym_open)) {
-                pd_message (cast_pd (y), sym_open, 0, NULL); return;
-            }
+    //
+    if (k == POPUP_PROPERTIES) {
+        if (class_hasPropertiesFunction (pd_class (y))) {
+            (*class_getPropertiesFunction (pd_class (y))) (y, glist); return;
         }
-        if (k == POPUP_HELP) {
-            file_openHelpPatch (y); return;
+    } 
+    if (k == POPUP_OPEN) {
+        if (class_hasMethod (pd_class (y), sym_open)) {
+            pd_message (cast_pd (y), sym_open, 0, NULL); return;
         }
+    }
+    if (k == POPUP_HELP) {
+        file_openHelpPatch (y); return;
+    }
+    //
     }
     //
     }
     
     if (k == POPUP_PROPERTIES) { canvas_functionProperties (cast_gobj (glist), NULL); }
-    //
-    }
 }
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
