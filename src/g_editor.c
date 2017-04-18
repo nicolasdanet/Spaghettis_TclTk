@@ -176,25 +176,25 @@ void editor_selectedLineSet (t_editor *x, t_outconnect *connection, int m, int i
 {
     x->e_selectedLineConnection = connection;
     
-    SET_FLOAT (x->e_selectedLine + 0, m);
-    SET_FLOAT (x->e_selectedLine + 1, i);
-    SET_FLOAT (x->e_selectedLine + 2, n);
-    SET_FLOAT (x->e_selectedLine + 3, j);
+    x->e_selectedLine[0] = m;
+    x->e_selectedLine[1] = i;
+    x->e_selectedLine[2] = n;
+    x->e_selectedLine[3] = j;
 }
 
 void editor_selectedLineReset (t_editor *x)
 {
-    x->e_selectedLineConnection = NULL;
-    
-    SET_FLOAT (x->e_selectedLine + 0, (t_float)0.0);
-    SET_FLOAT (x->e_selectedLine + 1, (t_float)0.0);
-    SET_FLOAT (x->e_selectedLine + 2, (t_float)0.0);
-    SET_FLOAT (x->e_selectedLine + 3, (t_float)0.0);
+    editor_selectedLineSet (x, NULL, 0, 0, 0, 0);
 }
 
 void editor_selectedLineDisconnect (t_editor *x)
 {
-    canvas_disconnect (x->e_owner, NULL, 4, x->e_selectedLine);
+    int m = x->e_selectedLine[0];
+    int i = x->e_selectedLine[1];
+    int n = x->e_selectedLine[2];
+    int j = x->e_selectedLine[3];
+    
+    glist_lineDisconnect (x->e_owner, m, i, n, j);
     
     editor_selectedLineReset (x);
 }

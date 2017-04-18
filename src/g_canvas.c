@@ -232,37 +232,16 @@ void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     error_failed (sym_connect);
 }
 
-void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+static void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
-    int indexOfObjectOut = (int)atom_getFloat (argv + 0);
-    int indexOfOutlet    = (int)atom_getFloat (argv + 1);
-    int indexOfObjectIn  = (int)atom_getFloat (argv + 2);
-    int indexOfInlet     = (int)atom_getFloat (argv + 3);
+    int m = (int)atom_getFloat (argv + 0);
+    int i = (int)atom_getFloat (argv + 1);
+    int n = (int)atom_getFloat (argv + 2);
+    int j = (int)atom_getFloat (argv + 3);
     
-    t_outconnect *connection = NULL;
-    t_traverser t;
-        
-    traverser_start (&t, glist);
-    
-    while ((connection = traverser_next (&t))) {
-    //
-    if ((traverser_getIndexOfOutlet (&t) == indexOfOutlet)) {
-        if ((traverser_getIndexOfInlet (&t) == indexOfInlet)) {
-
-            int m = glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (&t)));
-            int n = glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t)));
-
-            if (m == indexOfObjectOut && n == indexOfObjectIn) {
-                glist_eraseLine (glist, traverser_getCord (&t));
-                traverser_disconnect (&t);
-                break;
-            }
-        }
-    }
-    //
-    }
+    glist_lineDisconnect (glist, m, i, n, j);
     //
     }
 }

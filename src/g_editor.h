@@ -37,7 +37,7 @@ typedef struct _editor {
     t_clock             *e_clock;
     t_buffer            *e_cachedLines;
     t_outconnect        *e_selectedLineConnection;
-    t_atom              e_selectedLine[4];
+    int                 e_selectedLine[4];
     t_motionfn          e_fnMotion;
     t_drag              e_drag;
     int                 e_action;

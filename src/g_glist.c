@@ -957,6 +957,36 @@ int glist_lineExist (t_glist *glist, t_object *o, int m, t_object *i, int n)
     return 0;
 }
 
+void glist_lineDisconnect (t_glist *glist, 
+    int indexOfObjectOut, 
+    int indexOfOutlet, 
+    int indexOfObjectIn,
+    int indexOfInlet)
+{
+    t_outconnect *connection = NULL;
+    t_traverser t;
+        
+    traverser_start (&t, glist);
+    
+    while ((connection = traverser_next (&t))) {
+    //
+    if ((traverser_getIndexOfOutlet (&t) == indexOfOutlet)) {
+        if ((traverser_getIndexOfInlet (&t) == indexOfInlet)) {
+
+            int m = glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (&t)));
+            int n = glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t)));
+
+            if (m == indexOfObjectOut && n == indexOfObjectIn) {
+                glist_eraseLine (glist, traverser_getCord (&t));
+                traverser_disconnect (&t);
+                break;
+            }
+        }
+    }
+    //
+    }
+}
+
 void glist_lineDeleteSelected (t_glist *glist)
 {
     if (editor_hasSelectedLine (glist_getEditor (glist))) {
