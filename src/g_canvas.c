@@ -155,29 +155,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (glist->gl_graphics) {
-    //
-    t_gobj *g1 = NULL;
-    t_gobj *g2 = NULL;
-    
-    t_object *o = NULL;
-    
-    for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
-    
-    if ((o = cast_objectIfConnectable (g1))) {
-    //
-    int w = atom_getFloatAtIndex (0, argc, argv);
-    
-    object_setWidth (o, PD_MAX (1, w));
-    
-    if (glist_isOnScreen (glist)) {
-        gobj_visibilityChanged (g1, glist, 0);
-        gobj_visibilityChanged (g1, glist, 1);
-    }
-    //
-    }
-    //
-    }
+    glist_objectSetWidthOfLast (glist, (int)atom_getFloatAtIndex (0, argc, argv));
 }
 
 static void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -205,9 +183,11 @@ static void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     int n = (int)atom_getFloat (argv + 2);
     int j = (int)atom_getFloat (argv + 3);
     
-    glist_lineDisconnect (glist, m, i, n, j);
+    if (glist_lineDisconnect (glist, m, i, n, j) == PD_ERROR_NONE) { return; }
     //
     }
+    
+    error_failed (sym_disconnect);
 }
 
 static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)

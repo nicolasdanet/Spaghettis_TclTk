@@ -479,6 +479,28 @@ void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
     }
 }
 
+void glist_objectSetWidthOfLast (t_glist *glist, int w)
+{
+    if (glist->gl_graphics) {
+    //
+    t_gobj *g1 = NULL;
+    t_gobj *g2 = NULL;
+    
+    for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
+    
+    if (cast_objectIfConnectable (g1)) {
+    
+        object_setWidth (cast_object (g1), PD_MAX (1, w));
+        
+        if (glist_isOnScreen (glist)) {
+            gobj_visibilityChanged (g1, glist, 0);
+            gobj_visibilityChanged (g1, glist, 1);
+        }
+    }
+    //
+    }
+}
+
 void glist_objectAddProceed (t_glist *glist, t_gobj *first, t_gobj *next)
 {
     next->g_next = NULL;
@@ -584,7 +606,7 @@ void glist_objectRemoveAll (t_glist *glist)
     if (dspSuspended) { dsp_resume (dspState); }
 }
 
-void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
+void glist_objectRemoveAllByTemplate (t_glist *glist, t_template *template)
 {
     t_gobj *y = NULL;
 
@@ -597,7 +619,7 @@ void glist_objectRemoveByTemplate (t_glist *glist, t_template *template)
         }
         
         if (pd_class (y) == canvas_class) {
-            glist_objectRemoveByTemplate (cast_glist (y), template);
+            glist_objectRemoveAllByTemplate (cast_glist (y), template);
         }
     }
 }

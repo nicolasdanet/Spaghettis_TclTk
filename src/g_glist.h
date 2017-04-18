@@ -135,10 +135,11 @@ void    glist_key                           (t_glist *g, t_keycode n, t_symbol *
 
 void    glist_objectMake                    (t_glist *g, int a, int b, int w, int selected, t_buffer *t);
 void    glist_objectMakeScalar              (t_glist *g, int argc, t_atom *argv);
+void    glist_objectSetWidthOfLast          (t_glist *g, int w);
 void    glist_objectAddNext                 (t_glist *g, t_gobj *first, t_gobj *next);
 void    glist_objectAdd                     (t_glist *g, t_gobj *y);
 void    glist_objectRemove                  (t_glist *g, t_gobj *y);
-void    glist_objectRemoveByTemplate        (t_glist *g, t_template *tmpl);
+void    glist_objectRemoveAllByTemplate     (t_glist *g, t_template *tmpl);
 void    glist_objectRemoveAll               (t_glist *g);
 
 t_gobj  *glist_objectGetAt                  (t_glist *g, int n);

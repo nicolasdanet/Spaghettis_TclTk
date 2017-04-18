@@ -371,7 +371,7 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
     while (glist) {
 
         if (!template_isPrivate (template_getTemplateIdentifier (template))) {
-            glist_objectRemoveByTemplate (glist, template); 
+            glist_objectRemoveAllByTemplate (glist, template); 
         }
     
         glist = glist_getNext (glist);
