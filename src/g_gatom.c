@@ -280,8 +280,8 @@ static void gatom_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int 
     
     text_behaviorDisplaced (z, glist, deltaX, deltaY);
     
-    sys_vGui (".x%lx.c move %lxLABEL %d %d\n", 
-                    glist_getView (glist), 
+    sys_vGui ("%s.c move %lxLABEL %d %d\n", 
+                    glist_getTagAsString (glist_getView (glist)), 
                     x,
                     deltaX,
                     deltaY);
@@ -295,8 +295,8 @@ static void gatom_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     x->a_isSelected = isSelected;
     
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n", 
-                    glist_getView (glist), 
+    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n", 
+                    glist_getTagAsString (glist_getView (glist)), 
                     x,
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
@@ -309,15 +309,17 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
     
     if (x->a_label != &s_) {
     //
-    if (!isVisible) { sys_vGui (".x%lx.c delete %lxLABEL\n", glist_getView (glist), x); }
+    t_glist *view = glist_getView (glist);
+    
+    if (!isVisible) { sys_vGui ("%s.c delete %lxLABEL\n", glist_getTagAsString (view), x); }
     else { 
         int positionX = 0;
         int positionY = 0;
         
         gatom_getPostion (x, glist, &positionX, &positionY);
         
-        sys_vGui ("::ui_box::newText .x%lx.c %lxLABEL %d %d {%s} %d #%06x\n",   // --
-                        glist_getView (glist),
+        sys_vGui ("::ui_box::newText %s.c %lxLABEL %d %d {%s} %d #%06x\n",   // --
+                        glist_getTagAsString (view),
                         x,
                         positionX,
                         positionY,
@@ -330,6 +332,10 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
     
     if (!isVisible) { defer_removeJob ((void *)z); }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void gatom_functionSave (t_gobj *z, t_buffer *b)
 {
@@ -438,13 +444,53 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
+{
+    int width    = (int)atom_getFloatAtIndex (2, argc, argv);
+    int position = (int)atom_getFloatAtIndex (5, argc, argv);
+    
+    width        = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
+    position     = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+    
+    object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
+    object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
+    object_setWidth (cast_object (x), width);
+
+    x->a_lowRange           = atom_getFloatAtIndex (3, argc, argv);
+    x->a_highRange          = atom_getFloatAtIndex (4, argc, argv);
+    x->a_position           = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+    x->a_unexpandedLabel    = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
+    x->a_unexpandedReceive  = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
+    x->a_unexpandedSend     = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
+    x->a_send               = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedSend, x->a_owner);
+    x->a_receive            = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedReceive, x->a_owner);
+    x->a_label              = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedLabel, x->a_owner);
+            
+    if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
+
+    x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
+    
+    glist_objectAdd (x->a_owner, cast_gobj (x));
+}
+
+static void gatom_makeObjectMenu (t_gatom *x, int argc, t_atom *argv)
+{
+    glist_deselectAll (x->a_owner);
+        
+    object_setX (cast_object (x), instance_getDefaultX (x->a_owner));
+    object_setY (cast_object (x), instance_getDefaultY (x->a_owner));
+        
+    x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
+                
+    glist_objectAdd (x->a_owner, cast_gobj (x));
+    glist_objectSelect (x->a_owner, cast_gobj (x));
+}
+
 static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, t_atom *argv)
 {
-    t_gatom *x = (t_gatom *)pd_new (gatom_class);
+    t_gatom *x  = (t_gatom *)pd_new (gatom_class);
     
-    object_setBuffer (cast_object (x), buffer_new());
-    object_setWidth (cast_object (x),  type == A_FLOAT ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL);
-    object_setType (cast_object (x),   TYPE_ATOM);
+    t_buffer *t = buffer_new();
     
     x->a_owner              = glist;
     x->a_lowRange           = 0;
@@ -462,54 +508,22 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         t_atom a;
         SET_FLOAT (&x->a_atom, (t_float)0.0);
         SET_FLOAT (&a, (t_float)0.0);
-        buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
+        buffer_appendAtom (t, &a);
         
     } else {
         t_atom a;
         SET_SYMBOL (&x->a_atom, &s_symbol);
         SET_SYMBOL (&a, &s_symbol);
-        buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
+        buffer_appendAtom (t, &a);
     }
     
-    if (argc > 1) {                                                             /* File creation. */
+    object_setBuffer (cast_object (x), t);
+    object_setWidth (cast_object (x),  type == A_FLOAT ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL);
+    object_setType (cast_object (x),   TYPE_ATOM);
     
-        int width    = (int)atom_getFloatAtIndex (2, argc, argv);
-        int position = (int)atom_getFloatAtIndex (5, argc, argv);
-        
-        object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
-        object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
-        object_setWidth (cast_object (x), PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM));
-
-        x->a_lowRange           = atom_getFloatAtIndex (3, argc, argv);
-        x->a_highRange          = atom_getFloatAtIndex (4, argc, argv);
-        x->a_position           = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
-        x->a_unexpandedLabel    = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
-        x->a_unexpandedReceive  = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
-        x->a_unexpandedSend     = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
-        x->a_send               = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedSend, x->a_owner);
-        x->a_receive            = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedReceive, x->a_owner);
-        x->a_label              = dollar_expandDollarSymbolByEnvironment (x->a_unexpandedLabel, x->a_owner);
-                
-        if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
-
-        x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
-        
-        glist_objectAdd (glist, cast_gobj (x));
-        
-    } else {                                                                    /* Interactive creation. */
-    
-        int positionX = instance_getDefaultX (glist);
-        int positionY = instance_getDefaultY (glist);
-
-        glist_deselectAll (glist);
-        
-        object_setX (cast_object (x), positionX);
-        object_setY (cast_object (x), positionY);
-        
-        x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
-                
-        glist_objectAdd (glist, cast_gobj (x));
-        glist_objectSelect (glist, cast_gobj (x));
+    if (argc > 1) { gatom_makeObjectFile (x, argc, argv); } 
+    else {
+        gatom_makeObjectMenu (x, argc, argv);
     }
 }
 
