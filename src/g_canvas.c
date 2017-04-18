@@ -88,6 +88,40 @@ static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     glist_windowOpen (glist);
 }
 
+void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    t_symbol *name = &s_;
+    
+    if (argc > 3) { name = dollar_getSymbolExpandedIfRequiered (argv + 3, instance_contextGetCurrent()); }
+    
+    glist_setName (glist, (name == &s_ ? sym_Patch : name));
+    
+    PD_ASSERT (instance_contextGetCurrent() == glist);
+    
+    instance_stackPopPatch (glist, glist_isOpenedAtLoad (glist));
+
+    PD_ASSERT (glist->gl_parent == instance_contextGetCurrent());
+    
+    {
+        t_glist *parent = instance_contextGetCurrent();
+    
+        PD_ASSERT (parent);
+        PD_ABORT (!parent);     /* Hot to manage corrupted files? */
+        
+        glist->gl_parent = parent;
+        
+        object_setBuffer (cast_object (glist), buffer_new());
+        object_setX (cast_object (glist), atom_getFloatAtIndex (0, argc, argv));
+        object_setY (cast_object (glist), atom_getFloatAtIndex (1, argc, argv));
+        object_setWidth (cast_object (glist), 0);
+        object_setType (cast_object (glist), TYPE_OBJECT);
+        
+        if (argc > 2) { buffer_deserialize (object_getBuffer (cast_object (glist)), argc - 2, argv + 2); }
+        
+        glist_objectAdd (parent, cast_gobj (glist));
+    }
+}
+
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     int flags   = (int)atom_getFloatAtIndex (6, argc, argv);
@@ -121,36 +155,6 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     rectangle_setByWidthAndHeight (&r, a, b, width, height);
     
     glist_setGraphGeometry (glist, &r, &bounds, isGOP);
-}
-
-void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    t_symbol *name = &s_;
-    
-    if (argc > 3) { name = dollar_getSymbolExpandedIfRequiered (argv + 3, instance_contextGetCurrent()); }
-    
-    glist_setName (glist, (name == &s_ ? sym_Patch : name));
-    
-    instance_stackPopPatch (glist, glist_isOpenedAtLoad (glist));
-
-    {
-        t_glist *parent = instance_contextGetCurrent();
-    
-        PD_ASSERT (parent);
-        PD_ABORT (!parent);     /* Hot to manage corrupted files? */
-        
-        glist->gl_parent = parent;
-        
-        object_setBuffer (cast_object (glist), buffer_new());
-        object_setX (cast_object (glist), atom_getFloatAtIndex (0, argc, argv));
-        object_setY (cast_object (glist), atom_getFloatAtIndex (1, argc, argv));
-        object_setWidth (cast_object (glist), 0);
-        object_setType (cast_object (glist), TYPE_OBJECT);
-        
-        if (argc > 2) { buffer_deserialize (object_getBuffer (cast_object (glist)), argc - 2, argv + 2); }
-        
-        glist_objectAdd (parent, cast_gobj (glist));
-    }
 }
 
 static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -477,8 +481,8 @@ void canvas_setup (void)
     class_addDSP (c, (t_method)canvas_dsp);
     class_addClick (c, (t_method)canvas_click);
     
-    class_addMethod (c, (t_method)canvas_coords,                sym_coords,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_restore,               sym_restore,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_coords,                sym_coords,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,                 sym_f,                  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_connect,               sym_connect,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_disconnect,            sym_disconnect,         A_GIMME, A_NULL);
