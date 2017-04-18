@@ -109,6 +109,7 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     object_setBuffer (cast_object (x), t);
     object_setX (cast_object (x), a);
     object_setY (cast_object (x), b);
+    object_setWidth (cast_object (x), 0);
     object_setType (cast_object (x), TYPE_OBJECT);
     
     glist_objectAdd (glist, cast_gobj (x));
@@ -147,6 +148,7 @@ static void canvas_makeCommentFile (t_glist *glist, int argc, t_atom *argv)
     object_setBuffer (x, t);
     object_setX (x, a);
     object_setY (x, b);
+    object_setWidth (x, 0);
     object_setType (x, TYPE_COMMENT);
     
     glist_objectAdd (glist, cast_gobj (x));
@@ -168,6 +170,7 @@ void canvas_makeCommentMenu (t_glist *glist)
     object_setBuffer (x, t);
     object_setX (x, a);
     object_setY (x, b);
+    object_setWidth (x, 0);
     object_setType (x, TYPE_COMMENT);
 
     glist_deselectAll (glist);

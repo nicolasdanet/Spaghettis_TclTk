@@ -109,6 +109,10 @@ t_glist *glist_newPatch (t_symbol *name,
     //
     t_glist *x = glist_new (owner, name, &t1, &t2, &t3);
     
+    object_setBuffer (cast_object (x), buffer_new());
+    object_setX (cast_object (x), 0);
+    object_setY (cast_object (x), 0);
+    object_setWidth (cast_object (x), 0);
     object_setType (cast_object (x), TYPE_OBJECT);
     
     glist_setFontSize (x, fontSize);

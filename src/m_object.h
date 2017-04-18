@@ -116,7 +116,7 @@ static inline int object_isAtom (t_object *x)
 
 static inline t_buffer *object_getBuffer (t_object *x)
 {
-    return x->te_buffer;
+    PD_ASSERT (x->te_buffer != NULL); return x->te_buffer;
 }
 
 static inline t_inlet *object_getInlets (t_object *x)
@@ -155,7 +155,11 @@ static inline int object_getType (t_object *x)
 
 static inline void object_setBuffer (t_object *x, t_buffer *b)
 {
-    x->te_buffer = b;       /* Acquires ownership. */
+    if (x->te_buffer) { buffer_free (x->te_buffer); } 
+    
+    PD_ASSERT (b);
+    
+    x->te_buffer = b;     /* Acquires ownership. */
 }
 
 static inline void object_setX (t_object *x, int n)

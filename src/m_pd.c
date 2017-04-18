@@ -44,7 +44,8 @@ void pd_free (t_pd *x)
     if (class_isBox (c)) {
         while (object_getOutlets (cast_object (x))) { outlet_free (object_getOutlets (cast_object (x))); }
         while (object_getInlets (cast_object (x)))  { inlet_free (object_getInlets (cast_object (x)));   }
-        if (object_getBuffer (cast_object (x)))     { buffer_free (object_getBuffer (cast_object (x)));  }
+        
+        buffer_free (object_getBuffer (cast_object (x)));
     }
 
     PD_MEMORY_FREE (x);

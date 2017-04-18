@@ -40,8 +40,8 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         
         /* Subpatch renamed. */
         
-        glist_rename (cast_glist (x), buffer_size (t) - 1, buffer_atoms (t) + 1);
-        buffer_free (object_getBuffer (x)); 
+        glist_rename (cast_glist (x), buffer_size (t) - 1, buffer_atoms (t) + 1); 
+        
         object_setBuffer (x, t);
         
     } else {
