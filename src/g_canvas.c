@@ -90,36 +90,25 @@ static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *name = &s_;
+    PD_ABORT (!glist_hasParent (glist));
     
-    if (argc > 3) { name = dollar_getSymbolExpandedIfRequiered (argv + 3, instance_contextGetCurrent()); }
+    if (glist_hasParent (glist)) {
+    //
+    t_symbol *name = argc < 4 ? &s_ : dollar_getSymbolExpandedIfRequiered (argv + 3, glist);
+    t_buffer *t = buffer_new(); if (argc > 2) { buffer_deserialize (t, argc - 2, argv + 2); }
+    
+    object_setBuffer (cast_object (glist), t);
+    object_setX (cast_object (glist), atom_getFloatAtIndex (0, argc, argv));
+    object_setY (cast_object (glist), atom_getFloatAtIndex (1, argc, argv));
+    object_setWidth (cast_object (glist), 0);
+    object_setType (cast_object (glist), TYPE_OBJECT);
     
     glist_setName (glist, (name == &s_ ? sym_Patch : name));
-    
-    PD_ASSERT (instance_contextGetCurrent() == glist);
+    glist_objectAdd (glist_getParent (glist), cast_gobj (glist));
+    //
+    }
     
     instance_stackPopPatch (glist, glist_isOpenedAtLoad (glist));
-
-    PD_ASSERT (glist->gl_parent == instance_contextGetCurrent());
-    
-    {
-        t_glist *parent = instance_contextGetCurrent();
-    
-        PD_ASSERT (parent);
-        PD_ABORT (!parent);     /* Hot to manage corrupted files? */
-        
-        glist->gl_parent = parent;
-        
-        object_setBuffer (cast_object (glist), buffer_new());
-        object_setX (cast_object (glist), atom_getFloatAtIndex (0, argc, argv));
-        object_setY (cast_object (glist), atom_getFloatAtIndex (1, argc, argv));
-        object_setWidth (cast_object (glist), 0);
-        object_setType (cast_object (glist), TYPE_OBJECT);
-        
-        if (argc > 2) { buffer_deserialize (object_getBuffer (cast_object (glist)), argc - 2, argv + 2); }
-        
-        glist_objectAdd (parent, cast_gobj (glist));
-    }
 }
 
 static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
