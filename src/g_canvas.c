@@ -267,21 +267,9 @@ void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *name = &s_;
-    
-    if (argc) {
-    //
-    name = dollar_getSymbolExpandedIfRequiered (argv, glist);
-    if (name != &s_) { argc--; argv++; }
-    if (argc) { warning_unusedArguments (class_getName (pd_class (glist)), argc, argv); }
-    //
-    }
-    
-    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
-    
-    glist_setName (glist, (name == &s_ ? sym_Patch : name));
+    glist_rename (glist, argc, argv);
 }
 
 static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
