@@ -366,12 +366,14 @@ void instance_destroyAllScalarsByTemplate (t_template *template)
 {
     t_glist *glist = instance_get()->pd_roots;
     
+    PD_ASSERT (template);
+    
     while (glist) {
 
-        t_symbol *s = utils_stripTemplateIdentifier (template_getTemplateIdentifier (template));
-        t_atom t;
-        SET_SYMBOL (&t, s); 
-        pd_message (cast_pd (glist), sym_destroy, 1, &t);
+        if (!template_isPrivate (template_getTemplateIdentifier (template))) {
+            glist_objectRemoveByTemplate (glist, template); 
+        }
+    
         glist = glist_getNext (glist);
     }
 }

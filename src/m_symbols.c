@@ -242,7 +242,6 @@ t_symbol *sym_delread__tilde__;
 t_symbol *sym_delread4__tilde__;
 t_symbol *sym_delwrite__tilde__;
 t_symbol *sym_deselect;
-t_symbol *sym_destroy;
 t_symbol *sym_dirty;
 t_symbol *sym_disconnect;
 t_symbol *sym_displace;
@@ -822,7 +821,6 @@ void symbols_initialize (void)
     sym_delread4__tilde__                       = gensym ("delread4~");
     sym_delwrite__tilde__                       = gensym ("delwrite~");
     sym_deselect                                = gensym ("deselect");
-    sym_destroy                                 = gensym ("destroy");
     sym_dirty                                   = gensym ("dirty");
     sym_disconnect                              = gensym ("disconnect");
     sym_displace                                = gensym ("displace");
