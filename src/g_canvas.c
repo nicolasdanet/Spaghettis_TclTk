@@ -180,52 +180,16 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+static void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
     //
-    int indexOfObjectOut = (int)atom_getFloat (argv + 0);
-    int indexOfOutlet    = (int)atom_getFloat (argv + 1);
-    int indexOfObjectIn  = (int)atom_getFloat (argv + 2);
-    int indexOfInlet     = (int)atom_getFloat (argv + 3);
+    int m = (int)atom_getFloat (argv + 0);
+    int i = (int)atom_getFloat (argv + 1);
+    int n = (int)atom_getFloat (argv + 2);
+    int j = (int)atom_getFloat (argv + 3);
     
-    t_gobj *src  = glist_objectGetAt (glist, indexOfObjectOut);
-    t_gobj *dest = glist_objectGetAt (glist, indexOfObjectIn);
-    t_object *srcObject  = cast_objectIfConnectable (src);
-    t_object *destObject = cast_objectIfConnectable (dest);
-    
-    if (srcObject && destObject) {
-    //
-    int m = indexOfOutlet;
-    int n = indexOfInlet;
-    t_outconnect *connection = NULL;
-    
-    /* Creates dummy outlets and inlets (failure at object creation). */
-    
-    if (pd_class (srcObject) == text_class && object_isObject (srcObject)) {
-        while (m >= object_getNumberOfOutlets (srcObject)) {
-            outlet_new (srcObject, NULL);
-        }
-    }
-    
-    if (pd_class (destObject) == text_class && object_isObject (destObject)) {
-        while (n >= object_getNumberOfInlets (destObject)) {
-            inlet_new (destObject, cast_pd (destObject), NULL, NULL);
-        }
-    }
-
-    if ((connection = object_connect (srcObject, m, destObject, n))) {
-    //
-    if (glist_isOnScreen (glist)) {
-        t_cord t; cord_make (&t, connection, srcObject, m, destObject, n, glist);
-        glist_drawLine (glist, &t);
-    }
-    
-    return;
-    //
-    }
-    //
-    }
+    if (glist_lineConnect (glist, m, i, n, j) == PD_ERROR_NONE) { return; }
     //
     }
     

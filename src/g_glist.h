@@ -187,7 +187,8 @@ void    glist_lineSelect                    (t_glist *g, t_traverser *t);
 void    glist_lineDeselect                  (t_glist *g);
 void    glist_lineDeleteSelected            (t_glist *g);
 int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
-void    glist_lineDisconnect                (t_glist *g, int m, int i, int n, int j);
+t_error glist_lineConnect                   (t_glist *g, int m, int i, int n, int j);
+t_error glist_lineDisconnect                (t_glist *g, int m, int i, int n, int j);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -957,7 +957,54 @@ int glist_lineExist (t_glist *glist, t_object *o, int m, t_object *i, int n)
     return 0;
 }
 
-void glist_lineDisconnect (t_glist *glist, 
+t_error glist_lineConnect (t_glist *glist, 
+    int indexOfObjectOut, 
+    int indexOfOutlet, 
+    int indexOfObjectIn,
+    int indexOfInlet)
+{
+    t_gobj *src  = glist_objectGetAt (glist, indexOfObjectOut);
+    t_gobj *dest = glist_objectGetAt (glist, indexOfObjectIn);
+    t_object *srcObject  = cast_objectIfConnectable (src);
+    t_object *destObject = cast_objectIfConnectable (dest);
+    
+    if (srcObject && destObject) {
+    //
+    int m = indexOfOutlet;
+    int n = indexOfInlet;
+    t_outconnect *connection = NULL;
+    
+    /* Creates dummy outlets and inlets (failure at object creation). */
+    
+    if (pd_class (srcObject) == text_class && object_isObject (srcObject)) {
+        while (m >= object_getNumberOfOutlets (srcObject)) {
+            outlet_new (srcObject, NULL);
+        }
+    }
+    
+    if (pd_class (destObject) == text_class && object_isObject (destObject)) {
+        while (n >= object_getNumberOfInlets (destObject)) {
+            inlet_new (destObject, cast_pd (destObject), NULL, NULL);
+        }
+    }
+
+    if ((connection = object_connect (srcObject, m, destObject, n))) {
+    //
+    if (glist_isOnScreen (glist)) {
+        t_cord t; cord_make (&t, connection, srcObject, m, destObject, n, glist);
+        glist_drawLine (glist, &t);
+    }
+    
+    return PD_ERROR_NONE;
+    //
+    }
+    //
+    }
+    
+    return PD_ERROR;
+}
+
+t_error glist_lineDisconnect (t_glist *glist, 
     int indexOfObjectOut, 
     int indexOfOutlet, 
     int indexOfObjectIn,
@@ -979,12 +1026,14 @@ void glist_lineDisconnect (t_glist *glist,
             if (m == indexOfObjectOut && n == indexOfObjectIn) {
                 glist_eraseLine (glist, traverser_getCord (&t));
                 traverser_disconnect (&t);
-                break;
+                return PD_ERROR_NONE;
             }
         }
     }
     //
     }
+    
+    return PD_ERROR;
 }
 
 void glist_lineDeleteSelected (t_glist *glist)
