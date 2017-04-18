@@ -99,8 +99,8 @@ void text_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     if (gobj_isVisible (z, glist)) {
     //
-    sys_vGui (".x%lx.c itemconfigure %sBORDER -fill #%06x\n",
-                    glist, 
+    sys_vGui ("%s.c itemconfigure %sBORDER -fill #%06x\n",
+                    glist_getTagAsString (glist), 
                     box_getTag (text),
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
     //
