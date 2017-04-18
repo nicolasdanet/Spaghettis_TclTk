@@ -17,6 +17,8 @@
 
 t_error bounds_set (t_bounds *b, t_float left, t_float top, t_float right, t_float bottom)
 {
+    b->b_left = b->b_top = b->b_right = b->b_bottom = (t_float)0.0;     /* Avoid overzealous warning. */
+        
     if (left == right || top == bottom) { return PD_ERROR; }
     else {
         b->b_left   = left;
