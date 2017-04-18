@@ -551,7 +551,6 @@
 		3769632F1DBFB4C4001B91B5 /* d_perform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_perform.c; path = src/d_perform.c; sourceTree = "<group>"; };
 		376CF0681E4CBB0400B17967 /* s_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_apis.h; path = src/s_apis.h; sourceTree = "<group>"; };
 		37702F321D41E7FE00AE3FE2 /* g_scalar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_scalar.h; path = src/g_scalar.h; sourceTree = "<group>"; };
-		37702F511D41EA3300AE3FE2 /* g_canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_canvas.h; path = src/g_canvas.h; sourceTree = "<group>"; };
 		3770AD891DC2338300ADAE26 /* d_block.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_block.c; path = src/d_block.c; sourceTree = "<group>"; };
 		3770ADFF1DC2396E00ADAE26 /* d_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_dsp.c; path = src/d_dsp.c; sourceTree = "<group>"; };
 		3770AE3A1DC23D2000ADAE26 /* d_signal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_signal.c; path = src/d_signal.c; sourceTree = "<group>"; };
@@ -1307,7 +1306,6 @@
 		3777AEA71E5B2844003F61A1 /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
-				37702F511D41EA3300AE3FE2 /* g_canvas.h */,
 				377899481CFED1B10056BE61 /* g_make.c */,
 				37321C9B1E9244F2009C1EE0 /* g_interface.c */,
 				37321C9A1E9244F2009C1EE0 /* g_control.c */,

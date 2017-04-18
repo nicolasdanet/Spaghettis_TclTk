@@ -103,15 +103,19 @@ static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 
 void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (glist_hasWindow (x->m_owner)) {                     /* Not shown in GOP. */
+    //
     if (glist_isOnScreen (x->m_owner)) {
     //
     t_box *text = box_fetch (x->m_owner, cast_object (x));
-
-    sys_vGui (".x%lx.c itemconfigure %sBORDER -width 5\n", 
-                    glist_getView (x->m_owner), 
+              
+    sys_vGui ("%s.c itemconfigure %sBORDER -width 5\n", 
+                    glist_getTagAsString (x->m_owner), 
                     box_getTag (text));
     
     sys_guiFlush(); clock_delay (x->m_clock, 120.0);        /* Force the GUI to update. */
+    //
+    }
     //
     }
     
@@ -182,13 +186,17 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
 
 static void message_taskTick (t_message *x)
 {
+    if (glist_hasWindow (x->m_owner)) {                     /* Not shown in GOP. */
+    //
     if (glist_isOnScreen (x->m_owner)) {
     //
     t_box *text = box_fetch (x->m_owner, cast_object (x));
     
-    sys_vGui (".x%lx.c itemconfigure %sBORDER -width 1\n",
-                    glist_getView (x->m_owner),
+    sys_vGui ("%s.c itemconfigure %sBORDER -width 1\n",
+                    glist_getTagAsString (x->m_owner),
                     box_getTag (text));
+    //
+    }
     //
     }
 }
@@ -197,43 +205,50 @@ static void message_taskTick (t_message *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void message_makeObjectFile (t_message *x, int argc, t_atom *argv)
+{
+    t_buffer *t = buffer_new(); if (argc > 2) { buffer_deserialize (t, argc - 2, argv + 2); }
+    
+    object_setBuffer (cast_object (x), t);
+    object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
+    object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
+    object_setWidth (cast_object (x), 0);
+    object_setType (cast_object (x), TYPE_MESSAGE);
+    
+    glist_objectAdd (x->m_owner, cast_gobj (x));
+}
+
+static void message_makeObjectMenu (t_message *x, int argc, t_atom *argv)
+{
+    if (glist_isOnScreen (x->m_owner)) {
+    //
+    glist_deselectAll (x->m_owner);
+
+    object_setBuffer (cast_object (x), buffer_new());
+    object_setX (cast_object (x), instance_getDefaultX (x->m_owner));
+    object_setY (cast_object (x), instance_getDefaultY (x->m_owner));
+    object_setWidth (cast_object (x), 0);
+    object_setType (cast_object (x), TYPE_MESSAGE);
+    
+    glist_objectAdd (x->m_owner, cast_gobj (x));
+    glist_objectSelect (x->m_owner, cast_gobj (x));
+    gobj_activated (cast_gobj (x), x->m_owner, 1);
+    //
+    }
+}
+
 void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     t_message *x = (t_message *)pd_new (message_class);
     
-    object_setBuffer (cast_object (x), buffer_new());
-    object_setWidth (cast_object (x), 0);
-    object_setType (cast_object (x), TYPE_MESSAGE);
-
-    x->m_responder.mr_pd        = messageresponder_class;
-    x->m_responder.mr_outlet    = outlet_new (cast_object (x), &s_anything);
-    x->m_owner                  = glist;
-    x->m_clock                  = clock_new ((void *)x, (t_method)message_taskTick);
+    x->m_responder.mr_pd     = messageresponder_class;
+    x->m_responder.mr_outlet = outlet_new (cast_object (x), &s_anything);
+    x->m_owner               = glist;
+    x->m_clock               = clock_new ((void *)x, (t_method)message_taskTick);
     
-    if (argc > 1) {                                                             /* File creation. */
-    
-        object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
-        object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
-        
-        if (argc > 2) {
-            buffer_deserialize (object_getBuffer (cast_object (x)), argc - 2, argv + 2);
-        }
-        
-        glist_objectAdd (glist, cast_gobj (x));
-        
-    } else if (glist_isOnScreen (glist)) {                                  /* Interactive creation. */
-
-        int positionX = instance_getDefaultX (glist);
-        int positionY = instance_getDefaultY (glist);
-        
-        glist_deselectAll (glist);
-    
-        object_setX (cast_object (x), positionX);
-        object_setY (cast_object (x), positionY);
-        
-        glist_objectAdd (glist, cast_gobj (x));
-        glist_objectSelect (glist, cast_gobj (x));
-        gobj_activated (cast_gobj (x), glist, 1);
+    if (argc > 1) { message_makeObjectFile (x, argc, argv); }
+    else {
+        message_makeObjectMenu (x, argc, argv);
     }
 }
 

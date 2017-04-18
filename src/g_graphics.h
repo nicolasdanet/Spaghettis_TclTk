@@ -76,7 +76,6 @@ static inline char *proxy_getTagAsString (t_proxy *x)
 #include "g_patch.h"
 #include "g_editor.h"
 #include "g_glist.h"
-#include "g_canvas.h"
 #include "g_iem.h"
 #include "g_scalar.h"
 
