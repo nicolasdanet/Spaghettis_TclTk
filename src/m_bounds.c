@@ -48,10 +48,9 @@ t_error bounds_setByAtoms (t_bounds *b, int argc, t_atom *argv)
 
 void bounds_setCopy (t_bounds *b, t_bounds *toCopy)
 {
-    b->b_left   = toCopy->b_left;
-    b->b_top    = toCopy->b_top;
-    b->b_right  = toCopy->b_right;
-    b->b_bottom = toCopy->b_bottom;
+    t_error err = bounds_set (b, toCopy->b_left, toCopy->b_top, toCopy->b_right, toCopy->b_bottom);
+    
+    PD_ASSERT (!err);
 }
 
 // -----------------------------------------------------------------------------------------------------------
