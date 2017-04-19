@@ -58,7 +58,7 @@ static t_widgetbehavior radio_widgetBehavior =          /* Shared. */
 
 void radio_drawMoveVertical (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int n = x->x_numberOfButtons;
     int a = glist_getPixelX (glist, cast_object (x));
@@ -69,16 +69,16 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
     
     for (i = 0; i < n; i++, t += x->x_gui.iem_height) {
     //
-    sys_vGui (".x%lx.c coords %lxBASE%d %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxBASE%d %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     i,
                     a,
                     t,
                     a + x->x_gui.iem_width,
                     t + x->x_gui.iem_height);
-    sys_vGui (".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
-                    canvas, 
+    sys_vGui ("%s.c coords %lxBUTTON%d %d %d %d %d\n",
+                    glist_getTagAsString (view), 
                     x, 
                     i, 
                     a + k,
@@ -88,8 +88,8 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+                    glist_getTagAsString (view),
                     x, 
                     a + x->x_gui.iem_labelX, 
                     b + x->x_gui.iem_labelY);
@@ -97,7 +97,7 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
 
 void radio_drawNewVertical (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int n = x->x_numberOfButtons;
     int a = glist_getPixelX (glist, cast_object (x));
@@ -108,8 +108,8 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
     
     for (i = 0; i < n; i++, t += x->x_gui.iem_height) {
     //
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE%d\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE%d\n",
+                    glist_getTagAsString (view),
                     a,
                     t,
                     a + x->x_gui.iem_width,
@@ -117,8 +117,8 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
                     x->x_gui.iem_colorBackground,
                     x,
                     i);
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON%d\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON%d\n",
+                    glist_getTagAsString (view),
                     a + k,
                     t + k,
                     a + x->x_gui.iem_width - k,
@@ -130,12 +130,12 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor w"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
@@ -148,7 +148,7 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
 
 void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int n = x->x_numberOfButtons;
     int a = glist_getPixelX (glist, cast_object (x));
@@ -159,16 +159,16 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
     
     for (i = 0; i < n; i++, t += x->x_gui.iem_width) {
     //
-    sys_vGui (".x%lx.c coords %lxBASE%d %d %d %d %d\n",
-                    canvas, 
+    sys_vGui ("%s.c coords %lxBASE%d %d %d %d %d\n",
+                    glist_getTagAsString (view), 
                     x, 
                     i,
                     t,
                     b,
                     t + x->x_gui.iem_width,
                     b + x->x_gui.iem_height);
-    sys_vGui (".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
-                    canvas, 
+    sys_vGui ("%s.c coords %lxBUTTON%d %d %d %d %d\n",
+                    glist_getTagAsString (view), 
                     x, 
                     i, 
                     t + k, 
@@ -178,8 +178,8 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                    canvas, 
+    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+                    glist_getTagAsString (view), 
                     x, 
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY);
@@ -187,7 +187,7 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
 
 void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
     int n = x->x_numberOfButtons;
     int a = glist_getPixelX (glist, cast_object (x));
@@ -198,8 +198,8 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 
     for (i = 0; i < n; i++, t += x->x_gui.iem_width) {
     //
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE%d\n",
-                    canvas, 
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE%d\n",
+                    glist_getTagAsString (view), 
                     t, 
                     b, 
                     t + x->x_gui.iem_width, 
@@ -207,8 +207,8 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
                     x->x_gui.iem_colorBackground,
                     x,
                     i);
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON%d\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON%d\n",
+                    glist_getTagAsString (view),
                     t + k,
                     b + k,
                     t + x->x_gui.iem_width - k, 
@@ -220,12 +220,12 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor w"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
@@ -243,16 +243,16 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 void radio_drawJob (t_gobj *z, t_glist *glist)
 {
     t_radio *x = (t_radio *)z;
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
+                    glist_getTagAsString (view), 
                     x, 
                     x->x_stateDrawn,
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
+                    glist_getTagAsString (view), 
                     x, 
                     x->x_state,
                     x->x_gui.iem_colorForeground,
@@ -288,65 +288,65 @@ void radio_drawNew (t_radio *x, t_glist *glist)
 
 void radio_drawSelect (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int i;
 
     for (i = 0; i < x->x_numberOfButtons; i++) {
     //
-    sys_vGui (".x%lx.c itemconfigure %lxBASE%d -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBASE%d -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     i,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     //
     }
 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 void radio_drawErase (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int i;
 
     for (i = 0; i < x->x_numberOfButtons; i++) {
     //
-    sys_vGui (".x%lx.c delete %lxBASE%d\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxBASE%d\n",
+                    glist_getTagAsString (view),
                     x,
                     i);
-    sys_vGui (".x%lx.c delete %lxBUTTON%d\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxBUTTON%d\n",
+                    glist_getTagAsString (view),
                     x,
                     i);
     //
     }
     
-    sys_vGui (".x%lx.c delete %lxLABEL\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxLABEL\n",
+                    glist_getTagAsString (view),
                     x);
 }
 
 void radio_drawConfig (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int i;
 
     for (i = 0; i < x->x_numberOfButtons; i++) {
     //
-    sys_vGui (".x%lx.c itemconfigure %lxBASE%d -fill #%06x\n", 
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBASE%d -fill #%06x\n", 
+                    glist_getTagAsString (view),
                     x,
                     i,
                     x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     i,
                     (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
@@ -354,8 +354,8 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+                    glist_getTagAsString (view), 
                     x, 
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
@@ -527,21 +527,21 @@ static void radio_functionSave (t_gobj *z, t_buffer *b)
         object_getX (cast_object (z)),
         object_getY (cast_object (z)),
         x->x_isVertical ? sym_vradio : sym_hradio,
-        x->x_gui.iem_width,                                         // Size.
-        x->x_changed,                                               // Dummy.
-        iemgui_serializeLoadbang (cast_iem (z)),                    // Loadbang.
-        x->x_numberOfButtons,                                       // Number of buttons.
-        names.n_unexpandedSend,                                     // Send.
-        names.n_unexpandedReceive,                                  // Receive.
-        names.n_unexpandedLabel,                                    // Label.
-        x->x_gui.iem_labelX,                                        // Label X.
-        x->x_gui.iem_labelY,                                        // Label Y.
-        iemgui_serializeFontStyle (cast_iem (z)),                   // Label font.
-        x->x_gui.iem_fontSize,                                      // Label font size.
-        colors.c_symColorBackground,                                // Background color.
-        colors.c_symColorForeground,                                // Foreground color.
-        colors.c_symColorLabel,                                     // Label color.
-        x->x_floatValue);                                           // Float value.
+        x->x_gui.iem_width,
+        x->x_changed,
+        iemgui_serializeLoadbang (cast_iem (z)),
+        x->x_numberOfButtons,
+        names.n_unexpandedSend,
+        names.n_unexpandedReceive,
+        names.n_unexpandedLabel,
+        x->x_gui.iem_labelX,
+        x->x_gui.iem_labelY,
+        iemgui_serializeFontStyle (cast_iem (z)),
+        x->x_gui.iem_fontSize,
+        colors.c_symColorBackground,
+        colors.c_symColorForeground,
+        colors.c_symColorLabel,
+        x->x_floatValue);
 }
 
 static void radio_functionProperties (t_gobj *z, t_glist *owner)
@@ -623,30 +623,15 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     int numberOfButtons = IEM_RADIO_DEFAULT_BUTTONS;
     t_float floatValue  = (t_float)0.0;
     
-    if (argc == 15                                                  // --
-            && IS_FLOAT (argv + 0)                                  // Size.
-            && IS_FLOAT (argv + 1)                                  // Dummy.
-            && IS_FLOAT (argv + 2)                                  // Loadbang.
-            && IS_FLOAT (argv + 3)                                  // Number of buttons.
-            && IS_SYMBOL_OR_FLOAT (argv + 4)                        // Send.
-            && IS_SYMBOL_OR_FLOAT (argv + 5)                        // Receive.
-            && IS_SYMBOL_OR_FLOAT (argv + 6)                        // Label.
-            && IS_FLOAT (argv + 7)                                  // Label X.
-            && IS_FLOAT (argv + 8)                                  // Label Y.
-            && IS_FLOAT (argv + 9)                                  // Label font.
-            && IS_FLOAT (argv + 10)                                 // Label font size.
-            && IS_SYMBOL_OR_FLOAT (argv + 11)                       // Background color.
-            && IS_SYMBOL_OR_FLOAT (argv + 12)                       // Foreground color.
-            && IS_SYMBOL_OR_FLOAT (argv + 13)                       // Label color.
-            && IS_FLOAT (argv + 14))                                // Float value.
-    {
-        size                        = (int)atom_getFloatAtIndex (0, argc,  argv);
-        changed                     = (int)atom_getFloatAtIndex (1, argc,  argv);
-        numberOfButtons             = (int)atom_getFloatAtIndex (3, argc,  argv);
-        labelX                      = (int)atom_getFloatAtIndex (7, argc,  argv);
-        labelY                      = (int)atom_getFloatAtIndex (8, argc,  argv);
-        labelFontSize               = (int)atom_getFloatAtIndex (10, argc, argv);
-        floatValue                  = atom_getFloatAtIndex (14, argc, argv);
+    if (argc == 15) {
+    
+        size            = (int)atom_getFloatAtIndex (0, argc,  argv);
+        changed         = (int)atom_getFloatAtIndex (1, argc,  argv);
+        numberOfButtons = (int)atom_getFloatAtIndex (3, argc,  argv);
+        labelX          = (int)atom_getFloatAtIndex (7, argc,  argv);
+        labelY          = (int)atom_getFloatAtIndex (8, argc,  argv);
+        labelFontSize   = (int)atom_getFloatAtIndex (10, argc, argv);
+        floatValue      = atom_getFloatAtIndex (14, argc, argv);
         
         iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (2, argc, argv));
         iemgui_deserializeNames (cast_iem (x), 4, argv);
