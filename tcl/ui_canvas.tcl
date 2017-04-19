@@ -106,8 +106,8 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     ttk::frame      $top.f                      {*}[::styleFrame]
     ttk::labelframe $top.f.table                {*}[::styleLabelFrame]  -text [_ "Array"]
-    ttk::labelframe $top.f.onParent             {*}[::styleLabelFrame]  -text [_ "Patch"]
-    ttk::labelframe $top.f.graph                {*}[::styleLabelFrame]  -text [_ "Drawing"]
+    ttk::labelframe $top.f.onParent             {*}[::styleLabelFrame]  -text [_ "Properties"]
+    ttk::labelframe $top.f.graph                {*}[::styleLabelFrame]  -text [_ "Scalars"]
         
     pack $top.f                                 {*}[::packMain]
     pack $top.f.table                           {*}[::packCategory]
@@ -170,13 +170,13 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -width $::width(small)
     
     ttk::label $top.f.graph.scaleXLabel         {*}[::styleLabel] \
-                                                    -text [_ "Scale Horizontal"]
+                                                    -text [_ "Value Per Pixel X"]
     ttk::entry $top.f.graph.scaleX              {*}[::styleEntryNumber] \
                                                     -textvariable ::ui_canvas::canvasScaleX($top) \
                                                     -width $::width(small)
     
     ttk::label $top.f.graph.scaleYLabel         {*}[::styleLabel] \
-                                                    -text [_ "Scale Vertical"]
+                                                    -text [_ "Value Per Pixel Y"]
     ttk::entry $top.f.graph.scaleY              {*}[::styleEntryNumber] \
                                                     -textvariable ::ui_canvas::canvasScaleY($top) \
                                                     -width $::width(small)
