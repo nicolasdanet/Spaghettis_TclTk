@@ -62,15 +62,10 @@ static t_widgetbehavior bng_widgetBehavior =        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void bng_taskHold (t_bng *x)
+static void bng_taskFlash (t_bng *x)
 {
     x->x_flashed = 0;
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
-}
-
-static void bng_taskBreak (t_bng *x)
-{
     (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
@@ -242,21 +237,16 @@ void bng_setFlashTimes (t_bng *x, int m, int n)
     int flashHold  = PD_MAX (m, n);
     
     x->x_flashTimeBreak = PD_MAX (flashBreak, IEM_BANG_MINIMUM_BREAK);
-    x->x_flashTimeHold  = PD_MAX (flashHold,  IEM_BANG_MINIMUM_HOLD);
+    x->x_flashTime      = PD_MAX (flashHold,  IEM_BANG_MINIMUM_HOLD);
 }
 
 static void bng_updateFlash (t_bng *x)
 {
-    if (x->x_flashed) {
-        x->x_flashed = 0; (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
-        x->x_flashed = 1;
-        clock_delay (x->x_clockBreak, x->x_flashTimeBreak);
-        
-    } else {
+    if (!x->x_flashed) {
         x->x_flashed = 1; (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     }
     
-    clock_delay (x->x_clockHold, x->x_flashTimeHold);
+    clock_delay (x->x_clock, x->x_flashTime);
 }
 
 static void bng_out (t_bng *x)
@@ -384,7 +374,7 @@ static void bng_functionSave (t_gobj *z, t_buffer *b)
         object_getY (cast_object (z)),
         sym_bng,
         x->x_gui.iem_width,
-        x->x_flashTimeHold,
+        x->x_flashTime,
         x->x_flashTimeBreak,
         iemgui_serializeLoadbang (cast_iem (z)),
         names.n_unexpandedSend,
@@ -421,7 +411,7 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner)
             " %d %d %d"
             " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
-            x->x_flashTimeBreak, x->x_flashTimeHold,
+            x->x_flashTimeBreak, x->x_flashTime,
             x->x_gui.iem_loadbang,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
             names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -503,9 +493,8 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
         
     bng_setFlashTimes (x, flashBreak, flashHold);
     
-    x->x_outlet     = outlet_new (cast_object (x), &s_bang);
-    x->x_clockHold  = clock_new ((void *)x, (t_method)bng_taskHold);
-    x->x_clockBreak = clock_new ((void *)x, (t_method)bng_taskBreak);
+    x->x_outlet = outlet_new (cast_object (x), &s_bang);
+    x->x_clock  = clock_new ((void *)x, (t_method)bng_taskFlash);
     
     return x;
 }
@@ -514,8 +503,7 @@ static void bng_free (t_bng *x)
 {
     if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
     
-    clock_free (x->x_clockBreak);
-    clock_free (x->x_clockHold);
+    clock_free (x->x_clock);
     
     stub_destroyWithKey ((void *)x);
 }

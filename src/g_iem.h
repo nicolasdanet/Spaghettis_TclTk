@@ -131,11 +131,10 @@ typedef struct _iem {
 typedef struct _bng {
     t_iem       x_gui;                          /* MUST be the first. */
     int         x_flashed;
-    int         x_flashTimeBreak;
-    int         x_flashTimeHold;
+    int         x_flashTimeBreak;               /* Unused but kept for compatibility. */
+    int         x_flashTime;
     t_outlet    *x_outlet;
-    t_clock     *x_clockHold;
-    t_clock     *x_clockBreak;
+    t_clock     *x_clock;
     } t_bng;
 
 typedef struct _toggle {
