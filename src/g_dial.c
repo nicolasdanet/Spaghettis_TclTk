@@ -125,23 +125,23 @@ static int dial_hasKnob (t_dial *x, t_glist *glist)
     
     if (x->x_hasKnob != t) {
     
-        t_glist *canvas = glist_getView (glist);
+        t_glist *view = glist_getView (glist);
         
         if (t) {
         
-            sys_vGui (".x%lx.c itemconfigure %lxARC -state normal\n",
-                            canvas,
+            sys_vGui ("%s.c itemconfigure %lxARC -state normal\n",
+                            glist_getTagAsString (view),
                             x);
-            sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -state normal\n",
-                            canvas,
+            sys_vGui ("%s.c itemconfigure %lxNEEDLE -state normal\n",
+                            glist_getTagAsString (view),
                             x);
         } else {
             
-            sys_vGui (".x%lx.c itemconfigure %lxARC -state hidden\n",
-                            canvas,
+            sys_vGui ("%s.c itemconfigure %lxARC -state hidden\n",
+                            glist_getTagAsString (view),
                             x);
-            sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -state hidden\n",
-                            canvas,
+            sys_vGui ("%s.c itemconfigure %lxNEEDLE -state hidden\n",
+                            glist_getTagAsString (view),
                             x);
         }
         
@@ -159,7 +159,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
 {
     t_dial *x = (t_dial *)z;
     
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
@@ -170,16 +170,16 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
     
     dial_setString (x);
 
-    sys_vGui (".x%lx.c coords %lxNEEDLE %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxNEEDLE %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     m,
                     n,
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
     
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",   // --
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",   // --
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground,
                     x->x_t);
@@ -196,7 +196,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
 
 static void dial_drawMove (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
@@ -206,27 +206,27 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
     int m = a + (w / 2);
     int n = b + ((x->x_gui.iem_height - h) / 2);
     
-    sys_vGui (".x%lx.c coords %lxARC %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxARC %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + 2 + (h / 2),
                     b + 2,
                     a - 2 + w - (h / 2),
                     b - 2 + x->x_gui.iem_height - h);
-    sys_vGui (".x%lx.c coords %lxNEEDLE %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxNEEDLE %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     m,
                     n,
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
-    sys_vGui (".x%lx.c coords %lxNUMBER %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxNUMBER %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + 1 + (w / 2),
                     b + k);
-    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY);
@@ -234,7 +234,7 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
 
 static void dial_drawNew (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
@@ -246,14 +246,14 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     
     dial_setString (x);
     
-    sys_vGui (".x%lx.c create arc %d %d %d %d"
+    sys_vGui ("%s.c create arc %d %d %d %d"
                     " -width 2"
                     " -start %d"
                     " -extent %d"
                     " -outline #%06x"
                     " -style arc"
                     " -tags %lxARC\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     a + 2 + (h / 2),
                     b + 2,
                     a - 2 + w - (h / 2),
@@ -262,35 +262,35 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     -IEM_DIAL_ANGULAR_RANGE,
                     x->x_gui.iem_colorForeground,
                     x);
-    sys_vGui (".x%lx.c create line %d %d %d %d"
+    sys_vGui ("%s.c create line %d %d %d %d"
                     " -width 2"
                     " -fill #%06x"
                     " -tags %lxNEEDLE\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     m,
                     n,
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2),
                     x->x_gui.iem_colorForeground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor center"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
                     " -tags %lxNUMBER\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     a + 1 + (w / 2),
                     b + k,
                     x->x_t, 
                     x->x_digitsFontSize,
                     x->x_gui.iem_colorForeground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor w"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
@@ -303,63 +303,63 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
 
 static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
-    sys_vGui (".x%lx.c itemconfigure %lxARC -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxARC -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxNEEDLE -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxNUMBER -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void dial_drawErase (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
-    sys_vGui (".x%lx.c delete %lxARC\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxARC\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxNEEDLE\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxNEEDLE\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxLABEL\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxLABEL\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxNUMBER\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxNUMBER\n",
+                    glist_getTagAsString (view),
                     x);
 }
 
 static void dial_drawConfig (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxARC -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxARC -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxNEEDLE -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",             // --
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",             // --
+                    glist_getTagAsString (view),
                     x, 
                     x->x_digitsFontSize,
                     x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+                    glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
@@ -623,24 +623,24 @@ static void dial_functionSave (t_gobj *z, t_buffer *b)
         object_getX (cast_object (z)),
         object_getY (cast_object (z)),
         sym_nbx,
-        x->x_digitsNumber,                                                      // Number of digits.
-        x->x_gui.iem_height,                                                    // Height.
-        (t_float)x->x_minimum,                                                  // Range minimum.
-        (t_float)x->x_maximum,                                                  // Range maximum.
-        x->x_isLogarithmic,                                                     // Is logarithmic.
-        iemgui_serializeLoadbang (cast_iem (z)),                                // Loadbang.
-        names.n_unexpandedSend,                                                 // Send.
-        names.n_unexpandedReceive,                                              // Receive.
-        names.n_unexpandedLabel,                                                // Label.
-        x->x_gui.iem_labelX,                                                    // Label X.
-        x->x_gui.iem_labelY,                                                    // Label Y.
-        iemgui_serializeFontStyle (cast_iem (z)),                               // Label font.
-        x->x_gui.iem_fontSize,                                                  // Label font size.
-        colors.c_symColorBackground,                                            // Background color.
-        colors.c_symColorForeground,                                            // Foreground color.
-        colors.c_symColorLabel,                                                 // Label color.
-        x->x_floatValue,                                                        // Value.
-        x->x_steps);                                                            // Steps.
+        x->x_digitsNumber,
+        x->x_gui.iem_height,
+        (t_float)x->x_minimum,
+        (t_float)x->x_maximum,
+        x->x_isLogarithmic,
+        iemgui_serializeLoadbang (cast_iem (z)),
+        names.n_unexpandedSend,
+        names.n_unexpandedReceive,
+        names.n_unexpandedLabel,
+        x->x_gui.iem_labelX,
+        x->x_gui.iem_labelY,
+        iemgui_serializeFontStyle (cast_iem (z)),
+        x->x_gui.iem_fontSize,
+        colors.c_symColorBackground,
+        colors.c_symColorForeground,
+        colors.c_symColorLabel,
+        x->x_floatValue,
+        x->x_steps);
 }
 
 static void dial_functionProperties (t_gobj *z, t_glist *owner)
@@ -729,34 +729,17 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     double maximum      = IEM_DIAL_DEFAULT_MAXIMUM;
     double value        = IEM_DIAL_DEFAULT_MINIMUM;
     
-    if (argc >= 17                                                              // --
-            && IS_FLOAT (argv + 0)                                              // Number of digits.
-            && IS_FLOAT (argv + 1)                                              // Height.
-            && IS_FLOAT (argv + 2)                                              // Range minimum.
-            && IS_FLOAT (argv + 3)                                              // Range maximum.
-            && IS_FLOAT (argv + 4)                                              // Is logarithmic.
-            && IS_FLOAT (argv + 5)                                              // Loadbang.
-            && IS_SYMBOL_OR_FLOAT (argv + 6)                                    // Send.
-            && IS_SYMBOL_OR_FLOAT (argv + 7)                                    // Receive.
-            && IS_SYMBOL_OR_FLOAT (argv + 8)                                    // Label.
-            && IS_FLOAT (argv + 9)                                              // Label X.
-            && IS_FLOAT (argv + 10)                                             // Label Y.
-            && IS_FLOAT (argv + 11)                                             // Label font.
-            && IS_FLOAT (argv + 12)                                             // Label font size.
-            && IS_SYMBOL_OR_FLOAT (argv + 13)                                   // Background color.
-            && IS_SYMBOL_OR_FLOAT (argv + 14)                                   // Foreground color.
-            && IS_SYMBOL_OR_FLOAT (argv + 15)                                   // Label color.
-            && IS_FLOAT (argv + 16))                                            // Value.
-    {
-        digits                      = (int)atom_getFloatAtIndex (0,  argc, argv);
-        height                      = (int)atom_getFloatAtIndex (1,  argc, argv);
-        minimum                     = (double)atom_getFloatAtIndex (2, argc, argv);
-        maximum                     = (double)atom_getFloatAtIndex (3, argc, argv);
-        isLogarithmic               = (int)atom_getFloatAtIndex (4,  argc, argv);
-        labelX                      = (int)atom_getFloatAtIndex (9,  argc, argv);
-        labelY                      = (int)atom_getFloatAtIndex (10, argc, argv);
-        labelFontSize               = (int)atom_getFloatAtIndex (12, argc, argv);
-        value                       = atom_getFloatAtIndex (16, argc, argv);
+    if (argc >= 17) {
+    
+        digits          = (int)atom_getFloatAtIndex (0,  argc, argv);
+        height          = (int)atom_getFloatAtIndex (1,  argc, argv);
+        minimum         = (double)atom_getFloatAtIndex (2, argc, argv);
+        maximum         = (double)atom_getFloatAtIndex (3, argc, argv);
+        isLogarithmic   = (int)atom_getFloatAtIndex (4,  argc, argv);
+        labelX          = (int)atom_getFloatAtIndex (9,  argc, argv);
+        labelY          = (int)atom_getFloatAtIndex (10, argc, argv);
+        labelFontSize   = (int)atom_getFloatAtIndex (12, argc, argv);
+        value           = atom_getFloatAtIndex (16, argc, argv);
         
         if (argc == 18 && IS_FLOAT (argv + 17)) {
             steps = (int)atom_getFloatAtIndex (17, argc, argv);
