@@ -468,12 +468,12 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
 
     if (p->p_fieldX || i == size - 1 || (int)here.p_pixelX != (int)next.p_pixelX) {
 
-        sys_vGui (".x%lx.c create rectangle %d %d %d %d"
+        sys_vGui ("%s.c create rectangle %d %d %d %d"
                         " -width %d"
                         " -fill %s"
                         " -outline %s"
                         " -tags %lxPLOT\n",
-                        glist_getView (glist),
+                        glist_getTagAsString (glist_getView (glist)),
                         (p->p_fieldX == NULL) ? (int)here.p_pixelX : (int)here.p_pixelX - 1,
                         (int)minY,
                         (p->p_fieldX == NULL) ? (int)next.p_pixelX : (int)here.p_pixelX + 1,
@@ -528,7 +528,7 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     //
     t_heapstring *t = heapstring_new (0);
     
-    heapstring_addSprintf (t, ".x%lx.c create polygon", glist_getView (glist));
+    heapstring_addSprintf (t, "%s.c create polygon", glist_getTagAsString (glist_getView (glist)));
   
     /* Tk requires at least three points (i.e. two elements). */
     
@@ -572,7 +572,7 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
     
     int previous = -PD_INT_MAX;
         
-    heapstring_addSprintf (t, ".x%lx.c create line", glist_getView (glist));
+    heapstring_addSprintf (t, "%s.c create line", glist_getTagAsString (glist_getView (glist)));
     
     for (i = 0; i < size; i++) {
     //
@@ -664,7 +664,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     t_float relativeX = plot_getRelativeX (&p, baseX);
     t_float relativeY = plot_getRelativeY (&p, baseY);
     
-    if (!isVisible) { sys_vGui (".x%lx.c delete %lxPLOT\n", glist_getView (glist), w); }
+    if (!isVisible) { sys_vGui ("%s.c delete %lxPLOT\n", glist_getTagAsString (glist_getView (glist)), w); }
     else {
     //
     int t = (int)gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);

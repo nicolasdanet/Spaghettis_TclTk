@@ -76,6 +76,8 @@ static void scalar_drawJob (t_gobj *z, t_glist *glist)
 
 static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelected)
 {
+    t_glist *view = glist_getView (glist);
+    
     if (isSelected) {
     
         t_rectangle r;
@@ -90,12 +92,12 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
             int c = rectangle_getBottomRightX (&r);
             int d = rectangle_getBottomRightY (&r);
             
-            sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d"
+            sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
                             " -width 0"
                             " -fill #%06x"
                             " -dash {2 4}"  // --
                             " -tags %lxHANDLE\n",
-                            glist_getView (glist),
+                            glist_getTagAsString (view),
                             a,
                             b,
                             a,
@@ -111,7 +113,7 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
         }
                 
     } else {
-        sys_vGui (".x%lx.c delete %lxHANDLE\n", glist_getView (glist), x);
+        sys_vGui ("%s.c delete %lxHANDLE\n", glist_getTagAsString (view), x);
     }
 }
 
@@ -268,21 +270,23 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     t_scalar *x = cast_scalar (z);
     
     t_template *template = scalar_getTemplate (x);
-    t_glist *view = template_getInstanceViewIfPainters (template);
-    t_float baseX = scalar_getFloat (x, sym_x);
-    t_float baseY = scalar_getFloat (x, sym_y);
+    t_glist *owner = template_getInstanceViewIfPainters (template);
+    t_float baseX  = scalar_getFloat (x, sym_x);
+    t_float baseY  = scalar_getFloat (x, sym_y);
 
-    if (!view) {
+    if (!owner) {
+        
+        t_glist *view = glist_getView (glist);
         
         if (isVisible) {
         
             int a = glist_valueToPixelX (glist, baseX);
             int b = glist_valueToPixelY (glist, baseY);
             
-            sys_vGui (".x%lx.c create rectangle %d %d %d %d"
+            sys_vGui ("%s.c create rectangle %d %d %d %d"
                             " -outline #%06x"
                             " -tags %lxSCALAR\n",
-                            glist_getView (glist),
+                            glist_getTagAsString (view),
                             a,
                             b,
                             a + SCALAR_WRONG_SIZE,
@@ -290,14 +294,14 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                             SCALAR_WRONG_COLOR,
                             x);
         } else {
-            sys_vGui (".x%lx.c delete %lxSCALAR\n", glist_getView (glist), x);
+            sys_vGui ("%s.c delete %lxSCALAR\n", glist_getTagAsString (view), x);
         }
         
     } else {
     
         t_gobj *y = NULL;
         
-        for (y = view->gl_graphics; y; y = y->g_next) {
+        for (y = owner->gl_graphics; y; y = y->g_next) {
         
             t_painterwidgetbehavior *behavior = class_getPainterWidgetBehavior (pd_class (y));
             

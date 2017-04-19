@@ -204,7 +204,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     t_glist *glist = gpointer_getView (gp);
     t_glist *view  = glist_getView (glist);
     
-    if (!isVisible) { sys_vGui (".x%lx.c delete %lxCURVE\n", view, tag); }
+    if (!isVisible) { sys_vGui ("%s.c delete %lxCURVE\n", glist_getTagAsString (view), tag); }
     else {
     //
     int width            = gpointer_getFloatByDescriptor (gp, &x->x_width);
@@ -217,9 +217,10 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     t_heapstring *t = heapstring_new (0);
     int i;
     
-    if (x->x_flags & DRAWPOLYGON_CLOSED) { heapstring_addSprintf (t, ".x%lx.c create polygon", view); }
-    else {
-        heapstring_addSprintf (t, ".x%lx.c create line", view);
+    if (x->x_flags & DRAWPOLYGON_CLOSED) { 
+        heapstring_addSprintf (t, "%s.c create polygon", glist_getTagAsString (view)); 
+    } else {
+        heapstring_addSprintf (t, "%s.c create line", glist_getTagAsString (view));
     }
     
     for (i = 0; i < x->x_size; i += 2) {
