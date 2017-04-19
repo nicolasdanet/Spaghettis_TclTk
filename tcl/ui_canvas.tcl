@@ -24,7 +24,7 @@ namespace eval ::ui_canvas:: {
 
 variable  canvasScaleX
 variable  canvasScaleY
-variable  canvasVisible
+variable  canvasGOP
 variable  canvasStart
 variable  canvasUp
 variable  canvasEnd
@@ -36,7 +36,7 @@ variable  canvasY
 
 array set canvasScaleX  {}
 array set canvasScaleY  {}
-array set canvasVisible {}
+array set canvasGOP     {}
 array set canvasStart   {}
 array set canvasUp      {}
 array set canvasEnd     {}
@@ -61,7 +61,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
 
     variable canvasScaleX
     variable canvasScaleY
-    variable canvasVisible
+    variable canvasGOP
     variable canvasStart
     variable canvasUp
     variable canvasEnd
@@ -81,7 +81,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     set canvasScaleX($top)          $scaleX
     set canvasScaleY($top)          $scaleY
-    set canvasVisible($top)         $flags
+    set canvasGOP($top)             $flags
     set canvasStart($top)           $start
     set canvasUp($top)              $up
     set canvasEnd($top)             $end
@@ -102,7 +102,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     set canvasX(${top}.old)         $x
     set canvasY(${top}.old)         $y
     
-    ::ui_canvas::_forceVisible $top
+    ::ui_canvas::_forceGOP $top
     
     ttk::frame      $top.f                      {*}[::styleFrame]
     ttk::labelframe $top.f.table                {*}[::styleLabelFrame]  -text [_ "Array"]
@@ -138,12 +138,12 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -textvariable ::ui_canvas::canvasUp($top) \
                                                     -width $::width(small)
 
-    ttk::label $top.f.onParent.visibleLabel     {*}[::styleLabel] \
+    ttk::label $top.f.onParent.gopLabel         {*}[::styleLabel] \
                                                     -text [_ "Graph On Parent"]
-    ttk::checkbutton $top.f.onParent.visible    {*}[::styleCheckButton] \
-                                                    -variable ::ui_canvas::canvasVisible($top) \
+    ttk::checkbutton $top.f.onParent.gop        {*}[::styleCheckButton] \
+                                                    -variable ::ui_canvas::canvasGOP($top) \
                                                     -takefocus 0 \
-                                                    -command "::ui_canvas::_setVisible $top"
+                                                    -command "::ui_canvas::_setGOP $top"
 
     ttk::label $top.f.onParent.xLabel           {*}[::styleLabel] \
                                                     -text [_ "View X"]
@@ -190,8 +190,8 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     grid $top.f.table.upLabel                   -row 3 -column 0 -sticky ew
     grid $top.f.table.up                        -row 3 -column 1 -sticky ew
     
-    grid $top.f.onParent.visibleLabel           -row 0 -column 0 -sticky ew
-    grid $top.f.onParent.visible                -row 0 -column 1 -sticky ew
+    grid $top.f.onParent.gopLabel               -row 0 -column 0 -sticky ew
+    grid $top.f.onParent.gop                    -row 0 -column 1 -sticky ew
     grid $top.f.onParent.xLabel                 -row 1 -column 0 -sticky ew
     grid $top.f.onParent.x                      -row 1 -column 1 -sticky ew
     grid $top.f.onParent.yLabel                 -row 2 -column 0 -sticky ew
@@ -227,7 +227,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     after 250 "$top.f.table.start selection range 0 end"
     
-    ::ui_canvas::_setVisible $top
+    ::ui_canvas::_setGOP $top
         
     wm protocol $top WM_DELETE_WINDOW   "::ui_canvas::closed $top"
 }
@@ -236,7 +236,7 @@ proc closed {top} {
 
     variable canvasScaleX
     variable canvasScaleY
-    variable canvasVisible
+    variable canvasGOP
     variable canvasStart
     variable canvasUp
     variable canvasEnd
@@ -250,7 +250,7 @@ proc closed {top} {
     
     unset canvasScaleX($top)
     unset canvasScaleY($top)
-    unset canvasVisible($top)
+    unset canvasGOP($top)
     unset canvasStart($top)
     unset canvasUp($top)
     unset canvasEnd($top)
@@ -281,7 +281,7 @@ proc _apply {top} {
 
     variable canvasScaleX
     variable canvasScaleY
-    variable canvasVisible
+    variable canvasGOP
     variable canvasStart
     variable canvasUp
     variable canvasEnd
@@ -293,12 +293,12 @@ proc _apply {top} {
     
     ::ui_canvas::_forceScales  $top
     ::ui_canvas::_forceLimits  $top
-    ::ui_canvas::_forceVisible $top
+    ::ui_canvas::_forceGOP     $top
 
     ::ui_interface::pdsend "$top _canvasdialog \
             $canvasScaleX($top) \
             $canvasScaleY($top) \
-            $canvasVisible($top) \
+            $canvasGOP($top) \
             $canvasStart($top) \
             $canvasUp($top) \
             $canvasEnd($top) \
@@ -350,7 +350,7 @@ proc _forceLimits {top} {
     }
 }
 
-proc _forceVisible {top} {
+proc _forceGOP {top} {
 
     variable canvasWidth
     variable canvasHeight
@@ -376,13 +376,13 @@ proc _forceVisible {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _setVisible {top} {
+proc _setGOP {top} {
 
-    variable canvasVisible
+    variable canvasGOP
     
     set state "disabled"
     
-    if {$canvasVisible($top)} { set state "!disabled" }
+    if {$canvasGOP($top)} { set state "!disabled" }
     
     $top.f.onParent.x       state $state
     $top.f.onParent.y       state $state
