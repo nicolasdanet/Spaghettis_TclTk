@@ -149,14 +149,14 @@ static t_widgetbehavior vu_widgetBehavior =         /* Shared. */
 static void vu_drawJob (t_gobj *z, t_glist *glist)
 {
     t_vu *x = (t_vu *)z;
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     int h = vu_offsetWithStep (x, x->x_rms) + (x->x_thickness / 2);
     
-    sys_vGui (".x%lx.c coords %lxCOVER %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxCOVER %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + 1,
                     b + 1,
@@ -167,15 +167,15 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
     //
     h = vu_offsetWithStep (x, x->x_peak);
 
-    sys_vGui (".x%lx.c coords %lxPEAK %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxPEAK %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + 1,
                     b + h,
                     a + x->x_gui.iem_width,
                     b + h);
-    sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%06x\n",
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxPEAK -fill #%06x\n",
+                    glist_getTagAsString (view), 
                     x,
                     vu_colors[x->x_peak]);
     //
@@ -183,15 +183,15 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
     //
     h = vu_offsetWithStep (x, IEM_VUMETER_STEPS - 1);
     
-    sys_vGui (".x%lx.c coords %lxPEAK %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxPEAK %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x, 
                     a + 1,
                     b + h,
                     a + x->x_gui.iem_width,
                     b + h);
-    sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%06x\n",
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxPEAK -fill #%06x\n",
+                    glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_colorBackground);
     //
@@ -209,14 +209,14 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
 
 static void vu_drawMove (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     int h, i;
 
-    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x, 
                     a,
                     b,
@@ -227,8 +227,8 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
     //
     h = vu_offsetWithStep (x, i);
     
-    sys_vGui (".x%lx.c coords %lxLED%d %d %d %d %d\n",
-                    canvas, 
+    sys_vGui ("%s.c coords %lxLED%d %d %d %d %d\n",
+                    glist_getTagAsString (view), 
                     x,
                     i,
                     a + 3,
@@ -238,8 +238,8 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
     //
     }
 
-    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY);
@@ -249,14 +249,14 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
 
 static void vu_drawNew (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     int h, i;
 
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
+                    glist_getTagAsString (view),
                     a,
                     b,
                     a + x->x_gui.iem_width,
@@ -268,8 +268,8 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     //
     h = vu_offsetWithStep (x, i);
 
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%06x -tags %lxLED%d\n",
-                    canvas,
+    sys_vGui ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxLED%d\n",
+                    glist_getTagAsString (view),
                     a + 3,
                     b + h + x->x_thickness,
                     a + x->x_gui.iem_width - 2,
@@ -283,8 +283,8 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
 
     h = vu_offsetWithStep (x, IEM_VUMETER_STEPS - 1);
     
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxCOVER\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxCOVER\n",
+                    glist_getTagAsString (view),
                     a + 1, 
                     b + 1, 
                     a + x->x_gui.iem_width - 1,
@@ -292,8 +292,8 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%06x -tags %lxPEAK\n",
-                    canvas,
+    sys_vGui ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxPEAK\n",
+                    glist_getTagAsString (view),
                     a + 1,
                     b + h,
                     a + x->x_gui.iem_width,
@@ -301,9 +301,9 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                     x->x_thickness - 1,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"              // --
+    sys_vGui ("%s.c create text %d %d -text {%s} -anchor w"              // --
                     " -font [::getFont %d] -fill #%06x -tags %lxLABEL\n",   // --
-                    canvas,
+                    glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
@@ -316,81 +316,81 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
 
 static void vu_drawSelect (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void vu_drawErase (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     int i;
     
-    sys_vGui (".x%lx.c delete %lxBASE\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxBASE\n",
+                    glist_getTagAsString (view),
                     x);
     
     for (i = 1; i <= IEM_VUMETER_STEPS; i++) {
     //
-    sys_vGui (".x%lx.c delete %lxLED%d\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxLED%d\n",
+                    glist_getTagAsString (view),
                     x,
                     i);
     //
     }
 
-    sys_vGui (".x%lx.c delete %lxPEAK\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxPEAK\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxCOVER\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxCOVER\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxLABEL\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxLABEL\n",
+                    glist_getTagAsString (view),
                     x);
 }
 
 static void vu_drawConfig (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     int i;
         
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBASE -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground);
                 
     for (i = 1; i <= IEM_VUMETER_STEPS; i++) {
     //
-    sys_vGui (".x%lx.c itemconfigure %lxLED%d -width %d\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLED%d -width %d\n",
+                    glist_getTagAsString (view),
                     x,
                     i,
                     x->x_thickness - 1);
     //
     }
 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+                    glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "");
 
-    sys_vGui (".x%lx.c itemconfigure %lxCOVER -fill #%06x -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxCOVER -fill #%06x -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxPEAK -width %d\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxPEAK -width %d\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_thickness - 1);
 }
@@ -504,18 +504,18 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
         object_getX (cast_object (x)),
         object_getY (cast_object (x)),
         sym_vu,
-        x->x_gui.iem_width,                                         // Width.
-        x->x_gui.iem_height,                                        // Height.
-        names.n_unexpandedReceive,                                  // Receive.
-        names.n_unexpandedLabel,                                    // Label.
-        x->x_gui.iem_labelX,                                        // Label X.
-        x->x_gui.iem_labelY,                                        // Label Y.
-        iemgui_serializeFontStyle (cast_iem (z)),                   // Label font.
-        x->x_gui.iem_fontSize,                                      // Label font size.
-        colors.c_symColorBackground,                                // Background color.
-        colors.c_symColorLabel,                                     // Label color.
-        x->x_hasScale,                                              // Dummy.
-        0);                                                         // Dummy.
+        x->x_gui.iem_width,
+        x->x_gui.iem_height,
+        names.n_unexpandedReceive,
+        names.n_unexpandedLabel,
+        x->x_gui.iem_labelX,
+        x->x_gui.iem_labelY,
+        iemgui_serializeFontStyle (cast_iem (z)),
+        x->x_gui.iem_fontSize,
+        colors.c_symColorBackground,
+        colors.c_symColorLabel,
+        x->x_hasScale,
+        0);
 }
 
 static void vu_functionProperties (t_gobj *z, t_glist *owner)
@@ -586,25 +586,14 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int hasScale        = 0;
 
-    if (argc >= 11                                                  // --
-            && IS_FLOAT (argv + 0)                                  // Width.
-            && IS_FLOAT (argv + 1)                                  // Height.
-            && IS_SYMBOL_OR_FLOAT (argv + 2)                        // Receive.
-            && IS_SYMBOL_OR_FLOAT (argv + 3)                        // Label.
-            && IS_FLOAT (argv + 4)                                  // Label X.
-            && IS_FLOAT (argv + 5)                                  // Label Y.
-            && IS_FLOAT (argv + 6)                                  // Label font.
-            && IS_FLOAT (argv + 7)                                  // Label font size.
-            && IS_SYMBOL_OR_FLOAT (argv + 8)                        // Background color.
-            && IS_SYMBOL_OR_FLOAT (argv + 9)                        // Label color.
-            && IS_FLOAT (argv + 10))                                // Dummy.
-    {
-        width                       = (int)atom_getFloatAtIndex (0,  argc, argv);
-        height                      = (int)atom_getFloatAtIndex (1,  argc, argv);
-        labelX                      = (int)atom_getFloatAtIndex (4,  argc, argv);
-        labelY                      = (int)atom_getFloatAtIndex (5,  argc, argv);
-        labelFontSize               = (int)atom_getFloatAtIndex (7,  argc, argv);
-        hasScale                    = (int)atom_getFloatAtIndex (10, argc, argv);
+    if (argc >= 11) {
+    
+        width           = (int)atom_getFloatAtIndex (0,  argc, argv);
+        height          = (int)atom_getFloatAtIndex (1,  argc, argv);
+        labelX          = (int)atom_getFloatAtIndex (4,  argc, argv);
+        labelY          = (int)atom_getFloatAtIndex (5,  argc, argv);
+        labelFontSize   = (int)atom_getFloatAtIndex (7,  argc, argv);
+        hasScale        = (int)atom_getFloatAtIndex (10, argc, argv);
         
         /* Note that a fake float value is pitiably attribute to the send symbol. */
         
