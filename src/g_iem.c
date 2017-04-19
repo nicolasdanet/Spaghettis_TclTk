@@ -63,7 +63,7 @@ static t_color iemgui_colorDecodeFromInteger (int color)
 static t_color iemgui_colorDecode (t_atom *a)
 {
     if (IS_FLOAT (a))  { return iemgui_colorDecodeFromInteger ((int)GET_FLOAT (a)); }
-    if (IS_SYMBOL (a)) { return color_withEncodedSymbol (atom_getSymbol (a)); }
+    if (IS_SYMBOL (a)) { return color_withEncodedSymbol (atom_getSymbol (a));       }
     
     PD_BUG;
     
@@ -83,9 +83,9 @@ static t_symbol *iemgui_fetchName (int i, t_atom *argv)
         char t[PD_STRING] = { 0 };
         string_sprintf (t, PD_STRING, "%d", (int)atom_getFloat (argv + i));
         return gensym (t);
-    } else {
-        return utils_empty();
     }
+
+    return utils_empty();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -240,8 +240,8 @@ void iemgui_setLabel (void *x, t_symbol *s)
 
     if (glist_isOnScreen (iem->iem_owner)) {
     
-        sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
-                        glist_getView (iem->iem_owner),
+        sys_vGui ("%s.c itemconfigure %lxLABEL -text {%s}\n",    // --
+                        glist_getTagAsString (glist_getView (iem->iem_owner)),
                         x,
                         iem->iem_label != utils_empty() ? iem->iem_label->s_name : "");
     }
@@ -258,8 +258,8 @@ void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
     
     if (glist_isOnScreen (iem->iem_owner)) {
     
-        sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                        glist_getView (iem->iem_owner),
+        sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+                        glist_getTagAsString (glist_getView (iem->iem_owner)),
                         x,
                         glist_getPixelX (iem->iem_owner, cast_object (x)) + iem->iem_labelX,
                         glist_getPixelY (iem->iem_owner, cast_object (x)) + iem->iem_labelY);
@@ -277,10 +277,11 @@ void iemgui_setLabelFont (void *x, t_symbol *s, int argc, t_atom *argv)
     int f = (int)atom_getFloatAtIndex (1, argc, argv);
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
+    
     if (glist_isOnScreen (iem->iem_owner)) {
     
-        sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
-                        glist_getView (iem->iem_owner), 
+        sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
+                        glist_getTagAsString (glist_getView (iem->iem_owner)), 
                         x,
                         font_getHostFontSize (iem->iem_fontSize));
     }
