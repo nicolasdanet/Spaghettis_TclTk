@@ -63,27 +63,27 @@ static t_widgetbehavior panel_widgetBehavior =          /* Shared. */
 
 void panel_drawMove (t_panel *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
 
-    sys_vGui (".x%lx.c coords %lxPANEL %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxPANEL %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a,
                     b,
                     a + x->x_panelWidth,
                     b + x->x_panelHeight);
-    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a, 
                     b,
                     a + x->x_gui.iem_width,
                     b + x->x_gui.iem_height);
-    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY);
@@ -91,13 +91,13 @@ void panel_drawMove (t_panel *x, t_glist *glist)
 
 void panel_drawNew (t_panel *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
 
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxPANEL\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxPANEL\n",
+                    glist_getTagAsString (view),
                     a,
                     b,
                     a + x->x_panelWidth,
@@ -105,20 +105,20 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -outline #%06x -tags %lxBASE\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -outline #%06x -tags %lxBASE\n",
+                    glist_getTagAsString (view),
                     a,
                     b,
                     a + x->x_gui.iem_width,
                     b + x->x_gui.iem_height,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor w"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
@@ -129,44 +129,44 @@ void panel_drawNew (t_panel *x, t_glist *glist)
 
 void panel_drawSelect (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
 }
 
 void panel_drawErase (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c delete %lxBASE\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxBASE\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxPANEL\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxPANEL\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxLABEL\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxLABEL\n",
+                    glist_getTagAsString (view),
                     x);
 }
 
 void panel_drawConfig (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxPANEL -fill #%06x -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxPANEL -fill #%06x -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+                    glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_colorLabel,
@@ -264,18 +264,18 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
         object_getX (cast_object (z)),
         object_getY (cast_object (z)),
         sym_cnv,
-        x->x_gui.iem_width,                                                     // Grip width.
-        x->x_panelWidth,                                                        // Panel width.
-        x->x_panelHeight,                                                       // Panel height.
-        names.n_unexpandedSend,                                                 // Send.
-        names.n_unexpandedReceive,                                              // Receive.
-        names.n_unexpandedLabel,                                                // Label.
-        x->x_gui.iem_labelX,                                                    // Label X.
-        x->x_gui.iem_labelY,                                                    // Label Y.
-        iemgui_serializeFontStyle (cast_iem (z)),                               // Label font.
-        x->x_gui.iem_fontSize,                                                  // Label font size.
-        colors.c_symColorBackground,                                            // Background color.
-        colors.c_symColorLabel);                                                // Label color.
+        x->x_gui.iem_width,
+        x->x_panelWidth,
+        x->x_panelHeight,
+        names.n_unexpandedSend,
+        names.n_unexpandedReceive,
+        names.n_unexpandedLabel,
+        x->x_gui.iem_labelX,
+        x->x_gui.iem_labelY,
+        iemgui_serializeFontStyle (cast_iem (z)),
+        x->x_gui.iem_fontSize,
+        colors.c_symColorBackground,
+        colors.c_symColorLabel);
 }
 
 static void panel_functionProperties (t_gobj *z, t_glist *owner)
@@ -346,26 +346,14 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     int labelY          = IEM_DEFAULT_LABELY_TOP;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
         
-    if (argc >= 12                                                              // --
-            && IS_FLOAT (argv + 0)                                              // Grip width.
-            && IS_FLOAT (argv + 1)                                              // Panel width.
-            && IS_FLOAT (argv + 2)                                              // Panel Height.
-            && IS_SYMBOL_OR_FLOAT (argv + 3)                                    // Send.
-            && IS_SYMBOL_OR_FLOAT (argv + 4)                                    // Receive.
-            && IS_SYMBOL_OR_FLOAT (argv + 5)                                    // Label.
-            && IS_FLOAT (argv + 6)                                              // Label X.
-            && IS_FLOAT (argv + 7)                                              // Label Y.
-            && IS_FLOAT (argv + 8)                                              // Label font.
-            && IS_FLOAT (argv + 9)                                              // Label font size.
-            && IS_SYMBOL_OR_FLOAT (argv + 10)                                   // Background color.
-            && IS_SYMBOL_OR_FLOAT (argv + 11))                                  // Label color.
-    {
-        gripSize                    = (int)atom_getFloatAtIndex (0,  argc, argv);
-        panelWidth                  = (int)atom_getFloatAtIndex (1,  argc, argv);
-        panelHeight                 = (int)atom_getFloatAtIndex (2,  argc, argv);
-        labelX                      = (int)atom_getFloatAtIndex (6,  argc, argv);
-        labelY                      = (int)atom_getFloatAtIndex (7,  argc, argv);
-        labelFontSize               = (int)atom_getFloatAtIndex (9,  argc, argv);
+    if (argc >= 12) {
+    
+        gripSize        = (int)atom_getFloatAtIndex (0, argc, argv);
+        panelWidth      = (int)atom_getFloatAtIndex (1, argc, argv);
+        panelHeight     = (int)atom_getFloatAtIndex (2, argc, argv);
+        labelX          = (int)atom_getFloatAtIndex (6, argc, argv);
+        labelY          = (int)atom_getFloatAtIndex (7, argc, argv);
+        labelFontSize   = (int)atom_getFloatAtIndex (9, argc, argv);
         
         iemgui_deserializeNames (cast_iem (x), 3, argv);
         iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (8, argc, argv));
