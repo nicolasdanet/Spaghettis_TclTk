@@ -94,15 +94,15 @@ static t_widgetbehavior slider_widgetBehavior =         /* Shared. */
 
 static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int k = glist_getPixelY (glist, cast_object (x));
     
     k += x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
         
-    sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
-                    canvas, 
+    sys_vGui ("%s.c coords %lxKNOB %d %d %d %d\n",
+                    glist_getTagAsString (view), 
                     x, 
                     a + 1,
                     k,
@@ -112,13 +112,13 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
 
 static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int k = glist_getPixelX (glist, cast_object (x)) + slider_stepsToPixels (x->x_position);
     int b = glist_getPixelY (glist, cast_object (x));
         
-    sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
-                    canvas, 
+    sys_vGui ("%s.c coords %lxKNOB %d %d %d %d\n",
+                    glist_getTagAsString (view), 
                     x, 
                     k,
                     b + 1,
@@ -151,13 +151,13 @@ static void slider_drawUpdate (t_slider *x, t_glist *glist)
 
 static void slider_drawMove (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
 
-    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a, 
                     b,
@@ -166,8 +166,8 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
                 
     slider_drawUpdate (x, glist);
     
-    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+                    glist_getTagAsString (view),
                     x, 
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY);
@@ -175,13 +175,13 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
 
 static void slider_drawNew (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
+                    glist_getTagAsString (view),
                     a, 
                     b,
                     a + x->x_gui.iem_width, 
@@ -192,8 +192,8 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     if (x->x_isVertical) {
     //
     int k = b + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
-                    canvas,
+    sys_vGui ("%s.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
+                    glist_getTagAsString (view),
                     a + 1,
                     k, 
                     a + x->x_gui.iem_width - IEM_SLIDER_PIXEL,
@@ -204,8 +204,8 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     } else {
     //
     int k = a + slider_stepsToPixels (x->x_position);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
-                    canvas,
+    sys_vGui ("%s.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
+                    glist_getTagAsString (view),
                     k,
                     b + 1, 
                     k,
@@ -215,12 +215,12 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor w"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
@@ -231,48 +231,48 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
 
 static void slider_drawSelect (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n", 
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n", 
+                    glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
                 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n", 
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n", 
+                    glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void slider_drawErase (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c delete %lxBASE\n",
-                    canvas, 
+    sys_vGui ("%s.c delete %lxBASE\n",
+                    glist_getTagAsString (view), 
                     x);
-    sys_vGui (".x%lx.c delete %lxKNOB\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxKNOB\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxLABEL\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxLABEL\n",
+                    glist_getTagAsString (view),
                     x);
 }
 
 static void slider_drawConfig (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBASE -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x, 
                     x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxKNOB -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxKNOB -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+                    glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
@@ -563,24 +563,24 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
         object_getX (cast_object (z)), 
         object_getY (cast_object (z)),
         x->x_isVertical ? sym_vslider : sym_hslider, 
-        x->x_gui.iem_width,                                             // Width.
-        x->x_gui.iem_height,                                            // Height.
-        (t_float)x->x_minimum,                                          // Range minimum.
-        (t_float)x->x_maximum,                                          // Range maximum.
-        x->x_isLogarithmic,                                             // Is logarithmic.
-        iemgui_serializeLoadbang (cast_iem (z)),                        // Loadbang.
-        names.n_unexpandedSend,                                         // Send.
-        names.n_unexpandedReceive,                                      // Receive.
-        names.n_unexpandedLabel,                                        // Label.
-        x->x_gui.iem_labelX,                                            // Label X.
-        x->x_gui.iem_labelY,                                            // Label Y.
-        iemgui_serializeFontStyle (cast_iem (z)),                       // Label font.
-        x->x_gui.iem_fontSize,                                          // label font size.
-        colors.c_symColorBackground,                                    // Background color.
-        colors.c_symColorForeground,                                    // Foreground color.
-        colors.c_symColorLabel,                                         // Label color.
-        x->x_position,                                                  // Position.
-        x->x_isSteadyOnClick);                                          // Is steady.
+        x->x_gui.iem_width,
+        x->x_gui.iem_height,
+        (t_float)x->x_minimum,
+        (t_float)x->x_maximum,
+        x->x_isLogarithmic,
+        iemgui_serializeLoadbang (cast_iem (z)),
+        names.n_unexpandedSend,
+        names.n_unexpandedReceive,
+        names.n_unexpandedLabel,
+        x->x_gui.iem_labelX,
+        x->x_gui.iem_labelY,
+        iemgui_serializeFontStyle (cast_iem (z)),
+        x->x_gui.iem_fontSize,
+        colors.c_symColorBackground,
+        colors.c_symColorForeground,
+        colors.c_symColorLabel,
+        x->x_position,
+        x->x_isSteadyOnClick);
 }
 
 static void slider_functionProperties (t_gobj *z, t_glist *owner)
@@ -676,34 +676,17 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
     t_float position    = (t_float)0.0;
 
-    if (argc >= 17                                                      // --
-            && IS_FLOAT (argv + 0)                                      // Width.
-            && IS_FLOAT (argv + 1)                                      // Height.
-            && IS_FLOAT (argv + 2)                                      // Range minimum.
-            && IS_FLOAT (argv + 3)                                      // Range maximum.
-            && IS_FLOAT (argv + 4)                                      // Is logarithmic.
-            && IS_FLOAT (argv + 5)                                      // Loadbang.
-            && IS_SYMBOL_OR_FLOAT (argv + 6)                            // Send.
-            && IS_SYMBOL_OR_FLOAT (argv + 7)                            // Receive.
-            && IS_SYMBOL_OR_FLOAT (argv + 8)                            // Label.
-            && IS_FLOAT (argv + 9)                                      // Label X.
-            && IS_FLOAT (argv + 10)                                     // Label Y.
-            && IS_FLOAT (argv + 11)                                     // Label font.
-            && IS_FLOAT (argv + 12)                                     // Label font size.
-            && IS_SYMBOL_OR_FLOAT (argv + 13)                           // Background color.
-            && IS_SYMBOL_OR_FLOAT (argv + 14)                           // Foreground color.
-            && IS_SYMBOL_OR_FLOAT (argv + 15)                           // Label color.
-            && IS_FLOAT (argv + 16))                                    // Position.
-    {
-        width                       = (int)atom_getFloatAtIndex (0,  argc, argv);
-        height                      = (int)atom_getFloatAtIndex (1,  argc, argv);
-        minimum                     = (double)atom_getFloatAtIndex (2, argc, argv);
-        maximum                     = (double)atom_getFloatAtIndex (3, argc, argv);
-        isLogarithmic               = (int)atom_getFloatAtIndex (4,  argc, argv);
-        labelX                      = (int)atom_getFloatAtIndex (9,  argc, argv);
-        labelY                      = (int)atom_getFloatAtIndex (10, argc, argv);
-        labelFontSize               = (int)atom_getFloatAtIndex (12, argc, argv);
-        position                    = atom_getFloatAtIndex (16, argc, argv);
+    if (argc >= 17) {
+    
+        width           = (int)atom_getFloatAtIndex (0,  argc, argv);
+        height          = (int)atom_getFloatAtIndex (1,  argc, argv);
+        minimum         = (double)atom_getFloatAtIndex (2, argc, argv);
+        maximum         = (double)atom_getFloatAtIndex (3, argc, argv);
+        isLogarithmic   = (int)atom_getFloatAtIndex (4,  argc, argv);
+        labelX          = (int)atom_getFloatAtIndex (9,  argc, argv);
+        labelY          = (int)atom_getFloatAtIndex (10, argc, argv);
+        labelFontSize   = (int)atom_getFloatAtIndex (12, argc, argv);
+        position        = atom_getFloatAtIndex (16, argc, argv);
         
         if (argc == 18 && IS_FLOAT (argv + 17)) {
             isSteady = (int)atom_getFloatAtIndex (17, argc, argv);
