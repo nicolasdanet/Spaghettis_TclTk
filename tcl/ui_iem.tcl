@@ -563,12 +563,6 @@ proc _forceOptions {top} {
         "Bang"          {
             set iemOption1($top) [::ifInteger $iemOption1($top) $iemOption1(${top}.old)]
             set iemOption1($top) [::tcl::mathfunc::max $iemOption1($top) 10]
-            set iemOption2($top) [::ifInteger $iemOption2($top) $iemOption2(${top}.old)]
-            set iemOption2($top) [::tcl::mathfunc::max $iemOption2($top) 10]
-            set t1 $iemOption1($top)
-            set t2 $iemOption2($top)
-            set iemOption1($top) [::tcl::mathfunc::min $t1 $t2]
-            set iemOption2($top) [::tcl::mathfunc::max $t1 $t2]
         }
         "Toggle"        {
             set iemOption1($top) [::ifNumber  $iemOption1($top) $iemOption1(${top}.old)]

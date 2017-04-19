@@ -132,7 +132,7 @@ typedef struct _bng {
     t_iem       x_gui;                          /* MUST be the first. */
     int         x_flashed;
     int         x_flashTimeBreak;               /* Unused but kept for compatibility. */
-    int         x_flashTimeHold;
+    int         x_flashTime;
     t_outlet    *x_outlet;
     t_clock     *x_clock;
     } t_bng;

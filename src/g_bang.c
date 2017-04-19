@@ -33,7 +33,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #define IEM_BANG_MINIMUM_HOLD       10
-#define IEM_BANG_MINIMUM_BREAK      10
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -231,22 +230,13 @@ void bng_draw (t_bng *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void bng_setFlashTimes (t_bng *x, int m, int n)
-{
-    int flashBreak = PD_MIN (m, n);
-    int flashHold  = PD_MAX (m, n);
-    
-    x->x_flashTimeBreak = PD_MAX (flashBreak, IEM_BANG_MINIMUM_BREAK);
-    x->x_flashTimeHold  = PD_MAX (flashHold,  IEM_BANG_MINIMUM_HOLD);
-}
-
 static void bng_updateFlash (t_bng *x)
 {
     if (!x->x_flashed) {
         x->x_flashed = 1; (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     }
     
-    clock_delay (x->x_clock, x->x_flashTimeHold);
+    clock_delay (x->x_clock, x->x_flashTime);
 }
 
 static void bng_out (t_bng *x)
@@ -328,23 +318,12 @@ static void bng_size (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bng_flashtime (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int m = x->x_flashTimeBreak;
-    int n = x->x_flashTimeHold;
+    int n = x->x_flashTime;
     
-    if (argc == 1) {
-    //
-    n = (int)atom_getFloatAtIndex (0, argc, argv);
-    //
-    }
+    if (argc == 1) { n = (int)atom_getFloatAtIndex (0, argc, argv); }
+    if (argc == 2) { n = (int)atom_getFloatAtIndex (1, argc, argv); }
     
-    if (argc == 2) {
-    //
-    m = (int)atom_getFloatAtIndex (0, argc, argv);
-    n = (int)atom_getFloatAtIndex (1, argc, argv);
-    //
-    }
-    
-    bng_setFlashTimes (x, m, n);
+    x->x_flashTime = PD_MAX (n, IEM_BANG_MINIMUM_HOLD);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -384,7 +363,7 @@ static void bng_functionSave (t_gobj *z, t_buffer *b)
         object_getY (cast_object (z)),
         sym_bng,
         x->x_gui.iem_width,
-        x->x_flashTimeHold,
+        x->x_flashTime,
         x->x_flashTimeBreak,
         iemgui_serializeLoadbang (cast_iem (z)),
         names.n_unexpandedSend,
@@ -411,7 +390,7 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner)
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Bang"
             " %d %d Size 0 0 $::var(nil)"           // --
-            " %d {Flash Break} %d {Flash Hold}"     // --
+            " %d {Flash Time} -1 $::var(nil)"       // --
             " -1 $::var(nil) $::var(nil)"           // --
             " %d"
             " -1 -1 $::var(nil)"                    // --
@@ -421,7 +400,7 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner)
             " %d %d %d"
             " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
-            x->x_flashTimeBreak, x->x_flashTimeHold,
+            x->x_flashTime,
             x->x_gui.iem_loadbang,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
             names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -437,16 +416,14 @@ static void bng_fromDialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == IEM_DIALOG_SIZE) {
     //
-    int size        = (int)atom_getFloatAtIndex (0, argc, argv);
-    int flashHold   = (int)atom_getFloatAtIndex (2, argc, argv);
-    int flashBreak  = (int)atom_getFloatAtIndex (3, argc, argv);
+    int size      = (int)atom_getFloatAtIndex (0, argc, argv);
+    int flashTime = (int)atom_getFloatAtIndex (2, argc, argv);
     
     iemgui_fromDialog (cast_iem (x), argc, argv);
 
     x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
-    
-    bng_setFlashTimes (x, flashBreak, flashHold);
+    x->x_flashTime      = PD_MAX (flashTime, IEM_BANG_MINIMUM_HOLD);
     
     iemgui_boxChanged ((void *)x);
     //
@@ -500,8 +477,9 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     iemgui_checkSendReceiveLoop (cast_iem (x));
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
-        
-    bng_setFlashTimes (x, flashBreak, flashHold);
+    
+    x->x_flashTimeBreak     = flashBreak;
+    x->x_flashTime          = PD_MAX (flashHold, IEM_BANG_MINIMUM_HOLD);
     
     x->x_outlet = outlet_new (cast_object (x), &s_bang);
     x->x_clock  = clock_new ((void *)x, (t_method)bng_taskFlash);
