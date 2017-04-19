@@ -53,15 +53,15 @@ static t_widgetbehavior toggle_widgetBehavior =         /* Shared. */
 
 void toggle_drawJob (t_gobj *z, t_glist *glist)
 {
-    t_toggle *x = (t_toggle *)z;
-    t_glist *canvas = glist_getView (glist);
+    t_toggle *x   = (t_toggle *)z;
+    t_glist *view = glist_getView (glist);
     
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxCROSS1 -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS2 -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxCROSS2 -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
 }
@@ -77,44 +77,44 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 
 void toggle_drawMove (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     
     int thickness = (int)((x->x_gui.iem_width / 30.0) + 0.5);
         
-    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a,
                     b,
                     a + x->x_gui.iem_width,
                     b + x->x_gui.iem_height);
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -width %d\n", 
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxCROSS1 -width %d\n", 
+                    glist_getTagAsString (view), 
                     x, 
                     thickness);
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS2 -width %d\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxCROSS2 -width %d\n",
+                    glist_getTagAsString (view),
                     x,
                     thickness);
-    sys_vGui (".x%lx.c coords %lxCROSS1 %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxCROSS1 %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + thickness + 1,
                     b + thickness + 1,
                     a + x->x_gui.iem_width  - thickness - 1,
                     b + x->x_gui.iem_height - thickness - 1);
-    sys_vGui (".x%lx.c coords %lxCROSS2 %d %d %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxCROSS2 %d %d %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + thickness + 1,
                     b + x->x_gui.iem_height - thickness - 1,
                     a + x->x_gui.iem_width  - thickness - 1,
                     b + thickness + 1);
-    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-                    canvas,
+    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+                    glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX, 
                     b + x->x_gui.iem_labelY);
@@ -122,23 +122,23 @@ void toggle_drawMove (t_toggle *x, t_glist *glist)
 
 void toggle_drawNew (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
     
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     
     int thickness = (int)((x->x_gui.iem_width / 30.0) + 0.5);
 
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
-                    canvas,
+    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
+                    glist_getTagAsString (view),
                     a,
                     b,
                     a + x->x_gui.iem_width,
                     b + x->x_gui.iem_height,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS1\n",
-                    canvas,
+    sys_vGui ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS1\n",
+                    glist_getTagAsString (view),
                     a + thickness + 1,
                     b + thickness + 1, 
                     a + x->x_gui.iem_width  - thickness - 1,
@@ -146,8 +146,8 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                     thickness,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS2\n",
-                    canvas,
+    sys_vGui ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS2\n",
+                    glist_getTagAsString (view),
                     a + thickness + 1,
                     b + x->x_gui.iem_height - thickness - 1,
                     a + x->x_gui.iem_width  - thickness - 1,
@@ -155,12 +155,12 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                     thickness,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
+    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor w"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
-                    canvas,
+                    glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
                     (x->x_gui.iem_label != utils_empty()) ? x->x_gui.iem_label->s_name : "",
@@ -171,54 +171,54 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
 
 void toggle_drawSelect (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
-                    canvas, 
+    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+                    glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 void toggle_drawErase (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c delete %lxBASE\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxBASE\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxCROSS1\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxCROSS1\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxCROSS2\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxCROSS2\n",
+                    glist_getTagAsString (view),
                     x);
-    sys_vGui (".x%lx.c delete %lxLABEL\n",
-                    canvas,
+    sys_vGui ("%s.c delete %lxLABEL\n",
+                    glist_getTagAsString (view),
                     x);
 }
 
 void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getView (glist);
+    t_glist *view = glist_getView (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxBASE -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxCROSS1 -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS2 -fill #%06x\n",
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxCROSS2 -fill #%06x\n",
+                    glist_getTagAsString (view),
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    canvas,
+    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+                    glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
@@ -353,20 +353,20 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
         object_getX (cast_object (z)),
         object_getY (cast_object (z)),
         sym_tgl, 
-        x->x_gui.iem_width,                                 // Size.
-        iemgui_serializeLoadbang (cast_iem (z)),            // Loadbang.
-        names.n_unexpandedSend,                             // Send.
-        names.n_unexpandedReceive,                          // Receive.
-        names.n_unexpandedLabel,                            // Label.
-        x->x_gui.iem_labelX,                                // Label X.
-        x->x_gui.iem_labelY,                                // Label Y.
-        iemgui_serializeFontStyle (cast_iem (z)),           // Label font.
-        x->x_gui.iem_fontSize,                              // Label font size.
-        colors.c_symColorBackground,                        // Backround color.
-        colors.c_symColorForeground,                        // Foreground color.
-        colors.c_symColorLabel,                             // Label color.
-        x->x_state,                                         // Toggle state.
-        x->x_nonZero);                                      // Non-zero value.
+        x->x_gui.iem_width,
+        iemgui_serializeLoadbang (cast_iem (z)),
+        names.n_unexpandedSend,
+        names.n_unexpandedReceive,
+        names.n_unexpandedLabel,
+        x->x_gui.iem_labelX,
+        x->x_gui.iem_labelY,
+        iemgui_serializeFontStyle (cast_iem (z)),
+        x->x_gui.iem_fontSize,
+        colors.c_symColorBackground,
+        colors.c_symColorForeground,
+        colors.c_symColorLabel,
+        x->x_state,
+        x->x_nonZero);
 }
 
 static void toggle_functionProperties (t_gobj *z, t_glist *owner)
@@ -441,27 +441,14 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     t_float state       = (t_float)0.0;
     t_float nonZero     = (t_float)1.0;
 
-    if (argc >= 13                                              // --
-            && IS_FLOAT (argv)                                  // Size.
-            && IS_FLOAT (argv + 1)                              // Loadbang.
-            && IS_SYMBOL_OR_FLOAT (argv + 2)                    // Send.
-            && IS_SYMBOL_OR_FLOAT (argv + 3)                    // Receive.
-            && IS_SYMBOL_OR_FLOAT (argv + 4)                    // Label.
-            && IS_FLOAT (argv + 5)                              // Label X.
-            && IS_FLOAT (argv + 6)                              // Label Y.
-            && IS_FLOAT (argv + 7)                              // Label font.
-            && IS_FLOAT (argv + 8)                              // Label font size.
-            && IS_SYMBOL_OR_FLOAT (argv + 9)                    // Background color.
-            && IS_SYMBOL_OR_FLOAT (argv + 10)                   // Foreground color.
-            && IS_SYMBOL_OR_FLOAT (argv + 11)                   // Label color.
-            && IS_FLOAT (argv + 12))                            // Toggle state.
-    {
-        size                        = (int)atom_getFloatAtIndex (0, argc,  argv);
-        labelX                      = (int)atom_getFloatAtIndex (5, argc,  argv);
-        labelY                      = (int)atom_getFloatAtIndex (6, argc,  argv);
-        labelFontSize               = (int)atom_getFloatAtIndex (8, argc,  argv);
-        state                       = (t_float)atom_getFloatAtIndex (12, argc, argv);
-        nonZero                     = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
+    if (argc >= 13) {
+    
+        size            = (int)atom_getFloatAtIndex (0, argc,  argv);
+        labelX          = (int)atom_getFloatAtIndex (5, argc,  argv);
+        labelY          = (int)atom_getFloatAtIndex (6, argc,  argv);
+        labelFontSize   = (int)atom_getFloatAtIndex (8, argc,  argv);
+        state           = (t_float)atom_getFloatAtIndex (12, argc, argv);
+        nonZero         = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
         
         iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (1, argc, argv));
         iemgui_deserializeNames (cast_iem (x), 2, argv);
