@@ -282,31 +282,22 @@ proc _apply {top} {
     variable canvasScaleX
     variable canvasScaleY
     variable canvasGOP
-    variable canvasStart
-    variable canvasUp
-    variable canvasEnd
-    variable canvasDown
     variable canvasWidth
     variable canvasHeight
     variable canvasX
     variable canvasY
     
     ::ui_canvas::_forceScales  $top
-    ::ui_canvas::_forceLimits  $top
     ::ui_canvas::_forceGOP     $top
 
     ::ui_interface::pdsend "$top _canvasdialog \
-            $canvasScaleX($top) \
-            $canvasScaleY($top) \
-            $canvasGOP($top) \
-            $canvasStart($top) \
-            $canvasUp($top) \
-            $canvasEnd($top) \
-            $canvasDown($top) \
+            $canvasX($top) \
+            $canvasY($top) \
             $canvasWidth($top) \
             $canvasHeight($top) \
-            $canvasX($top) \
-            $canvasY($top)"
+            $canvasGOP($top) \
+            $canvasScaleX($top) \
+            $canvasScaleY($top)"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -324,30 +315,6 @@ proc _forceScales {top} {
     set canvasScaleY($top) [::ifNumber  $canvasScaleY($top) $canvasScaleY(${top}.old)]
     set canvasScaleY($top) [::ifNotZero $canvasScaleY($top) $canvasScaleY(${top}.old)]
     set canvasScaleY($top) [::ifNotZero $canvasScaleY($top) 1.0)]
-}
-
-proc _forceLimits {top} {
-
-    variable canvasStart
-    variable canvasUp
-    variable canvasEnd
-    variable canvasDown
-
-    set canvasStart($top) [::ifInteger $canvasStart($top) $canvasStart(${top}.old)]
-    set canvasEnd($top)   [::ifInteger $canvasEnd($top)   $canvasEnd(${top}.old)]
-    set canvasUp($top)    [::ifNumber  $canvasUp($top)    $canvasUp(${top}.old)]
-    set canvasDown($top)  [::ifNumber  $canvasDown($top)  $canvasDown(${top}.old)]
-    
-    set canvasStart($top) [::tcl::mathfunc::max $canvasStart($top) 0]
-    set canvasEnd($top)   [::tcl::mathfunc::max $canvasEnd($top)   0]
-    
-    if {$canvasStart($top) == $canvasEnd($top)} {
-        set canvasStart($top) $canvasStart(${top}.old); set canvasEnd($top) $canvasEnd(${top}.old)
-    }
-    
-    if {$canvasUp($top) == $canvasDown($top)} { 
-        set canvasUp($top) $canvasUp(${top}.old); set canvasDown($top) $canvasDown(${top}.old)
-    }
 }
 
 proc _forceGOP {top} {

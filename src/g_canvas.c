@@ -317,18 +317,18 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (argc == 11);
+    PD_ASSERT (argc == 7);
     PD_ASSERT (!glist_isArray (glist));
     
     {
     //
-    t_float scaleX  = atom_getFloat (argv + 0);
-    t_float scaleY  = atom_getFloat (argv + 1);
-    int isGOP       = (int)atom_getFloat (argv + 2);
-    int a           = (int)atom_getFloat (argv + 9);
-    int b           = (int)atom_getFloat (argv + 10);
-    int width       = (int)atom_getFloat (argv + 7);
-    int height      = (int)atom_getFloat (argv + 8);
+    int a           = (int)atom_getFloat (argv + 0);
+    int b           = (int)atom_getFloat (argv + 1);
+    int width       = (int)atom_getFloat (argv + 2);
+    int height      = (int)atom_getFloat (argv + 3);
+    int isGOP       = (int)atom_getFloat (argv + 4);
+    t_float scaleX  = atom_getFloat (argv + 5);
+    t_float scaleY  = atom_getFloat (argv + 6);
     
     t_rectangle r; t_bounds bounds;
     
