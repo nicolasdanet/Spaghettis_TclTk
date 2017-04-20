@@ -41,15 +41,15 @@ array set canvasScaleY  {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top x y width height flags scaleX scaleY} {
+proc show {top x y width height isGOP scaleX scaleY} {
     
-    ::ui_canvas::_create $top $x $y $width $height $flags $scaleX $scaleY
+    ::ui_canvas::_create $top $x $y $width $height $isGOP $scaleX $scaleY
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top x y width height flags scaleX scaleY} {
+proc _create {top x y width height isGOP scaleX scaleY} {
 
     variable canvasX
     variable canvasY
@@ -71,7 +71,7 @@ proc _create {top x y width height flags scaleX scaleY} {
     set canvasY($top)               $y
     set canvasWidth($top)           $width
     set canvasHeight($top)          $height
-    set canvasGOP($top)             $flags
+    set canvasGOP($top)             $isGOP
     set canvasScaleX($top)          $scaleX
     set canvasScaleY($top)          $scaleY
 
