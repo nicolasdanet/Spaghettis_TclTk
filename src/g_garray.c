@@ -639,14 +639,12 @@ void garray_functionProperties (t_garray *x)
     PD_ASSERT (glist_isArray (x->x_owner));
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %g %g %g %g %d %d\n",
-                utils_dollarToHash (x->x_unexpandedName)->s_name, 
+                "::ui_array::show %%s %s %d %g %g %d %d\n",
+                utils_dollarToHash (x->x_unexpandedName)->s_name,
                 array_getSize (array),
-                bounds_getLeft (bounds), 
-                bounds_getTop (bounds), 
-                bounds_getRight (bounds), 
+                bounds_getTop (bounds),
                 bounds_getBottom (bounds),
-                x->x_saveWithParent, 
+                x->x_saveWithParent,
                 PD_CLAMP (style, PLOT_POLYGONS, PLOT_CURVES));
     
     PD_ASSERT (!err);

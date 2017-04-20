@@ -24,32 +24,38 @@ namespace eval ::ui_array:: {
 
 variable  arrayName
 variable  arraySize
-variable  arrayDraw
+variable  arrayUp
+variable  arrayDown
 variable  arraySave
+variable  arrayDraw
 
-array set arrayName {}
-array set arraySize {}
-array set arrayDraw {}
-array set arraySave {}
+array set arrayName  {}
+array set arraySize  {}
+array set arrayUp    {}
+array set arrayDown  {}
+array set arraySave  {}
+array set arrayDraw  {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top name size start up end down save style} {
+proc show {top name size up down save style} {
 
-    ::ui_array::_create $top $name $size $save $style
+    ::ui_array::_create $top $name $size $up $down $save $style
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top name size save style} {
+proc _create {top name size up down save style} {
 
     variable arrayName
     variable arraySize
-    variable arrayDraw
+    variable arrayUp
+    variable arrayDown
     variable arraySave
-    
+    variable arrayDraw
+        
     toplevel $top -class PdDialog
     wm title $top [_ "Array"]
     wm group $top .
@@ -59,19 +65,26 @@ proc _create {top name size save style} {
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
     set arrayName($top)         [::dollarToHash $name]
-    set arrayName(${top}.old)   [::dollarToHash $name]
     set arraySize($top)         $size
-    set arraySize(${top}.old)   $size
+    set arrayUp($top)           $up
+    set arrayDown($top)         $down
     set arraySave($top)         $save
     set arrayDraw($top)         $style
+    
+    set arrayName(${top}.old)   [::dollarToHash $name]
+    set arraySize(${top}.old)   $size
+    set arrayUp(${top}.old)     $up
+    set arrayDown(${top}.old)   $down
     
     set values {"Polygons" "Points" "Curves"} 
         
     ttk::frame      $top.f                          {*}[::styleFrame]
     ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
-
+    ttk::labelframe $top.f.bounds                   {*}[::styleLabelFrame]  -text [_ "Bounds"]
+    
     pack $top.f                                     {*}[::packMain]
     pack $top.f.properties                          {*}[::packCategory]
+    pack $top.f.bounds                              {*}[::packCategoryNext]
     
     ttk::label $top.f.properties.nameLabel          {*}[::styleLabel] \
                                                         -text [_ "Name"]
@@ -97,6 +110,18 @@ proc _create {top name size save style} {
     ::createMenuByIndex $top.f.properties.draw      $values ::ui_array::arrayDraw($top) \
                                                         -width [::measure $values]
     
+    ttk::label $top.f.bounds.upLabel                {*}[::styleLabel] \
+                                                        -text [_ "Value Top"]
+    ttk::entry $top.f.bounds.up                     {*}[::styleEntryNumber] \
+                                                        -textvariable ::ui_array::arrayUp($top) \
+                                                        -width $::width(small)
+                                                        
+    ttk::label $top.f.bounds.downLabel              {*}[::styleLabel] \
+                                                        -text [_ "Value Bottom"]
+    ttk::entry $top.f.bounds.down                   {*}[::styleEntryNumber] \
+                                                        -textvariable ::ui_array::arrayDown($top) \
+                                                        -width $::width(small)
+                                                                                                  
     grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky ew
     grid $top.f.properties.name                     -row 0 -column 1 -sticky ew
     grid $top.f.properties.sizeLabel                -row 1 -column 0 -sticky ew
@@ -106,10 +131,19 @@ proc _create {top name size save style} {
     grid $top.f.properties.drawLabel                -row 3 -column 0 -sticky ew
     grid $top.f.properties.draw                     -row 3 -column 1 -sticky ew
     
-    grid columnconfigure $top.f.properties 0 -weight 1
+    grid $top.f.bounds.upLabel                      -row 0 -column 0 -sticky ew
+    grid $top.f.bounds.up                           -row 0 -column 1 -sticky ew
+    grid $top.f.bounds.downLabel                    -row 1 -column 0 -sticky ew
+    grid $top.f.bounds.down                         -row 1 -column 1 -sticky ew
     
-    bind $top.f.properties.name <Return> { ::nextEntry %W }
-    bind $top.f.properties.size <Return> { ::nextEntry %W }
+    grid columnconfigure $top.f.properties          0 -weight 1
+    grid columnconfigure $top.f.bounds              0 -weight 1
+    
+    bind $top.f.properties.name <Return>            { ::nextEntry %W }
+    bind $top.f.properties.size <Return>            { ::nextEntry %W }
+    
+    bind $top.f.bounds.up       <Return>            { ::nextEntry %W }
+    bind $top.f.bounds.down     <Return>            { ::nextEntry %W }
     
     focus $top.f.properties.name
     
@@ -122,16 +156,24 @@ proc closed {top} {
     
     variable arrayName
     variable arraySize
-    variable arrayDraw
+    variable arrayUp
+    variable arrayDown
     variable arraySave
-    
+    variable arrayDraw
+        
     ::ui_array::_apply $top
     
     unset arrayName($top)
     unset arraySize($top)
-    unset arraySize(${top}.old)
-    unset arrayDraw($top)
+    unset arrayUp($top)
+    unset arrayDown($top)
     unset arraySave($top)
+    unset arrayDraw($top)
+    
+    unset arrayName(${top}.old)
+    unset arraySize(${top}.old)
+    unset arrayUp(${top}.old)
+    unset arrayDown(${top}.old)
     
     ::cancel $top
 }
@@ -143,9 +185,11 @@ proc _apply {top} {
 
     variable arrayName
     variable arraySize
-    variable arrayDraw
+    variable arrayUp
+    variable arrayDown
     variable arraySave
-    
+    variable arrayDraw
+        
     ::ui_array::_forceSize $top
     
     ::ui_interface::pdsend "$top _arraydialog \
