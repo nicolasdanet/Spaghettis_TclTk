@@ -261,7 +261,7 @@ static void canvas_requireArrayDialog (t_glist *glist)
     char t[PD_STRING] = { 0 };
     
     t_error err = string_sprintf (t, PD_STRING, 
-                        "::ui_array::show %%s %s 100 3\n", 
+                        "::ui_array::show %%s %s 100 1 1\n", 
                         utils_getDefaultBindName (garray_class, sym_array)->s_name);
     
     PD_ASSERT (!err);
@@ -272,11 +272,6 @@ static void canvas_requireArrayDialog (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_makeArrayFromDialog (glist, s, argc, argv);
-}
 
 static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
@@ -313,6 +308,11 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     }
     
     if (k == POPUP_PROPERTIES) { canvas_functionProperties (cast_gobj (glist), NULL); }
+}
+
+static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    canvas_makeArrayFromDialog (glist, s, argc, argv);
 }
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -514,8 +514,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_selectAll,             sym__selectall,         A_NULL);
     
     class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,             A_NULL);
-    class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromDialog,            sym__canvasdialog,      A_GIMME, A_NULL);
    
     #if PD_WITH_LEGACY

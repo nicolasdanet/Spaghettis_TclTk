@@ -633,14 +633,14 @@ void garray_functionProperties (t_garray *x)
     char t[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
     int style = scalar_getFloat (x->x_scalar, sym_style);
-    int flags = x->x_saveWithParent + (2 * style);
     t_array *array = garray_getArray (x);
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %d\n",
+                "::ui_array::show %%s %s %d %d %d\n",
                 utils_dollarToHash (x->x_unexpandedName)->s_name, 
                 array_getSize (array),
-                flags);
+                x->x_saveWithParent, 
+                PD_CLAMP (style, PLOT_POLYGONS, PLOT_CURVES));
     
     PD_ASSERT (!err);
     

@@ -35,15 +35,15 @@ array set arraySave {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top name size flags} {
+proc show {top name size save style} {
 
-    ::ui_array::_create $top $name $size $flags
+    ::ui_array::_create $top $name $size $save $style
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top name size flags} {
+proc _create {top name size save style} {
 
     variable arrayName
     variable arraySize
@@ -62,8 +62,8 @@ proc _create {top name size flags} {
     set arrayName(${top}.old)   [::dollarToHash $name]
     set arraySize($top)         $size
     set arraySize(${top}.old)   $size
-    set arraySave($top)         [expr {$flags & 1}]
-    set arrayDraw($top)         [expr {($flags & 6) >> 1}]
+    set arraySave($top)         $save
+    set arrayDraw($top)         $style
     
     set values {"Polygons" "Points" "Curves"} 
         
