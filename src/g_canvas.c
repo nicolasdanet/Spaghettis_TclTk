@@ -123,7 +123,9 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     t_rectangle r; t_bounds bounds;
     
-    bounds_setByAtoms (&bounds, argc, argv);
+    t_error err = bounds_setByAtoms (&bounds, argc, argv);
+    
+    PD_ASSERT (!err);
     
     #if PD_WITH_LEGACY
     
