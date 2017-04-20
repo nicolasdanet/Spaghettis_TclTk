@@ -657,14 +657,18 @@ void garray_functionProperties (t_garray *x)
 
 void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 4) {
+    if (argc == 6) {
     //
     t_symbol *name = utils_hashToDollar (atom_getSymbol (argv + 0));
     int size       = (int)atom_getFloat (argv + 1);
-    int save       = (int)atom_getFloat (argv + 2);
-    int style      = (int)atom_getFloat (argv + 3);
+    t_float up     = atom_getFloat (argv + 2);
+    t_float down   = atom_getFloat (argv + 3);
+    int save       = (int)atom_getFloat (argv + 4);
+    int style      = (int)atom_getFloat (argv + 5);
 
     PD_ASSERT (size > 0);
+    
+    post_log ("%f %f", up, down);
     
     t_array *array = garray_getArray (x);
     

@@ -79,8 +79,10 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
 {
     t_symbol *name = atom_getSymbolAtIndex (0, argc, argv);
     t_float size   = atom_getFloatAtIndex (1, argc, argv);
-    int save       = (int)atom_getFloatAtIndex (2, argc, argv);
-    int style      = (int)atom_getFloatAtIndex (3, argc, argv);
+    t_float up     = atom_getFloatAtIndex (2, argc, argv);
+    t_float down   = atom_getFloatAtIndex (3, argc, argv);
+    int save       = (int)atom_getFloatAtIndex (4, argc, argv);
+    int style      = (int)atom_getFloatAtIndex (5, argc, argv);
     int flags      = (save + (2 * style));
     
     t_float n = PD_MAX (1, size);
@@ -92,7 +94,7 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     
     t_buffer *t = buffer_new(); buffer_appendSymbol (t, sym_graph);
     
-    bounds_set (&bounds, 0, 1, n, -1);
+    bounds_set (&bounds, 0, up, n, down);
         
     PD_ASSERT (name);
     

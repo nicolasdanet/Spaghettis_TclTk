@@ -191,10 +191,13 @@ proc _apply {top} {
     variable arrayDraw
         
     ::ui_array::_forceSize $top
+    ::ui_array::_forceBounds $top
     
     ::ui_interface::pdsend "$top _arraydialog \
             [::sanitized [::dollarToHash [::withEmpty $arrayName($top)]]] \
             $arraySize($top) \
+            $arrayUp($top) \
+            $arrayDown($top) \
             $arraySave($top) \
             $arrayDraw($top)"
 }
@@ -210,6 +213,19 @@ proc _forceSize {top} {
     set arrayName($top) [::ifNotNumber $arrayName($top) $arrayName(${top}.old)]
     set arraySize($top) [::ifInteger $arraySize($top) $arraySize(${top}.old)]
     set arraySize($top) [::tcl::mathfunc::max $arraySize($top) 1]
+}
+
+proc _forceBounds {top} {
+
+    variable arrayUp
+    variable arrayDown
+
+    set arrayUp($top)   [::ifNumber $arrayUp($top)   $arrayUp(${top}.old)]
+    set arrayDown($top) [::ifNumber $arrayDown($top) $arrayDown(${top}.old)]
+    
+    if {$arrayUp($top) == $arrayDown($top)} {
+        set arrayUp($top) $arrayUp(${top}.old); set arrayDown($top) $arrayDown(${top}.old)
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
