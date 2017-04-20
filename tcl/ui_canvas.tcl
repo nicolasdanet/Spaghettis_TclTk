@@ -22,55 +22,43 @@ namespace eval ::ui_canvas:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable  canvasScaleX
-variable  canvasScaleY
-variable  canvasGOP
-variable  canvasStart
-variable  canvasUp
-variable  canvasEnd
-variable  canvasDown
-variable  canvasWidth
-variable  canvasHeight
 variable  canvasX
 variable  canvasY
+variable  canvasWidth
+variable  canvasHeight
+variable  canvasGOP
+variable  canvasScaleX
+variable  canvasScaleY
 
-array set canvasScaleX  {}
-array set canvasScaleY  {}
-array set canvasGOP     {}
-array set canvasStart   {}
-array set canvasUp      {}
-array set canvasEnd     {}
-array set canvasDown    {}
-array set canvasWidth   {}
-array set canvasHeight  {}
 array set canvasX       {}
 array set canvasY       {}
+array set canvasWidth   {}
+array set canvasHeight  {}
+array set canvasGOP     {}
+array set canvasScaleX  {}
+array set canvasScaleY  {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top scaleX scaleY flags start up end down width height x y} {
+proc show {top x y width height flags scaleX scaleY} {
     
-    ::ui_canvas::_create $top $scaleX $scaleY $flags $start $up $end $down $width $height $x $y
+    ::ui_canvas::_create $top $x $y $width $height $flags $scaleX $scaleY
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top scaleX scaleY flags start up end down width height x y} {
+proc _create {top x y width height flags scaleX scaleY} {
 
-    variable canvasScaleX
-    variable canvasScaleY
-    variable canvasGOP
-    variable canvasStart
-    variable canvasUp
-    variable canvasEnd
-    variable canvasDown
-    variable canvasWidth
-    variable canvasHeight
     variable canvasX
     variable canvasY
-
+    variable canvasWidth
+    variable canvasHeight
+    variable canvasGOP
+    variable canvasScaleX
+    variable canvasScaleY
+    
     toplevel $top -class PdDialog
     wm title $top [_ "Canvas"]
     wm group $top .
@@ -79,65 +67,31 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     wm minsize   $top {*}[::styleMinimumSize]
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
-    set canvasScaleX($top)          $scaleX
-    set canvasScaleY($top)          $scaleY
-    set canvasGOP($top)             $flags
-    set canvasStart($top)           $start
-    set canvasUp($top)              $up
-    set canvasEnd($top)             $end
-    set canvasDown($top)            $down
-    set canvasWidth($top)           $width
-    set canvasHeight($top)          $height
     set canvasX($top)               $x
     set canvasY($top)               $y
-    
-    set canvasScaleX(${top}.old)    $scaleX
-    set canvasScaleY(${top}.old)    $scaleY
-    set canvasStart(${top}.old)     $start
-    set canvasUp(${top}.old)        $up
-    set canvasEnd(${top}.old)       $end
-    set canvasDown(${top}.old)      $down
-    set canvasWidth(${top}.old)     $width
-    set canvasHeight(${top}.old)    $height
+    set canvasWidth($top)           $width
+    set canvasHeight($top)          $height
+    set canvasGOP($top)             $flags
+    set canvasScaleX($top)          $scaleX
+    set canvasScaleY($top)          $scaleY
+
     set canvasX(${top}.old)         $x
     set canvasY(${top}.old)         $y
+    set canvasWidth(${top}.old)     $width
+    set canvasHeight(${top}.old)    $height
+    set canvasScaleX(${top}.old)    $scaleX
+    set canvasScaleY(${top}.old)    $scaleY
     
     ::ui_canvas::_forceGOP $top
     
     ttk::frame      $top.f                      {*}[::styleFrame]
-    ttk::labelframe $top.f.table                {*}[::styleLabelFrame]  -text [_ "Array"]
     ttk::labelframe $top.f.onParent             {*}[::styleLabelFrame]  -text [_ "Properties"]
     ttk::labelframe $top.f.graph                {*}[::styleLabelFrame]  -text [_ "Scalars"]
         
     pack $top.f                                 {*}[::packMain]
-    pack $top.f.table                           {*}[::packCategory]
-    pack $top.f.onParent                        {*}[::packCategoryNext]
+    pack $top.f.onParent                        {*}[::packCategory]
     pack $top.f.graph                           {*}[::packCategoryNext]
     
-    ttk::label $top.f.table.startLabel          {*}[::styleLabel] \
-                                                    -text [_ "Index Start"]
-    ttk::entry $top.f.table.start               {*}[::styleEntryNumber] \
-                                                    -textvariable ::ui_canvas::canvasStart($top) \
-                                                    -width $::width(small)
-
-    ttk::label $top.f.table.endLabel            {*}[::styleLabel] \
-                                                    -text [_ "Index End"]
-    ttk::entry $top.f.table.end                 {*}[::styleEntryNumber] \
-                                                    -textvariable ::ui_canvas::canvasEnd($top) \
-                                                    -width $::width(small)
-    
-    ttk::label $top.f.table.downLabel           {*}[::styleLabel] \
-                                                    -text [_ "Value Bottom"]
-    ttk::entry $top.f.table.down                {*}[::styleEntryNumber] \
-                                                    -textvariable ::ui_canvas::canvasDown($top) \
-                                                    -width $::width(small)
-                                                        
-    ttk::label $top.f.table.upLabel             {*}[::styleLabel] \
-                                                    -text [_ "Value Top"]
-    ttk::entry $top.f.table.up                  {*}[::styleEntryNumber] \
-                                                    -textvariable ::ui_canvas::canvasUp($top) \
-                                                    -width $::width(small)
-
     ttk::label $top.f.onParent.gopLabel         {*}[::styleLabel] \
                                                     -text [_ "Graph On Parent"]
     ttk::checkbutton $top.f.onParent.gop        {*}[::styleCheckButton] \
@@ -181,15 +135,6 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -textvariable ::ui_canvas::canvasScaleY($top) \
                                                     -width $::width(small)
                                                     
-    grid $top.f.table.startLabel                -row 0 -column 0 -sticky ew
-    grid $top.f.table.start                     -row 0 -column 1 -sticky ew
-    grid $top.f.table.endLabel                  -row 1 -column 0 -sticky ew
-    grid $top.f.table.end                       -row 1 -column 1 -sticky ew
-    grid $top.f.table.downLabel                 -row 2 -column 0 -sticky ew
-    grid $top.f.table.down                      -row 2 -column 1 -sticky ew
-    grid $top.f.table.upLabel                   -row 3 -column 0 -sticky ew
-    grid $top.f.table.up                        -row 3 -column 1 -sticky ew
-    
     grid $top.f.onParent.gopLabel               -row 0 -column 0 -sticky ew
     grid $top.f.onParent.gop                    -row 0 -column 1 -sticky ew
     grid $top.f.onParent.xLabel                 -row 1 -column 0 -sticky ew
@@ -206,14 +151,8 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     grid $top.f.graph.scaleYLabel               -row 1 -column 0 -sticky ew
     grid $top.f.graph.scaleY                    -row 1 -column 1 -sticky ew
     
-    grid columnconfigure $top.f.table           0 -weight 1
     grid columnconfigure $top.f.onParent        0 -weight 1
     grid columnconfigure $top.f.graph           0 -weight 1
-    
-    bind $top.f.table.start     <Return>        { ::nextEntry %W }
-    bind $top.f.table.end       <Return>        { ::nextEntry %W }
-    bind $top.f.table.up        <Return>        { ::nextEntry %W }
-    bind $top.f.table.down      <Return>        { ::nextEntry %W }
     
     bind $top.f.onParent.x      <Return>        { ::nextEntry %W }
     bind $top.f.onParent.y      <Return>        { ::nextEntry %W }
@@ -223,9 +162,9 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     bind $top.f.graph.scaleX    <Return>        { ::nextEntry %W }
     bind $top.f.graph.scaleY    <Return>        { ::nextEntry %W }
     
-    focus $top.f.table.start
+    focus $top.f.graph.scaleX
     
-    after 250 "$top.f.table.start selection range 0 end"
+    after 250 "$top.f.graph.scaleX selection range 0 end"
     
     ::ui_canvas::_setGOP $top
         
@@ -234,42 +173,30 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
 
 proc closed {top} {
 
-    variable canvasScaleX
-    variable canvasScaleY
-    variable canvasGOP
-    variable canvasStart
-    variable canvasUp
-    variable canvasEnd
-    variable canvasDown
-    variable canvasWidth
-    variable canvasHeight
     variable canvasX
     variable canvasY
+    variable canvasWidth
+    variable canvasHeight
+    variable canvasGOP
+    variable canvasScaleX
+    variable canvasScaleY
     
     ::ui_canvas::_apply $top
     
-    unset canvasScaleX($top)
-    unset canvasScaleY($top)
-    unset canvasGOP($top)
-    unset canvasStart($top)
-    unset canvasUp($top)
-    unset canvasEnd($top)
-    unset canvasDown($top)
-    unset canvasWidth($top)
-    unset canvasHeight($top)
     unset canvasX($top)
     unset canvasY($top)
+    unset canvasWidth($top)
+    unset canvasHeight($top)
+    unset canvasGOP($top)
+    unset canvasScaleX($top)
+    unset canvasScaleY($top)
     
-    unset canvasScaleX(${top}.old)
-    unset canvasScaleY(${top}.old)
-    unset canvasStart(${top}.old)
-    unset canvasUp(${top}.old)
-    unset canvasEnd(${top}.old)
-    unset canvasDown(${top}.old)
-    unset canvasWidth(${top}.old)
-    unset canvasHeight(${top}.old)
     unset canvasX(${top}.old)
     unset canvasY(${top}.old)
+    unset canvasWidth(${top}.old)
+    unset canvasHeight(${top}.old)
+    unset canvasScaleX(${top}.old)
+    unset canvasScaleY(${top}.old)
     
     ::cancel $top
 }

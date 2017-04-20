@@ -389,18 +389,14 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
         t_rectangle *r    = glist_getGraphGeometry (glist);
         
         t_error err = string_sprintf (t, PD_STRING, 
-                            "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                            bounds_getRight (bounds),
-                            bounds_getBottom (bounds),
-                            glist_isGraphOnParent (glist),
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0, 
+                            "::ui_canvas::show %%s %d %d %d %d %d %g %g\n",
+                            rectangle_getTopLeftX (r),
+                            rectangle_getTopLeftY (r),
                             rectangle_getWidth (r),
                             rectangle_getHeight (r),
-                            rectangle_getTopLeftX (r),
-                            rectangle_getTopLeftY (r));
+                            glist_isGraphOnParent (glist),
+                            bounds_getRight (bounds),
+                            bounds_getBottom (bounds));
 
         PD_ASSERT (!err);
     
