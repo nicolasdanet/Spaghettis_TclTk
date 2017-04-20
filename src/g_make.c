@@ -70,9 +70,7 @@ void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     PD_ASSERT (argc < 3 || atom_getSymbolAtIndex (2, argc, argv) == sym_float);
     
-    if (name != &s_) {
-        garray_makeObject (glist, name, size, flags); 
-    }
+    if (name != &s_) { garray_makeObject (glist, name, size, flags); }
     //
     }
 }
@@ -81,7 +79,9 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
 {
     t_symbol *name = atom_getSymbolAtIndex (0, argc, argv);
     t_float size   = atom_getFloatAtIndex (1, argc, argv);
-    t_float flags  = atom_getFloatAtIndex (2, argc, argv);
+    int save       = (int)atom_getFloatAtIndex (2, argc, argv);
+    int style      = (int)atom_getFloatAtIndex (3, argc, argv);
+    int flags      = (save + (2 * style));
     
     t_float n = PD_MAX (1, size);
     

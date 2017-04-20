@@ -151,7 +151,8 @@ proc _apply {top} {
     ::ui_interface::pdsend "$top _arraydialog \
             [::sanitized [::dollarToHash [::withEmpty $arrayName($top)]]] \
             $arraySize($top) \
-            [expr {$arraySave($top) + (2 * $arrayDraw($top))}]"
+            $arraySave($top) \
+            $arrayDraw($top)"
 }
 
 # ------------------------------------------------------------------------------------------------------------

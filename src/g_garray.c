@@ -649,27 +649,22 @@ void garray_functionProperties (t_garray *x)
 
 void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 3) {
+    if (argc == 4) {
     //
-    t_symbol *name = atom_getSymbol (argv + 0);
-    t_float size   = atom_getFloat (argv + 1);
-    t_float flags  = atom_getFloat (argv + 2);
-    
-    t_symbol *newName = utils_hashToDollar (name);
-    int newSize       = (int)PD_MAX (1.0, size);
-    int save          = (((int)flags & 1) != 0);
-    int newStyle      = (((int)flags & 6) >> 1);
-    int oldStyle      = (int)scalar_getFloat (x->x_scalar, sym_style);
+    t_symbol *name = utils_hashToDollar (atom_getSymbol (argv + 0));
+    int size       = (int)atom_getFloat (argv + 1);
+    int save       = (int)atom_getFloat (argv + 2);
+    int style      = (int)atom_getFloat (argv + 3);
 
-    PD_ASSERT (newSize > 0);
+    PD_ASSERT (size > 0);
     
     t_array *array = garray_getArray (x);
     
-    if (newName != x->x_unexpandedName) {
+    if (name != x->x_unexpandedName) {
     //
-    x->x_unexpandedName = newName;
+    x->x_unexpandedName = name;
     pd_unbind (cast_pd (x), x->x_name);
-    x->x_name = dollar_expandDollarSymbolByEnvironment (newName, x->x_owner);
+    x->x_name = dollar_expandDollarSymbolByEnvironment (name, x->x_owner);
     pd_bind (cast_pd (x), x->x_name);
 
     garray_updateGraphName (x);
@@ -677,11 +672,13 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
 
-    if (newSize == 1) { newStyle = PLOT_POINTS; }
-    if (newStyle != oldStyle) { scalar_setFloat (x->x_scalar, sym_style, (t_float)newStyle); }
-    if (newSize != array_getSize (array)) { garray_resizeWithInteger (x, newSize); }
+    if (size == 1) { style = PLOT_POINTS; }
+    
+    scalar_setFloat (x->x_scalar, sym_style, (t_float)style);
+    
+    if (size != array_getSize (array)) { garray_resizeWithInteger (x, size); }
         
-    garray_updateGraphSize (x, newSize, newStyle); 
+    garray_updateGraphSize (x, size, style); 
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
     glist_setDirty (x->x_owner, 1);
