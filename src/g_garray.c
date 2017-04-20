@@ -158,14 +158,38 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void garray_updateGraphName (t_garray *x)
+{
+    glist_updateGraphOnParent (x->x_owner); glist_setName (x->x_owner, x->x_name);
+}
+
+static void garray_updateGraphBounds (t_garray *x, t_float up, t_float down)
+{
+    t_glist *glist = x->x_owner;
+        
+    t_float a = bounds_getLeft (glist_getBounds (glist));
+    t_float b = up;
+    t_float c = bounds_getRight (glist_getBounds (glist));
+    t_float d = down;
+    
+    t_bounds bounds; t_error err = bounds_set (&bounds, a, b, c, d);
+    
+    PD_ASSERT (glist_isArray (glist));
+        
+    if (!err) { glist_setBounds (glist, &bounds); glist_updateGraphOnParent (glist); }
+    else {
+        PD_BUG;
+    }
+}
+
 static void garray_updateGraphSize (t_garray *x, int size, int style)
 {
     t_glist *glist = x->x_owner;
         
-    if (glist_isArray (glist))  {
-    //
     if (!glist_isLoading (glist)) {
     //
+    PD_ASSERT (glist_isArray (glist));
+    
     t_float a = (t_float)0.0;
     t_float b = bounds_getTop (glist_getBounds (glist));
     t_float c = (t_float)((style == PLOT_POINTS || size == 1) ? size : size - 1);
@@ -179,13 +203,6 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
     }
     //
     }
-    //
-    }
-}
-
-static void garray_updateGraphName (t_garray *x)
-{
-    glist_updateGraphOnParent (x->x_owner); glist_setName (x->x_owner, x->x_name);
 }
 
 void garray_resizeWithInteger (t_garray *x, int n)
@@ -668,8 +685,6 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 
     PD_ASSERT (size > 0);
     
-    post_log ("%f %f", up, down);
-    
     t_array *array = garray_getArray (x);
     
     if (name != x->x_unexpandedName) {
@@ -689,8 +704,9 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     scalar_setFloat (x->x_scalar, sym_style, (t_float)style);
     
     if (size != array_getSize (array)) { garray_resizeWithInteger (x, size); }
-        
-    garray_updateGraphSize (x, size, style); 
+    
+    garray_updateGraphSize (x, size, style);
+    garray_updateGraphBounds (x, up, down);
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
     glist_setDirty (x->x_owner, 1);
