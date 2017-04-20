@@ -35,7 +35,7 @@ array set arraySave {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top name size save style} {
+proc show {top name size start up end down save style} {
 
     ::ui_array::_create $top $name $size $save $style
 }

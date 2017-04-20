@@ -634,11 +634,18 @@ void garray_functionProperties (t_garray *x)
     t_error err = PD_ERROR_NONE;
     int style = scalar_getFloat (x->x_scalar, sym_style);
     t_array *array = garray_getArray (x);
+    t_bounds *bounds = glist_getBounds (x->x_owner);
+    
+    PD_ASSERT (glist_isArray (x->x_owner));
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %d %d\n",
+                "::ui_array::show %%s %s %d %g %g %g %g %d %d\n",
                 utils_dollarToHash (x->x_unexpandedName)->s_name, 
                 array_getSize (array),
+                bounds_getLeft (bounds), 
+                bounds_getTop (bounds), 
+                bounds_getRight (bounds), 
+                bounds_getBottom (bounds),
                 x->x_saveWithParent, 
                 PD_CLAMP (style, PLOT_POLYGONS, PLOT_CURVES));
     
