@@ -166,14 +166,17 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
     //
     if (!glist_isLoading (glist)) {
     //
-    t_atom t[4]; 
+    t_float a = (t_float)0.0;
+    t_float b = bounds_getTop (glist_getBounds (glist));
+    t_float c = (t_float)((style == PLOT_POINTS || size == 1) ? size : size - 1);
+    t_float d = bounds_getBottom (glist_getBounds (glist));
     
-    SET_FLOAT (t + 0, (t_float)0.0);
-    SET_FLOAT (t + 1, bounds_getTop (glist_getBounds (glist)));
-    SET_FLOAT (t + 2, (t_float)((style == PLOT_POINTS || size == 1) ? size : size - 1));
-    SET_FLOAT (t + 3, bounds_getBottom (glist_getBounds (glist)));
+    t_bounds bounds; t_error err = bounds_set (&bounds, a, b, c, d);
     
-    pd_message (cast_pd (glist), sym_bounds, 4, t);
+    if (!err) { glist_setBounds (glist, &bounds); glist_updateGraphOnParent (glist); }
+    else {
+        PD_BUG;
+    }
     //
     }
     //
