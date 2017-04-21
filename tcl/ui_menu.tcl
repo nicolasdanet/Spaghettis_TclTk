@@ -110,7 +110,7 @@ proc configureForText {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
+proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp} {
 
     variable popupX
     variable popupY
@@ -128,6 +128,12 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
         .popup entryconfigure [_ "Open"]            -state normal
     } else {
         .popup entryconfigure [_ "Open"]            -state disabled
+    }
+    
+    if {$hasHelp} {
+        .popup entryconfigure [_ "Help"]            -state normal
+    } else {
+        .popup entryconfigure [_ "Help"]            -state disabled
     }
     
     set xpopup [expr {int([winfo rootx $top.c] + $xcanvas - [$top.c canvasx 0])}]

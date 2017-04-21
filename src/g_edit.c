@@ -233,6 +233,7 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
     int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
+    int canHelp = (y != NULL);
     
     if (y && (pd_class (y) == canvas_class)) {
     //
@@ -242,12 +243,13 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     
     glist_deselectAll (glist);
     
-    sys_vGui ("::ui_menu::showPopup %s %d %d %d %d\n",
+    sys_vGui ("::ui_menu::showPopup %s %d %d %d %d %d\n",
                     glist_getTagAsString (glist), 
                     a, 
                     b, 
                     canProperties, 
-                    canOpen);
+                    canOpen, 
+                    canHelp);
 }
 
 // -----------------------------------------------------------------------------------------------------------
