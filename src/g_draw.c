@@ -46,20 +46,6 @@ void glist_updateWindow (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void glist_updateGraphOnParent (t_glist *glist)
-{  
-    if (glist_isOnScreen (glist)) {
-    //
-    if (glist_hasWindow (glist)) { glist_updateWindow (glist); }
-    else {
-        PD_ASSERT (glist_isParentOnScreen (glist));
-        glist_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0); 
-        glist_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
-    }
-    //
-    }
-}
-
 /* The rectangle drawn onto the parent. */
 
 void glist_updateRectangleOnParent (t_glist *glist)

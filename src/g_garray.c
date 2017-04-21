@@ -44,6 +44,12 @@ static int  garray_behaviorMouse                (t_gobj *, t_glist *, t_mouse *)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void glist_behaviorVisibilityChanged            (t_gobj *, t_glist *, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_class *garray_class;                                      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -146,7 +152,9 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 {
     t_garray *x = (t_garray *)z;
     
-    if (glist_isOnScreen (x->x_owner) && gobj_isVisible (z, glist)) {
+    PD_ASSERT (glist == x->x_owner);
+    
+    if (glist_isOnScreen (x->x_owner) && gobj_isVisible (z, x->x_owner)) {
     //
     garray_behaviorVisibilityChanged (z, x->x_owner, 0); 
     garray_behaviorVisibilityChanged (z, x->x_owner, 1);
@@ -158,52 +166,66 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void garray_updateGraphName (t_garray *x)
-{
-    glist_updateGraphOnParent (x->x_owner); glist_setName (x->x_owner, x->x_name);
+static void garray_updateGraphWindow (t_garray *x)
+{  
+    if (glist_isOnScreen (x->x_owner)) {
+    //
+    if (glist_hasWindow (x->x_owner)) { glist_updateWindow (x->x_owner); }
+    else {
+        PD_ASSERT (glist_isParentOnScreen (x->x_owner));
+        glist_behaviorVisibilityChanged (cast_gobj (x->x_owner), glist_getParent (x->x_owner), 0); 
+        glist_behaviorVisibilityChanged (cast_gobj (x->x_owner), glist_getParent (x->x_owner), 1);
+    }
+    //
+    }
 }
 
-static void garray_updateGraphBounds (t_garray *x, t_float up, t_float down)
+static void garray_updateGraphName (t_garray *x)
 {
-    t_glist *glist = x->x_owner;
-        
-    t_float a = bounds_getLeft (glist_getBounds (glist));
+    glist_setName (x->x_owner, x->x_name);
+}
+
+static void garray_updateGraphRange (t_garray *x, t_float up, t_float down)
+{
+    t_float a = bounds_getLeft (glist_getBounds (x->x_owner));
     t_float b = up;
-    t_float c = bounds_getRight (glist_getBounds (glist));
+    t_float c = bounds_getRight (glist_getBounds (x->x_owner));
     t_float d = down;
     
-    t_bounds bounds; t_error err = bounds_set (&bounds, a, b, c, d);
+    t_bounds bounds; 
     
-    PD_ASSERT (glist_isArray (glist));
-        
-    if (!err) { glist_setBounds (glist, &bounds); glist_updateGraphOnParent (glist); }
-    else {
-        PD_BUG;
-    }
+    t_error err = bounds_set (&bounds, a, b, c, d);
+    
+    PD_ASSERT (glist_isArray (x->x_owner));
+    PD_ASSERT (!err);
+    
+    if (!err) { glist_setBounds (x->x_owner, &bounds); }
 }
 
 static void garray_updateGraphSize (t_garray *x, int size, int style)
 {
-    t_glist *glist = x->x_owner;
-        
-    if (!glist_isLoading (glist)) {
+    if (!glist_isLoading (x->x_owner)) {
     //
-    PD_ASSERT (glist_isArray (glist));
-    
     t_float a = (t_float)0.0;
-    t_float b = bounds_getTop (glist_getBounds (glist));
+    t_float b = bounds_getTop (glist_getBounds (x->x_owner));
     t_float c = (t_float)((style == PLOT_POINTS || size == 1) ? size : size - 1);
-    t_float d = bounds_getBottom (glist_getBounds (glist));
+    t_float d = bounds_getBottom (glist_getBounds (x->x_owner));
     
-    t_bounds bounds; t_error err = bounds_set (&bounds, a, b, c, d);
+    t_bounds bounds; 
     
-    if (!err) { glist_setBounds (glist, &bounds); glist_updateGraphOnParent (glist); }
-    else {
-        PD_BUG;
-    }
+    t_error err = bounds_set (&bounds, a, b, c, d);
+    
+    PD_ASSERT (glist_isArray (x->x_owner));
+    PD_ASSERT (!err);
+    
+    if (!err) { glist_setBounds (x->x_owner, &bounds); }
     //
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void garray_resizeWithInteger (t_garray *x, int n)
 {
@@ -213,6 +235,7 @@ void garray_resizeWithInteger (t_garray *x, int n)
     PD_ASSERT (n > 0);
     
     garray_updateGraphSize (x, PD_MAX (1, n), style);
+    garray_updateGraphWindow (x);
     array_resizeAndRedraw (array, x->x_owner, PD_MAX (1, n));
     
     if (x->x_isUsedInDSP) { dsp_update(); }
@@ -423,15 +446,6 @@ void garray_redraw (t_garray *x)
     defer_addJob ((void *)x, x->x_owner, garray_drawJob);
 }
 
-int garray_isSingle (t_glist *glist)       /* Note that legacy patches might contain several arrays. */
-{
-    if (glist->gl_graphics && !glist->gl_graphics->g_next) {
-        if (pd_class (glist->gl_graphics) == garray_class) { return 1; }
-    }
-    
-    return 0;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -506,6 +520,7 @@ static void garray_rename (t_garray *x, t_symbol *s)
     pd_bind (cast_pd (x), x->x_name);
     garray_redraw (x);
     garray_updateGraphName (x);
+    garray_updateGraphWindow (x);
 }
 
 static void garray_read (t_garray *x, t_symbol *name)
@@ -701,7 +716,8 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     if (size != array_getSize (array)) { garray_resizeWithInteger (x, size); }
     
     garray_updateGraphSize (x, size, style);
-    garray_updateGraphBounds (x, up, down);
+    garray_updateGraphRange (x, up, down);
+    garray_updateGraphWindow (x);
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
     glist_setDirty (x->x_owner, 1);
@@ -763,6 +779,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
     garray_redraw (x);
     garray_updateGraphSize (x, n, style);
     garray_updateGraphName (x);
+    garray_updateGraphWindow (x);
     dsp_update();
     //
     }

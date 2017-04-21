@@ -242,8 +242,6 @@ t_glist     *garray_getView                 (t_garray *x);
 t_scalar    *garray_getScalar               (t_garray *x);
 t_symbol    *garray_getName                 (t_garray *x);
 
-int         garray_isSingle                 (t_glist *glist);
-
 int         garray_getSize                  (t_garray *x);         
 int         garray_getData                  (t_garray *x, int *size, t_word **w);
 void        garray_setDataAtIndex           (t_garray *x, int i, t_float f);
