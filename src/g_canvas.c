@@ -203,23 +203,6 @@ static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void canvas_bounds (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc == 4) {
-    //
-    if (glist_isArray (glist)) {
-    //
-    t_bounds bounds; t_error err = bounds_setByAtoms (&bounds, argc, argv);
-    
-    if (!err) { glist_setBounds (glist, &bounds); glist_updateGraphOnParent (glist); return; }
-    //
-    }
-    //
-    }
-    
-    error_invalid (sym_graph, sym_bounds); 
-}
-
 static void canvas_open (t_glist *glist)
 {
     glist_windowOpen (glist);
@@ -495,7 +478,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_mouseDown,             sym_mouse,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_window,                sym_window,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_bounds,                sym_bounds,             A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_save,                  sym_save,               A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,             A_DEFFLOAT, A_NULL);

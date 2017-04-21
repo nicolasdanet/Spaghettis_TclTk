@@ -576,11 +576,6 @@ static void garray_resize (t_garray *x, t_float f)
     garray_resizeWithInteger (x, PD_MAX (1, (int)f));
 }
 
-static void garray_bounds (t_garray *x, t_symbol *s, int argc, t_atom *argv)
-{
-    pd_message (cast_pd (x->x_owner), s, argc, argv);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -811,7 +806,6 @@ void garray_setup (void)
     class_addMethod (c, (t_method)garray_read,          sym_read,           A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_write,         sym_write,          A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)garray_bounds,        sym_bounds,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)garray_fromDialog,    sym__arraydialog,   A_GIMME, A_NULL);
         
     #if PD_WITH_LEGACY

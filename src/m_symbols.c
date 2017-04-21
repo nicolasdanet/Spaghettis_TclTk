@@ -195,7 +195,6 @@ t_symbol *sym_bindlist;
 t_symbol *sym_biquad__tilde__;
 t_symbol *sym_block__tilde__;
 t_symbol *sym_bng;
-t_symbol *sym_bounds;
 t_symbol *sym_bp__tilde__;
 t_symbol *sym_bundle;
 t_symbol *sym_buttonsnumber;
@@ -774,7 +773,6 @@ void symbols_initialize (void)
     sym_biquad__tilde__                         = gensym ("biquad~");
     sym_block__tilde__                          = gensym ("block~");
     sym_bng                                     = gensym ("bng");
-    sym_bounds                                  = gensym ("bounds");
     sym_bp__tilde__                             = gensym ("bp~");
     sym_bundle                                  = gensym ("bundle");
     sym_buttonsnumber                           = gensym ("buttonsnumber");

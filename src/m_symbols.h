@@ -195,7 +195,6 @@ extern t_symbol *sym_bindlist;
 extern t_symbol *sym_biquad__tilde__;
 extern t_symbol *sym_block__tilde__;
 extern t_symbol *sym_bng;
-extern t_symbol *sym_bounds;
 extern t_symbol *sym_bp__tilde__;
 extern t_symbol *sym_bundle;
 extern t_symbol *sym_buttonsnumber;
