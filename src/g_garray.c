@@ -221,10 +221,10 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void garray_setWithSumOfFourierComponents (t_garray *x,
+static void garray_setWithSineWavesProceed (t_garray *x,
     int numberOfPoints,
     int numberOfSineWaves,
-    t_float *valuesOfSineWaves,
+    t_float *amplitudeOfSineWaves,
     int isSine)
 {
     double phase, phaseIncrement;
@@ -248,11 +248,11 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     
     if (isSine) {
         for (j = 0, fj = phase; j < numberOfSineWaves; j++, fj += phase) { 
-            sum += (double)valuesOfSineWaves[j] * sin (fj);
+            sum += (double)amplitudeOfSineWaves[j] * sin (fj);
         }
     } else {
         for (j = 0, fj = 0; j < numberOfSineWaves; j++, fj += phase) {
-            sum += (double)valuesOfSineWaves[j] * cos (fj);
+            sum += (double)amplitudeOfSineWaves[j] * cos (fj);
         }
     }
     
@@ -269,15 +269,16 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
     //
     t_float *t = NULL;
     int i;
-    int numberOfPoints = atom_getFloatAtIndex (0, argc, argv);
+    int n = atom_getFloatAtIndex (0, argc, argv);
     
-    argv++, argc--;
+    argv++;
+    argc--;
     
     t = (t_float *)PD_MEMORY_GET (sizeof (t_float) * argc);
     
     for (i = 0; i < argc; i++) { t[i] = atom_getFloatAtIndex (i, argc, argv); }
     
-    garray_setWithSumOfFourierComponents (x, numberOfPoints, argc, t, isSine);
+    garray_setWithSineWavesProceed (x, n, argc, t, isSine);
     
     PD_MEMORY_FREE (t);
     //
@@ -406,9 +407,10 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc > 1) { 
     //
-    int i, j = atom_getFloat (argv);
     t_array *array = garray_getArray (x);
     
+    int i, j = atom_getFloat (argv);
+        
     argc--;
     argv++;
 
