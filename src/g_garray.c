@@ -26,12 +26,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GARRAY_MAXIMUM_CHUNK    1000
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void garray_behaviorGetRectangle         (t_gobj *, t_glist *, t_rectangle *);
 static void garray_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
 static void garray_behaviorSelected             (t_gobj *, t_glist *, int);
@@ -219,34 +213,6 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
     PD_ASSERT (!err);
     
     if (!err) { glist_setBounds (x->x_owner, &bounds); }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void garray_serialize (t_garray *x, t_buffer *b)
-{
-    if (x->x_saveWithParent) {
-    //
-    int n = 0;
-    t_array *array = garray_getArray (x);
-    
-    while (n < array_getSize (array)) {
-    //
-    int i, chunk = array_getSize (array) - n;
-    
-    if (chunk > GARRAY_MAXIMUM_CHUNK) { chunk = GARRAY_MAXIMUM_CHUNK; }
-    
-    buffer_vAppend (b, "si", sym___hash__A, n);
-    for (i = 0; i < chunk; i++) { buffer_vAppend (b, "f", GARRAY_AT (n + i)); }
-    buffer_appendSemicolon (b);
-        
-    n += chunk;
-    //
-    }
     //
     }
 }
@@ -640,16 +606,22 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     int style = scalar_getFloat (x->x_scalar, sym_style);    
     int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
     t_array *array = garray_getArray (x);
-        
+    int i, n = array_getSize (array);
+    
     buffer_vAppend (b, "sssisi;",
         sym___hash__X,
         sym_array,
         x->x_unexpandedName,
-        array_getSize (array),
+        n,
         &s_float,
         flags);
         
-    garray_serialize (x, b);
+    if (x->x_saveWithParent) {
+    
+        buffer_vAppend (b, "si", sym___hash__A, 0);
+        for (i = 0; i < n; i++) { buffer_vAppend (b, "f", GARRAY_AT (i)); }
+        buffer_appendSemicolon (b);
+    }
 }
 
 void garray_functionProperties (t_garray *x)
