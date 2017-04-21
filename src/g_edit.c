@@ -241,6 +241,8 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     //
     }
     
+    if (glist_isAbstraction (glist)) { canProperties = 0; }
+    
     glist_deselectAll (glist);
     
     sys_vGui ("::ui_menu::showPopup %s %d %d %d %d %d\n",
