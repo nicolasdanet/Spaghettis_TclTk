@@ -279,6 +279,7 @@ t_symbol *sym_fromsymbol;
 t_symbol *sym_fswap;
 t_symbol *sym_ftom;
 t_symbol *sym_ftom__tilde__;
+t_symbol *sym_garray;
 t_symbol *sym_gatom;
 t_symbol *sym_get;
 t_symbol *sym_getposition;
@@ -857,6 +858,7 @@ void symbols_initialize (void)
     sym_fswap                                   = gensym ("fswap");
     sym_ftom                                    = gensym ("ftom");
     sym_ftom__tilde__                           = gensym ("ftom~");
+    sym_garray                                  = gensym ("garray");
     sym_gatom                                   = gensym ("gatom");
     sym_get                                     = gensym ("get");
     sym_getposition                             = gensym ("getposition");

@@ -1,0 +1,7 @@
+#N canvas 341 294 450 300 12;
+#N canvas 0 22 450 300 Patch 0;
+#X array toto 10 float 1;
+#A 0 0 0 0 0 0 0 0 0 0 0;
+#X coords 0 1 9 -1 225 150 1 0 0;
+#X restore 79 65 graph;
+#X coords 0 0 1 1 225 150 0 0 0;

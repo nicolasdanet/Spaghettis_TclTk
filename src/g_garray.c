@@ -774,7 +774,7 @@ void garray_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_array,
+    c = class_new (sym_garray,
         NULL,
         (t_method)garray_free,
         sizeof (t_garray),

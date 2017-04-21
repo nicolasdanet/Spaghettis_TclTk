@@ -279,6 +279,7 @@ extern t_symbol *sym_fromsymbol;
 extern t_symbol *sym_fswap;
 extern t_symbol *sym_ftom;
 extern t_symbol *sym_ftom__tilde__;
+extern t_symbol *sym_garray;
 extern t_symbol *sym_gatom;
 extern t_symbol *sym_get;
 extern t_symbol *sym_getposition;

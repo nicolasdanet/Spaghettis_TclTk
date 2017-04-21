@@ -186,17 +186,21 @@ void file_openHelpPatch (t_gobj *y)
     char name[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
     
-    if (pd_class (y) == canvas_class && glist_isTop (cast_glist (y))) {
+    if (pd_class (y) == canvas_class && glist_isAbstraction (cast_glist (y))) {
         if (!(err = (buffer_size (object_getBuffer (cast_object (y))) < 1))) {
             atom_toString (buffer_atoms (object_getBuffer (cast_object (y))), name, PD_STRING);
             directory = environment_getDirectoryAsString (glist_getEnvironment (cast_glist (y)));
         }
+    
+    } else if (pd_class (y) == canvas_class && glist_isArray (cast_glist (y))) {
+        err = string_copy (name, PD_STRING, sym_garray->s_name);
+        directory = "";
         
     } else {
         err = string_copy (name, PD_STRING, class_getHelpNameAsString (pd_class (y)));
         directory = class_getExternalDirectoryAsString (pd_class (y));
     }
-
+    
     if (!err) { file_openHelp (directory, name); }
 }
 
