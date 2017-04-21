@@ -251,8 +251,7 @@ t_float     garray_getAmplitude             (t_garray *x);
 void        garray_setAsUsedInDSP           (t_garray *x);
 void        garray_setSaveWithParent        (t_garray *x, int savedWithParent);
 void        garray_redraw                   (t_garray *x);
-void        garray_resizeWithInteger        (t_garray *x, int n);
-void        garray_saveContentsToBuffer     (t_garray *x, t_buffer *b);
+void        garray_resize                   (t_garray *x, t_float f);
 void        garray_functionProperties       (t_garray *x);
 
 // -----------------------------------------------------------------------------------------------------------

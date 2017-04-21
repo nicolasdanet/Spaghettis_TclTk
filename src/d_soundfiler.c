@@ -99,7 +99,7 @@ static t_error soundfiler_readResizeIfNecessary (int f,
 
     for (i = 0; i < channelsRequired; i++) {
         int size;
-        garray_resizeWithInteger (a[i], dataSizeInFrames);
+        garray_resize (a[i], (t_float)dataSizeInFrames);
         garray_setSaveWithParent (a[i], 0);
         garray_getData (a[i], &size, &w[i]);
         PD_ASSERT (size == dataSizeInFrames);

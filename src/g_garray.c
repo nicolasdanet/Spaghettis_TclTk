@@ -227,21 +227,7 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void garray_resizeWithInteger (t_garray *x, int n)
-{
-    int style = scalar_getFloat (x->x_scalar, sym_style);
-    t_array *array = garray_getArray (x);
-    
-    PD_ASSERT (n > 0);
-    
-    garray_updateGraphSize (x, PD_MAX (1, n), style);
-    garray_updateGraphWindow (x);
-    array_resizeAndRedraw (array, x->x_owner, PD_MAX (1, n));
-    
-    if (x->x_isUsedInDSP) { dsp_update(); }
-}
-
-void garray_saveContentsToBuffer (t_garray *x, t_buffer *b)
+static void garray_serialize (t_garray *x, t_buffer *b)
 {
     if (x->x_saveWithParent) {
     //
@@ -284,7 +270,7 @@ static void garray_setWithSumOfFourierComponents (t_garray *x,
     
     if (!PD_IS_POWER_2 (numberOfPoints)) { numberOfPoints = (int)PD_NEXT_POWER_2 (numberOfPoints); }
     
-    garray_resizeWithInteger (x, numberOfPoints + 3);
+    garray_resize (x, (t_float)(numberOfPoints + 3));
     
     phaseIncrement = PD_TWO_PI / numberOfPoints;
     
@@ -586,9 +572,17 @@ static void garray_write (t_garray *x, t_symbol *name)
     }
 }
 
-static void garray_resize (t_garray *x, t_float f)
+void garray_resize (t_garray *x, t_float f)
 {
-    garray_resizeWithInteger (x, PD_MAX (1, (int)f));
+    t_array *array = garray_getArray (x);
+    int n = PD_MAX (1, (int)f);
+    int style = scalar_getFloat (x->x_scalar, sym_style);
+    
+    garray_updateGraphSize (x, n, style);
+    garray_updateGraphWindow (x);
+    array_resizeAndRedraw (array, x->x_owner, n);
+    
+    if (x->x_isUsedInDSP) { dsp_update(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -655,7 +649,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
         &s_float,
         flags);
         
-    garray_saveContentsToBuffer (x, b);
+    garray_serialize (x, b);
 }
 
 void garray_functionProperties (t_garray *x)
@@ -713,7 +707,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     scalar_setFloat (x->x_scalar, sym_style, (t_float)style);
     
-    if (size != array_getSize (array)) { garray_resizeWithInteger (x, size); }
+    if (size != array_getSize (array)) { garray_resize (x, (t_float)size); }
     
     garray_updateGraphSize (x, size, style);
     garray_updateGraphRange (x, up, down);

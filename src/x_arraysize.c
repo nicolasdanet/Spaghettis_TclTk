@@ -51,7 +51,7 @@ static void arraysize_float (t_arraysize *x, t_float f)
     if (ARRAYCLIENT_ASPOINTER (&x->x_arrayclient)) {
         array_resizeAndRedraw (a, arrayclient_fetchView (&x->x_arrayclient), n);
     } else {
-        garray_resizeWithInteger (arrayclient_fetchOwnerIfName (&x->x_arrayclient), n);
+        garray_resize (arrayclient_fetchOwnerIfName (&x->x_arrayclient), (t_float)n);
     }
     //
     } else { error_undefined (sym_array__space__size, sym_array); }
