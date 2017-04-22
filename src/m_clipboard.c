@@ -73,6 +73,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     int n = (++x->cb_count) * CLIPBOARD_PASTE_OFFSET;
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
+    int dirty = 0;
     
     glist_deselectAll (glist);
     
@@ -83,7 +84,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     snippet_substractOffsetToLine (x->cb_buffer, alreadyThere);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (i >= alreadyThere) { glist_objectSelect (glist, y); }
+        if (i >= alreadyThere) { glist_objectSelect (glist, y); dirty = 1; }
         i++;
     }
     
@@ -96,7 +97,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
         }
     }
     
-    glist_setDirty (glist, 1);
+    if (dirty) { glist_setDirty (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
