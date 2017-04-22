@@ -553,22 +553,32 @@ static void vu_functionProperties (t_gobj *z, t_glist *owner)
 
 static void vu_fromDialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == IEM_DIALOG_SIZE) {
+    int isDirty = 0;
+    
+    PD_ASSERT (argc == IEM_DIALOG_SIZE);
+    
+    int t0 = x->x_gui.iem_width;
+    int t1 = x->x_gui.iem_height;
+    
+    {
     //
     int width     = (int)atom_getFloatAtIndex (0, argc, argv);
     int thickness = (int)atom_getFloatAtIndex (1, argc, argv);
     
-    iemgui_fromDialog (cast_iem (x), argc, argv);
+    isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
     
     x->x_gui.iem_canSend = 0;    /* Force values that could be misguidedly set. */
     
     x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
     
     vu_setHeight (x, (thickness + 1) * IEM_VUMETER_STEPS);
-    
-    iemgui_boxChanged ((void *)x);
     //
     }
+    
+    isDirty |= (t0 != x->x_gui.iem_width);
+    isDirty |= (t1 != x->x_gui.iem_height);
+    
+    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
