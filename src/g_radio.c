@@ -580,7 +580,14 @@ static void radio_functionProperties (t_gobj *z, t_glist *owner)
 
 static void radio_fromDialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == IEM_DIALOG_SIZE) {
+    int isDirty = 0;
+    
+    PD_ASSERT (argc == IEM_DIALOG_SIZE);
+    
+    int t0 = x->x_gui.iem_width;
+    int t1 = x->x_numberOfButtons;
+    
+    {
     //
     int size            = (int)atom_getFloatAtIndex (0, argc, argv);
     int changed         = (int)atom_getFloatAtIndex (4, argc, argv);
@@ -589,18 +596,20 @@ static void radio_fromDialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
     
-    iemgui_fromDialog (cast_iem (x), argc, argv);
+    isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
     
     numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
     
     x->x_changed = (changed != 0);
 
     if (x->x_numberOfButtons != numberOfButtons) { radio_buttonsNumber (x, (t_float)numberOfButtons); } 
-    else {
-        iemgui_boxChanged ((void *)x);
-    }
     //
     }
+    
+    isDirty |= (t0 != x->x_gui.iem_width);
+    isDirty |= (t1 != x->x_numberOfButtons);
+    
+    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
