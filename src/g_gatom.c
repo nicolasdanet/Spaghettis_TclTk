@@ -403,7 +403,21 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
 
 static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 8) {
+    int isDirty  = 0;
+    
+    t_float  t1  = x->a_lowRange;
+    t_float  t2  = x->a_highRange;
+    int      t3  = x->a_position;
+    int      t4  = object_getWidth (cast_object (x));
+    t_symbol *t5 = x->a_send;
+    t_symbol *t6 = x->a_receive;
+    t_symbol *t7 = x->a_label;
+    
+    PD_ASSERT (argc == 8);
+    
+    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
+    
+    {
     //
     t_float width           = atom_getFloatAtIndex (0, argc, argv);
     t_float lowRange        = atom_getFloatAtIndex (1, argc, argv);
@@ -412,8 +426,6 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     t_symbol *symReceive    = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
     t_symbol *symLabel      = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
     int position            = (int)atom_getFloatAtIndex (7, argc, argv);
-
-    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
 
     if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
     
@@ -432,12 +444,20 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
     gatom_set (x, NULL, 1, argv + 3);
-
-    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
-    
-    glist_setDirty (x->a_owner, 1);
     //
     }
+    
+    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
+    
+    isDirty |= (t1 != x->a_lowRange);
+    isDirty |= (t2 != x->a_highRange);
+    isDirty |= (t3 != x->a_position);
+    isDirty |= (t4 != object_getWidth (cast_object (x)));
+    isDirty |= (t5 != x->a_send);
+    isDirty |= (t6 != x->a_receive);
+    isDirty |= (t7 != x->a_label);
+    
+    if (isDirty) { glist_setDirty (x->a_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
