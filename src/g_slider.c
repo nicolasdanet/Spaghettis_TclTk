@@ -622,7 +622,18 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner)
 
 static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == IEM_DIALOG_SIZE) {
+    int isDirty = 0;
+    
+    PD_ASSERT (argc == IEM_DIALOG_SIZE);
+    
+    int t0    = x->x_isLogarithmic;
+    int t1    = x->x_isSteadyOnClick;
+    int t2    = x->x_gui.iem_width;
+    int t3    = x->x_gui.iem_height;
+    double t4 = x->x_minimum;
+    double t5 = x->x_maximum;
+        
+    {
     //
     int width         = (int)atom_getFloatAtIndex (0, argc, argv);
     int height        = (int)atom_getFloatAtIndex (1, argc, argv);
@@ -631,7 +642,7 @@ static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     int isLogarithmic = (int)atom_getFloatAtIndex (4, argc, argv);
     int isSteady      = (int)atom_getFloatAtIndex (16, argc, argv);
 
-    iemgui_fromDialog (cast_iem (x), argc, argv);
+    isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
     
     x->x_isLogarithmic   = (isLogarithmic != 0);
     x->x_isSteadyOnClick = (isSteady != 0);
@@ -641,10 +652,17 @@ static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     slider_setRange (x, minimum, maximum);      /* Ditto. */
     
     x->x_floatValue = slider_getValue (x);
-    
-    iemgui_boxChanged ((void *)x);
     //
     }
+    
+    isDirty |= (t0 != x->x_isLogarithmic);
+    isDirty |= (t1 != x->x_isSteadyOnClick);
+    isDirty |= (t2 != x->x_gui.iem_width);
+    isDirty |= (t3 != x->x_gui.iem_height);
+    isDirty |= (t4 != x->x_minimum);
+    isDirty |= (t5 != x->x_maximum);
+    
+    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
