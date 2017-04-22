@@ -424,18 +424,16 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
 {
     int isDirty   = 0;
     
-    int t1        = iem->iem_canSend;
-    int t2        = iem->iem_canReceive;
-    int t3        = iem->iem_loadbang;
-    int t4        = iem->iem_labelX;
-    int t5        = iem->iem_labelY;
-    t_fontsize t6 = iem->iem_fontSize;
-    t_color t7    = iem->iem_colorForeground;
-    t_color t8    = iem->iem_colorBackground;
-    t_color t9    = iem->iem_colorLabel;
-    t_symbol *t10 = iem->iem_send;
-    t_symbol *t11 = iem->iem_receive;
-    t_symbol *t12 = iem->iem_label;
+    int t1        = iem->iem_loadbang;
+    int t2        = iem->iem_labelX;
+    int t3        = iem->iem_labelY;
+    t_fontsize t4 = iem->iem_fontSize;
+    t_color t5    = iem->iem_colorForeground;
+    t_color t6    = iem->iem_colorBackground;
+    t_color t7    = iem->iem_colorLabel;
+    t_symbol *t8  = iem->iem_send;
+    t_symbol *t9  = iem->iem_receive;
+    t_symbol *t10 = iem->iem_label;
     
     {
     //
@@ -472,7 +470,7 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
 
     iem->iem_canSend            = canSend;
     iem->iem_canReceive         = canReceive;
-    iem->iem_loadbang           = (loadbang != 0);
+    iem->iem_loadbang           = (loadbang == 1);
     iem->iem_labelX             = labelX;
     iem->iem_labelY             = labelY;
     iem->iem_fontSize           = PD_MAX (fontSize, IEM_MINIMUM_FONTSIZE);
@@ -486,18 +484,16 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     //
     }
     
-    isDirty |= (t1  != iem->iem_canSend);
-    isDirty |= (t2  != iem->iem_canReceive);
-    isDirty |= (t3  != iem->iem_loadbang);
-    isDirty |= (t4  != iem->iem_labelX);
-    isDirty |= (t5  != iem->iem_labelY);
-    isDirty |= (t6  != iem->iem_fontSize);
-    isDirty |= (t7  != iem->iem_colorForeground);
-    isDirty |= (t8  != iem->iem_colorBackground);
-    isDirty |= (t9  != iem->iem_colorLabel);
-    isDirty |= (t10 != iem->iem_send);
-    isDirty |= (t11 != iem->iem_receive);
-    isDirty |= (t12 != iem->iem_label);
+    isDirty |= (t1  != iem->iem_loadbang);
+    isDirty |= (t2  != iem->iem_labelX);
+    isDirty |= (t3  != iem->iem_labelY);
+    isDirty |= (t4  != iem->iem_fontSize);
+    isDirty |= (t5  != iem->iem_colorForeground);
+    isDirty |= (t6  != iem->iem_colorBackground);
+    isDirty |= (t7  != iem->iem_colorLabel);
+    isDirty |= (t8  != iem->iem_send);
+    isDirty |= (t9  != iem->iem_receive);
+    isDirty |= (t10 != iem->iem_label);
     
     return isDirty;
 }
