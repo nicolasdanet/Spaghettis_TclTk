@@ -420,7 +420,7 @@ void iemgui_serialize (t_iem *iem, t_iemnames *n, t_iemcolors *c)
     iemgui_serializeColors (iem, c);
 }
 
-void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
+int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
 {
     int isDirty   = 0;
     
@@ -499,7 +499,7 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     isDirty |= (t11 != iem->iem_receive);
     isDirty |= (t12 != iem->iem_label);
     
-    if (isDirty) { glist_setDirty (iem->iem_owner, 1); }
+    return isDirty;
 }
 
 // -----------------------------------------------------------------------------------------------------------

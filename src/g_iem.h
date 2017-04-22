@@ -230,7 +230,7 @@ void        iemgui_behaviorVisibilityChanged    (t_gobj *z, t_glist *glist, int 
 void        iemgui_behaviorDeleted              (t_gobj *z, t_glist *glist);
 
 void        iemgui_serialize                    (t_iem *iem, t_iemnames *n, t_iemcolors *c);
-void        iemgui_fromDialog                   (t_iem *iem, int argc, t_atom *argv);
+int         iemgui_fromDialog                   (t_iem *iem, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
