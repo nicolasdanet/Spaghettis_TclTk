@@ -405,7 +405,14 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner)
 
 static void toggle_fromDialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == IEM_DIALOG_SIZE) {
+    int isDirty = 0;
+    
+    PD_ASSERT (argc == IEM_DIALOG_SIZE);
+    
+    int t0     = x->x_gui.iem_width;
+    t_float t1 = x->x_nonZero;
+    
+    {
     //
     int size = (int)atom_getFloatAtIndex (0, argc, argv);
     t_float nonZero = atom_getFloatAtIndex (2, argc, argv);
@@ -413,17 +420,20 @@ static void toggle_fromDialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
     
-    iemgui_fromDialog (cast_iem (x), argc, argv);
+    isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
         
     toggle_nonZero (x, nonZero);
     
     if (x->x_state != 0.0) { 
         toggle_set (x, x->x_nonZero); 
     }
-    
-    iemgui_boxChanged ((void *)x);
     //
     }
+    
+    isDirty |= (t0 != x->x_gui.iem_width);
+    isDirty |= (t1 != x->x_nonZero);
+    
+    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
