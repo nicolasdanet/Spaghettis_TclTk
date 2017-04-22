@@ -302,6 +302,13 @@ static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_ato
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    int isDirty = 0;
+    t_rectangle t1; t_bounds t2; int t3;
+    
+    rectangle_setCopy (&t1, glist_getGraphGeometry (glist)); 
+    bounds_setCopy (&t2, glist_getBounds (glist));
+    t3 = glist_isGraphOnParent (glist);
+    
     PD_ASSERT (argc == 7);
     PD_ASSERT (!glist_isArray (glist));
     
@@ -325,11 +332,16 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     bounds_set (&bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     
     glist_setGraphGeometry (glist, &r, &bounds, isGOP);
-    glist_setDirty (glist, 1);
     
     if (glist_hasWindow (glist)) { glist_updateWindow (glist); }
     //
     }
+    
+    isDirty |= !rectangle_areEquals (&t1, glist_getGraphGeometry (glist));
+    isDirty |= !bounds_areEquals (&t2, glist_getBounds (glist)); 
+    isDirty |= (t3 != glist_isGraphOnParent (glist));
+    
+    if (isDirty) { glist_setDirty (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

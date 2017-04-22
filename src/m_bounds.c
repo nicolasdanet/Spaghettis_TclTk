@@ -50,5 +50,15 @@ void bounds_setCopy (t_bounds *b, t_bounds *toCopy)
     PD_ASSERT (!err);
 }
 
+int bounds_areEquals (t_bounds *b1, t_bounds *b2)
+{
+    if (b1->b_left        != b2->b_left)   { return 0; }
+    else if (b1->b_top    != b2->b_top)    { return 0; }
+    else if (b1->b_right  != b2->b_right)  { return 0; }
+    else if (b1->b_bottom != b2->b_bottom) { return 0; }
+    
+    return 1;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
