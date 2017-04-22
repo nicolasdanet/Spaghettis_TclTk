@@ -276,47 +276,22 @@ proc create {top type
         grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky ew -columnspan 2
     }
     
-    set row -1
-        
-    if {$nameColor != -1}           {
     
-        ttk::label $top.f.colors.nameLabel              {*}[::styleLabel]   -text [_ "Label"]
-        
-        label $top.f.colors.name                        -background [::integerToColor $nameColor] \
-                                                        -width $::width(small)
-        
-        grid $top.f.colors.nameLabel                    -row [incr row] -column 0 -sticky ew
-        grid $top.f.colors.name                         -row $row       -column 1 -sticky ew -pady 2
+    ttk::label $top.f.colors.nameLabel                  {*}[::styleLabel]   -text [_ "Label"]
     
-        bind $top.f.colors.name <Button>                "::ui_iem::_chooseNameColor $top %W"
-    }
+    label $top.f.colors.name                            -background [::integerToColor $nameColor] \
+                                                            -width $::width(small)
+    
+    ttk::label $top.f.colors.backgroundLabel            {*}[::styleLabel]   -text [_ "Background"]
+    
+    label $top.f.colors.background                      -background [::integerToColor $backgroundColor] \
+                                                            -width $::width(small)
 
-    if {$backgroundColor != -1}     {
+    ttk::label $top.f.colors.frontLabel                 {*}[::styleLabel]   -text [_ "Foreground"]
     
-        ttk::label $top.f.colors.backgroundLabel        {*}[::styleLabel]   -text [_ "Background"]
-        
-        label $top.f.colors.background                  -background [::integerToColor $backgroundColor] \
-                                                        -width $::width(small)
-                                                    
-        grid $top.f.colors.backgroundLabel              -row [incr row] -column 0 -sticky ew
-        grid $top.f.colors.background                   -row $row       -column 1 -sticky ew -pady 2
-        
-        bind $top.f.colors.background <Button>          "::ui_iem::_chooseBackgroundColor $top %W"
-    }
-    
-    if {$frontColor != -1}          {
-    
-        ttk::label $top.f.colors.frontLabel             {*}[::styleLabel]   -text [_ "Foreground"]
-    
-        label $top.f.colors.front                       -background [::integerToColor $frontColor] \
-                                                        -width $::width(small)
-    
-        grid $top.f.colors.frontLabel                   -row [incr row] -column 0 -sticky ew
-        grid $top.f.colors.front                        -row $row       -column 1 -sticky ew -pady 2
-
-        bind $top.f.colors.front <Button>               "::ui_iem::_chooseFrontColor $top %W"
-    }
-    
+    label $top.f.colors.front                           -background [::integerToColor $frontColor] \
+                                                            -width $::width(small)
+                                                        
     ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
                                                             -text [_ "Name"]
     ttk::entry $top.f.label.name                        {*}[::styleEntry] \
@@ -341,58 +316,56 @@ proc create {top type
                                                             -textvariable ::ui_iem::iemNameDeltaY($top) \
                                                             -width $::width(small)
 
-    set row -1
-    
-    grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky ew
-    grid $top.f.label.name                              -row $row       -column 1 -sticky ew -columnspan 2
-    grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky ew
-    grid $top.f.label.nameFontSize                      -row $row       -column 2 -sticky ew
-    grid $top.f.label.nameDeltaXLabel                   -row [incr row] -column 0 -sticky ew
-    grid $top.f.label.nameDeltaX                        -row $row       -column 2 -sticky ew
-    grid $top.f.label.nameDeltaYLabel                   -row [incr row] -column 0 -sticky ew
-    grid $top.f.label.nameDeltaY                        -row $row       -column 2 -sticky ew
+    ttk::label $top.f.label.sendLabel                   {*}[::styleLabel] \
+                                                            -text [_ "Send"]
+    ttk::entry $top.f.label.send                        {*}[::styleEntry] \
+                                                            -textvariable ::ui_iem::iemSend($top) \
+                                                            -width $::width(medium)
+    ttk::label $top.f.label.receiveLabel                {*}[::styleLabel] \
+                                                            -text [_ "Receive"]
+    ttk::entry $top.f.label.receive                     {*}[::styleEntry] \
+                                                            -textvariable ::ui_iem::iemReceive($top) \
+                                                            -width $::width(medium)
 
+    grid $top.f.colors.nameLabel                        -row 0 -column 0 -sticky ew
+    grid $top.f.colors.name                             -row 0 -column 1 -sticky ew -pady 2                                               
+    grid $top.f.colors.backgroundLabel                  -row 1 -column 0 -sticky ew
+    grid $top.f.colors.background                       -row 1 -column 1 -sticky ew -pady 2
+    grid $top.f.colors.frontLabel                       -row 2 -column 0 -sticky ew
+    grid $top.f.colors.front                            -row 2 -column 1 -sticky ew -pady 2
+
+    grid $top.f.label.nameLabel                         -row 0 -column 0 -sticky ew
+    grid $top.f.label.name                              -row 0 -column 1 -sticky ew -columnspan 2
+    grid $top.f.label.nameFontSizeLabel                 -row 1 -column 0 -sticky ew
+    grid $top.f.label.nameFontSize                      -row 1 -column 2 -sticky ew
+    grid $top.f.label.nameDeltaXLabel                   -row 2 -column 0 -sticky ew
+    grid $top.f.label.nameDeltaX                        -row 2 -column 2 -sticky ew
+    grid $top.f.label.nameDeltaYLabel                   -row 3 -column 0 -sticky ew
+    grid $top.f.label.nameDeltaY                        -row 3 -column 2 -sticky ew
+    grid $top.f.label.sendLabel                         -row 4 -column 0 -sticky ew
+    grid $top.f.label.send                              -row 4 -column 1 -sticky ew -columnspan 2
+    grid $top.f.label.receiveLabel                      -row 5 -column 0 -sticky ew
+    grid $top.f.label.receive                           -row 5 -column 1 -sticky ew -columnspan 2
+    
+    bind $top.f.colors.name         <Button>            "::ui_iem::_chooseNameColor $top %W"
+    bind $top.f.colors.background   <Button>            "::ui_iem::_chooseBackgroundColor $top %W"
+    bind $top.f.colors.front        <Button>            "::ui_iem::_chooseFrontColor $top %W"
+    
     bind $top.f.label.name          <Return>            { ::nextEntry %W }
     bind $top.f.label.nameFontSize  <Return>            { ::nextEntry %W }
     bind $top.f.label.nameDeltaX    <Return>            { ::nextEntry %W }
     bind $top.f.label.nameDeltaY    <Return>            { ::nextEntry %W }
+    bind $top.f.label.send          <Return>            { ::nextEntry %W }
+    bind $top.f.label.receive       <Return>            { ::nextEntry %W }
     
-    if {$send ne "nosndno"}         {
-    
-        ttk::label $top.f.label.sendLabel               {*}[::styleLabel] \
-                                                            -text [_ "Send"]
-        ttk::entry $top.f.label.send                    {*}[::styleEntry] \
-                                                            -textvariable ::ui_iem::iemSend($top) \
-                                                            -width $::width(medium)
-                                                            
-        grid $top.f.label.sendLabel                     -row [incr row] -column 0 -sticky ew
-        grid $top.f.label.send                          -row $row       -column 1 -sticky ew -columnspan 2
-        
-        bind $top.f.label.send <Return>                 { ::nextEntry %W }
-    }
-    
-    if {$receive ne "norcvno"}      {
-    
-        ttk::label $top.f.label.receiveLabel            {*}[::styleLabel] \
-                                                            -text [_ "Receive"]
-        ttk::entry $top.f.label.receive                 {*}[::styleEntry] \
-                                                            -textvariable ::ui_iem::iemReceive($top) \
-                                                            -width $::width(medium)
-        
-        grid $top.f.label.receiveLabel                  -row [incr row] -column 0 -sticky ew
-        grid $top.f.label.receive                       -row $row       -column 1 -sticky ew -columnspan 2
-        
-        bind $top.f.label.receive <Return>              { ::nextEntry %W }
-    }
-    
-    grid columnconfigure $top.f.properties  0 -weight 3
-    grid columnconfigure $top.f.properties  1 -weight 1
-    grid columnconfigure $top.f.properties  2 -weight 0
-    grid columnconfigure $top.f.colors      0 -weight 1
-    grid columnconfigure $top.f.colors      1 -weight 0
-    grid columnconfigure $top.f.label       0 -weight 3
-    grid columnconfigure $top.f.label       1 -weight 1
-    grid columnconfigure $top.f.label       2 -weight 0
+    grid columnconfigure $top.f.properties              0 -weight 3
+    grid columnconfigure $top.f.properties              1 -weight 1
+    grid columnconfigure $top.f.properties              2 -weight 0
+    grid columnconfigure $top.f.colors                  0 -weight 1
+    grid columnconfigure $top.f.colors                  1 -weight 0
+    grid columnconfigure $top.f.label                   0 -weight 3
+    grid columnconfigure $top.f.label                   1 -weight 1
+    grid columnconfigure $top.f.label                   2 -weight 0
     
     wm protocol $top WM_DELETE_WINDOW   "::ui_iem::closed $top"
 }
