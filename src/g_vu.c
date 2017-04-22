@@ -541,11 +541,11 @@ static void vu_functionProperties (t_gobj *z, t_glist *owner)
             " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
             (x->x_gui.iem_height / IEM_VUMETER_STEPS) - 1, IEM_VUMETER_THICKNESS_MINIMUM - 1,
-            "nosndno", names.n_unexpandedReceive->s_name,                               /* No send. */
+            names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
             names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
-            x->x_gui.iem_colorBackground, -1, x->x_gui.iem_colorLabel);                 /* No foreground. */
-            
+            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel);
+
     PD_ASSERT (!err);
     
     stub_new (cast_pd (x), (void *)x, t);
@@ -566,8 +566,6 @@ static void vu_fromDialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
     int thickness = (int)atom_getFloatAtIndex (1, argc, argv);
     
     isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
-    
-    x->x_gui.iem_canSend = 0;    /* Force values that could be misguidedly set. */
     
     x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
     
