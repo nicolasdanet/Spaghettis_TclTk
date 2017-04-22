@@ -314,13 +314,13 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     {
     //
-    int a           = (int)atom_getFloat (argv + 0);
-    int b           = (int)atom_getFloat (argv + 1);
-    int width       = (int)atom_getFloat (argv + 2);
-    int height      = (int)atom_getFloat (argv + 3);
-    int isGOP       = (int)atom_getFloat (argv + 4);
-    t_float scaleX  = atom_getFloat (argv + 5);
-    t_float scaleY  = atom_getFloat (argv + 6);
+    int a           = (int)atom_getFloatAtIndex (0, argc, argv);
+    int b           = (int)atom_getFloatAtIndex (1, argc, argv);
+    int width       = (int)atom_getFloatAtIndex (2, argc, argv);
+    int height      = (int)atom_getFloatAtIndex (3, argc, argv);
+    int isGOP       = (int)atom_getFloatAtIndex (4, argc, argv);
+    t_float scaleX  = atom_getFloatAtIndex (5, argc, argv);
+    t_float scaleY  = atom_getFloatAtIndex (6, argc, argv);
     
     t_rectangle r; t_bounds bounds;
     

@@ -652,14 +652,26 @@ void garray_functionProperties (t_garray *x)
 
 void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 6) {
+    int isDirty = 0;
+    
+    PD_ASSERT (argc == 6);
+    
+    t_symbol *t1 = x->x_name;
+    int t2       = x->x_saveWithParent;
+    int t3       = garray_getSize (x);
+    t_float t4   = scalar_getFloat (x->x_scalar, sym_style);
+    t_bounds t5;
+
+    bounds_setCopy (&t5, glist_getBounds (x->x_owner));
+    
+    {
     //
-    t_symbol *name = utils_hashToDollar (atom_getSymbol (argv + 0));
-    int size       = (int)atom_getFloat (argv + 1);
-    t_float up     = atom_getFloat (argv + 2);
-    t_float down   = atom_getFloat (argv + 3);
-    int save       = (int)atom_getFloat (argv + 4);
-    int style      = (int)atom_getFloat (argv + 5);
+    t_symbol *name = utils_hashToDollar (atom_getSymbolAtIndex (0, argc, argv));
+    int size       = (int)atom_getFloatAtIndex (1, argc, argv);
+    t_float up     = atom_getFloatAtIndex (2, argc, argv);
+    t_float down   = atom_getFloatAtIndex (3, argc, argv);
+    int save       = (int)atom_getFloatAtIndex (4, argc, argv);
+    int style      = (int)atom_getFloatAtIndex (5, argc, argv);
 
     PD_ASSERT (size > 0);
     
@@ -688,9 +700,16 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     garray_updateGraphWindow (x);
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
-    glist_setDirty (x->x_owner, 1);
     //
     }
+    
+    isDirty |= (t1 != x->x_name);
+    isDirty |= (t2 != x->x_saveWithParent);
+    isDirty |= (t3 != garray_getSize (x));
+    isDirty |= (t4 != scalar_getFloat (x->x_scalar, sym_style));
+    isDirty |= !bounds_areEquals (&t5, glist_getBounds (x->x_owner));
+    
+    if (isDirty) { glist_setDirty (x->x_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

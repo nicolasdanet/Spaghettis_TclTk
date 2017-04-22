@@ -405,10 +405,10 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty  = 0;
     
-    t_float  t1  = x->a_lowRange;
-    t_float  t2  = x->a_highRange;
-    int      t3  = x->a_position;
-    int      t4  = object_getWidth (cast_object (x));
+    t_float t1   = x->a_lowRange;
+    t_float t2   = x->a_highRange;
+    int t3       = x->a_position;
+    int t4       = object_getWidth (cast_object (x));
     t_symbol *t5 = x->a_send;
     t_symbol *t6 = x->a_receive;
     t_symbol *t7 = x->a_label;
