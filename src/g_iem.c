@@ -422,6 +422,23 @@ void iemgui_serialize (t_iem *iem, t_iemnames *n, t_iemcolors *c)
 
 void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
 {
+    int isDirty   = 0;
+    
+    int t1        = iem->iem_canSend;
+    int t2        = iem->iem_canReceive;
+    int t3        = iem->iem_loadbang;
+    int t4        = iem->iem_labelX;
+    int t5        = iem->iem_labelY;
+    t_fontsize t6 = iem->iem_fontSize;
+    t_color t7    = iem->iem_colorForeground;
+    t_color t8    = iem->iem_colorBackground;
+    t_color t9    = iem->iem_colorLabel;
+    t_symbol *t10 = iem->iem_send;
+    t_symbol *t11 = iem->iem_receive;
+    t_symbol *t12 = iem->iem_label;
+    
+    {
+    //
     int loadbang                = (int)atom_getFloatAtIndex (5,  argc, argv);
     int labelX                  = (int)atom_getFloatAtIndex (10, argc, argv);
     int labelY                  = (int)atom_getFloatAtIndex (11, argc, argv);
@@ -466,8 +483,23 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     iem->iem_label              = s3;
     
     iemgui_checkSendReceiveLoop (iem);
+    //
+    }
     
-    glist_setDirty (iem->iem_owner, 1);
+    isDirty |= (t1  != iem->iem_canSend);
+    isDirty |= (t2  != iem->iem_canReceive);
+    isDirty |= (t3  != iem->iem_loadbang);
+    isDirty |= (t4  != iem->iem_labelX);
+    isDirty |= (t5  != iem->iem_labelY);
+    isDirty |= (t6  != iem->iem_fontSize);
+    isDirty |= (t7  != iem->iem_colorForeground);
+    isDirty |= (t8  != iem->iem_colorBackground);
+    isDirty |= (t9  != iem->iem_colorLabel);
+    isDirty |= (t10 != iem->iem_send);
+    isDirty |= (t11 != iem->iem_receive);
+    isDirty |= (t12 != iem->iem_label);
+    
+    if (isDirty) { glist_setDirty (iem->iem_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

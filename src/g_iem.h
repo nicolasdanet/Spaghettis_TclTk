@@ -101,12 +101,12 @@ typedef struct _iem {
     t_object    iem_obj;                        /* MUST be the first. */
     t_glist     *iem_owner;
     t_iemfn     iem_fnDraw;
-    char        iem_fontStyle;                  /* Unused but kept for compatibility. */
-    char        iem_canSend;
-    char        iem_canReceive;
-    char        iem_loadbang;
-    char        iem_isSelected;
-    char        iem_goThrough;
+    int         iem_fontStyle;                  /* Unused but kept for compatibility. */
+    int         iem_canSend;
+    int         iem_canReceive;
+    int         iem_loadbang;
+    int         iem_isSelected;
+    int         iem_goThrough;
     int         iem_width;
     int         iem_height;
     int         iem_labelX;
