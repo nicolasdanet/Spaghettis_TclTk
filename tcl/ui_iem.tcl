@@ -142,6 +142,8 @@ proc create {top type
     set iemOption1(${top}.old)      $option1
     set iemOption2(${top}.old)      $option2
     set iemExtra(${top}.old)        $extra
+    set iemSend(${top}.old)         [::hashToDollar [::parseEmpty $send]]
+    set iemReceive(${top}.old)      [::hashToDollar [::parseEmpty $receive]]
     set iemNameDeltaX(${top}.old)   $nameDeltaX
     set iemNameDeltaY(${top}.old)   $nameDeltaY
     set iemNameFontSize(${top}.old) $nameFontSize
@@ -429,6 +431,8 @@ proc closed {top} {
     unset iemOption1(${top}.old)
     unset iemOption2(${top}.old)
     unset iemExtra(${top}.old)
+    unset iemSend(${top}.old)
+    unset iemReceive(${top}.old)
     unset iemNameDeltaX(${top}.old)
     unset iemNameDeltaY(${top}.old)
     unset iemNameFontSize(${top}.old)
@@ -465,6 +469,7 @@ proc _apply {top} {
     _forceOptions   $top
     _forceDelta     $top
     _forceFont      $top
+    _forceNames     $top
     
     ::ui_interface::pdsend "$top _iemdialog \
             $iemWidth($top) \
@@ -569,6 +574,15 @@ proc _forceFont {top} {
     
     set iemNameFontSize($top) [::ifInteger $iemNameFontSize($top) $iemNameFontSize(${top}.old)]
     set iemNameFontSize($top) [::tcl::mathfunc::max $iemNameFontSize($top) 4]
+}
+
+proc _forceNames {top} {
+
+    variable iemSend
+    variable iemReceive
+
+    set iemSend($top)    [::ifNotNumber $iemSend($top) $iemSend(${top}.old)]
+    set iemReceive($top) [::ifNotNumber $iemReceive($top) $iemReceive(${top}.old)]
 }
 
 # ------------------------------------------------------------------------------------------------------------
