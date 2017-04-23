@@ -91,15 +91,12 @@ void canvas_saveAs (t_glist *glist, t_float destroy)
 
 void canvas_save (t_glist *glist, t_float destroy)
 {
-    t_glist *root = glist_getTop (glist);
+    t_glist *root  = glist_getTop (glist);
+    t_symbol *name = glist_getName (root);
     
-    if (glist_getName (root) == &s_) { canvas_saveAs (root, destroy); }
+    if (name == &s_ || string_startWith (name->s_name, "Untitled")) { canvas_saveAs (root, destroy); }
     else {
-    
-        t_symbol *name      = glist_getName (root);
-        t_symbol *directory = environment_getDirectory (glist_getEnvironment (root));
-        
-        canvas_saveProceed (root, name, directory, destroy);
+        canvas_saveProceed (root, name, environment_getDirectory (glist_getEnvironment (root)), destroy);
     }
 }
 
