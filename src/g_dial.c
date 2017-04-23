@@ -743,28 +743,26 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     double maximum      = IEM_DIAL_DEFAULT_MAXIMUM;
     double value        = IEM_DIAL_DEFAULT_MINIMUM;
     
-    if (argc >= 17) {
+    if (argc < 17) { iemgui_deserializeDefault (cast_iem (x)); }
+    else {
+    //
+    digits          = (int)atom_getFloatAtIndex (0,  argc, argv);
+    height          = (int)atom_getFloatAtIndex (1,  argc, argv);
+    minimum         = (double)atom_getFloatAtIndex (2, argc, argv);
+    maximum         = (double)atom_getFloatAtIndex (3, argc, argv);
+    isLogarithmic   = (int)atom_getFloatAtIndex (4,  argc, argv);
+    labelX          = (int)atom_getFloatAtIndex (9,  argc, argv);
+    labelY          = (int)atom_getFloatAtIndex (10, argc, argv);
+    labelFontSize   = (int)atom_getFloatAtIndex (12, argc, argv);
+    value           = atom_getFloatAtIndex (16, argc, argv);
     
-        digits          = (int)atom_getFloatAtIndex (0,  argc, argv);
-        height          = (int)atom_getFloatAtIndex (1,  argc, argv);
-        minimum         = (double)atom_getFloatAtIndex (2, argc, argv);
-        maximum         = (double)atom_getFloatAtIndex (3, argc, argv);
-        isLogarithmic   = (int)atom_getFloatAtIndex (4,  argc, argv);
-        labelX          = (int)atom_getFloatAtIndex (9,  argc, argv);
-        labelY          = (int)atom_getFloatAtIndex (10, argc, argv);
-        labelFontSize   = (int)atom_getFloatAtIndex (12, argc, argv);
-        value           = atom_getFloatAtIndex (16, argc, argv);
-        
-        if (argc == 18) { steps = (int)atom_getFloatAtIndex (17, argc, argv); }
-    
-        iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (5, argc, argv));
-        iemgui_deserializeNames (cast_iem (x), 6, argv);
-        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (11, argc, argv));
-        iemgui_deserializeColors (cast_iem (x), argv + 13, argv + 14, argv + 15);
-        
-    } else {
-        iemgui_deserializeNames (cast_iem (x), 6, NULL);
-        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
+    if (argc == 18) { steps = (int)atom_getFloatAtIndex (17, argc, argv); }
+
+    iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (5, argc, argv));
+    iemgui_deserializeNames (cast_iem (x), 6, argv);
+    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (11, argc, argv));
+    iemgui_deserializeColors (cast_iem (x), argv + 13, argv + 14, argv + 15);
+    //
     }
     
     x->x_gui.iem_owner      = instance_contextGetCurrent();

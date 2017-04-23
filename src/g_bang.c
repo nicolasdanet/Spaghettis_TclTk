@@ -455,23 +455,21 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     int labelY          = IEM_DEFAULT_LABELY_NEXT;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     
-    if (argc == 14) {
+    if (argc != 14) { iemgui_deserializeDefault (cast_iem (x)); }
+    else {
+    //
+    size            = (int)atom_getFloatAtIndex (0,  argc, argv);
+    flashHold       = (int)atom_getFloatAtIndex (1,  argc, argv);
+    flashBreak      = (int)atom_getFloatAtIndex (2,  argc, argv);
+    labelX          = (int)atom_getFloatAtIndex (7,  argc, argv);
+    labelY          = (int)atom_getFloatAtIndex (8,  argc, argv);
+    labelFontSize   = (int)atom_getFloatAtIndex (10, argc, argv);
     
-        size            = (int)atom_getFloatAtIndex (0,  argc, argv);
-        flashHold       = (int)atom_getFloatAtIndex (1,  argc, argv);
-        flashBreak      = (int)atom_getFloatAtIndex (2,  argc, argv);
-        labelX          = (int)atom_getFloatAtIndex (7,  argc, argv);
-        labelY          = (int)atom_getFloatAtIndex (8,  argc, argv);
-        labelFontSize   = (int)atom_getFloatAtIndex (10, argc, argv);
-        
-        iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (3, argc, argv));
-        iemgui_deserializeNames (cast_iem (x), 4, argv);
-        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (9, argc, argv));
-        iemgui_deserializeColors (cast_iem (x), argv + 11, argv + 12, argv + 13);
-        
-    } else {
-        iemgui_deserializeNames (cast_iem (x), 4, NULL);
-        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
+    iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (3, argc, argv));
+    iemgui_deserializeNames (cast_iem (x), 4, argv);
+    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (9, argc, argv));
+    iemgui_deserializeColors (cast_iem (x), argv + 11, argv + 12, argv + 13);
+    //
     }
 
     x->x_gui.iem_owner      = instance_contextGetCurrent();

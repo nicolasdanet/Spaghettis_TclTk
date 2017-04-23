@@ -104,9 +104,8 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, int isNumbe
     if (!*s) {
         t_error err = PD_ERROR;
         t_buffer *b = object_getBuffer (cast_object (iem));
-        if (i < buffer_size (b)) {
+        if (i >= 0 && i < buffer_size (b)) {
             char t[PD_STRING] = { 0 };
-            PD_ASSERT (i >= 0);
             t_atom *a = buffer_atomAtIndex (b, i);
             if (isNumberAllowed || !IS_FLOAT (a)) {
                 if (!(err = atom_toString (a, t, PD_STRING))) { *s = gensym (t); }
@@ -198,6 +197,12 @@ void iemgui_deserializeNames (t_iem *iem, int i, t_atom *argv)
     
     iem->iem_cacheIndex = i;    /* Cache this index for later lookup. */
 }
+
+void iemgui_deserializeDefault (t_iem *iem)
+{
+    iemgui_deserializeNames (iem, -PD_INT_MAX, NULL);
+    iemgui_deserializeColors (iem, NULL, NULL, NULL);
+}   
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

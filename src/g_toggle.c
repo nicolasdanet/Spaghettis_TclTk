@@ -451,23 +451,21 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     t_float state       = (t_float)0.0;
     t_float nonZero     = (t_float)1.0;
 
-    if (argc >= 13) {
+    if (argc < 13) { iemgui_deserializeDefault (cast_iem (x)); }
+    else {
+    //
+    size            = (int)atom_getFloatAtIndex (0, argc,  argv);
+    labelX          = (int)atom_getFloatAtIndex (5, argc,  argv);
+    labelY          = (int)atom_getFloatAtIndex (6, argc,  argv);
+    labelFontSize   = (int)atom_getFloatAtIndex (8, argc,  argv);
+    state           = (t_float)atom_getFloatAtIndex (12, argc, argv);
+    nonZero         = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
     
-        size            = (int)atom_getFloatAtIndex (0, argc,  argv);
-        labelX          = (int)atom_getFloatAtIndex (5, argc,  argv);
-        labelY          = (int)atom_getFloatAtIndex (6, argc,  argv);
-        labelFontSize   = (int)atom_getFloatAtIndex (8, argc,  argv);
-        state           = (t_float)atom_getFloatAtIndex (12, argc, argv);
-        nonZero         = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
-        
-        iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (1, argc, argv));
-        iemgui_deserializeNames (cast_iem (x), 2, argv);
-        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (7, argc, argv));
-        iemgui_deserializeColors (cast_iem (x), argv + 9, argv + 10, argv + 11);
-        
-    } else {
-        iemgui_deserializeNames (cast_iem (x), 2, NULL);
-        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
+    iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (1, argc, argv));
+    iemgui_deserializeNames (cast_iem (x), 2, argv);
+    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (7, argc, argv));
+    iemgui_deserializeColors (cast_iem (x), argv + 9, argv + 10, argv + 11);
+    //
     }
     
     x->x_gui.iem_owner      = instance_contextGetCurrent();

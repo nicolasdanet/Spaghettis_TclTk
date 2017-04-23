@@ -594,25 +594,23 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int hasScale        = 0;
 
-    if (argc >= 11) {
+    if (argc < 11) { iemgui_deserializeDefault (cast_iem (x)); }
+    else {
+    //
+    width           = (int)atom_getFloatAtIndex (0,  argc, argv);
+    height          = (int)atom_getFloatAtIndex (1,  argc, argv);
+    labelX          = (int)atom_getFloatAtIndex (4,  argc, argv);
+    labelY          = (int)atom_getFloatAtIndex (5,  argc, argv);
+    labelFontSize   = (int)atom_getFloatAtIndex (7,  argc, argv);
+    hasScale        = (int)atom_getFloatAtIndex (10, argc, argv);
     
-        width           = (int)atom_getFloatAtIndex (0,  argc, argv);
-        height          = (int)atom_getFloatAtIndex (1,  argc, argv);
-        labelX          = (int)atom_getFloatAtIndex (4,  argc, argv);
-        labelY          = (int)atom_getFloatAtIndex (5,  argc, argv);
-        labelFontSize   = (int)atom_getFloatAtIndex (7,  argc, argv);
-        hasScale        = (int)atom_getFloatAtIndex (10, argc, argv);
-        
-        /* Note that the height value is pitiably attribute to the send symbol. */
-        /* Must be kept for backward compatibility. */
-        
-        iemgui_deserializeNames (cast_iem (x), 1, argv);
-        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (6, argc, argv));
-        iemgui_deserializeColors (cast_iem (x), argv + 8, NULL, argv + 9);
-        
-    } else {
-        iemgui_deserializeNames (cast_iem (x), 1, NULL);
-        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
+    /* Note that the value of height is pitiably attribute to the send symbol. */
+    /* Must be kept for backward compatibility. */
+    
+    iemgui_deserializeNames (cast_iem (x), 1, argv);
+    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (6, argc, argv));
+    iemgui_deserializeColors (cast_iem (x), argv + 8, NULL, argv + 9);
+    //
     }
 
     x->x_gui.iem_owner      = instance_contextGetCurrent();

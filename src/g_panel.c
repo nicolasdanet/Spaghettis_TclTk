@@ -359,24 +359,22 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     int labelY          = IEM_DEFAULT_LABELY_TOP;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
         
-    if (argc >= 12) {
+    if (argc < 12) { iemgui_deserializeDefault (cast_iem (x)); }
+    else {
+    //
+    gripSize        = (int)atom_getFloatAtIndex (0, argc, argv);
+    panelWidth      = (int)atom_getFloatAtIndex (1, argc, argv);
+    panelHeight     = (int)atom_getFloatAtIndex (2, argc, argv);
+    labelX          = (int)atom_getFloatAtIndex (6, argc, argv);
+    labelY          = (int)atom_getFloatAtIndex (7, argc, argv);
+    labelFontSize   = (int)atom_getFloatAtIndex (9, argc, argv);
     
-        gripSize        = (int)atom_getFloatAtIndex (0, argc, argv);
-        panelWidth      = (int)atom_getFloatAtIndex (1, argc, argv);
-        panelHeight     = (int)atom_getFloatAtIndex (2, argc, argv);
-        labelX          = (int)atom_getFloatAtIndex (6, argc, argv);
-        labelY          = (int)atom_getFloatAtIndex (7, argc, argv);
-        labelFontSize   = (int)atom_getFloatAtIndex (9, argc, argv);
-        
-        iemgui_deserializeNames (cast_iem (x), 3, argv);
-        iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (8, argc, argv));
-        iemgui_deserializeColors (cast_iem (x), argv + 10, NULL, argv + 11);
-                
-    } else {
-        iemgui_deserializeNames (cast_iem (x), 3, NULL);
-        iemgui_deserializeColors (cast_iem (x), NULL, NULL, NULL);
+    iemgui_deserializeNames (cast_iem (x), 3, argv);
+    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (8, argc, argv));
+    iemgui_deserializeColors (cast_iem (x), argv + 10, NULL, argv + 11);
+    //
     }
-
+    
     x->x_gui.iem_owner      = instance_contextGetCurrent();
     x->x_gui.iem_fnDraw     = (t_iemfn)panel_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_empty()) ? 0 : 1;
