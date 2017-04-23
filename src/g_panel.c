@@ -314,7 +314,7 @@ static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty = 0;
     
-    PD_ASSERT (argc == IEM_DIALOG_SIZE) 
+    PD_ASSERT (argc == IEM_DIALOG_SIZE);
     
     int t0 = x->x_gui.iem_width;
     int t1 = x->x_gui.iem_height;
