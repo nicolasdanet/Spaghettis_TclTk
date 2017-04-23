@@ -231,6 +231,8 @@ void glist_setName (t_glist *glist, t_symbol *name)
     glist_bind (glist);
     
     glist_updateTitle (glist);
+    
+    if (glist_isTop (glist)) { environment_setFileName (glist_getEnvironment (glist), name, NULL); }
 }
 
 void glist_setDirty (t_glist *glist, int n)

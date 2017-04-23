@@ -54,6 +54,7 @@ static void canvas_saveProceed (t_glist *glist, t_symbol *name, t_symbol *direct
     if (buffer_write (b, name, directory)) { error_failsToWrite (name); }
     else {
         post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
+        environment_setDirectory (glist_getEnvironment (glist), directory);
         glist_setDirty (glist, 0);
         if (destroy) {
             canvas_close (glist, (t_float)(destroy == QUITTING ? CONTINUE : DESTROY)); 
@@ -70,11 +71,15 @@ static void canvas_saveProceed (t_glist *glist, t_symbol *name, t_symbol *direct
 void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc > 2) {
+    //
+    t_glist *root       = glist_getTop (glist);
+    t_symbol *fileName  = atom_getSymbol (argv + 0);
+    t_symbol *directory = atom_getSymbol (argv + 1);
     
-        t_symbol *name      = atom_getSymbol (argv + 0);
-        t_symbol *directory = atom_getSymbol (argv + 1);
-        
-        canvas_saveProceed (glist, name, directory, (int)atom_getFloat (argv + 2));
+    if (fileName != glist_getName (root)) { glist_rename (root, 1, argv); }
+    
+    canvas_saveProceed (root, fileName, directory, (int)atom_getFloat (argv + 2));
+    //
     }
 }
 
@@ -84,19 +89,19 @@ void canvas_saveAs (t_glist *glist, t_float destroy)
     
     sys_vGui ("::ui_file::saveAs %s {%s} {%s} %d\n",     // --
                     glist_getTagAsString (root),
-                    glist_getName (root)->s_name,
+                    environment_getFileNameAsString (glist_getEnvironment (root)),
                     environment_getDirectoryAsString (glist_getEnvironment (root)), 
                     (int)destroy);
 }
 
 void canvas_save (t_glist *glist, t_float destroy)
 {
-    t_glist *root  = glist_getTop (glist);
-    t_symbol *name = glist_getName (root);
+    t_glist *root = glist_getTop (glist);
+    t_symbol *fileName = environment_getFileName (glist_getEnvironment (root));
     
-    if (name == &s_ || string_startWith (name->s_name, "Untitled")) { canvas_saveAs (root, destroy); }
+    if (fileName == &s_ || string_startWith (fileName->s_name, "Untitled")) { canvas_saveAs (root, destroy); }
     else {
-        canvas_saveProceed (root, name, environment_getDirectory (glist_getEnvironment (root)), destroy);
+        canvas_saveProceed (root, fileName, environment_getDirectory (glist_getEnvironment (root)), destroy);
     }
 }
 

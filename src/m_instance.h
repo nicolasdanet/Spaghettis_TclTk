@@ -295,10 +295,13 @@ void clipboard_paste        (t_clipboard *x, t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void environment_free       (t_environment *e);
+void environment_free           (t_environment *e);
+void environment_setDirectory   (t_environment *e, t_symbol *directory);
+void environment_setFileName    (t_environment *e, t_symbol *name, const char *extension);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static inline int environment_getDollarZero (t_environment *e)
 {
@@ -331,6 +334,11 @@ static inline t_symbol *environment_getFileName (t_environment *e)
     else {
         return sym_Patch;
     }
+}
+
+static inline char *environment_getFileNameAsString (t_environment *e)
+{
+    return environment_getFileName (e)->s_name;
 }
 
 // -----------------------------------------------------------------------------------------------------------

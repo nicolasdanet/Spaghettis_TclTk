@@ -97,3 +97,40 @@ void environment_free (t_environment *e)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void environment_setDirectory (t_environment *e, t_symbol *directory)
+{
+    e->env_directory = directory;
+}
+
+static void environment_setFileNameWithExtension (t_environment *e, t_symbol *name, const char *extension)
+{
+    char t[PD_STRING] = { 0 };
+    t_error err = PD_ERROR_NONE;
+    
+    if (!extension) {
+    //
+    if (string_endWith (e->env_fileName->s_name, PD_HELP)) { extension = PD_HELP; }
+    else {
+        extension = PD_PATCH;
+    }
+    //
+    }
+    
+    err = string_sprintf (t, PD_STRING, "%s%s", name->s_name, extension);
+    
+    if (!err) { e->env_fileName = gensym (t); }
+}
+
+void environment_setFileName (t_environment *e, t_symbol *name, const char *extension)
+{
+    if (string_endWith (name->s_name, PD_PATCH) || string_endWith (name->s_name, PD_HELP)) {
+        e->env_fileName = name;
+    } else {
+        environment_setFileNameWithExtension (e, name, extension);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
