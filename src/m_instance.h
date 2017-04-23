@@ -286,22 +286,26 @@ static inline void instance_setNewestObject (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void clipboard_init         (t_clipboard *x);
-void clipboard_destroy      (t_clipboard *x);
-void clipboard_copy         (t_clipboard *x, t_glist *glist);
-void clipboard_paste        (t_clipboard *x, t_glist *glist);
+void clipboard_init             (t_clipboard *x);
+void clipboard_destroy          (t_clipboard *x);
+void clipboard_copy             (t_clipboard *x, t_glist *glist);
+void clipboard_paste            (t_clipboard *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void environment_free           (t_environment *e);
-void environment_setDirectory   (t_environment *e, t_symbol *directory);
 void environment_setFileName    (t_environment *e, t_symbol *name, const char *extension);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+static inline void environment_setDirectory (t_environment *e, t_symbol *directory)
+{
+    e->env_directory = directory;
+}
 
 static inline int environment_getDollarZero (t_environment *e)
 {

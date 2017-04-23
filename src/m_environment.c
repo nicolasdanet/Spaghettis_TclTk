@@ -99,11 +99,6 @@ void environment_free (t_environment *e)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void environment_setDirectory (t_environment *e, t_symbol *directory)
-{
-    e->env_directory = directory;
-}
-
 static void environment_setFileNameWithExtension (t_environment *e, t_symbol *name, const char *extension)
 {
     char t[PD_STRING] = { 0 };
