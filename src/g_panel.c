@@ -312,23 +312,36 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner)
 
 static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == IEM_DIALOG_SIZE) {
+    int isDirty = 0;
+    
+    PD_ASSERT (argc == IEM_DIALOG_SIZE) 
+    
+    int t0 = x->x_gui.iem_width;
+    int t1 = x->x_gui.iem_height;
+    int t2 = x->x_panelWidth;
+    int t3 = x->x_panelHeight;
+    
+    {
     //
     int gripSize    = (int)atom_getFloatAtIndex (0, argc, argv);
     int panelWidth  = (int)atom_getFloatAtIndex (2, argc, argv);
     int panelHeight = (int)atom_getFloatAtIndex (3, argc, argv);
     
-    iemgui_fromDialog (cast_iem (x), argc, argv);
+    isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
 
     x->x_gui.iem_width  = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
     x->x_gui.iem_height = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
     x->x_panelWidth     = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
     x->x_panelHeight    = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
-    
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
     //
     }
+    
+    isDirty |= (t0 != x->x_gui.iem_width);
+    isDirty |= (t1 != x->x_gui.iem_height);
+    isDirty |= (t2 != x->x_panelWidth);
+    isDirty |= (t3 != x->x_panelHeight);
+    
+    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

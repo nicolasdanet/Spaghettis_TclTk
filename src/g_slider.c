@@ -706,9 +706,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
         labelFontSize   = (int)atom_getFloatAtIndex (12, argc, argv);
         position        = atom_getFloatAtIndex (16, argc, argv);
         
-        if (argc == 18 && IS_FLOAT (argv + 17)) {
-            isSteady = (int)atom_getFloatAtIndex (17, argc, argv);
-        }
+        if (argc == 18) { isSteady = (int)atom_getFloatAtIndex (17, argc, argv); }
         
         iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (5, argc, argv));
         iemgui_deserializeNames (cast_iem (x), 6, argv);
