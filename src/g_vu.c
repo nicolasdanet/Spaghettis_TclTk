@@ -603,7 +603,8 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         labelFontSize   = (int)atom_getFloatAtIndex (7,  argc, argv);
         hasScale        = (int)atom_getFloatAtIndex (10, argc, argv);
         
-        /* Note that a fake float value is pitiably attribute to the send symbol. */
+        /* Note that the height value is pitiably attribute to the send symbol. */
+        /* Must be kept for backward compatibility. */
         
         iemgui_deserializeNames (cast_iem (x), 1, argv);
         iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (6, argc, argv));

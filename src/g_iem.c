@@ -74,15 +74,20 @@ static t_color iemgui_colorDecode (t_atom *a)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* For convenience floats are loaded as integers (mainly in order to enumerate things). */
+/* For convenience, for labels only, a float is loaded as integers (mainly in order to enumerate things). */
+/* It is prohibited for send and receive. */
 
-static t_symbol *iemgui_fetchName (int i, t_atom *argv)
+static t_symbol *iemgui_fetchName (int i, t_atom *argv, int isNumberAllowed)
 {
     if (IS_SYMBOL (argv + i))     { return atom_getSymbol (argv + i); }
     else if (IS_FLOAT (argv + i)) {
+    //
+    if (isNumberAllowed) {
         char t[PD_STRING] = { 0 };
         string_sprintf (t, PD_STRING, "%d", (int)atom_getFloat (argv + i));
         return gensym (t);
+    }
+    //
     }
 
     return utils_empty();
@@ -94,7 +99,7 @@ static t_symbol *iemgui_fetchName (int i, t_atom *argv)
 /* Unexpanded names cannot be fetch at instantiation due to already substituted arguments. */
 /* Consequently it must be done by looking up again the object's text buffer. */
 
-static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *fallback)
+static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, int isNumberAllowed, t_symbol *fallback)
 {
     if (!*s) {
         t_error err = PD_ERROR;
@@ -102,7 +107,10 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *f
         if (i < buffer_size (b)) {
             char t[PD_STRING] = { 0 };
             PD_ASSERT (i >= 0);
-            if (!(err = atom_toString (buffer_atomAtIndex (b, i), t, PD_STRING))) { *s = gensym (t); }
+            t_atom *a = buffer_atomAtIndex (b, i);
+            if (isNumberAllowed || !IS_FLOAT (a)) {
+                if (!(err = atom_toString (a, t, PD_STRING))) { *s = gensym (t); }
+            }
         }
         if (err) {
             *s = (fallback ? fallback : utils_empty());
@@ -112,11 +120,11 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *f
 
 static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 {
-    int i = iem->iem_cacheIndex + 1;        /* It start now with the name of the object prepended. */
+    int i = iem->iem_cacheIndex + 1;    /* Buffer start now with the name of the object prepended. */
     
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedSend,    i + 0, iem->iem_send);
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, i + 1, iem->iem_receive);
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedLabel,   i + 2, iem->iem_label);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedSend,    i + 0, 0, iem->iem_send);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, i + 1, 0, iem->iem_receive);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedLabel,   i + 2, 1, iem->iem_label);
         
     s->n_unexpandedSend    = iem->iem_unexpandedSend;
     s->n_unexpandedReceive = iem->iem_unexpandedReceive;
@@ -180,9 +188,9 @@ void iemgui_deserializeLoadbang (t_iem *iem, int n)
 
 void iemgui_deserializeNames (t_iem *iem, int i, t_atom *argv)
 {
-    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv) : utils_empty());
-    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv) : utils_empty());
-    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv) : utils_empty());
+    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv, 0) : utils_empty());
+    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv, 0) : utils_empty());
+    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv, 1) : utils_empty());
     
     iem->iem_unexpandedSend    = NULL;
     iem->iem_unexpandedReceive = NULL;
@@ -447,9 +455,9 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     int canSend                 = 1;
     int canReceive              = 1;
 
-    t_symbol *s1 = utils_hashToDollar (iemgui_fetchName (7, argv));
-    t_symbol *s2 = utils_hashToDollar (iemgui_fetchName (8, argv));
-    t_symbol *s3 = utils_hashToDollar (iemgui_fetchName (9, argv));
+    t_symbol *s1 = utils_hashToDollar (iemgui_fetchName (7, argv, 0));
+    t_symbol *s2 = utils_hashToDollar (iemgui_fetchName (8, argv, 0));
+    t_symbol *s3 = utils_hashToDollar (iemgui_fetchName (9, argv, 1));
 
     iem->iem_unexpandedSend     = s1;
     iem->iem_unexpandedReceive  = s2;
