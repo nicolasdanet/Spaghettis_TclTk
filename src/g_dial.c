@@ -680,7 +680,18 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner)
 
 static void dial_fromDialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == IEM_DIALOG_SIZE) {
+    int isDirty = 0;
+    
+    PD_ASSERT (argc == IEM_DIALOG_SIZE);
+    
+    int t0    = x->x_gui.iem_height;
+    int t1    = x->x_isLogarithmic;
+    int t2    = x->x_digitsNumber;
+    int t3    = x->x_steps;
+    double t4 = x->x_minimum;
+    double t5 = x->x_maximum;
+    
+    {
     //
     int digits          = (int)atom_getFloatAtIndex (0, argc, argv);
     int height          = (int)atom_getFloatAtIndex (1, argc, argv);
@@ -689,7 +700,7 @@ static void dial_fromDialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     int isLogarithmic   = (int)atom_getFloatAtIndex (4, argc, argv);
     int steps           = (int)atom_getFloatAtIndex (6, argc, argv);
     
-    iemgui_fromDialog (cast_iem (x), argc, argv);
+    isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
     
     x->x_gui.iem_height = PD_MAX (height, IEM_MINIMUM_HEIGHT);
     x->x_isLogarithmic  = (isLogarithmic != 0);
@@ -700,14 +711,17 @@ static void dial_fromDialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     dial_setRange (x, minimum, maximum);
     
     x->x_floatValue = dial_getValue (x);
-        
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
-    
-    glist_updateLinesForObject (x->x_gui.iem_owner, cast_object (x));
     //
     }
+    
+    isDirty |= (t0 != x->x_gui.iem_height);
+    isDirty |= (t1 != x->x_isLogarithmic);
+    isDirty |= (t2 != x->x_digitsNumber);
+    isDirty |= (t3 != x->x_steps);
+    isDirty |= (t4 != x->x_minimum);
+    isDirty |= (t5 != x->x_maximum);
+    
+    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

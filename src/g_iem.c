@@ -358,6 +358,7 @@ void iemgui_boxChanged (void *x)
     
     if (glist_isOnScreen (iem->iem_owner)) {
     //
+    (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_UPDATE);
     (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG);
     (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_MOVE);
     glist_updateLinesForObject (iem->iem_owner, cast_object (x));
