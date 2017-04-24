@@ -88,6 +88,40 @@ static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     glist_windowOpen (glist);
 }
 
+static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (glist_isEditable (glist)) { glist_rename (glist, argc, argv); }
+}
+
+static void canvas_open (t_glist *glist)
+{
+    glist_windowOpen (glist);
+}
+
+static void canvas_loadbang (t_glist *glist)
+{
+    glist_loadbang (glist);
+}
+
+void canvas_clear (t_glist *glist)
+{
+    glist_objectRemoveAll (glist);
+}
+
+static void canvas_editmode (t_glist *glist, t_float f)
+{
+    if (glist_isEditable (glist)) { glist_windowEdit (glist, (f != 0.0)); }
+}
+
+static void canvas_dirty (t_glist *glist, t_float f)
+{
+    glist_setDirty (glist, (int)f);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     PD_ABORT (!glist_hasParent (glist));
@@ -185,11 +219,6 @@ static void canvas_disconnect (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     error_failed (sym_disconnect);
 }
 
-static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    glist_rename (glist, argc, argv);
-}
-
 static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 4) {
@@ -202,35 +231,6 @@ static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     }
 }
-
-static void canvas_open (t_glist *glist)
-{
-    glist_windowOpen (glist);
-}
-
-static void canvas_loadbang (t_glist *glist)
-{
-    glist_loadbang (glist);
-}
-
-void canvas_clear (t_glist *glist)
-{
-    glist_objectRemoveAll (glist);
-}
-
-static void canvas_editmode (t_glist *glist, t_float f)
-{
-    glist_windowEdit (glist, (f != 0.0));
-}
-
-static void canvas_dirty (t_glist *glist, t_float f)
-{
-    glist_setDirty (glist, (int)f);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static void canvas_map (t_glist *glist, t_float f)
 {
@@ -463,12 +463,27 @@ void canvas_setup (void)
     class_addDSP (c, (t_method)canvas_dsp);
     class_addClick (c, (t_method)canvas_click);
     
+    class_addMethod (c, (t_method)canvas_rename,                sym_rename,             A_GIMME, A_NULL);
+
+    
+    class_addMethod (c, (t_method)canvas_save,                  sym_save,               A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,             A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_close,                 sym_close,              A_DEFFLOAT, A_NULL);
+    
+    class_addMethod (c, (t_method)canvas_open,                  sym_open,               A_NULL);
+    class_addMethod (c, (t_method)canvas_loadbang,              sym_loadbang,           A_NULL);
+    class_addMethod (c, (t_method)canvas_clear,                 sym_clear,              A_NULL);
+    class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,           A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,              A_FLOAT, A_NULL);
+    
+    /* The methods below should stay private. */
+    /* A safer approach for dynamic patching must be implemented. */
+    
     class_addMethod (c, (t_method)canvas_restore,               sym_restore,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_coords,                sym_coords,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,                 sym_f,                  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_connect,               sym_connect,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_disconnect,            sym_disconnect,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_rename,                sym_rename,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeObject,            sym_obj,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeMessage,           sym_msg,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeArray,             sym_array,              A_GIMME, A_NULL);
@@ -491,16 +506,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_window,                sym_window,             A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)canvas_save,                  sym_save,               A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,             A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_close,                 sym_close,              A_DEFFLOAT, A_NULL);
-    
-    class_addMethod (c, (t_method)canvas_open,                  sym_open,               A_NULL);
-    class_addMethod (c, (t_method)canvas_loadbang,              sym_loadbang,           A_NULL);
-    class_addMethod (c, (t_method)canvas_clear,                 sym_clear,              A_NULL);
-    class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,           A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,              A_FLOAT, A_NULL);
-
     class_addMethod (c, (t_method)canvas_map,                   sym__map,               A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_cut,                   sym__cut,               A_NULL);

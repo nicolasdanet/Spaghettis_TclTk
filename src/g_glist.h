@@ -428,6 +428,11 @@ static inline int glist_hasEditMode (t_glist *g)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline int glist_isEditable (t_glist *g)
+{
+    return (!glist_isAbstraction (g) && !glist_isArray (g));
+}
+
 static inline int glist_isLoading (t_glist *g)
 {
     return g->gl_isLoading;
