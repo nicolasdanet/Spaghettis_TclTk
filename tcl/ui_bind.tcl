@@ -274,7 +274,7 @@ proc _key {w keysym iso isPress} {
     
     if {[winfo class $top] eq "PdPatch"} { set selector "$top" } else { set selector "pd" }
     
-    ::ui_interface::pdsend "$selector key $isPress $k" 
+    ::ui_interface::pdsend "$selector _key $isPress $k" 
 }
 
 # ------------------------------------------------------------------------------------------------------------

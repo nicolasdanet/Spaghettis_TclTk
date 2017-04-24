@@ -133,9 +133,9 @@ void global_setup (void)
     class_addMethod (c, (t_method)global_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_open,                  sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_dsp,                   sym_dsp,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)global_key,                   sym_key,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_quit,                  sym_quit,   A_NULL);
     
+    class_addMethod (c, (t_method)global_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_font,                  sym__font,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_audioProperties,       sym__audioproperties,   A_NULL);
     class_addMethod (c, (t_method)global_audioDialog,           sym__audiodialog,       A_GIMME, A_NULL);
