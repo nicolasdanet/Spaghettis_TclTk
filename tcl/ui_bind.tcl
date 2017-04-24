@@ -139,18 +139,18 @@ proc initialize {} {
 
 proc bindPatch {top} {
 
-    bind $top.c <<Motion1>>                 { ::ui_bind::_motion %W %x %y 0 }
-    bind $top.c <<Motion2>>                 { ::ui_bind::_motion %W %x %y 1 }
-    bind $top.c <<Motion3>>                 { ::ui_bind::_motion %W %x %y 2 }
-    bind $top.c <<Motion4>>                 { ::ui_bind::_motion %W %x %y 4 }
-    bind $top.c <<ClickLeft1>>              { ::ui_bind::_mouse %W %x %y 0  }
-    bind $top.c <<ClickLeft2>>              { ::ui_bind::_mouse %W %x %y 1  }
-    bind $top.c <<ClickLeft3>>              { ::ui_bind::_mouse %W %x %y 2  }
-    bind $top.c <<ClickLeft4>>              { ::ui_bind::_mouse %W %x %y 4  }
-    bind $top.c <<ClickLeft5>>              { ::ui_bind::_mouse %W %x %y 16 }
-    bind $top.c <<PopupMenu>>               { ::ui_bind::_mouse %W %x %y 8  }
+    bind $top.c <<Motion1>>                 { ::ui_bind::_motion %W %x %y 0      }
+    bind $top.c <<Motion2>>                 { ::ui_bind::_motion %W %x %y 1      }
+    bind $top.c <<Motion3>>                 { ::ui_bind::_motion %W %x %y 2      }
+    bind $top.c <<Motion4>>                 { ::ui_bind::_motion %W %x %y 4      }
+    bind $top.c <<ClickLeft1>>              { ::ui_bind::_mouseDown %W %x %y 0   }
+    bind $top.c <<ClickLeft2>>              { ::ui_bind::_mouseDown %W %x %y 1   }
+    bind $top.c <<ClickLeft3>>              { ::ui_bind::_mouseDown %W %x %y 2   }
+    bind $top.c <<ClickLeft4>>              { ::ui_bind::_mouseDown %W %x %y 4   }
+    bind $top.c <<ClickLeft5>>              { ::ui_bind::_mouseDown %W %x %y 16  }
+    bind $top.c <<PopupMenu>>               { ::ui_bind::_mouseDown %W %x %y 8   }
 
-    bind $top.c <<ClickRelease>>            { ::ui_bind::_mouseUp %W %x %y  }
+    bind $top.c <<ClickRelease>>            { ::ui_bind::_mouseUp %W %x %y       }
     bind $top.c <<ClickDummy>>              { ::ui_interface::pdsend "pd _dummy" }
     
     bind $top.c <MouseWheel>                { ::ui_patch::scroll %W y %D }
@@ -217,14 +217,14 @@ proc _motion {c x y m} {
     set isResizing 0
 }
 
-proc _mouse {c x y f} {
+proc _mouseDown {c x y f} {
 
     variable isResizing
     
     if {$isResizing == 0} {
     
         set top [winfo toplevel $c]
-        ::ui_interface::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $f"
+        ::ui_interface::pdsend "$top _mousedown [$c canvasx $x] [$c canvasy $y] $f"
     }
 }
 
@@ -235,7 +235,7 @@ proc _mouseUp {c x y} {
     if {$isResizing == 0} {
     
         set top [winfo toplevel $c]
-        ::ui_interface::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y]"
+        ::ui_interface::pdsend "$top _mouseup [$c canvasx $x] [$c canvasy $y]"
     }
     
     set isResizing 0
