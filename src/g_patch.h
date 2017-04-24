@@ -121,9 +121,7 @@ static inline int inlet_closest (int x, int n, t_rectangle *r)
     
     int i = (((x - a) * (n - 1) + (w / 2)) / w);
     
-    PD_ASSERT (i >= 0 && i < n);
-    
-    return i;
+    PD_ASSERT (n > 0); return PD_CLAMP (i, 0, n - 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
