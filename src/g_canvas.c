@@ -88,11 +88,6 @@ static void canvas_click (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     glist_windowOpen (glist);
 }
 
-static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
-{
-    if (glist_isEditable (glist)) { glist_rename (glist, argc, argv); }
-}
-
 static void canvas_open (t_glist *glist)
 {
     glist_windowOpen (glist);
@@ -116,6 +111,11 @@ static void canvas_editmode (t_glist *glist, t_float f)
 static void canvas_dirty (t_glist *glist, t_float f)
 {
     glist_setDirty (glist, (int)f);
+}
+
+static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (glist_isEditable (glist)) { glist_rename (glist, argc, argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -463,9 +463,6 @@ void canvas_setup (void)
     class_addDSP (c, (t_method)canvas_dsp);
     class_addClick (c, (t_method)canvas_click);
     
-    class_addMethod (c, (t_method)canvas_rename,                sym_rename,             A_GIMME, A_NULL);
-
-    
     class_addMethod (c, (t_method)canvas_save,                  sym_save,               A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,             A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_close,              A_DEFFLOAT, A_NULL);
@@ -475,7 +472,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_clear,                 sym_clear,              A_NULL);
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,           A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,              A_FLOAT, A_NULL);
-    
+    class_addMethod (c, (t_method)canvas_rename,                sym_rename,             A_GIMME, A_NULL);
+        
     /* The methods below should stay private. */
     /* A safer approach for dynamic patching must be implemented. */
     
@@ -500,12 +498,12 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeVu,                sym_vu,                 A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,                A_GIMME, A_NULL);
+    
     class_addMethod (c, (t_method)canvas_key,                   sym_key,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_motion,                sym_motion,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseDown,             sym_mouse,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_window,                sym_window,             A_GIMME, A_NULL);
-    
+    class_addMethod (c, (t_method)canvas_window,                sym__window,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_map,                   sym__map,               A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_cut,                   sym__cut,               A_NULL);

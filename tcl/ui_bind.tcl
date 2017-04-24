@@ -290,7 +290,7 @@ proc _resized {top width height x y} {
     
         set isResizing 1
         
-        ::ui_interface::pdsend "$top window $x $y [expr {$x + $width}] [expr {$y + $height}]"
+        ::ui_interface::pdsend "$top _window $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }
 }
 
