@@ -212,7 +212,7 @@ proc _motion {c x y m} {
     variable isResizing
     
     set top [winfo toplevel $c]
-    ::ui_interface::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
+    ::ui_interface::pdsend "$top _motion [$c canvasx $x] [$c canvasy $y] $m"
     
     set isResizing 0
 }

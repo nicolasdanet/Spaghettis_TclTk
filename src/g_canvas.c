@@ -500,7 +500,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,                A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_key,                   sym__key,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_motion,                sym_motion,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_motion,                sym__motion,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseDown,             sym_mouse,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseUp,               sym_mouseup,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_window,                sym__window,            A_GIMME, A_NULL);
