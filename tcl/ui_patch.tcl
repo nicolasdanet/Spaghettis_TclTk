@@ -36,7 +36,7 @@ array set patchIsEditMode    {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc create {top width height coordinates editable} {
+proc create {top width height coordinates isEditMode} {
 
     variable patchTitle
     variable patchIsEditMode
@@ -62,7 +62,7 @@ proc create {top width height coordinates editable} {
     focus $top.c
     
     set patchTitle($top)        ""
-    set patchIsEditMode($top)   $editable
+    set patchIsEditMode($top)   $isEditMode
 }
 
 proc willClose {top} {

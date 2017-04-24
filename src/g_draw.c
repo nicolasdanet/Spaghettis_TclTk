@@ -473,6 +473,10 @@ static void glist_eraseAllCommentBars (t_glist *glist)
 
 void glist_windowEdit (t_glist *glist, int isEditMode)
 {
+    int hasEditMode = 0;
+    
+    if (glist_isEditable (glist)) {
+    //
     if (isEditMode != glist_hasEditMode (glist)) {
     //
     glist_setEditMode (glist, isEditMode);
@@ -481,11 +485,15 @@ void glist_windowEdit (t_glist *glist, int isEditMode)
     else {
         glist_deselectAll (glist); glist_eraseAllCommentBars (glist);
     }
+    //
+    }
+    
+    hasEditMode = glist_hasEditMode (glist);
+    //
+    }
     
     if (glist_isOnScreen (glist)) {
-        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), glist_hasEditMode (glist));
-    }
-    //
+        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), hasEditMode);
     }
 }
 

@@ -105,7 +105,7 @@ void canvas_clear (t_glist *glist)
 
 static void canvas_editmode (t_glist *glist, t_float f)
 {
-    if (glist_isEditable (glist)) { glist_windowEdit (glist, (f != 0.0)); }
+    glist_windowEdit (glist, (f != 0.0));
 }
 
 static void canvas_dirty (t_glist *glist, t_float f)
