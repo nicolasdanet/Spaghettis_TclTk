@@ -209,8 +209,10 @@ static void glist_drawArrayName (t_glist *glist)
         int h = (int)font_getHostFontHeight (glist_getFontSize (view));
         int i = 0;
         
-        t_gobj *y = NULL;
+        /* Legacy patches can contains multiple arrays. */
         
+        t_gobj *y = NULL;
+         
         for (y = glist->gl_graphics; y; y = y->g_next) {
         //
         if (pd_class (y) == garray_class) {

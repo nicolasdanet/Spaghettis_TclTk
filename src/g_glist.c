@@ -25,7 +25,7 @@ static t_glist *glist_new (t_glist *owner,
     t_rectangle *window)
 {
     t_glist *x = (t_glist *)pd_new (canvas_class);
-    
+
     x->gl_holder            = gmaster_createWithGlist (x);
     x->gl_parent            = owner;
     x->gl_environment       = instance_environmentFetchIfAny();
@@ -175,7 +175,11 @@ int glist_isSubpatch (t_glist *glist)
 
 int glist_isArray (t_glist *glist)
 {
-    return (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph);
+    int isArray = (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph); 
+    
+    PD_ASSERT (!isArray || (glist_getArray (glist) != NULL));
+    
+    return isArray;
 }
 
 int glist_isDirty (t_glist *glist)
@@ -217,6 +221,16 @@ t_glist *glist_getView (t_glist *glist)
     while (glist_hasParent (glist) && !glist_isWindowable (glist)) { glist = glist_getParent (glist); }
     
     return glist;
+}
+
+t_garray *glist_getArray (t_glist *glist)
+{
+    t_gobj *y = glist->gl_graphics;
+    
+    if (y && pd_class (y) == garray_class) { return (t_garray *)y; }
+    else {
+        PD_BUG; return NULL;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

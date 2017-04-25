@@ -366,6 +366,11 @@ t_symbol *garray_getName (t_garray *x)
     return x->x_name;
 }
 
+t_symbol *garray_getUnexpandedName (t_garray *x)
+{
+    return x->x_unexpandedName;
+}
+
 t_glist *garray_getView (t_garray *x)
 {
     return x->x_owner;

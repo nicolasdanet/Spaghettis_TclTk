@@ -372,8 +372,10 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
     
     if (glist_isArray (glist)) {
     
+        /* Legacy patches can contains multiple arrays. */
+        
         t_gobj *y = NULL;
-            
+        
         for (y = glist->gl_graphics; y; y = y->g_next) {
             if (pd_class (y) == garray_class) { garray_functionProperties ((t_garray *)y); }
         }

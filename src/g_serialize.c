@@ -92,13 +92,18 @@ static void glist_serializeHeader (t_glist *glist, t_buffer *b)
 {
     if (glist_isSubpatch (glist)) {
     
-        /* Note that the name of a subpatch could be an A_DOLLARSYMBOL type. */
+        t_symbol *s = &s_;
         
-        t_buffer *z = buffer_new();
-        t_symbol *s = NULL;
-        buffer_serialize (z, object_getBuffer (cast_object (glist)));
-        s = atom_getSymbolAtIndex (1, buffer_size (z), buffer_atoms (z));   /* Fetch unexpanded name. */
-        buffer_free (z);
+        /* Note that the name of a subpatch or an array could be expanded. */
+        /* It is required to fetch the unexpanded form. */
+        
+        if (glist_isArray (glist)) { s = garray_getUnexpandedName (glist_getArray (glist)); }
+        else {
+            t_buffer *z = buffer_new();
+            buffer_serialize (z, object_getBuffer (cast_object (glist)));
+            s = atom_getSymbolAtIndex (1, buffer_size (z), buffer_atoms (z));
+            buffer_free (z);
+        }
         
         buffer_vAppend (b, "ssiiiisi;", 
             sym___hash__N, 

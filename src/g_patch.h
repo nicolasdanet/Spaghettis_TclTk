@@ -239,6 +239,7 @@ t_array     *garray_getArray                (t_garray *x);
 t_glist     *garray_getView                 (t_garray *x);
 t_scalar    *garray_getScalar               (t_garray *x);
 t_symbol    *garray_getName                 (t_garray *x);
+t_symbol    *garray_getUnexpandedName       (t_garray *x);
 
 int         garray_getSize                  (t_garray *x);         
 int         garray_getData                  (t_garray *x, int *size, t_word **w);

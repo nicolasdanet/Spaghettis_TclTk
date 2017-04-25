@@ -69,6 +69,7 @@ void            glist_free                  (t_glist *g);
 t_glist         *glist_getTop               (t_glist *g);
 t_environment   *glist_getEnvironment       (t_glist *g);
 t_glist         *glist_getView              (t_glist *g);
+t_garray        *glist_getArray             (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
