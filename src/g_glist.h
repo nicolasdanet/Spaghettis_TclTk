@@ -140,6 +140,7 @@ void    glist_objectAddNext                 (t_glist *g, t_gobj *first, t_gobj *
 void    glist_objectAdd                     (t_glist *g, t_gobj *y);
 void    glist_objectRemove                  (t_glist *g, t_gobj *y);
 void    glist_objectRemoveAllByTemplate     (t_glist *g, t_template *tmpl);
+void    glist_objectRemoveAllScalars        (t_glist *g);
 void    glist_objectRemoveAll               (t_glist *g);
 
 t_gobj  *glist_objectGetAt                  (t_glist *g, int n);

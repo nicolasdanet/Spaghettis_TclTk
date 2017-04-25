@@ -100,7 +100,7 @@ static void canvas_loadbang (t_glist *glist)
 
 void canvas_clear (t_glist *glist)
 {
-    glist_objectRemoveAll (glist);
+    glist_objectRemoveAllScalars (glist);
 }
 
 static void canvas_editmode (t_glist *glist, t_float f)

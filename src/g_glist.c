@@ -630,6 +630,15 @@ void glist_objectRemoveAllByTemplate (t_glist *glist, t_template *template)
     }
 }
 
+void glist_objectRemoveAllScalars (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == scalar_class) { glist_objectRemove (glist, y); }
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
