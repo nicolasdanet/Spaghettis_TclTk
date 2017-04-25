@@ -110,7 +110,7 @@ static void canvas_editmode (t_glist *glist, t_float f)
 
 static void canvas_dirty (t_glist *glist, t_float f)
 {
-    glist_setDirty (glist, (int)f);
+    if (glist_isEditable (glist)) { glist_setDirty (glist, (int)f); }
 }
 
 static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)

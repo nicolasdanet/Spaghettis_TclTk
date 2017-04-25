@@ -239,7 +239,9 @@ t_error scheduler_main (void)
     midi_open();
     instance_autoreleaseRun();
     instance_pollingRun();
+    
     scheduler_mainLoop();
+    
     instance_pollingStop();
     instance_autoreleaseStop();
     dsp_suspend();
