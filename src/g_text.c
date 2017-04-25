@@ -146,7 +146,7 @@ int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
             pd_message (cast_pd (x), sym_click, mouse_argc (m), mouse_argv (m)); 
         }
         
-        return 1;
+        return CURSOR_CLICK;
     }
     
     return 0;

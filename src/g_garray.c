@@ -595,7 +595,7 @@ static int garray_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 
     if (m->m_clicked) { gobj_mouse (cast_gobj (x->x_scalar), glist, m); }
     
-    return 1;
+    return CURSOR_CLICK;
 }
 
 // -----------------------------------------------------------------------------------------------------------

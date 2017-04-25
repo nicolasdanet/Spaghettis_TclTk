@@ -314,7 +314,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
             glist_setMotion (glist, z, (t_motionfn)drawpolygon_motion, m->m_x, m->m_y);
         }
     
-        return 1;
+        return CURSOR_OVER;
     }
     //
     }

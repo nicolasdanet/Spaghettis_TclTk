@@ -31,11 +31,13 @@ static void glist_updateCursor (t_glist *glist, int type)
         {
             "left_ptr",             // CURSOR_NOTHING
             "hand2",                // CURSOR_CLICK
+            "hand2",                // CURSOR_OVER
             "sb_v_double_arrow",    // CURSOR_THICKEN
-            "plus",                 // CURSOR_ADD
             "circle",               // CURSOR_CONNECT
             "sb_h_double_arrow"     // CURSOR_RESIZE
         };
+    
+    if (type == CURSOR_CLICK) { type = CURSOR_NOTHING; }
     
     type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE);
     

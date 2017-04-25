@@ -760,7 +760,7 @@ static int plot_behaviorMouseMatch (t_plot *x,
     //
     }
     
-    return (plot_thickness ? CURSOR_THICKEN : CURSOR_CLICK);
+    return (plot_thickness ? CURSOR_THICKEN : CURSOR_OVER);
 }
 
 static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
