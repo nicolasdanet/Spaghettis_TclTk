@@ -539,6 +539,7 @@ t_symbol *sym_writesf__tilde__;
 t_symbol *sym_x;
 t_symbol *sym_y;
 t_symbol *sym_z;
+t_symbol *sym_Array;
 t_symbol *sym_BackSpace;
 t_symbol *sym_Delete;
 t_symbol *sym_Down;
@@ -1119,6 +1120,7 @@ void symbols_initialize (void)
     sym_x                                       = gensym ("x");
     sym_y                                       = gensym ("y");
     sym_z                                       = gensym ("z");
+    sym_Array                                   = gensym ("Array");
     sym_BackSpace                               = gensym ("BackSpace");
     sym_Delete                                  = gensym ("Delete");
     sym_Down                                    = gensym ("Down");

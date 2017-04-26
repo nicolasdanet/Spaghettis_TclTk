@@ -539,6 +539,7 @@ extern t_symbol *sym_writesf__tilde__;
 extern t_symbol *sym_x;
 extern t_symbol *sym_y;
 extern t_symbol *sym_z;
+extern t_symbol *sym_Array;
 extern t_symbol *sym_BackSpace;
 extern t_symbol *sym_Delete;
 extern t_symbol *sym_Down;

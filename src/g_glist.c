@@ -243,7 +243,7 @@ void glist_setName (t_glist *glist, t_symbol *name)
 {
     if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
     
-    if (name == &s_) { name = sym_Patch; }
+    if (name == &s_) { name = glist_isArray (glist) ? sym_Array : sym_Patch; }
     
     if (name != glist->gl_name) {
     //
