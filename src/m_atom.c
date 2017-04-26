@@ -96,6 +96,22 @@ t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
     }
 }
 
+t_symbol *atom_getSymbolOrDollarSymbol (t_atom *a)
+{
+    if (IS_SYMBOL_OR_DOLLARSYMBOL (a)) { return GET_SYMBOL (a); }
+    else { 
+        return (&s_);
+    }
+}
+
+t_symbol *atom_getSymbolOrDollarSymbolAtIndex (int n, int argc, t_atom *argv)
+{
+    if (n >= 0 && n < argc) { return atom_getSymbolOrDollarSymbol (argv + n); }
+    else {
+        return (&s_);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

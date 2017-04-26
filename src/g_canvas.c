@@ -124,16 +124,9 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if (glist_hasParent (glist)) {
     //
     t_buffer *t = buffer_new(); 
-    t_symbol *name = &s_;
+    t_symbol *name = atom_getSymbolOrDollarSymbolAtIndex (3, argc, argv);
         
     if (argc > 2) { buffer_deserialize (t, argc - 2, argv + 2); }
-    if (argc > 3) {
-    //
-    if (IS_SYMBOL_OR_DOLLARSYMBOL (argv + 3)) { 
-        name = dollar_expandDollarSymbolByEnvironment (GET_SYMBOL (argv + 3), glist);
-    }
-    //
-    }
     
     object_setBuffer (cast_object (glist), t);
     object_setX (cast_object (glist), atom_getFloatAtIndex (0, argc, argv));
@@ -141,7 +134,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     object_setWidth (cast_object (glist), 0);
     object_setType (cast_object (glist), TYPE_OBJECT);
     
-    glist_setName (glist, name);
+    glist_setName (glist, dollar_expandDollarSymbolByEnvironment (name, glist));
     glist_objectAdd (glist_getParent (glist), cast_gobj (glist));
     //
     }

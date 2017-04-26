@@ -345,15 +345,9 @@ void glist_unbind (t_glist *glist)
 
 void glist_rename (t_glist *glist, int argc, t_atom *argv)
 {
-    t_symbol *name = &s_;
+    t_symbol *s = atom_getSymbolOrDollarSymbolAtIndex (0, argc, argv);
     
-    if (argc) {
-    if (IS_SYMBOL_OR_DOLLARSYMBOL (argv)) { 
-        name = dollar_expandDollarSymbolByEnvironment (GET_SYMBOL (argv), glist);
-    }
-    }
-    
-    glist_setName (glist, name);
+    glist_setName (glist, dollar_expandDollarSymbolByEnvironment (s, glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------

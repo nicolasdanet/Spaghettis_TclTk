@@ -122,6 +122,9 @@ int         pd_isThingQuiet                             (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol    *atom_getSymbolOrDollarSymbol               (t_atom *a);
+t_symbol    *atom_getSymbolOrDollarSymbolAtIndex        (int n, int argc, t_atom *argv);
+
 t_atom      *atom_substituteIfPointer                   (t_atom *a);
 char        *atom_atomsToString                         (int argc, t_atom *argv);
 
