@@ -64,7 +64,7 @@ proc _create {top name size up down save style} {
     wm minsize   $top {*}[::styleMinimumSize]
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
-    set arrayName($top)         [::dollarToHash $name]
+    set arrayName($top)         [::hashToDollar $name]
     set arraySize($top)         $size
     set arrayUp($top)           $up
     set arrayDown($top)         $down
