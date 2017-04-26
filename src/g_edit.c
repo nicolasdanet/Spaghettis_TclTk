@@ -502,14 +502,15 @@ void glist_key (t_glist *glist, t_keycode n, t_symbol *s)
     
     if (editor_hasSelectedBox (e)) {
         box_key (editor_getSelectedBox (e), n, s);
-        if (editor_hasSelectedBoxDirty (e)) { 
-            glist_setDirty (glist, 1); 
+        if (editor_hasSelectedBoxDirty (e)) {
+            glist_updateLinesForObject (glist, box_getObject (editor_getSelectedBox (e)));
+            glist_setDirty (glist, 1);
         }
         
     } else if (s == sym_Delete || s == sym_BackSpace) {
         if (editor_hasSelectedLine (e))   { glist_lineDeleteSelected (glist); }
-        else if (editor_hasSelection (e)) { 
-            glist_objectRemoveSelected (glist); 
+        else if (editor_hasSelection (e)) {
+            glist_objectRemoveSelected (glist);
         }
     }
 }

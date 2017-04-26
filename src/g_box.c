@@ -341,6 +341,11 @@ char *box_getTag (t_box *x)
     return x->box_tag;
 }
 
+t_object *box_getObject (t_box *x)
+{
+    return x->box_object;
+}
+
 int box_getWidth (t_box *x)
 {
     if (!x->box_checked) { box_send (x, BOX_CHECK, 0, 0); }
