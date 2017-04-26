@@ -18,6 +18,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Note that an expanded name is expected (with or without the file extension). */
+/* At load it can be temporarly set with the unexpanded form. */
+
 static t_glist *glist_new (t_glist *owner, 
     t_symbol    *name, 
     t_bounds    *bounds, 
@@ -344,8 +347,10 @@ void glist_rename (t_glist *glist, int argc, t_atom *argv)
 {
     t_symbol *name = &s_;
     
-    if (argc && (IS_SYMBOL (argv) || IS_DOLLARSYMBOL (argv))) { 
+    if (argc) {
+    if (IS_SYMBOL_OR_DOLLARSYMBOL (argv)) { 
         name = dollar_expandDollarSymbolByEnvironment (GET_SYMBOL (argv), glist);
+    }
     }
     
     glist_setName (glist, name);

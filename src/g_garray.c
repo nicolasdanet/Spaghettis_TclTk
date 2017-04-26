@@ -744,6 +744,8 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     return x;
 }
 
+/* Note that an unexpanded name is expected. */
+
 t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_float flags)
 {
     t_template *template = template_findByIdentifier (sym___TEMPLATE__float__dash__array);

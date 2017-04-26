@@ -144,6 +144,7 @@
 #pragma mark -
 
 #define IS_SYMBOL_OR_FLOAT(atom)            (IS_SYMBOL(atom) || IS_FLOAT(atom))
+#define IS_SYMBOL_OR_DOLLARSYMBOL(atom)     (IS_SYMBOL(atom) || IS_DOLLARSYMBOL(atom))
 #define IS_SEMICOLON_OR_COMMA(atom)         (IS_SEMICOLON(atom) || IS_COMMA(atom))
 
 // -----------------------------------------------------------------------------------------------------------

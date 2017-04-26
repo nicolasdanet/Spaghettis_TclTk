@@ -123,8 +123,17 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (glist_hasParent (glist)) {
     //
-    t_symbol *name = argc < 4 ? &s_ : dollar_getSymbolExpandedIfRequiered (argv + 3, glist);
-    t_buffer *t = buffer_new(); if (argc > 2) { buffer_deserialize (t, argc - 2, argv + 2); }
+    t_buffer *t = buffer_new(); 
+    t_symbol *name = &s_;
+        
+    if (argc > 2) { buffer_deserialize (t, argc - 2, argv + 2); }
+    if (argc > 3) {
+    //
+    if (IS_SYMBOL_OR_DOLLARSYMBOL (argv + 3)) { 
+        name = dollar_expandDollarSymbolByEnvironment (GET_SYMBOL (argv + 3), glist);
+    }
+    //
+    }
     
     object_setBuffer (cast_object (glist), t);
     object_setX (cast_object (glist), atom_getFloatAtIndex (0, argc, argv));

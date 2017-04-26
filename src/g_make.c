@@ -62,15 +62,18 @@ void canvas_makeMessage (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc > 1) {
-    //
-    t_symbol *name = atom_getSymbol (argv + 0);
-    t_float size   = atom_getFloat (argv + 1);
-    t_float flags  = atom_getFloatAtIndex (3, argc, argv);
-    
     PD_ASSERT (argc < 3 || atom_getSymbolAtIndex (2, argc, argv) == sym_float);
     
-    if (name != &s_) { garray_makeObject (glist, name, size, flags); }
+    if (argc > 1) {
+    //
+    t_float size  = atom_getFloat (argv + 1);
+    t_float flags = atom_getFloatAtIndex (3, argc, argv);
+    
+    if (IS_SYMBOL_OR_DOLLARSYMBOL (argv)) {
+    //
+    if (GET_SYMBOL (argv) != &s_) { garray_makeObject (glist, GET_SYMBOL (argv), size, flags); }
+    //
+    }
     //
     }
 }
