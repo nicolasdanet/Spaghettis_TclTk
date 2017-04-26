@@ -81,19 +81,22 @@ t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
     if (strchr (s->s_name, '$') == NULL) { return s; }
     else {
     //
+    t_symbol *t = NULL;
     t_environment *e = NULL;
     
     if (glist) { e = glist_getEnvironment (glist); }
 
-    if (!e) { return dollar_expandDollarSymbol (s, glist, 0, NULL); }
+    if (!e) { t = dollar_expandDollarSymbol (s, glist, 0, NULL); }
     else {
     //
-    return dollar_expandDollarSymbol (s,
+    t = dollar_expandDollarSymbol (s,
         glist,
         environment_getNumberOfArguments (e),
         environment_getArguments (e));
     //
     }
+    
+    return ((t != NULL) ? t : s);
     //
     }
 }
