@@ -238,6 +238,10 @@ t_garray *glist_getArray (t_glist *glist)
 
 void glist_setName (t_glist *glist, t_symbol *name)
 {
+    if (name == &s_) { name = sym_Patch; }
+    
+    if (name != glist->gl_name) {
+    //
     glist_unbind (glist);
     
     glist->gl_name = name;
@@ -247,6 +251,8 @@ void glist_setName (t_glist *glist, t_symbol *name)
     glist_updateTitle (glist);
     
     if (glist_isTop (glist)) { environment_setFileName (glist_getEnvironment (glist), name, NULL); }
+    //
+    }
 }
 
 void glist_setDirty (t_glist *glist, int n)
@@ -346,7 +352,7 @@ void glist_rename (t_glist *glist, int argc, t_atom *argv)
     
     if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
     
-    glist_setName (glist, (name == &s_ ? sym_Patch : name));
+    glist_setName (glist, name);
 }
 
 // -----------------------------------------------------------------------------------------------------------

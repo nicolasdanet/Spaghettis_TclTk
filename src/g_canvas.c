@@ -137,7 +137,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     object_setWidth (cast_object (glist), 0);
     object_setType (cast_object (glist), TYPE_OBJECT);
     
-    glist_setName (glist, (name == &s_ ? sym_Patch : name));
+    glist_setName (glist, name);
     glist_objectAdd (glist_getParent (glist), cast_gobj (glist));
     //
     }

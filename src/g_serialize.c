@@ -185,6 +185,11 @@ static void glist_serializeFooter (t_glist *glist, t_buffer *b)
             object_getY (cast_object (glist)));
         
         buffer_serialize (b, object_getBuffer (cast_object (glist)));
+        
+        if (glist_isArray (glist)) {
+            buffer_appendSymbol (b, garray_getUnexpandedName (glist_getArray (glist))); 
+        }
+        
         buffer_appendSemicolon (b);
         object_saveWidth (cast_object (glist), b);
     }
