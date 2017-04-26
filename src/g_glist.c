@@ -238,6 +238,8 @@ t_garray *glist_getArray (t_glist *glist)
 
 void glist_setName (t_glist *glist, t_symbol *name)
 {
+    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
+    
     if (name == &s_) { name = sym_Patch; }
     
     if (name != glist->gl_name) {
@@ -342,15 +344,9 @@ void glist_rename (t_glist *glist, int argc, t_atom *argv)
 {
     t_symbol *name = &s_;
     
-    if (argc) {
-    //
-    name = dollar_getSymbolExpandedIfRequiered (argv, glist);
-    if (name != &s_) { argc--; argv++; }
-    if (argc) { warning_unusedArguments (class_getName (pd_class (glist)), argc, argv); }
-    //
+    if (argc && (IS_SYMBOL (argv) || IS_DOLLARSYMBOL (argv))) { 
+        name = dollar_expandDollarSymbolByEnvironment (GET_SYMBOL (argv), glist);
     }
-    
-    if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
     
     glist_setName (glist, name);
 }
