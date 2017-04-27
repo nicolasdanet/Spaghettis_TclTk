@@ -143,7 +143,7 @@ proc getDefaultWeight {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-set var(appName)                "PureData"
+set var(appName)                "Spaghettis"
 
 set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}

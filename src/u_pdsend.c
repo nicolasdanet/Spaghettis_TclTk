@@ -38,7 +38,7 @@
 
 /*
     This is a standalone program that forwards messages from its standard input
-    to PureData via the netsend/netreceive ("FUDI") protocol.
+    to Spaghettis via the netsend/netreceive ("FUDI") protocol.
     
 */
 

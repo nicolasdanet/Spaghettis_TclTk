@@ -187,7 +187,7 @@ int properties_getKey (const char *key, char *value, int size)
 {
     HKEY hkey;
     DWORD n = size;
-    LONG err = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "Software\\" PD_NAME_SHORT, 0, KEY_QUERY_VALUE, &hkey);
+    LONG err = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "Software\\" PD_NAME, 0, KEY_QUERY_VALUE, &hkey);
     
     if (err != ERROR_SUCCESS) { return 0; }
     
@@ -204,7 +204,7 @@ void properties_setKey (const char *key, const char *value)
 {
     HKEY hkey;
     LONG err = RegCreateKeyEx (HKEY_LOCAL_MACHINE,
-                                "Software\\" PD_NAME_SHORT,
+                                "Software\\" PD_NAME,
                                 0,
                                 NULL,
                                 REG_OPTION_NON_VOLATILE,

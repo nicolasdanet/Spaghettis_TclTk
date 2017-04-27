@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# "PureData.app" automagically built.
+# "Spaghettis.app" automagically built.
 # 
 # Tested on:
 #
@@ -52,7 +52,7 @@ fi
 # Paths.
 
 folder="${rep}/Application"
-app="${folder}/PureData.app"
+app="${folder}/Spaghettis.app"
 plist="${rep}/resources/Info.plist"
 bin="${rep}/bin"
 tcl="${rep}/tcl"

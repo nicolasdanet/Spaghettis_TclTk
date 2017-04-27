@@ -12,7 +12,7 @@
 				<string>pd</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData Patch</string>
+			<string>Spaghettis Patch</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
@@ -22,7 +22,7 @@
 				<string>pdhelp</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData Help</string>
+			<string>Spaghettis Help</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
@@ -32,7 +32,7 @@
 				<string>pdbundle32</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData Object 32-bit</string>
+			<string>Spaghettis Object 32-bit</string>
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 		</dict>
@@ -42,7 +42,7 @@
 				<string>pdbundle64</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData Object 64-bit</string>
+			<string>Spaghettis Object 64-bit</string>
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 		</dict>
@@ -50,7 +50,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Pd</string>
 	<key>CFBundleGetInfoString</key>
-	<string>PureData Alpha,
+	<string>Spaghettis Alpha,
 Copyright © 1989-2009 Tcl Core Team,
 Copyright © 2002-2009 Daniel A. Steffen,
 Copyright © 2001-2009 Apple Inc.,
@@ -58,11 +58,11 @@ Copyright © 2001-2002 Jim Ingham &amp; Ian Reid</string>
 	<key>CFBundleIconFile</key>
 	<string>Wish.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.puredata.puredata</string>
+	<string>org.puredata.spaghettis</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>PureData</string>
+	<string>Spaghettis</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

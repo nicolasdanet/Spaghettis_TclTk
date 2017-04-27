@@ -37,7 +37,7 @@
 #pragma mark -
 
 /* 
-    This is a standalone program that receives messages from PureData via the
+    This is a standalone program that receives messages from Spaghettis via the
     netsend/netreceive ("FUDI") protocol, and copies them to standard output.
 
 */
