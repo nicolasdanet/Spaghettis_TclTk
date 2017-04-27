@@ -414,11 +414,11 @@ static int glist_mouseOverEdit (t_glist *glist, int a, int b, int m, int clicked
 {
     t_rectangle r;
     
-    t_gobj *y = glist_objectHit (glist, a, b, &r);      /* With a tolerance zone up and down. */
+    t_gobj *y = glist_objectHit (glist, a, b, &r);              /* With a tolerance zone up and down. */
         
     if (y) {
     //
-    t_rectangle dummy; int over = gobj_hit (y, glist, a, b, 0, &dummy);     /* Strictly over. */
+    t_rectangle dummy; int over = gobj_hit (y, glist, a, b, 0, &dummy);             /* Strictly over. */
     
     if (!over) { return glist_mouseOverEditLine (glist, y, a, b, clicked, &r); }
     else {
