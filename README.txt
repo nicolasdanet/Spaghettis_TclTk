@@ -7,6 +7,10 @@ Rationale:
 
     The goal is to make it fast, consistent, and fully embeddable.
 
+Disclaimer:
+
+    This is a pre-alpha version.
+    
 Build:
 
     - Download or clone this repository.
