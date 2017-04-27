@@ -13,9 +13,9 @@ Disclaimer:
     
 Build:
 
-    - Download or clone this repository.
-    - In a terminal, change directory onto the "build.sh" script.
-    - Execute it with the "./build.sh" command.
+    Download this repository.
+    Change directory to the "build.sh" script.
+    Execute the "./build.sh" command.
     
 Credits:
 
