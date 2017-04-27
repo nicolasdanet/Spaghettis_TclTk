@@ -1,8 +1,18 @@
 
-# PureData
+# Spaghettis
 
-...
+Yet another fork of Pure Data < https://puredata.info/ >.
 
+Rationale:
+
+    The goal is to make it fast, consistent, and fully embeddable.
+
+Build:
+
+    - Download or clone this repository.
+    - In a terminal, change directory onto the "Build.sh" script.
+    - Execute it with the "./Build.sh" command.
+    
 Credits:
 
     Miller Puckette & others < http://msp.ucsd.edu/Software/pd-README.txt >
