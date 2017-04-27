@@ -133,6 +133,20 @@ void rectangle_enlarge (t_rectangle *r, int n)
     }
 }
 
+void rectangle_enlargeY (t_rectangle *r, int n)
+{
+    if (!rectangle_isNothing (r)) {
+    //
+    int a = r->rect_topLeftX;
+    int b = r->rect_topLeftY - n;
+    int c = r->rect_bottomRightX;
+    int d = r->rect_bottomRightY + n;
+    
+    rectangle_set (r, a, b, c, d);
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

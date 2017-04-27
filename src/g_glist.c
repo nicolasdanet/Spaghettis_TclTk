@@ -657,7 +657,7 @@ void glist_objectRemoveAllScalars (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_gobj *glist_objectGetAt (t_glist *glist, int n)
+static t_gobj *glist_objectGetAt (t_glist *glist, int n)
 {
     t_gobj *t = NULL;
     int i = 0;
@@ -668,47 +668,6 @@ t_gobj *glist_objectGetAt (t_glist *glist, int n)
     }
     
     return NULL;
-}
-
-t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
-{
-    t_gobj *y = NULL;
-    t_gobj *object = NULL;
-    
-    t_rectangle t;
-    
-    rectangle_set (r, 0, 0, 0, 0);
-    
-    if (glist_objectGetNumberOfSelected (glist) > 1) {
-    //
-    t_selection *s = NULL;
-    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
-    //
-    if (gobj_hit (selection_getObject (s), glist, a, b, &t)) {
-        rectangle_setCopy (r, &t);
-        object = selection_getObject (s); 
-    }
-    //
-    }
-    //
-    }
-    
-    if (!object) {
-    //
-    int k = -PD_INT_MAX;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (gobj_hit (y, glist, a, b, &t)) {
-            if (rectangle_getTopLeftX (&t) > k) {
-                rectangle_setCopy (r, &t);
-                object = y; k = rectangle_getTopLeftX (&t);
-            }
-        }
-    }
-    //
-    }
-
-    return object;
 }
 
 int glist_objectGetIndexOf (t_glist *glist, t_gobj *y)

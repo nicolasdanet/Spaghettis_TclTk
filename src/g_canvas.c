@@ -269,7 +269,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     //
     t_rectangle t;
     
-    if (gobj_hit (y, glist, a, b, &t)) {
+    if (gobj_hit (y, glist, a, b, 0, &t)) {
     //
     if (k == POPUP_PROPERTIES) {
         if (class_hasPropertiesFunction (pd_class (y))) {

@@ -75,6 +75,7 @@ int         rectangle_overlap                           (t_rectangle *r1, t_rect
 void        rectangle_boundingBoxAddRectangle           (t_rectangle *r, t_rectangle *toAdd);
 void        rectangle_boundingBoxAddPoint               (t_rectangle *r, int x, int y);
 void        rectangle_enlarge                           (t_rectangle *r, int n);
+void        rectangle_enlargeY                          (t_rectangle *r, int n);
 int         rectangle_containsPoint                     (t_rectangle *r, int x, int y);
 int         rectangle_containsRectangle                 (t_rectangle *r, t_rectangle *isContained);
 

@@ -144,9 +144,6 @@ void    glist_objectRemoveAllByTemplate     (t_glist *g, t_template *tmpl);
 void    glist_objectRemoveAllScalars        (t_glist *g);
 void    glist_objectRemoveAll               (t_glist *g);
 
-t_gobj  *glist_objectGetAt                  (t_glist *g, int n);
-t_gobj  *glist_objectHit                    (t_glist *g, int a, int b, t_rectangle *r);
-
 void    glist_objectSelect                  (t_glist *g, t_gobj *y);
 void    glist_objectSelectIfNotSelected     (t_glist *g, t_gobj *y);
 int     glist_objectDeselect                (t_glist *g, t_gobj *y);

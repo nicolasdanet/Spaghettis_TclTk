@@ -187,7 +187,7 @@ void        gobj_visibilityChanged          (t_gobj *x, t_glist *owner, int isVi
 int         gobj_mouse                      (t_gobj *x, t_glist *owner, t_mouse *m);
 
 void        gobj_save                       (t_gobj *x, t_buffer *buffer);
-int         gobj_hit                        (t_gobj *x, t_glist *owner, int a, int b, t_rectangle *r);
+int         gobj_hit                        (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r);
                                                             
 int         gobj_isVisible                  (t_gobj *x, t_glist *owner);
 

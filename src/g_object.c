@@ -103,16 +103,18 @@ void gobj_save (t_gobj *x, t_buffer *buffer)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gobj_hit (t_gobj *x, t_glist *owner, int a, int b, t_rectangle *r)
+int gobj_hit (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r)
 {
     if (gobj_isVisible (x, owner)) {
     //
-    t_rectangle t;
+    t_rectangle t1, t2;
     
-    gobj_getRectangle (x, owner, &t);
+    gobj_getRectangle (x, owner, &t1);
     
-    if (!rectangle_isNothing (&t) && rectangle_containsPoint (&t, a, b)) {
-        rectangle_setCopy (r, &t);
+    rectangle_setCopy (&t2, &t1); rectangle_enlargeY (&t2, n);
+    
+    if (!rectangle_isNothing (&t2) && rectangle_containsPoint (&t2, a, b)) {
+        rectangle_setCopy (r, &t1);
         return 1;
     }
     //

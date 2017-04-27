@@ -100,7 +100,7 @@ static int glist_behaviorMouseProceed (t_glist *x, t_glist *owner, t_mouse *m)
             
         for (y = x->gl_graphics; y; y = y->g_next) {
             t_rectangle t;
-            if (gobj_hit (y, x, a, b, &t)) {
+            if (gobj_hit (y, x, a, b, 0, &t)) {
                 if ((k = gobj_mouse (y, x, m))) {
                     break;
                 }
