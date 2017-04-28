@@ -5,7 +5,7 @@ Yet another fork of Pure Data < https://puredata.info/ >.
 
 Rationale:
 
-    The goal is to make it fast, consistent, and fully embeddable.
+    It aims to make it fast, consistent, and fully embeddable.
 
 Disclaimer:
 
