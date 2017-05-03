@@ -9,7 +9,7 @@ Rationale:
 
 Disclaimer:
 
-    This is a pre-alpha version.
+    This is a work-in-progress version.
     
 Build:
 
