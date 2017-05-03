@@ -9,8 +9,8 @@ export MACOSX_DEPLOYMENT_TARGET = 10.6
 
 VPATH = ../obj
 
-PM_DIR = ../portmidi
-PA_DIR = ../portaudio
+PM_DIR = ../libraries/portmidi
+PA_DIR = ../libraries/portaudio
 
 BIN_DIR    = ../bin
 TCL_DIR    = ../tcl
