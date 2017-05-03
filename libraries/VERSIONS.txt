@@ -1,0 +1,25 @@
+
+PORTAUDIO
+
+    < http://www.portaudio.com/download.html > 
+
+    pa_stable_v190600_20161030.tgz
+    
+
+PORTMIDI
+
+    < https://sourceforge.net/p/portmedia/code/HEAD/tree/portmidi/trunk/ >
+
+    [r230]
+    
+TINYEXPR
+
+    < https://github.com/codeplea/tinyexpr >
+    
+    commit 9476568b69de4c384903f1d5f255907b92592f45
+    
+OOURA
+
+    < http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html >
+    
+    fft.zip (75KB) updated: 2006/12/28 
