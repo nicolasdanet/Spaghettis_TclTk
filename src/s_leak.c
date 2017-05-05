@@ -174,7 +174,7 @@ void sys_freeMemoryChecked (void *ptr, const char *f, int line)
     
     pthread_mutex_unlock (&leak_mutex);
     
-    return sys_freeMemory (ptr);
+    sys_freeMemory (ptr);
 }
 
 // -----------------------------------------------------------------------------------------------------------
