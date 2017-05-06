@@ -122,18 +122,18 @@ static int resample_setAllocateVectorIfRequired (t_resample *x, t_sample *s, int
 {
     if (size == resampledSize) {
     
-        if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vectorSize = 0; x->r_vector = NULL; }
+        if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_allocatedSize = 0; x->r_vector = NULL; }
         
         x->r_vector = s;
         
         return 0;
         
-    } else if (x->r_vectorSize != resampledSize) {
+    } else if (x->r_allocatedSize != resampledSize) {
     
-        size_t oldSize  = sizeof (t_sample) * x->r_vectorSize;
-        size_t newSize  = sizeof (t_sample) * resampledSize;
-        x->r_vectorSize = resampledSize;
-        x->r_vector     = (t_sample *)PD_MEMORY_RESIZE (x->r_vector, oldSize, newSize);  
+        size_t oldSize      = sizeof (t_sample) * x->r_allocatedSize;
+        size_t newSize      = sizeof (t_sample) * resampledSize;
+        x->r_allocatedSize  = resampledSize;
+        x->r_vector         = (t_sample *)PD_MEMORY_RESIZE (x->r_vector, oldSize, newSize);  
     }
     
     return 1;
@@ -195,15 +195,15 @@ void resample_init (t_resample *x, t_symbol *type)
     
     #endif
 
-    x->r_downsample = 1;
-    x->r_upsample   = 1;
-    x->r_vectorSize = 0;
-    x->r_vector     = NULL;
+    x->r_downsample     = 1;
+    x->r_upsample       = 1;
+    x->r_allocatedSize  = 0;
+    x->r_vector         = NULL;
 }
 
 void resample_free (t_resample *x)
 {
-    if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vectorSize = 0; x->r_vector = NULL; }
+    if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_allocatedSize = 0; x->r_vector = NULL; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -232,7 +232,7 @@ t_sample *resample_fromDsp (t_resample *x, t_sample *s, int size, int resampledS
             s,
             size,
             x->r_vector,
-            x->r_vectorSize,
+            x->r_allocatedSize,
             (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_ZERO);
     }
     
@@ -244,7 +244,7 @@ void resample_toDsp (t_resample *x, t_sample *s, int size, int resampledSize)
     if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
         resample_addResampling (x,
             x->r_vector,
-            x->r_vectorSize,
+            x->r_allocatedSize,
             s,
             size,
             (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_HOLD);

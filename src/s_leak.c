@@ -168,11 +168,15 @@ void *sys_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, con
 
 void sys_freeMemoryChecked (void *ptr, const char *f, int line)
 {
+    if (ptr) {
+    //
     pthread_mutex_lock (&leak_mutex);
     
         leak_remove ((t_int)ptr, f, line);
     
     pthread_mutex_unlock (&leak_mutex);
+    //
+    }
     
     sys_freeMemory (ptr);
 }
