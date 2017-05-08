@@ -1,7 +1,5 @@
 
-/* 
-    Copyright (c) 1997-2016 Miller Puckette and others.
-*/
+/* Copyright (c) 1997-2017 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -39,7 +37,6 @@
 /* 
     This is a standalone program that receives messages from Spaghettis via the
     netsend/netreceive ("FUDI") protocol, and copies them to standard output.
-
 */
 
 /* < http://en.wikipedia.org/wiki/FUDI > */

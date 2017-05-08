@@ -7,7 +7,7 @@ All files under "Standard Improved BSD License" unless explicitly disclaimed.
 
 Copyright:
 
-    Copyright (c) 1997-2015 Miller Puckette and others.
+    Copyright (c) 1997-2017 Miller Puckette and others.
 
 Additional terms:
 

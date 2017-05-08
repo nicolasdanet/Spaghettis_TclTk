@@ -1,7 +1,5 @@
 
-/* 
-    Copyright (c) 1999-2016 Guenter Geiger and others.
-*/
+/* Copyright (c) 1999-2017 Guenter Geiger and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
