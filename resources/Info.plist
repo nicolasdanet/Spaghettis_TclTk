@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleName</key>
+	<string>Spaghettis</string>
+	<key>CFBundleDisplayName</key>
+	<string>Spaghettis</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.puredata.spaghettis</string>
+	<key>CFBundleVersion</key>
+	<string>0.9</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.9</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleExecutable</key>
+	<string>Pd</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDocumentTypes</key>
@@ -47,31 +63,13 @@
 			<string>None</string>
 		</dict>
 	</array>
-	<key>CFBundleExecutable</key>
-	<string>Pd</string>
-	<key>CFBundleGetInfoString</key>
-	<string>Spaghettis Alpha,
-Copyright © 1989-2009 Tcl Core Team,
-Copyright © 2002-2009 Daniel A. Steffen,
-Copyright © 2001-2009 Apple Inc.,
-Copyright © 2001-2002 Jim Ingham &amp; Ian Reid</string>
-	<key>CFBundleIconFile</key>
-	<string>Wish.icns</string>
-	<key>CFBundleIdentifier</key>
-	<string>org.puredata.spaghettis</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>Spaghettis</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>0.9</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>10.6.0</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright (c) 1997-2015 Miller Puckette and others.</string>
+	<key>CFBundleIconFile</key>
+	<string>Wish.icns</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.6.0</string>
 </dict>
 </plist>
