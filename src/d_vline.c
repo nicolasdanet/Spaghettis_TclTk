@@ -188,8 +188,10 @@ static t_int *vline_tilde_perform (t_int *w)
     
     while (s && s->s_timeStart < timeNextSample) {
 
-        if (x->x_timeTarget <= timeNextSample) { f = x->x_target; increment = 0.0; }
-        if (s->s_timeTarget <= s->s_timeStart) { f = s->s_target; increment = 0.0; }
+        increment = 0.0;
+        
+        if (x->x_timeTarget <= timeNextSample) { f = x->x_target; }
+        if (s->s_timeTarget <= s->s_timeStart) { f = s->s_target; }
         else {
             double incrementPerMillisecond = (s->s_target - f) / (s->s_timeTarget - s->s_timeStart);
             double rampAlreadyDone = incrementPerMillisecond * (timeNextSample - s->s_timeStart);

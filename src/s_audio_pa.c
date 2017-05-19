@@ -314,7 +314,7 @@ int audio_pollNative (void)
     
     int status = DACS_YES;
         
-    if (!pa_stream || (!pa_channelsIn && !pa_channelsOut)) { return DACS_NO; }
+    if (!pa_stream || (pa_channelsIn <= 0 && pa_channelsOut <= 0)) { return DACS_NO; }
     else {
     //
     ring_buffer_size_t requiredIn  = INTERNAL_BLOCKSIZE * pa_channelsIn;

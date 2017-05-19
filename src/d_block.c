@@ -35,36 +35,25 @@ t_float block_getRatio (t_block *x)
 
 void block_getProperties (t_block *x, int parentBlockSize, t_float parentSampleRate, t_blockproperties *p)
 {
-    int switchable      = p->bp_switchable;
+    t_phase phase       = ugen_getPhase();
     int reblocked       = p->bp_reblocked;
-    int blockSize       = p->bp_blockSize;
-    t_float sampleRate  = p->bp_sampleRate;
-    int period          = p->bp_period;
-    int frequency       = p->bp_frequency;
-    int downsample      = p->bp_downsample;
-    int upsample        = p->bp_upsample;
-    
-    int overlap = x->bk_overlap;
-    t_phase phase = ugen_getPhase();
-    
-    if (x->bk_blockSize > 0) { blockSize = x->bk_blockSize; } 
-        
-    overlap     = PD_MIN (overlap, blockSize);
-    downsample  = PD_MIN (x->bk_downsample, parentBlockSize);
-    upsample    = x->bk_upsample;
-    period      = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
-    frequency   = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
-    sampleRate  = parentSampleRate * overlap * (upsample / downsample);
-    switchable  = x->bk_isSwitchObject;
+    int blockSize       = (x->bk_blockSize > 0) ? x->bk_blockSize : p->bp_blockSize;
+    int overlap         = PD_MIN (x->bk_overlap, blockSize);
+    int downsample      = PD_MIN (x->bk_downsample, parentBlockSize);
+    int upsample        = x->bk_upsample;
+    int period          = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
+    int frequency       = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
+    t_float sampleRate  = parentSampleRate * overlap * (upsample / downsample);
+    int switchable      = x->bk_isSwitchObject;
     
     PD_ASSERT (PD_IS_POWER_2 (period));
     PD_ASSERT (PD_IS_POWER_2 (frequency));
     PD_ASSERT (period == 1 || frequency == 1);
         
-    reblocked |= (overlap != 1);
-    reblocked |= (blockSize != parentBlockSize);
+    reblocked |= (overlap    != 1);
+    reblocked |= (blockSize  != parentBlockSize);
     reblocked |= (downsample != 1);
-    reblocked |= (upsample != 1);
+    reblocked |= (upsample   != 1);
     
     x->bk_phase         = (int)(phase & (t_phase)(period - 1));
     x->bk_period        = period;

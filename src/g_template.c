@@ -148,7 +148,7 @@ t_template *template_getTemplateIfArrayAtIndex (t_template *x, int n)
 {
     PD_ASSERT (x);
     PD_ASSERT (n >= 0);
-    PD_ASSERT (n < x->tp_size);
+    PD_ASSERT (x && n < x->tp_size);
     
     if (x->tp_slots[n].ds_type == DATA_ARRAY) {
         return template_findByIdentifier (x->tp_slots[n].ds_templateIdentifier);

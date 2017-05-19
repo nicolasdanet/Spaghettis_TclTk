@@ -898,7 +898,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				371655A51BA3469200ABDE22 /* PureData */,
+				371655A51BA3469200ABDE22 /* Spaghettis */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -1012,22 +1012,22 @@
 			name = PortMidi;
 			sourceTree = "<group>";
 		};
-		371655A51BA3469200ABDE22 /* PureData */ = {
+		371655A51BA3469200ABDE22 /* Spaghettis */ = {
 			isa = PBXGroup;
 			children = (
 				378971E21C4F716700263434 /* m_pd.h */,
 				3722C5331C4F920B00D2BF6F /* Core */,
 				3722C5341C4F921F00D2BF6F /* System */,
 				3722C5351C4F924900D2BF6F /* Graphics */,
-				3722C5361C4F925600D2BF6F /* Control */,
 				3722C5371C4F926300D2BF6F /* DSP */,
+				3722C5361C4F925600D2BF6F /* Control */,
 				3789717E1C4F712A00263434 /* Scripts */,
 				37961C251CAD85DB00859402 /* Libraries */,
 				378972041C4F716700263434 /* u_pdsend.c */,
 				378972031C4F716700263434 /* u_pdreceive.c */,
 				378972051C4F716700263434 /* u_watchdog.c */,
 			);
-			name = PureData;
+			name = Spaghettis;
 			sourceTree = "<group>";
 		};
 		3716D99C1DAA484F00FDC632 /* Utils */ = {
