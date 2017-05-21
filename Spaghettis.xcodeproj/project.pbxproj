@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -1814,9 +1814,16 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "Spaghettis" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* PureData */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -2191,9 +2198,7 @@
 		1DEB928608733DD80010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					PD_WITH_DEBUG,
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
 				);
@@ -2212,7 +2217,6 @@
 					"-lpthread",
 				);
 				PRODUCT_NAME = pd;
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2227,8 +2231,6 @@
 		1DEB928708733DD80010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
@@ -2248,7 +2250,6 @@
 					"-lpthread",
 				);
 				PRODUCT_NAME = pd;
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2263,35 +2264,19 @@
 		1DEB928A08733DD80010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PREBINDING = NO;
-				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
 		1DEB928B08733DD80010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
-				SDKROOT = macosx10.6;
 			};
 			name = Release;
 		};
 		379A42D41BA427B900C1CED0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				PRODUCT_NAME = pdsend;
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2306,9 +2291,7 @@
 		379A42D51BA427B900C1CED0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				PRODUCT_NAME = pdsend;
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2323,9 +2306,7 @@
 		379A42EF1BA428D000C1CED0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				PRODUCT_NAME = pdreceive;
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2340,9 +2321,7 @@
 		379A42F01BA428D000C1CED0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				PRODUCT_NAME = pdreceive;
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2357,9 +2336,7 @@
 		379A43021BA4291200C1CED0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				PRODUCT_NAME = pdwatchdog;
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2374,9 +2351,7 @@
 		379A43031BA4291200C1CED0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				PRODUCT_NAME = pdwatchdog;
-				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
