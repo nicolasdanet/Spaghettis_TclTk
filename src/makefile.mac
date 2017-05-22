@@ -63,7 +63,7 @@ CPPFLAGS = -DPD_WITH_DEBUG \
     -I$(PM_DIR)/pm_mac \
     -I$(PM_DIR)/porttime
 
-CFLAGS = -gstabs -ffast-math $(WARNINGS) $(ARCH)
+CFLAGS = -ffast-math $(WARNINGS) $(ARCH)
 
 else
 
