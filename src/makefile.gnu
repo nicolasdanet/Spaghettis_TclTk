@@ -46,9 +46,19 @@ LDFLAGS = -rdynamic $(ARCH)
 
 # Preprocessor and compiler flags.
 
+ifdef WITH_DEBUG
+
+CPPFLAGS = -DPD_WITH_DEBUG -DPD_BUILDING_APPLICATION
+
+CFLAGS = -ffast-math $(WARNINGS) $(ARCH)
+
+else
+
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
 
 CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
+
+endif
 
 # MIDI with ALSA.
 

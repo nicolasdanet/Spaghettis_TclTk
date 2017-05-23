@@ -28,13 +28,6 @@ rep=$(pwd)
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Frameworks ( http://jackaudio.org/downloads/ ).
-
-jack="/System/Library/Frameworks/Jackmp.framework/Headers/jack.h"
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 # ActiveTcl ( http://wiki.tcl.tk/1875 ).
 
 wish="/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
@@ -88,17 +81,13 @@ extension=".pdbundle32"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Build the binaries.
-
-#make -f makefile.mac "WITH_JACK=TRUE"                          || exit 1
-#make -f makefile.mac "WITH_PORTAUDIO=TRUE" "WITH_DEBUG=TRUE"   || exit 1
+# Build the binaries (for now with PortAudio API only).
 
 cd "${rep}/src"                                                 || exit 1
 
 echo "Build with PORTMIDI ..."
 echo "Build with PORTAUDIO ..."
-echo "Build with DEBUG ..."
-make -f makefile.mac "WITH_PORTAUDIO=TRUE" "WITH_DEBUG=TRUE"    || exit 1
+make -f makefile.mac "WITH_PORTAUDIO=TRUE"                      || exit 1
 
 cd "${rep}"                                                     || exit 1
 
