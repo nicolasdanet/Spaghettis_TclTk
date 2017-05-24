@@ -48,7 +48,7 @@ static void ooura_dummy (int n)
 {
     double *t = alloca (n * sizeof (double));
     
-    while (n--) { *t++ = 0.0; }
+    int i; for (i = 0; i < n; i++) { t[i] = 0.0; }
         
     rdft (n, 1, t, ooura_ip, ooura_w);
 }
