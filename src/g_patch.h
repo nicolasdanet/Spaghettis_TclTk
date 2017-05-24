@@ -85,7 +85,7 @@ enum {
 #pragma mark -
 
 #define INLET_WIDTH         7
-#define INLET_HEIGHT        1
+#define INLET_HEIGHT        2
 #define WINDOW_HEADER       50
 #define WINDOW_WIDTH        450
 #define WINDOW_HEIGHT       300
