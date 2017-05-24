@@ -9,6 +9,7 @@
 #
 #   - Mac OS X 10.6.8  / ActiveTcl 8.5.18
 #   - Mac OS X 10.12.5 / Apple 8.5.9
+#   - Mac OS X 10.12.5 / ActiveTcl 8.6.4
 #
 
 # ------------------------------------------------------------------------------------------------------------
@@ -30,12 +31,17 @@ rep=$(pwd)
 
 # ActiveTcl ( http://wiki.tcl.tk/1875 ).
 
-wish="/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
+wish="/Library/Frameworks/Tk.framework/Versions/8.6/Resources/Wish.app"
 
 if [ -e "${wish}" ]; then
-    echo "Build with ActiveTcl 8.5 ..."
+    echo "Build with ActiveTcl 8.6 ..."
 else
-    wish="/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
+    wish="/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
+    if [ -e "${wish}" ]; then
+        echo "Build with ActiveTcl 8.5 ..."
+    else
+        wish="/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
+    fi
 fi
 
 [ -e "${wish}" ] || { echo >&2 "${0##*/}: cannot find Tk framework"; exit 1; }
