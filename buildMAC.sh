@@ -110,6 +110,7 @@ mkdir "${folder}"                                               || exit 1
 cp -R "${wish}" "${app}"                                        || exit 1
 rm -f "${app}/Contents/Info.plist"                              || exit 1
 rm -f "${app}/Contents/PkgInfo"                                 || exit 1
+rm -f "${app}/Contents/version.plist"                           || exit 1
 rm -f "${app}/Contents/MacOS/Wish Shell"                        || exit 1
 rm -rf "${app}/Contents/_CodeSignature"                         || exit 1
 rm -f "${app}/Contents/CodeResources"                           || exit 1
