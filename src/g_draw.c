@@ -117,18 +117,12 @@ void glist_updateLineSelected (t_glist *glist, int isSelected)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
     //
-    if (isSelected) {
+    int color = (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     
-    sys_vGui ("%s.c itemconfigure %lxLINE -fill blue\n",
+    sys_vGui ("%s.c itemconfigure %lxLINE -fill #%06x\n",
                     glist_getTagAsString (glist),
-                    editor_getSelectedLineConnection (glist_getEditor (glist)));
-                    
-    } else {
-    
-    sys_vGui ("%s.c itemconfigure %lxLINE -fill black\n",
-                    glist_getTagAsString (glist),
-                    editor_getSelectedLineConnection (glist_getEditor (glist)));
-    }
+                    editor_getSelectedLineConnection (glist_getEditor (glist)), 
+                    color);
     //
     }
 }
