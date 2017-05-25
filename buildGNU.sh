@@ -46,7 +46,7 @@ isJack=$(dpkg-query -W -f='${Status}' libjack-dev 2>/dev/null | grep -c "ok inst
 
 # Paths.
 
-folder="${rep}/spaghettis"
+folder="${rep}/build"
 bin="${rep}/bin"
 tcl="${rep}/tcl"
 help="${rep}/resources/help"
@@ -99,9 +99,9 @@ cd "${rep}"                                                     || exit 1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Create the folder.
+# Create the directory.
 
-echo "Create folder ..."
+echo "Create directory ..."
 mkdir "${folder}"                                               || exit 1
 cp -R "${bin}" "${folder}"                                      || exit 1
 cp -R "${tcl}" "${folder}"                                      || exit 1
