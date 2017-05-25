@@ -8,6 +8,7 @@
 # Tested on:
 #
 #   - Mac OS X 10.6.8  / ActiveTcl 8.5.18
+#   - Mac OS X 10.12.5 / Apple 8.5.9
 #   - Mac OS X 10.12.5 / ActiveTcl 8.5.18
 #
 
