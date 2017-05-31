@@ -4,7 +4,6 @@ makefile.dependencies
 build/
 externals/
 Application/
-spaghettis/
 *.mode2v3
 *.pbxuser
 xcuserdata/
