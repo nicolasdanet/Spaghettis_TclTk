@@ -84,7 +84,7 @@ t_error     devices_getOutAtIndexAsString       (t_devicesproperties *p, int i, 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark-
+// MARK: -
 
 static inline int devices_getBlockSize (t_devicesproperties *p)
 {
@@ -98,7 +98,7 @@ static inline int devices_getSampleRate (t_devicesproperties *p)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark-
+// MARK: -
 
 static inline int devices_getInSize (t_devicesproperties *p)
 {
@@ -176,21 +176,21 @@ t_error     deviceslist_appendAudioOut              (t_deviceslist *p, const cha
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark-
+// MARK: -
 
 char        *deviceslist_getInAtIndexAsString       (t_deviceslist *p, int i);
 char        *deviceslist_getOutAtIndexAsString      (t_deviceslist *p, int i);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark-
+// MARK: -
 
 int         deviceslist_containsIn                  (t_deviceslist *p, char *device);
 int         deviceslist_containsOut                 (t_deviceslist *p, char *device);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark-
+// MARK: -
 
 int         deviceslist_getTotalOfChannelsIn        (t_deviceslist *p);
 int         deviceslist_getTotalOfChannelsOut       (t_deviceslist *p);
