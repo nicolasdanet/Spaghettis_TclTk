@@ -396,7 +396,7 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner)
             x->x_gui.iem_fontSize,
             x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel);
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     stub_new (cast_pd (x), (void *)x, t);
 }

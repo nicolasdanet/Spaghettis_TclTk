@@ -648,7 +648,7 @@ void garray_functionProperties (t_garray *x)
                 x->x_saveWithParent,
                 PD_CLAMP (style, PLOT_POLYGONS, PLOT_CURVES));
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     stub_new (cast_pd (x), (void *)x, t);
 }

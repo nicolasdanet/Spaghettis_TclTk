@@ -54,7 +54,7 @@ void editor_boxAdd (t_editor *x, t_object *object)
     //
     t_glist *view = glist_getView (x->e_owner);
     t_error err = string_sprintf (box->box_tag, BOX_TAG_SIZE, "%s.%lxBOX", glist_getTagAsString (view), box);
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     //
     }
     

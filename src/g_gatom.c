@@ -394,7 +394,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
                 x->a_position);
     }
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     stub_new (cast_pd (x), (void *)x, t);
 }

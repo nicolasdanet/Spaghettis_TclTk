@@ -45,7 +45,7 @@ void bounds_setCopy (t_bounds *b, t_bounds *toCopy)
 {
     t_error err = bounds_set (b, toCopy->b_left, toCopy->b_top, toCopy->b_right, toCopy->b_bottom);
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
 }
 
 int bounds_areEquals (t_bounds *b1, t_bounds *b2)

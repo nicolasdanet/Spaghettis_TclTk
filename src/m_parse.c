@@ -256,7 +256,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     //
     }
     
-    err = atom_toString (a, t, PD_STRING); PD_ASSERT (!err);
+    err = atom_toString (a, t, PD_STRING); PD_UNUSED (err); PD_ASSERT (!err);
     
     n = (int)(strlen (t) + 1);
     
@@ -376,7 +376,7 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
     if (!IS_FLOAT (a)) {
         char t[PD_STRING] = { 0 };
         t_error err = atom_toString (a, t, PD_STRING);
-        PD_ASSERT (!err);
+        PD_UNUSED (err); PD_ASSERT (!err);
         SET_SYMBOL (a, gensym (t));
     }
     //
@@ -402,7 +402,7 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
     else {
         char *s = GET_SYMBOL (argv + i)->s_name;
         t_error err = atom_withStringUnzeroed (a, s, (int)strlen (s));
-        PD_ASSERT (!err);
+        PD_UNUSED (err); PD_ASSERT (!err);
     }
     //
     }

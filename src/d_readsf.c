@@ -532,7 +532,7 @@ static void *readsf_tilde_new (t_float f1, t_float f2)
     err |= (pthread_cond_init (&x->sf_condAnswer, NULL) != 0);
     err |= (pthread_create (&x->sf_thread, NULL, readsf_tilde_thread, (void *)x) != 0);
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     return x;
 }

@@ -50,7 +50,7 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 
     if (ptr == s) {                                       
         err = string_sprintf (buffer, size, "$");       /* Unsubstituted dollars are preserved. */
-        PD_ASSERT (!err);
+        PD_UNUSED (err); PD_ASSERT (!err);
         return 0;
 
     } else if (n == 0) {                                    

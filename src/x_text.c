@@ -127,7 +127,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     
     {
         t_error err = scalar_setInternalBuffer (x->x_scalar, sym_t, textbuffer_getBuffer (&x->x_textbuffer));
-        PD_ASSERT (!err);
+        PD_UNUSED (err); PD_ASSERT (!err);
     }
 
     x->x_outlet = outlet_new (cast_object (x), &s_pointer);
@@ -175,7 +175,7 @@ static void textdefine_free (t_textdefine *x)
     
     {
         t_error err = scalar_unsetInternalBuffer (x->x_scalar, sym_t);
-        PD_ASSERT (!err);
+        PD_UNUSED (err); PD_ASSERT (!err);
     }
     
     pd_free (cast_pd (x->x_scalar));

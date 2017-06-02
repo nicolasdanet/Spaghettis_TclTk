@@ -126,6 +126,7 @@ int properties_getKey (const char *key, char *value, int size)
 
     PD_ASSERT (properties_loadBuffer != NULL);
     PD_ASSERT (!err);
+    PD_UNUSED (err);
     
     p = strstr (properties_loadBuffer, t);
     

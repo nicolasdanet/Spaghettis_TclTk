@@ -159,7 +159,8 @@ static t_error soundfile_readFileHeaderCanonicalWAVE (int f, t_headerhelper *t, 
     
     PD_ASSERT (fmtSize == 16);
     PD_ASSERT (audioFormat == WAVE_FORMAT_PCM || audioFormat == WAVE_FORMAT_FLOAT);
-
+    PD_UNUSED (fmtSize);
+    
     if (audioFormat == WAVE_FORMAT_PCM || audioFormat == WAVE_FORMAT_FLOAT) {
     //
     if (bitsPerSample == 16 || bitsPerSample == 24 || bitsPerSample == 32) {
@@ -202,7 +203,9 @@ static t_error soundfile_readFileHeaderCanonicalAIFF (int f, t_headerhelper *t, 
     
     PD_ASSERT (offset == 0);        /* Not tested nor implemented for now. */
     PD_ASSERT (blockAlign == 0);    /* Ditto. */
-
+    PD_UNUSED (offset);
+    PD_UNUSED (blockAlign);
+    
     if (bitsPerSample == 16 || bitsPerSample == 24 || bitsPerSample == 32) {
     //
     args->ap_headerSize        = SOUNDFILE_HEADER_AIFF;
@@ -658,7 +661,7 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
     
     err = path_withDirectoryAndName (filepath, PD_STRING, directory, name);
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     f = file_openRaw (filepath, O_CREAT | O_TRUNC | O_WRONLY);
     

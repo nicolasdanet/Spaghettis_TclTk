@@ -203,7 +203,7 @@ t_symbol *utils_makeBindSymbol (t_symbol *s)
     char t[PD_STRING] = { 0 };
     PD_ASSERT (s);
     err = string_sprintf (t, PD_STRING, UTILS_BIND "%s", s->s_name);
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     return gensym (t);
 }
 
@@ -213,7 +213,7 @@ t_symbol *utils_makeTemplateIdentifier (t_symbol *s)
     char t[PD_STRING] = { 0 };
     PD_ASSERT (s);
     err = string_sprintf (t, PD_STRING, UTILS_BIND_TEMPLATE "%s", s->s_name);
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     return gensym (t);
 }
 

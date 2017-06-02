@@ -127,7 +127,9 @@ static int subchunk_parseSSND (t_headerhelper *t, t_audioproperties *args)
     
     PD_ASSERT (offset == 0);        /* Not tested nor implemented for now. */
     PD_ASSERT (blockAlign == 0);    /* Ditto. */
-
+    PD_UNUSED (offset);
+    PD_UNUSED (blockAlign);
+    
     args->ap_dataSizeInBytes = t->h_chunkSize - SOUNDFILE_SUBCHUNK_HEADER;
     
     return 8 + SOUNDFILE_SUBCHUNK_HEADER;

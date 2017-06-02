@@ -85,7 +85,7 @@ t_proxy *proxy_new (t_pd *owner)
 {
     char t[PD_STRING] = { 0 }; t_error err = string_sprintf (t, PD_STRING, ".x%lx", owner);
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     return proxy_newWithBound (owner, gensym (t));
 }

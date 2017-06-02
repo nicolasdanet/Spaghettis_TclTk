@@ -154,7 +154,7 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     t_error err = bounds_setByAtoms (&bounds, argc, argv);
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     #if PD_WITH_LEGACY
     
@@ -244,7 +244,7 @@ static void canvas_requireArrayDialog (t_glist *glist)
                         "::ui_array::show %%s %s 100 1 -1 1 1\n", 
                         utils_getDefaultBindName (garray_class, sym_array)->s_name);
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     stub_new (cast_pd (glist), (void *)glist, t);
 }
@@ -392,7 +392,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
                             bounds_getRight (bounds),
                             bounds_getBottom (bounds));
 
-        PD_ASSERT (!err);
+        PD_UNUSED (err); PD_ASSERT (!err);
     
         stub_new (cast_pd (glist), (void *)glist, t);
     }

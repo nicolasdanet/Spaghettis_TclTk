@@ -114,6 +114,7 @@ static void dial_setString (t_dial *x)
     t_error err = string_sprintf (x->x_t, IEM_DIGITS_SIZE, "%f", x->x_floatValue);
     PD_ASSERT (!err);
     PD_ASSERT (x->x_digitsNumber < IEM_DIGITS_SIZE);
+    PD_UNUSED (err);
     x->x_t[x->x_digitsNumber] = 0;
 }
 
@@ -671,7 +672,7 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner)
             x->x_gui.iem_fontSize,
             x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel);
     
-    PD_ASSERT (!err);
+    PD_UNUSED (err); PD_ASSERT (!err);
     
     stub_new (cast_pd (x), (void *)x, t);
 }

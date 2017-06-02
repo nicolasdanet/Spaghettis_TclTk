@@ -66,7 +66,7 @@ static void callback_task (t_pipecallback *h)
     
     for (i = owner->x_size - 1; i >= 0; i--) {
         t_error err = atomoutlet_outputAtom (owner->x_vector + i, h->h_atoms + i);
-        PD_ASSERT (!err);
+        PD_UNUSED (err); PD_ASSERT (!err);
     }
     
     callback_free (h);

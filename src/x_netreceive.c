@@ -78,7 +78,7 @@ static void netreceive_receiversAdd (t_netreceive *x, t_receiver *receiver)
         }
     }
     
-    PD_ASSERT (hasFilledEmptySlot);
+    PD_UNUSED (hasFilledEmptySlot); PD_ASSERT (hasFilledEmptySlot);
     
     if (x->nr_protocol == SOCK_STREAM) { outlet_float (x->nr_outletRight, x->nr_numberOfConnections); }
 }

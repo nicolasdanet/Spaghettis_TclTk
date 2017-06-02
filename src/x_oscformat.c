@@ -283,7 +283,7 @@ static void oscformat_set (t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
     
     if (err) { error_invalid (sym_oscformat, sym_path); }
     else {
-        err = string_copy (x->x_path, PD_STRING, t); PD_ASSERT (!err);
+        err = string_copy (x->x_path, PD_STRING, t); PD_UNUSED (err); PD_ASSERT (!err);
     }
 }
 
