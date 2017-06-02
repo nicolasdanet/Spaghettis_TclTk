@@ -117,7 +117,7 @@ void devices_checkDisabled (t_devicesproperties *p)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 t_error devices_appendMidiInAsNumber (t_devicesproperties *p, int n)
 {
@@ -203,7 +203,7 @@ t_error devices_appendAudioOut (t_devicesproperties *p, char *device, int channe
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 t_error devices_getInAtIndexAsString (t_devicesproperties *p, int i, char *dest, size_t size)
 {

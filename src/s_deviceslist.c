@@ -12,7 +12,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 void deviceslist_init (t_deviceslist *p)
 {
@@ -42,7 +42,7 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 t_error deviceslist_appendMidiIn (t_deviceslist *p, const char *device)
 {
@@ -108,7 +108,7 @@ t_error deviceslist_appendAudioOut (t_deviceslist *p, const char *device, int ch
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static t_error deviceslist_appendMidiInAsNumber (t_deviceslist *p, int n)
 {
@@ -182,7 +182,7 @@ static t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n, int 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 char *deviceslist_getInAtIndexAsString (t_deviceslist *p, int i)
 {
@@ -208,7 +208,7 @@ char *deviceslist_getOutAtIndexAsString (t_deviceslist *p, int i)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
 {
@@ -280,7 +280,7 @@ void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 int deviceslist_containsIn (t_deviceslist *p, char *device)
 {
@@ -306,7 +306,7 @@ int deviceslist_containsOut (t_deviceslist *p, char *device)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 int deviceslist_getTotalOfChannelsIn (t_deviceslist *p)
 {

@@ -5,7 +5,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -36,7 +36,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 void soundfile_initialize (void)
 {
@@ -58,7 +58,7 @@ void soundfile_initialize (void)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 t_error soundfile_readFileParse (t_symbol *s, int *ac, t_atom **av, t_audioproperties *args)
 {
@@ -138,7 +138,7 @@ t_error soundfile_readFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprope
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static t_error soundfile_readFileHeaderCanonicalWAVE (int f, t_headerhelper *t, t_audioproperties *args)
 {
@@ -306,7 +306,7 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static int soundfile_readFileHeaderProceed (int f, t_audioproperties *args)
 {
@@ -359,7 +359,7 @@ int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioproperties *args)
 {
@@ -494,7 +494,7 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static t_error soundfile_writeFileHeaderWAVE (t_headerhelper *t, t_audioproperties *args)
 {
@@ -673,7 +673,7 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 t_error soundfile_writeFileCloseWAVE (int f, t_audioproperties *args)
 {

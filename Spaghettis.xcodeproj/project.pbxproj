@@ -1819,7 +1819,6 @@
 			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "Spaghettis" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
@@ -2223,7 +2222,6 @@
 					"-Wshadow",
 					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
-					"-Wno-unknown-pragmas",
 				);
 			};
 			name = Debug;
@@ -2256,7 +2254,6 @@
 					"-Wshadow",
 					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
-					"-Wno-unknown-pragmas",
 				);
 			};
 			name = Release;
@@ -2283,7 +2280,6 @@
 					"-Wshadow",
 					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
-					"-Wno-unknown-pragmas",
 				);
 			};
 			name = Debug;
@@ -2298,7 +2294,6 @@
 					"-Wshadow",
 					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
-					"-Wno-unknown-pragmas",
 				);
 			};
 			name = Release;
@@ -2313,7 +2308,6 @@
 					"-Wshadow",
 					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
-					"-Wno-unknown-pragmas",
 				);
 			};
 			name = Debug;
@@ -2328,7 +2322,6 @@
 					"-Wshadow",
 					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
-					"-Wno-unknown-pragmas",
 				);
 			};
 			name = Release;
@@ -2343,7 +2336,6 @@
 					"-Wshadow",
 					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
-					"-Wno-unknown-pragmas",
 				);
 			};
 			name = Debug;
@@ -2358,7 +2350,6 @@
 					"-Wshadow",
 					"-Wshorten-64-to-32",
 					"-Wno-unused-parameter",
-					"-Wno-unknown-pragmas",
 				);
 			};
 			name = Release;

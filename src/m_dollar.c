@@ -12,7 +12,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static int dollar_getDollarZero (t_glist *glist)
 {
@@ -73,7 +73,7 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
 {
@@ -147,7 +147,7 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, t_glist *glist, int argc, t_at
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv)
 {

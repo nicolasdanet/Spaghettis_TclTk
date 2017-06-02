@@ -5,7 +5,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -38,7 +38,7 @@ typedef struct _drawnumber {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static void drawnumber_behaviorGetRectangle      (t_gobj *, t_gpointer *, t_float, t_float, t_rectangle *);
 static void drawnumber_behaviorVisibilityChanged (t_gobj *, t_gpointer *, t_float, t_float, int);
@@ -56,7 +56,7 @@ static t_painterwidgetbehavior drawnumber_widgetBehavior =
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 void drawnumber_release (void)
 {
@@ -65,7 +65,7 @@ void drawnumber_release (void)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static t_error drawnumber_getContents (t_drawnumber *x, t_gpointer *gp, char *dest, int size, int *m, int *n)
 {
@@ -80,7 +80,7 @@ static t_error drawnumber_getContents (t_drawnumber *x, t_gpointer *gp, char *de
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static void drawnumber_float (t_drawnumber *x, t_float f)
 {
@@ -127,7 +127,7 @@ static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static void drawnumber_behaviorGetRectangle (t_gobj *z,
     t_gpointer *gp,
@@ -256,7 +256,7 @@ static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
 {
@@ -301,7 +301,7 @@ static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 void drawnumber_setup (void)
 {

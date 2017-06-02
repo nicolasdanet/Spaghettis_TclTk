@@ -12,7 +12,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static t_error string_appendProceed (char *dest, size_t size, const char *src, int n)
 {
@@ -38,7 +38,7 @@ static t_error string_appendProceed (char *dest, size_t size, const char *src, i
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 t_error string_copy (char *dest, size_t size, const char *src)
 {
@@ -122,7 +122,7 @@ t_error string_clear (char *dest, size_t size)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 int string_startWith (const char *s, const char *isStartWith)
 {
@@ -179,7 +179,7 @@ void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numb
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 static int string_indexOfFirstCharUntil (char *s, char c, int n)
 {
@@ -244,7 +244,7 @@ int string_indexOfFirstOccurrenceFromEnd (char *s, const char *c)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 void string_replaceCharacter (char *s, char toBeReplaced, char c)
 {
@@ -255,7 +255,7 @@ void string_replaceCharacter (char *s, char toBeReplaced, char c)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+// MARK: -
 
 /* True if the string start with a dollar following by zero or more numbers. */
 

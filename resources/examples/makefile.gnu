@@ -16,7 +16,7 @@ EXTERNALS = ./externals
 
 # Warnings
 
-WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-unknown-pragmas
+WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 
 # Flags.
 
