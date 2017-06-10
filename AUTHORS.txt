@@ -8,3 +8,4 @@ Authors (thanks to):
 Contributors sorted by first contribution (since original fork):
 
     Nicolas Danet < nicolas.danet@free.fr >
+
