@@ -1,18 +1,10 @@
 
-###
-
 Add a "snap to grid" feature.
 Clean and test all patches.
 
-###
-
-Improve the search path ala Max/MSP.
+Improve the search path.
 Add unlimited undo mechanism.
-
-###
 
 Encapsulate all static variables into instance.
 Profile and optimize code.
-Think about an unit testing system.
-
-###
+Think about an unit test suite.
