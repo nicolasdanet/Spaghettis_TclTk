@@ -2199,6 +2199,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					PD_WITH_DEBUG,
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
 				);
@@ -2231,6 +2232,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					PD_WITH_DEBUG,
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
 				);
