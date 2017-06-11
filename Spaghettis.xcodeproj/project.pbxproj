@@ -384,15 +384,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
-		8DD76FAF0486AB0100D96B5E /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -1795,9 +1786,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "pd" */;
 			buildPhases = (
+				1754B0051EED3B19000C3886 /* ShellScript */,
 				8DD76FAB0486AB0100D96B5E /* Sources */,
 				8DD76FAD0486AB0100D96B5E /* Frameworks */,
-				8DD76FAF0486AB0100D96B5E /* CopyFiles */,
+				175D6C521EED6D27007E1722 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1835,6 +1827,35 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1754B0051EED3B19000C3886 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rep=\"${SOURCE_ROOT}\"\n\nwish=\"/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app\"\n\nif [ ! -e \"${wish}\" ]; then\n    wish=\"/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app\"\nfi\n\nfolder=\"${rep}/Debug\"\napp=\"${folder}/Spaghettis.app\"\nplist=\"${rep}/resources/Info.plist\"\nbin=\"${rep}/bin\"\ntcl=\"${rep}/tcl\"\nhelp=\"${rep}/resources/help\"\nextras=\"${rep}/resources/extras\"\npatches=\"${rep}/resources/patches\"\n\nmkdir \"${folder}\" || exit 1\n\ncp -R \"${wish}\" \"${app}\"\nrm -f \"${app}/Contents/Info.plist\"\nrm -f \"${app}/Contents/PkgInfo\"\nrm -f \"${app}/Contents/version.plist\"\nrm -f \"${app}/Contents/MacOS/Wish Shell\"\nrm -rf \"${app}/Contents/_CodeSignature\"\nrm -f \"${app}/Contents/CodeResources\"\nrm -f \"${app}/Contents/Resources/Wish.sdef\"\ncp -p \"${plist}\" \"${app}/Contents/Info.plist\"\necho \"APPL????\" > \"${app}/Contents/PkgInfo\"\nmv \"${app}/Contents/MacOS/Wish\" \"${app}/Contents/MacOS/Pd\"\ncp -R \"${tcl}\" \"${app}/Contents/Resources/\"\ncp -R \"${help}\" \"${app}/Contents/Resources/\"\ncp -R \"${extras}\" \"${app}/Contents/Resources/\"\ncd \"${app}/Contents/Resources/\"\nln -s \"tcl\" \"Scripts\"\ncd \"${rep}\"\ncp -R \"${patches}\" \"${folder}\"";
+		};
+		175D6C521EED6D27007E1722 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rep=\"${SOURCE_ROOT}\"\nbin=\"${BUILT_PRODUCTS_DIR}/pd\"\ndestination=\"${rep}/Debug/Spaghettis.app/Contents/Resources/bin\"\n\nmkdir \"${destination}\" || exit 1\n\ncp \"${bin}\" \"${destination}/pd\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		379A426D1BA427B900C1CED0 /* Sources */ = {

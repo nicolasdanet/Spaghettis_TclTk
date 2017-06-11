@@ -2,6 +2,7 @@
 bin/
 makefile.dependencies
 build/
+Debug/
 externals/
 Application/
 *.mode2v3
