@@ -17,14 +17,10 @@ Build:
     Change directory to the "build.sh" script.
     Execute the "./build.sh" command.
 
-Install:
-
-    Nothing to do.
-
 Uninstall:
 
-    On macOS preferences are located in "~/Library/Application Support/Spaghettis".
-    On GNU/Linux it is "~/.spaghettisrc".
+    On macOS residual at "~/Library/Application Support/Spaghettis/".
+    Whereas for GNU/Linux it is "~/.spaghettisrc".
 
 Credits:
 
