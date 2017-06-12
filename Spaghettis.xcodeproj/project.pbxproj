@@ -387,6 +387,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		178037D51EEEE83100987AF8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
 		370157EB1DFFD62900F3FE0C /* d_vd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vd.c; path = src/d_vd.c; sourceTree = "<group>"; };
 		370157FC1DFFD6CE00F3FE0C /* d_delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_delay.h; path = src/d_delay.h; sourceTree = "<group>"; };
 		370158381DFFD81B00F3FE0C /* d_delread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delread.c; path = src/d_delread.c; sourceTree = "<group>"; };
@@ -879,6 +880,7 @@
 			isa = PBXGroup;
 			children = (
 				08FB7795FE84155DC02AAC07 /* Source */,
+				178037D41EEEE81700987AF8 /* Resources */,
 				379A42041BA3F4EA00C1CED0 /* Frameworks */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
@@ -892,6 +894,14 @@
 				371655A51BA3469200ABDE22 /* Spaghettis */,
 			);
 			name = Source;
+			sourceTree = "<group>";
+		};
+		178037D41EEEE81700987AF8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				178037D51EEEE83100987AF8 /* Info.plist */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
@@ -1808,6 +1818,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0830;
+				TargetAttributes = {
+					8DD76FA90486AB0100D96B5E = {
+						DevelopmentTeam = 78M35NX4JA;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "Spaghettis" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1853,7 +1869,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rep=\"${SOURCE_ROOT}\"\nbin=\"${BUILT_PRODUCTS_DIR}/pd\"\ndestination=\"${rep}/Debug/Spaghettis.app/Contents/Resources/bin\"\n\nmkdir \"${destination}\" || exit 1\n\ncp \"${bin}\" \"${destination}/pd\"\n";
+			shellScript = "rep=\"${SOURCE_ROOT}\"\nbin=\"${BUILT_PRODUCTS_DIR}/pd\"\napp=\"${rep}/Debug/Spaghettis.app\"\ndestination=\"${app}/Contents/Resources/bin\"\n\nmkdir \"${destination}\" || exit 1\n\ncp \"${bin}\" \"${destination}/pd\"\n\ncodesign -s \"${EXPANDED_CODE_SIGN_IDENTITY}\" -f \"${app}\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2219,6 +2235,8 @@
 		1DEB928608733DD80010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = 78M35NX4JA;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
@@ -2233,12 +2251,14 @@
 					libraries/portmidi/pm_mac,
 					libraries/portmidi/porttime,
 				);
+				INFOPLIST_FILE = "$(SRCROOT)/resources/Info.plist";
 				OTHER_CFLAGS = "-ffast-math";
 				OTHER_LDFLAGS = (
 					"-ldl",
 					"-lpthread",
 				);
 				PRODUCT_NAME = pd;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2252,6 +2272,8 @@
 		1DEB928708733DD80010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEVELOPMENT_TEAM = 78M35NX4JA;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
@@ -2265,12 +2287,14 @@
 					libraries/portmidi/pm_mac,
 					libraries/portmidi/porttime,
 				);
+				INFOPLIST_FILE = "$(SRCROOT)/resources/Info.plist";
 				OTHER_CFLAGS = "-ffast-math";
 				OTHER_LDFLAGS = (
 					"-ldl",
 					"-lpthread",
 				);
 				PRODUCT_NAME = pd;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
