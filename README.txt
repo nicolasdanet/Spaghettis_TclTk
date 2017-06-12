@@ -20,7 +20,7 @@ Build:
 Uninstall:
 
     On macOS residual at "~/Library/Application Support/Spaghettis/".
-    Whereas for GNU/Linux it is "~/.spaghettisrc".
+    For GNU/Linux it is  "~/.spaghettisrc".
 
 Credits:
 
