@@ -16,7 +16,16 @@ Build:
     Download this repository.
     Change directory to the "build.sh" script.
     Execute the "./build.sh" command.
-    
+
+Install:
+
+    Nothing to do.
+
+Uninstall:
+
+    On macOS the preference file is located in "~/Application Support/Spaghettis".
+    On GNU/Linux it is "~/.spaghettisrc".
+
 Credits:
 
     Miller Puckette & others < http://msp.ucsd.edu/Software/pd-README.txt >
