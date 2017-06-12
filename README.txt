@@ -23,7 +23,7 @@ Install:
 
 Uninstall:
 
-    On macOS the preference file is located in "~/Application Support/Spaghettis".
+    On macOS preferences are located in "~/Library/Application Support/Spaghettis".
     On GNU/Linux it is "~/.spaghettisrc".
 
 Credits:
