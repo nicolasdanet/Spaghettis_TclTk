@@ -252,6 +252,8 @@ void        path_slashToBackslashIfNecessary        (char *s);
 void        path_backslashToSlashIfNecessary        (char *s);
 int         path_isFileExist                        (const char *filepath);
 int         path_isFileExistAsRegularFile           (const char *filepath);
+int         path_isFileExistAsDirectory             (const char *filepath);
+t_error     path_createDirectory                    (const char *filepath);
 
 t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 

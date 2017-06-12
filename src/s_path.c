@@ -49,6 +49,16 @@ int path_isFileExistAsRegularFile (const char *filepath)
     struct stat t; return ((stat (filepath, &t) == 0) && S_ISREG (t.st_mode));
 }
 
+int path_isFileExistAsDirectory (const char *filepath)
+{
+    struct stat t; return ((stat (filepath, &t) == 0) && S_ISDIR (t.st_mode));
+}
+
+t_error path_createDirectory (const char *filepath)
+{
+    return (mkdir (filepath, S_IRWXU) != 0);
+}
+
 #else   
     /* < https://msdn.microsoft.com/en-us/library/aa364944%28v=vs.85%29.aspx > */
     #error

@@ -10,8 +10,7 @@ VPATH = ../obj
 BIN_DIR = ../bin
 TCL_DIR = ../tcl
 
-HELP_DIR   = ../resources/help
-EXTRAS_DIR = ../resources/extras
+HELP_DIR = ../resources/help
 
 # Install paths.
 
@@ -32,7 +31,6 @@ libpddir        = $(libdir)/pd
 libpdbindir     = $(libpddir)/bin
 libpdtcldir     = $(libpddir)/tcl
 libpdhelpdir    = $(libpddir)/help
-libpdextrasdir  = $(libpddir)/extras
 
 # Warnings
 
@@ -140,8 +138,6 @@ install: all
 	install $(HELP_DIR)/*.pdhelp $(DESTDIR)$(libpdhelpdir)
 	install $(HELP_DIR)/*.txt $(DESTDIR)$(libpdhelpdir)
 	install $(HELP_DIR)/*.aiff $(DESTDIR)$(libpdhelpdir)
-	@echo "Install extras ..."
-	install -d $(DESTDIR)$(libpdextrasdir)
 	@echo "Install headers ..."
 	install -d $(DESTDIR)$(includedir)
 	install -m644 m_pd.h $(DESTDIR)$(includedir)/m_pd.h
@@ -156,8 +152,6 @@ uninstall:
 	rm -f -r $(DESTDIR)$(libpddir)
 	@echo "Uninstall help ..."
 	rm -f -r $(DESTDIR)$(libpdhelpdir)
-	@echo "Uninstall extras ..."
-	rm -f -r $(DESTDIR)$(libpdextrasdir)
 	@echo "Uninstall headers ..."
 	rm -f $(DESTDIR)$(includedir)/m_pd.h
 

@@ -16,7 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_symbol *main_directoryHelp;
-extern t_symbol *main_directoryExtras;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -131,10 +130,6 @@ int file_openConsideringSearchPath (const char *directory,
     t_fileproperties *p)
 {
     int f = file_openWithDirectoryAndName (directory, name, extension, p);
-    
-    if (f < 0) {
-        f = file_openWithDirectoryAndName (main_directoryExtras->s_name, name, extension, p);
-    }
     
     if (f < 0) {
         t_pathlist *l = instance_getSearchPath();

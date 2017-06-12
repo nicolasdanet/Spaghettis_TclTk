@@ -18,10 +18,9 @@ t_symbol    *main_directoryRoot;                        /* Static. */
 t_symbol    *main_directoryBin;                         /* Static. */
 t_symbol    *main_directoryTcl;                         /* Static. */
 t_symbol    *main_directoryHelp;                        /* Static. */
-t_symbol    *main_directoryExtras;                      /* Static. */
+t_symbol    *main_directorySupport;                     /* Static. */
 
 int         main_portNumber;                            /* Static. */
-int         main_directoryWriteRequirePrivileges;       /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -214,11 +213,9 @@ static t_error main_getRootDirectory (void)
         err = string_copy (t2, PD_STRING, t1);
         err |= string_add (t2, PD_STRING, "/lib/pd");
         
-        if (!err && path_isFileExist (t2)) {                                              /* Complexe. */
-            main_directoryRoot = gensym (t2); main_directoryWriteRequirePrivileges = 1;
-            
-        } else {
-            main_directoryRoot = gensym (t1);                                             /* Simple. */
+        if (!err && path_isFileExist (t2)) { main_directoryRoot = gensym (t2); }    /* Complexe. */
+        else {
+            main_directoryRoot = gensym (t1);   /* Simple. */
         }
     #endif
     //
@@ -237,11 +234,35 @@ t_error main_setPaths (t_symbol *root)
     char t[PD_STRING] = { 0 };
     
     const char *s = root->s_name;
+    const char *home = getenv ("HOME");
     
-    if (!(err |= string_sprintf (t, PD_STRING, "%s/bin",    s))) { main_directoryBin    = gensym (t); }
-    if (!(err |= string_sprintf (t, PD_STRING, "%s/tcl",    s))) { main_directoryTcl    = gensym (t); }
-    if (!(err |= string_sprintf (t, PD_STRING, "%s/help",   s))) { main_directoryHelp   = gensym (t); }
-    if (!(err |= string_sprintf (t, PD_STRING, "%s/extras", s))) { main_directoryExtras = gensym (t); }
+    err |= (home == NULL);
+    
+    if (!err) {
+    //
+    #if PD_APPLE
+    
+    err |= string_sprintf (t, PD_STRING, "%s/Library/Application Support/"PD_NAME, home);
+    
+    if (!err && !path_isFileExistAsDirectory (t)) {
+        err |= path_createDirectory (t);
+    }
+    
+    #else
+    
+    err |= string_sprintf (t, PD_STRING, "%s", home);
+    
+    #endif
+    
+    if (!err) {
+        main_directorySupport = gensym (t);
+    }
+    
+    if (!(err |= string_sprintf (t, PD_STRING, "%s/bin",  s))) { main_directoryBin  = gensym (t); }
+    if (!(err |= string_sprintf (t, PD_STRING, "%s/tcl",  s))) { main_directoryTcl  = gensym (t); }
+    if (!(err |= string_sprintf (t, PD_STRING, "%s/help", s))) { main_directoryHelp = gensym (t); }
+    //
+    }
     
     return err;
     //
@@ -272,11 +293,11 @@ int main_entry (int argc, char **argv)
     err |= main_parseArguments (argc - 1, argv + 1);
     err |= main_setPaths (main_directoryRoot);
     
-    PD_ASSERT (main_directoryRoot   != NULL);
-    PD_ASSERT (main_directoryBin    != NULL);
-    PD_ASSERT (main_directoryTcl    != NULL);
-    PD_ASSERT (main_directoryHelp   != NULL);
-    PD_ASSERT (main_directoryExtras != NULL);
+    PD_ASSERT (main_directoryRoot    != NULL);
+    PD_ASSERT (main_directoryBin     != NULL);
+    PD_ASSERT (main_directoryTcl     != NULL);
+    PD_ASSERT (main_directoryHelp    != NULL);
+    PD_ASSERT (main_directorySupport != NULL);
     
     if (main_version) { err |= main_entryVersion (0); }
     else {

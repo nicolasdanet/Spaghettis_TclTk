@@ -13,12 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_symbol     *main_directoryExtras;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-extern int          main_directoryWriteRequirePrivileges;
+extern t_symbol *main_directorySupport;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -41,12 +36,11 @@ t_error properties_loadBegin (void)
     
     t_error err = PD_ERROR_NONE;
     
-    if (!main_directoryWriteRequirePrivileges) {
-        err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
-    } else {
-        char *home = getenv ("HOME");
-        err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", (home ? home : "."));
-    }
+    #if PD_APPLE
+    err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directorySupport->s_name);
+    #else
+    err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", main_directorySupport->s_name);
+    #endif
 
     if (!err) { err |= !path_isFileExist (filepath); }
     if (!err) {
@@ -96,12 +90,11 @@ t_error properties_saveBegin (void)
     
     t_error err = PD_ERROR_NONE;
     
-    if (!main_directoryWriteRequirePrivileges) {
-        err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
-    } else {
-        char *home = getenv ("HOME");
-        err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", (home ? home : "."));
-    }
+    #if PD_APPLE
+    err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directorySupport->s_name);
+    #else
+    err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", main_directorySupport->s_name);
+    #endif
     
     if (!err) { err = ((properties_saveFile = file_openWrite (filepath)) == NULL); }
     

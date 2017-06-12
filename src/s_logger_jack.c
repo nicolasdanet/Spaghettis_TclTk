@@ -25,7 +25,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_symbol *main_directoryExtras;
+extern t_symbol *main_directorySupport;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ t_error logger_initializeNative (void)
 {
     size_t k = PD_NEXT_POWER_2 (JACK_LOGGER_BUFFER_SIZE);
     char t[PD_STRING] = { 0 };
-    t_error err = string_sprintf (t, PD_STRING, "%s/log-XXXXXX", main_directoryExtras->s_name);
+    t_error err = string_sprintf (t, PD_STRING, "%s/log-XXXXXX", main_directorySupport->s_name);
     
     if (!err && (logger_file = mkstemp (t)) != -1) {
     //
