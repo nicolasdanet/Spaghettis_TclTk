@@ -2220,9 +2220,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					PD_WITH_DEBUG,
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
+					PD_WITH_DEBUG,
 				);
 				HEADER_SEARCH_PATHS = (
 					libraries/portaudio/include,
@@ -2253,7 +2253,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					PD_WITH_DEBUG,
 					PD_BUILDING_APPLICATION,
 					PA_USE_COREAUDIO,
 				);
