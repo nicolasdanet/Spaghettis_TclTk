@@ -67,9 +67,9 @@ proc getDefaultFamily {} {
                 "Inconsolata" \
                 "Consolas" \
                 "Droid Sans Mono" \
+                "Andale Mono" \
                 "Menlo" \
-                "Monaco" \
-                "Andale Mono" }
+                "Monaco" }
               
     foreach family $fonts {
         if {[lsearch -exact -nocase [font families] $family] > -1} {
