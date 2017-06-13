@@ -1,12 +1,24 @@
 
+###
+
 Add a "snap to grid" feature.
 Clean and test all patches.
+
+###
 
 Improve the search path.
 Add unlimited undo mechanism.
 
+###
+
 Encapsulate all static variables into instance.
 Profile and optimize code.
 Use generic containers (i.e linked list).
+
+###
+
 Think about an unit test suite.
+Replace the Tk GUI (make MVC more strict).
+
+###
 
