@@ -638,7 +638,6 @@ PD_DLL t_symbol *gensym                         (const char *s);
 
 PD_DLL void     *sys_getMemory                  (size_t n);
 PD_DLL void     *sys_getMemoryResize            (void *ptr, size_t oldSize, size_t newSize);
-
 PD_DLL void     sys_freeMemory                  (void *ptr);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -725,8 +724,8 @@ PD_DLL void     buffer_append                   (t_buffer *x, int argc, t_atom *
 PD_DLL t_clock  *clock_new                      (void *owner, t_method fn);
 
 PD_DLL void     clock_free                      (t_clock *x);
-PD_DLL void     clock_unset                     (t_clock *x);
-PD_DLL void     clock_delay                     (t_clock *x, double delay);     /* Usable in DSP perform. */
+PD_DLL void     clock_unset                     (t_clock *x);                   /* Usable in DSP perform. */
+PD_DLL void     clock_delay                     (t_clock *x, double delay);     /* Ditto. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -735,7 +734,7 @@ PD_DLL void     clock_delay                     (t_clock *x, double delay);     
 PD_DLL void     post                            (const char *fmt, ...);
 PD_DLL void     post_warning                    (const char *fmt, ...);
 PD_DLL void     post_error                      (const char *fmt, ...);
-PD_DLL void     post_log                        (const char *fmt, ...);
+PD_DLL void     post_log                        (const char *fmt, ...);         /* No-op in release build. */
                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
