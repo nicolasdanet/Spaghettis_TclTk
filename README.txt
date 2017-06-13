@@ -17,10 +17,10 @@ Build:
     Change directory to the "build.sh" script.
     Execute the "./build.sh" command.
 
-Uninstall:
+Residual:
 
-    On macOS residual at "~/Library/Application Support/Spaghettis/".
-    For GNU/Linux it is  "~/.spaghettisrc".
+    ~/Library/Application Support/Spaghettis/
+    ~/.spaghettisrc
 
 Credits:
 
