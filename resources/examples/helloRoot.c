@@ -18,7 +18,7 @@
 // MARK: -
 
 typedef struct _hello {
-    t_object    ob_;
+    t_object ob_;
     } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -53,6 +53,8 @@ PD_STUB void helloRoot_setup (t_symbol *s)
     hello_class = c;
     
     post ("My name is %s", s->s_name);          /* Absolute path of the external. */
+    
+    /* You can use it to locate its dependencies. */
 }
 
 PD_STUB void helloRoot_destroy (void)

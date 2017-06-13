@@ -11,14 +11,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Hello World. */
+/* Hello world! */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 typedef struct _hello {
-    t_object    ob_;                            /* MUST be the first. */
+    t_object ob_;                               /* MUST be the first. */
     } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -35,15 +35,9 @@ static void hello_bang (t_hello *x)
     post ("Hello world!");
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void *hello_new (void)
 {
-    t_hello *x = (t_hello *)pd_new (hello_class);
-
-    return x;
+    return pd_new (hello_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -56,7 +50,12 @@ PD_STUB void hello_setup (t_symbol *s)          /* MUST be the name of the file 
     
     /* MUST contains (at least) a class with the file name. */
     
-    c = class_new (gensym ("hello"), (t_newmethod)hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL); 
+    c = class_new (gensym ("hello"),
+            (t_newmethod)hello_new,
+            NULL,
+            sizeof (t_hello),
+            CLASS_BOX,
+            A_NULL);
     
     class_addBang (c, (t_method)hello_bang); 
     

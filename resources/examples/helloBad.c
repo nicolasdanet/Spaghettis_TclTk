@@ -18,7 +18,7 @@
 // MARK: -
 
 typedef struct _hello {
-    t_object    ob_;                            /* MUST be the first. */
+    t_object ob_;                           /* MUST be the first. */
     } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -36,10 +36,11 @@ static void *hello_new (void)
 
     t_error err = PD_ERROR_NONE;
     
-    err |= PD_ERROR;
+    err |= PD_ERROR;    /* Something wrong happens. */
     
     if (err) { 
-        pd_free ((t_pd *)x); x = NULL;
+        pd_free ((t_pd *)x);                /* It is safe to call the free method. */
+        x = NULL;
     }
     
     return x;
@@ -47,7 +48,9 @@ static void *hello_new (void)
 
 static void hello_free (t_hello *x)
 {
-    post ("Clean your room, now!");
+    post ("Clean your room, now!");         /* Clean already allocated things here. */
+    
+    /* Take care about fully vs partially constructed instance. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
