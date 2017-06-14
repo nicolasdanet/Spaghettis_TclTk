@@ -11,13 +11,13 @@ Rationale:
 
 Disclaimer:
 
-    This is a (AT YOUR OWN RISK) work-in-progress version.
+    This is an (AT YOUR OWN RISK) work-in-progress version.
     
 Build:
 
     Download this repository.
     Change directory to the "build.sh" script.
-    Execute the "./build.sh" command.
+    Run the "./build.sh" command.
     To avoid conflicts nothing is installed.
     On GNU/Linux execute "spaghettis/build/bin/pd".
     Launch the "Spaghettis.app" on macOS.
