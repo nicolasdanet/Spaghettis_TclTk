@@ -124,50 +124,16 @@ static t_error interface_launchGuiSpawnProcess (void)
 
 static t_error interface_launchGuiSpawnProcess (void) 
 {
-    t_error err = PD_ERROR_NONE;
-    
     char path[PD_STRING]    = { 0 };
     char command[PD_STRING] = { 0 };
     
-#if PD_APPLE
-
-    char *wish[10] = 
-        {
-            "/Applications/Utilities/Wish.app/Contents/MacOS/Wish",
-            "/Applications/Utilities/Wish Shell.app/Contents/MacOS/Wish Shell",
-            "/Applications/Wish.app/Contents/MacOS/Wish",
-            "/Applications/Wish Shell.app/Contents/MacOS/Wish Shell",
-            "/Library/Frameworks/Tk.framework/Resources/Wish.app/Contents/MacOS/Wish",
-            "/Library/Frameworks/Tk.framework/Resources/Wish Shell.app/Contents/MacOS/Wish Shell",
-            "/System/Library/Frameworks/Tk.framework/Resources/Wish.app/Contents/MacOS/Wish",
-            "/System/Library/Frameworks/Tk.framework/Resources/Wish Shell.app/Contents/MacOS/Wish Shell",
-            "/usr/bin/wish"
-            "wish"
-        };
+    t_error err = string_sprintf (path, PD_STRING, "%s/ui_main.tcl", main_directoryTcl->s_name);
     
-    int i; for (i = 0; i < 9; i++) { if (path_isFileExist (wish[i])) { break; } }
-
-#endif
-
-    err |= string_sprintf (path, PD_STRING, "%s/ui_main.tcl", main_directoryTcl->s_name);
-    
-#if PD_APPLE
-
-    err |= string_sprintf (command, PD_STRING, 
-            "\"%s\" \"%s\" %d\n", 
-            wish[i], 
-            path, 
-            main_portNumber);
-
-#else
-
-    err |= string_sprintf (command, PD_STRING, 
+    err |= string_sprintf (command, PD_STRING,
             "wish \"%s\" %d\n",
             path, 
             main_portNumber);
     
-#endif // PD_APPLE
-
     if (!err) {
     //
     if ((err = (path_isFileExist (path) == 0))) { PD_BUG; }
