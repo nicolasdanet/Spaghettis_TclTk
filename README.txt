@@ -3,6 +3,8 @@
 
 Yet another fork of Pure Data < https://puredata.info/ >.
 
+< http://msp.ucsd.edu/ >
+
 Rationale:
 
     Make it fast, consistent, and fully embeddable.
@@ -16,9 +18,6 @@ Build:
     Download this repository.
     Change directory to the "build.sh" script.
     Execute the "./build.sh" command.
-
-Run:
-
     To avoid conflicts nothing is installed.
     On GNU/Linux execute "spaghettis/build/bin/pd".
     Launch the "Spaghettis.app" on macOS.
