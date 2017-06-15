@@ -121,11 +121,9 @@ static void *hello_new (void)
 
 static void hello_free (t_hello *x)
 {
-    if (!x->error_) { x->~t_hello(); }      /* Call the destructor only if object is fully constructed. */
-
     /* Various deallocations. */
-    
-    post ("I have been freed properly!");
+
+    if (!x->error_) { x->~t_hello(); }      /* Call the destructor only if object is fully constructed. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
