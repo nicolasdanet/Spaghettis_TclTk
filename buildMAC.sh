@@ -46,8 +46,8 @@ fi
 
 # Paths.
 
-folder="${rep}/Application"
-app="${folder}/Spaghettis.app"
+destination="${rep}/Application"
+app="${destination}/Spaghettis.app"
 plist="${rep}/resources/Info.plist"
 bin="${rep}/bin"
 tcl="${rep}/tcl"
@@ -59,8 +59,8 @@ patches="${rep}/resources/patches"
 
 # Do not overwrite previous build.
 
-[ -e "${folder}" ] && { echo >&2 "${0##*/}: ${folder} already exist"; exit 1; }
-[ -e "${app}" ]    && { echo >&2 "${0##*/}: ${app} already exist";    exit 1; }
+[ -e "${destination}" ] && { echo >&2 "${0##*/}: ${destination} already exist"; exit 1; }
+[ -e "${app}" ] && { echo >&2 "${0##*/}: ${app} already exist"; exit 1; }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ cd "${rep}"                                                     || exit 1
 # Make the bundle.
 
 echo "Build package ..."
-mkdir "${folder}"                                               || exit 1
+mkdir "${destination}"                                          || exit 1
 cp -R "${wish}" "${app}"                                        || exit 1
 rm -f "${app}/Contents/Info.plist"                              || exit 1
 rm -f "${app}/Contents/PkgInfo"                                 || exit 1
@@ -131,7 +131,7 @@ cd "${rep}"                                                     || exit 1
 # Install materials.
 
 echo "Install patches ..."
-cp -R "${patches}" "${folder}"                                  || exit 1
+cp -R "${patches}" "${destination}"                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

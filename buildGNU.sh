@@ -46,7 +46,7 @@ isJack=$(dpkg-query -W -f='${Status}' libjack-dev 2>/dev/null | grep -c "ok inst
 
 # Paths.
 
-folder="${rep}/build"
+destination="${rep}/build"
 bin="${rep}/bin"
 tcl="${rep}/tcl"
 help="${rep}/resources/help"
@@ -57,7 +57,7 @@ patches="${rep}/resources/patches"
 
 # Do not overwrite previous build.
 
-[ -e "${folder}" ] && { echo >&2 "${0##*/}: ${folder} already exist"; exit 1; }
+[ -e "${destination}" ] && { echo >&2 "${0##*/}: ${destination} already exist"; exit 1; }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -101,10 +101,10 @@ cd "${rep}"                                                     || exit 1
 # Create the directory.
 
 echo "Create directory ..."
-mkdir "${folder}"                                               || exit 1
-cp -R "${bin}" "${folder}"                                      || exit 1
-cp -R "${tcl}" "${folder}"                                      || exit 1
-cp -R "${help}" "${folder}"                                     || exit 1
+mkdir "${destination}"                                          || exit 1
+cp -R "${bin}" "${destination}"                                 || exit 1
+cp -R "${tcl}" "${destination}"                                 || exit 1
+cp -R "${help}" "${destination}"                                || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ cp -R "${help}" "${folder}"                                     || exit 1
 # Install materials.
 
 echo "Install patches ..."
-cp -R "${patches}" "${folder}"                                  || exit 1
+cp -R "${patches}" "${destination}"                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
