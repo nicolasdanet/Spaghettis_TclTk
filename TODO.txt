@@ -14,6 +14,7 @@ Add unlimited undo mechanism.
 Encapsulate all static variables into instance.
 Profile and optimize code.
 Use generic containers (i.e linked list).
+Implement preferences and fonts management.
 
 ###
 
