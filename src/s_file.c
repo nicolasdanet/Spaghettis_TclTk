@@ -180,8 +180,8 @@ void file_openHelpPatch (t_gobj *y)
     t_error err = PD_ERROR_NONE;
     
     if (pd_class (y) == canvas_class && glist_isAbstraction (cast_glist (y))) {
-        if (!(err = (buffer_size (object_getBuffer (cast_object (y))) < 1))) {
-            atom_toString (buffer_atoms (object_getBuffer (cast_object (y))), name, PD_STRING);
+        if (!(err = (buffer_getSize (object_getBuffer (cast_object (y))) < 1))) {
+            atom_toString (buffer_getAtoms (object_getBuffer (cast_object (y))), name, PD_STRING);
             directory = environment_getDirectoryAsString (glist_getEnvironment (cast_glist (y)));
         }
     

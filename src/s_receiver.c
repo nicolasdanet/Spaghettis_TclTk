@@ -106,7 +106,7 @@ static int receiver_readHandleTCPForBinary (t_receiver *x)
     
     PD_ASSERT ((x->r_inHead != x->r_inTail) || (x->r_inHead == 0 && x->r_inTail == 0));
     
-    buffer_reset (x->r_message);
+    buffer_clear (x->r_message);
     
     for (i = x->r_inTail; top || (i != x->r_inHead); top = 0, (i = (i + 1) & (RECEIVER_BUFFER_SIZE - 1))) {
         unsigned char byte = x->r_inRaw[i];
@@ -178,7 +178,7 @@ static void receiver_readUDP (t_receiver *x, int fd)
     if (x->r_isBinary) {
 
         int i;
-        buffer_reset (x->r_message);
+        buffer_clear (x->r_message);
         for (i = 0; i < length; i++) { 
             buffer_appendFloat (x->r_message, (t_float)((unsigned char)(*(t + i))));
         }

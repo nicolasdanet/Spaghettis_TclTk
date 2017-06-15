@@ -38,17 +38,17 @@ void buffer_free (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int buffer_size (t_buffer *x)
+int buffer_getSize (t_buffer *x)
 {
     return x->b_size;
 }
 
-t_atom *buffer_atoms (t_buffer *x)
+t_atom *buffer_getAtoms (t_buffer *x)
 {
     return x->b_vector;
 }
 
-void buffer_reset (t_buffer *x)
+void buffer_clear (t_buffer *x)
 {
     buffer_resize (x, 0);
 }
@@ -144,7 +144,7 @@ void buffer_appendAtom (t_buffer *x, t_atom *a)
 
 void buffer_appendBuffer (t_buffer *x, t_buffer *y)
 {
-    buffer_append (x, buffer_size (y), buffer_atoms (y));
+    buffer_append (x, buffer_getSize (y), buffer_getAtoms (y));
 }
 
 void buffer_appendFloat (t_buffer *x, t_float f)
@@ -174,7 +174,7 @@ void buffer_appendSemicolon (t_buffer *x)
 
 t_atom *buffer_atomAtIndex (t_buffer *x, int n)
 {
-    if (n >= 0 && n < buffer_size (x)) { return (buffer_atoms (x) + n); }
+    if (n >= 0 && n < buffer_getSize (x)) { return (buffer_getAtoms (x) + n); }
     
     return NULL;
 }

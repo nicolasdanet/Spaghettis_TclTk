@@ -25,7 +25,7 @@ static void qlist_proceedWait (t_qlist *x, int doNotSend, int isAutomatic, int s
     t_buffer *b = textbuffer_getBuffer (&x->ql_textbuffer);
     int i = start + 1;
         
-    while (i < buffer_size (b) && IS_FLOAT (buffer_atomAtIndex (b, i))) { i++; }
+    while (i < buffer_getSize (b) && IS_FLOAT (buffer_atomAtIndex (b, i))) { i++; }
     
     x->ql_waitCount = i - start;
     
@@ -175,7 +175,7 @@ void qlist_rewind (t_qlist *x)
 void qlist_clear (t_qlist *x)
 {
     qlist_rewind (x);
-    buffer_reset (textbuffer_getBuffer (&x->ql_textbuffer));
+    buffer_clear (textbuffer_getBuffer (&x->ql_textbuffer));
     textbuffer_update (&x->ql_textbuffer);
 }
 

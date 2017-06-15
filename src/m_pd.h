@@ -661,9 +661,10 @@ PD_DLL t_class  *class_new                      (t_symbol *name,
                                                     int flags,
                                                     t_atomtype type1, ...);
 
-PD_DLL void     class_addSignal                 (t_class *c, t_int offset);
+
 PD_DLL void     class_addCreator                (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addMethod                 (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
+PD_DLL void     class_addSignal                 (t_class *c, t_int offset);
 PD_DLL void     class_free                      (t_class *c);
 
 PD_DLL void     class_addBang                   (t_class *c, t_method fn);
@@ -710,11 +711,11 @@ PD_DLL t_float  atom_getFloatAtIndex            (int n, int argc, t_atom *argv);
 // MARK: -
 
 PD_DLL t_buffer *buffer_new                     (void);
-PD_DLL t_atom   *buffer_atoms                   (t_buffer *x);
+PD_DLL t_atom   *buffer_getAtoms                (t_buffer *x);
 
+PD_DLL int      buffer_getSize                  (t_buffer *x);
 PD_DLL void     buffer_free                     (t_buffer *x);
-PD_DLL int      buffer_size                     (t_buffer *x);
-PD_DLL void     buffer_reset                    (t_buffer *x);
+PD_DLL void     buffer_clear                    (t_buffer *x);
 PD_DLL void     buffer_append                   (t_buffer *x, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------

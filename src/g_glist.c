@@ -445,8 +445,8 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
 
     if (!x) {
         x = (t_object *)pd_new (text_class);    /* If failed create a dummy box. */
-        if (buffer_size (t)) {
-            error_canNotMake (buffer_size (t), buffer_atoms (t)); 
+        if (buffer_getSize (t)) {
+            error_canNotMake (buffer_getSize (t), buffer_getAtoms (t));
         }
     }
 

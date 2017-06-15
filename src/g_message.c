@@ -126,7 +126,7 @@ void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
 
 static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_reset (object_getBuffer (cast_object (x)));
+    buffer_clear (object_getBuffer (cast_object (x)));
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
 }

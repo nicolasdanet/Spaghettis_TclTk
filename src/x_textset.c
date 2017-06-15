@@ -61,7 +61,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
     
         if (field < 0) {
 
-            int oldSize = buffer_size (b);
+            int oldSize = buffer_getSize (b);
             int addSemi = !buffer_isLastMessageProperlyEnded (b);
             int newSize = oldSize + addSemi + count + 1;
             

@@ -137,7 +137,7 @@ void editor_selectionCacheLines (t_editor *x)
     t_outconnect *connection = NULL;
     t_traverser t;
     
-    buffer_reset (x->e_cachedLines);
+    buffer_clear (x->e_cachedLines);
     
     traverser_start (&t, x->e_owner);
     

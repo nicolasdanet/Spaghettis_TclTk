@@ -67,7 +67,7 @@ static void texttolist_bang (t_texttolist *x)
     if (b) {
         t_buffer *t = buffer_new();
         buffer_serialize (t, b);
-        outlet_list (x->x_outlet, buffer_size (t), buffer_atoms (t));
+        outlet_list (x->x_outlet, buffer_getSize (t), buffer_getAtoms (t));
         buffer_free (t);
         
     } else { error_undefined (sym_text__space__tolist, sym_text); }
@@ -107,7 +107,7 @@ static void textfromlist_list (t_textfromlist *x, t_symbol *s, int argc, t_atom 
     t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
     
     if (b) {
-        buffer_reset (b);
+        buffer_clear (b);
         buffer_deserialize (b, argc, argv);
         textclient_update (&x->x_textclient);
     

@@ -66,7 +66,7 @@ void textdefine_set (t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
 
 static void textdefine_clear (t_textdefine *x)
 {
-    buffer_reset (textbuffer_getBuffer (&x->x_textbuffer));
+    buffer_clear (textbuffer_getBuffer (&x->x_textbuffer));
     textbuffer_update (&x->x_textbuffer);
 }
 

@@ -201,7 +201,7 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     t_buffer *t = buffer_new();
     
     buffer_deserialize (t, argc, argv);
-    glist_objectMakeScalar (glist, buffer_size (t), buffer_atoms (t));
+    glist_objectMakeScalar (glist, buffer_getSize (t), buffer_getAtoms (t));
     buffer_free (t);
     
     return;

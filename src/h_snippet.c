@@ -16,7 +16,7 @@
 
 void snippet_addOffsetToLine (t_buffer *x, int i)
 {
-    t_iterator *iter = iterator_new (buffer_size (x), buffer_atoms (x));
+    t_iterator *iter = iterator_new (buffer_getSize (x), buffer_getAtoms (x));
     t_atom *atoms = NULL;
     int count;
     

@@ -102,7 +102,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, int isNumbe
     if (!*s) {
         t_error err = PD_ERROR;
         t_buffer *b = object_getBuffer (cast_object (iem));
-        if (i >= 0 && i < buffer_size (b)) {
+        if (i >= 0 && i < buffer_getSize (b)) {
             char t[PD_STRING] = { 0 };
             t_atom *a = buffer_atomAtIndex (b, i);
             if (isNumberAllowed || !IS_FLOAT (a)) {

@@ -99,7 +99,7 @@ static void glist_serializeHeader (t_glist *glist, t_buffer *b)
         else {
             t_buffer *z = buffer_new();
             buffer_serialize (z, object_getBuffer (cast_object (glist)));
-            s = atom_getSymbolAtIndex (1, buffer_size (z), buffer_atoms (z));
+            s = atom_getSymbolAtIndex (1, buffer_getSize (z), buffer_getAtoms (z));
             buffer_free (z);
         }
         

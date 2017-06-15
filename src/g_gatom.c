@@ -120,7 +120,7 @@ static t_symbol *gatom_parse (t_symbol *s)
 
 static void gatom_update (t_gatom *x)
 {
-    buffer_reset (object_getBuffer (cast_object (x)));
+    buffer_clear (object_getBuffer (cast_object (x)));
     buffer_appendAtom (object_getBuffer (cast_object (x)), &x->a_atom);
     defer_addJob ((void *)x, x->a_owner, gatom_drawJob);
 }

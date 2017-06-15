@@ -188,9 +188,9 @@ t_error atom_withStringUnzeroed (t_atom *a, char *s, int size)
     
     buffer_withStringUnzeroed (t, s, size);
     
-    if (buffer_size (t) != 1) { SET_NULL (a); }
+    if (buffer_getSize (t) != 1) { SET_NULL (a); }
     else {
-        *a = *(buffer_atoms (t));
+        *a = *(buffer_getAtoms (t));
     }
     
     buffer_free (t);

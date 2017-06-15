@@ -88,8 +88,8 @@ t_symbol *utils_getFirstAtomOfBufferAsSymbol (t_buffer *x)
 {
     if (x != NULL) {
     //
-    int argc = buffer_size (x);
-    t_atom *argv = buffer_atoms (x);
+    int argc = buffer_getSize (x);
+    t_atom *argv = buffer_getAtoms (x);
     if (argc && IS_SYMBOL (argv)) { return GET_SYMBOL (argv); }
     //
     }
