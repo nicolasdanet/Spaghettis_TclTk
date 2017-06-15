@@ -18,12 +18,13 @@ EXTERNALS = ./externals
 
 # Warnings
 
-WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-deprecated
+WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 
 # Flags.
 
 CPPFLAGS = -I$(PUREDATA)
 CFLAGS   = -Os -fvisibility=hidden $(WARNINGS) $(ARCH)
+CXXFLAGS = $(CFLAGS) -Wno-deprecated
 LDFLAGS  = -bundle -undefined dynamic_lookup -bind_at_load
 
 # Targets.
@@ -57,4 +58,4 @@ $(EXTERNALS)/helloBad: helloBad.c | $(EXTERNALS)
 
 $(EXTERNALS)/helloCPP: helloCPP.cpp | $(EXTERNALS)
 	@echo "Build helloCPP ..."
-	@$(CXX) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloCPP$(EXTENSION) helloCPP.cpp
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloCPP$(EXTENSION) helloCPP.cpp
