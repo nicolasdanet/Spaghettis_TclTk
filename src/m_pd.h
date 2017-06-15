@@ -244,10 +244,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#if defined ( __cplusplus )
+
+#if PD_WINDOWS
+    #define PD_STUB             extern "C" __declspec(dllexport)
+#else
+    #define PD_STUB             extern "C" __attribute__((visibility ("default")))
+#endif
+
+#else
+
 #if PD_WINDOWS
     #define PD_STUB             __declspec(dllexport)
 #else
     #define PD_STUB             __attribute__((visibility ("default")))
+#endif
+
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

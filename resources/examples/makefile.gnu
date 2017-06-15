@@ -31,7 +31,8 @@ LDFLAGS  = -lm
 all:    $(EXTERNALS)/hello \
 		$(EXTERNALS)/helloRoot \
 		$(EXTERNALS)/helloRelease \
-		$(EXTERNALS)/helloBad
+		$(EXTERNALS)/helloBad \
+		$(EXTERNALS)/helloCPP
 
 $(EXTERNALS):
 	@test -d $(EXTERNALS) || mkdir -p $(EXTERNALS)
@@ -51,3 +52,7 @@ $(EXTERNALS)/helloRelease: helloRelease.c | $(EXTERNALS)
 $(EXTERNALS)/helloBad: helloBad.c | $(EXTERNALS)
 	@echo "Build helloBad ..."
 	@$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloBad$(EXTENSION) helloBad.c
+
+$(EXTERNALS)/helloCPP: helloCPP.cpp | $(EXTERNALS)
+	@echo "Build helloCPP ..."
+	@$(CXX) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloCPP$(EXTENSION) helloCPP.cpp
