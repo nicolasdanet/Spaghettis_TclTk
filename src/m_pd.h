@@ -599,15 +599,15 @@ typedef t_int   *(*t_perform)   (t_int *);
 
 #if ( PD_WITH_DEBUG && PD_BUILDING_APPLICATION )
 
-#define PD_MEMORY_GET(n)                sys_getMemoryChecked (n, __FUNCTION__, __LINE__)
-#define PD_MEMORY_RESIZE(ptr, m, n)     sys_getMemoryResizeChecked ((ptr), (m), (n), __FUNCTION__, __LINE__)
-#define PD_MEMORY_FREE(ptr)             sys_freeMemoryChecked (ptr, __FUNCTION__, __LINE__);
+#define PD_MEMORY_GET(n)                memory_getChecked (n, __FUNCTION__, __LINE__)
+#define PD_MEMORY_RESIZE(ptr, m, n)     memory_getResizeChecked ((ptr), (m), (n), __FUNCTION__, __LINE__)
+#define PD_MEMORY_FREE(ptr)             memory_freeChecked (ptr, __FUNCTION__, __LINE__);
 
 #else
 
-#define PD_MEMORY_GET(n)                sys_getMemory (n)
-#define PD_MEMORY_RESIZE(ptr, m, n)     sys_getMemoryResize ((ptr), (m), (n))
-#define PD_MEMORY_FREE(ptr)             sys_freeMemory (ptr)
+#define PD_MEMORY_GET(n)                memory_get (n)
+#define PD_MEMORY_RESIZE(ptr, m, n)     memory_getResize ((ptr), (m), (n))
+#define PD_MEMORY_FREE(ptr)             memory_free (ptr)
 
 #endif
 
@@ -636,9 +636,10 @@ PD_DLL t_symbol *gensym                         (const char *s);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PD_DLL void     *sys_getMemory                  (size_t n);
-PD_DLL void     *sys_getMemoryResize            (void *ptr, size_t oldSize, size_t newSize);
-PD_DLL void     sys_freeMemory                  (void *ptr);
+PD_DLL void     *memory_get                     (size_t n);
+PD_DLL void     *memory_getResize               (void *ptr, size_t oldSize, size_t newSize);
+
+PD_DLL void     memory_free                     (void *ptr);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -661,8 +662,8 @@ PD_DLL t_class  *class_new                      (t_symbol *name,
                                                     int flags,
                                                     t_atomtype type1, ...);
 
-
 PD_DLL void     class_addCreator                (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...);
+
 PD_DLL void     class_addMethod                 (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addSignal                 (t_class *c, t_int offset);
 PD_DLL void     class_free                      (t_class *c);

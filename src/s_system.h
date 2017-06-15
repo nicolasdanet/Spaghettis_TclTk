@@ -287,14 +287,14 @@ void        preferences_load                        (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        *sys_getMemoryChecked                   (size_t n, const char *f, int line);
-void        *sys_getMemoryResizeChecked             (void *ptr,
+void        *memory_getChecked                      (size_t n, const char *f, int line);
+void        *memory_getResizeChecked                (void *ptr,
                                                         size_t oldSize,
                                                         size_t newSize,
                                                         const char *f,
                                                         int line);
 
-void        sys_freeMemoryChecked                   (void *ptr, const char *f, int line);
+void        memory_freeChecked                      (void *ptr, const char *f, int line);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

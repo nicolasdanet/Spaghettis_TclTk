@@ -138,9 +138,9 @@ static void leak_remove (t_int ptr, const char *f, const int line)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *sys_getMemoryChecked (size_t n, const char *f, int line)
+void *memory_getChecked (size_t n, const char *f, int line)
 {
-    void *t = sys_getMemory (n);
+    void *t = memory_get (n);
     
     pthread_mutex_lock (&leak_mutex);
     
@@ -151,9 +151,9 @@ void *sys_getMemoryChecked (size_t n, const char *f, int line)
     return t;
 }
 
-void *sys_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, const char *f, int line)
+void *memory_getResizeChecked (void *ptr, size_t oldSize, size_t newSize, const char *f, int line)
 {
-    void *t = sys_getMemoryResize (ptr, oldSize, newSize);
+    void *t = memory_getResize (ptr, oldSize, newSize);
     
     pthread_mutex_lock (&leak_mutex);
     
@@ -164,7 +164,7 @@ void *sys_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, con
     return t;
 }
 
-void sys_freeMemoryChecked (void *ptr, const char *f, int line)
+void memory_freeChecked (void *ptr, const char *f, int line)
 {
     if (ptr) {
     //
@@ -176,7 +176,7 @@ void sys_freeMemoryChecked (void *ptr, const char *f, int line)
     //
     }
     
-    sys_freeMemory (ptr);
+    memory_free (ptr);
 }
 
 // -----------------------------------------------------------------------------------------------------------
