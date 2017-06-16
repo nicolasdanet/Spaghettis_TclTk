@@ -57,25 +57,6 @@ typedef struct _hello {
         t_error           x_error;
         auto_ptr < Jojo > x_jojo;
 
-#if 0
-
-    /* Override the default placement operators is not necessary. */
-    /* Note that the placement delete operator is called only if the instantiation fails. */
-
-    static void operator delete (void *p, void *x)
-    {
-        post ("Placement delete");
-    }
-    
-    static void * operator new (size_t, void *p)
-    {
-        post ("Placement new");
-        
-        return p;
-    }
-    
-#endif
-
 } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -96,11 +77,11 @@ static void *hello_new (void)
     t_error err = (x->x_error = PD_ERROR_NONE);
     
     try {
-        new (x) t_hello;
+        new (x) t_hello;                    /* Use the placement new operator. */
     }
     
     catch (...) {
-        err = (x->x_error = PD_ERROR);       /* Catch exceptions if any.  */
+        err = (x->x_error = PD_ERROR);      /* Catch exceptions if any. */
     }
     
     if (!err) {
