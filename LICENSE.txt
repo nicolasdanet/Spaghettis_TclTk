@@ -1,7 +1,7 @@
 
 # License
 
-All files under "Standard Improved BSD License" unless explicitly disclaimed.
+All source files under "Standard Improved BSD License" unless explicitly disclaimed.
 
 < http://opensource.org/licenses/BSD-3-Clause >
 
@@ -9,7 +9,7 @@ Copyright:
 
     Copyright (c) 1997-2017 Miller Puckette and others.
 
-Additional terms:
+Excluding:
 
     src/tinyexpr.c 
     
