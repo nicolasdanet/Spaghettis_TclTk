@@ -34,13 +34,13 @@ static void listfromsymbol_symbol (t_listfromsymbol *x, t_symbol *s)
     int count = (int)(strlen (s->s_name));
     int n;
         
-    ATOMS_ALLOCA (t, count);
+    PD_ATOMS_ALLOCA (t, count);
     
     for (n = 0; n < count; n++) { SET_FLOAT (t + n, (unsigned char)s->s_name[n]); }
     
     outlet_list (x->x_outlet, count, t);
     
-    ATOMS_FREEA (t, count);
+    PD_ATOMS_FREEA (t, count);
 }
 
 // -----------------------------------------------------------------------------------------------------------

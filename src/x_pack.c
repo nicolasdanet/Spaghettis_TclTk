@@ -36,13 +36,13 @@ static void pack_bang (t_pack *x)
     t_atom *a = NULL;
     int i;
         
-    ATOMS_ALLOCA (a, x->x_size);
+    PD_ATOMS_ALLOCA (a, x->x_size);
     
     for (i = 0; i < x->x_size; i++) { atomoutlet_copyAtom (x->x_vector + i, a + i); }
     
     outlet_list (x->x_outlet, x->x_size, a);
     
-    ATOMS_FREEA (a, x->x_size);
+    PD_ATOMS_FREEA (a, x->x_size);
 }
 
 static void pack_float (t_pack *x, t_float f)

@@ -176,7 +176,7 @@ static void textsequence_proceedOutContent (t_textsequence *x,
     int size  = count + 1;
     t_atom *t = NULL;
     
-    ATOMS_ALLOCA (t, size);     /* Extra size reserved for possible labelling (see above). */
+    PD_ATOMS_ALLOCA (t, size);      /* Extra size reserved for possible labelling (see above). */
     
     if (argc) { atom_copyAtomsExpanded (a, count, t, count, view, argc, argv);  }
     else      { atom_copyAtomsExpandedByEnvironment (a, count, t, count, view); }
@@ -184,7 +184,7 @@ static void textsequence_proceedOutContent (t_textsequence *x,
     if (x->x_outletMain) { textsequence_proceedOutContentMain (x, t, count, type); }
     else if (count > 0)  { textsequence_proceedOutContentGlobal (x, t, count, type); }
     
-    ATOMS_FREEA (t, size);
+    PD_ATOMS_FREEA (t, size);
 }
 
 static void textsequence_proceed (t_textsequence *x, int argc, t_atom *argv)

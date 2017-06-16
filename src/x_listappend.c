@@ -35,7 +35,7 @@ static void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *arg
     t_atom *t = NULL;
     int count = listinlet_getSize (&x->x_listinlet) + argc;
     
-    ATOMS_ALLOCA (t, count);
+    PD_ATOMS_ALLOCA (t, count);
     
     atom_copyAtomsUnchecked (argv, argc, t);
     
@@ -54,7 +54,7 @@ static void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *arg
         outlet_list (x->x_outlet, count, t);
     }
     
-    ATOMS_FREEA (t, count);
+    PD_ATOMS_FREEA (t, count);
 }
 
 static void listappend_anything (t_listappend *x, t_symbol *s, int argc, t_atom *argv)

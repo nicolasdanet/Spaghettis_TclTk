@@ -54,22 +54,22 @@ static void textget_float (t_textget *x, t_float f)
         
             outlet_float (x->x_outletRight, (t_float)(type == A_COMMA));
             
-            ATOMS_ALLOCA (t, size);
+            PD_ATOMS_ALLOCA (t, size);
             for (i = 0; i < size; i++) { buffer_getAtomAtIndex (b, start + i, t + i); }
             outlet_list (x->x_outletLeft, size, t); 
             match = 1;
-            ATOMS_FREEA (t, size);
+            PD_ATOMS_FREEA (t, size);
             
         } else if (field < size) {
         
             outlet_float (x->x_outletRight, (t_float)(type == A_COMMA));
             
             count = PD_MIN (count, size - field);
-            ATOMS_ALLOCA (t, count);
+            PD_ATOMS_ALLOCA (t, count);
             for (i = 0; i < count; i++) { buffer_getAtomAtIndex (b, start + field + i, t + i); }
             outlet_list (x->x_outletLeft, count, t);
             match = 1;
-            ATOMS_FREEA (t, count);
+            PD_ATOMS_FREEA (t, count);
         }
     } 
 

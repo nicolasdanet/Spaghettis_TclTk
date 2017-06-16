@@ -53,11 +53,11 @@ t_symbol *utils_hashToDollar (t_symbol *s)
 void utils_anythingToList (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom *t = NULL;
-    ATOMS_ALLOCA (t, argc + 1);
+    PD_ATOMS_ALLOCA (t, argc + 1);
     atom_copyAtomsUnchecked (argv, argc, t + 1);
     SET_SYMBOL (t, s);
     (*fn) (x, &s_anything, argc + 1, t);
-    ATOMS_FREEA (t, argc + 1);
+    PD_ATOMS_FREEA (t, argc + 1);
 }
 
 t_symbol *utils_gensymWithAtoms (int argc, t_atom *argv)

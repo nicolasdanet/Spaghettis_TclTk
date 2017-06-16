@@ -35,7 +35,7 @@ static void listprepend_list (t_listprepend *x, t_symbol *s, int argc, t_atom *a
     t_atom *t = NULL;
     int count = listinlet_getSize (&x->x_listinlet) + argc;
     
-    ATOMS_ALLOCA (t, count);
+    PD_ATOMS_ALLOCA (t, count);
     
     atom_copyAtomsUnchecked (argv, argc, t + listinlet_getSize (&x->x_listinlet));
     
@@ -54,7 +54,7 @@ static void listprepend_list (t_listprepend *x, t_symbol *s, int argc, t_atom *a
         outlet_list (x->x_outlet, count, t);
     }
     
-    ATOMS_FREEA (t, count);
+    PD_ATOMS_FREEA (t, count);
 }
 
 static void listprepend_anything (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)

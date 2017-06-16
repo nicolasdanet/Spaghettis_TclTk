@@ -351,7 +351,7 @@ static t_error oscparse_proceed (t_oscparse *x, int argc, t_atom *argv)
     
     size += hasBlob ? argc - typeOnset : numberOfTypeTags;
     
-    ATOMS_ALLOCA (a, size);
+    PD_ATOMS_ALLOCA (a, size);
     
     /* Fetch adress and arguments. */
     
@@ -362,7 +362,7 @@ static t_error oscparse_proceed (t_oscparse *x, int argc, t_atom *argv)
         outlet_list (x->x_outlet, n, a);
     }
     
-    ATOMS_FREEA (a, size);
+    PD_ATOMS_FREEA (a, size);
     //
     }
     //

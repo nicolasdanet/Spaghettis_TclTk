@@ -38,14 +38,14 @@ static void arrayget_bang (t_arrayget *x)
     t_array *a = arrayrange_getRange (&x->x_arrayrange, &start, &n);
     t_atom *t  = NULL;
     
-    ATOMS_ALLOCA (t, n);
+    PD_ATOMS_ALLOCA (t, n);
     
     for (i = 0; i < n; i++) {
         SET_FLOAT (t + i, array_getFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange))); 
     }
     outlet_list (x->x_outlet, n, t);
     
-    ATOMS_FREEA (t, n);
+    PD_ATOMS_FREEA (t, n);
     //
     }
 }

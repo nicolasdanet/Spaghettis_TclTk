@@ -112,7 +112,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     
     instance_setBoundA (NULL);
     
-    ATOMS_ALLOCA (message, x->b_size);
+    PD_ATOMS_ALLOCA (message, x->b_size);
     
     while (1) {
     //
@@ -170,7 +170,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     //
     }
     
-    ATOMS_FREEA (message, x->b_size);
+    PD_ATOMS_FREEA (message, x->b_size);
 }
 
 // -----------------------------------------------------------------------------------------------------------

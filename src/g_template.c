@@ -262,7 +262,7 @@ void template_notify (t_template *x,
     int i, n = argc + 1;
     t_gpointer gp; GPOINTER_INIT (&gp);
     
-    ATOMS_ALLOCA (a, n);
+    PD_ATOMS_ALLOCA (a, n);
     
     gpointer_setAsScalar (&gp, owner, scalar);
     SET_POINTER (a, &gp);
@@ -270,7 +270,7 @@ void template_notify (t_template *x,
     if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
     gpointer_unset (&gp);
     
-    ATOMS_FREEA (a, n);
+    PD_ATOMS_FREEA (a, n);
 }
 
 static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *argv)

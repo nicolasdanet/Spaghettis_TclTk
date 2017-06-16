@@ -230,13 +230,13 @@ static t_error oscformat_proceed (t_oscformat *x, int argc, t_atom *argv)
     
     t_atom *a = NULL;
     
-    ATOMS_ALLOCA (a, size);
+    PD_ATOMS_ALLOCA (a, size);
 
     err = oscformat_proceedFill (x, argc, argv, argumentsStart, a, size);
     
     if (!err) { outlet_list (x->x_outlet, size, a); }
     
-    ATOMS_FREEA (a, size);
+    PD_ATOMS_FREEA (a, size);
     
     return err;
 }
