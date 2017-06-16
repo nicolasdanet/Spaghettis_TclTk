@@ -13,16 +13,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-enum {
-    TYPE_COMMENT    = 0,
-    TYPE_OBJECT     = 1,
-    TYPE_MESSAGE    = 2,
-    TYPE_ATOM       = 3
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 struct _outconnect {
     struct _outconnect          *oc_next;
     t_pd                        *oc_receiver;
@@ -142,7 +132,7 @@ static inline int object_getWidth (t_object *x)
     return x->te_width;
 }
 
-static inline int object_getType (t_object *x)
+static inline t_objecttype object_getType (t_object *x)
 {
     return x->te_type;
 }
@@ -175,7 +165,7 @@ static inline void object_setWidth (t_object *x, int n)
     x->te_width = n;
 }
 
-static inline void object_setType (t_object *x, int n)
+static inline void object_setType (t_object *x, t_objecttype n)
 {
     x->te_type = n;
 }
