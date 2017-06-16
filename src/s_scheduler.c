@@ -38,18 +38,6 @@ static int      scheduler_audioMode;                    /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#if PD_WATCHDOG 
-#if PD_WITH_NOGUI
-
-static int      scheduler_didDSP;                       /* Static. */
-static int      scheduler_nextPing;                     /* Static. */
-
-#endif
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 t_systime scheduler_getLogicalTime (void)
@@ -116,22 +104,6 @@ static t_systime scheduler_getSystimePerDSPTick (void)
     return (SYSTIME_PER_SECOND * ((double)INTERNAL_BLOCKSIZE / audio_getSampleRate()));
 }
 
-static void scheduler_pollWatchdog (void)
-{
-    #if PD_WATCHDOG
-    #if PD_WITH_NOGUI
-        
-    if ((scheduler_didDSP - scheduler_nextPing) > 0) {
-    //
-    interface_watchdog (NULL);
-    scheduler_nextPing = scheduler_didDSP + (2 * (int)(audio_getSampleRate() / (double)INTERNAL_BLOCKSIZE));
-    //
-    }
-    
-    #endif
-    #endif
-}
-
 static void scheduler_pollStuck (int init)
 {
     static double idleTime;
@@ -157,19 +129,7 @@ static void scheduler_tick (void)
     //
     }
     
-    if (!scheduler_quit) {
-    //
-    ugen_dspTick();
-    
-    #if PD_WATCHDOG
-    #if PD_WITH_NOGUI
-    
-    scheduler_didDSP++;
-        
-    #endif
-    #endif
-    //
-    }
+    if (!scheduler_quit) { ugen_dspTick(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -216,7 +176,6 @@ static void scheduler_mainLoop (void)
     
     if (!scheduler_quit && sys_guiPollOrFlush()) { didSomething = 1; }
     if (!scheduler_quit && !didSomething) {
-        scheduler_pollWatchdog();
         if (timeForward != DACS_SLEPT) {
             monitor_blocking (SCHEDULER_BLOCKING_LAPSE);
         }

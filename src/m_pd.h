@@ -338,19 +338,15 @@
 // MARK: -
 
 #ifndef PD_WITH_DEBUG
-#define PD_WITH_DEBUG           0           /* Debug mode. */
+#define PD_WITH_DEBUG               0           /* Debug mode. */
 #endif
 
 #ifndef PD_WITH_LOGGER
-#define PD_WITH_LOGGER          0           /* Debug with wait-free logger. */
-#endif
-
-#ifndef PD_WITH_NOGUI           
-#define PD_WITH_NOGUI           0           /* Don't use the GUI. */
+#define PD_WITH_LOGGER              0           /* Debug with wait-free logger. */
 #endif
 
 #ifndef PD_WITH_LEGACY
-#define PD_WITH_LEGACY          1           /* Compatibility. */
+#define PD_WITH_LEGACY              1           /* Compatibility. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -359,13 +355,13 @@
 #if ( PD_LINUX || PD_BSD || PD_HURD || PD_CYGWIN || PD_APPLE )
 
 #ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME        1
+#define PD_WITH_REALTIME            1
 #endif
 
 #else
 
 #ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME        0
+#define PD_WITH_REALTIME            0
 #endif
 
 #endif
@@ -376,11 +372,11 @@
 
 #if ( PD_WITH_REALTIME && ( PD_LINUX || PD_BSD || PD_HURD ) )
 
-#define PD_WATCHDOG             1
+#define PD_WATCHDOG                 1
 
 #else
 
-#define PD_WATCHDOG             0
+#define PD_WATCHDOG                 0
 
 #endif
 
@@ -393,60 +389,60 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_STRING               1024                /* Maximum size for a string. */
-#define PD_ARGUMENTS            2                   /* Maximum number of typechecked arguments. */
-                                                    /* Use A_GIMME when more are requiered. */
+#define PD_STRING                   1024                /* Maximum size for a string. */
+#define PD_ARGUMENTS                2                   /* Maximum number of typechecked arguments. */
+                                                        /* Use A_GIMME when more are requiered. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define CLASS_DEFAULT           0
-#define CLASS_ABSTRACT          1
-#define CLASS_NOBOX             2
-#define CLASS_GRAPHIC           3
-#define CLASS_BOX               4
+#define CLASS_DEFAULT               0
+#define CLASS_ABSTRACT              1
+#define CLASS_NOBOX                 2
+#define CLASS_GRAPHIC               3
+#define CLASS_BOX                   4
 
-#define CLASS_NOINLET           8
+#define CLASS_NOINLET               8
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 #if PD_LLP64
-    typedef long long           t_int;              /* A pointer-size integer (LLP64). */
+    typedef long long               t_int;              /* A pointer-size integer (LLP64). */
 #else
-    typedef long                t_int;              /* Ditto (LP64 / ILP64). */
+    typedef long                    t_int;              /* Ditto (LP64 / ILP64). */
 #endif
 
-typedef float                   t_float;
-typedef float                   t_sample;
+typedef float                       t_float;
+typedef float                       t_sample;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef int                     t_error;
-typedef int                     t_color;
-typedef int                     t_fontsize;
-typedef double                  t_systime;
-typedef unsigned long           t_unique;
+typedef int                         t_error;
+typedef int                         t_color;
+typedef int                         t_fontsize;
+typedef double                      t_systime;
+typedef unsigned long               t_unique;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_LP64
-    typedef unsigned int        t_keycode;          // uint32_t
+    typedef unsigned int            t_keycode;          // uint32_t
 #else
-    typedef unsigned long       t_keycode;
+    typedef unsigned long           t_keycode;
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_ERROR                1
-#define PD_ERROR_NONE           0
+#define PD_ERROR                    1
+#define PD_ERROR_NONE               0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

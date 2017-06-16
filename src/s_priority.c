@@ -245,11 +245,9 @@ t_error priority_setPolicy (void)
     t_error err = priority_setRTNative();
     
     #if PD_WATCHDOG
-    #if ! ( PD_WITH_NOGUI )
     
     if (!err) { sys_gui ("::watchdog\n"); }
     
-    #endif
     #endif
 
     return err;
