@@ -592,8 +592,8 @@ typedef struct _object {
     t_buffer        *te_buffer;
     t_inlet         *te_inlets;
     t_outlet        *te_outlets;
-    int             te_xCoordinate;
-    int             te_yCoordinate;
+    int             te_x;
+    int             te_y;
     int             te_width;                   /* Zero for undefined. */
     t_objecttype    te_type;
     } t_object;

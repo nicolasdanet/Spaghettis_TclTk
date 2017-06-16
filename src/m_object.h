@@ -119,12 +119,12 @@ static inline t_outlet *object_getOutlets (t_object *x)
 
 static inline int object_getX (t_object *x)
 {
-    return x->te_xCoordinate;
+    return x->te_x;
 }
 
 static inline int object_getY (t_object *x)
 {
-    return x->te_yCoordinate;
+    return x->te_y;
 }
 
 static inline int object_getWidth (t_object *x)
@@ -152,12 +152,12 @@ static inline void object_setBuffer (t_object *x, t_buffer *b)
 
 static inline void object_setX (t_object *x, int n)
 {
-    x->te_xCoordinate = n;
+    x->te_x = n;
 }
 
 static inline void object_setY (t_object *x, int n)
 {
-    x->te_yCoordinate = n;
+    x->te_y = n;
 }
 
 static inline void object_setWidth (t_object *x, int n)
