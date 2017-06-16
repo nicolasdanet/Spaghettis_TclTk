@@ -638,7 +638,6 @@
 		378971D21C4F716700263434 /* g_toggle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_toggle.c; path = src/g_toggle.c; sourceTree = "<group>"; };
 		378971D31C4F716700263434 /* g_pointer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_pointer.c; path = src/g_pointer.c; sourceTree = "<group>"; };
 		378971D61C4F716700263434 /* g_vu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vu.c; path = src/g_vu.c; sourceTree = "<group>"; };
-		378971D71C4F716700263434 /* m_alloca.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_alloca.h; path = src/m_alloca.h; sourceTree = "<group>"; };
 		378971D81C4F716700263434 /* m_atom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_atom.c; path = src/m_atom.c; sourceTree = "<group>"; };
 		378971D91C4F716700263434 /* m_buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_buffer.c; path = src/m_buffer.c; sourceTree = "<group>"; };
 		378971DA1C4F716700263434 /* m_class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_class.c; path = src/m_class.c; sourceTree = "<group>"; };
@@ -1044,7 +1043,6 @@
 				3751C80D1E7142C4002AB689 /* m_instance.h */,
 				376192281E6EA50800E4B2DA /* m_class.h */,
 				37A649691E6472FA002C0A5C /* m_object.h */,
-				378971D71C4F716700263434 /* m_alloca.h */,
 				37D5E4271D746170004CB497 /* m_error.h */,
 				3713CDCF1E83C50700B6867D /* m_extern.h */,
 				3791F2E11CDF064000F7481C /* m_symbols.h */,

@@ -105,6 +105,16 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define ATOMS_ALLOCA(x, n)  \
+    (x) = (t_atom *)((n) < 64 ? alloca ((n) * sizeof (t_atom)) : PD_MEMORY_GET ((n) * sizeof (t_atom)))
+        
+#define ATOMS_FREEA(x, n)   \
+    if (n >= 64) { PD_MEMORY_FREE ((x)); }
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 #define SET_NULL(atom)                      ((atom)->a_type = A_NULL)
 #define SET_SEMICOLON(atom)                 ((atom)->a_type = A_SEMICOLON, (atom)->a_w.w_index = 0)
 #define SET_COMMA(atom)                     ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)

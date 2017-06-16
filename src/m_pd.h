@@ -274,6 +274,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include <alloca.h>
 #include <ctype.h>
 #include <dlfcn.h>
 #include <errno.h>
@@ -342,10 +343,6 @@
 
 #ifndef PD_WITH_LOGGER
 #define PD_WITH_LOGGER          0           /* Debug with wait-free logger. */
-#endif
-
-#ifndef PD_WITH_ALLOCA
-#define PD_WITH_ALLOCA          1           /* Message passing uses alloca function. */
 #endif
 
 #ifndef PD_WITH_NOGUI           
