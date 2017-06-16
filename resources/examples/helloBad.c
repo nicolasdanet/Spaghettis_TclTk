@@ -18,7 +18,7 @@
 // MARK: -
 
 typedef struct _hello {
-    t_object ob_;                           /* MUST be the first. */
+    t_object x_obj;                         /* MUST be the first. */
     } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ PD_STUB void helloBad_setup (t_symbol *s)
             (t_newmethod)hello_new,
             (t_method)hello_free,
             sizeof (t_hello),
-            CLASS_BOX,
+            CLASS_BOX | CLASS_NOINLET,
             A_NULL); 
         
     hello_class = c;

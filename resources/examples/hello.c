@@ -18,7 +18,7 @@
 // MARK: -
 
 typedef struct _hello {
-    t_object ob_;                               /* MUST be the first. */
+    t_object x_obj;                             /* MUST be the first. */
     } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------

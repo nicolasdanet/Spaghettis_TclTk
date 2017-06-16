@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Use C++ language. */
+/* C++ spoken. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,14 +48,14 @@ class Jojo {
 typedef struct _hello {
 
     public:
-        _hello() : jojo_ (new Jojo())
+        _hello() : x_jojo (new Jojo())
         {
         }
 
     public:
-        t_object          ob_;              /* MUST be the first. */
-        t_error           error_;
-        auto_ptr < Jojo > jojo_;
+        t_object          x_obj;                /* MUST be the first. */
+        t_error           x_error;
+        auto_ptr < Jojo > x_jojo;
 
 #if 0
 
@@ -93,14 +93,14 @@ static void *hello_new (void)
 
     if ((x = (t_hello *)pd_new (hello_class))) {
     //
-    t_error err = (x->error_ = PD_ERROR_NONE);
+    t_error err = (x->x_error = PD_ERROR_NONE);
     
     try {
         new (x) t_hello;
     }
     
     catch (...) {
-        err = (x->error_ = PD_ERROR);       /* Catch exceptions if any.  */
+        err = (x->x_error = PD_ERROR);       /* Catch exceptions if any.  */
     }
     
     if (!err) {
@@ -123,7 +123,7 @@ static void hello_free (t_hello *x)
 {
     /* Various deallocations. */
 
-    if (!x->error_) { x->~t_hello(); }      /* Call the destructor only if object is fully constructed. */
+    if (!x->x_error) { x->~t_hello(); }      /* Call the destructor only if object is fully constructed. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ PD_STUB void helloCPP_setup (t_symbol *s)
             (t_newmethod)hello_new,
             (t_method)hello_free,
             sizeof (t_hello),
-            CLASS_BOX,
+            CLASS_BOX | CLASS_NOINLET,
             A_NULL);
     
     hello_class = c;
