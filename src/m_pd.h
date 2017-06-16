@@ -17,24 +17,24 @@
 /* < http://sourceforge.net/p/predef/wiki/OperatingSystems/ > */
 
 #if defined ( _WIN32 ) || defined ( _WIN64 )
-    #define     PD_WINDOWS      1
+    #define     PD_WINDOWS          1
 #elif defined ( __CYGWIN__ ) 
-    #define     PD_CYGWIN       1
+    #define     PD_CYGWIN           1
 #elif defined ( ANDROID ) || defined ( __ANDROID__ )
-    #define     PD_ANDROID      1
+    #define     PD_ANDROID          1
 #elif defined ( LINUX ) || defined ( __linux__ )
-    #define     PD_LINUX        1
+    #define     PD_LINUX            1
 #elif defined ( __APPLE__ )
-    #define     PD_APPLE        1
+    #define     PD_APPLE            1
     #if defined ( TARGET_OS_IPHONE ) || defined ( TARGET_IPHONE_SIMULATOR )
-        #define PD_IOS          1
+        #define PD_IOS              1
     #else
-        #define PD_OSX          1
+        #define PD_OSX              1
     #endif
 #elif defined ( __FreeBSD__ ) || defined ( __FreeBSD_kernel__ )
-    #define     PD_BSD          1
+    #define     PD_BSD              1
 #elif defined ( __GNU__ )
-    #define     PD_HURD         1
+    #define     PD_HURD             1
 #else
     #error "Unknown platform!"
 #endif
@@ -46,14 +46,14 @@
 /* < http://sourceforge.net/p/predef/wiki/Compilers/ > */
 
 #if defined ( __clang__ )
-    #define     PD_CLANG        1
-    #define     PD_GCC          1
+    #define     PD_CLANG            1
+    #define     PD_GCC              1
 #elif defined ( __GNUC__ )
-    #define     PD_GCC          1
+    #define     PD_GCC              1
 #elif defined ( _MSC_VER )
-    #define     PD_MSVC         1
+    #define     PD_MSVC             1
 #elif defined ( __MINGW32__ ) || defined ( __MINGW64__ )
-    #define     PD_MINGW        1
+    #define     PD_MINGW            1
 #else
   #error "Unknown compiler!"
 #endif
@@ -65,11 +65,11 @@
 /* < http://sourceforge.net/p/predef/wiki/Architectures/ > */
 
 #if defined ( __i386__ )
-    #define     PD_CPU_x86      1
+    #define     PD_CPU_x86          1
 #elif defined ( __x86_64__ )
-    #define     PD_CPU_AMD64    1
+    #define     PD_CPU_AMD64        1
 #elif defined ( __arm__ )
-    #define     PD_CPU_ARM      1
+    #define     PD_CPU_ARM          1
 #else
     #error "Unknown processor!"
 #endif
@@ -81,13 +81,13 @@
 /* < http://en.cppreference.com/w/cpp/language/types > */
 
 #if defined ( _ILP32 ) || defined ( __ILP32__ )
-    #define     PD_ILP32        1
+    #define     PD_ILP32            1
 #endif
 
 #if defined ( __LP64__ ) || defined ( _LP64 )
-    #define     PD_LP64         1
+    #define     PD_LP64             1
 #elif defined ( _WIN64 )
-    #define     PD_LLP64        1
+    #define     PD_LLP64            1
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,26 +113,26 @@
 
     #if PD_MSVC
     #ifdef _WIN64
-        #define PD_64BIT        1
+        #define PD_64BIT            1
     #else
-        #define PD_32BIT        1
+        #define PD_32BIT            1
     #endif
     #endif
 
     #if PD_MINGW
     #ifdef __MINGW64__
-        #define PD_64BIT        1
+        #define PD_64BIT            1
     #else
-        #define PD_32BIT        1
+        #define PD_32BIT            1
     #endif
     #endif
     
 #else
 
     #if defined ( __LP64__ ) || defined ( _LP64 ) || defined ( __arm64__ )
-        #define PD_64BIT        1
+        #define PD_64BIT            1
     #else
-        #define PD_32BIT        1
+        #define PD_32BIT            1
     #endif
 
 #endif
@@ -153,16 +153,16 @@
 // MARK: -
 
 #if defined ( _BIG_ENDIAN ) || defined ( __BIG_ENDIAN__ )
-    #define PD_BIG_ENDIAN       1
+    #define PD_BIG_ENDIAN           1
 #else
 #if defined ( PD_WINDOWS ) || defined ( __LITTLE_ENDIAN__ )
-    #define PD_LITTLE_ENDIAN    1
+    #define PD_LITTLE_ENDIAN        1
 #else
     #include <endian.h>
     #if ( BYTE_ORDER == LITTLE_ENDIAN )
-    #define PD_LITTLE_ENDIAN    1
+    #define PD_LITTLE_ENDIAN        1
     #else
-    #define PD_BIG_ENDIAN       1
+    #define PD_BIG_ENDIAN           1
     #endif
 #endif
 #endif
@@ -182,17 +182,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_NAME                 "Spaghettis"
-#define PD_NAME_LOWERCASE       "spaghettis"
+#define PD_NAME                     "Spaghettis"
+#define PD_NAME_LOWERCASE           "spaghettis"
 
-#define PD_VERSION              "0.9"
+#define PD_VERSION                  "0.9"
                
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_PATCH                ".pd"
-#define PD_HELP                 ".pdhelp"
+#define PD_PATCH                    ".pd"
+#define PD_HELP                     ".pdhelp"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -200,31 +200,31 @@
 
 #if ( PD_LINUX || PD_BSD || PD_HURD )
     #if PD_64BIT
-        #define PD_PLUGIN       ".pdobject64"
+        #define PD_PLUGIN           ".pdobject64"
     #else
-        #define PD_PLUGIN       ".pdobject32"
+        #define PD_PLUGIN           ".pdobject32"
     #endif
 #elif PD_APPLE
     #if PD_64BIT
-        #define PD_PLUGIN       ".pdbundle64"
+        #define PD_PLUGIN           ".pdbundle64"
     #else
-        #define PD_PLUGIN       ".pdbundle32"
+        #define PD_PLUGIN           ".pdbundle32"
     #endif
 #elif ( PD_WINDOWS || PD_CYGWIN )
     #if PD_64BIT
-        #define PD_PLUGIN       ".pdlibrary64"
+        #define PD_PLUGIN           ".pdlibrary64"
     #else
-        #define PD_PLUGIN       ".pdlibrary32"
+        #define PD_PLUGIN           ".pdlibrary32"
     #endif
 #else
-    #define PD_PLUGIN           ".so"
+    #define PD_PLUGIN               ".so"
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_TRANSLATE(s)         (s)
+#define PD_TRANSLATE(s)             (s)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -232,12 +232,12 @@
 
 #if PD_WINDOWS
 #if PD_BUILDING_APPLICATION
-    #define PD_DLL              __declspec(dllexport)
+    #define PD_DLL                  __declspec(dllexport)
 #else
-    #define PD_DLL              __declspec(dllimport) 
+    #define PD_DLL                  __declspec(dllimport)
 #endif
 #else
-    #define PD_DLL              __attribute__((visibility ("default")))
+    #define PD_DLL                  __attribute__((visibility ("default")))
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -247,17 +247,17 @@
 #if defined ( __cplusplus )
 
 #if PD_WINDOWS
-    #define PD_STUB             extern "C" __declspec(dllexport)
+    #define PD_STUB                 extern "C" __declspec(dllexport)
 #else
-    #define PD_STUB             extern "C" __attribute__((visibility ("default")))
+    #define PD_STUB                 extern "C" __attribute__((visibility ("default")))
 #endif
 
 #else
 
 #if PD_WINDOWS
-    #define PD_STUB             __declspec(dllexport)
+    #define PD_STUB                 __declspec(dllexport)
 #else
-    #define PD_STUB             __attribute__((visibility ("default")))
+    #define PD_STUB                 __attribute__((visibility ("default")))
 #endif
 
 #endif
@@ -265,7 +265,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if ! ( PD_BUILDING_APPLICATION )           /* Avoid namespace pollution. */
+#if ! ( PD_BUILDING_APPLICATION )               /* Avoid namespace pollution. */
 
 #include <stdlib.h>
 
