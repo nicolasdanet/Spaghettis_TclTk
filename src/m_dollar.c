@@ -75,7 +75,7 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
+t_symbol *dollar_expandDollarSymbol (t_symbol *s, t_glist *glist)
 {
     if (strchr (s->s_name, '$') == NULL) { return s; }
     else {
@@ -85,10 +85,10 @@ t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
     
     if (glist) { e = glist_getEnvironment (glist); }
 
-    if (!e) { t = dollar_expandDollarSymbol (s, glist, 0, NULL); }
+    if (!e) { t = dollar_expandDollarSymbolWithArguments (s, glist, 0, NULL); }
     else {
     //
-    t = dollar_expandDollarSymbol (s,
+    t = dollar_expandDollarSymbolWithArguments (s,
         glist,
         environment_getNumberOfArguments (e),
         environment_getArguments (e));
@@ -100,7 +100,7 @@ t_symbol *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist)
     }
 }
 
-t_symbol *dollar_expandDollarSymbol (t_symbol *s, t_glist *glist, int argc, t_atom *argv)
+t_symbol *dollar_expandDollarSymbolWithArguments (t_symbol *s, t_glist *glist, int argc, t_atom *argv)
 {
     char t[PD_STRING] = { 0 };
     char result[PD_STRING] = { 0 };
@@ -149,7 +149,11 @@ t_symbol *dollar_expandDollarSymbol (t_symbol *s, t_glist *glist, int argc, t_at
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv)
+void dollar_expandDollarWithArguments (t_atom *dollar,
+    t_atom *a,
+    t_glist *glist,
+    int argc,
+    t_atom *argv)
 {
     int n = GET_DOLLAR (dollar);
         

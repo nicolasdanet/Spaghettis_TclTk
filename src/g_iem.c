@@ -26,7 +26,7 @@
 
 static t_symbol *iemgui_expandDollar (t_glist *glist, t_symbol *s)
 {
-    t_symbol *t = dollar_expandDollarSymbolByEnvironment (s, glist); 
+    t_symbol *t = dollar_expandDollarSymbol (s, glist); 
     
     return (t == NULL ? utils_empty() : t);
 }

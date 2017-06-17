@@ -154,9 +154,9 @@ void atom_copyAtomsExpandedWithArguments (t_atom *src,
     //
     t_atom *a = src + i; t_atom *b = dest + i;
     
-    if (IS_DOLLAR (a)) { dollar_expandDollarNumber (a, b, glist, argc, argv); }
+    if (IS_DOLLAR (a)) { dollar_expandDollarWithArguments (a, b, glist, argc, argv); }
     else if (IS_DOLLARSYMBOL (a)) {
-        t_symbol *s = dollar_expandDollarSymbol (GET_SYMBOL (a), glist, argc, argv);
+        t_symbol *s = dollar_expandDollarSymbolWithArguments (GET_SYMBOL (a), glist, argc, argv);
         if (s) { SET_SYMBOL (b, s); }
         else {
             SET_SYMBOL (b, GET_SYMBOL (a));
@@ -192,7 +192,7 @@ void atom_copyAtomsExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist *g
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error atom_withStringUnzeroed (t_atom *a, char *s, int size)
+t_error atom_setByStringUnzeroed (t_atom *a, char *s, int size)
 {
     t_buffer *t = buffer_new();
     

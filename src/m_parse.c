@@ -401,7 +401,7 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
     if (!IS_SYMBOL (argv + i)) { *a = *(argv + i); }
     else {
         char *s = GET_SYMBOL (argv + i)->s_name;
-        t_error err = atom_withStringUnzeroed (a, s, (int)strlen (s));
+        t_error err = atom_setByStringUnzeroed (a, s, (int)strlen (s));
         PD_UNUSED (err); PD_ASSERT (!err);
     }
     //
