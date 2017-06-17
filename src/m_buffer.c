@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define BUFFER_MAXIMUM_VARIADIC     64
+#define BUFFER_MAXIMUM_VARIADIC     64      /* Arbitrary value. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,28 +48,17 @@ t_atom *buffer_getAtoms (t_buffer *x)
     return x->b_vector;
 }
 
+t_atom *buffer_getAtomAtIndex (t_buffer *x, int n)
+{
+    if (n >= 0 && n < buffer_getSize (x)) { return (buffer_getAtoms (x) + n); }
+    
+    return NULL;
+}
+
 void buffer_clear (t_buffer *x)
 {
     buffer_resize (x, 0);
 }
-
-void buffer_append (t_buffer *x, int argc, t_atom *argv)
-{
-    if (argc > 0) {
-    //
-    t_atom *a = NULL;
-    int n = x->b_size + argc;
-
-    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
-
-    for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); } x->b_size = n;
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 void buffer_resize (t_buffer *x, int n)
 {
@@ -97,6 +86,24 @@ t_error buffer_resizeBetween (t_buffer *x, int start, int end, int n)
     }
     
     return PD_ERROR_NONE;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void buffer_append (t_buffer *x, int argc, t_atom *argv)
+{
+    if (argc > 0) {
+    //
+    t_atom *a = NULL;
+    int n = x->b_size + argc;
+
+    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
+
+    for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); } x->b_size = n;
+    //
+    }
 }
 
 /* < http://stackoverflow.com/a/11270603 > */
@@ -172,29 +179,18 @@ void buffer_appendSemicolon (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_atom *buffer_atomAtIndex (t_buffer *x, int n)
-{
-    if (n >= 0 && n < buffer_getSize (x)) { return (buffer_getAtoms (x) + n); }
-    
-    return NULL;
-}
-
-t_error buffer_getAtomAtIndex (t_buffer *x, int n, t_atom *a)
-{
-    t_error err = PD_ERROR;
-    
-    t_atom *t = buffer_atomAtIndex (x, n); if (t) { *a = *t; return PD_ERROR_NONE; }
-    
-    return err;
-}
-
 t_error buffer_setAtomAtIndex (t_buffer *x, int n, t_atom *a)
 {
-    t_error err = PD_ERROR;
+    t_atom *t = buffer_getAtomAtIndex (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
     
-    t_atom *t = buffer_atomAtIndex (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
+    return PD_ERROR;
+}
+
+t_error buffer_copyAtomAtIndex (t_buffer *x, int n, t_atom *a)
+{
+    t_atom *t = buffer_getAtomAtIndex (x, n); if (t) { *a = *t; return PD_ERROR_NONE; }
     
-    return err;
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------

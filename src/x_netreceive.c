@@ -123,12 +123,12 @@ void netreceive_callbackReceived (void *z, t_buffer *b)
         int j;
         
         for (j = 0; j < size; j++) { 
-            outlet_float (x->nr_outletLeft, atom_getFloat (buffer_atomAtIndex (b, start + j))); 
+            outlet_float (x->nr_outletLeft, atom_getFloat (buffer_getAtomAtIndex (b, start + j)));
         }
         
     } else {
     
-        t_atom *t = buffer_atomAtIndex (b, start);
+        t_atom *t = buffer_getAtomAtIndex (b, start);
         
         if (IS_FLOAT (t)) { 
             if (size == 1) { outlet_float (x->nr_outletLeft, GET_FLOAT (t)); }

@@ -104,7 +104,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, int isNumbe
         t_buffer *b = object_getBuffer (cast_object (iem));
         if (i >= 0 && i < buffer_getSize (b)) {
             char t[PD_STRING] = { 0 };
-            t_atom *a = buffer_atomAtIndex (b, i);
+            t_atom *a = buffer_getAtomAtIndex (b, i);
             if (isNumberAllowed || !IS_FLOAT (a)) {
                 if (!(err = atom_toString (a, t, PD_STRING))) { *s = gensym (t); }
             }

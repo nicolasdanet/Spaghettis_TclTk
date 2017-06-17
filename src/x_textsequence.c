@@ -61,7 +61,7 @@ static int textsequence_proceedNeedToWait (t_textsequence *x, t_buffer *b, int s
     else if (x->x_waitCount) { return 0; }
     else if (x->x_sendTo)    { return 0; }
     else {
-        t_atom *first    = buffer_atomAtIndex (b, start);
+        t_atom *first    = buffer_getAtomAtIndex (b, start);
         int waitOnNumber = IS_FLOAT (first)  && x->x_waitNumberOfLeading;
         int waitOnSymbol = IS_SYMBOL (first) && (GET_SYMBOL (first) == x->x_waitSymbol);
         
@@ -71,12 +71,12 @@ static int textsequence_proceedNeedToWait (t_textsequence *x, t_buffer *b, int s
 
 static int textsequence_proceedSetWaitRange (t_textsequence *x, t_buffer *b, int start, int end)
 {
-    if (IS_FLOAT (buffer_atomAtIndex (b, start))) {
+    if (IS_FLOAT (buffer_getAtomAtIndex (b, start))) {
         int n = start + x->x_waitNumberOfLeading;
         int i = start;
         n = (n < 0 ? PD_INT_MAX : n);
         n = PD_MIN (n, end);
-        while (i < n && IS_FLOAT (buffer_atomAtIndex (b, i))) {
+        while (i < n && IS_FLOAT (buffer_getAtomAtIndex (b, i))) {
             i++; x->x_waitCount++;
         }
             
@@ -89,33 +89,33 @@ static int textsequence_proceedSetWaitRange (t_textsequence *x, t_buffer *b, int
 
 static void textsequence_proceedOutWaitForSymbol (t_textsequence *x, t_buffer *b, int start, int end)
 {
-    if (x->x_isAutomatic && x->x_waitCount == 2 && IS_FLOAT (buffer_atomAtIndex (b, start + 1))) { 
-        x->x_delay = GET_FLOAT (buffer_atomAtIndex (b, start + 1)); 
+    if (x->x_isAutomatic && x->x_waitCount == 2 && IS_FLOAT (buffer_getAtomAtIndex (b, start + 1))) {
+        x->x_delay = GET_FLOAT (buffer_getAtomAtIndex (b, start + 1));
         
     } else {
         PD_ASSERT (x->x_outletWait);
         PD_ASSERT (x->x_waitCount);
         x->x_isAutomatic = 0;
-        outlet_list (x->x_outletWait, x->x_waitCount - 1, buffer_atomAtIndex (b, start + 1));
+        outlet_list (x->x_outletWait, x->x_waitCount - 1, buffer_getAtomAtIndex (b, start + 1));
     }
 }
 
 static void textsequence_proceedOutWaitForFloat (t_textsequence *x, t_buffer *b, int start, int end)
 {
     if (x->x_isAutomatic && x->x_waitCount == 1) { 
-        x->x_delay = GET_FLOAT (buffer_atomAtIndex (b, start)); 
+        x->x_delay = GET_FLOAT (buffer_getAtomAtIndex (b, start));
         
     } else {
         PD_ASSERT (x->x_outletWait);
         PD_ASSERT (x->x_waitCount);
         x->x_isAutomatic = 0;
-        outlet_list (x->x_outletWait, x->x_waitCount, buffer_atomAtIndex (b, start));
+        outlet_list (x->x_outletWait, x->x_waitCount, buffer_getAtomAtIndex (b, start));
     }
 }
 
 static void textsequence_proceedOutWait (t_textsequence *x, t_buffer *b, int start, int end)
 {
-    int k = IS_FLOAT (buffer_atomAtIndex (b, start));
+    int k = IS_FLOAT (buffer_getAtomAtIndex (b, start));
     
     x->x_sendTo    = NULL;
     x->x_isLooping = 0;
@@ -178,7 +178,7 @@ static void textsequence_proceedOutContent (t_textsequence *x,
     t_glist *view = textclient_fetchView (&x->x_textclient);
         
     int count = end - start - x->x_waitCount;
-    t_atom *a = buffer_atomAtIndex (b, start + x->x_waitCount);
+    t_atom *a = buffer_getAtomAtIndex (b, start + x->x_waitCount);
     int size  = count + 1;
     t_atom *t = NULL;
     

@@ -93,16 +93,8 @@ t_atom      *atom_substituteIfPointer               (t_atom *a);
 
 t_atomtype  atom_getType                            (t_atom *a);
 int         atom_typesAreEqual                      (t_atom *a, t_atom *b);
-t_error     atom_setByStringUnzeroed                (t_atom *a, char *s, int size);
+t_error     atom_withStringUnzeroed                 (t_atom *a, char *s, int size);
 t_error     atom_toString                           (t_atom *a, char *dest, int size);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error     buffer_getAtomAtIndex                   (t_buffer *x, int n, t_atom *a);
-t_error     buffer_setAtomAtIndex                   (t_buffer *x, int n, t_atom *a);
-t_atom      *buffer_atomAtIndex                     (t_buffer *x, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

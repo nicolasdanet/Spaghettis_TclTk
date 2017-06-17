@@ -192,7 +192,7 @@ void atom_copyAtomsExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist *g
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error atom_setByStringUnzeroed (t_atom *a, char *s, int size)
+t_error atom_withStringUnzeroed (t_atom *a, char *s, int size)
 {
     t_buffer *t = buffer_new();
     

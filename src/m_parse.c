@@ -346,7 +346,7 @@ int buffer_getMessageAtWithTypeOfEnd (t_buffer *x, int n, int *start, int *end, 
     
     if (k) {
     //
-    if (buffer_atomAtIndex (x, *end)) { *type = atom_getType (buffer_atomAtIndex (x, *end)); }
+    if (buffer_getAtomAtIndex (x, *end)) { *type = atom_getType (buffer_getAtomAtIndex (x, *end)); }
     else {
         *type = A_NULL;
     }
@@ -401,7 +401,7 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
     if (!IS_SYMBOL (argv + i)) { *a = *(argv + i); }
     else {
         char *s = GET_SYMBOL (argv + i)->s_name;
-        t_error err = atom_setByStringUnzeroed (a, s, (int)strlen (s));
+        t_error err = atom_withStringUnzeroed (a, s, (int)strlen (s));
         PD_UNUSED (err); PD_ASSERT (!err);
     }
     //

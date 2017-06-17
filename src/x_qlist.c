@@ -25,13 +25,13 @@ static void qlist_proceedWait (t_qlist *x, int doNotSend, int isAutomatic, int s
     t_buffer *b = textbuffer_getBuffer (&x->ql_textbuffer);
     int i = start + 1;
         
-    while (i < buffer_getSize (b) && IS_FLOAT (buffer_atomAtIndex (b, i))) { i++; }
+    while (i < buffer_getSize (b) && IS_FLOAT (buffer_getAtomAtIndex (b, i))) { i++; }
     
     x->ql_waitCount = i - start;
     
-    if (isAutomatic) { clock_delay (x->ql_clock, (double)GET_FLOAT (buffer_atomAtIndex (b, start))); }
+    if (isAutomatic) { clock_delay (x->ql_clock, (double)GET_FLOAT (buffer_getAtomAtIndex (b, start))); }
     else {
-        outlet_list (x->ql_outletLeft, x->ql_waitCount, buffer_atomAtIndex (b, start));
+        outlet_list (x->ql_outletLeft, x->ql_waitCount, buffer_getAtomAtIndex (b, start));
     }
 }
 
@@ -47,9 +47,9 @@ static int qlist_proceedNext (t_qlist *x,
     int count = end - start;
     
     if (count && !x->ql_target) {
-        if (!IS_SYMBOL (buffer_atomAtIndex (b, start))) { return 0; }
+        if (!IS_SYMBOL (buffer_getAtomAtIndex (b, start))) { return 0; }
         else {
-            t_symbol *t = GET_SYMBOL (buffer_atomAtIndex (b, start));
+            t_symbol *t = GET_SYMBOL (buffer_getAtomAtIndex (b, start));
             if (pd_hasThing (t)) { x->ql_target = pd_getThing (t); }
             else {
                 return 0;
@@ -66,7 +66,7 @@ static int qlist_proceedNext (t_qlist *x,
     if (!doNotSend) {
         if (!count) { pd_message (x->ql_target, &s_list, 0, NULL); }
         else {
-            t_atom *first = buffer_atomAtIndex (b, start);
+            t_atom *first = buffer_getAtomAtIndex (b, start);
             if (IS_FLOAT (first)) { pd_message (x->ql_target, &s_list, count, first); }
             else if (IS_SYMBOL (first)) { 
                 pd_message (x->ql_target, GET_SYMBOL (first), count - 1, first + 1); 
@@ -107,7 +107,7 @@ static void qlist_proceed (t_qlist *x, int doNotSend, int isAutomatic)
         start += x->ql_waitCount;
         size = end - start;
         
-        if (size && !x->ql_target && IS_FLOAT (buffer_atomAtIndex (b, start))) {
+        if (size && !x->ql_target && IS_FLOAT (buffer_getAtomAtIndex (b, start))) {
             qlist_proceedWait (x, doNotSend, isAutomatic, start, end);
             break;
             

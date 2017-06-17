@@ -29,7 +29,7 @@ static void textfile_bang (t_qlist *x)
     if (buffer_getMessageAt (b, i, &start, &end)) {
     //
     int size = end - start;
-    t_atom *first = buffer_atomAtIndex (b, start);
+    t_atom *first = buffer_getAtomAtIndex (b, start);
         
     if (size && IS_SYMBOL (first)) {
         outlet_anything (x->ql_outletLeft, GET_SYMBOL (first), size - 1, first + 1); 
