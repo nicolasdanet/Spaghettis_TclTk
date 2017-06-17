@@ -10,6 +10,7 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -114,7 +115,7 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
     //
     instance_environmentSetArguments (argc, argv);
     
-    buffer_fileEval (filename, gensym (fileproperties_getDirectory (&p)));
+    eval_file (filename, gensym (fileproperties_getDirectory (&p)));
     
     if (instance_contextGetCurrent() != instance_contextGetStored()) {
     
@@ -148,8 +149,8 @@ static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, char
     instance_contextStore();
     instance_contextSetCurrent (NULL);          /* The root canvas do NOT have parent. */
         
-    if (s) { buffer_fileEvalByString (name, directory, s); }
-    else   { buffer_fileEval (name, directory); }
+    if (s) { eval_fileByString (name, directory, s); }
+    else   { eval_file (name, directory); }
     
     if (instance_contextGetCurrent() != NULL) { 
         instance_stackPopPatch (instance_contextGetCurrent(), visible); 
@@ -193,13 +194,22 @@ void instance_loadSnippet (t_glist *glist, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void instance_makePatch (t_symbol *name, t_symbol *directory)
+void instance_patchNew (t_symbol *name, t_symbol *directory)
 {
     instance_environmentSetFile (name, directory);
     
     glist_newPatchPop (&s_, NULL, NULL, NULL, 1, 0, 0);
     
     instance_environmentResetFile();
+}
+
+void instance_patchOpen (t_symbol *name, t_symbol *directory)
+{
+    int state = dsp_suspend();
+    
+    instance_loadPatch (name, directory);
+    
+    dsp_resume (state); 
 }
 
 // -----------------------------------------------------------------------------------------------------------

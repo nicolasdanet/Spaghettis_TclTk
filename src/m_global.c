@@ -37,12 +37,12 @@ t_pd global_object;                 /* Static. */
 
 void global_newPatch (void *x, t_symbol *name, t_symbol *directory)
 {
-    instance_makePatch (name, directory);
+    instance_patchNew (name, directory);
 }
 
 static void global_open (void *x, t_symbol *name, t_symbol *directory)
 {
-    buffer_fileOpen (name, directory);
+    instance_patchOpen (name, directory);
 }
 
 static void global_dsp (void *x, t_symbol *s, int argc, t_atom *argv)

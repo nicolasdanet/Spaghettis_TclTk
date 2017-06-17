@@ -49,14 +49,12 @@ static inline t_atom *mouse_argv (t_mouse *m)
     SET_FLOAT (m->m_atoms + 5, m->m_dbl);
     SET_FLOAT (m->m_atoms + 6, m->m_clicked);
     
-    return m->m_atoms;      /* Lazily convert its members to an array of atoms. */
+    return m->m_atoms;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-/* For example [ P a t h / t o / t h a t 0 f i l e 0 ]. */
 
 struct _fileproperties { char f_directory[PD_STRING]; char *f_name; };
 
@@ -98,6 +96,7 @@ t_error     atom_toString                           (t_atom *a, char *dest, int 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void        buffer_toString                         (t_buffer *x, char **s);
 void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
@@ -118,12 +117,18 @@ int         buffer_getMessageAtWithTypeOfEnd        (t_buffer *x, int n, int *st
 
 void        buffer_serialize                        (t_buffer *x, t_buffer *y);
 void        buffer_deserialize                      (t_buffer *x, int argc, t_atom *argv);
+
 void        buffer_eval                             (t_buffer *x, t_pd *object, int argc, t_atom *argv);
-t_error     buffer_read                             (t_buffer *x, t_symbol *name, t_glist *glist);
-t_error     buffer_write                            (t_buffer *x, t_symbol *name, t_symbol *directory);
-t_error     buffer_fileEval                         (t_symbol *name, t_symbol *directory);
-t_error     buffer_fileEvalByString                 (t_symbol *name, t_symbol *directory, char *s);
-void        buffer_fileOpen                         (t_symbol *name, t_symbol *directory);
+
+t_error     buffer_fileRead                         (t_buffer *x, t_symbol *name, t_glist *glist);
+t_error     buffer_fileWrite                        (t_buffer *x, t_symbol *name, t_symbol *directory);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error     eval_file                               (t_symbol *name, t_symbol *directory);
+t_error     eval_fileByString                       (t_symbol *name, t_symbol *directory, char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

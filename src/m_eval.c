@@ -178,7 +178,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error buffer_read (t_buffer *x, t_symbol *name, t_glist *glist)
+t_error buffer_fileRead (t_buffer *x, t_symbol *name, t_glist *glist)
 {
     t_error err = PD_ERROR;
     
@@ -193,7 +193,7 @@ t_error buffer_read (t_buffer *x, t_symbol *name, t_glist *glist)
     return err;
 }
 
-t_error buffer_write (t_buffer *x, t_symbol *name, t_symbol *directory)
+t_error buffer_fileWrite (t_buffer *x, t_symbol *name, t_symbol *directory)
 {
     t_error err = PD_ERROR;
 
@@ -231,7 +231,7 @@ t_error buffer_write (t_buffer *x, t_symbol *name, t_symbol *directory)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_error buffer_fileEvalProceed (t_symbol *name, t_symbol *directory, char *s)
+static t_error eval_fileProceed (t_symbol *name, t_symbol *directory, char *s)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -257,27 +257,14 @@ static t_error buffer_fileEvalProceed (t_symbol *name, t_symbol *directory, char
     return err;
 }
 
-t_error buffer_fileEvalByString (t_symbol *name, t_symbol *directory, char *s)
+t_error eval_fileByString (t_symbol *name, t_symbol *directory, char *s)
 {
-    return buffer_fileEvalProceed (name, directory, s);
+    return eval_fileProceed (name, directory, s);
 }
 
-t_error buffer_fileEval (t_symbol *name, t_symbol *directory)
+t_error eval_file (t_symbol *name, t_symbol *directory)
 {
-    return buffer_fileEvalProceed (name, directory, NULL);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void buffer_fileOpen (t_symbol *name, t_symbol *directory)
-{
-    int state = dsp_suspend();
-    
-    instance_loadPatch (name, directory);
-    
-    dsp_resume (state); 
+    return eval_fileProceed (name, directory, NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

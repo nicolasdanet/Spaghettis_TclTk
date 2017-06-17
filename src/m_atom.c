@@ -135,10 +135,6 @@ void atom_copyAtoms (t_atom *src, int m, t_atom *dest, int n)
     int i; for (i = 0; i < size; i++) { dest[i] = src[i]; }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void atom_copyAtomsExpandedWithArguments (t_atom *src,
     int m,
     t_atom *dest,

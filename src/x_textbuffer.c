@@ -113,7 +113,7 @@ void textbuffer_read (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     if (argc && IS_SYMBOL (argv)) {
     //
     t_symbol *name = GET_SYMBOL (argv);
-    if (buffer_read (x->tb_buffer, name, x->tb_owner)) { error_failsToRead (name); }
+    if (buffer_fileRead (x->tb_buffer, name, x->tb_owner)) { error_failsToRead (name); }
     textbuffer_update (x);
     //
     }
@@ -127,7 +127,7 @@ void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     t_symbol *name = GET_SYMBOL (argv);
     char *directory = environment_getDirectoryAsString (glist_getEnvironment (x->tb_owner));
     t_error err = path_withDirectoryAndName (t, PD_STRING, directory, name->s_name);
-    if (err || buffer_write (x->tb_buffer, gensym (t), &s_)) { error_failsToWrite (name); }
+    if (err || buffer_fileWrite (x->tb_buffer, gensym (t), &s_)) { error_failsToWrite (name); }
     //
     }
 }

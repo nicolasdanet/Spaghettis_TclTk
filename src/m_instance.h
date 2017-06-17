@@ -164,7 +164,8 @@ void            instance_autoreleaseProceed             (t_pd *x);
 
 void            instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
-void            instance_makePatch                      (t_symbol *name, t_symbol *directory);
+void            instance_patchNew                       (t_symbol *name, t_symbol *directory);
+void            instance_patchOpen                      (t_symbol *name, t_symbol *directory);
 
 void            instance_loadPatch                      (t_symbol *name, t_symbol *directory);
 void            instance_loadInvisible                  (t_symbol *name, t_symbol *directory, char *s);
