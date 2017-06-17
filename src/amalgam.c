@@ -18,8 +18,8 @@
 #include "m_symbols.c"
 #include "m_instance.c"
 #include "m_stack.c"
-#include "m_environment.c"
 #include "m_clipboard.c"
+#include "m_environment.c"
 #include "m_bind.c"
 #include "m_message.c"
 #include "m_pd.c"
@@ -36,19 +36,16 @@
 #include "m_setup.c"
 #include "m_dollar.c"
 #include "m_error.c"
+#include "m_iterator.c"
+#include "m_pathlist.c"
+#include "m_heapstring.c"
+#include "m_snippet.c"
+#include "m_bounds.c"
+#include "m_rectangle.c"
 #include "m_color.c"
 #include "m_string.c"
 #include "m_utils.c"
 #include "m_math.c"
-#include "m_bounds.c"
-#include "m_rectangle.c"
-
-/* Helpers. */
-
-#include "h_iterator.c"
-#include "h_pathlist.c"
-#include "h_heapstring.c"
-#include "h_snippet.c"
 
 /* System. */
 
