@@ -15,6 +15,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void atom_copyAtomsExpandedWithArguments (t_atom *, int, t_atom *, int, t_glist *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_class *textsequence_class;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -178,8 +184,10 @@ static void textsequence_proceedOutContent (t_textsequence *x,
     
     PD_ATOMS_ALLOCA (t, size);      /* Extra size reserved for possible labelling (see above). */
     
-    if (argc) { atom_copyAtomsExpanded (a, count, t, count, view, argc, argv);  }
-    else      { atom_copyAtomsExpandedByEnvironment (a, count, t, count, view); }
+    if (argc) { atom_copyAtomsExpandedWithArguments (a, count, t, count, view, argc, argv);  }
+    else {
+        atom_copyAtomsExpanded (a, count, t, count, view);
+    }
     
     if (x->x_outletMain) { textsequence_proceedOutContentMain (x, t, count, type); }
     else if (count > 0)  { textsequence_proceedOutContentGlobal (x, t, count, type); }

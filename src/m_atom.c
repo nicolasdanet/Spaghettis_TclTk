@@ -139,37 +139,45 @@ void atom_copyAtoms (t_atom *src, int m, t_atom *dest, int n)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void atom_copyAtomsExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist *glist, int argc, t_atom *argv)
+void atom_copyAtomsExpandedWithArguments (t_atom *src,
+    int m,
+    t_atom *dest,
+    int n,
+    t_glist *glist,
+    int argc,
+    t_atom *argv)
 {
     int i;
     int size = PD_MIN (m, n);
     
     for (i = 0; i < size; i++) {
-
-        t_atom *a = src + i;
-        t_atom *b = dest + i;
-        
-        if (IS_SYMBOL_OR_FLOAT (a))     { *b = *a; }
-        else if (IS_DOLLAR (a))         { dollar_expandDollarNumber (a, b, glist, argc, argv); }
-        else if (IS_DOLLARSYMBOL (a))   {
-            t_symbol *s = dollar_expandDollarSymbol (GET_SYMBOL (a), glist, argc, argv);
-            if (s) { SET_SYMBOL (b, s); } else { SET_SYMBOL (b, GET_SYMBOL (a)); }
-        } else { 
-            PD_BUG; 
+    //
+    t_atom *a = src + i; t_atom *b = dest + i;
+    
+    if (IS_DOLLAR (a)) { dollar_expandDollarNumber (a, b, glist, argc, argv); }
+    else if (IS_DOLLARSYMBOL (a)) {
+        t_symbol *s = dollar_expandDollarSymbol (GET_SYMBOL (a), glist, argc, argv);
+        if (s) { SET_SYMBOL (b, s); }
+        else {
+            SET_SYMBOL (b, GET_SYMBOL (a));
         }
+    } else {
+        *b = *a;
+    }
+    //
     }
 }
 
-void atom_copyAtomsExpandedByEnvironment (t_atom *src, int m, t_atom *dest, int n, t_glist *glist)
+void atom_copyAtomsExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist *glist)
 {
     t_environment *e = NULL;
     
     if (glist) { e = glist_getEnvironment (glist); }
 
-    if (!e) { atom_copyAtomsExpanded (src, m, dest, n, glist, 0, NULL); }
+    if (!e) { atom_copyAtomsExpandedWithArguments (src, m, dest, n, glist, 0, NULL); }
     else {
     //
-    atom_copyAtomsExpanded (src,
+    atom_copyAtomsExpandedWithArguments (src,
         m,
         dest,
         n,

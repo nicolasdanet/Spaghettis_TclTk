@@ -89,27 +89,13 @@ static inline char *fileproperties_getName (t_fileproperties *p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_atom      *atom_substituteIfPointer                   (t_atom *a);
+t_atom      *atom_substituteIfPointer               (t_atom *a);
 
-t_atomtype  atom_getType                                (t_atom *a);
-int         atom_typesAreEqual                          (t_atom *a, t_atom *b);
-t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
-t_error     atom_toString                               (t_atom *a, char *dest, int size);
+t_atomtype  atom_getType                            (t_atom *a);
+int         atom_typesAreEqual                      (t_atom *a, t_atom *b);
+t_error     atom_withStringUnzeroed                 (t_atom *a, char *s, int size);
+t_error     atom_toString                           (t_atom *a, char *dest, int size);
 
-void        atom_copyAtomsExpandedByEnvironment         (t_atom *src, 
-                                                            int m,
-                                                            t_atom *dest,
-                                                            int n,
-                                                            t_glist *glist);
-                                                            
-void        atom_copyAtomsExpanded                      (t_atom *src,
-                                                            int m,
-                                                            t_atom *dest, 
-                                                            int n,
-                                                            t_glist *glist,
-                                                            int argc,
-                                                            t_atom *argv);
-                                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -163,7 +149,7 @@ void        buffer_fileOpen                             (t_symbol *name, t_symbo
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *dollar_expandDollarSymbolByEnvironment     (t_symbol *s, t_glist *glist);
+t_symbol    *dollar_expandDollarSymbolByEnvironment (t_symbol *s, t_glist *glist);
 t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, t_glist *glist, int argc, t_atom *argv);
 
 void        dollar_expandDollarNumber                   (t_atom *dollar, t_atom *a,
