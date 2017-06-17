@@ -96,8 +96,6 @@ int         atom_typesAreEqual                          (t_atom *a, t_atom *b);
 t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
 t_error     atom_toString                               (t_atom *a, char *dest, int size);
 
-void        atom_copyAtomsUnchecked                     (t_atom *src, int m, t_atom *dest);
-
 void        atom_copyAtomsExpandedByEnvironment         (t_atom *src, 
                                                             int m,
                                                             t_atom *dest,

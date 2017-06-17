@@ -742,6 +742,8 @@ PD_DLL t_symbol *atom_getDollarSymbolAtIndex    (int n, int argc, t_atom *argv);
 PD_DLL t_float  atom_getFloat                   (t_atom *a);
 PD_DLL t_float  atom_getFloatAtIndex            (int n, int argc, t_atom *argv);
 
+PD_DLL void     atom_copyAtoms                  (t_atom *src, int m, t_atom *dest, int n);
+
 PD_DLL char     *atom_atomsToString             (int argc, t_atom *argv);   /* Caller acquires ownership. */
 
 // -----------------------------------------------------------------------------------------------------------

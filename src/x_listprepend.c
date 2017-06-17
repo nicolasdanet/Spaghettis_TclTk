@@ -37,7 +37,7 @@ static void listprepend_list (t_listprepend *x, t_symbol *s, int argc, t_atom *a
     
     PD_ATOMS_ALLOCA (t, count);
     
-    atom_copyAtomsUnchecked (argv, argc, t + listinlet_getSize (&x->x_listinlet));
+    atom_copyAtoms (argv, argc, t + listinlet_getSize (&x->x_listinlet), argc);
     
     if (listinlet_hasPointer (&x->x_listinlet)) {
     
