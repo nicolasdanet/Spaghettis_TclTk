@@ -130,7 +130,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
         if (s == NULL || !(object = pd_getThing (s))) {
             if (!s) { error_invalid (&s_, sym_expansion); }
             else { 
-                pd_isThing (s); 
+                pd_hasThing (s); 
             }
             do { size--; v++; } while (size && !IS_SEMICOLON (v));
             

@@ -17,7 +17,7 @@
 
 void inmidi_noteOn (int port, int channel, int pitch, int velocity)
 {
-    if (pd_isThingQuiet (sym__notein)) {
+    if (pd_hasThingQuiet (sym__notein)) {
     //
     t_atom a[3];
     
@@ -32,7 +32,7 @@ void inmidi_noteOn (int port, int channel, int pitch, int velocity)
 
 void inmidi_controlChange (int port, int channel, int control, int value)
 {
-    if (pd_isThingQuiet (sym__ctlin)) {
+    if (pd_hasThingQuiet (sym__ctlin)) {
     //
     t_atom a[3];
     
@@ -47,7 +47,7 @@ void inmidi_controlChange (int port, int channel, int control, int value)
 
 void inmidi_programChange (int port, int channel, int value)
 {
-    if (pd_isThingQuiet (sym__pgmin)) {
+    if (pd_hasThingQuiet (sym__pgmin)) {
     //
     t_atom a[2];
     
@@ -61,7 +61,7 @@ void inmidi_programChange (int port, int channel, int value)
 
 void inmidi_pitchBend (int port, int channel, int value)
 {
-    if (pd_isThingQuiet (sym__bendin)) {
+    if (pd_hasThingQuiet (sym__bendin)) {
     //
     t_atom a[2];
     
@@ -75,7 +75,7 @@ void inmidi_pitchBend (int port, int channel, int value)
 
 void inmidi_afterTouch (int port, int channel, int value)
 {
-    if (pd_isThingQuiet (sym__touchin)) {
+    if (pd_hasThingQuiet (sym__touchin)) {
     //
     t_atom a[2];
     
@@ -89,7 +89,7 @@ void inmidi_afterTouch (int port, int channel, int value)
 
 void inmidi_polyPressure (int port, int channel, int pitch, int value)
 {
-    if (pd_isThingQuiet (sym__polytouchin)) {
+    if (pd_hasThingQuiet (sym__polytouchin)) {
     //
     t_atom a[3];
     
@@ -108,7 +108,7 @@ void inmidi_polyPressure (int port, int channel, int pitch, int value)
 
 void inmidi_byte (int port, int byte)
 {
-    if (pd_isThingQuiet (sym__midiin)) {
+    if (pd_hasThingQuiet (sym__midiin)) {
     //
     t_atom a[2];
         
@@ -126,7 +126,7 @@ void inmidi_byte (int port, int byte)
 
 void inmidi_sysex (int port, int byte)
 {
-    if (pd_isThingQuiet (sym__sysexin)) {
+    if (pd_hasThingQuiet (sym__sysexin)) {
     //
     t_atom a[2];
             
@@ -140,7 +140,7 @@ void inmidi_sysex (int port, int byte)
 
 void inmidi_realTime (int port, int byte)
 {
-    if (pd_isThingQuiet (sym__midirealtimein)) {
+    if (pd_hasThingQuiet (sym__midirealtimein)) {
     //
     t_atom a[2];
     

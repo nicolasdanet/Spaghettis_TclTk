@@ -36,7 +36,7 @@ void canvas_new (void *, t_symbol *, int, t_atom *);
 
 static void instance_autoreleaseDrain (void)
 {
-    if (pd_isThingQuiet (sym__autorelease)) {
+    if (pd_hasThingQuiet (sym__autorelease)) {
         pd_message (pd_getThing (sym__autorelease), sym__autorelease, 0, NULL);
     }   
 }
@@ -58,7 +58,7 @@ static void instance_autoreleaseReschedule (void)
 
 static void instance_pollingTask (void *dummy)
 {
-    if (pd_isThingQuiet (sym__polling)) {
+    if (pd_hasThingQuiet (sym__polling)) {
         pd_message (pd_getThing (sym__polling), sym__polling, 0, NULL);
     }  
     

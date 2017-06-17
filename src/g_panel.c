@@ -223,7 +223,7 @@ static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 
 static void panel_getPosition (t_panel *x)
 {
-    if (x->x_gui.iem_canSend && pd_isThing (x->x_gui.iem_send)) {
+    if (x->x_gui.iem_canSend && pd_hasThing (x->x_gui.iem_send)) {
         t_float a = glist_getPixelX (x->x_gui.iem_owner, cast_object (x));
         t_float b = glist_getPixelY (x->x_gui.iem_owner, cast_object (x));
         SET_FLOAT (&x->x_t[0], a);

@@ -40,7 +40,7 @@ static void int_float (t_intobject *x, t_float f)
 
 static void int_send (t_intobject *x, t_symbol *s)
 {
-    if (pd_isThing (s)) { int i = (int)x->x_f; pd_float (pd_getThing (s), (t_float)i); }
+    if (pd_hasThing (s)) { int i = (int)x->x_f; pd_float (pd_getThing (s), (t_float)i); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

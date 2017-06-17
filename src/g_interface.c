@@ -48,10 +48,10 @@ void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 
     /* Report keystrokes to bounded objects. */
     
-    if (n && pd_isThingQuiet (sym__key) && isDown)    { pd_float (pd_getThing (sym__key),   (t_float)n); }
-    if (n && pd_isThingQuiet (sym__keyup) && !isDown) { pd_float (pd_getThing (sym__keyup), (t_float)n); }
+    if (n && pd_hasThingQuiet (sym__key) && isDown)    { pd_float (pd_getThing (sym__key),   (t_float)n); }
+    if (n && pd_hasThingQuiet (sym__keyup) && !isDown) { pd_float (pd_getThing (sym__keyup), (t_float)n); }
     
-    if (pd_isThingQuiet (sym__keyname)) {
+    if (pd_hasThingQuiet (sym__keyname)) {
         t_atom a[2];
         SET_FLOAT  (a + 0, isDown);
         SET_SYMBOL (a + 1, s);

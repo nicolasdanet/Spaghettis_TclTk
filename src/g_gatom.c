@@ -181,7 +181,7 @@ static void gatom_bang (t_gatom *x)
     
         outlet_float (x->a_outlet, GET_FLOAT (&x->a_atom));
         
-        if (x->a_send != &s_ && pd_isThing (x->a_send)) {
+        if (x->a_send != &s_ && pd_hasThing (x->a_send)) {
             if (x->a_send != x->a_receive) { pd_float (pd_getThing (x->a_send), GET_FLOAT (&x->a_atom)); }
             else {
                 error_sendReceiveLoop (x->a_unexpandedSend);
@@ -192,7 +192,7 @@ static void gatom_bang (t_gatom *x)
     
         outlet_symbol (x->a_outlet, GET_SYMBOL (&x->a_atom));
         
-        if (x->a_send != &s_ && pd_isThing (x->a_send)) {
+        if (x->a_send != &s_ && pd_hasThing (x->a_send)) {
             if (x->a_send != x->a_receive) { pd_symbol (pd_getThing (x->a_send), GET_SYMBOL (&x->a_atom)); }
             else {
                 error_sendReceiveLoop (x->a_unexpandedSend);

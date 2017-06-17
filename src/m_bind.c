@@ -240,12 +240,12 @@ static int pd_isThingProceed (t_symbol *s, int withError)
     return k;
 }
 
-int pd_isThingQuiet (t_symbol *s)
+int pd_hasThingQuiet (t_symbol *s)
 {
     return pd_isThingProceed (s, 0);
 }
 
-int pd_isThing (t_symbol *s)
+int pd_hasThing (t_symbol *s)
 {
     return pd_isThingProceed (s, 1);
 }
@@ -275,7 +275,7 @@ t_pd *pd_getThingByClass (t_symbol *s, t_class *c)
 
 t_pd *pd_getThing (t_symbol *s)
 {
-    if (pd_isThingQuiet (s)) { return s->s_thing; }
+    if (pd_hasThingQuiet (s)) { return s->s_thing; }
     else {
         return NULL;
     }

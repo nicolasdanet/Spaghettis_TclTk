@@ -378,7 +378,7 @@ static void slider_out (t_slider *x)
 {
     outlet_float (x->x_outlet, x->x_floatValue);
 
-    if (x->x_gui.iem_canSend && pd_isThing (x->x_gui.iem_send)) {
+    if (x->x_gui.iem_canSend && pd_hasThing (x->x_gui.iem_send)) {
         pd_float (pd_getThing (x->x_gui.iem_send), x->x_floatValue);
     }
 }

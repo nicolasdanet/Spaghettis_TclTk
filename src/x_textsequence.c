@@ -146,7 +146,7 @@ static void textsequence_proceedOutContentGlobal (t_textsequence *x, t_atom *t, 
     
     if (!symSend) { if (IS_SYMBOL (t)) { symSend = GET_SYMBOL (t); } else { PD_BUG; } shitfRight = 1; }
     
-    if (pd_isThing (symSend)) {
+    if (pd_hasThing (symSend)) {
     //    
     int n = count - shitfRight;
     t_atom *v = t + shitfRight;

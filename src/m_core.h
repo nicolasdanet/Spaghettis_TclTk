@@ -109,27 +109,6 @@ static inline char *fileproperties_getDirectory (t_fileproperties *p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        pd_bang                                     (t_pd *x);
-void        pd_pointer                                  (t_pd *x, t_gpointer *gp);
-void        pd_float                                    (t_pd *x, t_float f);
-void        pd_symbol                                   (t_pd *x, t_symbol *s);
-void        pd_list                                     (t_pd *x, int argc, t_atom *argv);
-void        pd_message                                  (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_pd        *pd_getThing                                (t_symbol *s);
-t_pd        *pd_getThingByClass                         (t_symbol *s, t_class *c);
-
-int         pd_isThing                                  (t_symbol *s);
-int         pd_isThingQuiet                             (t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_symbol    *atom_getSymbolOrDollarSymbol               (t_atom *a);
 t_symbol    *atom_getSymbolOrDollarSymbolAtIndex        (int n, int argc, t_atom *argv);
 
