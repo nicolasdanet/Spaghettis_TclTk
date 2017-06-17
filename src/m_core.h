@@ -19,17 +19,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _mouse {
-    int         m_x;
-    int         m_y;
-    int         m_shift;
-    int         m_ctrl;
-    int         m_alt;
-    int         m_dbl;
-    int         m_clicked;
-    t_atom      m_atoms[7];
-    } t_mouse;
-
 typedef struct _drag {
     int         d_originX;
     int         d_originY;
@@ -54,10 +43,20 @@ typedef struct _bounds {
     t_float     b_bottom;
     } t_bounds;
 
-typedef struct _fileproperties {
-    char        f_directory[PD_STRING];
-    char        *f_name;
-    } t_fileproperties;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+typedef struct _mouse {
+    int         m_x;
+    int         m_y;
+    int         m_shift;
+    int         m_ctrl;
+    int         m_alt;
+    int         m_dbl;
+    int         m_clicked;
+    t_atom      m_atoms[7];
+    } t_mouse;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -78,8 +77,19 @@ static inline t_atom *mouse_argv (t_mouse *m)
     SET_FLOAT (m->m_atoms + 5, m->m_dbl);
     SET_FLOAT (m->m_atoms + 6, m->m_clicked);
     
-    return m->m_atoms;
+    return m->m_atoms;                      /* Lazily convert its members to an array of atoms. */
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* For example [ P a t h / t o / t h a t 0 f i l e 0 ]. */
+
+typedef struct _fileproperties {
+    char f_directory[PD_STRING];
+    char *f_name;                           /* Points to an element of the array. */
+    } t_fileproperties;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -198,6 +208,7 @@ void        buffer_fileOpen                             (t_symbol *name, t_symbo
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_symbol    *dollar_expandDollarSymbolByEnvironment     (t_symbol *s, t_glist *glist);
 t_symbol    *dollar_expandDollarSymbol                  (t_symbol *s, t_glist *glist, int argc, t_atom *argv);
