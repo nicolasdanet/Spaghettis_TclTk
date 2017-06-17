@@ -19,34 +19,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _drag {
-    int         d_originX;
-    int         d_originY;
-    int         d_startX;
-    int         d_startY;
-    int         d_endX;
-    int         d_endY;
-    } t_drag;
-    
-typedef struct _rectangle {
-    int         rect_topLeftX;
-    int         rect_topLeftY;
-    int         rect_bottomRightX;
-    int         rect_bottomRightY;
-    int         rect_isNothing;
-    } t_rectangle;
-
-typedef struct _bounds {
-    t_float     b_left;
-    t_float     b_top;
-    t_float     b_right;
-    t_float     b_bottom;
-    } t_bounds;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 typedef struct _mouse {
     int         m_x;
     int         m_y;
@@ -77,7 +49,7 @@ static inline t_atom *mouse_argv (t_mouse *m)
     SET_FLOAT (m->m_atoms + 5, m->m_dbl);
     SET_FLOAT (m->m_atoms + 6, m->m_clicked);
     
-    return m->m_atoms;                      /* Lazily convert its members to an array of atoms. */
+    return m->m_atoms;      /* Lazily convert its members to an array of atoms. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -86,31 +58,31 @@ static inline t_atom *mouse_argv (t_mouse *m)
 
 /* For example [ P a t h / t o / t h a t 0 f i l e 0 ]. */
 
-typedef struct _fileproperties {
-    char f_directory[PD_STRING];
-    char *f_name;                           /* Points to an element of the array. */
-    } t_fileproperties;
+struct _fileproperties { char f_directory[PD_STRING]; char *f_name; };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline char *fileproperties_getName (t_fileproperties *p)
-{
-    return p->f_name;
-}
+typedef struct _fileproperties t_fileproperties;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static inline char *fileproperties_getDirectory (t_fileproperties *p)
 {
     return p->f_directory;
 }
 
+static inline char *fileproperties_getName (t_fileproperties *p)
+{
+    return p->f_name;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-t_symbol    *atom_getSymbolOrDollarSymbol               (t_atom *a);
-t_symbol    *atom_getSymbolOrDollarSymbolAtIndex        (int n, int argc, t_atom *argv);
 
 t_atom      *atom_substituteIfPointer                   (t_atom *a);
 char        *atom_atomsToString                         (int argc, t_atom *argv);
@@ -201,6 +173,7 @@ void        dollar_expandDollarNumber                   (t_atom *dollar, t_atom 
 // -----------------------------------------------------------------------------------------------------------
 
 #include "h_helpers.h"
+#include "m_rectangle.h"
 #include "m_extern.h"
 #include "m_symbols.h"
 #include "m_instance.h"
@@ -208,7 +181,6 @@ void        dollar_expandDollarNumber                   (t_atom *dollar, t_atom 
 #include "m_object.h"
 #include "m_error.h"
 #include "m_utils.h"
-#include "m_rectangle.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

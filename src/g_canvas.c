@@ -122,7 +122,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if (glist_hasParent (glist)) {
     //
     t_buffer *t = buffer_new(); 
-    t_symbol *name = atom_getSymbolOrDollarSymbolAtIndex (3, argc, argv);
+    t_symbol *name = atom_getDollarSymbolAtIndex (3, argc, argv);
         
     if (argc > 2) { buffer_deserialize (t, argc - 2, argv + 2); }
     

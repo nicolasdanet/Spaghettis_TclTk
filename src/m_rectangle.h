@@ -14,6 +14,34 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+typedef struct _bounds {
+    t_float     b_left;
+    t_float     b_top;
+    t_float     b_right;
+    t_float     b_bottom;
+    } t_bounds;
+
+typedef struct _rectangle {
+    int         rect_topLeftX;
+    int         rect_topLeftY;
+    int         rect_bottomRightX;
+    int         rect_bottomRightY;
+    int         rect_isNothing;
+    } t_rectangle;
+
+typedef struct _drag {
+    int         d_originX;
+    int         d_originY;
+    int         d_startX;
+    int         d_startY;
+    int         d_endX;
+    int         d_endY;
+    } t_drag;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_error bounds_set          (t_bounds *b, t_float left, t_float top, t_float right, t_float bottom);
 t_error bounds_setByAtoms   (t_bounds *b, int argc, t_atom *argv);
 void    bounds_setCopy      (t_bounds *b, t_bounds *toCopy);

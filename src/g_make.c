@@ -64,7 +64,7 @@ void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (argc > 1) {
     //
-    t_symbol *name = atom_getSymbolOrDollarSymbol (argv + 0);
+    t_symbol *name = atom_getDollarSymbol (argv + 0);
     t_float size   = atom_getFloat (argv + 1);
     t_float flags  = atom_getFloatAtIndex (3, argc, argv);
     
