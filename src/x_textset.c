@@ -43,7 +43,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
     int start, end, count = argc; 
     int i;
         
-    if (buffer_getMessageAt (b, line, &start, &end)) {
+    if (buffer_getMessageAt (b, line, &start, &end) == PD_ERROR_NONE) {
     
         int size = end - start;
         

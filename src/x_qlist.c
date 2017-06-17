@@ -98,7 +98,7 @@ static void qlist_proceed (t_qlist *x, int doNotSend, int isAutomatic)
     t_atomtype type;
     int start, end, size;
     
-    err = (buffer_getMessageAtWithTypeOfEnd (b, i, &start, &end, &type) == 0);
+    err = buffer_getMessageAtWithTypeOfEnd (b, i, &start, &end, &type);
     
     PD_ASSERT (x->ql_waitCount <= end - start);
     

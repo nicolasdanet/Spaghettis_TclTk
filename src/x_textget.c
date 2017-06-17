@@ -44,7 +44,7 @@ static void textget_float (t_textget *x, t_float f)
     int start, end, match = 0;
     t_atomtype type;
     
-    if (buffer_getMessageAtWithTypeOfEnd (b, f, &start, &end, &type)) {
+    if (buffer_getMessageAtWithTypeOfEnd (b, f, &start, &end, &type) == PD_ERROR_NONE) {
     
         t_atom *t = NULL;
         int size = end - start;

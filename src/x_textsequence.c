@@ -201,7 +201,7 @@ static void textsequence_proceed (t_textsequence *x, int argc, t_atom *argv)
     int start, end;
     t_atomtype type;
         
-    if (b && buffer_getMessageAtWithTypeOfEnd (b, x->x_indexOfMessage, &start, &end, &type)) { 
+    if (b && !buffer_getMessageAtWithTypeOfEnd (b, x->x_indexOfMessage, &start, &end, &type)) {
         
         int advance, needToWait = textsequence_proceedNeedToWait (x, b, start, end);
         

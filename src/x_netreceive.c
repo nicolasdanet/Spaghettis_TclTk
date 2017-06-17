@@ -112,7 +112,7 @@ void netreceive_callbackReceived (void *z, t_buffer *b)
     //
     int start, end;
     
-    if (buffer_getMessageAt (b, i, &start, &end)) {
+    if (buffer_getMessageAt (b, i, &start, &end) == PD_ERROR_NONE) {
     //
     int size = end - start;
     

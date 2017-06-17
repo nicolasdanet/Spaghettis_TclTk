@@ -315,7 +315,7 @@ int buffer_getNumberOfMessages (t_buffer *x)
     return count;
 }
 
-int buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
+t_error buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
 {
     *start = 0; *end = 0;
     
@@ -331,21 +331,21 @@ int buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
         while (j < x->b_size && !IS_SEMICOLON_OR_COMMA (&x->b_vector[j])) { j++; }
         *start = i;
         *end   = j;
-        return 1;
+        return PD_ERROR_NONE;
     }
     //
     }
     //
     }
     
-    return 0;
+    return PD_ERROR;
 }
 
-int buffer_getMessageAtWithTypeOfEnd (t_buffer *x, int n, int *start, int *end, t_atomtype *type)
+t_error buffer_getMessageAtWithTypeOfEnd (t_buffer *x, int n, int *start, int *end, t_atomtype *type)
 {
-    int k = buffer_getMessageAt (x, n, start, end);
+    t_error err = buffer_getMessageAt (x, n, start, end);
     
-    if (k) {
+    if (!err) {
     //
     if (buffer_getAtomAtIndex (x, *end)) { *type = atom_getType (buffer_getAtomAtIndex (x, *end)); }
     else {
@@ -354,7 +354,7 @@ int buffer_getMessageAtWithTypeOfEnd (t_buffer *x, int n, int *start, int *end, 
     //
     }
     
-    return k;
+    return err;
 }
                                                             
 // -----------------------------------------------------------------------------------------------------------

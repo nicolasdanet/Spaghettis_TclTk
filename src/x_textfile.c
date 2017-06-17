@@ -26,7 +26,7 @@ static void textfile_bang (t_qlist *x)
     int i = x->ql_indexOfMessage;
     int start, end;
     
-    if (buffer_getMessageAt (b, i, &start, &end)) {
+    if (buffer_getMessageAt (b, i, &start, &end) == PD_ERROR_NONE) {
     //
     int size = end - start;
     t_atom *first = buffer_getAtomAtIndex (b, start);

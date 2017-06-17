@@ -44,8 +44,9 @@ static void textsize_float (t_textsize *x, t_float f)
     
     if (b) {
         int start, end;
-        if (buffer_getMessageAt (b, f, &start, &end)) { outlet_float (x->x_outlet, (t_float)(end - start)); }
-        else {
+        if (buffer_getMessageAt (b, f, &start, &end) == PD_ERROR_NONE) {
+            outlet_float (x->x_outlet, (t_float)(end - start));
+        } else {
             outlet_float (x->x_outlet, -1);
         }
         

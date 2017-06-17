@@ -13,6 +13,62 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Below core functions currently kept private. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_atom      *atom_substituteIfPointer               (t_atom *a);
+
+t_atomtype  atom_getType                            (t_atom *a);
+int         atom_typesAreEqual                      (t_atom *a, t_atom *b);
+t_error     atom_withStringUnzeroed                 (t_atom *a, char *s, int size);
+t_error     atom_toString                           (t_atom *a, char *dest, int size);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void        buffer_toString                         (t_buffer *x, char **s);
+void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
+void        buffer_withStringUnzeroed               (t_buffer *x, char *s, int size);
+
+int         buffer_isLastMessageProperlyEnded       (t_buffer *x);
+int         buffer_getNumberOfMessages              (t_buffer *x);
+t_error     buffer_getMessageAt                     (t_buffer *x, int n, int *start, int *end);
+t_error     buffer_getMessageAtWithTypeOfEnd        (t_buffer *x, int n, int *start, int *end, t_atomtype *t);
+
+void        buffer_serialize                        (t_buffer *x, t_buffer *y);
+void        buffer_deserialize                      (t_buffer *x, int argc, t_atom *argv);
+
+void        buffer_eval                             (t_buffer *x, t_pd *object, int argc, t_atom *argv);
+
+t_error     buffer_fileRead                         (t_buffer *x, t_symbol *name, t_glist *glist);
+t_error     buffer_fileWrite                        (t_buffer *x, t_symbol *name, t_symbol *directory);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error     eval_file                               (t_symbol *name, t_symbol *directory);
+t_error     eval_fileByString                       (t_symbol *name, t_symbol *directory, char *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_symbol    *dollar_expandDollarSymbol              (t_symbol *s, t_glist *glist);
+t_symbol    *dollar_expandDollarSymbolWithArguments (t_symbol *s, t_glist *glist, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void dollar_expandDollarWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #include "m_macros.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -77,70 +133,6 @@ static inline char *fileproperties_getName (t_fileproperties *p)
 {
     return p->f_name;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* Below core functions currently kept private. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_atom      *atom_substituteIfPointer               (t_atom *a);
-
-t_atomtype  atom_getType                            (t_atom *a);
-int         atom_typesAreEqual                      (t_atom *a, t_atom *b);
-t_error     atom_withStringUnzeroed                 (t_atom *a, char *s, int size);
-t_error     atom_toString                           (t_atom *a, char *dest, int size);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        buffer_toString                         (t_buffer *x, char **s);
-void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
-void        buffer_withStringUnzeroed               (t_buffer *x, char *s, int size);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* Could use iterator helper instead. */
-
-int         buffer_isLastMessageProperlyEnded       (t_buffer *x);
-int         buffer_getNumberOfMessages              (t_buffer *x);
-int         buffer_getMessageAt                     (t_buffer *x, int n, int *start, int *end);
-int         buffer_getMessageAtWithTypeOfEnd        (t_buffer *x, int n, int *start, int *end, t_atomtype *t);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void        buffer_serialize                        (t_buffer *x, t_buffer *y);
-void        buffer_deserialize                      (t_buffer *x, int argc, t_atom *argv);
-
-void        buffer_eval                             (t_buffer *x, t_pd *object, int argc, t_atom *argv);
-
-t_error     buffer_fileRead                         (t_buffer *x, t_symbol *name, t_glist *glist);
-t_error     buffer_fileWrite                        (t_buffer *x, t_symbol *name, t_symbol *directory);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error     eval_file                               (t_symbol *name, t_symbol *directory);
-t_error     eval_fileByString                       (t_symbol *name, t_symbol *directory, char *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_symbol    *dollar_expandDollarSymbol              (t_symbol *s, t_glist *glist);
-t_symbol    *dollar_expandDollarSymbolWithArguments (t_symbol *s, t_glist *glist, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void dollar_expandDollarWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
