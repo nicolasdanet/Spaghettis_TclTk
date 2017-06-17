@@ -12,6 +12,21 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Order of inclusion matters. */
+
+#include "m_macros.h"
+#include "m_helpers.h"
+#include "m_rectangle.h"
+#include "m_error.h"
+#include "m_symbols.h"
+#include "m_instance.h"
+#include "m_class.h"
+#include "m_object.h"
+#include "m_utils.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 t_atom      *atom_substituteIfPointer               (t_atom *a);
@@ -64,83 +79,25 @@ void dollar_expandDollarWithArguments (t_atom *dollar, t_atom *a, t_glist *glist
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "m_macros.h"
+/* Avoid typing. */
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-typedef struct _mouse {
-    int         m_x;
-    int         m_y;
-    int         m_shift;
-    int         m_ctrl;
-    int         m_alt;
-    int         m_dbl;
-    int         m_clicked;
-    t_atom      m_atoms[7];
-    } t_mouse;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline int mouse_argc (t_mouse *m)
-{
-    return 7;
-}
-
-static inline t_atom *mouse_argv (t_mouse *m)
-{
-    SET_FLOAT (m->m_atoms + 0, m->m_x);
-    SET_FLOAT (m->m_atoms + 1, m->m_y);
-    SET_FLOAT (m->m_atoms + 2, m->m_shift);
-    SET_FLOAT (m->m_atoms + 3, m->m_ctrl);
-    SET_FLOAT (m->m_atoms + 4, m->m_alt);
-    SET_FLOAT (m->m_atoms + 5, m->m_dbl);
-    SET_FLOAT (m->m_atoms + 6, m->m_clicked);
-    
-    return m->m_atoms;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-struct _fileproperties { char f_directory[PD_STRING]; char *f_name; };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-typedef struct _fileproperties t_fileproperties;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline char *fileproperties_getDirectory (t_fileproperties *p)
-{
-    return p->f_directory;
-}
-
-static inline char *fileproperties_getName (t_fileproperties *p)
-{
-    return p->f_name;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#include "m_helpers.h"
-#include "m_rectangle.h"
-#include "m_extern.h"
-#include "m_symbols.h"
-#include "m_instance.h"
-#include "m_class.h"
-#include "m_object.h"
-#include "m_error.h"
-#include "m_utils.h"
+extern t_class *block_class;
+extern t_class *canvas_class;
+extern t_class *catch_tilde_class;
+extern t_class *delwrite_tilde_class;
+extern t_class *floatinlet_class;
+extern t_class *garray_class;
+extern t_class *inlet_class;
+extern t_class *panel_class;
+extern t_class *pointerinlet_class;
+extern t_class *scalar_class;
+extern t_class *send_tilde_class;
+extern t_class *struct_class;
+extern t_class *symbolinlet_class;
+extern t_class *text_class;
+extern t_class *textdefine_class;
+extern t_class *vinlet_class;
+extern t_class *voutlet_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

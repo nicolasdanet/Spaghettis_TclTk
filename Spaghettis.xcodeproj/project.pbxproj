@@ -413,7 +413,6 @@
 		3711970B1E2DF6FE007214B2 /* d_ifft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_ifft.c; path = src/d_ifft.c; sourceTree = "<group>"; };
 		37128AF71D43640300EFB4FC /* m_color.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_color.c; path = src/m_color.c; sourceTree = "<group>"; };
 		3713CCB51E83A2E100B6867D /* g_glist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_glist.h; path = src/g_glist.h; sourceTree = "<group>"; };
-		3713CDCF1E83C50700B6867D /* m_extern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_extern.h; path = src/m_extern.h; sourceTree = "<group>"; };
 		371430B01D0D46BC00E68D11 /* g_paint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_paint.c; path = src/g_paint.c; sourceTree = "<group>"; };
 		371526B51E49D03E00712D43 /* x_expr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_expr.c; path = src/x_expr.c; sourceTree = "<group>"; };
 		3716554E1BA3452E00ABDE22 /* pa_allocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_allocation.c; path = libraries/portaudio/src/common/pa_allocation.c; sourceTree = "<group>"; };
@@ -1045,12 +1044,11 @@
 			children = (
 				378971E31C4F716700263434 /* m_core.h */,
 				378971DD1C4F716700263434 /* m_macros.h */,
+				37D5E4271D746170004CB497 /* m_error.h */,
+				3791F2E11CDF064000F7481C /* m_symbols.h */,
 				3751C80D1E7142C4002AB689 /* m_instance.h */,
 				376192281E6EA50800E4B2DA /* m_class.h */,
 				37A649691E6472FA002C0A5C /* m_object.h */,
-				37D5E4271D746170004CB497 /* m_error.h */,
-				3713CDCF1E83C50700B6867D /* m_extern.h */,
-				3791F2E11CDF064000F7481C /* m_symbols.h */,
 				3791F2E01CDF064000F7481C /* m_symbols.c */,
 				37F182091C70DBF8003D1A3A /* m_instance.c */,
 				37F085681CC26E5C0070DEAC /* m_stack.c */,
