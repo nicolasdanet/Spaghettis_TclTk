@@ -48,7 +48,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
         int size = end - start;
         
         if (field < 0) {
-            if (size != count) { buffer_resizeAtBetween (b, count, start, end); }
+            if (size != count) { buffer_resizeBetween (b, start, end, count); }
             
         } else {
             if (field >= size) { return; }

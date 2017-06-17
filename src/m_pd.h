@@ -757,7 +757,16 @@ PD_DLL t_atom   *buffer_getAtoms                (t_buffer *x);
 PD_DLL int      buffer_getSize                  (t_buffer *x);
 PD_DLL void     buffer_free                     (t_buffer *x);
 PD_DLL void     buffer_clear                    (t_buffer *x);
+PD_DLL void     buffer_resize                   (t_buffer *x, int n);
+PD_DLL t_error  buffer_resizeBetween            (t_buffer *x, int start, int end, int n);
+
 PD_DLL void     buffer_append                   (t_buffer *x, int argc, t_atom *argv);
+PD_DLL void     buffer_appendAtom               (t_buffer *x, t_atom *a);
+PD_DLL void     buffer_appendBuffer             (t_buffer *x, t_buffer *y);
+PD_DLL void     buffer_appendFloat              (t_buffer *x, t_float f);
+PD_DLL void     buffer_appendSymbol             (t_buffer *x, t_symbol *s);
+PD_DLL void     buffer_appendSemicolon          (t_buffer *x);
+PD_DLL void     buffer_vAppend                  (t_buffer *x, char *fmt, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
