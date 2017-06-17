@@ -232,7 +232,7 @@ t_atom *atom_substituteIfPointer (t_atom *a)
     return a;
 }
 
-char *atom_atomsToString (int argc, t_atom *argv)       /* Caller acquires string ownership. */
+char *atom_atomsToString (int argc, t_atom *argv)
 {
     char *s = NULL;
     t_buffer *t = buffer_new();

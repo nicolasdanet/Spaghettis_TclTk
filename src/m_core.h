@@ -82,15 +82,19 @@ static inline char *fileproperties_getName (t_fileproperties *p)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Below core functions currently kept private. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 t_atom      *atom_substituteIfPointer                   (t_atom *a);
-char        *atom_atomsToString                         (int argc, t_atom *argv);
 
-t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
-t_error     atom_toString                               (t_atom *a, char *dest, int size);
 t_atomtype  atom_getType                                (t_atom *a);
 int         atom_typesAreEqual                          (t_atom *a, t_atom *b);
+t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
+t_error     atom_toString                               (t_atom *a, char *dest, int size);
 
 void        atom_copyAtomsUnchecked                     (t_atom *src, int m, t_atom *dest);
 
