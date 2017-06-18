@@ -103,7 +103,7 @@
 // MARK: -
 
 #define PD_IS_POWER_2(v)                    (!((v) & ((v) - 1)))
-#define PD_NEXT_POWER_2(v)                  sys_nextPowerOf2 ((uint64_t)(v))
+#define PD_NEXT_POWER_2(v)                  sys_nextPowerOfTwo ((uint64_t)(v))
 #define PD_TO_RADIANS(degrees)              ((PD_PI * (degrees)) / 180.0)
 
 // -----------------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@
 
 /* Notice that it returns zero with an argument of zero. */
 
-static inline uint64_t sys_nextPowerOf2 (uint64_t v) 
+static inline uint64_t sys_nextPowerOfTwo (uint64_t v)
 {
     v--;
     v |= (v >> 1);

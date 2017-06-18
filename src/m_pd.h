@@ -488,7 +488,6 @@ struct _widgetbehavior;
 #define t_gpointer                  struct _gpointer
 #define t_proxy                     struct _proxy
 #define t_inlet                     struct _inlet
-#define t_iterator                  struct _iterator
 #define t_listinletelement          struct _listinletelement
 #define t_message                   struct _message
 #define t_outconnect                struct _outconnect

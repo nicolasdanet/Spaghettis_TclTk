@@ -460,7 +460,6 @@
 		3733937F1DBA6E4E00A76E6E /* s_outmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_outmidi.c; path = src/s_outmidi.c; sourceTree = "<group>"; };
 		373393BF1DBA702D00A76E6E /* x_bag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_bag.c; path = src/x_bag.c; sourceTree = "<group>"; };
 		373545601E6D6BF700BCFBE1 /* m_bounds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_bounds.c; path = src/m_bounds.c; sourceTree = "<group>"; };
-		3735458E1E6D6EE200BCFBE1 /* m_rectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_rectangle.h; path = src/m_rectangle.h; sourceTree = "<group>"; };
 		373690A31C84854B00A332BD /* portmidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = portmidi.h; path = libraries/portmidi/pm_common/portmidi.h; sourceTree = "<group>"; };
 		373690A41C84858000A332BD /* porttime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = porttime.h; path = libraries/portmidi/porttime/porttime.h; sourceTree = "<group>"; };
 		373690AA1C8485C000A332BD /* pminternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pminternal.h; path = libraries/portmidi/pm_common/pminternal.h; sourceTree = "<group>"; };
@@ -1019,36 +1018,18 @@
 			name = Spaghettis;
 			sourceTree = "<group>";
 		};
-		3716D99C1DAA484F00FDC632 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				379789711D7405F60055E010 /* m_helpers.h */,
-				3735458E1E6D6EE200BCFBE1 /* m_rectangle.h */,
-				37978A1C1D742E070055E010 /* m_utils.h */,
-				3716C79C1D6335C400022709 /* m_iterator.c */,
-				37E0BC361C53E0B700114412 /* m_pathlist.c */,
-				37C41F4E1D5B240000DC9C3E /* m_heapstring.c */,
-				373F12281E82548300508FE3 /* m_snippet.c */,
-				373545601E6D6BF700BCFBE1 /* m_bounds.c */,
-				374449391D66154D00E54A0D /* m_rectangle.c */,
-				37128AF71D43640300EFB4FC /* m_color.c */,
-				37A7BBF21D030B45000C7AB5 /* m_string.c */,
-				378971E61C4F716700263434 /* m_utils.c */,
-				374448191D66000B00E54A0D /* m_math.c */,
-			);
-			name = Utils;
-			sourceTree = "<group>";
-		};
 		3722C5331C4F920B00D2BF6F /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				378971E31C4F716700263434 /* m_core.h */,
 				378971DD1C4F716700263434 /* m_macros.h */,
-				37D5E4271D746170004CB497 /* m_error.h */,
 				3791F2E11CDF064000F7481C /* m_symbols.h */,
+				379789711D7405F60055E010 /* m_helpers.h */,
 				3751C80D1E7142C4002AB689 /* m_instance.h */,
 				376192281E6EA50800E4B2DA /* m_class.h */,
 				37A649691E6472FA002C0A5C /* m_object.h */,
+				37D5E4271D746170004CB497 /* m_error.h */,
+				37978A1C1D742E070055E010 /* m_utils.h */,
 				3791F2E01CDF064000F7481C /* m_symbols.c */,
 				37F182091C70DBF8003D1A3A /* m_instance.c */,
 				37F085681CC26E5C0070DEAC /* m_stack.c */,
@@ -1070,7 +1051,16 @@
 				378971E51C4F716700263434 /* m_setup.c */,
 				378971DB1C4F716700263434 /* m_dollar.c */,
 				37D5E3411D743889004CB497 /* m_error.c */,
-				3716D99C1DAA484F00FDC632 /* Utils */,
+				3716C79C1D6335C400022709 /* m_iterator.c */,
+				37E0BC361C53E0B700114412 /* m_pathlist.c */,
+				37C41F4E1D5B240000DC9C3E /* m_heapstring.c */,
+				373F12281E82548300508FE3 /* m_snippet.c */,
+				373545601E6D6BF700BCFBE1 /* m_bounds.c */,
+				374449391D66154D00E54A0D /* m_rectangle.c */,
+				37128AF71D43640300EFB4FC /* m_color.c */,
+				37A7BBF21D030B45000C7AB5 /* m_string.c */,
+				378971E61C4F716700263434 /* m_utils.c */,
+				374448191D66000B00E54A0D /* m_math.c */,
 			);
 			name = Core;
 			sourceTree = "<group>";

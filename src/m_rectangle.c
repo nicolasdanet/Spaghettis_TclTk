@@ -131,7 +131,7 @@ void rectangle_enlarge (t_rectangle *r, int n)
     }
 }
 
-void rectangle_enlargeY (t_rectangle *r, int n)
+void rectangle_enlargeHeight (t_rectangle *r, int n)
 {
     if (!rectangle_isNothing (r)) {
     //
@@ -149,7 +149,7 @@ void rectangle_enlargeY (t_rectangle *r, int n)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void rectangle_boundingBoxAddRectangle (t_rectangle *r, t_rectangle *toAdd)
+void rectangle_addRectangle (t_rectangle *r, t_rectangle *toAdd)
 {
     if (!rectangle_isNothing (toAdd)) { 
 
@@ -163,11 +163,11 @@ void rectangle_boundingBoxAddRectangle (t_rectangle *r, t_rectangle *toAdd)
     }
 }
 
-void rectangle_boundingBoxAddPoint (t_rectangle *r, int x, int y)
+void rectangle_addPoint (t_rectangle *r, int x, int y)
 {
     t_rectangle t; rectangle_set (&t, x, y, x, y);
     
-    rectangle_boundingBoxAddRectangle (r, &t);
+    rectangle_addRectangle (r, &t);
 }
 
 // -----------------------------------------------------------------------------------------------------------

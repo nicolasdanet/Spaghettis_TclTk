@@ -384,7 +384,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
             (*behavior->w_fnPainterGetRectangle) (y, &gp, relativeX, relativeY, &t);
             gpointer_unset (&gp);
             
-            rectangle_boundingBoxAddRectangle (r, &t);
+            rectangle_addRectangle (r, &t);
         }
     }
 }
@@ -422,8 +422,8 @@ static void plot_behaviorGetRectangle (t_gobj *z,
             p.p_width, 
             &c);
         
-        rectangle_boundingBoxAddPoint (r, c.p_pixelX, c.p_pixelY - c.p_pixelW);
-        rectangle_boundingBoxAddPoint (r, c.p_pixelX, c.p_pixelY + c.p_pixelW);
+        rectangle_addPoint (r, c.p_pixelX, c.p_pixelY - c.p_pixelW);
+        rectangle_addPoint (r, c.p_pixelX, c.p_pixelY + c.p_pixelW);
         
         if (view) { plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, r); }
     }

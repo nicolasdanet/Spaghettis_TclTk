@@ -194,7 +194,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
         (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &t);
         gpointer_unset (&gp);
         
-        rectangle_boundingBoxAddRectangle (r, &t);
+        rectangle_addRectangle (r, &t);
         //
         }
         //

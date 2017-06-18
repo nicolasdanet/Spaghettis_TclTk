@@ -138,7 +138,7 @@ static void pipe_list (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
     
     for (i = 0; i < argc; i++) {
     //
-    if (!atom_typesAreEqual (atomoutlet_getAtom (x->x_vector + i), argv + i)) {  
+    if (!atom_typesAreEquals (atomoutlet_getAtom (x->x_vector + i), argv + i)) {  
         error_mismatch (sym_pipe, sym_type); 
         return;
     }

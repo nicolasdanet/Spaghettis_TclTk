@@ -119,7 +119,7 @@ t_atomtype atom_getType (t_atom *a)
     return a->a_type;
 }
 
-int atom_typesAreEqual (t_atom *a, t_atom *b)
+int atom_typesAreEquals (t_atom *a, t_atom *b)
 {
     return (atom_getType (a) == atom_getType (b));
 }

@@ -175,7 +175,7 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     int a = glist_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
     int b = glist_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
     
-    rectangle_boundingBoxAddPoint (r, a, b);
+    rectangle_addPoint (r, a, b);
     //
     }
     //

@@ -45,7 +45,7 @@ int atomoutlet_isPointer (t_atomoutlet *x)
 
 int atomoutlet_isEqualTo (t_atomoutlet *x, t_atom *a)
 {
-    if (atom_typesAreEqual (&x->ao_atom, a)) {
+    if (atom_typesAreEquals (&x->ao_atom, a)) {
     //
     if (IS_FLOAT (&x->ao_atom) && (GET_FLOAT (&x->ao_atom) == GET_FLOAT (a)))    { return 1; }
     if (IS_SYMBOL (&x->ao_atom) && (GET_SYMBOL (&x->ao_atom) == GET_SYMBOL (a))) { return 1; }
@@ -68,7 +68,7 @@ void atomoutlet_copyAtom (t_atomoutlet *x, t_atom *a)
 
 t_error atomoutlet_setAtom (t_atomoutlet *x, t_atom *a)
 {
-    if (!atom_typesAreEqual (&x->ao_atom, a)) { return PD_ERROR; }
+    if (!atom_typesAreEquals (&x->ao_atom, a)) { return PD_ERROR; }
     else {
     //
     switch (atom_getType (&x->ao_atom)) {
@@ -85,7 +85,7 @@ t_error atomoutlet_setAtom (t_atomoutlet *x, t_atom *a)
 
 t_error atomoutlet_outputAtom (t_atomoutlet *x, t_atom *a)
 {
-    if (!atom_typesAreEqual (&x->ao_atom, a)) { return PD_ERROR; }
+    if (!atom_typesAreEquals (&x->ao_atom, a)) { return PD_ERROR; }
     else {
     //
     switch (atomoutlet_getType (x)) {

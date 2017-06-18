@@ -56,7 +56,7 @@ static int textsearch_listIsMatch (t_textsearch *x, t_buffer *b, int start, int 
     
     for (j = 0; j < argc;) {
     //
-    if (field < count && atom_typesAreEqual (buffer_getAtomAtIndex (b, start + field), argv + j)) {
+    if (field < count && atom_typesAreEquals (buffer_getAtomAtIndex (b, start + field), argv + j)) {
     //
     if (IS_FLOAT (argv + j)) {
         t_float f1 = GET_FLOAT (buffer_getAtomAtIndex (b, start + field));

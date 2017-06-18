@@ -109,7 +109,7 @@ int gobj_hit (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r)
     
     gobj_getRectangle (x, owner, &t1);
     
-    rectangle_setCopy (&t2, &t1); rectangle_enlargeY (&t2, n);
+    rectangle_setCopy (&t2, &t1); rectangle_enlargeHeight (&t2, n);
     
     if (!rectangle_isNothing (&t2) && rectangle_containsPoint (&t2, a, b)) {
         rectangle_setCopy (r, &t1);

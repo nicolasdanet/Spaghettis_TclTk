@@ -16,13 +16,12 @@
 /* Order of inclusion matters. */
 
 #include "m_macros.h"
-#include "m_helpers.h"
-#include "m_rectangle.h"
-#include "m_error.h"
 #include "m_symbols.h"
+#include "m_helpers.h"
 #include "m_instance.h"
 #include "m_class.h"
 #include "m_object.h"
+#include "m_error.h"
 #include "m_utils.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -32,7 +31,7 @@
 t_atom      *atom_substituteIfPointer               (t_atom *a);
 
 t_atomtype  atom_getType                            (t_atom *a);
-int         atom_typesAreEqual                      (t_atom *a, t_atom *b);
+int         atom_typesAreEquals                     (t_atom *a, t_atom *b);
 t_error     atom_withStringUnzeroed                 (t_atom *a, char *s, int size);
 t_error     atom_toString                           (t_atom *a, char *dest, int size);
 
