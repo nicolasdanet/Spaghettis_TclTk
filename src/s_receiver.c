@@ -223,7 +223,7 @@ static void receiver_readTCP (t_receiver *x, int fd)
         while (receiver_readHandleTCP (x)) {
             if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
             else { 
-                buffer_eval (x->r_message, NULL, 0, NULL); 
+                eval_buffer (x->r_message, NULL, 0, NULL); 
             }
             if (x->r_inTail == x->r_inHead) { break; }
         }

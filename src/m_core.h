@@ -51,14 +51,14 @@ t_error     buffer_getMessageAtWithTypeOfEnd        (t_buffer *x, int n, int *st
 void        buffer_serialize                        (t_buffer *x, t_buffer *y);
 void        buffer_deserialize                      (t_buffer *x, int argc, t_atom *argv);
 
-void        buffer_eval                             (t_buffer *x, t_pd *object, int argc, t_atom *argv);
-
 t_error     buffer_fileRead                         (t_buffer *x, t_symbol *name, t_glist *glist);
 t_error     buffer_fileWrite                        (t_buffer *x, t_symbol *name, t_symbol *directory);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+void        eval_buffer                             (t_buffer *x, t_pd *object, int argc, t_atom *argv);
 
 t_error     eval_file                               (t_symbol *name, t_symbol *directory);
 t_error     eval_fileByString                       (t_symbol *name, t_symbol *directory, char *s);

@@ -73,26 +73,26 @@ static void messageresponder_anything (t_messageresponder *x, t_symbol *s, int a
 
 static void message_bang (t_message *x)
 {
-    buffer_eval (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 0, NULL);
+    eval_buffer (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 0, NULL);
 }
 
 static void message_float (t_message *x, t_float f)
 {
     t_atom a; SET_FLOAT (&a, f);
     
-    buffer_eval (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 1, &a);
+    eval_buffer (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 1, &a);
 }
 
 static void message_symbol (t_message *x, t_symbol *s)
 {
     t_atom a; SET_SYMBOL (&a, s);
     
-    buffer_eval (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 1, &a);
+    eval_buffer (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), 1, &a);
 }
 
 static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_eval (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), argc, argv);
+    eval_buffer (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

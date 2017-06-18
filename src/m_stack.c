@@ -186,7 +186,7 @@ void instance_loadSnippet (t_glist *glist, t_buffer *b)
 {
     instance_contextStore();
     instance_contextSetCurrent (glist);
-    buffer_eval (b, NULL, 0, NULL);
+    eval_buffer (b, NULL, 0, NULL);
     instance_contextRestore();
 }
 

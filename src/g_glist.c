@@ -436,7 +436,7 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
     
     t_object *x = NULL;
     
-    buffer_eval (t, 
+    eval_buffer (t, 
         instance_getMakerObject(), 
         environment_getNumberOfArguments (e), 
         environment_getArguments (e));
