@@ -40,7 +40,6 @@ t_error     atom_toString                           (t_atom *a, char *dest, int 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        buffer_toString                         (t_buffer *x, char **s);
 void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed               (t_buffer *x, char *s, int size);
 

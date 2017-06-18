@@ -222,17 +222,17 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void buffer_toString (t_buffer *x, char **s)                        /* Caller acquires string ownership. */
+char *buffer_toString (t_buffer *x)
 {
-    char *buffer = NULL;
+    char *s = NULL;
     int n, length = 0;
     
-    buffer_toStringUnzeroed (x, &buffer, &length);
+    buffer_toStringUnzeroed (x, &s, &length);
     n = length + 1; 
-    buffer = PD_MEMORY_RESIZE (buffer, length, n); 
-    buffer[n - 1] = 0;
+    s = PD_MEMORY_RESIZE (s, length, n);
+    s[n - 1] = 0;
     
-    *s = buffer; 
+    return s;
 }
 
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller acquires string ownership. */

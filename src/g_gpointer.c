@@ -366,8 +366,7 @@ t_error gpointer_fieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest,
         err = string_addAtom (dest, size, &a);
             
     } else if (gpointer_fieldIsText (gp, fieldName)) {
-        char *t = NULL;
-        buffer_toString (gpointer_getText (gp, fieldName), &t);
+        char *t = buffer_toString (gpointer_getText (gp, fieldName));
         err = string_add (dest, size, t);
         PD_MEMORY_FREE (t);
         

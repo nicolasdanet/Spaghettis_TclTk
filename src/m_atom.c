@@ -244,7 +244,7 @@ char *atom_atomsToString (int argc, t_atom *argv)
     t_buffer *t = buffer_new();
     
     buffer_append (t, argc, argv);
-    buffer_toString (t, &s);
+    s = buffer_toString (t);
     buffer_free (t);
     
     return s;
