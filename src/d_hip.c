@@ -154,7 +154,7 @@ void hip_tilde_setup (void)
 
 void hip_tilde_destroy (void)
 {   
-    CLASS_FREE (hip_tilde_class);
+    class_free (hip_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

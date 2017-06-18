@@ -137,7 +137,7 @@ void cos_tilde_setup (void)
 
 void cos_tilde_destroy (void)
 {
-    CLASS_FREE (cos_tilde_class);
+    class_free (cos_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -104,7 +104,7 @@ void log_tilde_setup (void)
 
 void log_tilde_destroy (void)
 {
-    CLASS_FREE (log_tilde_class);
+    class_free (log_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -83,7 +83,7 @@ void change_setup (void)
 
 void change_destroy (void)
 {
-    CLASS_FREE (change_class);
+    class_free (change_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

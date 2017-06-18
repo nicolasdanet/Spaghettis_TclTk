@@ -103,7 +103,7 @@ void spigot_setup (void)
 
 void spigot_destroy (void)
 {
-    CLASS_FREE (spigot_class);
+    class_free (spigot_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

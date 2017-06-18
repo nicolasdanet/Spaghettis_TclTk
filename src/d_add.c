@@ -121,8 +121,8 @@ void add_tilde_setup (void)
 
 void add_tilde_destroy (void)
 {
-    CLASS_FREE (add_tilde_class);
-    CLASS_FREE (addScalar_tilde_class);
+    class_free (add_tilde_class);
+    class_free (addScalar_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

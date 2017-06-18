@@ -81,7 +81,7 @@ void listfromsymbol_setup (void)
 
 void listfromsymbol_destroy (void)
 {
-    CLASS_FREE (listfromsymbol_class);
+    class_free (listfromsymbol_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

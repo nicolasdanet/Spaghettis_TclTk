@@ -121,7 +121,7 @@ void proxy_setup (void)
 
 void proxy_destroy (void)
 {
-    CLASS_FREE (proxy_class);
+    class_free (proxy_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -99,7 +99,7 @@ void openpanel_setup (void)
 
 void openpanel_destroy (void)
 {
-    CLASS_FREE (openpanel_class);
+    class_free (openpanel_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

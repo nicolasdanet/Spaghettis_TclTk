@@ -408,7 +408,7 @@ void drawpolygon_setup (void)
 
 void drawpolygon_destroy (void)
 {
-    CLASS_FREE (drawpolygon_class);
+    class_free (drawpolygon_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

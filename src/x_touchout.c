@@ -73,7 +73,7 @@ void touchout_setup (void)
 
 void touchout_destroy (void)
 {
-    CLASS_FREE (touchout_class);
+    class_free (touchout_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

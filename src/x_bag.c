@@ -155,7 +155,7 @@ void bag_setup (void)
 
 void bag_destroy (void)
 {
-    CLASS_FREE (bag_class);
+    class_free (bag_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

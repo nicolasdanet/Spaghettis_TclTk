@@ -111,7 +111,7 @@ void throw_tilde_setup (void)
 
 void throw_tilde_destroy (void)
 {
-    CLASS_FREE (throw_tilde_class);
+    class_free (throw_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

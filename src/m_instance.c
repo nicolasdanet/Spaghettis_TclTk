@@ -466,8 +466,8 @@ static void instance_free (t_pdinstance *x)
     PD_ASSERT (x->pd_polling        == NULL);
     PD_ASSERT (x->pd_autorelease    == NULL);
     
-    CLASS_FREE (x->pd_canvasMaker);
-    CLASS_FREE (x->pd_objectMaker);
+    class_free (x->pd_canvasMaker);
+    class_free (x->pd_objectMaker);
     
     PD_ASSERT (x->pd_stack.s_stackIndex == 0);
     

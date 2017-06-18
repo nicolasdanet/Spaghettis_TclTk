@@ -146,7 +146,7 @@ void delay_setup (void)
 
 void delay_destroy (void)
 {
-    CLASS_FREE (delay_class);
+    class_free (delay_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

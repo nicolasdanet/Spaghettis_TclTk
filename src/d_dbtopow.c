@@ -86,7 +86,7 @@ void dbtopow_tilde_setup (void)
 
 void dbtopow_tilde_destroy (void)
 {
-    CLASS_FREE (dbtopow_tilde_class);
+    class_free (dbtopow_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

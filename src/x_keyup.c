@@ -76,7 +76,7 @@ void keyup_setup (void)
 
 void keyup_destroy (void)
 {
-    CLASS_FREE (keyup_class);
+    class_free (keyup_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

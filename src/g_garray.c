@@ -831,7 +831,7 @@ void garray_setup (void)
 
 void garray_destroy (void)
 {
-    CLASS_FREE (garray_class);
+    class_free (garray_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

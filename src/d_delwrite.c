@@ -164,7 +164,7 @@ void delwrite_tilde_setup (void)
 
 void delwrite_tilde_destroy (void)
 {
-    CLASS_FREE (delwrite_tilde_class);
+    class_free (delwrite_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

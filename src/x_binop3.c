@@ -328,15 +328,15 @@ void binop3_setup (void)
 
 void binop3_destroy (void)
 {
-    CLASS_FREE (binopBitwiseAnd_class);
-    CLASS_FREE (binopLogicalAnd_class);
-    CLASS_FREE (binopBitwiseOr_class);
-    CLASS_FREE (binopLogicalOr_class);
-    CLASS_FREE (binopShiftLeft_class);
-    CLASS_FREE (binopShiftRight_class);
-    CLASS_FREE (binopModulo_class);
-    CLASS_FREE (binopIntegerModulo_class);
-    CLASS_FREE (binopIntegerDivide_class);
+    class_free (binopBitwiseAnd_class);
+    class_free (binopLogicalAnd_class);
+    class_free (binopBitwiseOr_class);
+    class_free (binopLogicalOr_class);
+    class_free (binopShiftLeft_class);
+    class_free (binopShiftRight_class);
+    class_free (binopModulo_class);
+    class_free (binopIntegerModulo_class);
+    class_free (binopIntegerDivide_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

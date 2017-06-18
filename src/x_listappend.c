@@ -111,7 +111,7 @@ void listappend_setup (void)
 
 void listappend_destroy (void)
 {
-    CLASS_FREE (listappend_class);
+    class_free (listappend_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

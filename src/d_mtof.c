@@ -86,7 +86,7 @@ void mtof_tilde_setup (void)
 
 void mtof_tilde_destroy (void)
 {
-    CLASS_FREE (mtof_tilde_class);
+    class_free (mtof_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

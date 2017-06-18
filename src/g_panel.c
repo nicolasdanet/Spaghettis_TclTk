@@ -458,7 +458,7 @@ void panel_setup (void)
 
 void panel_destroy (void)
 {
-    CLASS_FREE (panel_class);
+    class_free (panel_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

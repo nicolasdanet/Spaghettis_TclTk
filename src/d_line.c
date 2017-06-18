@@ -152,7 +152,7 @@ void line_tilde_setup (void)
 
 void line_tilde_destroy (void)
 {
-    CLASS_FREE (line_tilde_class);
+    class_free (line_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

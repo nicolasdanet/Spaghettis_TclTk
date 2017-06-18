@@ -111,7 +111,7 @@ void tabreceive_tilde_setup (void)
 
 void tabreceive_tilde_destroy (void)
 {
-    CLASS_FREE (tabreceive_tilde_class);
+    class_free (tabreceive_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -118,8 +118,8 @@ void min_tilde_setup (void)
 
 void min_tilde_destroy (void)
 {
-    CLASS_FREE (min_tilde_class);
-    CLASS_FREE (minScalar_tilde_class);
+    class_free (min_tilde_class);
+    class_free (minScalar_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

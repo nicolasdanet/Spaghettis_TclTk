@@ -242,7 +242,7 @@ void netsend_setup (void)
 
 void netsend_destroy (void)
 {
-    CLASS_FREE (netsend_class);
+    class_free (netsend_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

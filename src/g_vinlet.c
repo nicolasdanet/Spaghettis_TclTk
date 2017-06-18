@@ -139,7 +139,7 @@ void vinlet_setup (void)
 
 void vinlet_destroy (void)
 {
-    CLASS_FREE (vinlet_class);
+    class_free (vinlet_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

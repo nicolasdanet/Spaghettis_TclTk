@@ -160,7 +160,7 @@ void delread_tilde_setup (void)
 
 void delread_tilde_destroy (void)
 {
-    CLASS_FREE (delread_tilde_class);
+    class_free (delread_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

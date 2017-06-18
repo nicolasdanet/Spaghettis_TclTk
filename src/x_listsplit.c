@@ -93,7 +93,7 @@ void listsplit_setup (void)
 
 void listsplit_destroy (void)
 {
-    CLASS_FREE (listsplit_class);
+    class_free (listsplit_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -110,7 +110,7 @@ void textsize_setup (void)
 
 void textsize_destroy (void)
 {
-    CLASS_FREE (textsize_class);
+    class_free (textsize_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

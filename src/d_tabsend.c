@@ -145,7 +145,7 @@ void tabsend_tilde_setup (void)
 
 void tabsend_tilde_destroy (void)
 {
-    CLASS_FREE (tabsend_tilde_class);
+    class_free (tabsend_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

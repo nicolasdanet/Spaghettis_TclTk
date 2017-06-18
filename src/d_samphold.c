@@ -137,7 +137,7 @@ void samphold_tilde_setup (void)
 
 void samphold_tilde_destroy (void)
 {
-    CLASS_FREE (samphold_tilde_class);
+    class_free (samphold_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -96,7 +96,7 @@ void ctlin_setup (void)
 
 void ctlin_destroy (void)
 {
-    CLASS_FREE (ctlin_class);
+    class_free (ctlin_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

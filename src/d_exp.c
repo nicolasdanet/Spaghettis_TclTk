@@ -86,7 +86,7 @@ void exp_tilde_setup (void)
 
 void exp_tilde_destroy (void)
 {
-    CLASS_FREE (exp_tilde_class);
+    class_free (exp_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

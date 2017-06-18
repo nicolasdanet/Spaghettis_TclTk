@@ -73,7 +73,7 @@ void bendout_setup (void)
 
 void bendout_destroy (void)
 {
-    CLASS_FREE (bendout_class);
+    class_free (bendout_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

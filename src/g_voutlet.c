@@ -140,7 +140,7 @@ void voutlet_setup (void)
 
 void voutlet_destroy (void)
 {
-    CLASS_FREE (voutlet_class);
+    class_free (voutlet_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

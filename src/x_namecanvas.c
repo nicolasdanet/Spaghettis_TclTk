@@ -67,7 +67,7 @@ void namecanvas_setup (void)
 
 void namecanvas_destroy (void)
 {
-    CLASS_FREE (namecanvas_class);
+    class_free (namecanvas_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

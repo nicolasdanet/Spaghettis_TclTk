@@ -327,7 +327,7 @@ void drawnumber_setup (void)
 
 void drawnumber_destroy (void)
 {
-    CLASS_FREE (drawnumber_class);
+    class_free (drawnumber_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

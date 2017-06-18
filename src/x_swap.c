@@ -85,7 +85,7 @@ void swap_setup (void)
 
 void swap_destroy (void)
 {
-    CLASS_FREE (swap_class);
+    class_free (swap_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

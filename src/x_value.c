@@ -126,8 +126,8 @@ void value_setup (void)
 
 void value_destroy (void)
 {
-    CLASS_FREE (valuecommon_class);
-    CLASS_FREE (value_class);
+    class_free (valuecommon_class);
+    class_free (value_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -92,7 +92,7 @@ void bendin_setup (void)
 
 void bendin_destroy (void)
 {
-    CLASS_FREE (bendin_class);
+    class_free (bendin_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

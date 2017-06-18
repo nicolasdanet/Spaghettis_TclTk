@@ -73,7 +73,7 @@ void pgmout_setup (void)
 
 void pgmout_destroy (void)
 {
-    CLASS_FREE (pgmout_class);
+    class_free (pgmout_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

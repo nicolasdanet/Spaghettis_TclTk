@@ -161,7 +161,7 @@ void trigger_setup (void)
 
 void trigger_destroy (void)
 {
-    CLASS_FREE (trigger_class);
+    class_free (trigger_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

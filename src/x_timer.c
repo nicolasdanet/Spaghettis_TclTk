@@ -110,7 +110,7 @@ void timer_setup (void)
 
 void timer_destroy (void)
 {
-    CLASS_FREE (timer_class);
+    class_free (timer_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

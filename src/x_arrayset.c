@@ -88,7 +88,7 @@ void arrayset_setup (void)
 
 void arrayset_destroy (void)
 {
-    CLASS_FREE (arrayset_class);
+    class_free (arrayset_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

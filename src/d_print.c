@@ -179,7 +179,7 @@ void print_tilde_setup (void)
 
 void print_tilde_destroy (void)
 {
-    CLASS_FREE (print_tilde_class);
+    class_free (print_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

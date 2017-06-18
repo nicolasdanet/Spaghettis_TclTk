@@ -67,7 +67,7 @@ void loadbang_setup (void)
 
 void loadbang_destroy (void)
 {
-    CLASS_FREE (loadbang_class);
+    class_free (loadbang_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

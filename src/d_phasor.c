@@ -123,7 +123,7 @@ void phasor_tilde_setup (void)
 
 void phasor_tilde_destroy (void)
 {
-    CLASS_FREE (phasor_tilde_class);
+    class_free (phasor_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

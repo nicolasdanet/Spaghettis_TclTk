@@ -244,7 +244,7 @@ void pipe_setup (void)
 
 void pipe_destroy (void)
 {
-    CLASS_FREE (pipe_class);
+    class_free (pipe_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

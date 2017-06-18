@@ -111,7 +111,7 @@ void unpack_setup (void)
 
 void unpack_destroy (void)
 {
-    CLASS_FREE (unpack_class);
+    class_free (unpack_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

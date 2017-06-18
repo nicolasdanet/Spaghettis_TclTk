@@ -143,7 +143,7 @@ void textget_setup (void)
 
 void textget_destroy (void)
 {
-    CLASS_FREE (textget_class);
+    class_free (textget_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -165,7 +165,7 @@ void cpole_tilde_setup (void)
 
 void cpole_tilde_destroy (void)
 {
-    CLASS_FREE (cpole_tilde_class)
+    class_free (cpole_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

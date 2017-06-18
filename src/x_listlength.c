@@ -76,7 +76,7 @@ void listlength_setup (void)
 
 void listlength_destroy (void)
 {
-    CLASS_FREE (listlength_class);
+    class_free (listlength_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

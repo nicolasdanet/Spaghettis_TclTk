@@ -162,7 +162,7 @@ void tabplay_tilde_setup (void)
 
 void tabplay_tilde_destroy (void)
 {
-    CLASS_FREE (tabplay_tilde_class);
+    class_free (tabplay_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

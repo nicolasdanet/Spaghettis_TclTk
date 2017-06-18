@@ -130,7 +130,7 @@ void vd_tilde_setup (void)
 
 void vd_tilde_destroy (void)
 {
-    CLASS_FREE (vd_tilde_class);
+    class_free (vd_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

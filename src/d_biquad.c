@@ -164,7 +164,7 @@ void biquad_tilde_setup (void)
 
 void biquad_tilde_destroy (void)
 {
-    CLASS_FREE (biquad_tilde_class);
+    class_free (biquad_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -82,7 +82,7 @@ void sig_tilde_setup (void)
 
 void sig_tilde_destroy (void)
 {
-    CLASS_FREE (sig_tilde_class);
+    class_free (sig_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

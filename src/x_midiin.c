@@ -83,7 +83,7 @@ void midiin_setup (void)
 
 void midiin_destroy (void)
 {
-    CLASS_FREE (midiin_class);
+    class_free (midiin_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

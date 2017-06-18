@@ -69,7 +69,7 @@ void atan2_setup (void)
 
 void atan2_destroy (void)
 {
-    CLASS_FREE (atan2_class);
+    class_free (atan2_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

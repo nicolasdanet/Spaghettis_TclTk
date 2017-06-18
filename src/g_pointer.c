@@ -237,7 +237,7 @@ void pointer_setup (void)
 
 void pointer_destroy (void)
 {
-    CLASS_FREE (pointer_class);
+    class_free (pointer_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

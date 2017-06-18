@@ -104,7 +104,7 @@ void snapshot_tilde_setup (void)
 
 void snapshot_tilde_destroy (void)
 {
-    CLASS_FREE (snapshot_tilde_class);
+    class_free (snapshot_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

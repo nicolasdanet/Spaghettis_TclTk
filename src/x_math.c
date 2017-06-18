@@ -294,15 +294,15 @@ void math_setup (void)
 
 void math_destroy (void)
 {
-    CLASS_FREE (sin_class);
-    CLASS_FREE (cos_class);
-    CLASS_FREE (tan_class);
-    CLASS_FREE (log_class);
-    CLASS_FREE (exp_class);
-    CLASS_FREE (abs_class);
-    CLASS_FREE (sqrt_class);
-    CLASS_FREE (wrap_class);
-    CLASS_FREE (atan_class);
+    class_free (sin_class);
+    class_free (cos_class);
+    class_free (tan_class);
+    class_free (log_class);
+    class_free (exp_class);
+    class_free (abs_class);
+    class_free (sqrt_class);
+    class_free (wrap_class);
+    class_free (atan_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -99,7 +99,7 @@ void notein_setup (void)
 
 void notein_destroy (void)
 {
-    CLASS_FREE (notein_class);
+    class_free (notein_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

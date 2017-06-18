@@ -118,8 +118,8 @@ void subtract_tilde_setup (void)
 
 void subtract_tilde_destroy (void)
 {
-    CLASS_FREE (subtract_tilde_class);
-    CLASS_FREE (subtractScalar_tilde_class);
+    class_free (subtract_tilde_class);
+    class_free (subtractScalar_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

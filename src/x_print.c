@@ -115,7 +115,7 @@ void print_setup (void)
 
 void print_destroy (void)
 {
-    CLASS_FREE (print_class);
+    class_free (print_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

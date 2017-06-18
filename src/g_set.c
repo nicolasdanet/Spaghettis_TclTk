@@ -190,7 +190,7 @@ void set_setup (void)
 
 void set_destroy (void)
 {
-    CLASS_FREE (set_class);
+    class_free (set_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

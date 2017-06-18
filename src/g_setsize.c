@@ -98,7 +98,7 @@ void setsize_setup (void)
 
 void setsize_destroy (void)
 {
-    CLASS_FREE (setsize_class);
+    class_free (setsize_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

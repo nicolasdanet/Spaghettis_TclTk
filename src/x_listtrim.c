@@ -80,7 +80,7 @@ void listtrim_setup (void)
 
 void listtrim_destroy (void)
 {
-    CLASS_FREE (listtrim_class);
+    class_free (listtrim_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

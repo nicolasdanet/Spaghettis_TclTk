@@ -90,7 +90,7 @@ void getsize_setup (void)
 
 void getsize_destroy (void)
 {
-    CLASS_FREE (getsize_class);
+    class_free (getsize_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

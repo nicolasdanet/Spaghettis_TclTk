@@ -109,7 +109,7 @@ void receive_setup (void)
 
 void receive_destroy (void)
 {
-    CLASS_FREE (receive_class);
+    class_free (receive_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

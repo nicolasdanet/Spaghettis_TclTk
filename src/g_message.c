@@ -314,8 +314,8 @@ void message_setup (void)
 
 void message_destroy (void)
 {
-    CLASS_FREE (message_class);
-    CLASS_FREE (messageresponder_class);
+    class_free (message_class);
+    class_free (messageresponder_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -94,7 +94,7 @@ void until_setup (void)
 
 void until_destroy (void)
 {
-    CLASS_FREE (until_class);
+    class_free (until_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

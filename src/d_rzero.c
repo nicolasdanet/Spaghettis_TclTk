@@ -135,7 +135,7 @@ void zero_tilde_setup (void)
 
 void zero_tilde_destroy (void)
 {
-    CLASS_FREE (rzero_tilde_class);
+    class_free (rzero_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

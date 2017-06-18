@@ -480,7 +480,7 @@ void template_setup (void)
 
 void template_destroy (void)
 {
-    CLASS_FREE (template_class);
+    class_free (template_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

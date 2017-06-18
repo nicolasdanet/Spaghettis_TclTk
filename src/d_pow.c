@@ -103,7 +103,7 @@ void pow_tilde_setup (void)
 
 void pow_tilde_destroy (void)
 {
-    CLASS_FREE (pow_tilde_class);
+    class_free (pow_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

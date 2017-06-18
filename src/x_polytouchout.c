@@ -76,7 +76,7 @@ void polytouchout_setup (void)
 
 void polytouchout_destroy (void)
 {
-    CLASS_FREE (polytouchout_class);
+    class_free (polytouchout_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -97,7 +97,7 @@ void float_setup (void)
 
 void float_destroy (void)
 {
-    CLASS_FREE (float_class);
+    class_free (float_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -90,7 +90,7 @@ void wrap_tilde_setup (void)
 
 void wrap_tilde_destroy (void)
 {
-    CLASS_FREE (wrap_tilde_class);
+    class_free (wrap_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

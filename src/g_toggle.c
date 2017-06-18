@@ -558,7 +558,7 @@ void toggle_setup (void)
 
 void toggle_destroy (void)
 {
-    CLASS_FREE (toggle_class);
+    class_free (toggle_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

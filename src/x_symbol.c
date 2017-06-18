@@ -88,7 +88,7 @@ void symbol_setup (void)
 
 void symbol_destroy (void)
 {
-    CLASS_FREE (symbol_class);
+    class_free (symbol_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

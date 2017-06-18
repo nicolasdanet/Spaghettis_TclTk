@@ -749,7 +749,7 @@ void radio_setup (void)
 
 void radio_destroy (void)
 {
-    CLASS_FREE (radio_class);
+    class_free (radio_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

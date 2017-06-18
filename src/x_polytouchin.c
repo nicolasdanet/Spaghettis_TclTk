@@ -99,7 +99,7 @@ void polytouchin_setup (void)
 
 void polytouchin_destroy (void)
 {
-    CLASS_FREE (polytouchin_class);
+    class_free (polytouchin_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -353,10 +353,10 @@ void inlet_setup (void)
 
 void inlet_destroy (void)
 {
-    CLASS_FREE (inlet_class);
-    CLASS_FREE (pointerinlet_class);
-    CLASS_FREE (floatinlet_class);
-    CLASS_FREE (symbolinlet_class);
+    class_free (inlet_class);
+    class_free (pointerinlet_class);
+    class_free (floatinlet_class);
+    class_free (symbolinlet_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

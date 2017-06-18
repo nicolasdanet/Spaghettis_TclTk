@@ -88,7 +88,7 @@ void ftom_tilde_setup (void)
 
 void ftom_tilde_destroy (void)
 {
-    CLASS_FREE (ftom_tilde_class);
+    class_free (ftom_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

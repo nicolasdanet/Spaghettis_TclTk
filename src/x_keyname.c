@@ -79,7 +79,7 @@ void keyname_setup (void)
 
 void keyname_destroy (void)
 {
-    CLASS_FREE (keyname_class);
+    class_free (keyname_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

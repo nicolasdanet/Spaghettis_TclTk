@@ -83,7 +83,7 @@ void tabread_setup (void)
 
 void tabread_destroy (void)
 {
-    CLASS_FREE (tabread_class);
+    class_free (tabread_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

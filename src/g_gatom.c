@@ -596,7 +596,7 @@ void gatom_setup (void)
 
 void gatom_destroy (void)
 {
-    CLASS_FREE (gatom_class);
+    class_free (gatom_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -173,7 +173,7 @@ void rsqrt_tilde_setup (void)
 
 void rsqrt_tilde_destroy (void)
 {
-    CLASS_FREE (rsqrt_tilde_class);
+    class_free (rsqrt_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

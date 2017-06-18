@@ -295,7 +295,7 @@ void qlist_setup (void)
 
 void qlist_destroy (void)
 {
-    CLASS_FREE (qlist_class);
+    class_free (qlist_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

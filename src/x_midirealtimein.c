@@ -84,7 +84,7 @@ void midirealtimein_setup (void)
 
 void midirealtimein_destroy (void)
 {
-    CLASS_FREE (midirealtimein_class);
+    class_free (midirealtimein_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

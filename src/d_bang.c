@@ -96,7 +96,7 @@ void bang_tilde_setup (void)
 
 void bang_tilde_destroy (void)
 {
-    CLASS_FREE (bang_tilde_class);
+    class_free (bang_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

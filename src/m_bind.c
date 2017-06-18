@@ -140,7 +140,7 @@ void bindlist_setup (void)
 
 void bindlist_destroy (void)
 {
-    CLASS_FREE (bindlist_class);
+    class_free (bindlist_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

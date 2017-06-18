@@ -152,8 +152,8 @@ void textlist_setup (void)
 
 void textlist_destroy (void)
 {
-    CLASS_FREE (texttolist_class);
-    CLASS_FREE (textfromlist_class);
+    class_free (texttolist_class);
+    class_free (textfromlist_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

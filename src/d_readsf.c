@@ -597,7 +597,7 @@ void readsf_tilde_setup (void)
 
 void readsf_tilde_destroy (void)
 {
-    CLASS_FREE (readsf_tilde_class);
+    class_free (readsf_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -76,7 +76,7 @@ void noteout_setup (void)
 
 void noteout_destroy (void)
 {
-    CLASS_FREE (noteout_class);
+    class_free (noteout_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

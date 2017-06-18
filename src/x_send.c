@@ -102,7 +102,7 @@ void send_setup (void)
 
 void send_destroy (void)
 {
-    CLASS_FREE (send_class);
+    class_free (send_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

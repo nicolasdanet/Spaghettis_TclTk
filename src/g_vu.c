@@ -696,7 +696,7 @@ void vu_setup (void)
 
 void vu_destroy (void)
 {
-    CLASS_FREE (vu_class);
+    class_free (vu_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

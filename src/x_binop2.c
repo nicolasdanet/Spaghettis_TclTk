@@ -212,12 +212,12 @@ void binop2_setup (void)
 
 void binop2_destroy (void)
 {
-    CLASS_FREE (binopEquals_class);
-    CLASS_FREE (binopNotEquals_class);
-    CLASS_FREE (binopGreater_class);
-    CLASS_FREE (binopLess_class);
-    CLASS_FREE (binopGreaterEquals_class);
-    CLASS_FREE (binopLessEquals_class);
+    class_free (binopEquals_class);
+    class_free (binopNotEquals_class);
+    class_free (binopGreater_class);
+    class_free (binopLess_class);
+    class_free (binopGreaterEquals_class);
+    class_free (binopLessEquals_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

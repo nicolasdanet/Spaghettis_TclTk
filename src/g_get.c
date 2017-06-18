@@ -117,7 +117,7 @@ void get_setup (void)
 
 void get_destroy (void)
 {
-    CLASS_FREE (get_class);
+    class_free (get_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

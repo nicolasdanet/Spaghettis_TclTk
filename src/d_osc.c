@@ -116,7 +116,7 @@ void osc_tilde_setup (void)
 
 void osc_tilde_destroy (void)
 {
-    CLASS_FREE (osc_tilde_class);
+    class_free (osc_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

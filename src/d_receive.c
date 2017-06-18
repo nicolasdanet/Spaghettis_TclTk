@@ -116,7 +116,7 @@ void receive_tilde_setup (void)
 
 void receive_tilde_destroy (void)
 {
-    CLASS_FREE (receive_tilde_class);
+    class_free (receive_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

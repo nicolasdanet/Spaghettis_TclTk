@@ -220,7 +220,7 @@ void textdefine_setup (void)
 
 void textdefine_destroy (void)
 {
-    CLASS_FREE (textdefine_class);
+    class_free (textdefine_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

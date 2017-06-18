@@ -104,7 +104,7 @@ void element_setup (void)
 
 void element_destroy (void)
 {
-    CLASS_FREE (element_class);
+    class_free (element_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

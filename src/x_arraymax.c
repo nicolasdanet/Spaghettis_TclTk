@@ -102,7 +102,7 @@ void arraymax_setup (void)
 
 void arraymax_destroy (void)
 {
-    CLASS_FREE (arraymax_class);
+    class_free (arraymax_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

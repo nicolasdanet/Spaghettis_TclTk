@@ -193,7 +193,7 @@ void tabwrite_tilde_setup (void)
 
 void tabwrite_tilde_destroy (void)
 {
-    CLASS_FREE (tabwrite_tilde_class);
+    class_free (tabwrite_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

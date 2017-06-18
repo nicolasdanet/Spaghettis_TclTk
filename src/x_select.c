@@ -187,8 +187,8 @@ void select_setup (void)
 
 void select_destroy (void)
 {
-    CLASS_FREE (select1_class);
-    CLASS_FREE (select2_class);
+    class_free (select1_class);
+    class_free (select2_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

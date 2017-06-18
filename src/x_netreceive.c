@@ -344,7 +344,7 @@ void netreceive_setup (void)
 
 void netreceive_destroy (void)
 {
-    CLASS_FREE (netreceive_class);
+    class_free (netreceive_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -124,7 +124,7 @@ void struct_setup (void)
 
 void struct_destroy (void)
 {
-    CLASS_FREE (struct_class);
+    class_free (struct_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

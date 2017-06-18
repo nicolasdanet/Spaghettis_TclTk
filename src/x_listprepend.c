@@ -111,7 +111,7 @@ void listprepend_setup (void)
 
 void listprepend_destroy (void)
 {
-    CLASS_FREE (listprepend_class);
+    class_free (listprepend_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

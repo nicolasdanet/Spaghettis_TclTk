@@ -130,7 +130,7 @@ void adc_tilde_setup (void)
 
 void adc_tilde_destroy (void)
 {
-    CLASS_FREE (adc_tilde_class);
+    class_free (adc_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

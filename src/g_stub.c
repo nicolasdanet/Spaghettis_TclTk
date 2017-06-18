@@ -168,7 +168,7 @@ void stub_setup (void)
 
 void stub_destroy (void)
 {
-    CLASS_FREE (stub_class);
+    class_free (stub_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -869,7 +869,7 @@ void dial_setup (void)
 
 void dial_destroy (void)
 {
-    CLASS_FREE (dial_class);
+    class_free (dial_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -114,7 +114,7 @@ void arraysize_setup (void)
 
 void arraysize_destroy (void)
 {
-    CLASS_FREE (arraysize_class);
+    class_free (arraysize_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

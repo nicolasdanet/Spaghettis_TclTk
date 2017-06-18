@@ -103,7 +103,7 @@ void arraymin_setup (void)
 
 void arraymin_destroy (void)
 {
-    CLASS_FREE (arraymin_class);
+    class_free (arraymin_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

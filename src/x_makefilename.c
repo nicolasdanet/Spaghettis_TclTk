@@ -172,7 +172,7 @@ void makefilename_setup (void)
 
 void makefilename_destroy (void)
 {
-    CLASS_FREE (makefilename_class);
+    class_free (makefilename_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

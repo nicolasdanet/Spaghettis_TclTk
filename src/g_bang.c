@@ -564,7 +564,7 @@ void bng_setup (void)
 
 void bng_destroy (void)
 {
-    CLASS_FREE (bng_class);
+    class_free (bng_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

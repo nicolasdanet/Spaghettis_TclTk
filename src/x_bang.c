@@ -81,7 +81,7 @@ void bang_setup (void)
 
 void bang_destroy (void)
 {
-    CLASS_FREE (bang_class);
+    class_free (bang_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

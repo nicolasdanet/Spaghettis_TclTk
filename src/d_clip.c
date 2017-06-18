@@ -105,7 +105,7 @@ void clip_tilde_setup (void)
 
 void clip_tilde_destroy (void)
 {
-    CLASS_FREE (clip_tilde_class);
+    class_free (clip_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

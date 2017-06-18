@@ -105,7 +105,7 @@ void textfile_setup (void)
 
 void textfile_destroy (void)
 {
-    CLASS_FREE (textfile_class);
+    class_free (textfile_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

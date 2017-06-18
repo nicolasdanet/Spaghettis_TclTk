@@ -78,7 +78,7 @@ void arrayquantile_setup (void)
 
 void arrayquantile_destroy (void)
 {
-    CLASS_FREE (arrayquantile_class);
+    class_free (arrayquantile_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

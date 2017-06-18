@@ -172,7 +172,7 @@ void threshold_tilde_setup (void)
 
 void threshold_tilde_destroy (void)
 {
-    CLASS_FREE (threshold_tilde_class);
+    class_free (threshold_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

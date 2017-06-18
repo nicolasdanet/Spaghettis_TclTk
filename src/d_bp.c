@@ -191,7 +191,7 @@ void bp_tilde_setup (void)
 
 void bp_tilde_destroy (void)
 {
-    CLASS_FREE (bp_tilde_class);
+    class_free (bp_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

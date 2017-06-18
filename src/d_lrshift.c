@@ -130,7 +130,7 @@ void lrshift_tilde_setup (void)
 
 void lrshift_tilde_destroy (void)
 {
-    CLASS_FREE (lrshift_tilde_class);
+    class_free (lrshift_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

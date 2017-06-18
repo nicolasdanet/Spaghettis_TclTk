@@ -78,7 +78,7 @@ void catch_tilde_setup (void)
 
 void catch_tilde_destroy (void)
 {
-    CLASS_FREE (catch_tilde_class);
+    class_free (catch_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

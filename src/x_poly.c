@@ -206,7 +206,7 @@ void poly_setup (void)
 
 void poly_destroy (void)
 {
-    CLASS_FREE (poly_class);
+    class_free (poly_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

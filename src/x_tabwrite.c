@@ -85,7 +85,7 @@ void tabwrite_setup (void)
 
 void tabwrite_destroy (void)
 {
-    CLASS_FREE (tabwrite_class);
+    class_free (tabwrite_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

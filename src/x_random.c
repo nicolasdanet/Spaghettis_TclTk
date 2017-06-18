@@ -106,7 +106,7 @@ void random_setup (void)
 
 void random_destroy (void)
 {
-    CLASS_FREE (random_class);
+    class_free (random_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

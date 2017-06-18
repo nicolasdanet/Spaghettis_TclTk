@@ -77,7 +77,7 @@ void moses_setup (void)
 
 void moses_destroy (void)
 {
-    CLASS_FREE (moses_class);
+    class_free (moses_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

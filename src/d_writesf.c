@@ -533,7 +533,7 @@ void writesf_tilde_setup (void)
 
 void writesf_tilde_destroy (void)
 {
-    CLASS_FREE (writesf_tilde_class);
+    class_free (writesf_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

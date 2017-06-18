@@ -83,7 +83,7 @@ void sysexin_setup (void)
 
 void sysexin_destroy (void)
 {
-    CLASS_FREE (sysexin_class);
+    class_free (sysexin_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

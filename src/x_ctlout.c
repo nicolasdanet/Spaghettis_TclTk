@@ -77,7 +77,7 @@ void ctlout_setup (void)
 
 void ctlout_destroy (void)
 {
-    CLASS_FREE (ctlout_class);
+    class_free (ctlout_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

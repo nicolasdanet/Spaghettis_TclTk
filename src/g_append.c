@@ -150,7 +150,7 @@ void append_setup (void)
 
 void append_destroy (void)
 {
-    CLASS_FREE (append_class);
+    class_free (append_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

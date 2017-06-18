@@ -146,7 +146,7 @@ void lop_tilde_setup (void)
 
 void lop_tilde_destroy (void)
 {
-    CLASS_FREE (lop_tilde_class);
+    class_free (lop_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

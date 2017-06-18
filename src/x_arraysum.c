@@ -92,7 +92,7 @@ void arraysum_setup (void)
 
 void arraysum_destroy (void)
 {
-    CLASS_FREE (arraysum_class);
+    class_free (arraysum_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -86,7 +86,7 @@ void abs_tilde_setup (void)
 
 void abs_tilde_destroy (void)
 {
-    CLASS_FREE (abs_tilde_class);
+    class_free (abs_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

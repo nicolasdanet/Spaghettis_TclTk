@@ -257,7 +257,7 @@ void textsearch_setup (void)
 
 void textsearch_destroy (void)
 {
-    CLASS_FREE (textsearch_class);
+    class_free (textsearch_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

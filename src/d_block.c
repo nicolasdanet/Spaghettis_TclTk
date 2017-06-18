@@ -236,7 +236,7 @@ void block_tilde_setup (void)
 
 void block_tilde_destroy (void)
 {
-    CLASS_FREE (block_class);
+    class_free (block_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

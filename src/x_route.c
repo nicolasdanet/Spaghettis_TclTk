@@ -220,7 +220,7 @@ void route_setup (void)
 
 void route_destroy (void)
 {
-    CLASS_FREE (route_class);
+    class_free (route_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

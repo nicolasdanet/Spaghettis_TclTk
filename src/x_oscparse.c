@@ -439,7 +439,7 @@ void oscparse_setup (void)
 
 void oscparse_destroy (void)
 {
-    CLASS_FREE (oscparse_class);
+    class_free (oscparse_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

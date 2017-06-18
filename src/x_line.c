@@ -179,7 +179,7 @@ void line_setup (void)
 
 void line_destroy (void)
 {
-    CLASS_FREE (line_class);
+    class_free (line_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -823,7 +823,7 @@ void slider_setup (void)
 
 void slider_destroy (void)
 {
-    CLASS_FREE (slider_class);
+    class_free (slider_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -441,7 +441,7 @@ void soundfiler_setup (void)
 
 void soundfiler_destroy (void)
 {
-    CLASS_FREE (soundfiler_class);
+    class_free (soundfiler_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

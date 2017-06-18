@@ -168,7 +168,7 @@ void metro_setup (void)
 
 void metro_destroy (void)
 {
-    CLASS_FREE (metro_class);
+    class_free (metro_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

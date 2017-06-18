@@ -80,7 +80,7 @@ void send_tilde_setup (void)
 
 void send_tilde_destroy (void)
 {
-    CLASS_FREE (send_tilde_class);
+    class_free (send_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

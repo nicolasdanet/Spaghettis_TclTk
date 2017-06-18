@@ -174,7 +174,7 @@ void makenote_setup (void)
 
 void makenote_destroy (void)
 {
-    CLASS_FREE (makenote_class);
+    class_free (makenote_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

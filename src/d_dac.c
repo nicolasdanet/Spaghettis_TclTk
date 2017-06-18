@@ -132,7 +132,7 @@ void dac_tilde_setup (void)
 
 void dac_tilde_destroy (void)
 {
-    CLASS_FREE (dac_tilde_class);
+    class_free (dac_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

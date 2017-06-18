@@ -168,7 +168,7 @@ void framp_tilde_setup (void)
 
 void framp_tilde_destroy (void)
 {
-    CLASS_FREE (framp_tilde_class);
+    class_free (framp_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

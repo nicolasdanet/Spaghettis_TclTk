@@ -118,8 +118,8 @@ void divide_tilde_setup (void)
 
 void divide_tilde_destroy (void)
 {
-    CLASS_FREE (divide_tilde_class);
-    CLASS_FREE (divideScalar_tilde_class);
+    class_free (divide_tilde_class);
+    class_free (divideScalar_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

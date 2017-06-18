@@ -87,7 +87,7 @@ void int_setup (void)
 
 void int_destroy (void)
 {
-    CLASS_FREE (int_class);
+    class_free (int_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

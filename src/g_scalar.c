@@ -605,7 +605,7 @@ void scalar_setup (void)
 
 void scalar_destroy (void)
 {
-    CLASS_FREE (scalar_class);
+    class_free (scalar_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

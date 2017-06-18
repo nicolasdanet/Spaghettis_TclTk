@@ -94,7 +94,7 @@ void noise_tilde_setup (void)
 
 void noise_tilde_destroy (void)
 {
-    CLASS_FREE (noise_tilde_class);
+    class_free (noise_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -86,7 +86,7 @@ void powtodb_tilde_setup (void)
 
 void powtodb_tilde_destroy (void)
 {
-    CLASS_FREE (powtodb_tilde_class);
+    class_free (powtodb_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

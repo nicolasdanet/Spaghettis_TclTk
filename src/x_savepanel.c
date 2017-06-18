@@ -93,7 +93,7 @@ void savepanel_setup (void)
 
 void savepanel_destroy (void)
 {
-    CLASS_FREE (savepanel_class);
+    class_free (savepanel_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

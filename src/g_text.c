@@ -180,7 +180,7 @@ void text_setup (void)
 
 void text_destroy (void)
 {
-    CLASS_FREE (text_class);
+    class_free (text_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

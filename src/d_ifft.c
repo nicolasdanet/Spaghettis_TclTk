@@ -109,7 +109,7 @@ void ifft_tilde_setup (void)
 
 void ifft_tilde_destroy (void)
 {
-    CLASS_FREE (ifft_tilde_class);
+    class_free (ifft_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

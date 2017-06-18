@@ -136,7 +136,7 @@ void rpole_tilde_setup (void)
 
 void rpole_tilde_destroy (void)
 {
-    CLASS_FREE (rpole_tilde_class);
+    class_free (rpole_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

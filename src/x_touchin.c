@@ -92,7 +92,7 @@ void touchin_setup (void)
 
 void touchin_destroy (void)
 {
-    CLASS_FREE (touchin_class);
+    class_free (touchin_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

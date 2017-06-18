@@ -276,7 +276,7 @@ void vline_tilde_setup (void)
 
 void vline_tilde_destroy (void)
 {
-    CLASS_FREE (vline_tilde_class);
+    class_free (vline_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

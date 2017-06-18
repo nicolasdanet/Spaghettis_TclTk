@@ -183,7 +183,7 @@ void env_tilde_setup (void)
 
 void env_tilde_destroy (void)
 {
-    CLASS_FREE (env_tilde_class);
+    class_free (env_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

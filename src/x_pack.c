@@ -153,7 +153,7 @@ void pack_setup (void)
 
 void pack_destroy (void)
 {
-    CLASS_FREE (pack_class);
+    class_free (pack_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

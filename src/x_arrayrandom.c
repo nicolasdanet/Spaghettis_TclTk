@@ -107,7 +107,7 @@ void arrayrandom_setup (void)
 
 void arrayrandom_destroy (void)
 {
-    CLASS_FREE (arrayrandom_class);
+    class_free (arrayrandom_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -165,7 +165,7 @@ void czero_rev_tilde_setup (void)
 
 void czero_rev_tilde_destroy (void)
 {
-    CLASS_FREE (czero_rev_tilde_class);
+    class_free (czero_rev_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

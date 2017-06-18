@@ -259,13 +259,13 @@ void binop1_setup (void)
 
 void binop1_destroy (void)
 {
-    CLASS_FREE (binopAdd_class);
-    CLASS_FREE (binopSubtract_class);
-    CLASS_FREE (binopMultiply_class);
-    CLASS_FREE (binopDivide_class);
-    CLASS_FREE (binopPower_class);
-    CLASS_FREE (binopMaximum_class);
-    CLASS_FREE (binopMinimum_class);
+    class_free (binopAdd_class);
+    class_free (binopSubtract_class);
+    class_free (binopMultiply_class);
+    class_free (binopDivide_class);
+    class_free (binopPower_class);
+    class_free (binopMaximum_class);
+    class_free (binopMinimum_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

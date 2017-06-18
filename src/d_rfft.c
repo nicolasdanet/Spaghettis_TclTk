@@ -124,7 +124,7 @@ void rfft_tilde_setup (void)
 
 void rfft_tilde_destroy (void)
 {
-    CLASS_FREE (rfft_tilde_class);
+    class_free (rfft_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -88,7 +88,7 @@ void rmstodb_tilde_setup (void)
 
 void rmstodb_tilde_destroy (void)
 {
-    CLASS_FREE (rmstodb_tilde_class);
+    class_free (rmstodb_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

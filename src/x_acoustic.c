@@ -201,12 +201,12 @@ void acoustic_setup (void)
 
 void acoustic_destroy (void)
 {
-    CLASS_FREE (mtof_class);
-    CLASS_FREE (ftom_class);
-    CLASS_FREE (powtodb_class);
-    CLASS_FREE (dbtopow_class);
-    CLASS_FREE (rmstodb_class);
-    CLASS_FREE (dbtorms_class);
+    class_free (mtof_class);
+    class_free (ftom_class);
+    class_free (powtodb_class);
+    class_free (dbtopow_class);
+    class_free (rmstodb_class);
+    class_free (dbtorms_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

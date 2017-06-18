@@ -128,7 +128,7 @@ void tabread4_tilde_setup (void)
 
 void tabread4_tilde_destroy (void)
 {
-    CLASS_FREE (tabread4_tilde_class);
+    class_free (tabread4_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

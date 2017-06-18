@@ -167,7 +167,7 @@ void expr_setup (void)
 
 void expr_destroy (void)
 {
-    CLASS_FREE (expr_class);
+    class_free (expr_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

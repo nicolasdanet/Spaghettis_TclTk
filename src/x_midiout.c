@@ -78,7 +78,7 @@ void midiout_setup (void)
 
 void midiout_destroy (void)
 {
-    CLASS_FREE (midiout_class);
+    class_free (midiout_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

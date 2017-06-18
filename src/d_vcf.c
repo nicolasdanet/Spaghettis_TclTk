@@ -187,7 +187,7 @@ void vcf_tilde_setup (void)
 
 void vcf_tilde_destroy (void)
 {
-    CLASS_FREE (vcf_tilde_class);
+    class_free (vcf_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

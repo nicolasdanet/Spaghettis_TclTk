@@ -970,7 +970,7 @@ void plot_setup (void)
 
 void plot_destroy (void)
 {
-    CLASS_FREE (plot_class);
+    class_free (plot_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

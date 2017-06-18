@@ -74,7 +74,7 @@ void key_setup (void)
 
 void key_destroy (void)
 {
-    CLASS_FREE (key_class);
+    class_free (key_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

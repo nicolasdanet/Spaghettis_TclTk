@@ -107,7 +107,7 @@ void fft_tilde_setup (void)
 
 void fft_tilde_destroy (void)
 {
-    CLASS_FREE (fft_tilde_class);
+    class_free (fft_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

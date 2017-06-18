@@ -450,7 +450,7 @@ void textsequence_setup (void)
 
 void textsequence_destroy (void)
 {
-    CLASS_FREE (textsequence_class);
+    class_free (textsequence_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

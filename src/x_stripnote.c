@@ -75,7 +75,7 @@ void stripnote_setup (void)
 
 void stripnote_destroy (void)
 {
-    CLASS_FREE (stripnote_class);
+    class_free (stripnote_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

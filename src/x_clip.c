@@ -86,7 +86,7 @@ void clip_setup (void)
 
 void clip_destroy (void)
 {
-    CLASS_FREE (clip_class);
+    class_free (clip_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -165,7 +165,7 @@ void listinlet_setup (void)
 
 void listinlet_destroy (void)
 {
-    CLASS_FREE (listinlet_class);
+    class_free (listinlet_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

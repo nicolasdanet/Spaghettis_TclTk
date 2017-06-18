@@ -88,7 +88,7 @@ void dbtorms_tilde_setup (void)
 
 void dbtorms_tilde_destroy (void)
 {
-    CLASS_FREE (dbtorms_tilde_class);
+    class_free (dbtorms_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -363,7 +363,7 @@ void oscformat_setup (void)
 
 void oscformat_destroy (void)
 {
-    CLASS_FREE (oscformat_class);
+    class_free (oscformat_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

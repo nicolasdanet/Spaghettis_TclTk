@@ -108,7 +108,7 @@ void samplerate_tilde_setup (void)
 
 void samplerate_tilde_destroy (void)
 {
-    CLASS_FREE (samplerate_tilde_class);
+    class_free (samplerate_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

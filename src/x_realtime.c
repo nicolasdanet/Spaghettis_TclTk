@@ -84,7 +84,7 @@ void realtime_setup (void)
 
 void realtime_destroy (void)
 {
-    CLASS_FREE (realtime_class);
+    class_free (realtime_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

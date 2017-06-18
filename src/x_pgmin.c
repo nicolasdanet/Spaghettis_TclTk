@@ -92,7 +92,7 @@ void pgmin_setup (void)
 
 void pgmin_destroy (void)
 {
-    CLASS_FREE (pgmin_class);
+    class_free (pgmin_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

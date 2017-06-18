@@ -537,7 +537,7 @@ void canvas_setup (void)
 
 void canvas_destroy (void)
 {
-    CLASS_FREE (canvas_class);
+    class_free (canvas_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

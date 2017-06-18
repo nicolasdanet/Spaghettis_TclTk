@@ -98,7 +98,7 @@ void arrayget_setup (void)
 
 void arrayget_destroy (void)
 {
-    CLASS_FREE (arrayget_class);
+    class_free (arrayget_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -123,7 +123,7 @@ void rifft_tilde_setup (void)
 
 void rifft_tilde_destroy (void)
 {
-    CLASS_FREE (rifft_tilde_class);
+    class_free (rifft_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

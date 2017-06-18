@@ -69,7 +69,7 @@ void serial_setup (void)
 
 void serial_destroy (void)
 {
-    CLASS_FREE (serial_class);
+    class_free (serial_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

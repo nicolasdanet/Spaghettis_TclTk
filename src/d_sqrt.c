@@ -95,7 +95,7 @@ void sqrt_tilde_setup (void)
 
 void sqrt_tilde_destroy (void)
 {
-    CLASS_FREE (sqrt_tilde_class);
+    class_free (sqrt_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -151,7 +151,7 @@ void textset_setup (void)
 
 void textset_destroy (void)
 {
-    CLASS_FREE (textset_class);
+    class_free (textset_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

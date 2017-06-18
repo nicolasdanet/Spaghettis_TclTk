@@ -164,7 +164,7 @@ void tabosc4_tilde_setup (void)
 
 void tabosc4_tilde_destroy (void)
 {
-    CLASS_FREE (tabosc4_tilde_class);
+    class_free (tabosc4_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

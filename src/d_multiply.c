@@ -118,8 +118,8 @@ void multiply_tilde_setup (void)
 
 void multiply_tilde_destroy (void)
 {
-    CLASS_FREE (multiply_tilde_class);
-    CLASS_FREE (multiplyScalar_tilde_class);
+    class_free (multiply_tilde_class);
+    class_free (multiplyScalar_tilde_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
