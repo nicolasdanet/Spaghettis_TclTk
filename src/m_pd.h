@@ -564,9 +564,6 @@ typedef struct _gobj {
     struct _gobj    *g_next;
     } t_gobj;
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 /* CLASS_GRAPHIC. */
 
 typedef struct _scalar {                        
@@ -574,9 +571,6 @@ typedef struct _scalar {
     t_symbol        *sc_templateIdentifier;
     t_word          *sc_element;
     } t_scalar;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 /* CLASS_BOX. */
 
@@ -629,6 +623,7 @@ typedef t_int   *(*t_perform)   (t_int *);
 // MARK: -
 
 #define CLASS_SIGNAL(c, t, field)       class_addSignal (c, (char *)(&((t *)0)->field) - (char *)0)
+#define CLASS_FREE(c)                   { class_free (c); c = NULL; }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -800,6 +795,114 @@ PD_DLL void     post_log                        (const char *fmt, ...);         
 }
 
 #endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define PD_MAX(a,b)                 ((a)>(b)?(a):(b))
+#define PD_MIN(a,b)                 ((a)<(b)?(a):(b))
+
+#define PD_ABS(a)                   ((a)<0?-(a):(a))
+#define PD_CLAMP(u,a,b)             ((u)<(a)?(a):(u)>(b)?(b):(u))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://www.math-solutions.org/graphplotter.html > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define PD_HALF_PI                  1.5707963267948966192313216916398
+#define PD_PI                       3.1415926535897932384626433832795
+#define PD_TWO_PI                   6.283185307179586476925286766559
+#define PD_LOG_TEN                  2.3025850929940456840179914546844
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define pd_class(x)                 (*((t_pd *)(x)))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define cast_pd(x)                  ((t_pd *)(x))
+#define cast_iem(x)                 ((t_iem *)(x))
+#define cast_gobj(x)                ((t_gobj *)(x))
+#define cast_glist(x)               ((t_glist *)(x))
+#define cast_scalar(x)              ((t_scalar *)(x))
+#define cast_object(x)              ((t_object *)(x))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#if PD_BUILDING_APPLICATION
+
+#define class_addDSP(c, m)          class_addMethod ((c), (t_method)(m), sym_dsp, A_CANT, A_NULL)
+#define class_addClick(c, m)        class_addMethod ((c), (t_method)(m), sym_click, A_GIMME, A_NULL)
+#define class_addPolling(c, m)      class_addMethod ((c), (t_method)(m), sym__polling, A_NULL)
+#define class_addAutorelease(c, m)  class_addMethod ((c), (t_method)(m), sym__autorelease, A_NULL)
+
+#else
+
+#define class_addDSP(c, m)          class_addMethod ((c), (t_method)(m), gensym ("dsp"), A_CANT, A_NULL)
+#define class_addClick(c, m)        class_addMethod ((c), (t_method)(m), gensym ("click"), A_GIMME, A_NULL)
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define IS_NULL(atom)               ((atom)->a_type == A_NULL)
+#define IS_SEMICOLON(atom)          ((atom)->a_type == A_SEMICOLON)
+#define IS_COMMA(atom)              ((atom)->a_type == A_COMMA)
+#define IS_POINTER(atom)            ((atom)->a_type == A_POINTER)
+#define IS_FLOAT(atom)              ((atom)->a_type == A_FLOAT)
+#define IS_SYMBOL(atom)             ((atom)->a_type == A_SYMBOL)
+#define IS_DOLLAR(atom)             ((atom)->a_type == A_DOLLAR)
+#define IS_DOLLARSYMBOL(atom)       ((atom)->a_type == A_DOLLARSYMBOL)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define IS_SEMICOLON_OR_COMMA(atom)     (IS_SEMICOLON(atom) || IS_COMMA(atom))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define SET_NULL(atom)              ((atom)->a_type = A_NULL)
+#define SET_SEMICOLON(atom)         ((atom)->a_type = A_SEMICOLON, (atom)->a_w.w_index = 0)
+#define SET_COMMA(atom)             ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)
+#define SET_POINTER(atom, gp)       ((atom)->a_type = A_POINTER, (atom)->a_w.w_gpointer = (gp))
+#define SET_FLOAT(atom, f)          ((atom)->a_type = A_FLOAT, (atom)->a_w.w_float = (f))
+#define SET_SYMBOL(atom, s)         ((atom)->a_type = A_SYMBOL, (atom)->a_w.w_symbol = (s))
+#define SET_DOLLAR(atom, n)         ((atom)->a_type = A_DOLLAR, (atom)->a_w.w_index = (n))
+#define SET_DOLLARSYMBOL(atom, s)   ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.w_symbol = (s))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define GET_POINTER(atom)           ((atom)->a_w.w_gpointer)
+#define GET_FLOAT(atom)             ((atom)->a_w.w_float)
+#define GET_SYMBOL(atom)            ((atom)->a_w.w_symbol)
+#define GET_DOLLAR(atom)            ((atom)->a_w.w_index)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define WORD_FLOAT(w)               ((w)->w_float)
+#define WORD_SYMBOL(w)              ((w)->w_symbol)
+#define WORD_ARRAY(w)               ((w)->w_array)
+#define WORD_BUFFER(w)              ((w)->w_buffer)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
