@@ -39,7 +39,7 @@ static void *hello_new (void)
     err |= PD_ERROR;    /* Something wrong happens. */
     
     if (err) { 
-        pd_free ((t_pd *)x);                /* It is safe to call the free method. */
+        pd_free (cast_pd (x));              /* It is safe to call the free method. */
         x = NULL;
     }
     
