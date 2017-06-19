@@ -51,8 +51,8 @@ proc styleFontConsole {}        { return TkTextFont }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleFrame {}              { return "-style Application.TFrame         -padding 15"    }
-proc styleLabelFrame {}         { return "-style Application.TLabelframe    -padding 10"    }
+proc styleFrame {}              { return "-style Application.TFrame         -padding 10"    }
+proc styleLabelFrame {}         { return "-style Application.TLabelframe    -padding 7"     }
 proc styleEntry {}              { return "-style Application.TEntry"                        }
 proc styleEntryNumber {}        { return "-style Application.TEntry         -justify right" }
 proc styleMenuButton {}         { return "-style Application.TMenubutton"  }
@@ -70,7 +70,7 @@ proc packCategoryNext {}        { return "-side top -fill both -expand 1 -pady {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleMinimumSize {}        { return "350 150" }
+proc styleMinimumSize {}        { return "300 150" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
