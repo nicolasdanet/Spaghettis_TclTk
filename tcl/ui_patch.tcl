@@ -22,11 +22,6 @@ namespace eval ::ui_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable suffix "(Edit)"
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 variable  patchTitle
 variable  patchIsEditMode
 
@@ -95,8 +90,6 @@ proc setTitle {top path name dirty} {
         }
     }
 
-    wm title $top $patchTitle($top)
-    
     ::ui_patch::_reflectEditmode $top
 }
 
@@ -140,12 +133,13 @@ proc scroll {c axis amount} {
 
 proc _reflectEditmode {top} {
 
-    variable suffix
     variable patchIsEditMode
-    
+
     set title [::ui_patch::getTitle $top]
-    
-    if {$patchIsEditMode($top)} { wm title $top "$title $suffix" } else { wm title $top "$title" }
+
+    # On macOS Sierra extra space is required to avoid ellipsis.
+
+    if {$patchIsEditMode($top)} { wm title $top "$title (Edit)" } else { wm title $top "$title          " }
 }
 
 # ------------------------------------------------------------------------------------------------------------
