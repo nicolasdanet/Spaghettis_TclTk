@@ -16,12 +16,12 @@ Encapsulate all static variables into instance.
 Profile and optimize code.
 Make an embeddable interpreter.
 Use generic containers (i.e linked list).
-Implement a better preferences and fonts management.
 
 ###
 
 Think about an unit test suite.
 Replace the Tk GUI (make MVC more strict).
+Implement a better preferences and fonts management.
 Make translation (internationalization).
 Consider dynamic patching with a multi-core audio engine.
 
