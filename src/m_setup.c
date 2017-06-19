@@ -602,6 +602,7 @@ void setup_setup (void)
     czero_rev_tilde_setup();
     dac_tilde_setup();
     dbtopow_tilde_setup();
+    dbtorms_tilde_setup();
     delread_tilde_setup();
     delwrite_tilde_setup();
     divide_tilde_setup();
@@ -800,6 +801,7 @@ void setup_destroy (void)
     czero_rev_tilde_destroy();
     dac_tilde_destroy();
     dbtopow_tilde_destroy();
+    dbtorms_tilde_destroy();
     delread_tilde_destroy();
     delwrite_tilde_destroy();
     divide_tilde_destroy();
