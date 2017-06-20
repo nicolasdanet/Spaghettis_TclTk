@@ -387,6 +387,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		179E8D9C1EF91B4700FD3865 /* m_environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_environment.h; path = src/m_environment.h; sourceTree = "<group>"; };
 		370157EB1DFFD62900F3FE0C /* d_vd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vd.c; path = src/d_vd.c; sourceTree = "<group>"; };
 		370157FC1DFFD6CE00F3FE0C /* d_delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_delay.h; path = src/d_delay.h; sourceTree = "<group>"; };
 		370158381DFFD81B00F3FE0C /* d_delread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delread.c; path = src/d_delread.c; sourceTree = "<group>"; };
@@ -1025,6 +1026,7 @@
 				378971DD1C4F716700263434 /* m_macros.h */,
 				3791F2E11CDF064000F7481C /* m_symbols.h */,
 				379789711D7405F60055E010 /* m_helpers.h */,
+				179E8D9C1EF91B4700FD3865 /* m_environment.h */,
 				3751C80D1E7142C4002AB689 /* m_instance.h */,
 				376192281E6EA50800E4B2DA /* m_class.h */,
 				37A649691E6472FA002C0A5C /* m_object.h */,

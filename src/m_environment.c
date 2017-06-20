@@ -125,5 +125,10 @@ void environment_setFileName (t_environment *e, t_symbol *name, const char *exte
     }
 }
 
+void environment_setDirectory (t_environment *e, t_symbol *directory)
+{
+    e->env_directory = directory;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

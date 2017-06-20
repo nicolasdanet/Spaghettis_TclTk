@@ -29,14 +29,6 @@ typedef struct _stack {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _environment {
-    int             env_dollarZeroValue;
-    int             env_argc;
-    t_atom          *env_argv;
-    t_symbol        *env_directory;
-    t_symbol        *env_fileName;
-    } t_environment;
-
 typedef struct _position {
     int             p_x;
     int             p_y;
@@ -284,60 +276,6 @@ static inline void instance_setDspState (int n)
 static inline void instance_setNewestObject (t_pd *x)
 {
     instance_get()->pd_newest = x;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void environment_free           (t_environment *e);
-void environment_setFileName    (t_environment *e, t_symbol *name, const char *extension);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline void environment_setDirectory (t_environment *e, t_symbol *directory)
-{
-    e->env_directory = directory;
-}
-
-static inline int environment_getDollarZero (t_environment *e)
-{
-    return e->env_dollarZeroValue;
-}
-
-static inline int environment_getNumberOfArguments (t_environment *e)
-{
-    return e->env_argc;
-}
-
-static inline t_atom *environment_getArguments (t_environment *e)
-{
-    return e->env_argv;
-}
-
-static inline t_symbol *environment_getDirectory (t_environment *e)
-{
-    return e->env_directory;
-}
-
-static inline char *environment_getDirectoryAsString (t_environment *e)
-{
-    return e->env_directory->s_name;
-}
-
-static inline t_symbol *environment_getFileName (t_environment *e)
-{
-    if (e) { return e->env_fileName; }
-    else {
-        return sym_Patch;
-    }
-}
-
-static inline char *environment_getFileNameAsString (t_environment *e)
-{
-    return environment_getFileName (e)->s_name;
 }
 
 // -----------------------------------------------------------------------------------------------------------
