@@ -183,7 +183,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
         
         for (y = view->gl_graphics; y; y = y->g_next) {
         //
-        t_painterwidgetbehavior *behavior = class_getPainterWidgetBehavior (pd_class (y));
+        t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
         
         if (behavior) {
         //
@@ -301,7 +301,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         
         for (y = owner->gl_graphics; y; y = y->g_next) {
         
-            t_painterwidgetbehavior *behavior = class_getPainterWidgetBehavior (pd_class (y));
+            t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
             
             if (behavior) {
                 
@@ -338,7 +338,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
             
     for (y = view->gl_graphics; y; y = y->g_next) {
     //
-    t_painterwidgetbehavior *behavior = class_getPainterWidgetBehavior (pd_class (y));
+    t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
     
     if (behavior) { 
         

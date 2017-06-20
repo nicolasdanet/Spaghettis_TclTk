@@ -534,7 +534,7 @@ void glist_objectAddProceed (t_glist *glist, t_gobj *first, t_gobj *next)
 
 void glist_objectAddNext (t_glist *glist, t_gobj *first, t_gobj *next)
 {
-    int needToRepaint = class_hasPainterWidgetBehavior (pd_class (next));
+    int needToRepaint = class_hasPainterBehavior (pd_class (next));
     
     if (needToRepaint) { paint_erase(); }
     
@@ -568,7 +568,7 @@ void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
 void glist_objectRemove (t_glist *glist, t_gobj *y)
 {
     int needToRebuild = class_hasDSP (pd_class (y));
-    int needToRepaint = class_hasPainterWidgetBehavior (pd_class (y)) || (pd_class (y) == struct_class);
+    int needToRepaint = class_hasPainterBehavior (pd_class (y)) || (pd_class (y) == struct_class);
     
     glist_deleteBegin (glist);
     

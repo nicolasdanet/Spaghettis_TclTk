@@ -70,7 +70,7 @@ static int  plot_behaviorMouse             (t_gobj *, t_gpointer *, t_float, t_f
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_painterwidgetbehavior plot_widgetBehavior =
+static t_painterbehavior plot_painterBehavior =
     {
         plot_behaviorGetRectangle,
         plot_behaviorVisibilityChanged,
@@ -373,7 +373,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
                         
     for (y = view->gl_graphics; y; y = y->g_next) {
     
-        t_painterwidgetbehavior *behavior = class_getPainterWidgetBehavior (pd_class (y));
+        t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
         
         if (behavior) {
         
@@ -627,7 +627,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     
     for (y = view->gl_graphics; y; y = y->g_next) {
 
-        t_painterwidgetbehavior *behavior = class_getPainterWidgetBehavior (pd_class (y));
+        t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
         
         if (behavior) {
         
@@ -963,7 +963,7 @@ void plot_setup (void)
             
     class_addFloat (c, (t_method)plot_float);
     
-    class_setPainterWidgetBehavior (c, &plot_widgetBehavior);
+    class_setPainterBehavior (c, &plot_painterBehavior);
     
     plot_class = c;
 }

@@ -323,7 +323,7 @@ t_glist *template_getInstanceViewIfPainters (t_template *x)
         t_gobj *y = NULL;
         
         for (y = view->gl_graphics; y; y = y->g_next) {
-            if (class_hasPainterWidgetBehavior (pd_class (y))) { return view; }
+            if (class_hasPainterBehavior (pd_class (y))) { return view; }
         }
     }
     

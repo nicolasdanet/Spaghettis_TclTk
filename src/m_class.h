@@ -62,7 +62,7 @@ struct _widgetbehavior {
     t_mousefn                   w_fnMouse;
     };
     
-struct _painterwidgetbehavior {
+struct _painterbehavior {
     t_paintergetrectanglefn     w_fnPainterGetRectangle;
     t_paintervisibilityfn       w_fnPainterVisibilityChanged;
     t_paintermousefn            w_fnPainterMouse;
@@ -94,8 +94,8 @@ struct _class {
     t_listmethod                c_methodList;
     t_anythingmethod            c_methodAnything;
     t_pointermethod             c_methodPointer;
-    t_widgetbehavior            *c_behavior;
-    t_painterwidgetbehavior     *c_behaviorPainter;
+    t_widgetbehavior            *c_behaviorWidget;
+    t_painterbehavior           *c_behaviorPainter;
     t_savefn                    c_fnSave;
     t_propertiesfn              c_fnProperties;
     t_int                       c_signalOffset;
@@ -253,10 +253,10 @@ static inline void class_setHelpName (t_class *c, t_symbol *s)
 
 static inline int class_hasWidgetBehavior (t_class *c)
 {
-    return (c->c_behavior != NULL);
+    return (c->c_behaviorWidget != NULL);
 }
 
-static inline int class_hasPainterWidgetBehavior (t_class *c)
+static inline int class_hasPainterBehavior (t_class *c)
 {
     return (c->c_behaviorPainter != NULL);
 }
@@ -277,10 +277,10 @@ static inline int class_hasPropertiesFunction (t_class *c)
 
 static inline t_widgetbehavior *class_getWidgetBehavior (t_class *c)
 {
-    return c->c_behavior;
+    return c->c_behaviorWidget;
 }
 
-static inline t_painterwidgetbehavior *class_getPainterWidgetBehavior (t_class *c)
+static inline t_painterbehavior *class_getPainterBehavior (t_class *c)
 {
     return c->c_behaviorPainter;
 }
@@ -301,10 +301,10 @@ static inline t_propertiesfn class_getPropertiesFunction (t_class *c)
 
 static inline void class_setWidgetBehavior (t_class *c, t_widgetbehavior *w)
 {
-    c->c_behavior = w;
+    c->c_behaviorWidget = w;
 }
 
-static inline void class_setPainterWidgetBehavior (t_class *c, t_painterwidgetbehavior *pw)
+static inline void class_setPainterBehavior (t_class *c, t_painterbehavior *pw)
 {
     c->c_behaviorPainter = pw;
 }

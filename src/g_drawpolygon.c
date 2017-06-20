@@ -70,7 +70,7 @@ static int  drawpolygon_behaviorMouse               (t_gobj *, t_gpointer *, t_f
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_painterwidgetbehavior drawpolygon_widgetBehavior =
+static t_painterbehavior drawpolygon_painterBehavior =
     {
         drawpolygon_behaviorGetRectangle,
         drawpolygon_behaviorVisibilityChanged,
@@ -401,7 +401,7 @@ void drawpolygon_setup (void)
     
     class_addFloat (c, (t_method)drawpolygon_float);
         
-    class_setPainterWidgetBehavior (c, &drawpolygon_widgetBehavior);
+    class_setPainterBehavior (c, &drawpolygon_painterBehavior);
     
     drawpolygon_class = c;
 }

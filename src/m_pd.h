@@ -466,7 +466,7 @@ struct _listinletelement;
 struct _message;
 struct _outconnect;
 struct _outlet;
-struct _painterwidgetbehavior;
+struct _painterbehavior;
 struct _pdinstance;
 struct _signal;
 struct _struct;
@@ -492,7 +492,7 @@ struct _widgetbehavior;
 #define t_message                   struct _message
 #define t_outconnect                struct _outconnect
 #define t_outlet                    struct _outlet
-#define t_painterwidgetbehavior     struct _painterwidgetbehavior
+#define t_painterbehavior           struct _painterbehavior
 #define t_pdinstance                struct _pdinstance
 #define t_signal                    struct _signal
 #define t_struct                    struct _struct

@@ -225,7 +225,7 @@ t_class *class_new (t_symbol *s,
     c->c_methodSymbol       = class_defaultSymbol;
     c->c_methodList         = class_defaultList;
     c->c_methodAnything     = class_defaultAnything;
-    c->c_behavior           = (type == CLASS_BOX ? &text_widgetBehavior : NULL);
+    c->c_behaviorWidget     = (type == CLASS_BOX ? &text_widgetBehavior : NULL);
     c->c_behaviorPainter    = NULL;
     c->c_fnSave             = (type == CLASS_BOX ? class_defaultSave : NULL);
     c->c_fnProperties       = NULL;
