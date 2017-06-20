@@ -44,10 +44,10 @@ typedef struct _clipboard {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void clipboard_init         (t_clipboard *x);
-void clipboard_destroy      (t_clipboard *x);
-void clipboard_copy         (t_clipboard *x, t_glist *glist);
-void clipboard_paste        (t_clipboard *x, t_glist *glist);
+void clipboard_init     (t_clipboard *x);
+void clipboard_destroy  (t_clipboard *x);
+void clipboard_copy     (t_clipboard *x, t_glist *glist);
+void clipboard_paste    (t_clipboard *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

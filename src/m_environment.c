@@ -33,10 +33,6 @@ void instance_environmentSetArguments (int argc, t_atom *argv)
     if (argc) { atom_copyAtoms (argv, argc, instance_get()->pd_environment.env_argv, argc); }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void instance_environmentResetFile (void)
 {
     instance_environmentSetFile (&s_, &s_);
@@ -97,31 +93,20 @@ void environment_free (t_environment *e)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void environment_setFileNameWithExtension (t_environment *e, t_symbol *name, const char *extension)
-{
-    char t[PD_STRING] = { 0 };
-    t_error err = PD_ERROR_NONE;
-    
-    if (!extension) {
-    //
-    if (string_endWith (e->env_fileName->s_name, PD_HELP)) { extension = PD_HELP; }
-    else {
-        extension = PD_PATCH;
-    }
-    //
-    }
-    
-    err = string_sprintf (t, PD_STRING, "%s%s", name->s_name, extension);
-    
-    if (!err) { e->env_fileName = gensym (t); }
-}
-
-void environment_setFileName (t_environment *e, t_symbol *name, const char *extension)
+void environment_setFileName (t_environment *e, t_symbol *name)
 {
     if (string_endWith (name->s_name, PD_PATCH) || string_endWith (name->s_name, PD_HELP)) {
         e->env_fileName = name;
+        
     } else {
-        environment_setFileNameWithExtension (e, name, extension);
+
+        char t[PD_STRING] = { 0 };
+        const char *extension = PD_PATCH;
+        
+        if (string_endWith (e->env_fileName->s_name, PD_HELP)) { extension = PD_HELP; }
+        if (!string_sprintf (t, PD_STRING, "%s%s", name->s_name, extension)) {
+            e->env_fileName = gensym (t);
+        }
     }
 }
 
