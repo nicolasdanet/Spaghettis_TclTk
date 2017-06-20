@@ -93,6 +93,8 @@ void environment_free (t_environment *e)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Always contains an extension. */
+
 void environment_setFileName (t_environment *e, t_symbol *name)
 {
     if (string_endWith (name->s_name, PD_PATCH) || string_endWith (name->s_name, PD_HELP)) {

@@ -137,6 +137,10 @@ void    instance_rootsAdd                       (t_glist *glist);
 void    instance_rootsRemove                    (t_glist *glist);
 void    instance_rootsFreeAll                   (void);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void    instance_dspStart                       (void);
 void    instance_dspStop                        (void);
 void    instance_dspChainInitialize             (void);
@@ -145,6 +149,10 @@ void    instance_dspChainAppend                 (t_perform f, int n, ...);
 
 void    instance_signalAdd                      (t_signal *s);
 void    instance_signalFreeAll                  (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void    instance_clockAdd                       (t_clock *c);
 void    instance_clockUnset                     (t_clock *c);
@@ -160,7 +168,15 @@ void    instance_autoreleaseStop                (void);
 void    instance_autoreleaseRegister            (t_pd *x);
 void    instance_autoreleaseProceed             (t_pd *x);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void    instance_patchNew                       (t_symbol *name, t_symbol *directory);
 void    instance_patchOpen                      (t_symbol *name, t_symbol *directory);
@@ -173,8 +189,16 @@ void    instance_stackPush                      (t_glist *glist);
 void    instance_stackPop                       (t_glist *glist);
 void    instance_stackPopPatch                  (t_glist *glist, int visible);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void    instance_searchPathSetEncoded           (int argc, t_atom *argv);
 void    instance_searchPathAppendPath           (char *filepath);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_environment   *instance_environmentFetchIfAny (void);
 
@@ -182,6 +206,10 @@ void    instance_environmentSetFile             (t_symbol *name, t_symbol *direc
 void    instance_environmentSetArguments        (int argc, t_atom *argv);
 void    instance_environmentResetFile           (void);
 void    instance_environmentResetArguments      (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void    instance_setDefaultCoordinates          (t_glist *glist, int a, int b);
 int     instance_getDefaultX                    (t_glist *glist);
@@ -205,11 +233,6 @@ static inline t_glist *instance_contextGetCurrent (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline int instance_isMakerObject (t_pd *x)
-{
-    return (x == &(instance_get()->pd_objectMaker));
-}
-
 static inline t_pd *instance_getMakerObject (void)
 {
     return &(instance_get()->pd_objectMaker);
@@ -218,6 +241,11 @@ static inline t_pd *instance_getMakerObject (void)
 static inline t_class *instance_getMakerObjectClass (void)
 {
     return (instance_get()->pd_objectMaker);
+}
+
+static inline int instance_isMakerObject (t_pd *x)
+{
+    return (x == instance_getMakerObject());
 }
 
 // -----------------------------------------------------------------------------------------------------------
