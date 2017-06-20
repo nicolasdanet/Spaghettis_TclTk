@@ -196,8 +196,6 @@ static int loader_openExternal (t_glist *glist, t_symbol *name)
     char *filename  = fileproperties_getName (&p);
     char *directory = fileproperties_getDirectory (&p);
 
-    class_setCurrentExternalDirectory (gensym (directory));
-    
     if (!path_withDirectoryAndName (filepath, PD_STRING, directory, filename)) {
         char stub[PD_STRING] = { 0 };
         t_error err = loader_makeStubName (stub, PD_STRING, name, "_setup");
@@ -205,8 +203,6 @@ static int loader_openExternal (t_glist *glist, t_symbol *name)
             loader_addLoaded (name, handle);
         }
     }
-    
-    class_setCurrentExternalDirectory (&s_);
     //
     }
     //

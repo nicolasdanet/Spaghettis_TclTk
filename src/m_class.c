@@ -20,11 +20,6 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol *class_currentExternalDirectory = &s_;      /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static void class_defaultFloat      (t_pd *, t_float);
 static void class_defaultList       (t_pd *, t_symbol *, int, t_atom *);
 static void class_defaultAnything   (t_pd *, t_symbol *, int, t_atom *);
@@ -166,15 +161,6 @@ static void class_defaultSave (t_gobj *z, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void class_setCurrentExternalDirectory (t_symbol *s)
-{
-    class_currentExternalDirectory = s;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 /* For now the class name needs to be unique only if it contains a constructor. */
 /* For now it is valid to add inlets with CLASS_NOINLET set at first. */
 /* Probably best to make that more restrictive in the future. */
@@ -215,7 +201,7 @@ t_class *class_new (t_symbol *s,
     c = (t_class *)PD_MEMORY_GET (sizeof (t_class));
     c->c_name               = s;
     c->c_helpName           = s;
-    c->c_externalDirectory  = class_currentExternalDirectory;
+    c->c_helpDirectory      = &s_;
     c->c_methods            = (t_entry *)PD_MEMORY_GET (0);             /* Allocate 1 byte of memory. */
     c->c_methodsSize        = 0;
     c->c_methodFree         = (t_freemethod)freeMethod;

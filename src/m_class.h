@@ -86,7 +86,7 @@ typedef struct _entry {
 struct _class {
     t_symbol                    *c_name;
     t_symbol                    *c_helpName;
-    t_symbol                    *c_externalDirectory;
+    t_symbol                    *c_helpDirectory;
     t_entry                     *c_methods;
     int                         c_methodsSize;
     t_freemethod                c_methodFree;
@@ -106,12 +106,6 @@ struct _class {
     int                         c_type;
     size_t                      c_size;
     };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        class_setCurrentExternalDirectory   (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -235,9 +229,9 @@ static inline char *class_getHelpNameAsString (t_class *c)
     return c->c_helpName->s_name;
 }
 
-static inline char *class_getExternalDirectoryAsString (t_class *c)
+static inline char *class_getHelpDirectoryAsString (t_class *c)
 {
-    return c->c_externalDirectory->s_name;
+    return c->c_helpDirectory->s_name;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -247,6 +241,11 @@ static inline char *class_getExternalDirectoryAsString (t_class *c)
 static inline void class_setHelpName (t_class *c, t_symbol *s)
 {
     c->c_helpName = s;
+}
+
+static inline void class_setHelpDirectory (t_class *c, t_symbol *s)
+{
+    c->c_helpDirectory = s;
 }
 
 // -----------------------------------------------------------------------------------------------------------

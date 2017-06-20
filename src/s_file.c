@@ -168,7 +168,8 @@ static void file_openHelp (const char *directory, const char *name)
     }
 }
 
-/* First consider the sibling files of the object (or abstraction). */
+/* First consider the sibling files of an abstraction. */
+/* For an external search in its help directory if provided. */
 /* Then look for in the application "help" folder. */
 /* And last in the defined search path. */
 
@@ -190,7 +191,7 @@ void file_openHelpPatch (t_gobj *y)
         
     } else {
         err = string_copy (name, PD_STRING, class_getHelpNameAsString (pd_class (y)));
-        directory = class_getExternalDirectoryAsString (pd_class (y));
+        directory = class_getHelpDirectoryAsString (pd_class (y));
     }
     
     if (!err) { file_openHelp (directory, name); }
