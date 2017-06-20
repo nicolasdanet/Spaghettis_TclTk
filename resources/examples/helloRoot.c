@@ -11,7 +11,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* The plug-in path is something unique. */
+/* Locate the depedencies. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -52,9 +52,7 @@ PD_STUB void helloRoot_setup (t_symbol *s)
     
     hello_class = c;
     
-    post ("My name is %s", s->s_name);          /* Absolute path of the external. */
-    
-    /* You can use it to locate its dependencies. */
+    post ("I am at %s", s->s_name);             /* Path to the directory that contains the external. */
 }
 
 PD_STUB void helloRoot_destroy (void)
