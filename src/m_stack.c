@@ -27,19 +27,19 @@
 
 static void instance_contextStore (void)
 {
-    instance_get()->pd_stack.s_cache = instance_contextGetCurrent();
+    instance_get()->pd_stack.s_contextCached = instance_contextGetCurrent();
 }
 
 static void instance_contextRestore (void)
 {
-    instance_contextSetCurrent (instance_get()->pd_stack.s_cache);
+    instance_contextSetCurrent (instance_get()->pd_stack.s_contextCached);
     
-    instance_get()->pd_stack.s_cache = NULL;
+    instance_get()->pd_stack.s_contextCached = NULL;
 }
 
 static t_glist *instance_contextGetStored (void)
 {
-    return instance_get()->pd_stack.s_cache;
+    return instance_get()->pd_stack.s_contextCached;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ void instance_stackPush (t_glist *x)
     PD_ABORT (instance_get()->pd_stack.s_stackIndex >= INSTANCE_STACK_SIZE);    /* Resize? */
     
     e->s_context = instance_contextGetCurrent();
-    e->s_abstraction = instance_get()->pd_loadingAbstraction;
+    e->s_loadedAbstraction = instance_get()->pd_loadingAbstraction;
     
     instance_get()->pd_loadingAbstraction = NULL;
     
@@ -69,7 +69,7 @@ void instance_stackPop (t_glist *x)
     
     instance_contextSetCurrent (e->s_context);
     
-    instance_get()->pd_stack.s_popped = x;
+    instance_get()->pd_stack.s_contextPopped = x;
 }
 
 void instance_stackPopPatch (t_glist *glist, int visible)
@@ -94,7 +94,7 @@ static int instance_loadAbstractionIsValid (t_symbol *filename)
     for (i = 0; i < instance_get()->pd_stack.s_stackIndex; i++) {
     //
     t_stackelement *e = instance_get()->pd_stack.s_stack + i;
-    if (e->s_abstraction == filename) { return 0; }
+    if (e->s_loadedAbstraction == filename) { return 0; }
     //
     }
     
@@ -138,9 +138,9 @@ void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
 
 static void instance_loadPatchLoadbang (void)
 {
-    if (instance_get()->pd_stack.s_popped) { 
-        glist_loadbang (instance_get()->pd_stack.s_popped);
-        instance_get()->pd_stack.s_popped = NULL;
+    if (instance_get()->pd_stack.s_contextPopped) {
+        glist_loadbang (instance_get()->pd_stack.s_contextPopped);
+        instance_get()->pd_stack.s_contextPopped = NULL;
     }
 }
 
@@ -162,7 +162,7 @@ static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, char
     instance_contextRestore();
 }
 
-void instance_loadPatch (t_symbol *name, t_symbol *directory)
+static void instance_loadPatch (t_symbol *name, t_symbol *directory)
 {
     instance_loadPatchProceed (name, directory, NULL, 1);
 }

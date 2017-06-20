@@ -16,14 +16,14 @@
 
 typedef struct _stackelement {
     t_glist         *s_context;
-    t_symbol        *s_abstraction;
+    t_symbol        *s_loadedAbstraction;
     } t_stackelement;
 
-typedef struct _stack       {
+typedef struct _stack {
     int             s_stackIndex;
     t_stackelement  *s_stack;
-    t_glist         *s_cache;
-    t_glist         *s_popped;
+    t_glist         *s_contextCached;
+    t_glist         *s_contextPopped;
     } t_stack;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -37,22 +37,29 @@ typedef struct _environment {
     t_symbol        *env_fileName;
     } t_environment;
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _clipboard {
-    int             cb_count;
-    t_buffer        *cb_buffer;
-    } t_clipboard;
-
 typedef struct _position {
     int             p_x;
     int             p_y;
     t_glist         *p_glist;
     } t_position;
-    
+
+typedef struct _clipboard {
+    int             cb_pasteCount;
+    t_buffer        *cb_buffer;
+    } t_clipboard;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void clipboard_init         (t_clipboard *x);
+void clipboard_destroy      (t_clipboard *x);
+void clipboard_copy         (t_clipboard *x, t_glist *glist);
+void clipboard_paste        (t_clipboard *x, t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 struct _pdinstance {
     t_systime       pd_systime;
@@ -73,7 +80,6 @@ struct _pdinstance {
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
-    t_glist         *pd_defaultContext;
     t_pathlist      *pd_searchPath;
     };
 
@@ -81,7 +87,7 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define INSTANCE_STACK_SIZE     1024
+#define INSTANCE_STACK_SIZE     1024                /* Arbitrary. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -135,60 +141,59 @@ static inline t_pd *instance_getBoundX (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void            instance_rootsAdd                       (t_glist *glist);
-void            instance_rootsRemove                    (t_glist *glist);
-void            instance_rootsFreeAll                   (void);
+void    instance_rootsAdd                       (t_glist *glist);
+void    instance_rootsRemove                    (t_glist *glist);
+void    instance_rootsFreeAll                   (void);
 
-void            instance_dspStart                       (void);
-void            instance_dspStop                        (void);
-void            instance_dspChainInitialize             (void);
-void            instance_dspChainRelease                (void);
-void            instance_dspChainAppend                 (t_perform f, int n, ...);
+void    instance_dspStart                       (void);
+void    instance_dspStop                        (void);
+void    instance_dspChainInitialize             (void);
+void    instance_dspChainRelease                (void);
+void    instance_dspChainAppend                 (t_perform f, int n, ...);
 
-void            instance_signalAdd                      (t_signal *s);
-void            instance_signalFreeAll                  (void);
+void    instance_signalAdd                      (t_signal *s);
+void    instance_signalFreeAll                  (void);
 
-void            instance_clockAdd                       (t_clock *c);
-void            instance_clockUnset                     (t_clock *c);
-void            instance_clockTick                      (t_systime systime);
+void    instance_clockAdd                       (t_clock *c);
+void    instance_clockUnset                     (t_clock *c);
+void    instance_clockTick                      (t_systime systime);
 
-void            instance_pollingRun                     (void);
-void            instance_pollingStop                    (void);
-void            instance_pollingRegister                (t_pd *x);
-void            instance_pollingUnregister              (t_pd *x);
+void    instance_pollingRun                     (void);
+void    instance_pollingStop                    (void);
+void    instance_pollingRegister                (t_pd *x);
+void    instance_pollingUnregister              (t_pd *x);
 
-void            instance_autoreleaseRun                 (void);
-void            instance_autoreleaseStop                (void);
-void            instance_autoreleaseRegister            (t_pd *x);
-void            instance_autoreleaseProceed             (t_pd *x);
+void    instance_autoreleaseRun                 (void);
+void    instance_autoreleaseStop                (void);
+void    instance_autoreleaseRegister            (t_pd *x);
+void    instance_autoreleaseProceed             (t_pd *x);
 
-void            instance_destroyAllScalarsByTemplate    (t_template *tmpl);
+void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
-void            instance_patchNew                       (t_symbol *name, t_symbol *directory);
-void            instance_patchOpen                      (t_symbol *name, t_symbol *directory);
+void    instance_patchNew                       (t_symbol *name, t_symbol *directory);
+void    instance_patchOpen                      (t_symbol *name, t_symbol *directory);
 
-void            instance_loadPatch                      (t_symbol *name, t_symbol *directory);
-void            instance_loadInvisible                  (t_symbol *name, t_symbol *directory, char *s);
-void            instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
-void            instance_loadSnippet                    (t_glist *glist, t_buffer *b);
+void    instance_loadInvisible                  (t_symbol *name, t_symbol *directory, char *s);
+void    instance_loadAbstraction                (t_symbol *s, int argc, t_atom *argv);
+void    instance_loadSnippet                    (t_glist *glist, t_buffer *b);
 
-void            instance_stackPush                      (t_glist *glist);
-void            instance_stackPop                       (t_glist *glist);
-void            instance_stackPopPatch                  (t_glist *glist, int visible);
+void    instance_stackPush                      (t_glist *glist);
+void    instance_stackPop                       (t_glist *glist);
+void    instance_stackPopPatch                  (t_glist *glist, int visible);
 
-void            instance_searchPathSetEncoded           (int argc, t_atom *argv);
-void            instance_searchPathAppendPath           (char *filepath);
+void    instance_searchPathSetEncoded           (int argc, t_atom *argv);
+void    instance_searchPathAppendPath           (char *filepath);
 
-t_environment   *instance_environmentFetchIfAny         (void);
+t_environment   *instance_environmentFetchIfAny (void);
 
-void            instance_environmentSetFile             (t_symbol *name, t_symbol *directory);
-void            instance_environmentSetArguments        (int argc, t_atom *argv);
-void            instance_environmentResetFile           (void);
-void            instance_environmentResetArguments      (void);
+void    instance_environmentSetFile             (t_symbol *name, t_symbol *directory);
+void    instance_environmentSetArguments        (int argc, t_atom *argv);
+void    instance_environmentResetFile           (void);
+void    instance_environmentResetArguments      (void);
 
-void            instance_setDefaultCoordinates          (t_glist *glist, int a, int b);
-int             instance_getDefaultX                    (t_glist *glist);
-int             instance_getDefaultY                    (t_glist *glist);
+void    instance_setDefaultCoordinates          (t_glist *glist, int a, int b);
+int     instance_getDefaultX                    (t_glist *glist);
+int     instance_getDefaultY                    (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -280,15 +285,6 @@ static inline void instance_setNewestObject (t_pd *x)
 {
     instance_get()->pd_newest = x;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void clipboard_init             (t_clipboard *x);
-void clipboard_destroy          (t_clipboard *x);
-void clipboard_copy             (t_clipboard *x, t_glist *glist);
-void clipboard_paste            (t_clipboard *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

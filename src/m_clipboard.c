@@ -32,7 +32,7 @@ void clipboard_copy (t_clipboard *x, t_glist *glist)
     t_outconnect *connection = NULL;
     t_traverser t;
     
-    x->cb_count = 0;
+    x->cb_pasteCount = 0;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (glist_objectIsSelected (glist, y)) { gobj_save (y, b); }
@@ -68,7 +68,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     t_gobj *y = NULL;
     t_selection *s = NULL;
     int i = 0;
-    int n = (++x->cb_count) * CLIPBOARD_PASTE_OFFSET;
+    int n = (++x->cb_pasteCount) * CLIPBOARD_PASTE_OFFSET;
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     int isDirty = 0;
@@ -104,7 +104,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
 
 void clipboard_init (t_clipboard *x)
 {
-    x->cb_count  = 0;
+    x->cb_pasteCount  = 0;
     x->cb_buffer = buffer_new();
 }
 
