@@ -22,6 +22,7 @@ WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 
 CPPFLAGS = -I$(PUREDATA)
 CFLAGS   = -Os -fvisibility=hidden -shared -fpic $(WARNINGS) $(ARCH)
+CXXFLAGS = $(CFLAGS) -Wno-deprecated
 LDFLAGS  = -lm
 
 # Targets.
@@ -55,4 +56,4 @@ $(EXTERNALS)/helloBad: helloBad.c | $(EXTERNALS)
 
 $(EXTERNALS)/helloCPP: helloCPP.cpp | $(EXTERNALS)
 	@echo "Build helloCPP ..."
-	@$(CXX) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloCPP$(EXTENSION) helloCPP.cpp
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloCPP$(EXTENSION) helloCPP.cpp
