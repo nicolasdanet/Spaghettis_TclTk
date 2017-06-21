@@ -711,6 +711,8 @@ PD_DLL void     class_setHelpDirectory          (t_class *c, t_symbol *s);
 PD_DLL t_inlet  *inlet_newPointer               (t_object *owner, t_gpointer *gp);
 PD_DLL t_inlet  *inlet_newFloat                 (t_object *owner, t_float *fp);
 PD_DLL t_inlet  *inlet_newSymbol                (t_object *owner, t_symbol **sp);
+
+PD_DLL t_inlet  *inlet_newSignalWithDefault     (t_object *owner, t_float f);
 PD_DLL t_inlet  *inlet_newSignal                (t_object *owner);
 
 // -----------------------------------------------------------------------------------------------------------

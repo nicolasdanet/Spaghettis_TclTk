@@ -12,19 +12,20 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 struct _inlet {
-    t_pd                        i_pd;                   /* MUST be the first. */
-    struct _inlet               *i_next;
-    t_object                    *i_owner;
-    t_pd                        *i_receiver;
-    t_symbol                    *i_type;
+    t_pd            i_pd;           /* MUST be the first. */
+    struct _inlet   *i_next;
+    t_object        *i_owner;
+    t_pd            *i_receiver;
+    t_symbol        *i_type;
     union {
-        t_symbol                *i_method;
-        t_gpointer              *i_pointer;
-        t_float                 *i_float;
-        t_symbol                **i_symbol;
-        t_float                 i_signal;
+        t_symbol    *i_method;
+        t_gpointer  *i_pointer;
+        t_float     *i_float;
+        t_symbol    **i_symbol;
+        t_float     i_signal;
     } i_un;
     };
 
@@ -32,13 +33,12 @@ struct _inlet {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_inlet     *inlet_newSignalDefault             (t_object *owner, t_float f);
-t_inlet     *inlet_new                          (t_object *owner, t_pd *receiver, t_symbol *t, t_symbol *m);
+t_inlet *inlet_new                  (t_object *owner, t_pd *receiver, t_symbol *t, t_symbol *m);
 
-void        inlet_free                          (t_inlet *x);
-void        inlet_moveFirst                     (t_inlet *x);
-int         inlet_isSignal                      (t_inlet *x);
-int         inlet_getSignalIndex                (t_inlet *x);
+void    inlet_free                  (t_inlet *x);
+void    inlet_moveFirst             (t_inlet *x);
+int     inlet_isSignal              (t_inlet *x);
+int     inlet_getSignalIndex        (t_inlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ static inline t_object *inlet_getOwner (t_inlet *x)
     return x->i_owner;
 }
 
-static inline t_float *inlet_getSignalValue (t_inlet *x)
+static inline t_float *inlet_getValueOfSignal (t_inlet *x)
 {
     return &x->i_un.i_signal;
 }

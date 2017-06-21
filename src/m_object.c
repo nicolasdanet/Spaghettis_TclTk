@@ -315,7 +315,7 @@ t_float *object_getValueOfSignalAtIndex (t_object *x, int m)
     for (i = x->te_inlets; i; i = inlet_getNext (i), m--) {
         if (inlet_isSignal (i)) { 
             if (m == 0) { 
-                return inlet_getSignalValue (i); 
+                return inlet_getValueOfSignal (i);
             } 
         }
     }
