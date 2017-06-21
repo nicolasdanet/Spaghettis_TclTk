@@ -14,19 +14,51 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define COLOR_IEM_BACKGROUND_DARK       0xcccccc        /* Grey. */
-#define COLOR_IEM_BACKGROUND_LIGHT      0xffffff        /* White. */
-#define COLOR_IEM_FOREGROUND            0x000000        /* Black. */
-#define COLOR_IEM_LABEL                 0x000000        /* Black. */
+void        utils_anythingToList            (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define COLOR_MASKED                    0xdddddd        /* Grey. */
-#define COLOR_NORMAL                    0x000000        /* Black. */
-#define COLOR_SELECTED                  0x0000ff        /* Blue. */
-#define COLOR_GOP                       0xff8080        /* Red. */
+t_symbol    *utils_gensymWithAtoms          (int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_symbol    *utils_getFirstAtomOfObjectAsSymbol         (t_object *x);
+t_symbol    *utils_getFirstAtomOfBufferAsSymbol         (t_buffer *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_symbol    *utils_dollarToHash                         (t_symbol *s);
+t_symbol    *utils_hashToDollar                         (t_symbol *s);
+t_symbol    *utils_decode                               (t_symbol *s);
+t_symbol    *utils_dash                                 (void);
+t_symbol    *utils_empty                                (void); 
+t_symbol    *utils_substituteIfEmpty                    (t_symbol *s, int asDash);
+
+t_symbol    *utils_removeExtension                      (t_symbol *s);
+t_symbol    *utils_makeBindSymbol                       (t_symbol *s);
+t_symbol    *utils_makeTemplateIdentifier               (t_symbol *s);
+t_symbol    *utils_stripBindSymbol                      (t_symbol *s);
+t_symbol    *utils_stripTemplateIdentifier              (t_symbol *s);
+
+t_symbol    *utils_getDefaultBindName                   (t_class *c, t_symbol *prefix);
+
+t_symbol    *utils_getSymbolWithKeyCode                 (t_keycode n);
+int         utils_isKeyCodeAllowed                      (t_keycode n);
+int         utils_parseSymbolToKeyCode                  (t_symbol *s, t_keycode *n);
+
+int         utils_isNameAllowedForWindow                (t_symbol *s);
+
+int         utils_isTokenEnd                            (char c);
+int         utils_isTokenEscape                         (char c);
+int         utils_isTokenWhitespace                     (char c);
+int         utils_isAlphanumericOrUnderscore            (char c);
+t_unique    utils_unique                                (void);
+t_error     utils_version                               (char *dest, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,60 +98,6 @@ void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfC
 
 int         string_containsOneDollarFollowingByNumbers  (const char *s);
 int         string_startWithOneDollarAndOneNumber       (const char *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        utils_anythingToList                        (t_pd *x, 
-                                                            t_listmethod fn,
-                                                            t_symbol *s,
-                                                            int argc,
-                                                            t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_symbol    *utils_gensymWithAtoms                      (int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_symbol    *utils_getFirstAtomOfObjectAsSymbol         (t_object *x);
-t_symbol    *utils_getFirstAtomOfBufferAsSymbol         (t_buffer *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_symbol    *utils_dollarToHash                         (t_symbol *s);
-t_symbol    *utils_hashToDollar                         (t_symbol *s);
-t_symbol    *utils_decode                               (t_symbol *s);
-t_symbol    *utils_dash                                 (void);
-t_symbol    *utils_empty                                (void); 
-t_symbol    *utils_substituteIfEmpty                    (t_symbol *s, int asDash);
-
-t_symbol    *utils_removeExtension                      (t_symbol *s);
-t_symbol    *utils_makeBindSymbol                       (t_symbol *s);
-t_symbol    *utils_makeTemplateIdentifier               (t_symbol *s);
-t_symbol    *utils_stripBindSymbol                      (t_symbol *s);
-t_symbol    *utils_stripTemplateIdentifier              (t_symbol *s);
-
-t_symbol    *utils_getDefaultBindName                   (t_class *c, t_symbol *prefix);
-
-t_symbol    *utils_getSymbolWithKeyCode                 (t_keycode n);
-int         utils_isKeyCodeAllowed                      (t_keycode n);
-int         utils_parseSymbolToKeyCode                  (t_symbol *s, t_keycode *n);
-
-int         utils_isNameAllowedForWindow                (t_symbol *s);
-
-int         utils_isTokenEnd                            (char c);
-int         utils_isTokenEscape                         (char c);
-int         utils_isTokenWhitespace                     (char c);
-int         utils_isAlphanumericOrUnderscore            (char c);
-t_unique    utils_unique                                (void);
-t_error     utils_version                               (char *dest, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
