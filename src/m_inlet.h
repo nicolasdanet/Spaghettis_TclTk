@@ -15,7 +15,7 @@
 // MARK: -
 
 struct _inlet {
-    t_pd            i_pd;           /* MUST be the first. */
+    t_pd            i_pd;       /* MUST be the first. */
     struct _inlet   *i_next;
     t_object        *i_owner;
     t_pd            *i_receiver;
@@ -33,12 +33,12 @@ struct _inlet {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_inlet *inlet_new                  (t_object *owner, t_pd *receiver, t_symbol *t, t_symbol *m);
+t_inlet *inlet_new              (t_object *owner, t_pd *receiver, t_symbol *t, t_symbol *m);
 
-void    inlet_free                  (t_inlet *x);
-void    inlet_moveFirst             (t_inlet *x);
-int     inlet_isSignal              (t_inlet *x);
-int     inlet_getSignalIndex        (t_inlet *x);
+void    inlet_free              (t_inlet *x);
+void    inlet_moveFirst         (t_inlet *x);
+int     inlet_isSignal          (t_inlet *x);
+int     inlet_getSignalIndex    (t_inlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
