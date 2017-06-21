@@ -22,6 +22,8 @@
 #include "m_instance.h"
 #include "m_class.h"
 #include "m_object.h"
+#include "m_inlet.h"
+#include "m_outlet.h"
 #include "m_error.h"
 #include "m_utils.h"
 

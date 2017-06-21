@@ -12,39 +12,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-struct _outconnect {
-    struct _outconnect          *oc_next;
-    t_pd                        *oc_receiver;
-    };
-
-struct _outlet {
-    struct _outlet              *o_next;
-    t_object                    *o_owner;
-    t_outconnect                *o_connections;
-    t_symbol                    *o_type;
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-struct _inlet {
-    t_pd                        i_pd;                   /* MUST be the first. */
-    struct _inlet               *i_next;
-    t_object                    *i_owner;
-    t_pd                        *i_receiver;
-    t_symbol                    *i_type;
-    union {
-        t_symbol                *i_method;
-        t_gpointer              *i_pointer;
-        t_float                 *i_float;
-        t_symbol                **i_symbol;
-        t_float                 i_signal;
-    } i_un;
-    };
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 t_outconnect    *object_connect                     (t_object *src, int m, t_object *dest, int n);
@@ -168,73 +135,6 @@ static inline void object_setWidth (t_object *x, int n)
 static inline void object_setType (t_object *x, t_objecttype n)
 {
     x->te_type = n;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_inlet     *inlet_newSignalDefault             (t_object *owner, t_float f);
-t_inlet     *inlet_new                          (t_object *owner, t_pd *receiver, t_symbol *t, t_symbol *m);
-
-void        inlet_free                          (t_inlet *x);
-void        inlet_moveFirst                     (t_inlet *x);
-int         inlet_isSignal                      (t_inlet *x);
-int         inlet_getSignalIndex                (t_inlet *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline t_inlet *inlet_getNext (t_inlet *x)
-{
-    return x->i_next;
-}
-
-static inline t_object *inlet_getOwner (t_inlet *x)
-{
-    return x->i_owner;
-}
-
-static inline t_float *inlet_getSignalValue (t_inlet *x)
-{
-    return &x->i_un.i_signal;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_outconnect    *outlet_addConnection           (t_outlet *x, t_pd *receiver);
-
-void            outlet_removeConnection         (t_outlet *x, t_pd *receiver);
-void            outlet_free                     (t_outlet *x);
-void            outlet_moveFirst                (t_outlet *x);
-int             outlet_isSignal                 (t_outlet *x);
-int             outlet_getSignalIndex           (t_outlet *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline t_outlet *outlet_getNext (t_outlet *x)
-{
-    return x->o_next;
-}
-
-static inline t_outconnect *outlet_getConnections (t_outlet *x)
-{
-    return x->o_connections;
-}
-
-static inline t_outconnect *connection_getNext (t_outconnect *x)
-{
-    return x->oc_next;
-}
-
-static inline t_pd *connection_getReceiver (t_outconnect *x)
-{
-    return x->oc_receiver;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -388,6 +388,8 @@
 
 /* Begin PBXFileReference section */
 		179E8D9C1EF91B4700FD3865 /* m_environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_environment.h; path = src/m_environment.h; sourceTree = "<group>"; };
+		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
+		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_outlet.h; path = src/m_outlet.h; sourceTree = "<group>"; };
 		370157EB1DFFD62900F3FE0C /* d_vd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vd.c; path = src/d_vd.c; sourceTree = "<group>"; };
 		370157FC1DFFD6CE00F3FE0C /* d_delay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_delay.h; path = src/d_delay.h; sourceTree = "<group>"; };
 		370158381DFFD81B00F3FE0C /* d_delread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_delread.c; path = src/d_delread.c; sourceTree = "<group>"; };
@@ -1030,6 +1032,8 @@
 				3751C80D1E7142C4002AB689 /* m_instance.h */,
 				376192281E6EA50800E4B2DA /* m_class.h */,
 				37A649691E6472FA002C0A5C /* m_object.h */,
+				17DB3FE51EFA766700D136DB /* m_inlet.h */,
+				17DB3FE61EFA767200D136DB /* m_outlet.h */,
 				37D5E4271D746170004CB497 /* m_error.h */,
 				37978A1C1D742E070055E010 /* m_utils.h */,
 				3791F2E01CDF064000F7481C /* m_symbols.c */,
