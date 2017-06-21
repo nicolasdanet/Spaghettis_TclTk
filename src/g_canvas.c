@@ -357,7 +357,7 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
         
         buffer_serialize (b, object_getBuffer (cast_object (x)));
         buffer_appendSemicolon (b);
-        object_saveWidth (cast_object (x), b);
+        object_serializeWidth (cast_object (x), b);
     }
 }
 

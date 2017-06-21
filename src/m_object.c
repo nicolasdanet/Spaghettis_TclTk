@@ -70,7 +70,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void object_distributeOnInlets (t_object *x, int argc, t_atom *argv)
+void object_distributeAtomsOnInlets (t_object *x, int argc, t_atom *argv)
 {
     if (argc) { 
         
@@ -222,7 +222,7 @@ int object_getNumberOfSignalOutlets (t_object *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int object_getSignalIndexOfInlet (t_object *x, int m)
+int object_getIndexAsSignalOfInlet (t_object *x, int m)
 {
     int n = 0;
     t_inlet *i = NULL;
@@ -246,7 +246,7 @@ int object_getSignalIndexOfInlet (t_object *x, int m)
     return -1;
 }
 
-int object_getSignalIndexOfOutlet (t_object *x, int m)
+int object_getIndexAsSignalOfOutlet (t_object *x, int m)
 {
     int n = 0;
     t_outlet *o = NULL;
@@ -298,12 +298,12 @@ int object_isSignalOutlet (t_object *x, int m)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void object_saveWidth (t_object *x, t_buffer *b)
+void object_serializeWidth (t_object *x, t_buffer *b)
 {
     if (x->te_width) { buffer_vAppend (b, "ssi;", sym___hash__X, sym_f, x->te_width); }
 }
 
-t_float *object_getSignalValueAtIndex (t_object *x, int m)
+t_float *object_getValueOfSignalAtIndex (t_object *x, int m)
 {
     t_inlet *i = NULL;
     

@@ -141,7 +141,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
         /* In GOP the only regular box type shown is comment. */
         
         if ((object = cast_objectIfConnectable (x))) {
-            if (object_isViewAsBox (object)) {
+            if (object_isViewedAsBox (object)) {
                 if (!object_isComment (object)) {
                     return 0; 
                 }
@@ -173,7 +173,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
 
 /* True if object is really drawn as a box in the patch. */
 
-int object_isViewAsBox (t_object *x)
+int object_isViewedAsBox (t_object *x)
 {
     return ((class_getWidgetBehavior (pd_class (x)) == &text_widgetBehavior)
         || ((pd_class (x) == canvas_class) && !glist_isGraphOnParent (cast_glist (x))));

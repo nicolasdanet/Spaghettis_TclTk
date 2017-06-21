@@ -14,25 +14,37 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_outconnect    *object_connect                     (t_object *src, int m, t_object *dest, int n);
+void    object_setFromEntry                 (t_object *x, t_glist *glist, t_box *z);
 
-void        object_disconnect                       (t_object *src, int m, t_object *dest, int n);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-void        object_setFromEntry                     (t_object *x, t_glist *glist, t_box *z);
+t_outconnect    *object_connect             (t_object *src, int m, t_object *dest, int n);
 
-int         object_getNumberOfInlets                (t_object *x);
-int         object_getNumberOfOutlets               (t_object *x);
-int         object_getNumberOfSignalInlets          (t_object *x);
-int         object_getNumberOfSignalOutlets         (t_object *x);
-int         object_getSignalIndexOfInlet            (t_object *x, int m);
-int         object_getSignalIndexOfOutlet           (t_object *x, int m);
-int         object_isSignalInlet                    (t_object *x, int m);
-int         object_isSignalOutlet                   (t_object *x, int m);
+void    object_disconnect                   (t_object *src, int m, t_object *dest, int n);
 
-void        object_saveWidth                        (t_object *x, t_buffer *b);
-void        object_distributeOnInlets               (t_object *x, int argc, t_atom *argv);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-t_float     *object_getSignalValueAtIndex           (t_object *x, int m);
+int     object_getNumberOfInlets            (t_object *x);
+int     object_getNumberOfOutlets           (t_object *x);
+int     object_getNumberOfSignalInlets      (t_object *x);
+int     object_getNumberOfSignalOutlets     (t_object *x);
+int     object_getIndexAsSignalOfInlet      (t_object *x, int m);
+int     object_getIndexAsSignalOfOutlet     (t_object *x, int m);
+int     object_isSignalInlet                (t_object *x, int m);
+int     object_isSignalOutlet               (t_object *x, int m);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void    object_serializeWidth               (t_object *x, t_buffer *b);
+void    object_distributeAtomsOnInlets      (t_object *x, int argc, t_atom *argv);
+
+t_float *object_getValueOfSignalAtIndex     (t_object *x, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -41,7 +53,10 @@ t_float     *object_getSignalValueAtIndex           (t_object *x, int m);
 /* Viewed as a box (NOT an IEM and NOT a subpatch GOP). */
 /* Note that it can be a comment, a message or an atom. */
 
-int object_isViewAsBox (t_object *x);
+int object_isViewedAsBox (t_object *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* Everything that is NOT a comment, a message, or an atom. */
 
@@ -49,6 +64,9 @@ static inline int object_isObject (t_object *x)
 {
     return (x->te_type == TYPE_OBJECT);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static inline int object_isComment (t_object *x)
 {
@@ -108,13 +126,13 @@ static inline t_objecttype object_getType (t_object *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline void object_setBuffer (t_object *x, t_buffer *b)
+static inline void object_setBuffer (t_object *x, t_buffer *b)      /* Acquires ownership. */
 {
     if (x->te_buffer) { buffer_free (x->te_buffer); } 
     
     PD_ASSERT (b);
     
-    x->te_buffer = b;     /* Acquires ownership. */
+    x->te_buffer = b;
 }
 
 static inline void object_setX (t_object *x, int n)

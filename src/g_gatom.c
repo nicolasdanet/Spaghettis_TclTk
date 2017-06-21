@@ -352,7 +352,7 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
         utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1)),
         utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1)));
 
-    object_saveWidth (cast_object (x), b);
+    object_serializeWidth (cast_object (x), b);
 }
 
 static void gatom_functionProperties (t_gobj *z, t_glist *owner)

@@ -279,7 +279,7 @@ static void ugen_graphMainRecursiveEmptyInlets (t_dspcontext *context, t_ugenbox
     if (u->u_in[i].i_numberOfConnections == 0) {
     //
     t_signal *s = signal_new (context->dc_blockSize, context->dc_sampleRate);
-    t_float *f  = object_getSignalValueAtIndex (u->u_owner, i);
+    t_float *f  = object_getValueOfSignalAtIndex (u->u_owner, i);
     
     if (f) { dsp_addScalarPerform (f, s->s_vector, s->s_vectorSize); }
     else {
@@ -443,8 +443,8 @@ void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2
     t_ugenbox *u1 = ugen_graphFetchUgen (context, o1);
     t_ugenbox *u2 = ugen_graphFetchUgen (context, o2);
     
-    m = object_getSignalIndexOfOutlet (o1, m);
-    n = object_getSignalIndexOfInlet (o2, n);
+    m = object_getIndexAsSignalOfOutlet (o1, m);
+    n = object_getIndexAsSignalOfInlet (o2, n);
     
     if (!u1 || !u2 || n < 0) { PD_BUG; }
     else if (m < 0 || m >= u1->u_outSize || n >= u2->u_inSize) { PD_BUG; }

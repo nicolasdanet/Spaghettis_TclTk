@@ -9,7 +9,7 @@ Clean and test all patches.
 Improve the search path.
 Save recent files in preferences.
 Add unlimited undo mechanism.
-Add encapsulate feature.
+Add "encapsulate" feature.
 
 ###
 

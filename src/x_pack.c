@@ -74,7 +74,7 @@ static void pack_pointer (t_pack *x, t_gpointer *gp)
 
 static void pack_list (t_pack *x, t_symbol *s, int argc, t_atom *argv)
 {
-    object_distributeOnInlets (cast_object (x), argc, argv);
+    object_distributeAtomsOnInlets (cast_object (x), argc, argv);
 }
 
 static void pack_anything (t_pack *x, t_symbol *s, int argc, t_atom *argv)

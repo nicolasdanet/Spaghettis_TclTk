@@ -211,7 +211,7 @@ static void glist_actionResize (t_glist *glist, int a, int b)
     t_gobj *y  = glist_objectHit (glist, startX, startY, &r);
 
     if (y && cast_objectIfConnectable (y)) {
-        if (object_isViewAsBox (cast_object (y))) { glist_actionResizeBox (glist, y, a - startX); }
+        if (object_isViewedAsBox (cast_object (y))) { glist_actionResizeBox (glist, y, a - startX); }
         else {
             int c = rectangle_getBottomRightX (&r);
             int d = rectangle_getBottomRightY (&r);
@@ -334,12 +334,12 @@ static int glist_mouseOverEditResize (t_glist *glist, t_gobj *y, int a, int b, i
     
     if (cast_objectIfConnectable (y)) {
     //
-    resizable |= object_isViewAsBox (cast_object (y));
+    resizable |= object_isViewedAsBox (cast_object (y));
     resizable |= ((pd_class (y) == canvas_class) && !glist_isAbstraction (cast_glist (y)));
     
     if (resizable) {
         int w = rectangle_getBottomRightX (r) - EDIT_GRIP_SIZE;
-        int h = rectangle_getBottomRightY (r) - (object_isViewAsBox (cast_object (y)) ? EDIT_GRIP_SIZE : 0);
+        int h = rectangle_getBottomRightY (r) - (object_isViewedAsBox (cast_object (y)) ? EDIT_GRIP_SIZE : 0);
         if (a > w && b < h) { k = 1; }
     }
     //
