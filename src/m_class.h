@@ -116,6 +116,7 @@ int         class_hasMethod                     (t_class *c, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 int         class_hasOverrideBangMethod         (t_class *c);
 
@@ -232,20 +233,6 @@ static inline char *class_getHelpNameAsString (t_class *c)
 static inline char *class_getHelpDirectoryAsString (t_class *c)
 {
     return c->c_helpDirectory->s_name;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline void class_setHelpName (t_class *c, t_symbol *s)
-{
-    c->c_helpName = s;
-}
-
-static inline void class_setHelpDirectory (t_class *c, t_symbol *s)
-{
-    c->c_helpDirectory = s;
 }
 
 // -----------------------------------------------------------------------------------------------------------

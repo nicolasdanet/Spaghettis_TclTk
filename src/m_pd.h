@@ -701,6 +701,9 @@ PD_DLL void     class_addPointer                (t_class *c, t_method fn);
 PD_DLL void     class_addList                   (t_class *c, t_method fn);
 PD_DLL void     class_addAnything               (t_class *c, t_method fn);
 
+PD_DLL void     class_setHelpName               (t_class *c, t_symbol *s);
+PD_DLL void     class_setHelpDirectory          (t_class *c, t_symbol *s);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

@@ -50,9 +50,11 @@ PD_STUB void helloRoot_setup (t_symbol *s)
             CLASS_BOX | CLASS_NOINLET,          /* Avoid the default inlet. */
             A_NULL);
     
-    hello_class = c;
-    
     post ("I am at %s", s->s_name);             /* Path to the directory that contains the external. */
+    
+    class_setHelpDirectory (c, s);              /* Use it to locate the depedencies. */
+    
+    hello_class = c;
 }
 
 PD_STUB void helloRoot_destroy (void)
