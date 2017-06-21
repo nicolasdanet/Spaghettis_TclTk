@@ -9,10 +9,11 @@ Clean and test all patches.
 Improve the search path.
 Save recent files in preferences.
 Add unlimited undo mechanism.
+Add encapsulate feature.
 
 ###
 
-Encapsulate all static variables into instance.
+Move all static variables into instance.
 Profile and optimize code.
 Make an embeddable interpreter.
 Use generic containers (i.e linked list).
