@@ -31,8 +31,8 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
     
     {
     //
-    int m = ((utils_getFirstAtomOfObjectAsSymbol (x) == sym_pd) && (pd_class (x) == canvas_class));
-    int n = ((utils_getFirstAtomOfBufferAsSymbol (t) == sym_pd));
+    int m = ((utils_getFirstAtomOfObject (x) == sym_pd) && (pd_class (x) == canvas_class));
+    int n = ((utils_getFirstAtomOfBuffer (t) == sym_pd));
     
     if (m && n) {
         

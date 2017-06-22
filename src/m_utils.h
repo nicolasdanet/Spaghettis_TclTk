@@ -26,8 +26,8 @@ t_symbol    *utils_gensymWithAtoms          (int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *utils_getFirstAtomOfObjectAsSymbol         (t_object *x);
-t_symbol    *utils_getFirstAtomOfBufferAsSymbol         (t_buffer *x);
+t_symbol    *utils_getFirstAtomOfObject     (t_object *x);
+t_symbol    *utils_getFirstAtomOfBuffer     (t_buffer *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

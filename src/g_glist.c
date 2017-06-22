@@ -176,7 +176,7 @@ int glist_isSubpatch (t_glist *glist)
 
 int glist_isArray (t_glist *glist)
 {
-    return (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph);
+    return (utils_getFirstAtomOfObject (cast_object (glist)) == sym_graph);
 }
 
 int glist_isDirty (t_glist *glist)
