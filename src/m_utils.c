@@ -9,7 +9,6 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "s_system.h"
-#include "s_utf8.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -192,6 +191,23 @@ t_symbol *utils_decode (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol *utils_getDefaultBindName (t_class *class, t_symbol *prefix)
+{
+    int i = 1;
+    char t[PD_STRING] = { 0 };
+    
+    PD_ASSERT (prefix);
+    
+    while (1) {
+        t_error err = string_sprintf (t, PD_STRING, "%s%d", prefix->s_name, i);
+        PD_ABORT (err != PD_ERROR_NONE);
+        t_symbol *name = gensym (t);
+        if (!pd_getThingByClass (name, class)) { return name; }
+        i++;
+        PD_ABORT (i < 0);
+    }
+}
+
 t_symbol *utils_removeExtension (t_symbol *s)
 {
     PD_ASSERT (s);
@@ -209,25 +225,14 @@ t_symbol *utils_removeExtension (t_symbol *s)
     return s;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_symbol *utils_getDefaultBindName (t_class *class, t_symbol *prefix)
+int utils_isNameAllowedForWindow (t_symbol *s)
 {
-    int i = 1;
-    char t[PD_STRING] = { 0 };
+    if (s == sym_Array)         { return 0; }
+    else if (s == sym_Patch)    { return 0; }
+    else if (s == sym_Scalar)   { return 0; }
+    else if (s == sym_Text)     { return 0; }
     
-    PD_ASSERT (prefix);
-    
-    while (1) {
-        t_error err = string_sprintf (t, PD_STRING, "%s%d", prefix->s_name, i);
-        PD_ABORT (err != PD_ERROR_NONE);
-        t_symbol *name = gensym (t);
-        if (!pd_getThingByClass (name, class)) { return name; }
-        i++;
-        PD_ABORT (i < 0);
-    }
+    return 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -270,76 +275,6 @@ t_symbol *utils_stripTemplateIdentifier (t_symbol *s)
     }
     
     return s;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int utils_isNameAllowedForWindow (t_symbol *s)
-{
-    if (s == sym_Array)         { return 0; }
-    else if (s == sym_Patch)    { return 0; }
-    else if (s == sym_Scalar)   { return 0; }
-    else if (s == sym_Text)     { return 0; }
-    
-    return 1;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* Few characters are forbidden to avoid mislead interpretations at script level. */
-
-int utils_isKeyCodeAllowed (t_keycode n)
-{
-    if (n == '{')   { return 0; }     // --
-    if (n == '}')   { return 0; }     // --
-    if (n == '\\')  { return 0; }
-     
-    return 1;
-}
-
-int utils_parseSymbolToKeyCode (t_symbol *s, t_keycode *n)
-{
-    if (s == sym_Enter)     { *n = 3;   return 1; }
-    if (s == sym_BackSpace) { *n = 8;   return 1; }
-    if (s == sym_Tab)       { *n = 9;   return 1; }
-    if (s == sym_Return)    { *n = 10;  return 1; }
-    if (s == sym_Escape)    { *n = 27;  return 1; }
-    if (s == sym_Space)     { *n = 32;  return 1; }
-    if (s == sym_Delete)    { *n = 127; return 1; }
-    
-    return 0;
-}
-
-t_symbol *utils_getSymbolWithKeyCode (t_keycode n)
-{
-    switch (n) {
-    //
-    case 3   : return sym_Enter;
-    case 8   : return sym_BackSpace;
-    case 9   : return sym_Tab;
-    case 10  : return sym_Return;
-    case 13  : return sym_Return;
-    case 27  : return sym_Escape;
-    case 32  : return sym_Space;
-    case 127 : return sym_Delete;
-    //
-    }
-    
-    {
-    
-    /* Encode UTF-32 as UTF-8. */
-    
-    char t[UTF8_MAXIMUM_BYTES + 1] = { 0 };
-    int size = u8_wc_toutf8 (t, n); 
-    t[size] = 0;
-    
-    return gensym (t);
-        
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

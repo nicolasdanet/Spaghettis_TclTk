@@ -53,9 +53,10 @@ t_symbol    *utils_decode                   (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol    *utils_getDefaultBindName       (t_class *c, t_symbol *prefix);
 t_symbol    *utils_removeExtension          (t_symbol *s);
 
-t_symbol    *utils_getDefaultBindName       (t_class *c, t_symbol *prefix);
+int         utils_isNameAllowedForWindow    (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -69,12 +70,6 @@ t_symbol    *utils_stripTemplateIdentifier  (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-t_symbol    *utils_getSymbolWithKeyCode                 (t_keycode n);
-int         utils_isKeyCodeAllowed                      (t_keycode n);
-int         utils_parseSymbolToKeyCode                  (t_symbol *s, t_keycode *n);
-
-int         utils_isNameAllowedForWindow                (t_symbol *s);
 
 int         utils_isTokenEnd                            (char c);
 int         utils_isTokenEscape                         (char c);
