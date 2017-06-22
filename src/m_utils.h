@@ -31,13 +31,19 @@ t_symbol    *utils_getFirstAtomOfBuffer     (t_buffer *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_symbol    *utils_nil                      (void);
+t_symbol    *utils_dash                     (void);
+t_symbol    *utils_emptyAsNil               (t_symbol *s);
+t_symbol    *utils_emptyAsDash              (t_symbol *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_symbol    *utils_dollarToHash                         (t_symbol *s);
 t_symbol    *utils_hashToDollar                         (t_symbol *s);
 t_symbol    *utils_decode                               (t_symbol *s);
-t_symbol    *utils_dash                                 (void);
-t_symbol    *utils_empty                                (void); 
-t_symbol    *utils_substituteIfEmpty                    (t_symbol *s, int asDash);
 
 t_symbol    *utils_removeExtension                      (t_symbol *s);
 t_symbol    *utils_makeBindSymbol                       (t_symbol *s);

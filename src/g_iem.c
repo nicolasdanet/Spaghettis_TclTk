@@ -28,7 +28,7 @@ static t_symbol *iemgui_expandDollar (t_glist *glist, t_symbol *s)
 {
     t_symbol *t = dollar_expandDollarSymbol (s, glist); 
     
-    return (t == NULL ? utils_empty() : t);
+    return (t == NULL ? utils_nil() : t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ static t_symbol *iemgui_fetchName (int i, t_atom *argv, int isNumberAllowed)
     //
     }
 
-    return utils_empty();
+    return utils_nil();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, int isNumbe
             }
         }
         if (err) {
-            *s = (fallback ? fallback : utils_empty());
+            *s = (fallback ? fallback : utils_nil());
         }
     }
 }
@@ -185,9 +185,9 @@ void iemgui_deserializeLoadbang (t_iem *iem, int n)
 
 void iemgui_deserializeNames (t_iem *iem, int i, t_atom *argv)
 {
-    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv, 0) : utils_empty());
-    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv, 0) : utils_empty());
-    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv, 1) : utils_empty());
+    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv, 0) : utils_nil());
+    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv, 0) : utils_nil());
+    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv, 1) : utils_nil());
     
     iem->iem_unexpandedSend    = NULL;
     iem->iem_unexpandedReceive = NULL;
@@ -222,21 +222,21 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
 void iemgui_setSend (void *x, t_symbol *s)
 {
     t_iem *iem  = cast_iem (x);
-    t_symbol *t = utils_hashToDollar (utils_substituteIfEmpty (s, 0));
+    t_symbol *t = utils_hashToDollar (utils_emptyAsNil (s));
     iem->iem_unexpandedSend = t;
     iem->iem_send = iemgui_expandDollar (iem->iem_owner, t);
-    iem->iem_canSend = (s == utils_empty()) ? 0 : 1;
+    iem->iem_canSend = (s == utils_nil()) ? 0 : 1;
     iemgui_checkSendReceiveLoop (iem);
 }
 
 void iemgui_setReceive (void *x, t_symbol *s)
 {
     t_iem *iem  = cast_iem (x);
-    t_symbol *t = utils_hashToDollar (utils_substituteIfEmpty (s, 0));
+    t_symbol *t = utils_hashToDollar (utils_emptyAsNil (s));
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = iemgui_expandDollar (iem->iem_owner, t);
-    iem->iem_canReceive = (s == utils_empty()) ? 0 : 1;
+    iem->iem_canReceive = (s == utils_nil()) ? 0 : 1;
     if (iem->iem_canReceive) { pd_bind (cast_pd (iem), iem->iem_receive); }
     iemgui_checkSendReceiveLoop (iem);
 }
@@ -244,7 +244,7 @@ void iemgui_setReceive (void *x, t_symbol *s)
 void iemgui_setLabel (void *x, t_symbol *s)
 {
     t_iem *iem  = cast_iem (x);
-    t_symbol *t = utils_hashToDollar (utils_substituteIfEmpty (s, 0));
+    t_symbol *t = utils_hashToDollar (utils_emptyAsNil (s));
     
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
@@ -254,7 +254,7 @@ void iemgui_setLabel (void *x, t_symbol *s)
         sys_vGui ("%s.c itemconfigure %lxLABEL -text {%s}\n",    // --
                         glist_getTagAsString (glist_getView (iem->iem_owner)),
                         x,
-                        iem->iem_label != utils_empty() ? iem->iem_label->s_name : "");
+                        iem->iem_label != utils_nil() ? iem->iem_label->s_name : "");
     }
 }
 
@@ -471,8 +471,8 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     s2 = iemgui_expandDollar (iem->iem_owner, s2);
     s3 = iemgui_expandDollar (iem->iem_owner, s3);
     
-    if (s1 == utils_empty()) { canSend = 0;    }
-    if (s2 == utils_empty()) { canReceive = 0; }
+    if (s1 == utils_nil()) { canSend = 0;    }
+    if (s2 == utils_nil()) { canReceive = 0; }
     
     if (canReceive) {
         if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }

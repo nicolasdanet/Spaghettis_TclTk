@@ -153,19 +153,27 @@ t_symbol *utils_decode (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol *utils_nil (void)
+{
+    return sym_empty;
+}
+
 t_symbol *utils_dash (void)
 {
     return sym___dash__;
 }
 
-t_symbol *utils_empty (void)
+t_symbol *utils_emptyAsNil (t_symbol *s)
 {
-    return sym_empty;
+    if (s == &s_) { return utils_nil(); }
+    else { 
+        return s;
+    }
 }
 
-t_symbol *utils_substituteIfEmpty (t_symbol *s, int asDash)
+t_symbol *utils_emptyAsDash (t_symbol *s)
 {
-    if (s == &s_) { return (asDash ? utils_dash() : utils_empty()); }
+    if (s == &s_) { return utils_dash(); }
     else { 
         return s;
     }

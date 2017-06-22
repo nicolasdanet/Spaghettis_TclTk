@@ -112,7 +112,7 @@ static void gatom_drawJob (t_gobj *z, t_glist *glist)
 
 static t_symbol *gatom_parse (t_symbol *s)
 {
-    if (s == utils_empty() || s == utils_dash()) { return &s_; }
+    if (s == utils_nil() || s == utils_dash()) { return &s_; }
     else { 
         return utils_hashToDollar (s);
     }
@@ -348,9 +348,9 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
         (double)x->a_lowRange,
         (double)x->a_highRange,
         (double)x->a_position,
-        utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 1)),
-        utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 1)),
-        utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedSend, 1)));
+        utils_dollarToHash (utils_emptyAsDash (x->a_unexpandedLabel)),
+        utils_dollarToHash (utils_emptyAsDash (x->a_unexpandedReceive)),
+        utils_dollarToHash (utils_emptyAsDash (x->a_unexpandedSend)));
 
     object_serializeWidth (cast_object (x), b);
 }
@@ -361,9 +361,9 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
     
-    t_symbol *symSend    = utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedSend, 0));
-    t_symbol *symReceive = utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedReceive, 0));
-    t_symbol *symLabel   = utils_dollarToHash (utils_substituteIfEmpty (x->a_unexpandedLabel, 0));
+    t_symbol *symSend    = utils_dollarToHash (utils_emptyAsNil (x->a_unexpandedSend));
+    t_symbol *symReceive = utils_dollarToHash (utils_emptyAsNil (x->a_unexpandedReceive));
+    t_symbol *symLabel   = utils_dollarToHash (utils_emptyAsNil (x->a_unexpandedLabel));
     
     if (gatom_isFloat (x)) {
     
