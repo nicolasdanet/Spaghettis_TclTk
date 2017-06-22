@@ -45,8 +45,8 @@
 #include "m_utils.c"
 #include "m_symbol.c"
 #include "m_color.c"
-#include "m_string.c"
 #include "m_math.c"
+#include "m_string.c"
 
 /* System. */
 

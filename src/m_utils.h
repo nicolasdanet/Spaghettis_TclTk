@@ -64,6 +64,20 @@ t_symbol    *color_toEncoded                (t_color color);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int         math_compareFloat               (t_float a, t_float b);
+t_float     math_euclideanDistance          (t_float a, t_float b, t_float c, t_float d);
+
+t_float     math_midiToFrequency            (t_float f);
+t_float     math_frequencyToMidi            (t_float f);
+t_float     math_rootMeanSquareToDecibel    (t_float f);
+t_float     math_decibelToRootMeanSquare    (t_float f);
+t_float     math_powerToDecibel             (t_float f);
+t_float     math_decibelToPower             (t_float f);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_error     string_copy                                 (char *dest, size_t size, const char *src);
 t_error     string_add                                  (char *dest, size_t size, const char *src);
 t_error     string_append                               (char *dest, size_t size, const char *src, int n);
@@ -86,22 +100,6 @@ void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfC
 
 int         string_containsOneDollarFollowingByNumbers  (const char *s);
 int         string_startWithOneDollarAndOneNumber       (const char *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int         math_ilog2                                  (int n);
-
-int         math_compareFloat                           (t_float a, t_float b);
-t_float     math_euclideanDistance                      (t_float a, t_float b, t_float c, t_float d);
-
-t_float     math_midiToFrequency                        (t_float f);
-t_float     math_frequencyToMidi                        (t_float f);
-t_float     math_rootMeanSquareToDecibel                (t_float f);
-t_float     math_decibelToRootMeanSquare                (t_float f);
-t_float     math_powerToDecibel                         (t_float f);
-t_float     math_decibelToPower                         (t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -1068,8 +1068,8 @@
 				378971E61C4F716700263434 /* m_utils.c */,
 				17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */,
 				37128AF71D43640300EFB4FC /* m_color.c */,
-				37A7BBF21D030B45000C7AB5 /* m_string.c */,
 				374448191D66000B00E54A0D /* m_math.c */,
+				37A7BBF21D030B45000C7AB5 /* m_string.c */,
 			);
 			name = Core;
 			sourceTree = "<group>";

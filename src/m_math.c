@@ -13,27 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int math_ilog2 (int n)
-{
-    if (n <= 0) { return 0; }
-    else {
-    //
-    int r = -1;
-    
-    while (n) { r++; n >>= 1; }
-    
-    return r;
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* Naive implementation of comparaison function. */
-
-int math_compareFloat (t_float a, t_float b)
+int math_compareFloat (t_float a, t_float b)    /* Basic implementation of comparaison function. */
 {
     if (a < b) { return -1; } else if (b > a) { return 1; } else { return 0; }
 }

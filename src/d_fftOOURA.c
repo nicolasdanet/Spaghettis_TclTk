@@ -33,6 +33,20 @@ static void ooura_release (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static int math_ilog2 (int n)
+{
+    if (n <= 0) { return 0; }
+    else {
+    //
+    int r = -1;
+    
+    while (n) { r++; n >>= 1; }
+    
+    return r;
+    //
+    }
+}
+
 /* Next squarable power of two. */
 
 static int ooura_getNextSize (int n)
