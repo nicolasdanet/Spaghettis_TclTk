@@ -1,6 +1,7 @@
 
 ###
 
+Make an object to freeze patches.
 Add a "snap to grid" feature.
 Clean and test all patches.
 
