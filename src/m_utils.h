@@ -53,13 +53,22 @@ t_symbol    *utils_decode                   (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *utils_removeExtension                      (t_symbol *s);
-t_symbol    *utils_makeBindSymbol                       (t_symbol *s);
-t_symbol    *utils_makeTemplateIdentifier               (t_symbol *s);
-t_symbol    *utils_stripBindSymbol                      (t_symbol *s);
-t_symbol    *utils_stripTemplateIdentifier              (t_symbol *s);
+t_symbol    *utils_removeExtension          (t_symbol *s);
 
-t_symbol    *utils_getDefaultBindName                   (t_class *c, t_symbol *prefix);
+t_symbol    *utils_getDefaultBindName       (t_class *c, t_symbol *prefix);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_symbol    *utils_makeBindSymbol           (t_symbol *s);
+t_symbol    *utils_makeTemplateIdentifier   (t_symbol *s);
+t_symbol    *utils_stripBindSymbol          (t_symbol *s);
+t_symbol    *utils_stripTemplateIdentifier  (t_symbol *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_symbol    *utils_getSymbolWithKeyCode                 (t_keycode n);
 int         utils_isKeyCodeAllowed                      (t_keycode n);

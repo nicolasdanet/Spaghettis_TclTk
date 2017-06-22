@@ -192,6 +192,27 @@ t_symbol *utils_decode (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol *utils_removeExtension (t_symbol *s)
+{
+    PD_ASSERT (s);
+    
+    if (s != &s_) {
+    //
+    char t[PD_STRING] = { 0 };
+    int n = string_indexOfFirstOccurrenceFromEnd (s->s_name, ".");
+    t_error err = string_copy (t, PD_STRING, s->s_name);
+    PD_ASSERT (!err);
+    if (!err && n >= 0) { t[n] = 0; return gensym (t); } 
+    //
+    }
+    
+    return s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_symbol *utils_getDefaultBindName (t_class *class, t_symbol *prefix)
 {
     int i = 1;
@@ -254,23 +275,6 @@ t_symbol *utils_stripTemplateIdentifier (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-t_symbol *utils_removeExtension (t_symbol *s)
-{
-    PD_ASSERT (s);
-    
-    if (s != &s_) {
-    //
-    char t[PD_STRING] = { 0 };
-    int n = string_indexOfFirstOccurrenceFromEnd (s->s_name, ".");
-    t_error err = string_copy (t, PD_STRING, s->s_name);
-    PD_ASSERT (!err);
-    if (!err && n >= 0) { t[n] = 0; return gensym (t); } 
-    //
-    }
-    
-    return s;
-}
 
 int utils_isNameAllowedForWindow (t_symbol *s)
 {
