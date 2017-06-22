@@ -225,7 +225,7 @@ void iemgui_setSend (void *x, t_symbol *s)
     t_symbol *t = utils_hashToDollar (utils_emptyAsNil (s));
     iem->iem_unexpandedSend = t;
     iem->iem_send = iemgui_expandDollar (iem->iem_owner, t);
-    iem->iem_canSend = (s == utils_nil()) ? 0 : 1;
+    iem->iem_canSend = utils_isNil (s) ? 0 : 1;
     iemgui_checkSendReceiveLoop (iem);
 }
 
@@ -236,7 +236,7 @@ void iemgui_setReceive (void *x, t_symbol *s)
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = iemgui_expandDollar (iem->iem_owner, t);
-    iem->iem_canReceive = (s == utils_nil()) ? 0 : 1;
+    iem->iem_canReceive = utils_isNil (s) ? 0 : 1;
     if (iem->iem_canReceive) { pd_bind (cast_pd (iem), iem->iem_receive); }
     iemgui_checkSendReceiveLoop (iem);
 }
@@ -254,7 +254,7 @@ void iemgui_setLabel (void *x, t_symbol *s)
         sys_vGui ("%s.c itemconfigure %lxLABEL -text {%s}\n",    // --
                         glist_getTagAsString (glist_getView (iem->iem_owner)),
                         x,
-                        iem->iem_label != utils_nil() ? iem->iem_label->s_name : "");
+                        utils_isNil (iem->iem_label) ? "" : iem->iem_label->s_name);
     }
 }
 
@@ -471,8 +471,8 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     s2 = iemgui_expandDollar (iem->iem_owner, s2);
     s3 = iemgui_expandDollar (iem->iem_owner, s3);
     
-    if (s1 == utils_nil()) { canSend = 0;    }
-    if (s2 == utils_nil()) { canReceive = 0; }
+    if (utils_isNil (s1)) { canSend = 0;    }
+    if (utils_isNil (s2)) { canReceive = 0; }
     
     if (canReceive) {
         if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }

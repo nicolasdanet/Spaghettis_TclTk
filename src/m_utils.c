@@ -153,6 +153,9 @@ t_symbol *utils_decode (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Note that usage of "empty" or "-" as nil tokens is a bad idea. */
+/* But it must be kept to ensure compatibility with legacy files. */
+
 t_symbol *utils_nil (void)
 {
     return sym_empty;
@@ -177,6 +180,16 @@ t_symbol *utils_emptyAsDash (t_symbol *s)
     else { 
         return s;
     }
+}
+
+int utils_isNil (t_symbol *s)
+{
+    return (s == utils_nil());
+}
+
+int utils_isNilOrDash (t_symbol *s)
+{
+    return (s == utils_nil() || s == utils_dash());
 }
 
 // -----------------------------------------------------------------------------------------------------------

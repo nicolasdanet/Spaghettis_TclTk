@@ -213,15 +213,15 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     //
     }
     
-    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
+    sys_vGui ("%s.c create text %d %d -text {%s}"   // --
                     " -anchor w"
-                    " -font [::getFont %d]"             // --
+                    " -font [::getFont %d]"         // --
                     " -fill #%06x"
                     " -tags %lxLABEL\n",
                     glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
-                    (x->x_gui.iem_label != utils_nil()) ? x->x_gui.iem_label->s_name : "",
+                    utils_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_colorLabel,
                     x);
@@ -274,7 +274,7 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                    (x->x_gui.iem_label != utils_nil()) ? x->x_gui.iem_label->s_name : "");
+                    utils_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -716,8 +716,8 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_gui.iem_owner      = instance_contextGetCurrent();
     x->x_gui.iem_fnDraw     = (t_iemfn)slider_draw;
-    x->x_gui.iem_canSend    = (x->x_gui.iem_send == utils_nil()) ? 0 : 1;
-    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == utils_nil()) ? 0 : 1;
+    x->x_gui.iem_canSend    = utils_isNil (x->x_gui.iem_send) ? 0 : 1;
+    x->x_gui.iem_canReceive = utils_isNil (x->x_gui.iem_receive) ? 0 : 1;
     x->x_gui.iem_labelX     = labelX;
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);

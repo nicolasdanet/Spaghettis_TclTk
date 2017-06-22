@@ -112,10 +112,7 @@ static void gatom_drawJob (t_gobj *z, t_glist *glist)
 
 static t_symbol *gatom_parse (t_symbol *s)
 {
-    if (s == utils_nil() || s == utils_dash()) { return &s_; }
-    else { 
-        return utils_hashToDollar (s);
-    }
+    if (utils_isNilOrDash (s)) { return &s_; } else { return utils_hashToDollar (s); }
 }
 
 static void gatom_update (t_gatom *x)

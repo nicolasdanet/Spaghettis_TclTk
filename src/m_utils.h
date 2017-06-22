@@ -38,6 +38,9 @@ t_symbol    *utils_dash                     (void);
 t_symbol    *utils_emptyAsNil               (t_symbol *s);
 t_symbol    *utils_emptyAsDash              (t_symbol *s);
 
+int         utils_isNil                     (t_symbol *s);
+int         utils_isNilOrDash               (t_symbol *s);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
