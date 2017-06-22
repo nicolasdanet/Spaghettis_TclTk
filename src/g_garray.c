@@ -641,7 +641,7 @@ void garray_functionProperties (t_garray *x)
     
     err |= string_sprintf (t, PD_STRING,
                 "::ui_array::show %%s %s %d %g %g %d %d\n",
-                utils_dollarToHash (x->x_unexpandedName)->s_name,
+                symbol_dollarToHash (x->x_unexpandedName)->s_name,
                 array_getSize (array),
                 bounds_getTop (bounds),
                 bounds_getBottom (bounds),
@@ -669,7 +669,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     {
     //
-    t_symbol *name = utils_hashToDollar (atom_getSymbolAtIndex (0, argc, argv));
+    t_symbol *name = symbol_hashToDollar (atom_getSymbolAtIndex (0, argc, argv));
     int size       = (int)atom_getFloatAtIndex (1, argc, argv);
     t_float up     = atom_getFloatAtIndex (2, argc, argv);
     t_float down   = atom_getFloatAtIndex (3, argc, argv);

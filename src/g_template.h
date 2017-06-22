@@ -150,7 +150,7 @@ static inline t_symbol *template_makeIdentifierWithWildcard (t_symbol *s)
 {
     if (s == &s_ || s == sym___dash__) { return template_getWildcard(); }
     else { 
-        return utils_makeTemplateIdentifier (s);
+        return symbol_makeTemplateIdentifier (s);
     }
 }
 

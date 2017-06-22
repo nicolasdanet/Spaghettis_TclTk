@@ -317,19 +317,19 @@ void glist_setWindowGeometry (t_glist *glist, t_rectangle *r)
 
 void glist_bind (t_glist *glist)
 {
-    t_symbol *s = utils_removeExtension (glist_getName (glist));
+    t_symbol *s = symbol_removeExtension (glist_getName (glist));
     
     if (utils_isNameAllowedForWindow (s)) {
-        pd_bind (cast_pd (glist), utils_makeBindSymbol (s));
+        pd_bind (cast_pd (glist), symbol_makeBindSymbol (s));
     }
 }
 
 void glist_unbind (t_glist *glist)
 {
-    t_symbol *s = utils_removeExtension (glist_getName (glist));
+    t_symbol *s = symbol_removeExtension (glist_getName (glist));
     
     if (utils_isNameAllowedForWindow (s)) {
-        pd_unbind (cast_pd (glist), utils_makeBindSymbol (s));
+        pd_unbind (cast_pd (glist), symbol_makeBindSymbol (s));
     }
 }
 
@@ -472,7 +472,7 @@ void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
 {
     if (argc > 0 && IS_SYMBOL (argv)) {
     //
-    t_symbol *templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv));
+    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (GET_SYMBOL (argv));
         
     if (template_isValid (template_findByIdentifier (templateIdentifier))) {
     //

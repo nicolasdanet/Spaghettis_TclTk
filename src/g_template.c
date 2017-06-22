@@ -221,7 +221,7 @@ void template_serialize (t_template *x, t_buffer *b)
     buffer_vAppend (b, "sss",
         sym___hash__N,
         sym_struct,
-        utils_stripTemplateIdentifier (x->tp_templateIdentifier));
+        symbol_stripTemplateIdentifier (x->tp_templateIdentifier));
     
     for (i = 0; i < x->tp_size; i++) {
     //
@@ -238,7 +238,7 @@ void template_serialize (t_template *x, t_buffer *b)
         buffer_vAppend (b, "sss",
             type,
             x->tp_slots[i].ds_fieldName,
-            utils_stripTemplateIdentifier (x->tp_slots[i].ds_templateIdentifier));
+            symbol_stripTemplateIdentifier (x->tp_slots[i].ds_templateIdentifier));
             
     } else {
         buffer_vAppend (b,  "ss",
@@ -277,7 +277,7 @@ static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *arg
 {
     #if PD_WITH_DEBUG
     
-    post ("My name is %s.", utils_stripTemplateIdentifier (x->tp_templateIdentifier)->s_name);
+    post ("My name is %s.", symbol_stripTemplateIdentifier (x->tp_templateIdentifier)->s_name);
     
     #endif
 }
@@ -343,7 +343,7 @@ void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && IS_SYMBOL (argv)) {
     //
-    t_symbol *templateIdentifier = utils_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
+    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
     
     argc--;
     argv++;
@@ -386,7 +386,7 @@ static t_error template_newParse (t_template *x, int *ac, t_atom **av)
         else if (type == sym_text)   { k = DATA_TEXT;   }
         else if (type == sym_array)  {
             if (argc >= 3 && IS_SYMBOL (argv + 2)) {
-                templateIdentifier = utils_makeTemplateIdentifier (GET_SYMBOL (argv + 2));
+                templateIdentifier = symbol_makeTemplateIdentifier (GET_SYMBOL (argv + 2));
                 k = DATA_ARRAY;
                 argc--;
                 argv++;
@@ -432,7 +432,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     
     /* Empty template should be managed appropriately elsewhere. */
     
-    PD_ASSERT (utils_stripTemplateIdentifier (templateIdentifier) != &s_); 
+    PD_ASSERT (symbol_stripTemplateIdentifier (templateIdentifier) != &s_);
         
     x->tp_size               = 0;
     x->tp_slots              = (t_dataslot *)PD_MEMORY_GET (0);
@@ -443,7 +443,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     
     if (template_newParse (x, &argc, &argv)) {      /* It may consume arguments. */
     //
-    error_invalidArguments (utils_stripTemplateIdentifier (templateIdentifier), argc, argv);
+    error_invalidArguments (symbol_stripTemplateIdentifier (templateIdentifier), argc, argv);
     pd_free (cast_pd (x)); x = NULL;
     //
     }

@@ -371,7 +371,7 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
     t_template *template = scalar_getTemplate (x);
     int i;
         
-    buffer_vAppend (b, "s", utils_stripTemplateIdentifier (x->sc_templateIdentifier));
+    buffer_vAppend (b, "s", symbol_stripTemplateIdentifier (x->sc_templateIdentifier));
 
     for (i = 0; i < template_getSize (template); i++) {
     

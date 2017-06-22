@@ -349,7 +349,7 @@ void instance_searchPathSetEncoded (int argc, t_atom *argv)
     
     for (i = 0; i < argc; i++) {
     //
-    t_symbol *path = utils_decode (atom_getSymbolAtIndex (i, argc, argv));
+    t_symbol *path = symbol_decode (atom_getSymbolAtIndex (i, argc, argv));
         
     instance_get()->pd_searchPath = pathlist_newAppend (instance_get()->pd_searchPath, path->s_name);
     //

@@ -149,7 +149,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                     glist_getTagAsString (view), 
                     a + x->x_gui.iem_labelX,
                     b + x->x_gui.iem_labelY,
-                    utils_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name,
+                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_colorLabel,
                     x);
@@ -205,7 +205,7 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                    utils_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name);
+                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -474,8 +474,8 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
 
     x->x_gui.iem_owner      = instance_contextGetCurrent();
     x->x_gui.iem_fnDraw     = (t_iemfn)bng_draw;
-    x->x_gui.iem_canSend    = utils_isNil (x->x_gui.iem_send) ? 0 : 1;
-    x->x_gui.iem_canReceive = utils_isNil (x->x_gui.iem_receive) ? 0 : 1;
+    x->x_gui.iem_canSend    = symbol_isNil (x->x_gui.iem_send) ? 0 : 1;
+    x->x_gui.iem_canReceive = symbol_isNil (x->x_gui.iem_receive) ? 0 : 1;
     x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_labelX     = labelX;

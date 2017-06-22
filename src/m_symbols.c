@@ -615,9 +615,9 @@ t_symbol *sym_vumeter;
 
 void symbols_initialize (void)
 {
-    sym___TEMPLATE__float                       = utils_makeTemplateIdentifier (gensym ("float"));
-    sym___TEMPLATE__float__dash__array          = utils_makeTemplateIdentifier (gensym ("float-array"));
-    sym___TEMPLATE__text                        = utils_makeTemplateIdentifier (gensym ("text"));
+    sym___TEMPLATE__float                       = symbol_makeTemplateIdentifier (gensym ("float"));
+    sym___TEMPLATE__float__dash__array          = symbol_makeTemplateIdentifier (gensym ("float-array"));
+    sym___TEMPLATE__text                        = symbol_makeTemplateIdentifier (gensym ("text"));
     sym___ampersand__                           = gensym ("&");
     sym___ampersand____ampersand__              = gensym ("&&");
     sym___arrobe__                              = gensym ("@");

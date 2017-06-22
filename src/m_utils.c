@@ -31,7 +31,7 @@ void utils_anythingToList (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_at
     PD_ATOMS_FREEA (t, argc + 1);
 }
 
-t_symbol *utils_gensymWithAtoms (int argc, t_atom *argv)
+t_symbol *symbol_withAtoms (int argc, t_atom *argv)
 {
     t_symbol *s = &s_;
         
@@ -74,47 +74,47 @@ t_symbol *utils_getFirstAtomOfBuffer (t_buffer *x)
 /* Note that usage of "empty" or "-" as nil tokens is a bad idea. */
 /* But it must be kept to ensure compatibility with legacy files. */
 
-t_symbol *utils_nil (void)
+t_symbol *symbol_nil (void)
 {
     return sym_empty;
 }
 
-t_symbol *utils_dash (void)
+t_symbol *symbol_dash (void)
 {
     return sym___dash__;
 }
 
-t_symbol *utils_emptyAsNil (t_symbol *s)
+t_symbol *symbol_emptyAsNil (t_symbol *s)
 {
-    if (s == &s_) { return utils_nil(); }
+    if (s == &s_) { return symbol_nil(); }
     else { 
         return s;
     }
 }
 
-t_symbol *utils_emptyAsDash (t_symbol *s)
+t_symbol *symbol_emptyAsDash (t_symbol *s)
 {
-    if (s == &s_) { return utils_dash(); }
+    if (s == &s_) { return symbol_dash(); }
     else { 
         return s;
     }
 }
 
-int utils_isNil (t_symbol *s)
+int symbol_isNil (t_symbol *s)
 {
-    return (s == utils_nil());
+    return (s == symbol_nil());
 }
 
-int utils_isNilOrDash (t_symbol *s)
+int symbol_isNilOrDash (t_symbol *s)
 {
-    return (s == utils_nil() || s == utils_dash());
+    return (s == symbol_nil() || s == symbol_dash());
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *utils_dollarToHash (t_symbol *s)
+t_symbol *symbol_dollarToHash (t_symbol *s)
 {
     char t[PD_STRING + 1] = { 0 };
     
@@ -126,7 +126,7 @@ t_symbol *utils_dollarToHash (t_symbol *s)
     }
 }
 
-t_symbol *utils_hashToDollar (t_symbol *s)
+t_symbol *symbol_hashToDollar (t_symbol *s)
 {
     char t[PD_STRING + 1] = { 0 };
     
@@ -140,7 +140,7 @@ t_symbol *utils_hashToDollar (t_symbol *s)
 
 /* A format to avoid slicing by the string parser. */
 
-t_symbol *utils_decode (t_symbol *s)
+t_symbol *symbol_decode (t_symbol *s)
 {
     if (!s) { PD_BUG; }
     else {
@@ -208,7 +208,7 @@ t_symbol *utils_getDefaultBindName (t_class *class, t_symbol *prefix)
     }
 }
 
-t_symbol *utils_removeExtension (t_symbol *s)
+t_symbol *symbol_removeExtension (t_symbol *s)
 {
     PD_ASSERT (s);
     
@@ -235,11 +235,20 @@ int utils_isNameAllowedForWindow (t_symbol *s)
     return 1;
 }
 
+t_unique utils_unique (void)
+{
+    static t_unique unique = 10000;     /* Static. */
+    
+    unique++;
+    
+    return (unique == 0 ? (++unique) : unique);        
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *utils_makeBindSymbol (t_symbol *s)
+t_symbol *symbol_makeBindSymbol (t_symbol *s)
 {
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
@@ -249,7 +258,7 @@ t_symbol *utils_makeBindSymbol (t_symbol *s)
     return gensym (t);
 }
 
-t_symbol *utils_makeTemplateIdentifier (t_symbol *s)
+t_symbol *symbol_makeTemplateIdentifier (t_symbol *s)
 {
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
@@ -259,7 +268,7 @@ t_symbol *utils_makeTemplateIdentifier (t_symbol *s)
     return gensym (t);
 }
 
-t_symbol *utils_stripBindSymbol (t_symbol *s)
+t_symbol *symbol_stripBindSymbol (t_symbol *s)
 {
     if (string_startWith (s->s_name, UTILS_BIND)) { 
         return gensym (s->s_name + strlen (UTILS_BIND));
@@ -268,7 +277,7 @@ t_symbol *utils_stripBindSymbol (t_symbol *s)
     return s;
 }
 
-t_symbol *utils_stripTemplateIdentifier (t_symbol *s)
+t_symbol *symbol_stripTemplateIdentifier (t_symbol *s)
 {
     if (string_startWith (s->s_name, UTILS_BIND_TEMPLATE)) {
         return gensym (s->s_name + strlen (UTILS_BIND_TEMPLATE)); 
@@ -280,43 +289,6 @@ t_symbol *utils_stripTemplateIdentifier (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-int utils_isTokenEnd (char c) 
-{
-    return (c == ',' || c == ';');
-}
-
-int utils_isTokenEscape (char c)
-{
-    return (c == '\\');
-}
-
-int utils_isTokenWhitespace (char c)
-{
-    return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int utils_isAlphanumericOrUnderscore (char c)
-{
-    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_'));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_unique utils_unique (void)
-{
-    static t_unique unique = 10000;     /* Static. */
-    
-    unique++;
-    
-    return (unique == 0 ? (++unique) : unique);        
-}
 
 t_error utils_version (char *dest, size_t size)
 {

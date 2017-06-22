@@ -14,47 +14,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_error     utils_version                   (char *dest, size_t size);
+t_unique    utils_unique                    (void);
+
 void        utils_anythingToList            (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_atom *argv);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_symbol    *utils_gensymWithAtoms          (int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
+t_symbol    *utils_getDefaultBindName       (t_class *c, t_symbol *prefix);
 t_symbol    *utils_getFirstAtomOfObject     (t_object *x);
 t_symbol    *utils_getFirstAtomOfBuffer     (t_buffer *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_symbol    *utils_nil                      (void);
-t_symbol    *utils_dash                     (void);
-t_symbol    *utils_emptyAsNil               (t_symbol *s);
-t_symbol    *utils_emptyAsDash              (t_symbol *s);
-
-int         utils_isNil                     (t_symbol *s);
-int         utils_isNilOrDash               (t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_symbol    *utils_dollarToHash             (t_symbol *s);
-t_symbol    *utils_hashToDollar             (t_symbol *s);
-t_symbol    *utils_decode                   (t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_symbol    *utils_getDefaultBindName       (t_class *c, t_symbol *prefix);
-t_symbol    *utils_removeExtension          (t_symbol *s);
 
 int         utils_isNameAllowedForWindow    (t_symbol *s);
 
@@ -62,21 +29,49 @@ int         utils_isNameAllowedForWindow    (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *utils_makeBindSymbol           (t_symbol *s);
-t_symbol    *utils_makeTemplateIdentifier   (t_symbol *s);
-t_symbol    *utils_stripBindSymbol          (t_symbol *s);
-t_symbol    *utils_stripTemplateIdentifier  (t_symbol *s);
+t_symbol    *symbol_withAtoms               (int argc, t_atom *argv);
+
+t_symbol    *symbol_nil                     (void);
+t_symbol    *symbol_dash                    (void);
+t_symbol    *symbol_emptyAsNil              (t_symbol *s);
+t_symbol    *symbol_emptyAsDash             (t_symbol *s);
+
+int         symbol_isNil                    (t_symbol *s);
+int         symbol_isNilOrDash              (t_symbol *s);
+
+t_symbol    *symbol_dollarToHash            (t_symbol *s);
+t_symbol    *symbol_hashToDollar            (t_symbol *s);
+t_symbol    *symbol_decode                  (t_symbol *s);
+t_symbol    *symbol_removeExtension         (t_symbol *s);
+
+t_symbol    *symbol_makeBindSymbol          (t_symbol *s);
+t_symbol    *symbol_makeTemplateIdentifier  (t_symbol *s);
+t_symbol    *symbol_stripBindSymbol         (t_symbol *s);
+t_symbol    *symbol_stripTemplateIdentifier (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         utils_isTokenEnd                            (char c);
-int         utils_isTokenEscape                         (char c);
-int         utils_isTokenWhitespace                     (char c);
-int         utils_isAlphanumericOrUnderscore            (char c);
-t_unique    utils_unique                                (void);
-t_error     utils_version                               (char *dest, size_t size);
+static inline int utils_isTokenEnd (char c)
+{
+    return (c == ',' || c == ';');
+}
+
+static inline int utils_isTokenEscape (char c)
+{
+    return (c == '\\');
+}
+
+static inline int utils_isTokenWhitespace (char c)
+{
+    return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
+}
+
+static inline int utils_isAlphanumericOrUnderscore (char c)
+{
+    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_'));
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

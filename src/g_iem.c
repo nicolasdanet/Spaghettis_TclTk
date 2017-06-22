@@ -28,7 +28,7 @@ static t_symbol *iemgui_expandDollar (t_glist *glist, t_symbol *s)
 {
     t_symbol *t = dollar_expandDollarSymbol (s, glist); 
     
-    return (t == NULL ? utils_nil() : t);
+    return (t == NULL ? symbol_nil() : t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ static t_symbol *iemgui_fetchName (int i, t_atom *argv, int isNumberAllowed)
     //
     }
 
-    return utils_nil();
+    return symbol_nil();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, int isNumbe
             }
         }
         if (err) {
-            *s = (fallback ? fallback : utils_nil());
+            *s = (fallback ? fallback : symbol_nil());
         }
     }
 }
@@ -153,9 +153,9 @@ void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
 {
     iemgui_fetchUnexpandedNames (iem, n);
     
-    n->n_unexpandedSend    = utils_dollarToHash (n->n_unexpandedSend);
-    n->n_unexpandedReceive = utils_dollarToHash (n->n_unexpandedReceive);
-    n->n_unexpandedLabel   = utils_dollarToHash (n->n_unexpandedLabel);
+    n->n_unexpandedSend    = symbol_dollarToHash (n->n_unexpandedSend);
+    n->n_unexpandedReceive = symbol_dollarToHash (n->n_unexpandedReceive);
+    n->n_unexpandedLabel   = symbol_dollarToHash (n->n_unexpandedLabel);
 }
 
 void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foreground, t_atom *label)
@@ -185,9 +185,9 @@ void iemgui_deserializeLoadbang (t_iem *iem, int n)
 
 void iemgui_deserializeNames (t_iem *iem, int i, t_atom *argv)
 {
-    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv, 0) : utils_nil());
-    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv, 0) : utils_nil());
-    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv, 1) : utils_nil());
+    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv, 0) : symbol_nil());
+    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv, 0) : symbol_nil());
+    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv, 1) : symbol_nil());
     
     iem->iem_unexpandedSend    = NULL;
     iem->iem_unexpandedReceive = NULL;
@@ -222,21 +222,21 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
 void iemgui_setSend (void *x, t_symbol *s)
 {
     t_iem *iem  = cast_iem (x);
-    t_symbol *t = utils_hashToDollar (utils_emptyAsNil (s));
+    t_symbol *t = symbol_hashToDollar (symbol_emptyAsNil (s));
     iem->iem_unexpandedSend = t;
     iem->iem_send = iemgui_expandDollar (iem->iem_owner, t);
-    iem->iem_canSend = utils_isNil (s) ? 0 : 1;
+    iem->iem_canSend = symbol_isNil (s) ? 0 : 1;
     iemgui_checkSendReceiveLoop (iem);
 }
 
 void iemgui_setReceive (void *x, t_symbol *s)
 {
     t_iem *iem  = cast_iem (x);
-    t_symbol *t = utils_hashToDollar (utils_emptyAsNil (s));
+    t_symbol *t = symbol_hashToDollar (symbol_emptyAsNil (s));
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = iemgui_expandDollar (iem->iem_owner, t);
-    iem->iem_canReceive = utils_isNil (s) ? 0 : 1;
+    iem->iem_canReceive = symbol_isNil (s) ? 0 : 1;
     if (iem->iem_canReceive) { pd_bind (cast_pd (iem), iem->iem_receive); }
     iemgui_checkSendReceiveLoop (iem);
 }
@@ -244,7 +244,7 @@ void iemgui_setReceive (void *x, t_symbol *s)
 void iemgui_setLabel (void *x, t_symbol *s)
 {
     t_iem *iem  = cast_iem (x);
-    t_symbol *t = utils_hashToDollar (utils_emptyAsNil (s));
+    t_symbol *t = symbol_hashToDollar (symbol_emptyAsNil (s));
     
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
@@ -254,7 +254,7 @@ void iemgui_setLabel (void *x, t_symbol *s)
         sys_vGui ("%s.c itemconfigure %lxLABEL -text {%s}\n",    // --
                         glist_getTagAsString (glist_getView (iem->iem_owner)),
                         x,
-                        utils_isNil (iem->iem_label) ? "" : iem->iem_label->s_name);
+                        symbol_isNil (iem->iem_label) ? "" : iem->iem_label->s_name);
     }
 }
 
@@ -459,9 +459,9 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     int canSend                 = 1;
     int canReceive              = 1;
 
-    t_symbol *s1 = utils_hashToDollar (iemgui_fetchName (7, argv, 0));
-    t_symbol *s2 = utils_hashToDollar (iemgui_fetchName (8, argv, 0));
-    t_symbol *s3 = utils_hashToDollar (iemgui_fetchName (9, argv, 1));
+    t_symbol *s1 = symbol_hashToDollar (iemgui_fetchName (7, argv, 0));
+    t_symbol *s2 = symbol_hashToDollar (iemgui_fetchName (8, argv, 0));
+    t_symbol *s3 = symbol_hashToDollar (iemgui_fetchName (9, argv, 1));
 
     iem->iem_unexpandedSend     = s1;
     iem->iem_unexpandedReceive  = s2;
@@ -471,8 +471,8 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     s2 = iemgui_expandDollar (iem->iem_owner, s2);
     s3 = iemgui_expandDollar (iem->iem_owner, s3);
     
-    if (utils_isNil (s1)) { canSend = 0;    }
-    if (utils_isNil (s2)) { canReceive = 0; }
+    if (symbol_isNil (s1)) { canSend = 0;    }
+    if (symbol_isNil (s2)) { canReceive = 0; }
     
     if (canReceive) {
         if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }

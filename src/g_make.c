@@ -114,7 +114,7 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     
     glist_objectAdd (glist, cast_gobj (x));
     
-    garray_makeObject (x, utils_hashToDollar (name), n, flags);
+    garray_makeObject (x, symbol_hashToDollar (name), n, flags);
     //
     }
     
@@ -194,7 +194,7 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     if (templateName != &s_) {
     //
-    t_symbol *templateIdentifier = utils_makeTemplateIdentifier (templateName);
+    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (templateName);
     
     if (template_findByIdentifier (templateIdentifier)) {
     //

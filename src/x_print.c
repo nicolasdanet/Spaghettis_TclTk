@@ -78,7 +78,7 @@ static void *print_new (t_symbol *s, int argc, t_atom *argv)
     
     if (t == sym___dash__n || t == sym___dash__none) { x->x_name = &s_; }
     else {
-        if (argc) { x->x_name = utils_gensymWithAtoms (argc, argv); } 
+        if (argc) { x->x_name = symbol_withAtoms (argc, argv); } 
         else {
             x->x_name = sym_print;
         }
