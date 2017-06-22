@@ -1064,12 +1064,12 @@
 				3716C79C1D6335C400022709 /* m_iterator.c */,
 				37E0BC361C53E0B700114412 /* m_pathlist.c */,
 				37C41F4E1D5B240000DC9C3E /* m_heapstring.c */,
+				373F12281E82548300508FE3 /* m_snippet.c */,
 				378971E61C4F716700263434 /* m_utils.c */,
 				17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */,
 				37128AF71D43640300EFB4FC /* m_color.c */,
 				37A7BBF21D030B45000C7AB5 /* m_string.c */,
 				374448191D66000B00E54A0D /* m_math.c */,
-				373F12281E82548300508FE3 /* m_snippet.c */,
 			);
 			name = Core;
 			sourceTree = "<group>";

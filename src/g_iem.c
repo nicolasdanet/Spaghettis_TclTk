@@ -61,7 +61,7 @@ static t_color iemgui_colorDecodeFromInteger (int color)
 static t_color iemgui_colorDecode (t_atom *a)
 {
     if (IS_FLOAT (a))  { return iemgui_colorDecodeFromInteger ((int)GET_FLOAT (a)); }
-    if (IS_SYMBOL (a)) { return color_withEncodedSymbol (atom_getSymbol (a));       }
+    if (IS_SYMBOL (a)) { return color_withEncoded (atom_getSymbol (a));       }
     
     PD_BUG;
     
@@ -134,9 +134,9 @@ static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 
 void iemgui_serializeColors (t_iem *iem, t_iemcolors *c)
 {
-    c->c_symColorBackground = color_toEncodedSymbol (iem->iem_colorBackground);
-    c->c_symColorForeground = color_toEncodedSymbol (iem->iem_colorForeground);
-    c->c_symColorLabel      = color_toEncodedSymbol (iem->iem_colorLabel);
+    c->c_symColorBackground = color_toEncoded (iem->iem_colorBackground);
+    c->c_symColorForeground = color_toEncoded (iem->iem_colorForeground);
+    c->c_symColorLabel      = color_toEncoded (iem->iem_colorLabel);
 }
 
 int iemgui_serializeFontStyle (t_iem *iem)
@@ -163,9 +163,9 @@ void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foregroun
     iem->iem_colorForeground = COLOR_IEM_FOREGROUND;
     iem->iem_colorLabel      = COLOR_IEM_LABEL;
     
-    if (pd_class (iem) == panel_class) { iem->iem_colorBackground = COLOR_IEM_BACKGROUND_DARK; }
+    if (pd_class (iem) == panel_class) { iem->iem_colorBackground = COLOR_IEM_PANEL; }
     else {
-        iem->iem_colorBackground = COLOR_IEM_BACKGROUND_LIGHT;
+        iem->iem_colorBackground = COLOR_IEM_BACKGROUND;
     }
     
     if (background) { iem->iem_colorBackground = iemgui_colorDecode (background); }

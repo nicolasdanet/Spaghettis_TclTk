@@ -180,7 +180,7 @@ t_symbol *symbol_removeExtension (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *symbol_makeBindSymbol (t_symbol *s)
+t_symbol *symbol_makeBind (t_symbol *s)
 {
     t_error err = PD_ERROR_NONE;
     char t[PD_STRING] = { 0 };
@@ -200,7 +200,7 @@ t_symbol *symbol_makeTemplateIdentifier (t_symbol *s)
     return gensym (t);
 }
 
-t_symbol *symbol_stripBindSymbol (t_symbol *s)
+t_symbol *symbol_stripBind (t_symbol *s)
 {
     if (string_startWith (s->s_name, SYMBOL_BIND)) { 
         return gensym (s->s_name + strlen (SYMBOL_BIND));

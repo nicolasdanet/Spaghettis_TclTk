@@ -207,7 +207,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
                     glist_getTagAsString (view),
                     pixelX,
                     pixelY,
-                    color_toEncodedSymbol (color)->s_name,
+                    color_toEncoded (color)->s_name,
                     font_getHostFontSize (glist_getFontSize (glist)),
                     t, 
                     tag);

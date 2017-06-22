@@ -666,7 +666,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     else {
     //
     int t = (int)gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);
-    t_symbol *color = color_toEncodedSymbol (color_withDigits (t));
+    t_symbol *color = color_toEncoded (color_withDigits (t));
     
     /* Draw simply as points. */
     /* Draw a filled line with variable thickness. */

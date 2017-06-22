@@ -208,8 +208,8 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     int width            = gpointer_getFloatByDescriptor (gp, &x->x_width);
     t_float colorFill    = gpointer_getFloatByDescriptor (gp, &x->x_colorFill);
     t_float colorOutline = gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);
-    t_symbol *filled     = color_toEncodedSymbol (color_withDigits ((int)colorFill));
-    t_symbol *outlined   = color_toEncodedSymbol (color_withDigits ((int)colorOutline));
+    t_symbol *filled     = color_toEncoded (color_withDigits ((int)colorFill));
+    t_symbol *outlined   = color_toEncoded (color_withDigits ((int)colorOutline));
     
     t_fielddescriptor *fd = x->x_coordinates;
     t_heapstring *t = heapstring_new (0);

@@ -45,22 +45,20 @@ t_symbol    *symbol_hashToDollar            (t_symbol *s);
 t_symbol    *symbol_decode                  (t_symbol *s);
 t_symbol    *symbol_removeExtension         (t_symbol *s);
 
-t_symbol    *symbol_makeBindSymbol          (t_symbol *s);
+t_symbol    *symbol_makeBind                (t_symbol *s);
 t_symbol    *symbol_makeTemplateIdentifier  (t_symbol *s);
-t_symbol    *symbol_stripBindSymbol         (t_symbol *s);
+t_symbol    *symbol_stripBind               (t_symbol *s);
 t_symbol    *symbol_stripTemplateIdentifier (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_color     color_checked                               (t_color color);
-t_color     color_withRGB                               (int argc, t_atom *argv);
-t_color     color_withDigits                            (int c);
-t_color     color_withEncodedSymbol                     (t_symbol *s);
-t_error     color_toEncodedString                       (char *dest, size_t size, t_color color);
+t_color     color_withRGB                   (int argc, t_atom *argv);
+t_color     color_withDigits                (int c);
+t_color     color_withEncoded               (t_symbol *s);
 
-t_symbol    *color_toEncodedSymbol                      (t_color color);
+t_symbol    *color_toEncoded                (t_color color);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -104,6 +102,39 @@ t_float     math_rootMeanSquareToDecibel                (t_float f);
 t_float     math_decibelToRootMeanSquare                (t_float f);
 t_float     math_powerToDecibel                         (t_float f);
 t_float     math_decibelToPower                         (t_float f);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define COLOR_IEM_BACKGROUND        0xffffff    // White.
+#define COLOR_IEM_FOREGROUND        0x000000    // Black.
+#define COLOR_IEM_LABEL             0x000000    // Black.
+#define COLOR_IEM_PANEL             0xcccccc    // Grey.
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define COLOR_OPENED                0xdddddd    // Grey.
+#define COLOR_NORMAL                0x000000    // Black.
+#define COLOR_SELECTED              0x0000ff    // Blue.
+#define COLOR_GOP                   0xff8080    // Red.
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define COLOR_MASK                  0xffffff
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline t_color color_checked (t_color color)
+{
+    return (color & COLOR_MASK);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -13,24 +13,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define COLOR_MASK      0xffffff
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static unsigned int color_digitTo8BitsComponent (int n)
 {
     unsigned int c = PD_CLAMP (n, 0, 8); return PD_MIN ((c << 5), 0xff);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_color color_checked (t_color color)
-{
-    return (color & COLOR_MASK);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -61,7 +46,7 @@ t_color color_withDigits (int c)
     return (t_color)(COLOR_MASK & ((r << 16) | (g << 8) | b));
 }
 
-t_color color_withEncodedSymbol (t_symbol *s)
+t_color color_withEncoded (t_symbol *s)
 {
     if (s->s_name[0] == '#') { return color_checked ((t_color)strtol (s->s_name + 1, NULL, 16)); }
     
@@ -72,16 +57,16 @@ t_color color_withEncodedSymbol (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *color_toEncodedSymbol (t_color color)
+static t_error color_toEncodedString (char *dest, size_t size, t_color color)
+{
+    return string_sprintf (dest, size, "#%06x", color_checked (color));
+}
+
+t_symbol *color_toEncoded (t_color color)
 {
     char t[PD_STRING] = { 0 }; color_toEncodedString (t, PD_STRING, color);
     
     return gensym (t);
-}
-
-t_error color_toEncodedString (char *dest, size_t size, t_color color)
-{
-    return string_sprintf (dest, size, "#%06x", color_checked (color));
 }
 
 // -----------------------------------------------------------------------------------------------------------

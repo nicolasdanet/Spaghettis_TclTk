@@ -50,7 +50,7 @@ void glist_updateRectangleOnParent (t_glist *glist)
 {   
     int isSelected = glist_isSelected (glist);
     int hasWindow  = glist_hasWindow (glist);
-    int color      = hasWindow ? COLOR_MASKED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
+    int color      = hasWindow ? COLOR_OPENED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     
     t_glist *view  = glist_getView (glist_getParent (glist));
     
@@ -234,7 +234,7 @@ void glist_drawRectangleOnParent (t_glist *glist)
 {
     int isSelected   = glist_isSelected (glist);
     int hasWindow    = glist_hasWindow (glist);
-    int color        = hasWindow ? COLOR_MASKED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
+    int color        = hasWindow ? COLOR_OPENED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     const char *type = hasWindow ? "polygon" : "line";
     
     t_glist *view = glist_getView (glist_getParent (glist));

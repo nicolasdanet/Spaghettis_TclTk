@@ -320,7 +320,7 @@ void glist_bind (t_glist *glist)
     t_symbol *s = symbol_removeExtension (glist_getName (glist));
     
     if (utils_isNameAllowedForWindow (s)) {
-        pd_bind (cast_pd (glist), symbol_makeBindSymbol (s));
+        pd_bind (cast_pd (glist), symbol_makeBind (s));
     }
 }
 
@@ -329,7 +329,7 @@ void glist_unbind (t_glist *glist)
     t_symbol *s = symbol_removeExtension (glist_getName (glist));
     
     if (utils_isNameAllowedForWindow (s)) {
-        pd_unbind (cast_pd (glist), symbol_makeBindSymbol (s));
+        pd_unbind (cast_pd (glist), symbol_makeBind (s));
     }
 }
 
