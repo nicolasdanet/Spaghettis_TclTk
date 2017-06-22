@@ -78,9 +78,9 @@ proc _create {top width low high type value send receive name position} {
     set atomHigh($top)          $high
     set atomType($top)          $type
     set atomValue($top)         $value
-    set atomSend($top)          [::hashToDollar [::parseEmpty $send]]
-    set atomReceive($top)       [::hashToDollar [::parseEmpty $receive]]
-    set atomName($top)          [::hashToDollar [::parseEmpty $name]]
+    set atomSend($top)          [::hashToDollar [::parseNil $send]]
+    set atomReceive($top)       [::hashToDollar [::parseNil $receive]]
+    set atomName($top)          [::hashToDollar [::parseNil $name]]
     set atomPosition($top)      $position
     
     set atomWidth(${top}.old)   $width
@@ -241,9 +241,9 @@ proc _apply {top} {
             $atomLow($top) \
             $atomHigh($top) \
             $atomValue($top) \
-            [::sanitized [::dollarToHash [::withEmpty $atomSend($top)]]] \
-            [::sanitized [::dollarToHash [::withEmpty $atomReceive($top)]]] \
-            [::sanitized [::dollarToHash [::withEmpty $atomName($top)]]] \
+            [::sanitized [::dollarToHash [::withNil $atomSend($top)]]] \
+            [::sanitized [::dollarToHash [::withNil $atomReceive($top)]]] \
+            [::sanitized [::dollarToHash [::withNil $atomName($top)]]] \
             $atomPosition($top)"
 }
 

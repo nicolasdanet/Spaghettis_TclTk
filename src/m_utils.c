@@ -72,6 +72,49 @@ t_symbol *utils_getFirstAtomOfBuffer (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Note that usage of "empty" or "-" as nil tokens is a bad idea. */
+/* But it must be kept to ensure compatibility with legacy files. */
+
+t_symbol *utils_nil (void)
+{
+    return sym_empty;
+}
+
+t_symbol *utils_dash (void)
+{
+    return sym___dash__;
+}
+
+t_symbol *utils_emptyAsNil (t_symbol *s)
+{
+    if (s == &s_) { return utils_nil(); }
+    else { 
+        return s;
+    }
+}
+
+t_symbol *utils_emptyAsDash (t_symbol *s)
+{
+    if (s == &s_) { return utils_dash(); }
+    else { 
+        return s;
+    }
+}
+
+int utils_isNil (t_symbol *s)
+{
+    return (s == utils_nil());
+}
+
+int utils_isNilOrDash (t_symbol *s)
+{
+    return (s == utils_nil() || s == utils_dash());
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_symbol *utils_dollarToHash (t_symbol *s)
 {
     char t[PD_STRING + 1] = { 0 };
@@ -95,10 +138,6 @@ t_symbol *utils_hashToDollar (t_symbol *s)
         return gensym (t);
     }
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 /* A format to avoid slicing by the string parser. */
 
@@ -147,49 +186,6 @@ t_symbol *utils_decode (t_symbol *s)
     }
     
     return &s_;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* Note that usage of "empty" or "-" as nil tokens is a bad idea. */
-/* But it must be kept to ensure compatibility with legacy files. */
-
-t_symbol *utils_nil (void)
-{
-    return sym_empty;
-}
-
-t_symbol *utils_dash (void)
-{
-    return sym___dash__;
-}
-
-t_symbol *utils_emptyAsNil (t_symbol *s)
-{
-    if (s == &s_) { return utils_nil(); }
-    else { 
-        return s;
-    }
-}
-
-t_symbol *utils_emptyAsDash (t_symbol *s)
-{
-    if (s == &s_) { return utils_dash(); }
-    else { 
-        return s;
-    }
-}
-
-int utils_isNil (t_symbol *s)
-{
-    return (s == utils_nil());
-}
-
-int utils_isNilOrDash (t_symbol *s)
-{
-    return (s == utils_nil() || s == utils_dash());
 }
 
 // -----------------------------------------------------------------------------------------------------------

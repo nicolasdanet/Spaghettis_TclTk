@@ -43,10 +43,15 @@ int         utils_isNilOrDash               (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-t_symbol    *utils_dollarToHash                         (t_symbol *s);
-t_symbol    *utils_hashToDollar                         (t_symbol *s);
-t_symbol    *utils_decode                               (t_symbol *s);
+t_symbol    *utils_dollarToHash             (t_symbol *s);
+t_symbol    *utils_hashToDollar             (t_symbol *s);
+t_symbol    *utils_decode                   (t_symbol *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_symbol    *utils_removeExtension                      (t_symbol *s);
 t_symbol    *utils_makeBindSymbol                       (t_symbol *s);

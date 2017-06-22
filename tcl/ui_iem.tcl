@@ -126,9 +126,9 @@ proc create {top type
     set iemExtra($top)              $extra
     set iemExtraMaximum($top)       $extraMaximum
     set iemExtraLabel($top)         $extraLabel
-    set iemSend($top)               [::hashToDollar [::parseEmpty $send]]
-    set iemReceive($top)            [::hashToDollar [::parseEmpty $receive]]
-    set iemName($top)               [::hashToDollar [::parseEmpty $name]]
+    set iemSend($top)               [::hashToDollar [::parseNil $send]]
+    set iemReceive($top)            [::hashToDollar [::parseNil $receive]]
+    set iemName($top)               [::hashToDollar [::parseNil $name]]
     set iemNameDeltaX($top)         $nameDeltaX
     set iemNameDeltaY($top)         $nameDeltaY
     set iemNameFontSize($top)       $nameFontSize
@@ -142,8 +142,8 @@ proc create {top type
     set iemOption1(${top}.old)      $option1
     set iemOption2(${top}.old)      $option2
     set iemExtra(${top}.old)        $extra
-    set iemSend(${top}.old)         [::hashToDollar [::parseEmpty $send]]
-    set iemReceive(${top}.old)      [::hashToDollar [::parseEmpty $receive]]
+    set iemSend(${top}.old)         [::hashToDollar [::parseNil $send]]
+    set iemReceive(${top}.old)      [::hashToDollar [::parseNil $receive]]
     set iemNameDeltaX(${top}.old)   $nameDeltaX
     set iemNameDeltaY(${top}.old)   $nameDeltaY
     set iemNameFontSize(${top}.old) $nameFontSize
@@ -479,9 +479,9 @@ proc _apply {top} {
             $iemCheck($top) \
             $iemLoadbang($top) \
             $iemExtra($top) \
-            [::sanitized [::dollarToHash [::withEmpty $iemSend($top)]]] \
-            [::sanitized [::dollarToHash [::withEmpty $iemReceive($top)]]] \
-            [::sanitized [::dollarToHash [::withEmpty $iemName($top)]]] \
+            [::sanitized [::dollarToHash [::withNil $iemSend($top)]]] \
+            [::sanitized [::dollarToHash [::withNil $iemReceive($top)]]] \
+            [::sanitized [::dollarToHash [::withNil $iemName($top)]]] \
             $iemNameDeltaX($top) \
             $iemNameDeltaY($top) \
             $iemNameFontSize($top) \
