@@ -85,8 +85,8 @@ static t_error loader_makeStubName (char *dest, size_t size, t_symbol *name, con
     while (*n && !err) {
     //
     char c = *n;
-    if (utils_isAlphanumericOrUnderscore (c)) { err |= string_append (dest, size, n, 1);  } 
-    else if ((c == '~') && (*(n + 1) == 0))   { err |= string_add (dest, size, "_tilde"); }
+    if (char_isAlphanumeric (c)) { err |= string_append (dest, size, n, 1);  }
+    else if ((c == '~') && (*(n + 1) == 0)) { err |= string_add (dest, size, "_tilde"); }
     else {
         err |= string_add (dest, size, "_");
     }

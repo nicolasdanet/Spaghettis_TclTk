@@ -51,7 +51,7 @@ static int buffer_parseIsMalformed (char *s, int size)
 
 static int buffer_parseIsValidCharacter (char c)
 {
-    return (!utils_isTokenWhitespace (c) && !utils_isTokenEnd (c));
+    return (!char_isWhitespace (c) && !char_isEnd (c));
 }
 
 static int buffer_parseIsValidState (int floatState)
@@ -154,7 +154,7 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
     
     while (1) {
     //
-    while (utils_isTokenWhitespace (*text) && (text != tBound)) { text++; }         /* Skip whitespaces. */
+    while (char_isWhitespace (*text) && (text != tBound)) { text++; }         /* Skip whitespaces. */
     
     if (text == tBound)    { break; }
     else if (*text == ';') { SET_SEMICOLON (a); text++; }
@@ -174,7 +174,7 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
         //
         char c = *p = *text++;
         
-        lastSlash = slash; slash = utils_isTokenEscape (c);
+        lastSlash = slash; slash = char_isEscape (c);
 
         if (floatState >= 0) { floatState = buffer_parseNextFloatState (floatState, c); }
         if (!lastSlash && text != tBound && string_startWithOneDollarAndOneNumber (text - 1)) { dollar = 1; }

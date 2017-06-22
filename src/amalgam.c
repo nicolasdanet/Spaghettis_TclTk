@@ -42,6 +42,7 @@
 #include "m_pathlist.c"
 #include "m_heapstring.c"
 #include "m_utils.c"
+#include "m_symbol.c"
 #include "m_color.c"
 #include "m_string.c"
 #include "m_math.c"

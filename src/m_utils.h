@@ -20,6 +20,7 @@ t_unique    utils_unique                    (void);
 void        utils_anythingToList            (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_atom *argv);
 
 t_symbol    *utils_getDefaultBindName       (t_class *c, t_symbol *prefix);
+
 t_symbol    *utils_getFirstAtomOfObject     (t_object *x);
 t_symbol    *utils_getFirstAtomOfBuffer     (t_buffer *x);
 
@@ -48,30 +49,6 @@ t_symbol    *symbol_makeBindSymbol          (t_symbol *s);
 t_symbol    *symbol_makeTemplateIdentifier  (t_symbol *s);
 t_symbol    *symbol_stripBindSymbol         (t_symbol *s);
 t_symbol    *symbol_stripTemplateIdentifier (t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline int utils_isTokenEnd (char c)
-{
-    return (c == ',' || c == ';');
-}
-
-static inline int utils_isTokenEscape (char c)
-{
-    return (c == '\\');
-}
-
-static inline int utils_isTokenWhitespace (char c)
-{
-    return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
-}
-
-static inline int utils_isAlphanumericOrUnderscore (char c)
-{
-    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_'));
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -127,6 +104,30 @@ t_float     math_rootMeanSquareToDecibel                (t_float f);
 t_float     math_decibelToRootMeanSquare                (t_float f);
 t_float     math_powerToDecibel                         (t_float f);
 t_float     math_decibelToPower                         (t_float f);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline int char_isEnd (char c)
+{
+    return (c == ',' || c == ';');
+}
+
+static inline int char_isEscape (char c)
+{
+    return (c == '\\');
+}
+
+static inline int char_isWhitespace (char c)
+{
+    return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
+}
+
+static inline int char_isAlphanumeric (char c)
+{
+    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_'));
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

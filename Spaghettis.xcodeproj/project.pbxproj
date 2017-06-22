@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */; };
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
 		370158391DFFD81B00F3FE0C /* d_delread.c in Sources */ = {isa = PBXBuildFile; fileRef = 370158381DFFD81B00F3FE0C /* d_delread.c */; };
 		370241501DAB95AC00AB5440 /* x_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 3702414F1DAB95AC00AB5440 /* x_serial.c */; };
@@ -388,6 +389,7 @@
 
 /* Begin PBXFileReference section */
 		179E8D9C1EF91B4700FD3865 /* m_environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_environment.h; path = src/m_environment.h; sourceTree = "<group>"; };
+		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
 		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_outlet.h; path = src/m_outlet.h; sourceTree = "<group>"; };
 		370157EB1DFFD62900F3FE0C /* d_vd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vd.c; path = src/d_vd.c; sourceTree = "<group>"; };
@@ -1063,6 +1065,7 @@
 				37E0BC361C53E0B700114412 /* m_pathlist.c */,
 				37C41F4E1D5B240000DC9C3E /* m_heapstring.c */,
 				378971E61C4F716700263434 /* m_utils.c */,
+				17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */,
 				37128AF71D43640300EFB4FC /* m_color.c */,
 				37A7BBF21D030B45000C7AB5 /* m_string.c */,
 				374448191D66000B00E54A0D /* m_math.c */,
@@ -2103,6 +2106,7 @@
 				37EECD3C1DC749A300E02EDF /* d_bang.c in Sources */,
 				37EECD3E1DC749AE00E02EDF /* d_print.c in Sources */,
 				37B79AFB1DCB775900EB423B /* d_vinlet.c in Sources */,
+				17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */,
 				37B79B4A1DCB7E0300EB423B /* d_voutlet.c in Sources */,
 				372BDF771DCF36D00045ECE8 /* d_adc.c in Sources */,
 				37C000551DE2FE1B00F90584 /* d_throw.c in Sources */,
