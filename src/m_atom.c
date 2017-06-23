@@ -96,7 +96,7 @@ t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
 
 t_symbol *atom_getDollarSymbol (t_atom *a)
 {
-    if ((IS_SYMBOL(a) || IS_DOLLARSYMBOL(a))) { return GET_SYMBOL (a); }
+    if ((IS_SYMBOL (a) || IS_DOLLARSYMBOL (a))) { return GET_SYMBOL (a); }
     else { 
         return (&s_);
     }
