@@ -84,7 +84,7 @@ t_symbol *gensym (const char *s)
 
 void message_initialize (void)
 {
-    t_symbol *symbols[11] = 
+    t_symbol *symbols[11] =
         { 
             &s_pointer,
             &s_float,
@@ -118,7 +118,7 @@ void message_initialize (void)
 
 static int message_isStaticSymbol (t_symbol *s)
 {
-    t_symbol *symbols[11] = 
+    static t_symbol *symbols[11] =
         { 
             &s_pointer,
             &s_float,

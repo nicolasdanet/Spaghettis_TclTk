@@ -36,6 +36,8 @@ typedef struct _bindlist {
 
 /* Note that binding or/and unbinding might be possible while broadcasting. */
 /* It means therefore that a receiver can unbound itself also during the sender call. */
+/* A bindlist is created to manage multiple binds. */
+/* That bindlist remains until the end. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
