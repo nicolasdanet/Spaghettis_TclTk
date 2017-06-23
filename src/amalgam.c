@@ -18,6 +18,7 @@
 #include "m_symbols.c"
 #include "m_environment.c"
 #include "m_clipboard.c"
+#include "m_autorelease.c"
 #include "m_instance.c"
 #include "m_stack.c"
 #include "m_bind.c"

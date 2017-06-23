@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
 		17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */; };
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
 		370158391DFFD81B00F3FE0C /* d_delread.c in Sources */ = {isa = PBXBuildFile; fileRef = 370158381DFFD81B00F3FE0C /* d_delread.c */; };
@@ -388,6 +389,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		177169881EFD1212003CD374 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		179E8D9C1EF91B4700FD3865 /* m_environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_environment.h; path = src/m_environment.h; sourceTree = "<group>"; };
 		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
@@ -1041,6 +1043,7 @@
 				3791F2E01CDF064000F7481C /* m_symbols.c */,
 				370B1FAF1E421D22003D95A0 /* m_environment.c */,
 				372C88E91E7FE48F00F2C23F /* m_clipboard.c */,
+				177169881EFD1212003CD374 /* m_autorelease.c */,
 				37F182091C70DBF8003D1A3A /* m_instance.c */,
 				37F085681CC26E5C0070DEAC /* m_stack.c */,
 				373D6CC91C610AAF00106641 /* m_bind.c */,
@@ -2180,6 +2183,7 @@
 				370B1FB01E421D22003D95A0 /* m_environment.c in Sources */,
 				37CC95F21E45AEB800D9BA64 /* s_gui.c in Sources */,
 				37329A6A1E4631D5008AA5E4 /* s_defer.c in Sources */,
+				177169891EFD1212003CD374 /* m_autorelease.c in Sources */,
 				37329A6B1E4631D5008AA5E4 /* s_monitor.c in Sources */,
 				37ECBA031E488A3000F1CFD1 /* d_lrshift.c in Sources */,
 				3759441E1E48E04A00CF3FD7 /* tinyexpr.c in Sources */,
