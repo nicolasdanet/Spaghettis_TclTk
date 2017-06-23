@@ -13,19 +13,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef void (*t_gimme)     (t_pd *, t_symbol *, int, t_atom *);
-typedef t_pd *(*t_newgimme) (t_symbol *, int, t_atom *);
+typedef void (*t_gimme)         (t_pd *, t_symbol *, int, t_atom *);
+typedef t_pd *(*t_newgimme)     (t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef void (*t_method10)  (t_int);
-typedef void (*t_method11)  (t_int, t_float);
-typedef void (*t_method12)  (t_int, t_float, t_float);
-typedef void (*t_method20)  (t_int, t_int);
-typedef void (*t_method21)  (t_int, t_int, t_float);
-typedef void (*t_method30)  (t_int, t_int, t_int);
+typedef void (*t_method10)      (t_int);
+typedef void (*t_method11)      (t_int, t_float);
+typedef void (*t_method12)      (t_int, t_float, t_float);
+typedef void (*t_method20)      (t_int, t_int);
+typedef void (*t_method21)      (t_int, t_int, t_float);
+typedef void (*t_method30)      (t_int, t_int, t_int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ static void method_execute (t_pd *x, t_method f, int m, t_int *ai, int n, t_floa
 
 /* Note that A_FLOAT arguments are always passed at last. */
 
-static t_error method_untypedCheck (t_entry *e, t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atomtype t;
     t_atomtype *p = e->me_arguments;
@@ -160,13 +160,16 @@ static t_error method_untypedCheck (t_entry *e, t_pd *x, t_symbol *s, int argc, 
     return PD_ERROR_NONE;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* The A_GIMME signature should always be prefered now. */
 
-static t_error method_untyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static t_error method_entry (t_entry *e, t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atomtype *p = e->me_arguments;
     
-    if (*p != A_GIMME) { return method_untypedCheck (e, x, s, argc, argv); }
+    if (*p != A_GIMME) { return method_entryTyped (e, x, s, argc, argv); }
     else {
         if (!instance_isMakerObject (x)) { (*((t_gimme)e->me_method)) (x, s, argc, argv); }
         else {
@@ -179,7 +182,7 @@ static t_error method_untyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_ato
     return PD_ERROR_NONE;
 }
 
-static t_error method_typed (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static t_error method_slot (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -235,8 +238,11 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
     PD_ASSERT (s != &s_pointer || instance_isMakerObject (x));
     
+    /* Notice that slot methods MUST be managed here. */
+    /* For instance to create identical name objects. */
+    
     if (s == &s_bang || s == &s_float || s == &s_symbol || s == &s_list) {
-        err = method_typed (x, s, argc, argv);
+        err = method_slot (x, s, argc, argv);
         if (!err) { 
             return; 
         }  
@@ -249,7 +255,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
             
         for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
             if (m->me_name == s) {
-                err = method_untyped (m, x, s, argc, argv); 
+                err = method_entry (m, x, s, argc, argv); 
                 if (!err) { return; } 
                 else {
                     break;
