@@ -33,27 +33,11 @@ static void ooura_release (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int math_ilog2 (int n)
-{
-    if (n <= 0) { return 0; }
-    else {
-    //
-    int r = -1;
-    
-    while (n) { r++; n >>= 1; }
-    
-    return r;
-    //
-    }
-}
-
 /* Next squarable power of two. */
 
 static int ooura_getNextSize (int n)
 {
-    int t = (int)((math_ilog2 ((int)PD_NEXT_POWER_2 (n)) / 2.0) + 0.5);
-    
-    return (1 << (t * 2));
+    int i = 1; while (i && i < n) { i = i << 2; } return i;
 }
 
 /* Initialize the tables with a dummy fft. */
@@ -76,6 +60,8 @@ void ooura_initialize (int n)
     static int ooura_maximum = 0;
     
     n = ooura_getNextSize (n);
+    
+    PD_ASSERT (n != 0);
     
     if (n > ooura_maximum) {
     //
