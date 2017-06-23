@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void snippet_addOffsetToLine (t_buffer *x, int i)
+void snippet_addOffsetToLines (t_buffer *x, int i)
 {
     t_iterator *iter = iterator_new (buffer_getSize (x), buffer_getAtoms (x));
     t_atom *atoms = NULL;
@@ -50,9 +50,9 @@ void snippet_addOffsetToLine (t_buffer *x, int i)
     iterator_free (iter);
 }
 
-void snippet_substractOffsetToLine (t_buffer *x, int i)
+void snippet_substractOffsetToLines (t_buffer *x, int i)
 {
-    snippet_addOffsetToLine (x, -i);
+    snippet_addOffsetToLines (x, -i);
 }
 
 // -----------------------------------------------------------------------------------------------------------

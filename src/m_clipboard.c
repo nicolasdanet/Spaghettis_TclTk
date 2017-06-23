@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define CLIPBOARD_PASTE_OFFSET      20
+#define CLIPBOARD_CUMULATIVE_OFFSET 20
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -57,7 +57,8 @@ void clipboard_copy (t_clipboard *x, t_glist *glist)
     //
     }
     
-    buffer_free (x->cb_buffer); 
+    buffer_free (x->cb_buffer);
+    
     x->cb_buffer = b;
     //
     }
@@ -68,18 +69,18 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
     t_gobj *y = NULL;
     t_selection *s = NULL;
     int i = 0;
-    int n = (++x->cb_pasteCount) * CLIPBOARD_PASTE_OFFSET;
+    int n = (++x->cb_pasteCount) * CLIPBOARD_CUMULATIVE_OFFSET;
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     int isDirty = 0;
     
     glist_deselectAll (glist);
     
-    snippet_addOffsetToLine (x->cb_buffer, alreadyThere);
+    snippet_addOffsetToLines (x->cb_buffer, alreadyThere);
     
         instance_loadSnippet (glist, x->cb_buffer);
     
-    snippet_substractOffsetToLine (x->cb_buffer, alreadyThere);
+    snippet_substractOffsetToLines (x->cb_buffer, alreadyThere);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (i >= alreadyThere) { glist_objectSelect (glist, y); isDirty = 1; }
@@ -90,9 +91,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
         
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
         y = selection_getObject (s); gobj_displaced (y, glist, n, n);
-        if (pd_class (y) == canvas_class) { 
-            glist_loadbang (cast_glist (y)); 
-        }
+        if (pd_class (y) == canvas_class) { glist_loadbang (cast_glist (y)); }
     }
     
     if (isDirty) { glist_setDirty (glist, 1); }
@@ -104,7 +103,7 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
 
 void clipboard_init (t_clipboard *x)
 {
-    x->cb_pasteCount  = 0;
+    x->cb_pasteCount = 0;
     x->cb_buffer = buffer_new();
 }
 

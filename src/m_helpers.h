@@ -350,8 +350,8 @@ t_error         heapstring_addSprintf   (t_heapstring *x, const char *format, ..
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void snippet_addOffsetToLine            (t_buffer *x, int i);
-void snippet_substractOffsetToLine      (t_buffer *x, int i);
+void snippet_addOffsetToLines           (t_buffer *x, int i);
+void snippet_substractOffsetToLines     (t_buffer *x, int i);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
