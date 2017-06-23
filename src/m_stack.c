@@ -103,11 +103,11 @@ static int instance_loadAbstractionIsValid (t_symbol *filename)
     return 1;
 }
 
-void instance_loadAbstraction (t_symbol *s, int argc, t_atom *argv)
+void instance_loadAbstraction (t_symbol *name, int argc, t_atom *argv)
 {
     t_fileproperties p;
     
-    if (glist_fileExist (instance_contextGetCurrent(), s->s_name, PD_PATCH, &p)) {
+    if (glist_fileExist (instance_contextGetCurrent(), name->s_name, PD_PATCH, &p)) {
     //
     t_symbol *filename = gensym (fileproperties_getName (&p));
     
@@ -162,19 +162,19 @@ static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, char
     instance_contextRestore();
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static void instance_loadPatch (t_symbol *name, t_symbol *directory)
 {
     instance_loadPatchProceed (name, directory, NULL, 1);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 /* Load invisible patches (mainly used for built-in templates). */
 
-void instance_loadInvisible (t_symbol *name, t_symbol *directory, char *s)
+void instance_loadInvisible (t_symbol *name, char *s)
 {
-    instance_loadPatchProceed (name, directory, s, 0);
+    instance_loadPatchProceed (name, sym___dot__, s, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

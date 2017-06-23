@@ -305,19 +305,21 @@ int instance_getDefaultY (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Called if no method of the object factory match. */
+/* Called if no method of the maker object match. */
 
 static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     instance_get()->pd_newest = NULL;
     
+    /* Note that it can be a recursive call. */
+    
     if (!instance_get()->pd_loadingExternal) {
 
-        /* First search an external and redo the creation. */
+        /* First search an external. */
         
         if (loader_load (instance_contextGetCurrent(), s)) {
             instance_get()->pd_loadingExternal = 1;
-            pd_message (x, s, argc, argv);
+            pd_message (x, s, argc, argv);              /* Try again. */
             instance_get()->pd_loadingExternal = 0;
         
         /* Otherwise look for an abstraction. */
@@ -327,7 +329,7 @@ static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
         
     } else {
-        error_canNotFind (sym_loader, sym_class);   /* External MUST provide a properly named class. */
+        error_canNotFind (sym_loader, sym_class);       /* External MUST provide a properly named class. */
     }
 }
 
@@ -384,9 +386,6 @@ static void instance_free (t_pdinstance *x)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-/* The factories are local to the instance. */
-/* Requiered global to all instances in the future? */
 
 void instance_initialize (void)
 {

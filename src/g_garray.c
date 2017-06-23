@@ -104,8 +104,8 @@ void garray_initialize (void)
         "#X f 74;"
         "#X obj 43 70 plot z color linewidth 0 0 1 style;\n";
     
-    instance_loadInvisible (sym__floattemplate, sym___dot__, floatTemplate);
-    instance_loadInvisible (sym__floatarraytemplate, sym___dot__, floatArrayTemplate);
+    instance_loadInvisible (sym__floattemplate, floatTemplate);
+    instance_loadInvisible (sym__floatarraytemplate, floatArrayTemplate);
 }
 
 #if PD_WITH_DEBUG
