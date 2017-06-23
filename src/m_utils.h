@@ -86,20 +86,41 @@ t_error     string_addSprintf                           (char *dest, size_t size
 t_error     string_addAtom                              (char *dest, size_t size, t_atom *a);
 t_error     string_clear                                (char *dest, size_t size);
 
-int         string_startWith                            (const char *s, const char *isStartWith);
-int         string_endWith                              (const char *s, const char *isEndWith);
-int         string_containsCharacterAtStart             (const char *s, const char *isContained);
+int         string_startWith                            (const char *s, const char *isStart);
+int         string_endWith                              (const char *s, const char *isEnd);
 int         string_contains                             (const char *s, const char *isContained);
-        
-int         string_indexOfFirstOccurrenceUntil          (char *s, const char *c, int n);
-int         string_indexOfFirstOccurrenceFrom           (char *s, const char *c, int n);
-int         string_indexOfFirstOccurrenceFromEnd        (char *s, const char *c);
+int         string_containsCharacterAtStart             (const char *s, const char *chars);
+
+int         string_indexOfFirstOccurrenceUntil          (char *s, const char *chars, int n);
+int         string_indexOfFirstOccurrenceFrom           (char *s, const char *chars, int n);
+int         string_indexOfFirstOccurrenceFromEnd        (char *s, const char *chars);
 void        string_replaceCharacter                     (char *s, char toBeReplaced, char c);
 
 void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfColumns, int *numberOfLines);
 
-int         string_containsOneDollarFollowingByNumbers  (const char *s);
-int         string_startWithOneDollarAndOneNumber       (const char *s);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* True if the string start with a dollar following by zero or more numbers. */
+
+static inline int string_containsOneDollarFollowingByNumbers (const char *s)
+{
+    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
+    
+    return 1;
+}
+
+/* True if the string start with a dollar following by one number. */
+
+static inline int string_startWithOneDollarAndOneNumber (const char *s)
+{
+    PD_ASSERT (s[0] != 0);
+    
+    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
+    
+    return 1;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
