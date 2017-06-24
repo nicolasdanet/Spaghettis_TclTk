@@ -119,6 +119,11 @@ int         class_hasMethod                     (t_class *c, t_symbol *s);
 // MARK: -
 
 int         class_hasOverrideBangMethod         (t_class *c);
+int         class_hasOverridePointerMethod      (t_class *c);
+int         class_hasOverrideFloatMethod        (t_class *c);
+int         class_hasOverrideSymbolMethod       (t_class *c);
+int         class_hasOverrideListMethod         (t_class *c);
+int         class_hasOverrideAnythingMethod     (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

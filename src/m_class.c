@@ -41,7 +41,7 @@ static void class_defaultBang (t_pd *x)
 {
     t_class *c = pd_class (x);
     
-    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, &s_bang, 0, NULL); }
+    if (c->c_methodList != class_defaultList) { (*c->c_methodList) (x, &s_bang, 0, NULL); }
     else { 
         (*c->c_methodAnything) (x, &s_bang, 0, NULL);
     }
@@ -54,7 +54,7 @@ static void class_defaultPointer (t_pd *x, t_gpointer *gp)
     t_atom a;
     SET_POINTER (&a, gp);
         
-    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, &s_pointer, 1, &a); }
+    if (c->c_methodList != class_defaultList) { (*c->c_methodList) (x, &s_pointer, 1, &a); }
     else {
         (*c->c_methodAnything) (x, &s_pointer, 1, &a);
     }
@@ -67,7 +67,7 @@ static void class_defaultFloat (t_pd *x, t_float f)
     t_atom a;
     SET_FLOAT (&a, f);
         
-    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, &s_float, 1, &a); }
+    if (c->c_methodList != class_defaultList) { (*c->c_methodList) (x, &s_float, 1, &a); }
     else {
         (*c->c_methodAnything) (x, &s_float, 1, &a);
     }
@@ -80,7 +80,7 @@ static void class_defaultSymbol (t_pd *x, t_symbol *s)
     t_atom a;
     SET_SYMBOL (&a, s);
         
-    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, &s_symbol, 1, &a); }
+    if (c->c_methodList != class_defaultList) { (*c->c_methodList) (x, &s_symbol, 1, &a); }
     else {
         (*c->c_methodAnything) (x, &s_symbol, 1, &a);
     }
@@ -90,38 +90,30 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_class *c = pd_class (x);
     
-    if (argc == 0) {
-        if ((*c->c_methodBang) != class_defaultBang) { (*c->c_methodBang) (x); return; }
-    }
+    if (argc == 0) { if (c->c_methodBang != class_defaultBang) { (*c->c_methodBang) (x); return; } }
     
     if (argc == 1) {
-    
-        if (IS_FLOAT (argv)) {
-            if ((*c->c_methodFloat) != class_defaultFloat) {
-                (*c->c_methodFloat) (x, GET_FLOAT (argv));
-                return;
-            }
-        }
-            
-        if (IS_SYMBOL (argv)) { 
-            if ((*c->c_methodSymbol) != class_defaultSymbol) {
-                (*c->c_methodSymbol) (x, GET_SYMBOL (argv));
-                return;
-            }
-        }
-            
-        if (IS_POINTER (argv)) {
-            if ((*c->c_methodPointer) != class_defaultPointer) {
-                (*c->c_methodPointer) (x, GET_POINTER (argv)); 
-                return;
-            }
-        }
+    //
+    if (IS_FLOAT (argv) && c->c_methodFloat != class_defaultFloat) {
+        (*c->c_methodFloat) (x, GET_FLOAT (argv)); return;
+    }
+        
+    if (IS_SYMBOL (argv) && c->c_methodSymbol != class_defaultSymbol) {
+        (*c->c_methodSymbol) (x, GET_SYMBOL (argv)); return;
+    }
+        
+    if (IS_POINTER (argv) && c->c_methodPointer != class_defaultPointer) {
+        (*c->c_methodPointer) (x, GET_POINTER (argv)); return;
+    }
+    //
     }
 
-    if ((*c->c_methodAnything) != class_defaultAnything) { (*c->c_methodAnything) (x, &s_list, argc, argv); }
-    else if (class_isBox (c)) { object_distributeAtomsOnInlets (cast_object (x), argc, argv); }
-    else { 
-        class_defaultAnything (x, &s_list, argc, argv); 
+    if (c->c_methodAnything != class_defaultAnything) { (*c->c_methodAnything) (x, &s_list, argc, argv); }
+    else {
+        if (class_isBox (c)) { object_distributeAtomsOnInlets (cast_object (x), argc, argv); }
+        else {
+            class_defaultAnything (x, &s_list, argc, argv);
+        }
     }
 }
 
@@ -414,6 +406,31 @@ int class_hasMethod (t_class *c, t_symbol *s)
 int class_hasOverrideBangMethod (t_class *c)
 {
     return (c->c_methodBang != class_defaultBang);
+}
+
+int class_hasOverridePointerMethod (t_class *c)
+{
+    return (c->c_methodPointer != class_defaultPointer);
+}
+
+int class_hasOverrideFloatMethod (t_class *c)
+{
+    return (c->c_methodFloat != class_defaultFloat);
+}
+
+int class_hasOverrideSymbolMethod (t_class *c)
+{
+    return (c->c_methodSymbol != class_defaultSymbol);
+}
+
+int class_hasOverrideListMethod (t_class *c)
+{
+    return (c->c_methodList != class_defaultList);
+}
+
+int class_hasOverrideAnythingMethod (t_class *c)
+{
+    return (c->c_methodAnything != class_defaultAnything);
 }
 
 // -----------------------------------------------------------------------------------------------------------
