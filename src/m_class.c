@@ -30,7 +30,7 @@ static void class_defaultAnything   (t_pd *, t_symbol *, int, t_atom *);
 
 static void class_floatForSignal (t_pd *x, t_float f)
 {
-    *(class_getFirstInletSignalValue (x)) = f;
+    *(class_getFirstInletSignal (x)) = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

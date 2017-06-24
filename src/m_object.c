@@ -303,19 +303,19 @@ void object_serializeWidth (t_object *x, t_buffer *b)
     if (x->te_width) { buffer_vAppend (b, "ssi;", sym___hash__X, sym_f, x->te_width); }
 }
 
-t_float *object_getValueOfSignalAtIndex (t_object *x, int m)
+t_float *object_getSignalAtIndex (t_object *x, int m)
 {
     t_inlet *i = NULL;
     
     if (class_hasFirstInletAsSignal (pd_class (x))) {
-        if (!m) { return class_getFirstInletSignalValue (cast_pd (x)); }
+        if (!m) { return class_getFirstInletSignal (cast_pd (x)); }
         m--;
     }
     
     for (i = x->te_inlets; i; i = inlet_getNext (i), m--) {
         if (inlet_isSignal (i)) { 
             if (m == 0) { 
-                return inlet_getValueOfSignal (i);
+                return inlet_getSignal (i);
             } 
         }
     }

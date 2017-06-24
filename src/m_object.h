@@ -44,7 +44,7 @@ int     object_isSignalOutlet               (t_object *x, int m);
 void    object_serializeWidth               (t_object *x, t_buffer *b);
 void    object_distributeAtomsOnInlets      (t_object *x, int argc, t_atom *argv);
 
-t_float *object_getValueOfSignalAtIndex     (t_object *x, int m);
+t_float *object_getSignalAtIndex            (t_object *x, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

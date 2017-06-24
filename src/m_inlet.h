@@ -54,7 +54,7 @@ static inline t_object *inlet_getOwner (t_inlet *x)
     return x->i_owner;
 }
 
-static inline t_float *inlet_getValueOfSignal (t_inlet *x)
+static inline t_float *inlet_getSignal (t_inlet *x)
 {
     return &x->i_un.i_signal;
 }
