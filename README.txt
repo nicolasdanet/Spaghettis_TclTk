@@ -12,7 +12,11 @@ Rationale:
 Disclaimer:
 
     This is an (AT YOUR OWN RISK) work-in-progress version.
-    
+
+Remark:
+
+    Apple Tk 8.5.9 crashes when entering the tilde character.
+
 Build:
 
     Download this repository.
