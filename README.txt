@@ -15,9 +15,9 @@ Disclaimer:
 
 Remark:
 
-    On latest macOS use ActiveTCL 8.6.6 instead of Apple Tk.
+    On latest macOS install ActiveTCL 8.6.6 first.
 
-    < https://www.activestate.com/activetcl >
+    < https://www.activestate.com/activetcl/downloads >
 
 Build:
 
