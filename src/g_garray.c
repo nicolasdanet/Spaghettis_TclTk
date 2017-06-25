@@ -473,7 +473,7 @@ static void garray_rename (t_garray *x, t_symbol *s)
 {
     pd_unbind (cast_pd (x), x->x_name);
     x->x_unexpandedName = s;
-    x->x_name = dollar_expandDollarSymbol (s, x->x_owner);
+    x->x_name = dollar_expandSymbol (s, x->x_owner);
     pd_bind (cast_pd (x), x->x_name);
     garray_redraw (x);
     garray_updateGraphName (x);
@@ -684,7 +684,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     //
     x->x_unexpandedName = name;
     pd_unbind (cast_pd (x), x->x_name);
-    x->x_name = dollar_expandDollarSymbol (name, x->x_owner);
+    x->x_name = dollar_expandSymbol (name, x->x_owner);
     pd_bind (cast_pd (x), x->x_name);
 
     garray_updateGraphName (x);
@@ -730,7 +730,7 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     x->x_scalar         = scalar_new (glist, templateIdentifier);
     x->x_owner          = glist;
     x->x_unexpandedName = name;
-    x->x_name           = dollar_expandDollarSymbol (name, glist);
+    x->x_name           = dollar_expandSymbol (name, glist);
     x->x_isUsedInDSP    = 0;
     x->x_saveWithParent = save;
     x->x_hideName       = hide;

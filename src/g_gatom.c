@@ -432,9 +432,9 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     x->a_unexpandedSend     = symSend;
     x->a_unexpandedReceive  = symReceive;
     x->a_unexpandedLabel    = symLabel;
-    x->a_send               = dollar_expandDollarSymbol (x->a_unexpandedSend, x->a_owner);
-    x->a_receive            = dollar_expandDollarSymbol (x->a_unexpandedReceive, x->a_owner);
-    x->a_label              = dollar_expandDollarSymbol (x->a_unexpandedLabel, x->a_owner);
+    x->a_send               = dollar_expandSymbol (x->a_unexpandedSend, x->a_owner);
+    x->a_receive            = dollar_expandSymbol (x->a_unexpandedReceive, x->a_owner);
+    x->a_label              = dollar_expandSymbol (x->a_unexpandedLabel, x->a_owner);
     
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
@@ -477,9 +477,9 @@ static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
     x->a_unexpandedLabel    = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
     x->a_unexpandedReceive  = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
     x->a_unexpandedSend     = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
-    x->a_send               = dollar_expandDollarSymbol (x->a_unexpandedSend, x->a_owner);
-    x->a_receive            = dollar_expandDollarSymbol (x->a_unexpandedReceive, x->a_owner);
-    x->a_label              = dollar_expandDollarSymbol (x->a_unexpandedLabel, x->a_owner);
+    x->a_send               = dollar_expandSymbol (x->a_unexpandedSend, x->a_owner);
+    x->a_receive            = dollar_expandSymbol (x->a_unexpandedReceive, x->a_owner);
+    x->a_label              = dollar_expandSymbol (x->a_unexpandedLabel, x->a_owner);
             
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
 

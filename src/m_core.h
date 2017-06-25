@@ -69,13 +69,13 @@ t_error     eval_fileByString                       (t_symbol *name, t_symbol *d
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *dollar_expandDollarSymbol              (t_symbol *s, t_glist *glist);
-t_symbol    *dollar_expandDollarSymbolWithArguments (t_symbol *s, t_glist *glist, int argc, t_atom *argv);
+t_symbol    *dollar_expandSymbol                    (t_symbol *s, t_glist *glist);
+t_symbol    *dollar_expandSymbolWithArguments       (t_symbol *s, t_glist *glist, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void dollar_expandDollarWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv);
+void dollar_expandWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -171,7 +171,7 @@ static void file_openHelp (const char *directory, const char *name)
 /* First consider the sibling files of an abstraction. */
 /* For an external search in its help directory if provided. */
 /* Then look for in the application "help" folder. */
-/* And last in the defined search path. */
+/* And last in the user search path. */
 
 void file_openHelpPatch (t_gobj *y)
 {

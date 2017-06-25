@@ -130,9 +130,7 @@ int atom_typesAreEquals (t_atom *a, t_atom *b)
 
 void atom_copyAtoms (t_atom *src, int m, t_atom *dest, int n)
 {
-    int size = PD_MIN (m, n);
-    
-    int i; for (i = 0; i < size; i++) { dest[i] = src[i]; }
+    int size = PD_MIN (m, n); int i; for (i = 0; i < size; i++) { dest[i] = src[i]; }
 }
 
 void atom_copyAtomsExpandedWithArguments (t_atom *src,
@@ -150,13 +148,14 @@ void atom_copyAtomsExpandedWithArguments (t_atom *src,
     //
     t_atom *a = src + i; t_atom *b = dest + i;
     
-    if (IS_DOLLAR (a)) { dollar_expandDollarWithArguments (a, b, glist, argc, argv); }
-    else if (IS_DOLLARSYMBOL (a)) {
-        t_symbol *s = dollar_expandDollarSymbolWithArguments (GET_SYMBOL (a), glist, argc, argv);
+    if (IS_DOLLARSYMBOL (a)) {
+        t_symbol *s = dollar_expandSymbolWithArguments (GET_SYMBOL (a), glist, argc, argv);
         if (s) { SET_SYMBOL (b, s); }
         else {
             SET_SYMBOL (b, GET_SYMBOL (a));
         }
+    } else if (IS_DOLLAR (a)) {
+        dollar_expandWithArguments (a, b, glist, argc, argv);
     } else {
         *b = *a;
     }
@@ -170,17 +169,16 @@ void atom_copyAtomsExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist *g
     
     if (glist) { e = glist_getEnvironment (glist); }
 
-    if (!e) { atom_copyAtomsExpandedWithArguments (src, m, dest, n, glist, 0, NULL); }
-    else {
-    //
-    atom_copyAtomsExpandedWithArguments (src,
-        m,
-        dest,
-        n,
-        glist,
-        environment_getNumberOfArguments (e),
-        environment_getArguments (e));
-    //
+    if (!e) {
+        atom_copyAtomsExpandedWithArguments (src, m, dest, n, glist, 0, NULL);
+    } else {
+        atom_copyAtomsExpandedWithArguments (src,
+            m,
+            dest,
+            n,
+            glist,
+            environment_getNumberOfArguments (e),
+            environment_getArguments (e));
     }
 }
 
@@ -201,10 +199,7 @@ t_error atom_withStringUnzeroed (t_atom *a, char *s, int size)
     
     buffer_free (t);
     
-    if (IS_NULL (a)) { return PD_ERROR; }
-    else {
-        return PD_ERROR_NONE;
-    }
+    if (IS_NULL (a)) { return PD_ERROR; } else { return PD_ERROR_NONE; }
 }
 
 t_error atom_toString (t_atom *a, char *dest, int size)
