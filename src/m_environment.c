@@ -51,7 +51,7 @@ void instance_environmentResetArguments (void)
 
 t_environment *instance_environmentFetchIfAny (void)
 {
-    static int dollarZero = 1000;       /* Static. */
+    static int dollarZero = 1000;       /* Shared. */
     
     if (instance_get()->pd_environment.env_directory != &s_) {
     //
