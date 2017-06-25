@@ -341,7 +341,7 @@ static t_pdinstance *instance_new()
 {
     t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
     
-    x->pd_stack.s_stack = (t_stackelement *)PD_MEMORY_GET (INSTANCE_STACK_SIZE * sizeof (t_stackelement));
+    x->pd_stack.s_stack = (t_stackelement *)PD_MEMORY_GET (INSTANCE_STACK * sizeof (t_stackelement));
     
     x->pd_environment.env_directory = &s_;
     x->pd_environment.env_fileName  = &s_;

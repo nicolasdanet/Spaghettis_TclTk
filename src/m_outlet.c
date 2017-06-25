@@ -15,30 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define OUTLET_MAXIMUM_RECURSION            1000
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static int outlet_stackCount;               /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static int outlet_hasStackOverflow (t_outlet *x)
-{
-    int k = (++outlet_stackCount >= OUTLET_MAXIMUM_RECURSION);
-    
-    if (k) { error_stackOverflow(); }
-    
-    return k;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 /* Assumed below that connection to a receiver is unique. */
 
 t_outconnect *outlet_addConnection (t_outlet *x, t_pd *receiver)
@@ -130,81 +106,79 @@ int outlet_getSignalIndex (t_outlet *x)
 
 void outlet_bang (t_outlet *x)
 {
-    if (!outlet_hasStackOverflow (x)) {
-
+    if (instance_overflowPush ()) { error_stackOverflow(); }
+    else {
         t_outconnect *oc = NULL;
-    
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_bang (oc->oc_receiver); }
     }
     
-    --outlet_stackCount;
+    instance_overflowPop ();
 }
 
 void outlet_pointer (t_outlet *x, t_gpointer *gp)
 {
-    if (!outlet_hasStackOverflow (x)) {
-
-        t_outconnect *oc = NULL;
-        
-        for (oc = x->o_connections; oc; oc = oc->oc_next) {
+    if (instance_overflowPush ()) { error_stackOverflow(); }
+    else {
+    //
+    t_outconnect *oc = NULL;
+    
+    for (oc = x->o_connections; oc; oc = oc->oc_next) {
+    //
+    t_gpointer gpointer; GPOINTER_INIT (&gpointer);
             
-            t_gpointer gpointer; GPOINTER_INIT (&gpointer);     /* Use a copy cached on the stack. */
-            
-            gpointer_setByCopy (&gpointer, gp); 
-                pd_pointer (oc->oc_receiver, &gpointer);
-            gpointer_unset (&gpointer);
-        }
+    gpointer_setByCopy (&gpointer, gp);
+        pd_pointer (oc->oc_receiver, &gpointer);    /* Use a copy cached on the stack. */
+    gpointer_unset (&gpointer);
+    //
+    }
+    //
     }
     
-    --outlet_stackCount;
+    instance_overflowPop ();
 }
 
 void outlet_float (t_outlet *x, t_float f)
 {
-    if (!outlet_hasStackOverflow (x)) {
-
+    if (instance_overflowPush ()) { error_stackOverflow(); }
+    else {
         t_outconnect *oc = NULL;
-        
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_float (oc->oc_receiver, f); }
     }
     
-    --outlet_stackCount;
+    instance_overflowPop ();
 }
 
 void outlet_symbol (t_outlet *x, t_symbol *s)
 {
-    if (!outlet_hasStackOverflow (x)) {
-
+    if (instance_overflowPush ()) { error_stackOverflow(); }
+    else {
         t_outconnect *oc = NULL;
-    
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_symbol (oc->oc_receiver, s); }
     }
     
-    --outlet_stackCount;
+    instance_overflowPop ();
 }
 
 void outlet_list (t_outlet *x, int argc, t_atom *argv)
 {
-    if (!outlet_hasStackOverflow (x)) {
-    
+    if (instance_overflowPush ()) { error_stackOverflow(); }
+    else {
         t_outconnect *oc = NULL;
-    
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_list (oc->oc_receiver, argc, argv); }
     }
     
-    --outlet_stackCount;
+    instance_overflowPop ();
 }
 
 void outlet_anything (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!outlet_hasStackOverflow (x)) {
-    
+    if (instance_overflowPush ()) { error_stackOverflow(); }
+    else {
         t_outconnect *oc = NULL;
-    
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_message (oc->oc_receiver, s, argc, argv); }
     }
     
-    --outlet_stackCount;
+    instance_overflowPop ();
 }
 
 // -----------------------------------------------------------------------------------------------------------

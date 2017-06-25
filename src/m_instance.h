@@ -59,6 +59,7 @@ struct _pdinstance {
     t_environment   pd_environment;
     t_clipboard     pd_clipboard;
     t_position      pd_locate;
+    int             pd_overflowCount;
     int             pd_dspState;
     int             pd_dspChainSize;
     int             pd_loadingExternal;
@@ -79,7 +80,8 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define INSTANCE_STACK_SIZE     1024                /* Arbitrary. */
+#define INSTANCE_STACK          1024    /* Arbitrary. */
+#define INSTANCE_OVERFLOW       1000    /* Arbitrary. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -227,6 +229,20 @@ static inline void instance_contextSetCurrent (t_glist *glist)
 static inline t_glist *instance_contextGetCurrent (void)
 {
     return cast_glist (instance_getBoundX());
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline int instance_overflowPush (void)
+{
+    return (++instance_get()->pd_overflowCount >= INSTANCE_OVERFLOW);
+}
+
+static inline void instance_overflowPop (void)
+{
+    instance_get()->pd_overflowCount--;
 }
 
 // -----------------------------------------------------------------------------------------------------------
