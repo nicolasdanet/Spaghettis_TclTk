@@ -15,8 +15,7 @@ Disclaimer:
 
 Remark:
 
-    Apple Tk 8.5.9 crashes when entering the tilde character.
-    Use ActiveTCL 8.6.6 instead.
+    On latest macOS use ActiveTCL 8.6.6 instead of Apple Tk.
 
     < https://www.activestate.com/activetcl >
 
