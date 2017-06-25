@@ -10,10 +10,10 @@ Make it simple, fast, and fully embeddable.
 Remark:
 
     This is an (AT YOUR OWN RISK) work-in-progress version.
-    On macOS install ActiveTCL 8.6.6 first < https://www.activestate.com/activetcl >
 
 Build:
 
+    On macOS install ActiveTCL 8.6.6 first.
     Download this repository.
     Open a terminal and go to the "build.sh" script.
     Run the "./build.sh" command.
