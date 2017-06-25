@@ -80,8 +80,8 @@ void object_distributeAtomsOnInlets (t_object *x, int argc, t_atom *argv)
         
         for (count = argc - 1, a = argv + 1; i && count--; a++, i = inlet_getNext (i)) {
         //
-        if (IS_POINTER (a))        { pd_pointer (cast_pd (i), GET_POINTER (a)); }
-        else if (IS_FLOAT (a))     { pd_float (cast_pd (i), GET_FLOAT (a)); }
+        if (IS_POINTER (a))         { pd_pointer (cast_pd (i), GET_POINTER (a)); }
+        else if (IS_FLOAT (a))      { pd_float (cast_pd (i), GET_FLOAT (a)); }
         else {
             pd_symbol (cast_pd (i), GET_SYMBOL (a));
         }
@@ -96,7 +96,7 @@ void object_distributeAtomsOnInlets (t_object *x, int argc, t_atom *argv)
         
     } else {
     
-        if (class_hasOverrideBangMethod (pd_class (x))) { 
+        if (class_hasOverrideBangMethod (pd_class (x))) {
             (*(class_getBangMethod (pd_class (x)))) (cast_pd (x)); 
         } else {
             (*(class_getAnythingMethod (pd_class (x)))) (cast_pd (x), &s_bang, 0, NULL);
@@ -107,7 +107,7 @@ void object_distributeAtomsOnInlets (t_object *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that the inlet list do NOT contains the first inlet. */
+/* Note that the linked list of inlets do NOT contains the first inlet. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -139,9 +139,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
 
     oc = outlet_addConnection (o, receiver);
     
-    if (outlet_isSignal (o)) {
-        dsp_update();
-    }
+    if (outlet_isSignal (o)) { dsp_update(); }
     //
     }
     
@@ -173,9 +171,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
 
     outlet_removeConnection (o, receiver);
     
-    if (outlet_isSignal (o)) {
-        dsp_update(); 
-    }
+    if (outlet_isSignal (o)) { dsp_update(); }
     //
     }
 }
@@ -314,9 +310,9 @@ t_float *object_getSignalAtIndex (t_object *x, int m)
     
     for (i = x->te_inlets; i; i = inlet_getNext (i), m--) {
         if (inlet_isSignal (i)) { 
-            if (m == 0) { 
+            if (m == 0) {
                 return inlet_getSignal (i);
-            } 
+            }
         }
     }
     

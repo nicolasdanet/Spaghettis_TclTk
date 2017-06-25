@@ -110,10 +110,12 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
     if (c->c_methodAnything != class_defaultAnything) { (*c->c_methodAnything) (x, &s_list, argc, argv); }
     else {
-        if (class_isBox (c)) { object_distributeAtomsOnInlets (cast_object (x), argc, argv); }
-        else {
-            class_defaultAnything (x, &s_list, argc, argv);
-        }
+    //
+    if (class_isBox (c)) { object_distributeAtomsOnInlets (cast_object (x), argc, argv); }
+    else {
+        class_defaultAnything (x, &s_list, argc, argv);
+    }
+    //
     }
 }
 
