@@ -35,6 +35,10 @@ static int outlet_hasStackOverflow (t_outlet *x)
     return k;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* Assumed below that connection to a receiver is unique. */
 
 t_outconnect *outlet_addConnection (t_outlet *x, t_pd *receiver)
@@ -74,7 +78,11 @@ void outlet_removeConnection (t_outlet *x, t_pd *receiver)
         }
     }
 }
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 int outlet_isSignal (t_outlet *x)
 {
     return (x->o_type == &s_signal);

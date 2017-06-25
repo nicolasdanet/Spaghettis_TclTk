@@ -38,7 +38,7 @@ t_inlet *inlet_new              (t_object *owner, t_pd *receiver, t_symbol *t, t
 void    inlet_free              (t_inlet *x);
 void    inlet_moveFirst         (t_inlet *x);
 int     inlet_isSignal          (t_inlet *x);
-int     inlet_getSignalIndex    (t_inlet *x);
+int     inlet_getIndexAsSignal  (t_inlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

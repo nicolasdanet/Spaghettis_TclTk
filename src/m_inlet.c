@@ -34,6 +34,10 @@ static void inlet_unexpected (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
     error_unexpected (class_getName (pd_class (x->i_owner)), s);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void inlet_add (t_inlet *x, t_object *owner)
 {
     t_inlet *i1 = NULL;
@@ -74,7 +78,7 @@ void inlet_moveFirst (t_inlet *x)
     }
 }
 
-int inlet_getSignalIndex (t_inlet *x)
+int inlet_getIndexAsSignal (t_inlet *x)
 {
     t_inlet *i = NULL;
     int n = 0;
@@ -82,7 +86,9 @@ int inlet_getSignalIndex (t_inlet *x)
     PD_ASSERT (inlet_isSignal (x));
     
     for (i = x->i_owner->te_inlets; i && i != x; i = i->i_next) { 
-        if (inlet_isSignal (i)) { n++; }
+        if (inlet_isSignal (i)) {
+            n++;
+        }
     }
     
     return n;
@@ -96,9 +102,9 @@ int inlet_getSignalIndex (t_inlet *x)
 
 static void inlet_bang (t_inlet *x)
 {
-    if (x->i_type == &s_bang)        { pd_message (x->i_receiver, x->i_un.i_method, 0, NULL); }
-    else if (x->i_type == NULL)      { pd_bang (x->i_receiver); }
-    else if (x->i_type == &s_list)   { inlet_list (x, &s_bang, 0, NULL); }
+    if (x->i_type == &s_bang)               { pd_message (x->i_receiver, x->i_un.i_method, 0, NULL); }
+    else if (x->i_type == NULL)             { pd_bang (x->i_receiver); }
+    else if (x->i_type == &s_list)          { inlet_list (x, &s_bang, 0, NULL); }
     else {
         inlet_unexpected (x, &s_bang, 0, NULL);
     }
@@ -110,10 +116,10 @@ static void inlet_float (t_inlet *x, t_float f)
     
     SET_FLOAT (&t, f);
     
-    if (x->i_type == &s_float)       { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
-    else if (x->i_type == &s_signal) { x->i_un.i_signal = f; }
-    else if (x->i_type == NULL)      { pd_float (x->i_receiver, f); }
-    else if (x->i_type == &s_list)   { inlet_list (x, &s_float, 1, &t); }
+    if (x->i_type == &s_float)              { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
+    else if (x->i_type == &s_signal)        { x->i_un.i_signal = f; }
+    else if (x->i_type == NULL)             { pd_float (x->i_receiver, f); }
+    else if (x->i_type == &s_list)          { inlet_list (x, &s_float, 1, &t); }
     else { 
         inlet_unexpected (x, &s_float, 0, NULL);
     }
@@ -125,9 +131,9 @@ static void inlet_symbol (t_inlet *x, t_symbol *s)
     
     SET_SYMBOL (&t, s);
     
-    if (x->i_type == &s_symbol)      { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
-    else if (x->i_type == NULL)      { pd_symbol (x->i_receiver, s); }
-    else if (x->i_type == &s_list)   { inlet_list (x, &s_symbol, 1, &t); }
+    if (x->i_type == &s_symbol)             { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
+    else if (x->i_type == NULL)             { pd_symbol (x->i_receiver, s); }
+    else if (x->i_type == &s_list)          { inlet_list (x, &s_symbol, 1, &t); }
     else { 
         inlet_unexpected (x, &s_symbol, 0, NULL);
     }
@@ -139,9 +145,9 @@ static void inlet_pointer (t_inlet *x, t_gpointer *gp)
     
     SET_POINTER (&t, gp);
     
-    if (x->i_type == &s_pointer)     { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
-    else if (x->i_type == NULL)      { pd_pointer (x->i_receiver, gp); }
-    else if (x->i_type == &s_list)   { inlet_list (x, &s_pointer, 1, &t); }
+    if (x->i_type == &s_pointer)            { pd_message (x->i_receiver, x->i_un.i_method, 1, &t); }
+    else if (x->i_type == NULL)             { pd_pointer (x->i_receiver, gp); }
+    else if (x->i_type == &s_list)          { inlet_list (x, &s_pointer, 1, &t); }
     else {
         inlet_unexpected (x, &s_pointer, 0, NULL);
     }
@@ -164,8 +170,8 @@ static void inlet_list (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
 
 static void inlet_anything (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->i_type == s)         { pd_message (x->i_receiver, x->i_un.i_method, argc, argv); }
-    else if (x->i_type == NULL) { pd_message (x->i_receiver, s, argc, argv); }
+    if (x->i_type == s)                     { pd_message (x->i_receiver, x->i_un.i_method, argc, argv); }
+    else if (x->i_type == NULL)             { pd_message (x->i_receiver, s, argc, argv); }
     else {
         inlet_unexpected (x, s, argc, argv);
     }
@@ -196,20 +202,6 @@ static void inlet_forPointer (t_inlet *x, t_gpointer *gp)
 
 /* Typed inlet that just store the incoming value. */
 
-t_inlet *inlet_newSignalWithDefault (t_object *owner, t_float f)
-{
-    t_inlet *x = inlet_new (owner, NULL, &s_signal, NULL);
-    
-    x->i_un.i_signal = f;
-    
-    return x;
-}
-
-t_inlet *inlet_newSignal (t_object *owner)
-{
-    return inlet_newSignalWithDefault (owner, (t_float)0.0);
-}
-
 t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
 {
     t_inlet *x = (t_inlet *)pd_new (floatinlet_class);
@@ -218,21 +210,6 @@ t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
     x->i_receiver       = NULL;
     x->i_type           = &s_float;
     x->i_un.i_float     = fp;
-    x->i_next           = NULL;
-    
-    inlet_add (x, owner);
-    
-    return x;
-}
-
-t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
-{
-    t_inlet *x = (t_inlet *)pd_new (pointerinlet_class);
-    
-    x->i_owner          = owner;
-    x->i_receiver       = NULL;
-    x->i_type           = &s_pointer;
-    x->i_un.i_pointer   = gp;
     x->i_next           = NULL;
     
     inlet_add (x, owner);
@@ -255,6 +232,38 @@ t_inlet *inlet_newSymbol (t_object *owner, t_symbol **sp)
     return x;
 }
 
+t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
+{
+    t_inlet *x = (t_inlet *)pd_new (pointerinlet_class);
+    
+    x->i_owner          = owner;
+    x->i_receiver       = NULL;
+    x->i_type           = &s_pointer;
+    x->i_un.i_pointer   = gp;
+    x->i_next           = NULL;
+    
+    inlet_add (x, owner);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_inlet *inlet_newSignalWithDefault (t_object *owner, t_float f)
+{
+    t_inlet *x = inlet_new (owner, NULL, &s_signal, NULL);
+    
+    x->i_un.i_signal = f;
+    
+    return x;
+}
+
+t_inlet *inlet_newSignal (t_object *owner)
+{
+    return inlet_newSignalWithDefault (owner, (t_float)0.0);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -272,7 +281,7 @@ t_inlet *inlet_new (t_object *owner, t_pd *receiver, t_symbol *type, t_symbol *m
     x->i_type     = type;
     x->i_next     = NULL;
     
-    if (type != &s_signal) { x->i_un.i_method = method; PD_ASSERT (!type || method); }
+    if (type != &s_signal) { x->i_un.i_method = method; PD_ASSERT (method || !type); }
     else {
         x->i_un.i_signal = (t_float)0.0; 
     }
