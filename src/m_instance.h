@@ -235,9 +235,9 @@ static inline t_glist *instance_contextGetCurrent (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline int instance_overflowPush (void)
+static inline t_error instance_overflowPush (void)
 {
-    return (++instance_get()->pd_overflowCount >= INSTANCE_OVERFLOW);
+    return (t_error)(++instance_get()->pd_overflowCount >= INSTANCE_OVERFLOW);
 }
 
 static inline void instance_overflowPop (void)
