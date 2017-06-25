@@ -1,6 +1,7 @@
 
 ###
 
+Move all static variables into instance.
 Make an object to freeze patches.
 Add a "snap to grid" feature.
 Clean and test all patches.
@@ -14,7 +15,6 @@ Add "encapsulate" feature.
 
 ###
 
-Move all static variables into instance.
 Profile and optimize code.
 Make an embeddable interpreter.
 Use generic containers (i.e linked list).
