@@ -5,19 +5,15 @@ Yet another fork of Pure Data < https://puredata.info/ >.
 
 < http://msp.ucsd.edu/ >
 
-Rationale:
-
-    Make it fast, consistent, and fully embeddable.
-
-Disclaimer:
-
-    This is an (AT YOUR OWN RISK) work-in-progress version.
+Make it simple, fast, and fully embeddable.
 
 Remark:
 
-    On latest macOS install ActiveTCL 8.6.6 first.
+    On macOS Sierra install ActiveTCL 8.6.6 first.
 
     < https://www.activestate.com/activetcl/downloads >
+
+    This is an (AT YOUR OWN RISK) work-in-progress version.
 
 Build:
 
