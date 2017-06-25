@@ -10,9 +10,7 @@ Make it simple, fast, and fully embeddable.
 Remark:
 
     This is an (AT YOUR OWN RISK) work-in-progress version.
-    On macOS Sierra install ActiveTCL 8.6.6 first.
-
-    < https://www.activestate.com/activetcl/downloads >
+    On macOS install ActiveTCL 8.6.6 first < https://www.activestate.com/activetcl >
 
 Build:
 
