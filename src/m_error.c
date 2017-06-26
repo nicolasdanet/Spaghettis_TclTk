@@ -19,18 +19,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_symbol *error__replaceIfEmpty (t_symbol *s)
-{
-    if (s == &s_) { return sym___question__; }
-    else { 
-        return s;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void error__error1 (const char *s)
 {
     error__error2 ("", s);
@@ -151,64 +139,46 @@ void error_failed (t_symbol *s)
 
 void error_noSuch (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: no such %s"), s1->s_name, s2->s_name);
 }
 
 void error_canNotFind (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: can't find %s"), s1->s_name, s2->s_name);
 }
 
 void error_unknownMethod (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: unknown method %s"), s1->s_name, s2->s_name);
 }
 
 void error_missingField (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: missing field %s"), s1->s_name, s2->s_name);
 }
 
 void error_unexpected (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: unexpected %s"), s1->s_name, s2->s_name);
 }
 
 void error_invalid (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: invalid %s"), s1->s_name, s2->s_name);
 }
 
 void error_mismatch (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: mismatch %s"), s1->s_name, s2->s_name);
 }
 
 void error_unspecified (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: unspecified %s"), s1->s_name, s2->s_name);
 }
 
 void error_undefined (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_error (PD_TRANSLATE ("%s: undefined %s"), s1->s_name, s2->s_name);
 }
 
@@ -242,8 +212,6 @@ void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2, int argc, t_at
 {
     char *t = atom_atomsToString (argc, argv);
     
-    s2 = error__replaceIfEmpty (s2);
-    
     if (s1 != sym_objectmaker) {
         post_error (PD_TRANSLATE ("%s: [ %s ] invalid argument(s) for method %s"), s1->s_name, t, s2->s_name);
     } else {
@@ -259,29 +227,21 @@ void error_invalidArgumentsForMethod (t_symbol *s1, t_symbol *s2, int argc, t_at
 
 void warning_invalid (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_warning (PD_TRANSLATE ("%s: invalid %s"), s1->s_name, s2->s_name);
 }
 
 void warning_badName (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_warning (PD_TRANSLATE ("%s: bad name %s"), s1->s_name, s2->s_name);
 }
 
 void warning_badType (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_warning (PD_TRANSLATE ("%s: bad type %s"), s1->s_name, s2->s_name);
 }
 
 void warning_unusedOption (t_symbol *s1, t_symbol *s2)
 {
-    s2 = error__replaceIfEmpty (s2);
-    
     post_warning (PD_TRANSLATE ("%s: unused option %s"), s1->s_name, s2->s_name);
 }
 
