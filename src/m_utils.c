@@ -39,7 +39,7 @@ t_error utils_version (char *dest, size_t size)
 
 t_unique utils_unique (void)
 {
-    static t_unique unique = 10000;     /* Static. */
+    static t_unique unique = 10000;     /* Shared. */
     
     unique++;
     
@@ -64,7 +64,7 @@ void utils_anythingToList (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_at
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *utils_getDefaultBindName (t_class *class, t_symbol *prefix)
+t_symbol *utils_getUnusedBindName (t_class *class, t_symbol *prefix)
 {
     int i = 1;
     char t[PD_STRING] = { 0 };

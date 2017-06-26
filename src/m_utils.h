@@ -19,7 +19,7 @@ t_unique    utils_unique                    (void);
 
 void        utils_anythingToList            (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_atom *argv);
 
-t_symbol    *utils_getDefaultBindName       (t_class *c, t_symbol *prefix);
+t_symbol    *utils_getUnusedBindName        (t_class *c, t_symbol *prefix);
 
 t_symbol    *utils_getFirstAtomOfObject     (t_object *x);
 t_symbol    *utils_getFirstAtomOfBuffer     (t_buffer *x);
