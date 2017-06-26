@@ -102,10 +102,22 @@ proc saveAs {target filename directory destroy} {
     
     if {![file isdirectory $directory]} { set directory $directoryNew }
     
-    set filename [tk_getSaveFile    -initialfile $filename \
-                                    -initialdir $directory \
-                                    -filetypes $::var(filesTypes) \
-                                    -defaultextension [lindex $::var(filesExtensions) 0]]
+    # On ActiveTCL 8.6.6 the initial file paramater seems broken.
+    
+    if {[tk windowingsystem] eq "aqua"} {
+    
+        set filename [tk_getSaveFile    -initialdir $directory \
+                                        -filetypes $::var(filesTypes) \
+                                        -defaultextension [lindex $::var(filesExtensions) 0]]
+    
+    } else {
+    
+        set filename [tk_getSaveFile    -initialfile $filename \
+                                        -initialdir $directory \
+                                        -filetypes $::var(filesTypes) \
+                                        -defaultextension [lindex $::var(filesExtensions) 0]]
+
+    }
                       
     if {$filename ne ""} {
         set basename  [file tail $filename]
