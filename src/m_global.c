@@ -15,47 +15,47 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void dsp_state                      (int n);
-void canvas_key                     (t_glist *, t_symbol *, int, t_atom *);
-void interface_quit                 (void);
-void font_withHostMeasured          (int, t_atom *);
-void audio_requireDialog            (void);
-void audio_fromDialog               (int, t_atom *);
-void midi_requireDialog             (void);
-void midi_fromDialog                (int, t_atom *);
-void canvas_quit                    (void);
-void preferences_save               (void);
+void dsp_state                  (int n);
+void canvas_key                 (t_glist *, t_symbol *, int, t_atom *);
+void interface_quit             (void);
+void font_withHostMeasured      (int, t_atom *);
+void audio_requireDialog        (void);
+void audio_fromDialog           (int, t_atom *);
+void midi_requireDialog         (void);
+void midi_fromDialog            (int, t_atom *);
+void canvas_quit                (void);
+void preferences_save           (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pd global_object;                 /* Static. */
+t_class *global_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void global_newPatch (void *x, t_symbol *name, t_symbol *directory)
+void global_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
     instance_patchNew (name, directory);
 }
 
-static void global_open (void *x, t_symbol *name, t_symbol *directory)
+static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
 {
     instance_patchOpen (name, directory);
 }
 
-static void global_dsp (void *x, t_symbol *s, int argc, t_atom *argv)
+static void global_dsp (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) { dsp_state ((int)atom_getFloatAtIndex (0, argc, argv)); }
 }
 
-static void global_key (void *x, t_symbol *s, int argc, t_atom *argv)
+static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_key (NULL, s, argc, argv);
 }
 
-static void global_quit (void *x)
+static void global_quit (void *dummy)
 {
     interface_quit();
 }
@@ -64,53 +64,58 @@ static void global_quit (void *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void global_font (void *x, t_symbol *s, int argc, t_atom *argv)
+static void global_font (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     font_withHostMeasured (argc, argv);
 }
 
-static void global_audioProperties (void *x)
+static void global_audioProperties (void *dummy)
 {
     audio_requireDialog();
 }
 
-static void global_audioDialog (void *x, t_symbol *s, int argc, t_atom *argv)
+static void global_audioDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     audio_fromDialog (argc, argv);
 }
 
-static void global_midiProperties (void *x)
+static void global_midiProperties (void *dummy)
 {
     midi_requireDialog();
 }
 
-static void global_midiDialog (void *x, t_symbol *s, int argc, t_atom *argv)
+static void global_midiDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     midi_fromDialog (argc, argv);
 }
 
-static void global_setSearchPath (void *x, t_symbol *s, int argc, t_atom *argv)
+static void global_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     instance_searchPathSetEncoded (argc, argv);
 }
 
-static void global_shouldQuit (void *x)
+static void global_shouldQuit (void *dummy)
 {
     canvas_quit();
 }
 
-static void global_savePreferences (void *x)
+static void global_savePreferences (void *dummy)
 {
     preferences_save();
 }
 
-static void global_default (void *x, t_symbol *s, int argc, t_atom *argv)
+static void global_default (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    error_unknownMethod (class_getName (pd_class (x)), s);
+    error_unknownMethod (sym_pd, s);
 }
 
-static void global_dummy (void *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void global_dummy (void *dummy)
 {
+    PD_ASSERT (dummy == &global_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -152,16 +157,16 @@ void global_setup (void)
 
     class_addAnything (c, (t_method)global_default);
     
-    global_object = c;
+    global_class = c;
         
-    pd_bind (&global_object, sym_pd);
+    pd_bind (&global_class, sym_pd);        /* Fake binding the abstract class. */
 }
 
 void global_destroy (void)
 {
-    pd_unbind (&global_object, sym_pd);
+    pd_unbind (&global_class, sym_pd);
     
-    class_free (global_object);
+    class_free (global_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
