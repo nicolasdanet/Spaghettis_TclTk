@@ -68,37 +68,9 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* Dollar symbol expansion (e.g. '$1-foo' to 'bar-foo'). */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *dollar_expandSymbol (t_symbol *s, t_glist *glist)
-{
-    if (strchr (s->s_name, '$') == NULL) { return s; }
-    else {
-    //
-    t_symbol *t = NULL;
-    t_environment *e = NULL;
-    
-    if (glist) { e = glist_getEnvironment (glist); }
-
-    if (!e) { t = dollar_expandSymbolWithArguments (s, glist, 0, NULL); }
-    else {
-    //
-    t = dollar_expandSymbolWithArguments (s,
-            glist,
-            environment_getNumberOfArguments (e),
-            environment_getArguments (e));
-    //
-    }
-    
-    return ((t != NULL) ? t : s);
-    //
-    }
-}
+/* Dollar symbol expansion (e.g. '$1-foo' to 'bar-foo'). */
 
 t_symbol *dollar_expandSymbolWithArguments (t_symbol *s, t_glist *glist, int argc, t_atom *argv)
 {
@@ -140,14 +112,36 @@ t_symbol *dollar_expandSymbolWithArguments (t_symbol *s, t_glist *glist, int arg
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
+t_symbol *dollar_expandSymbol (t_symbol *s, t_glist *glist)
+{
+    if (strchr (s->s_name, '$') == NULL) { return s; }
+    else {
+    //
+    t_symbol *t = NULL;
+    t_environment *e = NULL;
+    
+    if (glist) { e = glist_getEnvironment (glist); }
 
-/* Dollar number expansion (e.g. '$1' to 'foo'). */
+    if (!e) { t = dollar_expandSymbolWithArguments (s, glist, 0, NULL); }
+    else {
+    //
+    t = dollar_expandSymbolWithArguments (s,
+            glist,
+            environment_getNumberOfArguments (e),
+            environment_getArguments (e));
+    //
+    }
+    
+    return ((t != NULL) ? t : s);
+    //
+    }
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+/* Dollar number expansion (e.g. '$1' to 'foo'). */
 
 void dollar_expandWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv)
 {
