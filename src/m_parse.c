@@ -222,17 +222,9 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-char *buffer_toString (t_buffer *x)
+void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
 {
-    char *s = NULL;
-    int n, length = 0;
-    
-    buffer_toStringUnzeroed (x, &s, &length);
-    n = length + 1; 
-    s = PD_MEMORY_RESIZE (s, length, n);
-    s[n - 1] = 0;
-    
-    return s;
+    buffer_parseStringUnzeroed (x, s, size, BUFFER_PREALLOCATED_ATOMS);
 }
 
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller acquires string ownership. */
@@ -285,9 +277,17 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     *size = length;
 }
 
-void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
+char *buffer_toString (t_buffer *x)
 {
-    buffer_parseStringUnzeroed (x, s, size, BUFFER_PREALLOCATED_ATOMS);
+    char *s = NULL;
+    int n, length = 0;
+    
+    buffer_toStringUnzeroed (x, &s, &length);
+    n = length + 1; 
+    s = PD_MEMORY_RESIZE (s, length, n);
+    s[n - 1] = 0;
+    
+    return s;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
+		179873E31F01095100BB1B94 /* m_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 179873E21F01095100BB1B94 /* m_file.c */; };
 		17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */; };
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
 		370158391DFFD81B00F3FE0C /* d_delread.c in Sources */ = {isa = PBXBuildFile; fileRef = 370158381DFFD81B00F3FE0C /* d_delread.c */; };
@@ -390,6 +391,7 @@
 
 /* Begin PBXFileReference section */
 		177169881EFD1212003CD374 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
+		179873E21F01095100BB1B94 /* m_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_file.c; path = src/m_file.c; sourceTree = "<group>"; };
 		179E8D9C1EF91B4700FD3865 /* m_environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_environment.h; path = src/m_environment.h; sourceTree = "<group>"; };
 		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
@@ -1057,6 +1059,7 @@
 				378971D81C4F716700263434 /* m_atom.c */,
 				378971D91C4F716700263434 /* m_buffer.c */,
 				3709BE581D01726800D9B48C /* m_parse.c */,
+				179873E21F01095100BB1B94 /* m_file.c */,
 				3709BE1D1D016C9400D9B48C /* m_eval.c */,
 				378971DC1C4F716700263434 /* m_global.c */,
 				378971E51C4F716700263434 /* m_setup.c */,
@@ -1920,6 +1923,7 @@
 				3789722D1C4F716800263434 /* g_panel.c in Sources */,
 				3789722E1C4F716800263434 /* g_dial.c in Sources */,
 				3789722F1C4F716800263434 /* g_file.c in Sources */,
+				179873E31F01095100BB1B94 /* m_file.c in Sources */,
 				378972301C4F716800263434 /* g_box.c in Sources */,
 				378972311C4F716800263434 /* g_scalar.c in Sources */,
 				378972321C4F716800263434 /* g_template.c in Sources */,
