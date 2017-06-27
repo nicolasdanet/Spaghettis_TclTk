@@ -54,7 +54,7 @@ t_symbol *symbol_dash (void)
 
 t_symbol *symbol_emptyAsNil (t_symbol *s)
 {
-    if (s == &s_) { return symbol_nil(); }
+    if (s == &s_) { return sym_empty; }
     else { 
         return s;
     }
@@ -62,7 +62,7 @@ t_symbol *symbol_emptyAsNil (t_symbol *s)
 
 t_symbol *symbol_emptyAsDash (t_symbol *s)
 {
-    if (s == &s_) { return symbol_dash(); }
+    if (s == &s_) { return sym___dash__; }
     else { 
         return s;
     }
@@ -70,12 +70,12 @@ t_symbol *symbol_emptyAsDash (t_symbol *s)
 
 int symbol_isNil (t_symbol *s)
 {
-    return (s == symbol_nil());
+    return (s == sym_empty);
 }
 
 int symbol_isNilOrDash (t_symbol *s)
 {
-    return (s == symbol_nil() || s == symbol_dash());
+    return (s == sym_empty || s == sym___dash__);
 }
 
 // -----------------------------------------------------------------------------------------------------------
