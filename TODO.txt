@@ -3,20 +3,20 @@
 
 Move all static variables into instance.
 Make an object to freeze patches.
-Add a "snap to grid" feature.
+Add a "Snap To Grid" feature.
 Clean and test all patches.
 
 ###
 
 Improve the search path.
-Save recent files in preferences.
+Append recent files in preferences.
 Add unlimited undo mechanism.
-Add "encapsulate" feature.
+Add "Encapsulate" feature.
 
 ###
 
 Profile and optimize code.
-Forbid the audio to glitch.
+Forbid the audio to glitch!
 Make an embeddable interpreter.
 Use generic containers (i.e linked list).
 
