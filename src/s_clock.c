@@ -77,6 +77,54 @@ double clock_getRealTimeInSeconds (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_error clock_parseUnit (t_float f, t_symbol *s, t_float *n, int *isSamples)
+{
+    t_error err = (f <= 0.0);
+    
+    *n = 1; *isSamples = 0;
+    
+    if (!err) {
+    //
+    if (s == sym_permillisecond)    { *n = (t_float)(1.0 / f);     }
+    else if (s == sym_persecond)    { *n = (t_float)(1000.0 / f);  }
+    else if (s == sym_perminute)    { *n = (t_float)(60000.0 / f); }
+    else if (s == sym_millisecond)  { *n = f;                      }
+    else if (s == sym_second)       { *n = (t_float)(1000.0 * f);  }
+    else if (s == sym_minute)       { *n = (t_float)(60000.0 * f); }
+    else if (s == sym_sample)       { *n = f; *isSamples = 1;      }
+    else {
+        #if PD_WITH_LEGACY
+        
+            if (s == sym_perms)         { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
+            else if (s == sym_permsec)  { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
+            else if (s == sym_persec)   { err = clock_parseUnit (f, sym_persecond,      n, isSamples); }
+            else if (s == sym_permin)   { err = clock_parseUnit (f, sym_perminute,      n, isSamples); }
+            else if (s == sym_msec)     { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
+            else if (s == sym_ms)       { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
+            else if (s == sym_sec)      { err = clock_parseUnit (f, sym_second,         n, isSamples); }
+            else if (s == sym_min)      { err = clock_parseUnit (f, sym_minute,         n, isSamples); }
+            else if (s == sym_sam)      { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
+            else if (s == sym_samp)     { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
+            else {
+                err = PD_ERROR;
+            }
+        
+        #else
+        
+        err = PD_ERROR;
+        
+        #endif
+    }
+    //
+    }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_clock *clock_new (void *owner, t_method fn)
 {
     t_clock *x = (t_clock *)PD_MEMORY_GET (sizeof (t_clock));
@@ -162,6 +210,10 @@ static void clock_setUnit (t_clock *x, double unit, int isSamples)
     if (timeLeft >= 0.0) { clock_delay (x, timeLeft); }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void clock_setUnitAsSamples (t_clock *x, double samples) 
 {
     clock_setUnit (x, samples, 1);
@@ -182,54 +234,6 @@ t_error clock_setUnitParsed (t_clock *x, t_float f, t_symbol *unitName)
         else {
             clock_setUnitAsMilliseconds (x, n);
         }
-    }
-    
-    return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error clock_parseUnit (t_float f, t_symbol *s, t_float *n, int *isSamples)
-{
-    t_error err = (f <= 0.0);
-    
-    *n = 1; *isSamples = 0;
-    
-    if (!err) {
-    //
-    if (s == sym_permillisecond)    { *n = (t_float)(1.0 / f);     }
-    else if (s == sym_persecond)    { *n = (t_float)(1000.0 / f);  }
-    else if (s == sym_perminute)    { *n = (t_float)(60000.0 / f); }
-    else if (s == sym_millisecond)  { *n = f;                      }
-    else if (s == sym_second)       { *n = (t_float)(1000.0 * f);  }
-    else if (s == sym_minute)       { *n = (t_float)(60000.0 * f); }
-    else if (s == sym_sample)       { *n = f; *isSamples = 1;      }
-    else {
-        #if PD_WITH_LEGACY
-        
-            if (s == sym_perms)         { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
-            else if (s == sym_permsec)  { err = clock_parseUnit (f, sym_permillisecond, n, isSamples); }
-            else if (s == sym_persec)   { err = clock_parseUnit (f, sym_persecond,      n, isSamples); }
-            else if (s == sym_permin)   { err = clock_parseUnit (f, sym_perminute,      n, isSamples); }
-            else if (s == sym_msec)     { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
-            else if (s == sym_ms)       { err = clock_parseUnit (f, sym_millisecond,    n, isSamples); }
-            else if (s == sym_sec)      { err = clock_parseUnit (f, sym_second,         n, isSamples); }
-            else if (s == sym_min)      { err = clock_parseUnit (f, sym_minute,         n, isSamples); }
-            else if (s == sym_sam)      { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
-            else if (s == sym_samp)     { err = clock_parseUnit (f, sym_sample,         n, isSamples); }
-            else {
-                err = PD_ERROR;
-            }
-        
-        #else
-        
-        err = PD_ERROR;
-        
-        #endif
-    }
-    //
     }
     
     return err;
