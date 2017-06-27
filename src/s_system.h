@@ -191,31 +191,6 @@ void        midi_broadcast                          (int port, int hasOneByte, i
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        inmidi_noteOn                           (int port, int channel, int pitch, int velocity);
-void        inmidi_controlChange                    (int port, int channel, int control, int value);
-void        inmidi_programChange                    (int port, int channel, int value);
-void        inmidi_pitchBend                        (int port, int channel, int value);
-void        inmidi_afterTouch                       (int port, int channel, int value);
-void        inmidi_polyPressure                     (int port, int channel, int pitch, int value);
-void        inmidi_byte                             (int port, int byte);
-void        inmidi_sysex                            (int port, int byte);
-void        inmidi_realTime                         (int port, int byte);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        outmidi_noteOn                          (int channel, int pitch, int velocity);
-void        outmidi_controlChange                   (int channel, int control, int value);
-void        outmidi_programChange                   (int channel, int value);
-void        outmidi_pitchBend                       (int channel, int value);
-void        outmidi_afterTouch                      (int channel, int value);
-void        outmidi_polyPressure                    (int channel, int pitch, int value);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_error     audio_initialize                        (void);
 void        audio_release                           (void);
 int         audio_poll                              (void);
