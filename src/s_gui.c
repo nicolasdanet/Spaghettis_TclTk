@@ -104,7 +104,7 @@ void gui_release (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void sys_vGui (char *format, ...)
+void gui_vAdd (char *format, ...)
 {
     int bufferWasTooSmall = 1;
     
@@ -132,17 +132,17 @@ void sys_vGui (char *format, ...)
     } while (bufferWasTooSmall);
 }
 
-void sys_gui (char *s)
+void gui_add (char *s)
 {
-    sys_vGui ("%s", s);
+    gui_vAdd ("%s", s);
 }
 
-int sys_guiPollOrFlush (void)
+int gui_pollOrFlush (void)
 {
     return (monitor_nonBlocking() || gui_flushBufferAndQueue());
 }
 
-void sys_guiFlush (void)
+void gui_flush (void)
 {
     gui_flushBufferAndQueue();
 }

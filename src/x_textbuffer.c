@@ -26,7 +26,7 @@ void textbuffer_free (t_textbuffer *x)
     buffer_free (x->tb_buffer);
     
     if (x->tb_proxy) {
-        sys_vGui ("destroy %s\n", proxy_getTagAsString (x->tb_proxy));
+        gui_vAdd ("destroy %s\n", proxy_getTagAsString (x->tb_proxy));
         proxy_release (x->tb_proxy);
     }
 }
@@ -53,14 +53,14 @@ void textbuffer_click (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->tb_proxy) {
     
-        sys_vGui ("wm deiconify %s\n", proxy_getTagAsString (x->tb_proxy));
-        sys_vGui ("raise %s\n", proxy_getTagAsString (x->tb_proxy));
-        sys_vGui ("focus %s.text\n", proxy_getTagAsString (x->tb_proxy));
+        gui_vAdd ("wm deiconify %s\n", proxy_getTagAsString (x->tb_proxy));
+        gui_vAdd ("raise %s\n", proxy_getTagAsString (x->tb_proxy));
+        gui_vAdd ("focus %s.text\n", proxy_getTagAsString (x->tb_proxy));
         
     } else {
     
         x->tb_proxy = proxy_new (cast_pd (x));
-        sys_vGui ("::ui_text::show %s\n", proxy_getTagAsString (x->tb_proxy));
+        gui_vAdd ("::ui_text::show %s\n", proxy_getTagAsString (x->tb_proxy));
         textbuffer_update (x);
     }
 }
@@ -68,7 +68,7 @@ void textbuffer_click (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
 void textbuffer_close (t_textbuffer *x)
 {
     if (x->tb_proxy) {
-        sys_vGui ("::ui_text::release %s\n", proxy_getTagAsString (x->tb_proxy));
+        gui_vAdd ("::ui_text::release %s\n", proxy_getTagAsString (x->tb_proxy));
         proxy_release (x->tb_proxy); 
         x->tb_proxy = NULL;
     }    
@@ -85,7 +85,7 @@ void textbuffer_update (t_textbuffer *x)
     
     buffer_toStringUnzeroed (x->tb_buffer, &text, &size);
     
-    sys_vGui ("::ui_text::clear %s\n", tag);
+    gui_vAdd ("::ui_text::clear %s\n", tag);
     
     while (i < size) {                              /* Send it line by line. */
 
@@ -96,12 +96,12 @@ void textbuffer_update (t_textbuffer *x)
         
         /* < http://stackoverflow.com/a/13289324 > */
         
-        sys_vGui ("::ui_text::append %s {%.*s\n}\n", tag, (int)(newline - start), start);  // --
+        gui_vAdd ("::ui_text::append %s {%.*s\n}\n", tag, (int)(newline - start), start);  // --
         
         i = (int)(newline - text) + 1;
     }
     
-    sys_vGui ("::ui_text::dirty %s 0\n", tag);
+    gui_vAdd ("::ui_text::dirty %s 0\n", tag);
     
     PD_MEMORY_FREE (text);
     //

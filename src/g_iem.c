@@ -251,7 +251,7 @@ void iemgui_setLabel (void *x, t_symbol *s)
 
     if (glist_isOnScreen (iem->iem_owner)) {
     
-        sys_vGui ("%s.c itemconfigure %lxLABEL -text {%s}\n",    // --
+        gui_vAdd ("%s.c itemconfigure %lxLABEL -text {%s}\n",    // --
                         glist_getTagAsString (glist_getView (iem->iem_owner)),
                         x,
                         symbol_isNil (iem->iem_label) ? "" : iem->iem_label->s_name);
@@ -269,7 +269,7 @@ void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
     
     if (glist_isOnScreen (iem->iem_owner)) {
     
-        sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+        gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
                         glist_getTagAsString (glist_getView (iem->iem_owner)),
                         x,
                         glist_getPixelX (iem->iem_owner, cast_object (x)) + iem->iem_labelX,
@@ -291,7 +291,7 @@ void iemgui_setLabelFont (void *x, t_symbol *s, int argc, t_atom *argv)
     
     if (glist_isOnScreen (iem->iem_owner)) {
     
-        sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
+        gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
                         glist_getTagAsString (glist_getView (iem->iem_owner)), 
                         x,
                         font_getHostFontSize (iem->iem_fontSize));

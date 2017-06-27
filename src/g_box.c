@@ -47,7 +47,7 @@ static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, 
     
     if (create) {
     
-        sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
+        gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -dash %s"
                         " -tags %sBORDER\n",
                         glist_getTagAsString (view),
@@ -66,7 +66,7 @@ static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, 
                         
     } else {
     
-        sys_vGui ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d\n",
+        gui_vAdd ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d\n",
                         glist_getTagAsString (view),
                         tag,
                         a,
@@ -80,7 +80,7 @@ static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, 
                         a,
                         b);
                         
-        sys_vGui ("%s.c itemconfigure %sBORDER -dash %s\n",
+        gui_vAdd ("%s.c itemconfigure %sBORDER -dash %s\n",
                         glist_getTagAsString (view),
                         tag,
                         pattern);
@@ -98,7 +98,7 @@ static void box_drawMessage (t_glist *glist, t_object *o, char *tag, int create,
     
     if (create) {
     
-        sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
+        gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
                         " -tags %sBORDER\n",
                         glist_getTagAsString (view),
                         a,
@@ -119,7 +119,7 @@ static void box_drawMessage (t_glist *glist, t_object *o, char *tag, int create,
                     
     } else {
     
-        sys_vGui ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+        gui_vAdd ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
                         glist_getTagAsString (view),
                         tag,
                         a,
@@ -150,7 +150,7 @@ static void box_drawAtom (t_glist *glist, t_object *o, char *tag, int create, t_
     
     if (create) {
     
-        sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d %d %d"
+        gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d %d %d"
                         " -tags %sBORDER\n",
                         glist_getTagAsString (view),
                         a,
@@ -169,7 +169,7 @@ static void box_drawAtom (t_glist *glist, t_object *o, char *tag, int create, t_
                         
     } else {
     
-        sys_vGui ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d\n",
+        gui_vAdd ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d\n",
                         glist_getTagAsString (view),
                         tag,
                         a,
@@ -199,7 +199,7 @@ static void box_drawCommentBar (t_glist *glist, t_object *o, char *tag, int crea
     
     if (create) {
     
-        sys_vGui ("%s.c create line %d %d %d %d"
+        gui_vAdd ("%s.c create line %d %d %d %d"
                         " -tags [list %sBORDER COMMENTBAR]\n",      // --
                         glist_getTagAsString (glist),
                         c,
@@ -210,7 +210,7 @@ static void box_drawCommentBar (t_glist *glist, t_object *o, char *tag, int crea
                         
     } else {
     
-        sys_vGui ("%s.c coords %sBORDER %d %d %d %d\n",
+        gui_vAdd ("%s.c coords %sBORDER %d %d %d %d\n",
                         glist_getTagAsString (glist),
                         tag,
                         c,
@@ -240,7 +240,7 @@ static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, in
     
     if (create) {
     
-        sys_vGui ("%s.c create rectangle %d %d %d %d -tags %sINLET%d\n",
+        gui_vAdd ("%s.c create rectangle %d %d %d %d -tags %sINLET%d\n",
                         glist_getTagAsString (view),
                         offset,
                         b,
@@ -251,7 +251,7 @@ static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, in
                         
     } else {
     
-        sys_vGui ("%s.c coords %sINLET%d %d %d %d %d\n",
+        gui_vAdd ("%s.c coords %sINLET%d %d %d %d %d\n",
                         glist_getTagAsString (view),
                         tag,
                         i,
@@ -269,7 +269,7 @@ static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, in
     
     if (create) {
     
-        sys_vGui ("%s.c create rectangle %d %d %d %d -tags %sOUTLET%d\n",
+        gui_vAdd ("%s.c create rectangle %d %d %d %d -tags %sOUTLET%d\n",
                         glist_getTagAsString (view),
                         offset,
                         d - INLET_HEIGHT,
@@ -280,7 +280,7 @@ static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, in
                         
     } else {
     
-        sys_vGui ("%s.c coords %sOUTLET%d %d %d %d %d\n",
+        gui_vAdd ("%s.c coords %sOUTLET%d %d %d %d %d\n",
                         glist_getTagAsString (view),
                         tag,
                         i,
@@ -320,14 +320,14 @@ static void box_eraseBox (t_glist *glist, t_object *o, char *tag)
     int n = object_getNumberOfOutlets (o);
     int i;
     
-    for (i = 0; i < m; i++) { sys_vGui ("%s.c delete %sINLET%d\n",  glist_getTagAsString (view), tag, i); }
-    for (i = 0; i < n; i++) { sys_vGui ("%s.c delete %sOUTLET%d\n", glist_getTagAsString (view), tag, i); }
+    for (i = 0; i < m; i++) { gui_vAdd ("%s.c delete %sINLET%d\n",  glist_getTagAsString (view), tag, i); }
+    for (i = 0; i < n; i++) { gui_vAdd ("%s.c delete %sOUTLET%d\n", glist_getTagAsString (view), tag, i); }
     
-    sys_vGui ("%s.c delete %sBORDER\n", glist_getTagAsString (view), tag);
+    gui_vAdd ("%s.c delete %sBORDER\n", glist_getTagAsString (view), tag);
     //
     }
     
-    sys_vGui ("%s.c delete %s\n", glist_getTagAsString (view), tag);
+    gui_vAdd ("%s.c delete %s\n", glist_getTagAsString (view), tag);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -428,7 +428,7 @@ void box_update (t_box *x)      /* Update borders. */
 
 void box_displace (t_box *x, int deltaX, int deltaY)
 {
-    sys_vGui ("%s.c move %s %d %d\n", 
+    gui_vAdd ("%s.c move %s %d %d\n", 
                     glist_getTagAsString (glist_getView (x->box_owner)), 
                     x->box_tag, 
                     deltaX, 
@@ -439,7 +439,7 @@ void box_displace (t_box *x, int deltaX, int deltaY)
 
 void box_select (t_box *x, int isSelected)
 {
-    sys_vGui ("%s.c itemconfigure %s -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %s -fill #%06x\n",
                     glist_getTagAsString (glist_getView (x->box_owner)), 
                     x->box_tag, 
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
@@ -451,7 +451,7 @@ void box_activate (t_box *x, int isActivated)
     
     if (isActivated) {
 
-        sys_vGui ("::ui_box::setEditing %s %s 1\n", glist_getTagAsString (x->box_owner), x->box_tag);
+        gui_vAdd ("::ui_box::setEditing %s %s 1\n", glist_getTagAsString (x->box_owner), x->box_tag);
                         
         editor_boxSelect (glist_getEditor (x->box_owner), x);
         
@@ -462,7 +462,7 @@ void box_activate (t_box *x, int isActivated)
 
     } else {
 
-        sys_vGui ("::ui_box::setEditing %s {} 0\n", glist_getTagAsString (x->box_owner));   // --
+        gui_vAdd ("::ui_box::setEditing %s {} 0\n", glist_getTagAsString (x->box_owner));   // --
         
         editor_boxUnselect (glist_getEditor (x->box_owner), x);
         

@@ -32,7 +32,7 @@ typedef struct _savepanel {
 
 static void savepanel_symbol (t_savepanel *x, t_symbol *s)
 {
-    sys_vGui ("::ui_file::savePanel {%s} {%s}\n",   // --
+    gui_vAdd ("::ui_file::savePanel {%s} {%s}\n",   // --
                     proxy_getTagAsString (x->x_proxy),
                     s->s_name);
 }

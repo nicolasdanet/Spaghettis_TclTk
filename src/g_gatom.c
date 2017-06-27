@@ -275,7 +275,7 @@ static void gatom_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int 
     
     text_behaviorDisplaced (z, glist, deltaX, deltaY);
     
-    sys_vGui ("%s.c move %lxLABEL %d %d\n", 
+    gui_vAdd ("%s.c move %lxLABEL %d %d\n", 
                     glist_getTagAsString (glist_getView (glist)), 
                     x,
                     deltaX,
@@ -290,7 +290,7 @@ static void gatom_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     x->a_isSelected = isSelected;
     
-    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n", 
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n", 
                     glist_getTagAsString (glist_getView (glist)), 
                     x,
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
@@ -306,14 +306,14 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
     //
     t_glist *view = glist_getView (glist);
     
-    if (!isVisible) { sys_vGui ("%s.c delete %lxLABEL\n", glist_getTagAsString (view), x); }
+    if (!isVisible) { gui_vAdd ("%s.c delete %lxLABEL\n", glist_getTagAsString (view), x); }
     else { 
         int positionX = 0;
         int positionY = 0;
         
         gatom_getPostion (x, glist, &positionX, &positionY);
         
-        sys_vGui ("::ui_box::newText %s.c %lxLABEL %d %d {%s} %d #%06x\n",   // --
+        gui_vAdd ("::ui_box::newText %s.c %lxLABEL %d %d {%s} %d #%06x\n",   // --
                         glist_getTagAsString (view),
                         x,
                         positionX,

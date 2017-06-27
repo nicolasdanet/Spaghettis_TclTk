@@ -246,7 +246,7 @@ t_error priority_setPolicy (void)
     
     #if PD_WATCHDOG
     
-    if (!err) { sys_gui ("::watchdog\n"); }
+    if (!err) { gui_add ("::watchdog\n"); }
     
     #endif
 

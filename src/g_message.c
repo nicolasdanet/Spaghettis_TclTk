@@ -107,11 +107,11 @@ void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
     //
     t_box *text = box_fetch (x->m_owner, cast_object (x));
               
-    sys_vGui ("%s.c itemconfigure %sBORDER -width 5\n", 
+    gui_vAdd ("%s.c itemconfigure %sBORDER -width 5\n", 
                     glist_getTagAsString (x->m_owner), 
                     box_getTag (text));
     
-    sys_guiFlush(); clock_delay (x->m_clock, 120.0);        /* Force the GUI to update. */
+    gui_flush(); clock_delay (x->m_clock, 120.0);           /* Force the GUI to update. */
     //
     }
     //
@@ -190,7 +190,7 @@ static void message_taskTick (t_message *x)
     //
     t_box *text = box_fetch (x->m_owner, cast_object (x));
     
-    sys_vGui ("%s.c itemconfigure %sBORDER -width 1\n",
+    gui_vAdd ("%s.c itemconfigure %sBORDER -width 1\n",
                     glist_getTagAsString (x->m_owner),
                     box_getTag (text));
     //

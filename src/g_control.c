@@ -23,8 +23,8 @@ void canvas_copy (t_glist *glist)
         char *t = NULL;
         int s = 0;
         box_getSelection (editor_getSelectedBox (glist_getEditor (glist)), &t, &s);
-        sys_gui ("clipboard clear\n");
-        sys_vGui ("clipboard append {%.*s}\n", s, t);       /* < http://stackoverflow.com/a/13289324 > */
+        gui_add ("clipboard clear\n");
+        gui_vAdd ("clipboard append {%.*s}\n", s, t);       /* < http://stackoverflow.com/a/13289324 > */
         
     } else {
         clipboard_copy (instance_getClipboard(), glist);
@@ -59,7 +59,7 @@ void canvas_paste (t_glist *glist)
     if (glist_hasEditMode (glist)) { 
     //
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
-        sys_vGui ("::ui_bind::pasteText %s\n", glist_getTagAsString (glist));
+        gui_vAdd ("::ui_bind::pasteText %s\n", glist_getTagAsString (glist));
     } else {
         clipboard_paste (instance_getClipboard(), glist);
     }

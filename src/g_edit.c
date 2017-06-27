@@ -84,7 +84,7 @@ static void glist_updateCursor (t_glist *glist, int type)
     
     if (lastGlist != glist || lastType != type) {
     //
-    sys_vGui ("%s configure -cursor %s\n", glist_getTagAsString (glist), cursors[type]);
+    gui_vAdd ("%s configure -cursor %s\n", glist_getTagAsString (glist), cursors[type]);
     //
     }
     
@@ -286,7 +286,7 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     
     glist_deselectAll (glist);
     
-    sys_vGui ("::ui_menu::showPopup %s %d %d %d %d %d\n",
+    gui_vAdd ("::ui_menu::showPopup %s %d %d %d %d %d\n",
                     glist_getTagAsString (glist), 
                     a, 
                     b, 

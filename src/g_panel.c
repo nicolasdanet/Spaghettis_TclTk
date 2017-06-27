@@ -66,21 +66,21 @@ void panel_drawMove (t_panel *x, t_glist *glist)
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
 
-    sys_vGui ("%s.c coords %lxPANEL %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxPANEL %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a,
                     b,
                     a + x->x_panelWidth,
                     b + x->x_panelHeight);
-    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxBASE %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a, 
                     b,
                     a + x->x_gui.iem_width,
                     b + x->x_gui.iem_height);
-    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX,
@@ -94,7 +94,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
 
-    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxPANEL\n",
+    gui_vAdd ("%s.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxPANEL\n",
                     glist_getTagAsString (view),
                     a,
                     b,
@@ -103,7 +103,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui ("%s.c create rectangle %d %d %d %d -outline #%06x -tags %lxBASE\n",
+    gui_vAdd ("%s.c create rectangle %d %d %d %d -outline #%06x -tags %lxBASE\n",
                     glist_getTagAsString (view),
                     a,
                     b,
@@ -111,7 +111,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                     b + x->x_gui.iem_height,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui ("%s.c create text %d %d -text {%s}"   // --
+    gui_vAdd ("%s.c create text %d %d -text {%s}"   // --
                     " -anchor w"
                     " -font [::getFont %d]"         // --
                     " -fill #%06x"
@@ -129,7 +129,7 @@ void panel_drawSelect (t_panel* x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
@@ -139,13 +139,13 @@ void panel_drawErase (t_panel* x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c delete %lxBASE\n",
+    gui_vAdd ("%s.c delete %lxBASE\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxPANEL\n",
+    gui_vAdd ("%s.c delete %lxPANEL\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxLABEL\n",
+    gui_vAdd ("%s.c delete %lxLABEL\n",
                     glist_getTagAsString (view),
                     x);
 }
@@ -154,16 +154,16 @@ void panel_drawConfig (t_panel* x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxPANEL -fill #%06x -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxPANEL -fill #%06x -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),

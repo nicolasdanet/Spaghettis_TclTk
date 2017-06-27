@@ -466,7 +466,7 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
 
     if (p->p_fieldX || i == size - 1 || (int)here.p_pixelX != (int)next.p_pixelX) {
 
-        sys_vGui ("%s.c create rectangle %d %d %d %d"
+        gui_vAdd ("%s.c create rectangle %d %d %d %d"
                         " -width %d"
                         " -fill %s"
                         " -outline %s"
@@ -547,7 +547,7 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
         heapstring_addSprintf (t, " -width 1 -tags %lxPLOT\n", w);
     }
     
-    sys_gui (heapstring_getRaw (t));
+    gui_add (heapstring_getRaw (t));
 
     heapstring_free (t);
     //
@@ -598,7 +598,7 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
         heapstring_addSprintf (t, " -tags %lxPLOT\n", w);
     }
 
-    sys_gui (heapstring_getRaw (t));
+    gui_add (heapstring_getRaw (t));
     //
     } else {
         plot_behaviorVisibilityDrawPoint (x, p, relativeX, relativeY, glist, w, color);
@@ -662,7 +662,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     t_float relativeX = plot_getRelativeX (&p, baseX);
     t_float relativeY = plot_getRelativeY (&p, baseY);
     
-    if (!isVisible) { sys_vGui ("%s.c delete %lxPLOT\n", glist_getTagAsString (glist_getView (glist)), w); }
+    if (!isVisible) { gui_vAdd ("%s.c delete %lxPLOT\n", glist_getTagAsString (glist_getView (glist)), w); }
     else {
     //
     int t = (int)gpointer_getFloatByDescriptor (gp, &x->x_colorOutline);

@@ -74,7 +74,7 @@ static void bng_drawJob (t_gobj *z, t_glist *glist)
 {
     t_bng *x = (t_bng *)z;
     
-    sys_vGui ("%s.c itemconfigure %lxBUTTON -fill #%06x\n", 
+    gui_vAdd ("%s.c itemconfigure %lxBUTTON -fill #%06x\n", 
                     glist_getTagAsString (glist_getView (glist)),
                     x,
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
@@ -96,21 +96,21 @@ void bng_drawMove (t_bng *x, t_glist *glist)
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     
-    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxBASE %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a,
                     b,
                     a + x->x_gui.iem_width,
                     b + x->x_gui.iem_height);
-    sys_vGui ("%s.c coords %lxBUTTON %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxBUTTON %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + 1,
                     b + 1,
                     a + x->x_gui.iem_width - 1,
                     b + x->x_gui.iem_height - 1);
-    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX,
@@ -124,7 +124,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     
-    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
+    gui_vAdd ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                     glist_getTagAsString (view),
                     a,
                     b,
@@ -132,7 +132,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                     b + x->x_gui.iem_height,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui ("%s.c create oval %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON\n",
+    gui_vAdd ("%s.c create oval %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON\n",
                     glist_getTagAsString (view),
                     a + 1,
                     b + 1,
@@ -141,7 +141,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     COLOR_NORMAL,
                     x);
-    sys_vGui ("%s.c create text %d %d -text {%s}"       // --
+    gui_vAdd ("%s.c create text %d %d -text {%s}"       // --
                     " -anchor w"                                                 
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
@@ -159,15 +159,15 @@ void bng_drawSelect (t_bng *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-    sys_vGui ("%s.c itemconfigure %lxBUTTON -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBUTTON -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
                     glist_getTagAsString (view),
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -177,13 +177,13 @@ void bng_drawErase (t_bng *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c delete %lxBASE\n",
+    gui_vAdd ("%s.c delete %lxBASE\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxBUTTON\n",
+    gui_vAdd ("%s.c delete %lxBUTTON\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxLABEL\n",
+    gui_vAdd ("%s.c delete %lxLABEL\n",
                     glist_getTagAsString (view),
                     x);
 }
@@ -192,15 +192,15 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxBASE -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxBUTTON -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBUTTON -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),

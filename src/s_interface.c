@@ -248,9 +248,9 @@ static t_error interface_startGui (void)
     
     if (!err) {
         t_pathlist *l = instance_getSearchPath();
-        sys_vGui ("::initialize\n");
+        gui_vAdd ("::initialize\n");
         while (l) {
-            sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getPath (l));    // --
+            gui_vAdd ("lappend ::var(searchPath) {%s}\n", pathlist_getPath (l));    // --
             l = pathlist_getNext (l);
         }
     }

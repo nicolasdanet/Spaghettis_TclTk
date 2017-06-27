@@ -128,18 +128,18 @@ static int dial_hasKnob (t_dial *x, t_glist *glist)
         
         if (t) {
         
-            sys_vGui ("%s.c itemconfigure %lxARC -state normal\n",
+            gui_vAdd ("%s.c itemconfigure %lxARC -state normal\n",
                             glist_getTagAsString (view),
                             x);
-            sys_vGui ("%s.c itemconfigure %lxNEEDLE -state normal\n",
+            gui_vAdd ("%s.c itemconfigure %lxNEEDLE -state normal\n",
                             glist_getTagAsString (view),
                             x);
         } else {
             
-            sys_vGui ("%s.c itemconfigure %lxARC -state hidden\n",
+            gui_vAdd ("%s.c itemconfigure %lxARC -state hidden\n",
                             glist_getTagAsString (view),
                             x);
-            sys_vGui ("%s.c itemconfigure %lxNEEDLE -state hidden\n",
+            gui_vAdd ("%s.c itemconfigure %lxNEEDLE -state hidden\n",
                             glist_getTagAsString (view),
                             x);
         }
@@ -169,7 +169,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
     
     dial_setString (x);
 
-    sys_vGui ("%s.c coords %lxNEEDLE %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxNEEDLE %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     m,
@@ -177,7 +177,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
     
-    sys_vGui ("%s.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",   // --
+    gui_vAdd ("%s.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground,
@@ -205,26 +205,26 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
     int m = a + (w / 2);
     int n = b + ((x->x_gui.iem_height - h) / 2);
     
-    sys_vGui ("%s.c coords %lxARC %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxARC %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + 2 + (h / 2),
                     b + 2,
                     a - 2 + w - (h / 2),
                     b - 2 + x->x_gui.iem_height - h);
-    sys_vGui ("%s.c coords %lxNEEDLE %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxNEEDLE %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     m,
                     n,
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
-    sys_vGui ("%s.c coords %lxNUMBER %d %d\n",
+    gui_vAdd ("%s.c coords %lxNUMBER %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + 1 + (w / 2),
                     b + k);
-    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX,
@@ -245,7 +245,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     
     dial_setString (x);
     
-    sys_vGui ("%s.c create arc %d %d %d %d"
+    gui_vAdd ("%s.c create arc %d %d %d %d"
                     " -width 2"
                     " -start %d"
                     " -extent %d"
@@ -261,7 +261,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     -IEM_DIAL_ANGULAR_RANGE,
                     x->x_gui.iem_colorForeground,
                     x);
-    sys_vGui ("%s.c create line %d %d %d %d"
+    gui_vAdd ("%s.c create line %d %d %d %d"
                     " -width 2"
                     " -fill #%06x"
                     " -tags %lxNEEDLE\n",
@@ -272,7 +272,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2),
                     x->x_gui.iem_colorForeground,
                     x);
-    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
+    gui_vAdd ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor center"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
@@ -284,7 +284,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     x->x_digitsFontSize,
                     x->x_gui.iem_colorForeground,
                     x);
-    sys_vGui ("%s.c create text %d %d -text {%s}"    // --
+    gui_vAdd ("%s.c create text %d %d -text {%s}"    // --
                     " -anchor w"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
@@ -304,19 +304,19 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
-    sys_vGui ("%s.c itemconfigure %lxARC -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxARC -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
-    sys_vGui ("%s.c itemconfigure %lxNEEDLE -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxNEEDLE -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
-    sys_vGui ("%s.c itemconfigure %lxNUMBER -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxNUMBER -fill #%06x\n",
                     glist_getTagAsString (view),
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -326,16 +326,16 @@ static void dial_drawErase (t_dial *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
-    sys_vGui ("%s.c delete %lxARC\n",
+    gui_vAdd ("%s.c delete %lxARC\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxNEEDLE\n",
+    gui_vAdd ("%s.c delete %lxNEEDLE\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxLABEL\n",
+    gui_vAdd ("%s.c delete %lxLABEL\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxNUMBER\n",
+    gui_vAdd ("%s.c delete %lxNUMBER\n",
                     glist_getTagAsString (view),
                     x);
 }
@@ -344,20 +344,20 @@ static void dial_drawConfig (t_dial *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxARC -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxARC -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
-    sys_vGui ("%s.c itemconfigure %lxNEEDLE -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxNEEDLE -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
-    sys_vGui ("%s.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",             // --
+    gui_vAdd ("%s.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",             // --
                     glist_getTagAsString (view),
                     x, 
                     x->x_digitsFontSize,
                     x->x_gui.iem_colorForeground);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),

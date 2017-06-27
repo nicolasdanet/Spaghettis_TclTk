@@ -90,7 +90,7 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
             int c = rectangle_getBottomRightX (&r);
             int d = rectangle_getBottomRightY (&r);
             
-            sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
+            gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
                             " -width 0"
                             " -fill #%06x"
                             " -dash {2 4}"  // --
@@ -111,7 +111,7 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
         }
                 
     } else {
-        sys_vGui ("%s.c delete %lxHANDLE\n", glist_getTagAsString (view), x);
+        gui_vAdd ("%s.c delete %lxHANDLE\n", glist_getTagAsString (view), x);
     }
 }
 
@@ -281,7 +281,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
             int a = glist_valueToPixelX (glist, baseX);
             int b = glist_valueToPixelY (glist, baseY);
             
-            sys_vGui ("%s.c create rectangle %d %d %d %d"
+            gui_vAdd ("%s.c create rectangle %d %d %d %d"
                             " -outline #%06x"
                             " -tags %lxSCALAR\n",
                             glist_getTagAsString (view),
@@ -292,7 +292,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                             SCALAR_WRONG_COLOR,
                             x);
         } else {
-            sys_vGui ("%s.c delete %lxSCALAR\n", glist_getTagAsString (view), x);
+            gui_vAdd ("%s.c delete %lxSCALAR\n", glist_getTagAsString (view), x);
         }
         
     } else {

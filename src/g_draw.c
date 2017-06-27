@@ -25,7 +25,7 @@ void glist_updateTitle (t_glist *glist)
 {
     if (glist_hasWindow (glist)) {
 
-        sys_vGui ("::ui_patch::setTitle %s {%s} {%s} %d\n",  // --
+        gui_vAdd ("::ui_patch::setTitle %s {%s} {%s} %d\n",  // --
                         glist_getTagAsString (glist),
                         environment_getDirectoryAsString (glist_getEnvironment (glist)),
                         glist_getName (glist)->s_name,
@@ -54,7 +54,7 @@ void glist_updateRectangleOnParent (t_glist *glist)
     
     t_glist *view  = glist_getView (glist_getParent (glist));
     
-    sys_vGui ("%s.c itemconfigure %lxGRAPH -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxGRAPH -fill #%06x\n",
                     glist_getTagAsString (view),
                     glist,
                     color);
@@ -68,7 +68,7 @@ void glist_updateRectangle (t_glist *glist)
     //
     if (!glist_isArray (glist)) {
     //
-    sys_vGui ("%s.c delete RECTANGLE\n", glist_getTagAsString (glist));
+    gui_vAdd ("%s.c delete RECTANGLE\n", glist_getTagAsString (glist));
     
     glist_drawRectangle (glist);
     //
@@ -83,7 +83,7 @@ void glist_updateLasso (t_glist *glist, int a, int b)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c coords LASSO %d %d %d %d\n",
+    gui_vAdd ("%s.c coords LASSO %d %d %d %d\n",
                     glist_getTagAsString (glist),
                     drag_getStartX (editor_getDrag (glist_getEditor (glist))),
                     drag_getStartY (editor_getDrag (glist_getEditor (glist))),
@@ -101,7 +101,7 @@ void glist_updateTemporary (t_glist *glist, int a, int b, int c, int d)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c coords TEMPORARY %d %d %d %d\n",
+    gui_vAdd ("%s.c coords TEMPORARY %d %d %d %d\n",
                     glist_getTagAsString (glist),
                     a,
                     b,
@@ -119,7 +119,7 @@ void glist_updateLineSelected (t_glist *glist, int isSelected)
     //
     int color = (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     
-    sys_vGui ("%s.c itemconfigure %lxLINE -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxLINE -fill #%06x\n",
                     glist_getTagAsString (glist),
                     editor_getSelectedLineConnection (glist_getEditor (glist)), 
                     color);
@@ -133,7 +133,7 @@ void glist_updateLine (t_glist *glist, t_cord *c)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c coords %lxLINE %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxLINE %d %d %d %d\n",
                     glist_getTagAsString (glist),
                     cord_getConnection (c),
                     cord_getStartX (c),
@@ -141,7 +141,7 @@ void glist_updateLine (t_glist *glist, t_cord *c)
                     cord_getEndX (c),
                     cord_getEndY (c));
 
-    sys_vGui ("%s.c itemconfigure %lxLINE -width %d\n",
+    gui_vAdd ("%s.c itemconfigure %lxLINE -width %d\n",
                     glist_getTagAsString (glist),
                     cord_getConnection (c),
                     cord_isSignal (c) ? 2 : 1);
@@ -209,7 +209,7 @@ static void glist_drawArrayName (t_glist *glist)
         //
         if (pd_class (y) == garray_class) {
         //
-        sys_vGui ("%s.c create text %d %d -text {%s}"   // --
+        gui_vAdd ("%s.c create text %d %d -text {%s}"   // --
                         " -anchor nw"
                         " -font [::getFont %d]"         // --
                         " -fill #%06x"
@@ -249,7 +249,7 @@ void glist_drawRectangleOnParent (t_glist *glist)
         int c = rectangle_getBottomRightX (&r);
         int d = rectangle_getBottomRightY (&r);
         
-        sys_vGui ("%s.c create %s %d %d %d %d %d %d %d %d %d %d"
+        gui_vAdd ("%s.c create %s %d %d %d %d %d %d %d %d %d %d"
                         " -fill #%06x"
                         " -tags %lxGRAPH\n",
                         glist_getTagAsString (view),
@@ -282,7 +282,7 @@ void glist_drawRectangle (t_glist *glist)
     int c = rectangle_getBottomRightX (glist_getGraphGeometry (glist));
     int d = rectangle_getBottomRightY (glist_getGraphGeometry (glist));
     
-    sys_vGui ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
+    gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
                     " -dash {2 4}"  // --
                     " -fill #%06x"
                     " -tags RECTANGLE\n",
@@ -309,7 +309,7 @@ void glist_drawLasso (t_glist *glist, int a, int b)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c create rectangle %d %d %d %d -tags LASSO\n",
+    gui_vAdd ("%s.c create rectangle %d %d %d %d -tags LASSO\n",
                     glist_getTagAsString (glist),
                     a,
                     b,
@@ -327,7 +327,7 @@ void glist_drawTemporary (t_glist *glist, int a, int b, int isSignal)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
+    gui_vAdd ("%s.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
                     glist_getTagAsString (glist),
                     a,
                     b,
@@ -346,7 +346,7 @@ void glist_drawLine (t_glist *glist, t_cord *c)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c create line %d %d %d %d -width %d -tags %lxLINE\n",
+    gui_vAdd ("%s.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                     glist_getTagAsString (glist),
                     cord_getStartX (c),
                     cord_getStartY (c),
@@ -406,7 +406,7 @@ void glist_eraseRectangleOnParent (t_glist *glist)
 {
     t_glist *view = glist_getView (glist_getParent (glist));
     
-    sys_vGui ("%s.c delete %lxGRAPH\n", glist_getTagAsString (view), glist);
+    gui_vAdd ("%s.c delete %lxGRAPH\n", glist_getTagAsString (view), glist);
 }
 
 void glist_eraseLasso (t_glist *glist)
@@ -415,7 +415,7 @@ void glist_eraseLasso (t_glist *glist)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c delete LASSO\n", glist_getTagAsString (glist));
+    gui_vAdd ("%s.c delete LASSO\n", glist_getTagAsString (glist));
     //
     }
     //
@@ -428,7 +428,7 @@ void glist_eraseTemporary (t_glist *glist)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c delete TEMPORARY\n", glist_getTagAsString (glist));
+    gui_vAdd ("%s.c delete TEMPORARY\n", glist_getTagAsString (glist));
     //
     }
     //
@@ -441,7 +441,7 @@ void glist_eraseLine (t_glist *glist, t_cord *c)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c delete %lxLINE\n", glist_getTagAsString (glist), cord_getConnection (c));
+    gui_vAdd ("%s.c delete %lxLINE\n", glist_getTagAsString (glist), cord_getConnection (c));
     //
     }
     //
@@ -454,7 +454,7 @@ static void glist_eraseAllCommentBars (t_glist *glist)
     //
     if (glist_isOnScreen (glist)) {
     //
-    sys_vGui ("%s.c delete COMMENTBAR\n", glist_getTagAsString (glist));
+    gui_vAdd ("%s.c delete COMMENTBAR\n", glist_getTagAsString (glist));
     //
     }
     //
@@ -487,7 +487,7 @@ void glist_windowEdit (t_glist *glist, int isEditMode)
     }
     
     if (glist_isOnScreen (glist)) {
-        sys_vGui ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), hasEditMode);
+        gui_vAdd ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), hasEditMode);
     }
 }
 
@@ -497,7 +497,7 @@ void glist_windowEdit (t_glist *glist, int isEditMode)
 
 static void glist_windowMappedEraseContent (t_glist *glist)
 {
-    sys_vGui ("%s.c delete all\n", glist_getTagAsString (glist)); 
+    gui_vAdd ("%s.c delete all\n", glist_getTagAsString (glist)); 
     
     glist_setMapped (glist, 0);
 }
@@ -555,12 +555,12 @@ void glist_windowOpen (t_glist *glist)
     
     /* Create or deiconify the window. */
     
-    if (glist_hasWindow (glist)) { sys_vGui ("::bringToFront %s\n", glist_getTagAsString (glist)); }
+    if (glist_hasWindow (glist)) { gui_vAdd ("::bringToFront %s\n", glist_getTagAsString (glist)); }
     else {
     //
     t_rectangle *r = glist_getWindowGeometry (glist);
     
-    sys_vGui ("::ui_patch::create %s %d %d +%d+%d %d\n",    // --
+    gui_vAdd ("::ui_patch::create %s %d %d +%d+%d %d\n",    // --
                     glist_getTagAsString (glist),
                     rectangle_getWidth (r),
                     rectangle_getHeight (r),
@@ -581,7 +581,7 @@ void glist_windowClose (t_glist *glist)
     
     if (glist_isOnScreen (glist)) { glist_windowMapped (glist, 0); }
 
-    sys_vGui ("destroy %s\n", glist_getTagAsString (glist));
+    gui_vAdd ("destroy %s\n", glist_getTagAsString (glist));
     
     /* If it is a GOP opened in its own window it needs to be redrawn on parent. */
     /* Note that as above the window state influence the way it is rendered. */

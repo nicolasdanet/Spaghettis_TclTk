@@ -54,11 +54,11 @@ void toggle_drawJob (t_gobj *z, t_glist *glist)
     t_toggle *x   = (t_toggle *)z;
     t_glist *view = glist_getView (glist);
     
-    sys_vGui ("%s.c itemconfigure %lxCROSS1 -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxCROSS1 -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxCROSS2 -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxCROSS2 -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
@@ -82,36 +82,36 @@ void toggle_drawMove (t_toggle *x, t_glist *glist)
     
     int thickness = (int)((x->x_gui.iem_width / 30.0) + 0.5);
         
-    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxBASE %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a,
                     b,
                     a + x->x_gui.iem_width,
                     b + x->x_gui.iem_height);
-    sys_vGui ("%s.c itemconfigure %lxCROSS1 -width %d\n", 
+    gui_vAdd ("%s.c itemconfigure %lxCROSS1 -width %d\n", 
                     glist_getTagAsString (view), 
                     x, 
                     thickness);
-    sys_vGui ("%s.c itemconfigure %lxCROSS2 -width %d\n",
+    gui_vAdd ("%s.c itemconfigure %lxCROSS2 -width %d\n",
                     glist_getTagAsString (view),
                     x,
                     thickness);
-    sys_vGui ("%s.c coords %lxCROSS1 %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxCROSS1 %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + thickness + 1,
                     b + thickness + 1,
                     a + x->x_gui.iem_width  - thickness - 1,
                     b + x->x_gui.iem_height - thickness - 1);
-    sys_vGui ("%s.c coords %lxCROSS2 %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxCROSS2 %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + thickness + 1,
                     b + x->x_gui.iem_height - thickness - 1,
                     a + x->x_gui.iem_width  - thickness - 1,
                     b + thickness + 1);
-    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX, 
@@ -127,7 +127,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
     
     int thickness = (int)((x->x_gui.iem_width / 30.0) + 0.5);
 
-    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
+    gui_vAdd ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                     glist_getTagAsString (view),
                     a,
                     b,
@@ -135,7 +135,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                     b + x->x_gui.iem_height,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS1\n",
+    gui_vAdd ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS1\n",
                     glist_getTagAsString (view),
                     a + thickness + 1,
                     b + thickness + 1, 
@@ -144,7 +144,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                     thickness,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS2\n",
+    gui_vAdd ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS2\n",
                     glist_getTagAsString (view),
                     a + thickness + 1,
                     b + x->x_gui.iem_height - thickness - 1,
@@ -153,7 +153,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                     thickness,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui ("%s.c create text %d %d -text {%s}"   // --
+    gui_vAdd ("%s.c create text %d %d -text {%s}"   // --
                     " -anchor w"
                     " -font [::getFont %d]"         // --
                     " -fill #%06x"
@@ -171,11 +171,11 @@ void toggle_drawSelect (t_toggle *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -outline #%06x\n",
                     glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
                     glist_getTagAsString (view),
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -185,16 +185,16 @@ void toggle_drawErase (t_toggle *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c delete %lxBASE\n",
+    gui_vAdd ("%s.c delete %lxBASE\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxCROSS1\n",
+    gui_vAdd ("%s.c delete %lxCROSS1\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxCROSS2\n",
+    gui_vAdd ("%s.c delete %lxCROSS2\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxLABEL\n",
+    gui_vAdd ("%s.c delete %lxLABEL\n",
                     glist_getTagAsString (view),
                     x);
 }
@@ -203,19 +203,19 @@ void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxBASE -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxCROSS1 -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxCROSS1 -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxCROSS2 -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxCROSS2 -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),

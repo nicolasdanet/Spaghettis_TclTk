@@ -58,7 +58,7 @@ void stub_destroyWithKey (void *key)
     
     for (t = stub_list; t; t = t->x_next) {
         if (t->x_key == key) {
-            sys_vGui ("destroy " PD_GUISTUB "%lx\n", t);
+            gui_vAdd ("destroy " PD_GUISTUB "%lx\n", t);
             t->x_owner = NULL;
             stub_removeFromList (t);
             pd_free (cast_pd (t));
@@ -129,7 +129,7 @@ t_error stub_new (t_pd *owner, void *key, const char *cmd)
 
         PD_ASSERT (!err);
         
-        sys_gui (heapstring_getRaw (m));
+        gui_add (heapstring_getRaw (m));
         
         heapstring_free (m);
     }

@@ -85,7 +85,7 @@ void canvas_saveAs (t_glist *glist, t_float destroy)
 {
     t_glist *root = glist_getTop (glist);
     
-    sys_vGui ("::ui_file::saveAs %s {%s} {%s} %d\n",     // --
+    gui_vAdd ("::ui_file::saveAs %s {%s} {%s} %d\n",     // --
                     glist_getTagAsString (root),
                     environment_getFileNameAsString (glist_getEnvironment (root)),
                     environment_getDirectoryAsString (glist_getEnvironment (root)), 
@@ -115,7 +115,7 @@ void canvas_quit (void)
     //
     if (glist_isDirty (glist)) {
     //
-    sys_vGui ("::ui_confirm::checkClose %s"
+    gui_vAdd ("::ui_confirm::checkClose %s"
                     " { ::ui_interface::pdsend $top save %d  }"
                     " { ::ui_interface::pdsend $top close %d }"
                     " {}\n",    // --
@@ -154,7 +154,7 @@ void canvas_closeDestroyOrCheckIfNecessary (t_glist *glist)
 {
     if (glist_isDirty (glist)) {
             
-        sys_vGui ("::ui_confirm::checkClose %s"
+        gui_vAdd ("::ui_confirm::checkClose %s"
                         " { ::ui_interface::pdsend $top save %d  }"
                         " { ::ui_interface::pdsend $top close %d }"
                         " {}\n",    // --

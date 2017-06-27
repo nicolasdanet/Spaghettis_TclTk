@@ -43,7 +43,7 @@ static void openpanel_bang (t_openpanel *x)
 
 static void openpanel_symbol (t_openpanel *x, t_symbol *s)
 {
-    sys_vGui ("::ui_file::openPanel {%s} {%s}\n",   // --
+    gui_vAdd ("::ui_file::openPanel {%s} {%s}\n",   // --
                     proxy_getTagAsString (x->x_proxy),
                     s->s_name);
 }

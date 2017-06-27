@@ -162,8 +162,8 @@ static t_error midi_requireDialogInitialize (void)
     err |= string_add (t1, PD_STRING, "]\n");
     err |= string_add (t2, PD_STRING, "]\n");
     
-    sys_gui (t1);
-    sys_gui (t2);
+    gui_add (t1);
+    gui_add (t2);
     //
     }
     

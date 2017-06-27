@@ -24,7 +24,7 @@ void dsp_state (int n)
         instance_dspStop(); audio_stop();
     }
     
-    sys_vGui ("set ::var(isDsp) %d\n", instance_getDspState());     // --
+    gui_vAdd ("set ::var(isDsp) %d\n", instance_getDspState());     // --
     //
     }
 }

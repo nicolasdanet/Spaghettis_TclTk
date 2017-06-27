@@ -99,7 +99,7 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
     
     k += x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
         
-    sys_vGui ("%s.c coords %lxKNOB %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxKNOB %d %d %d %d\n",
                     glist_getTagAsString (view), 
                     x, 
                     a + 1,
@@ -115,7 +115,7 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
     int k = glist_getPixelX (glist, cast_object (x)) + slider_stepsToPixels (x->x_position);
     int b = glist_getPixelY (glist, cast_object (x));
         
-    sys_vGui ("%s.c coords %lxKNOB %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxKNOB %d %d %d %d\n",
                     glist_getTagAsString (view), 
                     x, 
                     k,
@@ -154,7 +154,7 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
 
-    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxBASE %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a, 
@@ -164,7 +164,7 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
                 
     slider_drawUpdate (x, glist);
     
-    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
                     glist_getTagAsString (view),
                     x, 
                     a + x->x_gui.iem_labelX,
@@ -178,7 +178,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
     
-    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
+    gui_vAdd ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                     glist_getTagAsString (view),
                     a, 
                     b,
@@ -190,7 +190,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     if (x->x_isVertical) {
     //
     int k = b + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
-    sys_vGui ("%s.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
+    gui_vAdd ("%s.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
                     glist_getTagAsString (view),
                     a + 1,
                     k, 
@@ -202,7 +202,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     } else {
     //
     int k = a + slider_stepsToPixels (x->x_position);
-    sys_vGui ("%s.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
+    gui_vAdd ("%s.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
                     glist_getTagAsString (view),
                     k,
                     b + 1, 
@@ -213,7 +213,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     //
     }
     
-    sys_vGui ("%s.c create text %d %d -text {%s}"   // --
+    gui_vAdd ("%s.c create text %d %d -text {%s}"   // --
                     " -anchor w"
                     " -font [::getFont %d]"         // --
                     " -fill #%06x"
@@ -231,12 +231,12 @@ static void slider_drawSelect (t_slider *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n", 
+    gui_vAdd ("%s.c itemconfigure %lxBASE -outline #%06x\n", 
                     glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
                 
-    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n", 
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n", 
                     glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -246,13 +246,13 @@ static void slider_drawErase (t_slider *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c delete %lxBASE\n",
+    gui_vAdd ("%s.c delete %lxBASE\n",
                     glist_getTagAsString (view), 
                     x);
-    sys_vGui ("%s.c delete %lxKNOB\n",
+    gui_vAdd ("%s.c delete %lxKNOB\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxLABEL\n",
+    gui_vAdd ("%s.c delete %lxLABEL\n",
                     glist_getTagAsString (view),
                     x);
 }
@@ -261,15 +261,15 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxBASE -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -fill #%06x\n",
                     glist_getTagAsString (view),
                     x, 
                     x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxKNOB -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxKNOB -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),

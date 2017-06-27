@@ -144,10 +144,14 @@ void        gui_addJob                              (void *owner, t_glist *glist
 void        gui_removeJob                           (void *owner);
 int         gui_flushJobs                           (void);
 
-int         sys_guiPollOrFlush                      (void);
-void        sys_guiFlush                            (void);
-void        sys_vGui                                (char *format, ...);
-void        sys_gui                                 (char *s);
+int         gui_pollOrFlush                         (void);
+void        gui_flush                               (void);
+void        gui_vAdd                                (char *format, ...);
+void        gui_add                                 (char *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void        interface_watchdog                      (void *dummy);
 t_error     interface_start                         (void);
@@ -171,8 +175,8 @@ int         audio_poll                              (void);
 t_error     audio_stop                              (void);
 t_error     audio_start                             (void);
 
-void        audio_setSampleRate                     (t_float sampleRate);
-void        audio_setBlockSize                      (int blockSize);
+void        audio_setSampleRate                     (t_float f);
+void        audio_setBlockSize                      (int n);
 
 t_float     audio_getSampleRate                     (void);
 int         audio_getBlockSize                      (void);
@@ -213,7 +217,7 @@ t_error     path_withDirectoryAndName               (char *dest,
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         loader_load                             (t_glist *canvas, t_symbol *name);
+int         loader_load                             (t_glist *glist, t_symbol *name);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

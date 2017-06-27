@@ -153,7 +153,7 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
     int b = glist_getPixelY (glist, cast_object (x));
     int h = vu_offsetWithStep (x, x->x_rms) + (x->x_thickness / 2);
     
-    sys_vGui ("%s.c coords %lxCOVER %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxCOVER %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + 1,
@@ -165,14 +165,14 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
     //
     h = vu_offsetWithStep (x, x->x_peak);
 
-    sys_vGui ("%s.c coords %lxPEAK %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxPEAK %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + 1,
                     b + h,
                     a + x->x_gui.iem_width,
                     b + h);
-    sys_vGui ("%s.c itemconfigure %lxPEAK -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxPEAK -fill #%06x\n",
                     glist_getTagAsString (view), 
                     x,
                     vu_colors[x->x_peak]);
@@ -181,14 +181,14 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
     //
     h = vu_offsetWithStep (x, IEM_VUMETER_STEPS - 1);
     
-    sys_vGui ("%s.c coords %lxPEAK %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxPEAK %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x, 
                     a + 1,
                     b + h,
                     a + x->x_gui.iem_width,
                     b + h);
-    sys_vGui ("%s.c itemconfigure %lxPEAK -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxPEAK -fill #%06x\n",
                     glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_colorBackground);
@@ -213,7 +213,7 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
     int b = glist_getPixelY (glist, cast_object (x));
     int h, i;
 
-    sys_vGui ("%s.c coords %lxBASE %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxBASE %d %d %d %d\n",
                     glist_getTagAsString (view),
                     x, 
                     a,
@@ -225,7 +225,7 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
     //
     h = vu_offsetWithStep (x, i);
     
-    sys_vGui ("%s.c coords %lxLED%d %d %d %d %d\n",
+    gui_vAdd ("%s.c coords %lxLED%d %d %d %d %d\n",
                     glist_getTagAsString (view), 
                     x,
                     i,
@@ -236,7 +236,7 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
     //
     }
 
-    sys_vGui ("%s.c coords %lxLABEL %d %d\n",
+    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
                     glist_getTagAsString (view),
                     x,
                     a + x->x_gui.iem_labelX,
@@ -253,7 +253,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     int b = glist_getPixelY (glist, cast_object (x));
     int h, i;
 
-    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
+    gui_vAdd ("%s.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                     glist_getTagAsString (view),
                     a,
                     b,
@@ -266,7 +266,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     //
     h = vu_offsetWithStep (x, i);
 
-    sys_vGui ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxLED%d\n",
+    gui_vAdd ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxLED%d\n",
                     glist_getTagAsString (view),
                     a + 3,
                     b + h + x->x_thickness,
@@ -281,7 +281,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
 
     h = vu_offsetWithStep (x, IEM_VUMETER_STEPS - 1);
     
-    sys_vGui ("%s.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxCOVER\n",
+    gui_vAdd ("%s.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxCOVER\n",
                     glist_getTagAsString (view),
                     a + 1, 
                     b + 1, 
@@ -290,7 +290,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxPEAK\n",
+    gui_vAdd ("%s.c create line %d %d %d %d -width %d -fill #%06x -tags %lxPEAK\n",
                     glist_getTagAsString (view),
                     a + 1,
                     b + h,
@@ -299,7 +299,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                     x->x_thickness - 1,
                     x->x_gui.iem_colorBackground,
                     x);
-    sys_vGui ("%s.c create text %d %d -text {%s} -anchor w"              // --
+    gui_vAdd ("%s.c create text %d %d -text {%s} -anchor w"              // --
                     " -font [::getFont %d] -fill #%06x -tags %lxLABEL\n",   // --
                     glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
@@ -316,11 +316,11 @@ static void vu_drawSelect (t_vu *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
-    sys_vGui ("%s.c itemconfigure %lxBASE -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-    sys_vGui ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -331,26 +331,26 @@ static void vu_drawErase (t_vu *x, t_glist *glist)
     t_glist *view = glist_getView (glist);
     int i;
     
-    sys_vGui ("%s.c delete %lxBASE\n",
+    gui_vAdd ("%s.c delete %lxBASE\n",
                     glist_getTagAsString (view),
                     x);
     
     for (i = 1; i <= IEM_VUMETER_STEPS; i++) {
     //
-    sys_vGui ("%s.c delete %lxLED%d\n",
+    gui_vAdd ("%s.c delete %lxLED%d\n",
                     glist_getTagAsString (view),
                     x,
                     i);
     //
     }
 
-    sys_vGui ("%s.c delete %lxPEAK\n",
+    gui_vAdd ("%s.c delete %lxPEAK\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxCOVER\n",
+    gui_vAdd ("%s.c delete %lxCOVER\n",
                     glist_getTagAsString (view),
                     x);
-    sys_vGui ("%s.c delete %lxLABEL\n",
+    gui_vAdd ("%s.c delete %lxLABEL\n",
                     glist_getTagAsString (view),
                     x);
 }
@@ -360,14 +360,14 @@ static void vu_drawConfig (t_vu *x, t_glist *glist)
     t_glist *view = glist_getView (glist);
     int i;
         
-    sys_vGui ("%s.c itemconfigure %lxBASE -fill #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxBASE -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground);
                 
     for (i = 1; i <= IEM_VUMETER_STEPS; i++) {
     //
-    sys_vGui ("%s.c itemconfigure %lxLED%d -width %d\n",
+    gui_vAdd ("%s.c itemconfigure %lxLED%d -width %d\n",
                     glist_getTagAsString (view),
                     x,
                     i,
@@ -375,19 +375,19 @@ static void vu_drawConfig (t_vu *x, t_glist *glist)
     //
     }
 
-    sys_vGui ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
+    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
                     font_getHostFontSize (x->x_gui.iem_fontSize),
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
                     symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name);
 
-    sys_vGui ("%s.c itemconfigure %lxCOVER -fill #%06x -outline #%06x\n",
+    gui_vAdd ("%s.c itemconfigure %lxCOVER -fill #%06x -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground,
                     x->x_gui.iem_colorBackground);
-    sys_vGui ("%s.c itemconfigure %lxPEAK -width %d\n",
+    gui_vAdd ("%s.c itemconfigure %lxPEAK -width %d\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_thickness - 1);

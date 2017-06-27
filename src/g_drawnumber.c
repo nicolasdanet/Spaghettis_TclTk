@@ -185,7 +185,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     t_glist *glist = gpointer_getView (gp);
     t_glist *view  = glist_getView (glist);
     
-    if (!isVisible) { sys_vGui ("%s.c delete %lxNUMBER\n", glist_getTagAsString (view), tag); }    // --
+    if (!isVisible) { gui_vAdd ("%s.c delete %lxNUMBER\n", glist_getTagAsString (view), tag); }    // --
     else {
     //
     char t[PD_STRING] = { 0 };
@@ -198,7 +198,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     
     drawnumber_getContents (x, gp, t, PD_STRING, NULL, NULL);
     
-    sys_vGui ("%s.c create text %d %d"
+    gui_vAdd ("%s.c create text %d %d"
                     " -anchor nw"
                     " -fill %s"
                     " -font [::getFont %d]"     // --
