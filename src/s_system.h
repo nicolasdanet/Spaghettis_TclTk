@@ -30,7 +30,7 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define SCHEDULER_AUDIO_NONE            0
+#define SCHEDULER_AUDIO_STOP            0
 #define SCHEDULER_AUDIO_POLL            1 
 
 // -----------------------------------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ t_systime   scheduler_getLogicalTime                (void);
 t_systime   scheduler_getLogicalTimeAfter           (double ms);
 double      scheduler_getMillisecondsSince          (t_systime systime);    
 double      scheduler_getUnitsSince                 (t_systime systime, double unit, int isSamples);
-void        scheduler_setAudioMode                  (int flag);
+void        scheduler_setAudioState                 (int state);
 void        scheduler_needToExit                    (void);
 void        scheduler_needToExitWithError           (void);
 

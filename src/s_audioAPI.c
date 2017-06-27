@@ -100,11 +100,11 @@ t_error audio_open (void)
     if (err) {
         error_canNotOpen (sym_audio);
         audio_state = 0;
-        scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+        scheduler_setAudioState (SCHEDULER_AUDIO_STOP);
         
     } else {
         audio_state = 1;
-        scheduler_setAudioMode (SCHEDULER_AUDIO_POLL);
+        scheduler_setAudioState (SCHEDULER_AUDIO_POLL);
     }
     
     return err;
@@ -114,7 +114,7 @@ void audio_close (void)
 {
     if (audio_isOpened()) { audio_closeNative(); }
     audio_state = 0;
-    scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+    scheduler_setAudioState (SCHEDULER_AUDIO_STOP);
 }
 
 // -----------------------------------------------------------------------------------------------------------

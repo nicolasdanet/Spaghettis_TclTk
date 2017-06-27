@@ -15,26 +15,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define SCHEDULER_RUN           0
-#define SCHEDULER_QUIT          1
-#define SCHEDULER_RESTART       2
-#define SCHEDULER_ERROR         3
+#define SCHEDULER_BLOCKING_LAPSE    1000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define SCHEDULER_BLOCKING_LAPSE        1000
+enum {
+    SCHEDULER_RUN       = 0,
+    SCHEDULER_QUIT      = 1,
+    SCHEDULER_RESTART   = 2,
+    SCHEDULER_ERROR     = 3
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static volatile sig_atomic_t scheduler_quit;            /* Static. */
+static volatile sig_atomic_t scheduler_quit;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      scheduler_audioMode;                    /* Static. */
+static int      scheduler_audioState;                   /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -76,9 +78,9 @@ double scheduler_getMillisecondsSince (t_systime systime)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void scheduler_setAudioMode (int flag)
+void scheduler_setAudioState (int state)
 {
-    scheduler_audioMode = flag;
+    scheduler_audioState = state;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -112,7 +114,7 @@ static void scheduler_pollStuck (int init)
     else {
         if (clock_getRealTimeInSeconds() - idleTime > 1.0) {
             audio_close();
-            scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+            scheduler_setAudioState (SCHEDULER_AUDIO_STOP);
             if (!scheduler_quit) { scheduler_quit = SCHEDULER_RESTART; }
             error_ioStuck();
         }
@@ -149,7 +151,7 @@ static void scheduler_mainLoop (void)
     //
     int timeForward, didSomething = 0;
 
-    if (scheduler_audioMode != SCHEDULER_AUDIO_NONE) {
+    if (scheduler_audioState != SCHEDULER_AUDIO_STOP) {
         if ((timeForward = audio_poll())) { idleCount = 0; }
         else {
             if (!(++idleCount % 31)) { 
@@ -194,13 +196,15 @@ static void scheduler_mainLoop (void)
 t_error scheduler_main (void)
 {
     midi_open();
-    instance_autoreleaseRun();
-    instance_pollingRun();
     
-    scheduler_mainLoop();
+        instance_autoreleaseRun();
+        instance_pollingRun();
     
-    instance_pollingStop();
-    instance_autoreleaseStop();
+            scheduler_mainLoop();
+    
+        instance_pollingStop();
+        instance_autoreleaseStop();
+    
     dsp_suspend();
     audio_close();
     midi_close();
