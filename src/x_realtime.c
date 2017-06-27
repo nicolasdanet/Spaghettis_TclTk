@@ -31,12 +31,12 @@ typedef struct _realtime {
 
 static void realtime_bang (t_realtime *x)
 {
-    x->x_time = sys_getRealTimeInSeconds();
+    x->x_time = clock_getRealTimeInSeconds();
 }
 
 static void realtime_elapsed (t_realtime *x)
 {
-    double elapsed = sys_getRealTimeInSeconds() - x->x_time;
+    double elapsed = clock_getRealTimeInSeconds() - x->x_time;
     
     outlet_float (x->x_outlet, (t_float)(SECONDS_TO_MILLISECONDS (elapsed)));
 }

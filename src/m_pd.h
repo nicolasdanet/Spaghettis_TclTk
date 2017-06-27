@@ -605,9 +605,9 @@ typedef t_int   *(*t_perform)   (t_int *);
 
 #if ( PD_WITH_DEBUG && PD_BUILDING_APPLICATION )
 
-#define PD_MEMORY_GET(n)                memory_getChecked (n, __FUNCTION__, __LINE__)
-#define PD_MEMORY_RESIZE(ptr, m, n)     memory_getResizeChecked ((ptr), (m), (n), __FUNCTION__, __LINE__)
-#define PD_MEMORY_FREE(ptr)             memory_freeChecked (ptr, __FUNCTION__, __LINE__);
+#define PD_MEMORY_GET(n)                leak_getMemoryChecked (n, __FUNCTION__, __LINE__)
+#define PD_MEMORY_RESIZE(ptr, m, n)     leak_getMemoryResizeChecked ((ptr), (m), (n), __FUNCTION__, __LINE__)
+#define PD_MEMORY_FREE(ptr)             leak_freeMemoryChecked (ptr, __FUNCTION__, __LINE__);
 
 #else
 

@@ -108,9 +108,9 @@ static void scheduler_pollStuck (int init)
 {
     static double idleTime;
     
-    if (init) { idleTime = sys_getRealTimeInSeconds(); }
+    if (init) { idleTime = clock_getRealTimeInSeconds(); }
     else {
-        if (sys_getRealTimeInSeconds() - idleTime > 1.0) {
+        if (clock_getRealTimeInSeconds() - idleTime > 1.0) {
             audio_close();
             scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
             if (!scheduler_quit) { scheduler_quit = SCHEDULER_RESTART; }
@@ -140,7 +140,7 @@ static void scheduler_mainLoop (void)
 {
     int idleCount = 0;
     
-    double realTimeAtStart = sys_getRealTimeInSeconds();
+    double realTimeAtStart = clock_getRealTimeInSeconds();
     t_systime logicalTimeAtStart = scheduler_getLogicalTime();
     
     midi_start();
@@ -158,7 +158,7 @@ static void scheduler_mainLoop (void)
         }
         
     } else {
-        double realLapse = SECONDS_TO_MILLISECONDS (sys_getRealTimeInSeconds() - realTimeAtStart);
+        double realLapse = SECONDS_TO_MILLISECONDS (clock_getRealTimeInSeconds() - realTimeAtStart);
         double logicalLapse = scheduler_getMillisecondsSince (logicalTimeAtStart);
 
         if (realLapse > logicalLapse) { timeForward = DACS_YES; }

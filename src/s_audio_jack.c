@@ -420,7 +420,7 @@ int audio_pollNative (void)
     //
     int i;
     t_sample *p = NULL;
-    double now = sys_getRealTimeInSeconds();
+    double now = clock_getRealTimeInSeconds();
     size_t size = INTERNAL_BLOCKSIZE * sizeof (t_sample);
     
     pthread_mutex_lock (&jack_mutex);
@@ -446,7 +446,7 @@ int audio_pollNative (void)
     
     pthread_mutex_unlock (&jack_mutex);
 
-    if (sys_getRealTimeInSeconds() - now > MILLISECONDS_TO_SECONDS (2)) { status = DACS_SLEPT; }
+    if (clock_getRealTimeInSeconds() - now > MILLISECONDS_TO_SECONDS (2)) { status = DACS_SLEPT; }
     //
     }
     

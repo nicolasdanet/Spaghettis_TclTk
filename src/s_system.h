@@ -240,18 +240,15 @@ void        preferences_load                        (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        *memory_getChecked                      (size_t n, const char *f, int line);
-void        *memory_getResizeChecked                (void *ptr,
+void        *leak_getMemoryChecked                  (size_t n, const char *f, int line);
+void        *leak_getMemoryResizeChecked            (void *ptr,
                                                         size_t oldSize,
                                                         size_t newSize,
                                                         const char *f,
                                                         int line);
 
-void        memory_freeChecked                      (void *ptr, const char *f, int line);
+void        leak_freeMemoryChecked                  (void *ptr, const char *f, int line);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 void        leak_initialize                         (void);
 void        leak_release                            (void);
@@ -280,7 +277,6 @@ int         logger_isRunning                        (void);
 // MARK: -
 
 void        sys_setSignalHandlers                   (void);
-double      sys_getRealTimeInSeconds                (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -138,7 +138,7 @@ static void leak_remove (t_int ptr, const char *f, const int line)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *memory_getChecked (size_t n, const char *f, int line)
+void *leak_getMemoryChecked (size_t n, const char *f, int line)
 {
     void *t = memory_get (n);
     
@@ -151,7 +151,7 @@ void *memory_getChecked (size_t n, const char *f, int line)
     return t;
 }
 
-void *memory_getResizeChecked (void *ptr, size_t oldSize, size_t newSize, const char *f, int line)
+void *leak_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, const char *f, int line)
 {
     void *t = memory_getResize (ptr, oldSize, newSize);
     
@@ -164,7 +164,7 @@ void *memory_getResizeChecked (void *ptr, size_t oldSize, size_t newSize, const 
     return t;
 }
 
-void memory_freeChecked (void *ptr, const char *f, int line)
+void leak_freeMemoryChecked (void *ptr, const char *f, int line)
 {
     if (ptr) {
     //
