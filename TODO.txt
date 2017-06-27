@@ -16,6 +16,7 @@ Add "encapsulate" feature.
 ###
 
 Profile and optimize code.
+Forbid the audio to glitch.
 Make an embeddable interpreter.
 Use generic containers (i.e linked list).
 
