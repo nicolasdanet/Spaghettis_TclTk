@@ -14,18 +14,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *main_directoryRoot;                        /* Static. */
-t_symbol    *main_directoryBin;                         /* Static. */
-t_symbol    *main_directoryTcl;                         /* Static. */
-t_symbol    *main_directoryHelp;                        /* Static. */
-t_symbol    *main_directorySupport;                     /* Static. */
+t_symbol    *main_directoryRoot;                        /* Shared. */
+t_symbol    *main_directoryBin;                         /* Shared. */
+t_symbol    *main_directoryTcl;                         /* Shared. */
+t_symbol    *main_directoryHelp;                        /* Shared. */
+t_symbol    *main_directorySupport;                     /* Shared. */
 
-int         main_portNumber;                            /* Static. */
+int         main_portNumber;                            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int  main_version;                               /* Static. */
+static int  main_version;                               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -311,7 +311,7 @@ int main_entry (int argc, char **argv)
     if (!err) {
     //
     midi_initialize();
-    setup_initialize();
+    setup_initialize();     /* Instance initialized here. */
     preferences_load();
     
     if (!(err |= interface_start())) {
