@@ -3,3 +3,5 @@
 
 Contributions are welcomed, but consider to contact < nicolas.danet@free.fr > first.
 
+Planned to be more beginners-friendly in the future.
+
