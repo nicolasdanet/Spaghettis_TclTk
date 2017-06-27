@@ -86,7 +86,7 @@ static void bng_drawJob (t_gobj *z, t_glist *glist)
 
 void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
-    defer_addJob ((void *)x, glist, bng_drawJob);
+    gui_addJob ((void *)x, glist, bng_drawJob);
 }
 
 void bng_drawMove (t_bng *x, t_glist *glist)

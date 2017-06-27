@@ -265,7 +265,7 @@ void radio_drawJob (t_gobj *z, t_glist *glist)
 
 void radio_drawUpdate (t_radio *x, t_glist *glist)
 {
-    defer_addJob ((void *)x, glist, radio_drawJob);
+    gui_addJob ((void *)x, glist, radio_drawJob);
 }
 
 void radio_drawMove (t_radio *x, t_glist *glist)

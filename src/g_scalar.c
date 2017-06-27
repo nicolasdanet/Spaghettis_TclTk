@@ -160,7 +160,7 @@ static void scalar_notifySelected (t_scalar *x,
 
 void scalar_redraw (t_scalar *x, t_glist *glist)
 {
-    defer_addJob ((void *)x, glist, scalar_drawJob);
+    gui_addJob ((void *)x, glist, scalar_drawJob);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -575,7 +575,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 
 static void scalar_free (t_scalar *x)
 {
-    defer_removeJob ((void *)x);
+    gui_removeJob ((void *)x);
     
     word_free (x->sc_element, scalar_getTemplate (x));
 

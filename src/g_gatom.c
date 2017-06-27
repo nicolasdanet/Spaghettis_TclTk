@@ -119,7 +119,7 @@ static void gatom_update (t_gatom *x)
 {
     buffer_clear (object_getBuffer (cast_object (x)));
     buffer_appendAtom (object_getBuffer (cast_object (x)), &x->a_atom);
-    defer_addJob ((void *)x, x->a_owner, gatom_drawJob);
+    gui_addJob ((void *)x, x->a_owner, gatom_drawJob);
 }
 
 static int gatom_isFloat (t_gatom *x)
@@ -325,7 +325,7 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
     //
     }
     
-    if (!isVisible) { defer_removeJob ((void *)z); }
+    if (!isVisible) { gui_removeJob ((void *)z); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -554,7 +554,7 @@ void gatom_makeObjectSymbol (t_glist *glist, t_symbol *dummy, int argc, t_atom *
 
 static void gatom_free (t_gatom *x)
 {
-    defer_removeJob ((void *)x);
+    gui_removeJob ((void *)x);
     
     if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
     

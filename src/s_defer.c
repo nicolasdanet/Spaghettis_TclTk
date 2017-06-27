@@ -31,7 +31,7 @@ static t_guiqueue   *defer_queue;       /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void defer_addJob (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job if not already there. */
+void gui_addJob (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job if not already there. */
 {
     t_guiqueue **qNext = NULL;
     t_guiqueue *q = NULL;
@@ -56,7 +56,7 @@ void defer_addJob (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job i
     *qNext = q;
 }
 
-void defer_removeJob (void *owner)
+void gui_removeJob (void *owner)
 {
     while (defer_queue && defer_queue->gq_p == owner) {
         t_guiqueue *first = defer_queue;
@@ -73,7 +73,7 @@ void defer_removeJob (void *owner)
     }
 }
 
-int defer_flushJobs (void)
+int gui_flushJobs (void)
 {
     if (defer_queue) {
     
@@ -96,6 +96,10 @@ int defer_flushJobs (void)
     
     return 0;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void defer_release (void)
 {

@@ -140,22 +140,14 @@ void        monitor_removePoller                    (int fd);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        defer_addJob                            (void *owner, t_glist *glist, t_drawfn f);
-void        defer_removeJob                         (void *owner);
-int         defer_flushJobs                         (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
+void        gui_addJob                              (void *owner, t_glist *glist, t_drawfn f);
+void        gui_removeJob                           (void *owner);
+int         gui_flushJobs                           (void);
 
 int         sys_guiPollOrFlush                      (void);
 void        sys_guiFlush                            (void);
 void        sys_vGui                                (char *format, ...);
 void        sys_gui                                 (char *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 void        interface_watchdog                      (void *dummy);
 t_error     interface_start                         (void);
