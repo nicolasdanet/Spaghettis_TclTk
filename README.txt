@@ -5,7 +5,7 @@ Yet another fork of Pure Data < https://puredata.info/ >.
 
 < http://msp.ucsd.edu/ >
 
-Make it simple, fast, and fully embeddable.
+An attempt to make it simple, fast, and fully embeddable.
 
 Remark:
 
