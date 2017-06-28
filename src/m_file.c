@@ -79,9 +79,15 @@ t_error buffer_fileWrite (t_buffer *x, t_symbol *name, t_symbol *directory)
 
     if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory->s_name, name->s_name))) {
     //
-    FILE *f = 0;
+    int f = file_openWrite (filepath);
+    
+    err = (f < 0);
+    
+    if (!err) {
+    //
+    FILE *file = fdopen (f, "w");
 
-    err = !(f = file_fopenWrite (filepath));
+    err = (file == NULL);
     
     if (!err) {
     //
@@ -90,13 +96,15 @@ t_error buffer_fileWrite (t_buffer *x, t_symbol *name, t_symbol *directory)
     
     buffer_toStringUnzeroed (x, &s, &size);
 
-    err |= (fwrite (s, size, 1, f) < 1);
-    err |= (fflush (f) != 0);
+    err |= (fwrite (s, size, 1, file) < 1);
+    err |= (fflush (file) != 0);
 
     PD_ASSERT (!err);
     PD_MEMORY_FREE (s);
-        
-    fclose (f);
+    
+    fclose (file);
+    //
+    }
     //
     }
     //

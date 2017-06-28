@@ -105,7 +105,7 @@ void properties_saveClose (void)
 {
     if (properties_saveFile) {
     //
-    fclose (properties_saveFile); properties_saveFile = NULL;
+    if (fclose (properties_saveFile) != 0) { PD_BUG; } properties_saveFile = NULL;
     //
     }
 }

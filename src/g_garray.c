@@ -544,7 +544,7 @@ static void garray_write (t_garray *x, t_symbol *name)
             }
         }
         
-        fclose (file);
+        if (fclose (file) != 0) { PD_BUG; }
     }
     //
     }
