@@ -412,12 +412,12 @@ void iemgui_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
         (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_ERASE);
     }
     
-    if (!isVisible) { gui_removeJob ((void *)z); }
+    if (!isVisible) { gui_jobRemove ((void *)z); }
 }
 
 void iemgui_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    gui_removeJob ((void *)z);
+    gui_jobRemove ((void *)z);
     
     glist_objectDeleteLines (glist, cast_object (z));
 }

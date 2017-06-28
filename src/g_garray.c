@@ -399,7 +399,7 @@ void garray_setSaveWithParent (t_garray *x, int savedWithParent)
 
 void garray_redraw (t_garray *x)
 {
-    gui_addJob ((void *)x, x->x_owner, garray_drawJob);
+    gui_jobAdd ((void *)x, x->x_owner, garray_drawJob);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -589,7 +589,7 @@ static void garray_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
     
     gobj_visibilityChanged (cast_gobj (x->x_scalar), glist, isVisible);
     
-    if (!isVisible) { gui_removeJob ((void *)z); }
+    if (!isVisible) { gui_jobRemove ((void *)z); }
 }
 
 static int garray_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
@@ -783,7 +783,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
 
 static void garray_free (t_garray *x)
 {
-    gui_removeJob ((void *)x);
+    gui_jobRemove ((void *)x);
     stub_destroyWithKey ((void *)x);
     instance_setBoundA (NULL);
     pd_unbind (cast_pd (x), x->x_name);

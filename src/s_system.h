@@ -140,9 +140,8 @@ void        monitor_removePoller                    (int fd);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        gui_addJob                              (void *owner, t_glist *glist, t_drawfn f);
-void        gui_removeJob                           (void *owner);
-int         gui_flushJobs                           (void);
+void        gui_jobAdd                              (void *owner, t_glist *glist, t_drawfn f);
+void        gui_jobRemove                           (void *owner);
 
 int         gui_pollOrFlush                         (void);
 void        gui_flush                               (void);

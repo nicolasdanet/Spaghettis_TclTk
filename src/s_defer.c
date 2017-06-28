@@ -25,13 +25,13 @@ typedef struct _guiqueue {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_guiqueue   *defer_queue;       /* Static. */
+static t_guiqueue *defer_queue;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void gui_addJob (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job if not already there. */
+void gui_jobAdd (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job if not already there. */
 {
     t_guiqueue **qNext = NULL;
     t_guiqueue *q = NULL;
@@ -56,12 +56,10 @@ void gui_addJob (void *owner, t_glist *glist, t_drawfn f)    /* Add draw job if 
     *qNext = q;
 }
 
-void gui_removeJob (void *owner)
+void gui_jobRemove (void *owner)
 {
     while (defer_queue && defer_queue->gq_p == owner) {
-        t_guiqueue *first = defer_queue;
-        defer_queue = defer_queue->gq_next;
-        PD_MEMORY_FREE (first);
+        t_guiqueue *first = defer_queue; defer_queue = defer_queue->gq_next; PD_MEMORY_FREE (first);
     }
     
     if (defer_queue) {
@@ -73,7 +71,11 @@ void gui_removeJob (void *owner)
     }
 }
 
-int gui_flushJobs (void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int gui_jobFlush (void)
 {
     if (defer_queue) {
     
@@ -99,16 +101,11 @@ int gui_flushJobs (void)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
-void defer_release (void)
+void gui_jobClear (void)
 {
     while (defer_queue) {
-    //
-    t_guiqueue *first = defer_queue;
-    defer_queue = defer_queue->gq_next;
-    PD_MEMORY_FREE (first);
-    //
+        t_guiqueue *first = defer_queue; defer_queue = defer_queue->gq_next; PD_MEMORY_FREE (first);
     }
 }
 

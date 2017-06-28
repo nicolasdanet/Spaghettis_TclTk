@@ -202,7 +202,7 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
 
 static void vu_drawUpdate (t_vu *x, t_glist *glist)
 {
-    gui_addJob ((void *)x, glist, vu_drawJob);
+    gui_jobAdd ((void *)x, glist, vu_drawJob);
 }
 
 static void vu_drawMove (t_vu *x, t_glist *glist)

@@ -30,7 +30,6 @@ void textdefine_initialize      (void);
 // MARK: -
 
 void cos_tilde_release          (void);
-void defer_release              (void);
 void drawnumber_release         (void);
 void drawpolygon_release        (void);
 void fft_release                (void);
@@ -921,7 +920,6 @@ void setup_release (void)
     fft_release();
     drawpolygon_release();
     drawnumber_release();
-    defer_release();
     cos_tilde_release();
     
     /* At last. */
