@@ -66,6 +66,11 @@ void outmidi_polyPressure (int channel, int pitch, int value)
     midi_broadcast ((t >> 4), 0, MIDI_POLYPRESSURE + (t & 0xf), pitch, value);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Not used for now. */
+
 #if 0
 
 void outmidi_clock (int port)
