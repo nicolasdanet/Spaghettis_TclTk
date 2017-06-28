@@ -453,7 +453,6 @@ struct _box;
 struct _class;
 struct _clock;
 struct _dspcontext;
-struct _fdpoll;
 struct _fielddescriptor;
 struct _garray;
 struct _gatom;
@@ -481,7 +480,6 @@ struct _widgetbehavior;
 #define t_class                     struct _class
 #define t_clock                     struct _clock
 #define t_dspcontext                struct _dspcontext
-#define t_fdpoll                    struct _fdpoll
 #define t_fielddescriptor           struct _fielddescriptor
 #define t_garray                    struct _garray
 #define t_gatom                     struct _gatom
