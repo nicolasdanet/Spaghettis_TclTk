@@ -16,21 +16,6 @@
 
 #if PD_WINDOWS
 
-static int file_openRawNative (const char *filepath, int oflag)
-{
-    char t[PD_STRING]           = { 0 };
-    wchar_t ucs2path[PD_STRING] = { 0 };
-    
-    if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
-    path_slashToBackslashIfNecessary (t);
-    u8_utf8toucs2 (ucs2path, PD_STRING, t, -1);
-
-    if (oflag & O_CREAT) { return _wopen (ucs2path, oflag | O_BINARY, _S_IREAD | _S_IWRITE); }
-    else {
-        return _wopen (ucs2path, oflag | O_BINARY);
-    }
-}
-
 static FILE *file_openModeNative (const char *filepath, const char *mode)
 {
     char t[PD_STRING]           = { 0 };
@@ -47,14 +32,6 @@ static FILE *file_openModeNative (const char *filepath, const char *mode)
 }
 
 #else
-
-static int file_openRawNative (const char *filepath, int oflag)
-{
-    if (oflag & O_CREAT) { return open (filepath, oflag, 0666); }
-    else {
-        return open (filepath, oflag);
-    } 
-}
 
 static FILE *file_openModeNative (const char *filepath, const char *mode)
 {
@@ -76,21 +53,49 @@ FILE *file_fopenWrite (const char *filepath)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int file_openRaw (const char *filepath, int oflag)
+#if PD_WINDOWS
+
+static int file_openRawNative (const char *filepath, int oflag)
 {
-    if (!(oflag & O_CREAT)) { if (!(path_isFileExistAsRegularFile (filepath))) { return -1; } }
+    char t[PD_STRING]           = { 0 };
+    wchar_t ucs2path[PD_STRING] = { 0 };
     
-    return file_openRawNative (filepath, oflag);
+    if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
+    path_slashToBackslashIfNecessary (t);
+    u8_utf8toucs2 (ucs2path, PD_STRING, t, -1);
+
+    if (oflag & O_CREAT) { return _wopen (ucs2path, oflag | O_BINARY, _S_IREAD | _S_IWRITE); }
+    else {
+        return _wopen (ucs2path, oflag | O_BINARY);
+    }
 }
+
+#else
+
+static int file_openRawNative (const char *filepath, int oflag)
+{
+    if (oflag & O_CREAT) { return open (filepath, oflag, 0666); }
+    else {
+        return open (filepath, oflag);
+    } 
+}
+
+#endif // PD_WINDOWS
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 int file_openWrite (const char *filepath)
 {
-    return file_openRaw (filepath, O_CREAT | O_TRUNC | O_WRONLY);
+    return file_openRawNative (filepath, O_CREAT | O_TRUNC | O_WRONLY);
 }
 
 int file_openRead (const char *filepath)
 {
-    return file_openRaw (filepath, O_RDONLY);
+    if (!(path_isFileExistAsRegularFile (filepath))) { return -1; }
+    
+    return file_openRawNative (filepath, O_RDONLY);
 }
 
 // -----------------------------------------------------------------------------------------------------------
