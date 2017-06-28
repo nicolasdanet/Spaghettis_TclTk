@@ -299,10 +299,10 @@ typedef struct _iterator {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_iterator  *iterator_new               (int argc, t_atom *argv);
+t_iterator  *iterator_new   (int argc, t_atom *argv);
 
-void        iterator_free               (t_iterator *x);
-int         iterator_next               (t_iterator *x, t_atom **a);
+void        iterator_free   (t_iterator *x);
+int         iterator_next   (t_iterator *x, t_atom **a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

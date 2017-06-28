@@ -13,11 +13,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-extern t_symbol *main_directoryHelp;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
@@ -108,117 +103,6 @@ t_error buffer_fileWrite (t_buffer *x, t_symbol *name, t_symbol *directory)
     }
     
     return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static int file_openWithDirectoryAndName (const char *directory, 
-    const char *name, 
-    const char *extension,
-    t_fileproperties *p)
-{
-    int f = -1;
-    t_error err = PD_ERROR_NONE;
-    
-    PD_ASSERT (directory);
-    PD_ASSERT (name);
-    
-    p->f_directory[0] = 0; p->f_name = p->f_directory;
-    
-    err |= path_withDirectoryAndName (p->f_directory, PD_STRING, directory, name);
-    err |= string_add (p->f_directory, PD_STRING, extension);
-
-    if (!err && (f = file_openRaw (p->f_directory, O_RDONLY)) >= 0) {
-    //
-    char *slash = NULL;
-
-    if ((slash = strrchr (p->f_directory, '/'))) { *slash = 0; p->f_name = slash + 1; }
-    
-    return f;  
-    //
-    }
-    
-    p->f_directory[0] = 0; p->f_name = p->f_directory;
-    
-    return -1;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-int file_openConsideringSearchPath (const char *directory, 
-    const char *name, 
-    const char *extension,
-    t_fileproperties *p)
-{
-    int f = file_openWithDirectoryAndName (directory, name, extension, p);
-    
-    if (f < 0) {
-        t_pathlist *l = instance_getSearchPath();
-        while (l) {
-            char *path = pathlist_getPath (l);
-            l = pathlist_getNext (l);
-            f = file_openWithDirectoryAndName (path, name, extension, p);
-            if (f >= 0) { break; }
-        }
-    }
-
-    return f;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void file_openHelp (const char *directory, const char *name)
-{
-    t_fileproperties p;
-    int f = -1;
-    
-    if (*directory != 0) { f = file_openWithDirectoryAndName (directory, name, PD_HELP, &p); }
-    
-    if (f < 0) { 
-        f = file_openConsideringSearchPath (main_directoryHelp->s_name, name, PD_HELP, &p); 
-    }
-    
-    if (f < 0) { error_canNotFind (gensym (name), sym_help); }
-    else {
-        t_symbol *s1 = gensym (fileproperties_getName (&p));
-        t_symbol *s2 = gensym (fileproperties_getDirectory (&p));
-        close (f); 
-        instance_patchOpen (s1, s2);
-    }
-}
-
-/* First consider the sibling files of an abstraction. */
-/* For an external search in its help directory if provided. */
-/* Then look for in the application "help" folder. */
-/* And last in the user search path. */
-
-void file_openHelpPatch (t_gobj *y)
-{
-    char *directory = NULL;
-    char name[PD_STRING] = { 0 };
-    t_error err = PD_ERROR_NONE;
-    
-    if (pd_class (y) == canvas_class && glist_isAbstraction (cast_glist (y))) {
-        if (!(err = (buffer_getSize (object_getBuffer (cast_object (y))) < 1))) {
-            atom_toString (buffer_getAtoms (object_getBuffer (cast_object (y))), name, PD_STRING);
-            directory = environment_getDirectoryAsString (glist_getEnvironment (cast_glist (y)));
-        }
-    
-    } else if (pd_class (y) == canvas_class && glist_isArray (cast_glist (y))) {
-        err = string_copy (name, PD_STRING, sym_garray->s_name);
-        directory = "";
-        
-    } else {
-        err = string_copy (name, PD_STRING, class_getHelpNameAsString (pd_class (y)));
-        directory = class_getHelpDirectoryAsString (pd_class (y));
-    }
-    
-    if (!err) { file_openHelp (directory, name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
