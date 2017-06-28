@@ -522,14 +522,19 @@ static void garray_read (t_garray *x, t_symbol *name)
 static void garray_write (t_garray *x, t_symbol *name)
 {
     char t[PD_STRING] = { 0 };
-    FILE *file = NULL;
     char *directory = environment_getDirectoryAsString (glist_getEnvironment (glist_getView (x->x_owner)));
-    
     t_error err = path_withDirectoryAndName (t, PD_STRING, directory, name->s_name);
-    
-    if (err || !(file = file_fopenWrite (t))) { error_canNotCreate (name); }
-    else {
 
+    if (!err) {
+    //
+    int f = file_openWrite (t);
+    
+    if (!(err |= (f < 0))) {
+    //
+    FILE *file = fdopen (f, "w");
+    
+    if (!(err |= (file == NULL))) {
+    
         int i;
         t_array *array = garray_getArray (x);
         
@@ -541,6 +546,12 @@ static void garray_write (t_garray *x, t_symbol *name)
         
         fclose (file);
     }
+    //
+    }
+    //
+    }
+    
+    if (err) { error_canNotCreate (name); }
 }
 
 void garray_resize (t_garray *x, t_float f)
