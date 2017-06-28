@@ -13,6 +13,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_symbol *main_directoryTcl;
 extern t_symbol *main_directoryBin;
 
@@ -26,19 +31,19 @@ extern int  main_portNumber;
 
 #if PD_WATCHDOG
 
-int         interface_watchdogPipe;             /* Static. */
+int         interface_watchdogPipe;             /* Shared. */
 
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int         interface_guiSocket;                /* Static. */
+int         interface_guiSocket;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_receiver  *interface_guiReceiver;             /* Static. */
+t_receiver  *interface_guiReceiver;             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -59,6 +64,19 @@ t_receiver  *interface_guiReceiver;             /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#if PD_WATCHDOG
+
+void interface_pollWatchdog (void *dummy)
+{
+    if (write (interface_watchdogPipe, "\n", 1) < 1) { PD_BUG; scheduler_needToExitWithError(); }
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_error interface_fetchGui (struct sockaddr_in *server)
 {
     struct hostent *host = gethostbyname (INTERFACE_LOCALHOST);
@@ -68,11 +86,13 @@ static t_error interface_fetchGui (struct sockaddr_in *server)
     PD_ASSERT (!err);
     
     if (host && !err) {
-        server->sin_family = AF_INET;
-        server->sin_port = htons ((unsigned short)main_portNumber);
-        memcpy ((char *)&server->sin_addr, (char *)host->h_addr, host->h_length);
-        err |= (connect (interface_guiSocket, (struct sockaddr *)server, sizeof (struct sockaddr_in)) != 0);
-        PD_ASSERT (!err);
+    //
+    server->sin_family = AF_INET;
+    server->sin_port = htons ((unsigned short)main_portNumber);
+    memcpy ((char *)&server->sin_addr, (char *)host->h_addr, host->h_length);
+    err |= (connect (interface_guiSocket, (struct sockaddr *)server, sizeof (struct sockaddr_in)) != 0);
+    PD_ASSERT (!err);
+    //
     }
     
     return err;
@@ -138,7 +158,7 @@ static t_error interface_launchGuiSpawnProcess (void)
     
     if (pid < 0)   { err = PD_ERROR; PD_BUG; }
     else if (!pid) {
-        if (!priority_privilegeRelinquish()) {                      /* Child lose setuid privileges. */
+        if (!priority_privilegeRelinquish()) {                  /* Child lose setuid privileges. */
             execl ("/bin/sh", "sh", "-c", command, NULL);
         }
         _exit (1);
@@ -260,6 +280,7 @@ static t_error interface_startGui (void)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_error interface_start (void)
 {
@@ -277,23 +298,14 @@ t_error interface_start (void)
     return err;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void interface_quit (void)
 {
     scheduler_needToExit();
 }
 
-#if PD_WATCHDOG
-
-void interface_watchdog (void *dummy)
-{
-    if (write (interface_watchdogPipe, "\n", 1) < 1) { PD_BUG; scheduler_needToExitWithError(); }
-}
-
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void interface_initialize (void)
 {
