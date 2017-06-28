@@ -1,7 +1,6 @@
 
 ###
 
-Move all static variables into instance.
 Make an object to freeze patches.
 Add a "Snap To Grid" feature.
 Clean and test all patches.
