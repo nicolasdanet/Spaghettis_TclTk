@@ -23,7 +23,7 @@ t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
 
     if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name))) {
     //
-    int f = file_openRaw (filepath, O_RDONLY);
+    int f = file_openRead (filepath);
     
     err = (f < 0);
     
@@ -81,7 +81,7 @@ t_error buffer_fileWrite (t_buffer *x, t_symbol *name, t_symbol *directory)
     //
     FILE *f = 0;
 
-    err = !(f = file_openWrite (filepath));
+    err = !(f = file_fopenWrite (filepath));
     
     if (!err) {
     //

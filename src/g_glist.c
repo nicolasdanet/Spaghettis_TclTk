@@ -410,7 +410,7 @@ int glist_fileOpen (t_glist *glist, char *name, char *extension, t_filepropertie
 {
     char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
     
-    int f = file_openConsideringSearchPath (directory, name, extension, p);
+    int f = file_openReadConsideringSearchPath (directory, name, extension, p);
         
     return f;
 }

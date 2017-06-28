@@ -527,7 +527,7 @@ static void garray_write (t_garray *x, t_symbol *name)
     
     t_error err = path_withDirectoryAndName (t, PD_STRING, directory, name->s_name);
     
-    if (err || !(file = file_openWrite (t))) { error_canNotCreate (name); }
+    if (err || !(file = file_fopenWrite (t))) { error_canNotCreate (name); }
     else {
 
         int i;

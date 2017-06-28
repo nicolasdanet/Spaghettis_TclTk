@@ -67,14 +67,7 @@ static FILE *file_openModeNative (const char *filepath, const char *mode)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int file_openRaw (const char *filepath, int oflag)
-{
-    if (!(oflag & O_CREAT)) { if (!(path_isFileExistAsRegularFile (filepath))) { return -1; } }
-    
-    return file_openRawNative (filepath, oflag);
-}
-
-FILE *file_openWrite (const char *filepath)
+FILE *file_fopenWrite (const char *filepath)
 {
     return file_openModeNative (filepath, "w");
 }
@@ -83,7 +76,28 @@ FILE *file_openWrite (const char *filepath)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int file_openWithDirectoryAndName (const char *directory, 
+int file_openRaw (const char *filepath, int oflag)
+{
+    if (!(oflag & O_CREAT)) { if (!(path_isFileExistAsRegularFile (filepath))) { return -1; } }
+    
+    return file_openRawNative (filepath, oflag);
+}
+
+int file_openWrite (const char *filepath)
+{
+    return file_openRaw (filepath, O_CREAT | O_TRUNC | O_WRONLY);
+}
+
+int file_openRead (const char *filepath)
+{
+    return file_openRaw (filepath, O_RDONLY);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int file_openReadWithDirectoryAndName (const char *directory,
     const char *name, 
     const char *extension,
     t_fileproperties *p)
@@ -99,7 +113,7 @@ int file_openWithDirectoryAndName (const char *directory,
     err |= path_withDirectoryAndName (p->f_directory, PD_STRING, directory, name);
     err |= string_add (p->f_directory, PD_STRING, extension);
 
-    if (!err && (f = file_openRaw (p->f_directory, O_RDONLY)) >= 0) {
+    if (!err && (f = file_openRead (p->f_directory)) >= 0) {
     //
     char *slash = NULL;
 
@@ -114,22 +128,19 @@ int file_openWithDirectoryAndName (const char *directory,
     return -1;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-int file_openConsideringSearchPath (const char *directory, 
+int file_openReadConsideringSearchPath (const char *directory, 
     const char *name, 
     const char *extension,
     t_fileproperties *p)
 {
-    int f = file_openWithDirectoryAndName (directory, name, extension, p);
+    int f = file_openReadWithDirectoryAndName (directory, name, extension, p);
     
     if (f < 0) {
         t_pathlist *l = instance_getSearchPath();
         while (l) {
             char *path = pathlist_getPath (l);
             l = pathlist_getNext (l);
-            f = file_openWithDirectoryAndName (path, name, extension, p);
+            f = file_openReadWithDirectoryAndName (path, name, extension, p);
             if (f >= 0) { break; }
         }
     }

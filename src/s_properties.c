@@ -47,7 +47,7 @@ t_error properties_loadBegin (void)
     //
     int f;
     
-    err |= ((f = file_openRaw (filepath, O_RDONLY)) < 0);
+    err |= ((f = file_openRead (filepath)) < 0);
     
     if (!err) {
     //
@@ -96,7 +96,7 @@ t_error properties_saveBegin (void)
     err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", main_directorySupport->s_name);
     #endif
     
-    if (!err) { err = ((properties_saveFile = file_openWrite (filepath)) == NULL); }
+    if (!err) { err = ((properties_saveFile = file_fopenWrite (filepath)) == NULL); }
     
     return err;
 }

@@ -182,10 +182,10 @@ static void gobj_openHelp (const char *directory, const char *name)
     t_fileproperties p;
     int f = -1;
     
-    if (*directory != 0) { f = file_openWithDirectoryAndName (directory, name, PD_HELP, &p); }
+    if (*directory != 0) { f = file_openReadWithDirectoryAndName (directory, name, PD_HELP, &p); }
     
     if (f < 0) { 
-        f = file_openConsideringSearchPath (main_directoryHelp->s_name, name, PD_HELP, &p); 
+        f = file_openReadConsideringSearchPath (main_directoryHelp->s_name, name, PD_HELP, &p); 
     }
     
     if (f < 0) { error_canNotFind (gensym (name), sym_help); }

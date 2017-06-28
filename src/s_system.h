@@ -184,15 +184,17 @@ int         audio_getTotalOfChannelsOut             (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-FILE        *file_openWrite                         (const char *filepath);
-int         file_openRaw                            (const char *filepath, int oflag);
+FILE        *file_fopenWrite                        (const char *filepath);
 
-int         file_openConsideringSearchPath          (const char *directory, 
+int         file_openWrite                          (const char *filepath);
+int         file_openRead                           (const char *filepath);
+
+int         file_openReadWithDirectoryAndName       (const char *directory,
                                                         const char *name,
                                                         const char *extension,
                                                         t_fileproperties *p);
 
-int         file_openWithDirectoryAndName           (const char *directory,
+int         file_openReadConsideringSearchPath      (const char *directory,
                                                         const char *name,
                                                         const char *extension,
                                                         t_fileproperties *p);

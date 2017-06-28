@@ -663,7 +663,7 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
-    f = file_openRaw (filepath, O_CREAT | O_TRUNC | O_WRONLY);
+    f = file_openWrite (filepath);
     
     if (f >= 0) { 
         if (write (f, t.h_c, t.h_bytesSet) < t.h_bytesSet) { close (f); f = -1; PD_BUG; }
