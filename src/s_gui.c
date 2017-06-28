@@ -32,7 +32,7 @@ static int  gui_bufferTail;     /* Shared. */
 // MARK: -
 
 #define GUI_BUFFER_SIZE     (1024 * 128)
-#define GUI_BUFFER_ABORT    (1024 * 128 * 1024)
+#define GUI_BUFFER_ABORT    (1024 * 128 * 1024)     /* Arbitrary. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ int  gui_jobFlush (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void gui_enlargeBuffer()
+static void gui_bufferEnlarge()
 {
     int oldSize = gui_bufferSize;
     int newSize = oldSize * 2;
@@ -57,7 +57,7 @@ static void gui_enlargeBuffer()
     gui_bufferSize = newSize;
 }
 
-static int gui_flushBuffer (void)
+static int gui_bufferFlush (void)
 {
     int need = gui_bufferHead - gui_bufferTail;
     
@@ -80,31 +80,6 @@ static int gui_flushBuffer (void)
     }
     
     return 0;
-}
-
-static int gui_flushBufferAndQueue (void)
-{
-    int didSomething = 0;
-    
-    didSomething |= gui_jobFlush();
-    didSomething |= gui_flushBuffer();
-
-    return didSomething;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void gui_initialize (void)
-{
-    gui_buffer = (char *)PD_MEMORY_GET (GUI_BUFFER_SIZE);
-    gui_bufferSize = GUI_BUFFER_SIZE;
-}
-
-void gui_release (void)
-{
-    gui_jobClear(); PD_MEMORY_FREE (gui_buffer);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -130,7 +105,7 @@ void gui_vAdd (char *format, ...)
     
     if (t < 0) { PD_BUG; return; }
     
-    if ((size_t)t >= size) { gui_enlargeBuffer(); }
+    if ((size_t)t >= size) { gui_bufferEnlarge(); }
     else {
         bufferWasTooSmall = 0;
         gui_bufferHead += t;
@@ -144,14 +119,29 @@ void gui_add (char *s)
     gui_vAdd ("%s", s);
 }
 
-int gui_pollOrFlush (void)
+int gui_flush (void)
 {
-    return (monitor_nonBlocking() || gui_flushBufferAndQueue());
+    int didSomething = 0;
+    
+    didSomething |= gui_jobFlush();
+    didSomething |= gui_bufferFlush();
+
+    return didSomething;
 }
 
-void gui_flush (void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void gui_initialize (void)
 {
-    gui_flushBufferAndQueue();
+    gui_buffer = (char *)PD_MEMORY_GET (GUI_BUFFER_SIZE);
+    gui_bufferSize = GUI_BUFFER_SIZE;
+}
+
+void gui_release (void)
+{
+    gui_jobClear(); PD_MEMORY_FREE (gui_buffer);
 }
 
 // -----------------------------------------------------------------------------------------------------------

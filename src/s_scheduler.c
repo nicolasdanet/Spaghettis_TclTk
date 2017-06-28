@@ -176,7 +176,7 @@ static void scheduler_mainLoop (void)
 
     midi_poll();
     
-    if (!scheduler_quit && gui_pollOrFlush()) { didSomething = 1; }
+    if (!scheduler_quit && (monitor_nonBlocking() || gui_flush())) { didSomething = 1; }
     if (!scheduler_quit && !didSomething) {
         if (timeForward != DACS_SLEPT) {
             monitor_blocking (SCHEDULER_BLOCKING_LAPSE);
