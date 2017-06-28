@@ -280,7 +280,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
         }
     }
     if (k == POPUP_HELP) {
-        file_openHelpPatch (y); return;
+        gobj_help (y); return;
     }
     //
     }

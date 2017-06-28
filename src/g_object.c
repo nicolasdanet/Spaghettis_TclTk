@@ -9,7 +9,13 @@
 
 #include "m_pd.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "g_graphics.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+extern t_symbol *main_directoryHelp;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -165,6 +171,59 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     }
 
     return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void gobj_openHelp (const char *directory, const char *name)
+{
+    t_fileproperties p;
+    int f = -1;
+    
+    if (*directory != 0) { f = file_openWithDirectoryAndName (directory, name, PD_HELP, &p); }
+    
+    if (f < 0) { 
+        f = file_openConsideringSearchPath (main_directoryHelp->s_name, name, PD_HELP, &p); 
+    }
+    
+    if (f < 0) { error_canNotFind (gensym (name), sym_help); }
+    else {
+        t_symbol *s1 = gensym (fileproperties_getName (&p));
+        t_symbol *s2 = gensym (fileproperties_getDirectory (&p));
+        close (f); 
+        instance_patchOpen (s1, s2);
+    }
+}
+
+/* First consider the sibling files of an abstraction. */
+/* For an external search in its help directory if provided. */
+/* Then look for in the application "help" folder. */
+/* And last in the user search path. */
+
+void gobj_help (t_gobj *y)
+{
+    char *directory = NULL;
+    char name[PD_STRING] = { 0 };
+    t_error err = PD_ERROR_NONE;
+    
+    if (pd_class (y) == canvas_class && glist_isAbstraction (cast_glist (y))) {
+        if (!(err = (buffer_getSize (object_getBuffer (cast_object (y))) < 1))) {
+            atom_toString (buffer_getAtoms (object_getBuffer (cast_object (y))), name, PD_STRING);
+            directory = environment_getDirectoryAsString (glist_getEnvironment (cast_glist (y)));
+        }
+    
+    } else if (pd_class (y) == canvas_class && glist_isArray (cast_glist (y))) {
+        err = string_copy (name, PD_STRING, sym_garray->s_name);
+        directory = "";
+        
+    } else {
+        err = string_copy (name, PD_STRING, class_getHelpNameAsString (pd_class (y)));
+        directory = class_getHelpDirectoryAsString (pd_class (y));
+    }
+    
+    if (!err) { gobj_openHelp (directory, name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
