@@ -60,6 +60,17 @@ t_error     buffer_fileWrite                        (t_buffer *x, t_symbol *name
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int         file_openConsideringSearchPath          (const char *directory, 
+                                                        const char *name,
+                                                        const char *extension,
+                                                        t_fileproperties *p);
+
+void        file_openHelpPatch                      (t_gobj *y);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void        eval_buffer                             (t_buffer *x, t_pd *object, int argc, t_atom *argv);
 
 t_error     eval_file                               (t_symbol *name, t_symbol *directory);
