@@ -96,7 +96,13 @@ t_error properties_saveBegin (void)
     err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", main_directorySupport->s_name);
     #endif
     
-    if (!err) { err = ((properties_saveFile = file_fopenWrite (filepath)) == NULL); }
+    if (!err) {
+    //
+    int f = file_openWrite (filepath);
+    err |= (f < 0);
+    if (!err) { err |= ((properties_saveFile = fdopen (f, "w")) == NULL); }
+    //
+    }
     
     return err;
 }
