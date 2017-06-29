@@ -44,7 +44,6 @@ struct _pdinstance {
     t_systime       pd_systime;
     t_stack         pd_stack;
     t_environment   pd_environment;
-    t_clipboard     pd_clipboard;
     t_position      pd_locate;
     int             pd_overflowCount;
     int             pd_dspState;
@@ -283,11 +282,6 @@ static inline t_glist *instance_getRoots (void)
 static inline t_pd *instance_getNewestObject (void)
 {
     return instance_get()->pd_newest;
-}
-
-static inline t_clipboard *instance_getClipboard (void)
-{
-    return &instance_get()->pd_clipboard;
 }
 
 static inline t_pathlist *instance_getSearchPath (void)

@@ -27,7 +27,7 @@ void canvas_copy (t_glist *glist)
         gui_vAdd ("clipboard append {%.*s}\n", s, t);       /* < http://stackoverflow.com/a/13289324 > */
         
     } else {
-        clipboard_copy (instance_getClipboard(), glist);
+        clipboard_copy (glist);
     }
     //
     }
@@ -61,7 +61,7 @@ void canvas_paste (t_glist *glist)
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
         gui_vAdd ("::ui_bind::pasteText %s\n", glist_getTagAsString (glist));
     } else {
-        clipboard_paste (instance_getClipboard(), glist);
+        clipboard_paste (glist);
     }
     //
     }
@@ -72,7 +72,7 @@ void canvas_duplicate (t_glist *glist)
     if (glist_hasEditMode (glist)) {
     //
     canvas_copy (glist);
-    clipboard_paste (instance_getClipboard(), glist);
+    clipboard_paste (glist);
     //
     }
 }

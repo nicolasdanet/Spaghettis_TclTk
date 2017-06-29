@@ -306,11 +306,6 @@ typedef struct _heapstring {
     char                *hs_raw;
     } t_heapstring;
 
-typedef struct _clipboard {
-    int                 cb_pasteCount;
-    t_buffer            *cb_buffer;
-    } t_clipboard;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -342,22 +337,6 @@ void        heapstring_free             (t_heapstring *x);
 t_error     heapstring_add              (t_heapstring *x, const char *src);
 t_error     heapstring_append           (t_heapstring *x, const char *src, int n);
 t_error     heapstring_addSprintf       (t_heapstring *x, const char *format, ...);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        clipboard_initialize        (t_clipboard *x);
-void        clipboard_release           (t_clipboard *x);
-void        clipboard_copy              (t_clipboard *x, t_glist *glist);
-void        clipboard_paste             (t_clipboard *x, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void snippet_addOffsetToLines           (t_buffer *x, int i);
-void snippet_substractOffsetToLines     (t_buffer *x, int i);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

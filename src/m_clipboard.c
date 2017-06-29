@@ -16,13 +16,27 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define CLIPBOARD_CUMULATIVE_OFFSET 20
+#define CLIPBOARD_CUMULATIVE_OFFSET     20
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void clipboard_copy (t_clipboard *x, t_glist *glist)
+typedef struct _clipboard {
+    int         cb_pasteCount;
+    t_buffer    *cb_buffer;
+    } t_clipboard;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_clipboard clipboard;           /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void clipboard_copy (t_glist *glist)
 {
     if (editor_hasSelection (glist_getEditor (glist))) {
     //
@@ -32,7 +46,7 @@ void clipboard_copy (t_clipboard *x, t_glist *glist)
     t_outconnect *connection = NULL;
     t_traverser t;
     
-    x->cb_pasteCount = 0;
+    clipboard.cb_pasteCount = 0;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (glist_objectIsSelected (glist, y)) { gobj_save (y, b); }
@@ -57,30 +71,30 @@ void clipboard_copy (t_clipboard *x, t_glist *glist)
     //
     }
     
-    buffer_free (x->cb_buffer);
+    buffer_free (clipboard.cb_buffer);
     
-    x->cb_buffer = b;
+    clipboard.cb_buffer = b;
     //
     }
 }
 
-void clipboard_paste (t_clipboard *x, t_glist *glist)
+void clipboard_paste (t_glist *glist)
 {
     t_gobj *y = NULL;
     t_selection *s = NULL;
     int i = 0;
-    int n = (++x->cb_pasteCount) * CLIPBOARD_CUMULATIVE_OFFSET;
+    int n = (++clipboard.cb_pasteCount) * CLIPBOARD_CUMULATIVE_OFFSET;
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     int isDirty = 0;
     
     glist_deselectAll (glist);
     
-    snippet_addOffsetToLines (x->cb_buffer, alreadyThere);
+    snippet_addOffsetToLines (clipboard.cb_buffer, alreadyThere);
     
-        instance_loadSnippet (glist, x->cb_buffer);
+        instance_loadSnippet (glist, clipboard.cb_buffer);
     
-    snippet_substractOffsetToLines (x->cb_buffer, alreadyThere);
+    snippet_substractOffsetToLines (clipboard.cb_buffer, alreadyThere);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (i >= alreadyThere) { glist_objectSelect (glist, y); isDirty = 1; }
@@ -101,15 +115,15 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void clipboard_initialize (t_clipboard *x)
+void clipboard_initialize (void)
 {
-    x->cb_pasteCount = 0;
-    x->cb_buffer = buffer_new();
+    clipboard.cb_pasteCount = 0;
+    clipboard.cb_buffer = buffer_new();
 }
 
-void clipboard_release (t_clipboard *x)
+void clipboard_release (void)
 {
-    if (x->cb_buffer) { buffer_free (x->cb_buffer); }
+    if (clipboard.cb_buffer) { buffer_free (clipboard.cb_buffer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -14,6 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void clipboard_initialize       (void);
 void cos_tilde_initialize       (void);
 void fft_initialize             (void);
 void garray_initialize          (void);
@@ -29,6 +30,7 @@ void textdefine_initialize      (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void clipboard_release          (void);
 void cos_tilde_release          (void);
 void drawnumber_release         (void);
 void drawpolygon_release        (void);
@@ -869,9 +871,10 @@ void setup_initialize (void)
     /* First. */
     
     instance_initialize();
-        
+    
     /* Second various initializations (alphabetically sorted there). */
     
+    clipboard_initialize();
     cos_tilde_initialize();
     fft_initialize();
     gui_initialize();
@@ -921,6 +924,7 @@ void setup_release (void)
     drawpolygon_release();
     drawnumber_release();
     cos_tilde_release();
+    clipboard_release();
     
     /* At last. */
     
