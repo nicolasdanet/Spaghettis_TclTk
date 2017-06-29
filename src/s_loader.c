@@ -26,6 +26,7 @@ typedef void (*t_dtor) (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 #if PD_WINDOWS
     typedef HMODULE t_handle;
@@ -35,23 +36,24 @@ typedef void (*t_dtor) (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-typedef struct _loadedlist {
-    struct _loadedlist  *ll_next;
-    t_symbol            *ll_name;
-    t_handle            ll_handle;
-    } t_loadedlist;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_loadedlist     *loader_alreadyLoaded;
+typedef struct _loaded {
+    struct _loaded  *ll_next;
+    t_symbol        *ll_name;
+    t_handle        ll_handle;
+    } t_loaded;
 
 // -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_loaded *loader_alreadyLoaded;      /* Shared. */
+
+    // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void loader_closeExternal (t_handle handle, t_symbol *name);
+static void loader_externalClose (t_handle handle, t_symbol *name);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -59,7 +61,7 @@ static void loader_closeExternal (t_handle handle, t_symbol *name);
 
 static int loader_isAlreadyLoaded (t_symbol *name)
 {
-    t_loadedlist *l = NULL;
+    t_loaded *l = NULL;
     
     for (l = loader_alreadyLoaded; l; l = l->ll_next) { if (l->ll_name == name) { return 1; } }
     
@@ -68,7 +70,7 @@ static int loader_isAlreadyLoaded (t_symbol *name)
 
 static void loader_addLoaded (t_symbol *name, t_handle handle)
 {
-    t_loadedlist *l = (t_loadedlist *)PD_MEMORY_GET (sizeof (t_loadedlist));
+    t_loaded *l = (t_loaded *)PD_MEMORY_GET (sizeof (t_loaded));
     
     l->ll_next   = loader_alreadyLoaded;
     l->ll_name   = name;
@@ -105,7 +107,7 @@ static t_error loader_makeStubName (char *dest, size_t size, t_symbol *name, con
 
 #if PD_WINDOWS
 
-static t_handle loader_openExternalNative (char *filepath, char *stub, t_symbol *root)
+static t_handle loader_externalOpenNative (char *filepath, char *stub, t_symbol *root)
 {
     t_handle handle;
     
@@ -123,14 +125,14 @@ static t_handle loader_openExternalNative (char *filepath, char *stub, t_symbol 
         }
     }
     
-    if (handle) { loader_closeExternal (handle, NULL); }
+    if (handle) { loader_externalClose (handle, NULL); }
     
     return NULL;
 }
 
 #else
 
-static t_handle loader_openExternalNative (char *filepath, char *stub, t_symbol *root)
+static t_handle loader_externalOpenNative (char *filepath, char *stub, t_symbol *root)
 {
     t_handle handle = dlopen (filepath, RTLD_NOW | RTLD_GLOBAL);
     
@@ -144,7 +146,7 @@ static t_handle loader_openExternalNative (char *filepath, char *stub, t_symbol 
         }
     }
     
-    if (handle) { loader_closeExternal (handle, NULL); }
+    if (handle) { loader_externalClose (handle, NULL); }
     
     return NULL;
 }
@@ -156,7 +158,7 @@ static t_handle loader_openExternalNative (char *filepath, char *stub, t_symbol 
 
 #if PD_WINDOWS
 
-static void loader_closeExternalNative (t_handle handle, char *stub)
+static void loader_externalCloseNative (t_handle handle, char *stub)
 {
     t_dtor dtor = (t_dtor)GetProcAddress (handle, stub);
     
@@ -165,7 +167,7 @@ static void loader_closeExternalNative (t_handle handle, char *stub)
 
 #else
 
-static void loader_closeExternalNative (t_handle handle, char *stub)
+static void loader_externalCloseNative (t_handle handle, char *stub)
 {
     t_dtor dtor = (t_dtor)dlsym (handle, stub);
     
@@ -178,7 +180,7 @@ static void loader_closeExternalNative (t_handle handle, char *stub)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int loader_openExternal (t_glist *glist, t_symbol *name)
+static int loader_externalOpen (t_glist *glist, t_symbol *name)
 {
     t_handle handle = NULL;
     
@@ -199,7 +201,7 @@ static int loader_openExternal (t_glist *glist, t_symbol *name)
     if (!path_withDirectoryAndName (filepath, PD_STRING, directory, filename)) {
         char stub[PD_STRING] = { 0 };
         t_error err = loader_makeStubName (stub, PD_STRING, name, "_setup");
-        if (!err && (handle = loader_openExternalNative (filepath, stub, gensym (directory)))) {
+        if (!err && (handle = loader_externalOpenNative (filepath, stub, gensym (directory)))) {
             loader_addLoaded (name, handle);
         }
     }
@@ -211,14 +213,14 @@ static int loader_openExternal (t_glist *glist, t_symbol *name)
     return (handle != NULL);
 }
 
-static void loader_closeExternal (t_handle handle, t_symbol *name)
+static void loader_externalClose (t_handle handle, t_symbol *name)
 {
     if (name) {
     //
     char stub[PD_STRING] = { 0 };
             
     if (!(loader_makeStubName (stub, PD_STRING, name, "_destroy"))) { 
-        loader_closeExternalNative (handle, stub); 
+        loader_externalCloseNative (handle, stub); 
     }
     //
     }
@@ -237,7 +239,7 @@ static void loader_closeExternal (t_handle handle, t_symbol *name)
 int loader_load (t_glist *glist, t_symbol *name)
 {
     int state = dsp_suspend();
-    int done  = loader_openExternal (glist, name);
+    int done  = loader_externalOpen (glist, name);
     dsp_resume (state);
     
     return done;
@@ -249,12 +251,12 @@ int loader_load (t_glist *glist, t_symbol *name)
 
 void loader_release (void)
 {
-    t_loadedlist *l = loader_alreadyLoaded;
+    t_loaded *l = loader_alreadyLoaded;
 
     while (l) {
     //
-    t_loadedlist *next = l->ll_next;
-    loader_closeExternal (l->ll_handle, l->ll_name);
+    t_loaded *next = l->ll_next;
+    loader_externalClose (l->ll_handle, l->ll_name);
     PD_MEMORY_FREE (l);
     l = next; 
     //
