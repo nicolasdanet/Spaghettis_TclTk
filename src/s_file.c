@@ -16,45 +16,6 @@
 
 #if PD_WINDOWS
 
-static FILE *file_openModeNative (const char *filepath, const char *mode)
-{
-    char t[PD_STRING]           = { 0 };
-    wchar_t ucs2path[PD_STRING] = { 0 };
-    wchar_t ucs2mode[PD_STRING] = { 0 };
-    
-    if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
-    path_slashToBackslashIfNecessary (t);
-    u8_utf8toucs2 (ucs2path, PD_STRING, t, -1);
-    
-    mbstowcs (ucs2mode, mode, PD_STRING);
-    
-    return _wfopen (ucs2path, ucs2mode);
-}
-
-#else
-
-static FILE *file_openModeNative (const char *filepath, const char *mode)
-{
-    return fopen (filepath, mode);
-}
-
-#endif // PD_WINDOWS
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-FILE *file_fopenWrite (const char *filepath)
-{
-    return file_openModeNative (filepath, "w");
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#if PD_WINDOWS
-
 static int file_openRawNative (const char *filepath, int oflag)
 {
     char t[PD_STRING]           = { 0 };
@@ -112,6 +73,7 @@ int file_openReadWithDirectoryAndName (const char *directory,
     
     PD_ASSERT (directory);
     PD_ASSERT (name);
+    PD_ASSERT (extension);
     
     p->f_directory[0] = 0; p->f_name = p->f_directory;
     
