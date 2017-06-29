@@ -35,7 +35,7 @@ static int file_openRawNative (const char *filepath, int oflag)
 
 static int file_openRawNative (const char *filepath, int oflag)
 {
-    if (oflag & O_CREAT) { return open (filepath, oflag, 0666); }
+    if (oflag & O_CREAT) { return open (filepath, oflag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); }
     else {
         return open (filepath, oflag);
     } 

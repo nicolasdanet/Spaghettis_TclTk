@@ -56,7 +56,7 @@ int path_isFileExistAsDirectory (const char *filepath)
 
 t_error path_createDirectory (const char *filepath)
 {
-    return (mkdir (filepath, S_IRWXU) != 0);
+    return (mkdir (filepath, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0);
 }
 
 #else   
