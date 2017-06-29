@@ -290,28 +290,35 @@ static inline char *fileproperties_getName (t_fileproperties *p)
 // MARK: -
 
 typedef struct _iterator {
-    int     iter_argc;
-    int     iter_index;
-    t_atom  *iter_argv;
+    int                 iter_argc;
+    int                 iter_index;
+    t_atom              *iter_argv;
     } t_iterator;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_iterator  *iterator_new   (int argc, t_atom *argv);
-
-void        iterator_free   (t_iterator *x);
-int         iterator_next   (t_iterator *x, t_atom **a);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 typedef struct _pathlist {
     struct _pathlist    *pl_next;
     char                *pl_string;
     } t_pathlist;
+
+typedef struct _heapstring {
+    size_t              hs_used;
+    size_t              hs_size;
+    char                *hs_raw;
+    } t_heapstring;
+
+typedef struct _clipboard {
+    int                 cb_pasteCount;
+    t_buffer            *cb_buffer;
+    } t_clipboard;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_iterator  *iterator_new               (int argc, t_atom *argv);
+
+void        iterator_free               (t_iterator *x);
+int         iterator_next               (t_iterator *x, t_atom **a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -328,23 +335,22 @@ void        pathlist_free               (t_pathlist *x);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _heapstring {
-    size_t  hs_used;
-    size_t  hs_size;
-    char    *hs_raw;
-    } t_heapstring;
+t_heapstring    *heapstring_new         (int size);
+char            *heapstring_getRaw      (t_heapstring *x);
+
+void        heapstring_free             (t_heapstring *x);
+t_error     heapstring_add              (t_heapstring *x, const char *src);
+t_error     heapstring_append           (t_heapstring *x, const char *src, int n);
+t_error     heapstring_addSprintf       (t_heapstring *x, const char *format, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_heapstring    *heapstring_new         (int size);
-char            *heapstring_getRaw      (t_heapstring *x);
-
-void            heapstring_free         (t_heapstring *x);
-t_error         heapstring_add          (t_heapstring *x, const char *src);
-t_error         heapstring_append       (t_heapstring *x, const char *src, int n);
-t_error         heapstring_addSprintf   (t_heapstring *x, const char *format, ...);
+void        clipboard_initialize        (t_clipboard *x);
+void        clipboard_release           (t_clipboard *x);
+void        clipboard_copy              (t_clipboard *x, t_glist *glist);
+void        clipboard_paste             (t_clipboard *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

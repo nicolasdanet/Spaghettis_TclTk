@@ -101,13 +101,13 @@ void clipboard_paste (t_clipboard *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void clipboard_init (t_clipboard *x)
+void clipboard_initialize (t_clipboard *x)
 {
     x->cb_pasteCount = 0;
     x->cb_buffer = buffer_new();
 }
 
-void clipboard_destroy (t_clipboard *x)
+void clipboard_release (t_clipboard *x)
 {
     if (x->cb_buffer) { buffer_free (x->cb_buffer); }
 }

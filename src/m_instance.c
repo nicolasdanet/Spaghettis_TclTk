@@ -346,7 +346,7 @@ static t_pdinstance *instance_new()
     x->pd_environment.env_directory = &s_;
     x->pd_environment.env_fileName  = &s_;
     
-    clipboard_init (&x->pd_clipboard);
+    clipboard_initialize (&x->pd_clipboard);
     
     x->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     x->pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
@@ -375,7 +375,7 @@ static void instance_free (t_pdinstance *x)
     
     pathlist_free (x->pd_searchPath);
     
-    clipboard_destroy (&x->pd_clipboard);
+    clipboard_release (&x->pd_clipboard);
     
     if (x->pd_environment.env_argv) { PD_MEMORY_FREE (x->pd_environment.env_argv); }
     
