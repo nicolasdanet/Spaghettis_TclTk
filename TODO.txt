@@ -16,11 +16,11 @@ Add "Encapsulate" feature.
 
 Profile and optimize code.
 Forbid the audio to glitch!
-Make an embeddable interpreter.
 Use generic containers (i.e linked list).
 
 ###
 
+Make an embeddable interpreter.
 Think about an unit test suite.
 Replace the Tk GUI (make MVC more strict).
 Implement a better preferences and fonts management.
