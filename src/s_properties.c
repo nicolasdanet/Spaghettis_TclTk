@@ -24,8 +24,8 @@ extern t_symbol *main_directorySupport;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static char *properties_loadBuffer;     /* Static. */
-static FILE *properties_saveFile;       /* Static. */
+static char *properties_loadBuffer;     /* Shared. */
+static FILE *properties_saveFile;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -143,9 +143,7 @@ int properties_getKey (const char *key, char *value, int size)
     
     size_t length = pEnd + 1 - p;
     
-    if (length > 0) { 
-        if (!string_append (value, size, p, (int)length)) { return 1; }
-    }
+    if (length > 0) { if (!string_append (value, size, p, (int)length)) { return 1; } }
     //
     }
     
