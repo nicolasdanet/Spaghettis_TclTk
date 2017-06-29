@@ -14,31 +14,21 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-enum {
-    DACS_NO     = 0,
-    DACS_YES    = 1,
-    DACS_SLEPT  = 2
-    };
+#define INTERNAL_BLOCKSIZE          64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define INTERNAL_BLOCKSIZE              64
+#define SCHEDULER_AUDIO_STOP        0
+#define SCHEDULER_AUDIO_POLL        1
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define SCHEDULER_AUDIO_STOP            0
-#define SCHEDULER_AUDIO_POLL            1 
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define AUDIO_DEFAULT_BLOCKSIZE         64
-#define AUDIO_DEFAULT_SAMPLERATE        44100
+#define AUDIO_DEFAULT_BLOCKSIZE     64
+#define AUDIO_DEFAULT_SAMPLERATE    44100
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,36 +36,28 @@ enum {
 
 /* Note that LCM of (32000, 44100, 48000, 88200, 96000) is 14112000. */
 
-#define SYSTIME_PER_MILLISECOND         (32.0 * 441.0)
-#define SYSTIME_PER_SECOND              (SYSTIME_PER_MILLISECOND * 1000.0)
+#define SYSTIME_PER_MILLISECOND     (32.0 * 441.0)
+#define SYSTIME_PER_SECOND          (SYSTIME_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef void (*t_pollfn)        (void *p, int fd);
-typedef void (*t_notifyfn)      (void *owner, int fd);
-typedef void (*t_receivefn)     (void *owner, t_buffer *b);
-typedef void (*t_clockfn)       (void *owner);
-typedef void (*t_drawfn)        (t_gobj *x, t_glist *glist);
+typedef void (*t_pollfn)            (void *p, int fd);
+typedef void (*t_notifyfn)          (void *owner, int fd);
+typedef void (*t_receivefn)         (void *owner, t_buffer *b);
+typedef void (*t_clockfn)           (void *owner);
+typedef void (*t_drawfn)            (t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _receiver {
-    void        *r_owner;
-    t_buffer    *r_message;
-    char        *r_inRaw;
-    int         r_inHead;
-    int         r_inTail;
-    int         r_fd;
-    int         r_isUdp;
-    int         r_isBinary;
-    int         r_isClosed;
-    t_notifyfn  r_fnNotify;
-    t_receivefn r_fnReceive;
-    } t_receiver;
+enum {
+    DACS_NO     = 0,
+    DACS_YES    = 1,
+    DACS_SLEPT  = 2
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -166,8 +148,6 @@ void        midi_broadcast                          (int port, int hasOneByte, i
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error     audio_initialize                        (void);
-void        audio_release                           (void);
 int         audio_poll                              (void);
 t_error     audio_stop                              (void);
 t_error     audio_start                             (void);

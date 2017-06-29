@@ -30,10 +30,12 @@ static int  main_version;                               /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void message_initialize (void);
-void message_release    (void);
-void setup_initialize   (void);
-void setup_release      (void);
+t_error     audio_initialize    (void);
+void        audio_release       (void);
+void        message_initialize  (void);
+void        message_release     (void);
+void        setup_initialize    (void);
+void        setup_release       (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
