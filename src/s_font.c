@@ -21,23 +21,23 @@
 // MARK: -
 
 typedef struct _fontinfo {
-    int     fi_size;
-    int     fi_requiredWidth;
-    int     fi_requiredHeight;
-    double  fi_hostSize;
-    double  fi_hostWidth;
-    double  fi_hostHeight;
+    t_fontsize  fi_size;
+    int         fi_requiredWidth;
+    int         fi_requiredHeight;
+    double      fi_hostSize;
+    double      fi_hostWidth;
+    double      fi_hostHeight;
     } t_fontinfo;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_fontsize font_defaultSize = 12;                /* Static. */
+static t_fontsize font_defaultSize = 12;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_fontinfo font_fontList[FONT_LIST_SIZE] =       /* Static. */
+static t_fontinfo font_fontList[FONT_LIST_SIZE] =       /* Shared. */
     {
         { 8,   6, 10,   8.0,   6.0, 10.0 }, 
         { 10,  7, 13,   10.0,  7.0, 13.0 }, 
