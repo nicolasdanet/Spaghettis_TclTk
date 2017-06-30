@@ -14,74 +14,74 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_GUISTUB              ".guistub"
+#define PD_GUISTUB          ".guistub"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 enum {
-    ACTION_NONE                 = 0,
-    ACTION_MOVE                 = 1,
-    ACTION_CONNECT              = 2,
-    ACTION_REGION               = 3,
-    ACTION_PASS                 = 4,
-    ACTION_DRAG                 = 5,
-    ACTION_RESIZE               = 6
+    ACTION_NONE             = 0,
+    ACTION_MOVE             = 1,
+    ACTION_CONNECT          = 2,
+    ACTION_REGION           = 3,
+    ACTION_PASS             = 4,
+    ACTION_DRAG             = 5,
+    ACTION_RESIZE           = 6
     };
 
 enum {
-    CURSOR_NOTHING              = 0,            /* Must NOT be changed. */
-    CURSOR_CLICK                = 1,            /* Must NOT be changed. */
-    CURSOR_OVER                 = 2,
-    CURSOR_THICKEN              = 3,
-    CURSOR_CONNECT              = 4,
-    CURSOR_RESIZE               = 5
+    CURSOR_NOTHING          = 0,            /* Must NOT be changed. */
+    CURSOR_CLICK            = 1,            /* Must NOT be changed. */
+    CURSOR_OVER             = 2,
+    CURSOR_THICKEN          = 3,
+    CURSOR_CONNECT          = 4,
+    CURSOR_RESIZE           = 5
     };
 
 enum {
-    MODIFIER_NONE               = 0,
-    MODIFIER_SHIFT              = 1,
-    MODIFIER_CTRL               = 2,            /* Command key on Mac OS X. */
-    MODIFIER_ALT                = 4,
-    MODIFIER_RIGHT              = 8,
-    MODIFIER_DOUBLE             = 16
+    MODIFIER_NONE           = 0,
+    MODIFIER_SHIFT          = 1,
+    MODIFIER_CTRL           = 2,            /* Command key on Mac OS X. */
+    MODIFIER_ALT            = 4,
+    MODIFIER_RIGHT          = 8,
+    MODIFIER_DOUBLE         = 16
     };
 
 enum {
-    BOX_DOWN                    = 1,
-    BOX_DRAG                    = 2,
-    BOX_DOUBLE                  = 3,
-    BOX_SHIFT                   = 4
+    BOX_DOWN                = 1,
+    BOX_DRAG                = 2,
+    BOX_DOUBLE              = 3,
+    BOX_SHIFT               = 4
     };
 
 enum {
-    BOX_CHECK                   = 0,
-    BOX_CREATE                  = 1,
-    BOX_UPDATE                  = 2
+    BOX_CHECK               = 0,
+    BOX_CREATE              = 1,
+    BOX_UPDATE              = 2
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define WINDOW_WIDTH            450
-#define WINDOW_HEIGHT           300
+#define WINDOW_WIDTH        450
+#define WINDOW_HEIGHT       300
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_APPLE
-    #define WINDOW_HEADER       22                      /* Windows don't include menu bar at top. */
+    #define WINDOW_HEADER   22                      /* Windows don't include menu bar at top. */
 #else
-    #define WINDOW_HEADER       50
+    #define WINDOW_HEADER   50
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define BOX_TAG_SIZE            50
+#define BOX_TAG_SIZE        50
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ struct _box {
     struct _box     *box_next;
     t_object        *box_object;
     t_glist         *box_owner;
-    char            *box_string;                        /* Unzeroed string UTF-8 formatted. */
+    char            *box_string;                    /* Unzeroed string UTF-8 formatted. */
     int             box_stringSizeInBytes;
     int             box_selectionStart;
     int             box_selectionEnd;
@@ -135,116 +135,66 @@ typedef struct _traverser {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        gobj_getRectangle               (t_gobj *x, t_glist *owner, t_rectangle *r);
-void        gobj_displaced                  (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
-void        gobj_selected                   (t_gobj *x, t_glist *owner, int isSelected);
-void        gobj_activated                  (t_gobj *x, t_glist *owner, int isActivated);
-void        gobj_deleted                    (t_gobj *x, t_glist *owner);
-void        gobj_visibilityChanged          (t_gobj *x, t_glist *owner, int isVisible);
-int         gobj_mouse                      (t_gobj *x, t_glist *owner, t_mouse *m);
+void    gobj_getRectangle           (t_gobj *x, t_glist *owner, t_rectangle *r);
+void    gobj_displaced              (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
+void    gobj_selected               (t_gobj *x, t_glist *owner, int isSelected);
+void    gobj_activated              (t_gobj *x, t_glist *owner, int isActivated);
+void    gobj_deleted                (t_gobj *x, t_glist *owner);
+void    gobj_visibilityChanged      (t_gobj *x, t_glist *owner, int isVisible);
+int     gobj_mouse                  (t_gobj *x, t_glist *owner, t_mouse *m);
 
-void        gobj_save                       (t_gobj *x, t_buffer *buffer);
-int         gobj_hit                        (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r);
+void    gobj_save                   (t_gobj *x, t_buffer *buffer);
+int     gobj_hit                    (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r);
                                                             
-int         gobj_isVisible                  (t_gobj *x, t_glist *owner);
-void        gobj_help                       (t_gobj *x);
+int     gobj_isVisible              (t_gobj *x, t_glist *owner);
+void    gobj_help                   (t_gobj *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_box       *box_fetch                      (t_glist *glist, t_object *object);
-char        *box_getTag                     (t_box *x);
-t_object    *box_getObject                  (t_box *x);
+t_box       *box_fetch              (t_glist *glist, t_object *object);
+char        *box_getTag             (t_box *x);
+t_object    *box_getObject          (t_box *x);
 
-int         box_getWidth                    (t_box *x);
-int         box_getHeight                   (t_box *x);
-void        box_getText                     (t_box *x, char **p, int *size);
-void        box_getSelection                (t_box *x, char **p, int *size);
+int     box_getWidth                (t_box *x);
+int     box_getHeight               (t_box *x);
+void    box_getText                 (t_box *x, char **p, int *size);
+void    box_getSelection            (t_box *x, char **p, int *size);
 
-void        box_retext                      (t_box *x);
-void        box_create                      (t_box *x);
-void        box_draw                        (t_box *x);
-void        box_update                      (t_box *x);
-void        box_erase                       (t_box *x);
-void        box_displace                    (t_box *x, int deltaX, int deltaY);
-void        box_select                      (t_box *x, int isSelected);
-void        box_activate                    (t_box *x, int isActivated);
-void        box_mouse                       (t_box *x, int a, int b, int flag);
-void        box_key                         (t_box *x, t_keycode n, t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        message_makeObject              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-
-void        message_click                   (t_message *x, t_symbol *s, int argc, t_atom *argv);
-                                                            
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        gatom_makeObjectFloat           (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-void        gatom_makeObjectSymbol          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
-
-void        gatom_click                     (t_gatom *x, t_symbol *s, int argc, t_atom *argv);
+void    box_retext                  (t_box *x);
+void    box_create                  (t_box *x);
+void    box_draw                    (t_box *x);
+void    box_update                  (t_box *x);
+void    box_erase                   (t_box *x);
+void    box_displace                (t_box *x, int deltaX, int deltaY);
+void    box_select                  (t_box *x, int isSelected);
+void    box_activate                (t_box *x, int isActivated);
+void    box_mouse                   (t_box *x, int a, int b, int flag);
+void    box_key                     (t_box *x, t_keycode n, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_garray    *garray_makeObject              (t_glist *glist, t_symbol *s, t_float n, t_float flags);
-t_array     *garray_getArray                (t_garray *x);
-t_glist     *garray_getView                 (t_garray *x);
-t_scalar    *garray_getScalar               (t_garray *x);
-t_symbol    *garray_getName                 (t_garray *x);
-t_symbol    *garray_getUnexpandedName       (t_garray *x);
-
-int         garray_getSize                  (t_garray *x);         
-int         garray_getData                  (t_garray *x, int *size, t_word **w);
-void        garray_setDataAtIndex           (t_garray *x, int i, t_float f);
-t_float     garray_getDataAtIndex           (t_garray *x, int i);
-void        garray_setDataFromIndex         (t_garray *x, int i, t_float f);
-t_float     garray_getAmplitude             (t_garray *x);
-void        garray_setAsUsedInDSP           (t_garray *x);
-void        garray_setSaveWithParent        (t_garray *x, int savedWithParent);
-void        garray_redraw                   (t_garray *x);
-void        garray_resize                   (t_garray *x, t_float f);
-void        garray_functionProperties       (t_garray *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_inlet     *vinlet_getInlet                (t_pd *x);
-t_outlet    *voutlet_getOutlet              (t_pd *x);
-
-int         vinlet_isSignal                 (t_vinlet *x);
-int         voutlet_isSignal                (t_voutlet *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int         cord_hit                        (t_cord *x, int a, int b);
-void        cord_init                       (t_cord *x, t_outconnect *connection);
-void        cord_make                       (t_cord *x, t_outconnect *connection, 
-                                                t_object *src,
-                                                int i,
-                                                t_object *dest, 
-                                                int j, 
-                                                t_glist *owner);
+int     cord_hit                    (t_cord *x, int a, int b);
+void    cord_init                   (t_cord *x, t_outconnect *connection);
+void    cord_make                   (t_cord *x, t_outconnect *connection,
+                                        t_object *src,
+                                        int i,
+                                        t_object *dest,
+                                        int j,
+                                        t_glist *owner);
                                                 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_outconnect    *traverser_next             (t_traverser *t);
+t_outconnect    *traverser_next     (t_traverser *t);
 
-void        traverser_start                 (t_traverser *t, t_glist *glist);
-void        traverser_disconnect            (t_traverser *t);
-int         traverser_isItLineBetween       (t_traverser *t, t_object *src, int m, t_object *dest, int n);
+void    traverser_start             (t_traverser *t, t_glist *glist);
+void    traverser_disconnect        (t_traverser *t);
+int     traverser_isItLineBetween   (t_traverser *t, t_object *src, int m, t_object *dest, int n);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

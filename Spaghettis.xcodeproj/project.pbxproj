@@ -391,6 +391,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		176D2C271F06A9860023E38E /* g_objects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_objects.h; path = src/g_objects.h; sourceTree = "<group>"; };
 		177169881EFD1212003CD374 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		1794C5D81F055A6400D78A38 /* m_clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_clipboard.h; path = src/m_clipboard.h; sourceTree = "<group>"; };
 		17981E141F0618A10029AD87 /* s_searchpath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_searchpath.c; path = src/s_searchpath.c; sourceTree = "<group>"; };
@@ -1454,6 +1455,7 @@
 				3742465E1E59AAE3009E8DC1 /* g_patch.h */,
 				373303351E7EE9D9000DF74C /* g_editor.h */,
 				3713CCB51E83A2E100B6867D /* g_glist.h */,
+				176D2C271F06A9860023E38E /* g_objects.h */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				37F6E1711E7C3D6100A42588 /* g_typeset.c */,
 				378971CE1C4F716700263434 /* g_box.c */,
