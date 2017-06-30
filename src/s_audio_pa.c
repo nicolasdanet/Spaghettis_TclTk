@@ -41,15 +41,15 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static PaStream         *pa_stream;                     /* Static. */
-static char             *pa_bufferIn;                   /* Static. */
-static char             *pa_bufferOut;                  /* Static. */
+static PaStream         *pa_stream;                     /* Global. */
+static char             *pa_bufferIn;                   /* Global. */
+static char             *pa_bufferOut;                  /* Global. */
 
-static PaUtilRingBuffer pa_ringIn;                      /* Static. */
-static PaUtilRingBuffer pa_ringOut;                     /* Static. */
+static PaUtilRingBuffer pa_ringIn;                      /* Global. */
+static PaUtilRingBuffer pa_ringOut;                     /* Global. */
 
-static int              pa_channelsIn;                  /* Static. */
-static int              pa_channelsOut;                 /* Static. */
+static int              pa_channelsIn;                  /* Global. */
+static int              pa_channelsOut;                 /* Global. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -295,7 +295,12 @@ t_error audio_openNative (t_devicesproperties *p)
 
 void audio_closeNative (void)
 {
-    if (pa_stream)    { Pa_AbortStream (pa_stream); Pa_CloseStream (pa_stream); pa_stream = NULL; }
+    if (pa_stream) {
+        Pa_AbortStream (pa_stream);
+        Pa_CloseStream (pa_stream);
+        pa_stream = NULL;
+    }
+    
     if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
     if (pa_bufferOut) { PD_MEMORY_FREE (pa_bufferOut); pa_bufferOut = NULL; } 
 }
