@@ -92,7 +92,7 @@ static void global_midiDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void global_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    instance_searchPathSetEncoded (argc, argv);
+    searchpath_setEncoded (argc, argv);
 }
 
 static void global_shouldQuit (void *dummy)

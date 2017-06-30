@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
+		17981E151F0618A10029AD87 /* s_searchpath.c in Sources */ = {isa = PBXBuildFile; fileRef = 17981E141F0618A10029AD87 /* s_searchpath.c */; };
 		179873E31F01095100BB1B94 /* m_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 179873E21F01095100BB1B94 /* m_file.c */; };
 		17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */; };
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
@@ -392,6 +393,7 @@
 /* Begin PBXFileReference section */
 		177169881EFD1212003CD374 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		1794C5D81F055A6400D78A38 /* m_clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_clipboard.h; path = src/m_clipboard.h; sourceTree = "<group>"; };
+		17981E141F0618A10029AD87 /* s_searchpath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_searchpath.c; path = src/s_searchpath.c; sourceTree = "<group>"; };
 		179873E21F01095100BB1B94 /* m_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_file.c; path = src/m_file.c; sourceTree = "<group>"; };
 		179E8D9C1EF91B4700FD3865 /* m_environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_environment.h; path = src/m_environment.h; sourceTree = "<group>"; };
 		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
@@ -1105,6 +1107,7 @@
 				3733937F1DBA6E4E00A76E6E /* s_outmidi.c */,
 				378971F11C4F716700263434 /* s_audio.c */,
 				378B47381C6C660B004099AA /* s_file.c */,
+				17981E141F0618A10029AD87 /* s_searchpath.c */,
 				378971FC1C4F716700263434 /* s_path.c */,
 				378971F51C4F716700263434 /* s_loader.c */,
 				37E224BE1E4B542B00314AA4 /* s_properties.c */,
@@ -1954,6 +1957,7 @@
 				378972561C4F716800263434 /* s_midi.c in Sources */,
 				378972571C4F716800263434 /* s_path.c in Sources */,
 				378972581C4F716800263434 /* s_post.c in Sources */,
+				17981E151F0618A10029AD87 /* s_searchpath.c in Sources */,
 				3789725A1C4F716800263434 /* s_utf8.c in Sources */,
 				3789725E1C4F716800263434 /* x_acoustic.c in Sources */,
 				3789725F1C4F716800263434 /* x_math.c in Sources */,

@@ -181,6 +181,16 @@ int         file_openReadConsideringSearchPath      (const char *directory,
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_pathlist  *searchpath_get                         (void);
+
+void        searchpath_appendPath                   (char *filepath);
+void        searchpath_setEncoded                   (int argc, t_atom *argv);
+
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void        path_slashToBackslashIfNecessary        (char *s);
 void        path_backslashToSlashIfNecessary        (char *s);
 int         path_isFileExist                        (const char *filepath);

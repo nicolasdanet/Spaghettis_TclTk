@@ -59,7 +59,6 @@ struct _pdinstance {
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
-    t_pathlist      *pd_searchPath;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -181,13 +180,6 @@ void    instance_stackPopPatch                  (t_glist *glist, int visible);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    instance_searchPathSetEncoded           (int argc, t_atom *argv);
-void    instance_searchPathAppendPath           (char *filepath);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_environment   *instance_environmentFetchIfAny (void);
 
 void    instance_environmentSetFile             (t_symbol *name, t_symbol *directory);
@@ -282,11 +274,6 @@ static inline t_glist *instance_getRoots (void)
 static inline t_pd *instance_getNewestObject (void)
 {
     return instance_get()->pd_newest;
-}
-
-static inline t_pathlist *instance_getSearchPath (void)
-{
-    return instance_get()->pd_searchPath;
 }
 
 // -----------------------------------------------------------------------------------------------------------

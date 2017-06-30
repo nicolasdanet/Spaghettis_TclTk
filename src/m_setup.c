@@ -41,6 +41,7 @@ void instance_release           (void);
 void loader_release             (void);
 void monitor_release            (void);
 void plot_release               (void);
+void searchpath_release         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -917,6 +918,7 @@ void setup_release (void)
     
     /* Various cleaning (reverse order). */
     
+    searchpath_release();
     plot_release();
     monitor_release();
     gui_release();

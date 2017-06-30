@@ -68,6 +68,7 @@
 #include "s_outmidi.c"
 #include "s_audio.c"
 #include "s_file.c"
+#include "s_searchpath.c"
 #include "s_path.c"
 #include "s_loader.c"
 #include "s_properties.c"

@@ -234,32 +234,6 @@ void instance_clockTick (t_systime t)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void instance_searchPathAppendPath (char *filepath)
-{
-    instance_get()->pd_searchPath = pathlist_newAppend (instance_get()->pd_searchPath, filepath);
-}
-
-void instance_searchPathSetEncoded (int argc, t_atom *argv)
-{
-    int i;
-    
-    pathlist_free (instance_get()->pd_searchPath);
-    
-    instance_get()->pd_searchPath = NULL;
-    
-    for (i = 0; i < argc; i++) {
-    //
-    t_symbol *path = symbol_decode (atom_getSymbolAtIndex (i, argc, argv));
-        
-    instance_get()->pd_searchPath = pathlist_newAppend (instance_get()->pd_searchPath, path->s_name);
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void instance_destroyAllScalarsByTemplate (t_template *template)
 {
     t_glist *glist = instance_get()->pd_roots;
@@ -371,8 +345,6 @@ static void instance_free (t_pdinstance *x)
     
     PD_ASSERT (x->pd_stack.s_stackIndex == 0);
     
-    pathlist_free (x->pd_searchPath);
-        
     if (x->pd_environment.env_argv) { PD_MEMORY_FREE (x->pd_environment.env_argv); }
     
     PD_MEMORY_FREE (x->pd_stack.s_stack);
