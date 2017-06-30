@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_pathlist *searchPath;     /* Global. */
+static t_pathlist *searchpath_list;     /* Global. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -22,22 +22,22 @@ static t_pathlist *searchPath;     /* Global. */
 
 void searchpath_appendPath (char *filepath)
 {
-    searchPath = pathlist_newAppend (searchPath, filepath);
+    searchpath_list = pathlist_newAppend (searchpath_list, filepath);
 }
 
 void searchpath_setEncoded (int argc, t_atom *argv)
 {
     int i;
     
-    pathlist_free (searchPath);
+    pathlist_free (searchpath_list);
     
-    searchPath = NULL;
+    searchpath_list = NULL;
     
     for (i = 0; i < argc; i++) {
     //
     t_symbol *path = symbol_decode (atom_getSymbolAtIndex (i, argc, argv));
         
-    searchPath = pathlist_newAppend (searchPath, path->s_name);
+    searchpath_list = pathlist_newAppend (searchpath_list, path->s_name);
     //
     }
 }
@@ -48,7 +48,7 @@ void searchpath_setEncoded (int argc, t_atom *argv)
 
 t_pathlist *searchpath_get (void)
 {
-    return searchPath;
+    return searchpath_list;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ t_pathlist *searchpath_get (void)
 
 void searchpath_release (void)
 {
-    pathlist_free (searchPath);
+    pathlist_free (searchpath_list);
 }
 
 // -----------------------------------------------------------------------------------------------------------
