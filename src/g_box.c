@@ -236,7 +236,7 @@ static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, in
     
     for (i = 0; i < m; i++) {
     //
-    int offset = inlet_offset (i, m, r);
+    int offset = inlet_getOffset (i, m, r);
     
     if (create) {
     
@@ -265,7 +265,7 @@ static void box_drawInletsAndOutlets (t_glist *glist, t_object *o, char *tag, in
     
     for (i = 0; i < n; i++) {
     //
-    int offset = inlet_offset (i, n, r);
+    int offset = inlet_getOffset (i, n, r);
     
     if (create) {
     

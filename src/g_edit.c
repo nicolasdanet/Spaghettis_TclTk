@@ -123,8 +123,8 @@ static void glist_makeLineProceed (t_glist *glist, int a, int b, int end)
     
     if (numberOfOutlets && numberOfInlets) {
     //
-    int k1 = inlet_closest (startX, numberOfOutlets, &r1);
-    int k2 = inlet_closest (a, numberOfInlets, &r2);
+    int k1 = inlet_getClosest (startX, numberOfOutlets, &r1);
+    int k2 = inlet_getClosest (a, numberOfInlets, &r2);
 
     if (!glist_lineExist (glist, o1, k1, o2, k2)) {
     //
@@ -369,8 +369,8 @@ static int glist_mouseOverEditLine (t_glist *glist, t_gobj *y, int a, int b, int
     if ((n = object_getNumberOfOutlets (cast_object (y)))) {
     if ((b >= rectangle_getBottomRightY (r) - EDIT_GRIP_SIZE)) {
     //
-    int closest = inlet_closest (a, n, r);
-    int hotspot = inlet_middle (closest, n, r);
+    int closest = inlet_getClosest (a, n, r);
+    int hotspot = inlet_getMiddle (closest, n, r);
 
     if (PD_ABS (a - hotspot) < EDIT_GRIP_SIZE) {
     

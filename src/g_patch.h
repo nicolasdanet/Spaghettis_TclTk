@@ -14,162 +14,121 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_GUISTUB          ".guistub"
+#define PD_GUISTUB              ".guistub"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 enum {
-    ACTION_NONE             = 0,
-    ACTION_MOVE             = 1,
-    ACTION_CONNECT          = 2,
-    ACTION_REGION           = 3,
-    ACTION_PASS             = 4,
-    ACTION_DRAG             = 5,
-    ACTION_RESIZE           = 6
+    ACTION_NONE                 = 0,
+    ACTION_MOVE                 = 1,
+    ACTION_CONNECT              = 2,
+    ACTION_REGION               = 3,
+    ACTION_PASS                 = 4,
+    ACTION_DRAG                 = 5,
+    ACTION_RESIZE               = 6
     };
 
 enum {
-    CURSOR_NOTHING          = 0,            /* Must NOT be changed. */
-    CURSOR_CLICK            = 1,            /* Must NOT be changed. */
-    CURSOR_OVER             = 2,
-    CURSOR_THICKEN          = 3,
-    CURSOR_CONNECT          = 4,
-    CURSOR_RESIZE           = 5
+    CURSOR_NOTHING              = 0,            /* Must NOT be changed. */
+    CURSOR_CLICK                = 1,            /* Must NOT be changed. */
+    CURSOR_OVER                 = 2,
+    CURSOR_THICKEN              = 3,
+    CURSOR_CONNECT              = 4,
+    CURSOR_RESIZE               = 5
     };
 
 enum {
-    MODIFIER_NONE           = 0,
-    MODIFIER_SHIFT          = 1,
-    MODIFIER_CTRL           = 2,            /* Command key on Mac OS X. */
-    MODIFIER_ALT            = 4,
-    MODIFIER_RIGHT          = 8,
-    MODIFIER_DOUBLE         = 16
+    MODIFIER_NONE               = 0,
+    MODIFIER_SHIFT              = 1,
+    MODIFIER_CTRL               = 2,            /* Command key on Mac OS X. */
+    MODIFIER_ALT                = 4,
+    MODIFIER_RIGHT              = 8,
+    MODIFIER_DOUBLE             = 16
     };
 
 enum {
-    BOX_DOWN                = 1,
-    BOX_DRAG                = 2,
-    BOX_DOUBLE              = 3,
-    BOX_SHIFT               = 4
+    BOX_DOWN                    = 1,
+    BOX_DRAG                    = 2,
+    BOX_DOUBLE                  = 3,
+    BOX_SHIFT                   = 4
     };
 
 enum {
-    BOX_CHECK               = 0,
-    BOX_CREATE              = 1,
-    BOX_UPDATE              = 2
+    BOX_CHECK                   = 0,
+    BOX_CREATE                  = 1,
+    BOX_UPDATE                  = 2
     };
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define WINDOW_WIDTH            450
+#define WINDOW_HEIGHT           300
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_APPLE
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define INLET_WIDTH         7
-#define INLET_HEIGHT        2
-#define WINDOW_HEADER       22
-#define WINDOW_WIDTH        450
-#define WINDOW_HEIGHT       300
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#else 
+    #define WINDOW_HEADER       22                      /* Windows don't include menu bar at top. */
+#else
+    #define WINDOW_HEADER       50
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define INLET_WIDTH         7
-#define INLET_HEIGHT        2
-#define WINDOW_HEADER       50
-#define WINDOW_WIDTH        450
-#define WINDOW_HEIGHT       300
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#endif // PD_APPLE
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline int inlet_offset (int i, int n, t_rectangle *r)
-{
-    int a = rectangle_getTopLeftX (r);
-    int w = rectangle_getWidth (r);
-    
-    return (a + (((w - INLET_WIDTH) * i) / ((n == 1) ? 1 : (n - 1))));
-}
-
-static inline int inlet_middle (int i, int n, t_rectangle *r)
-{
-    return (inlet_offset (i, n, r) + ((INLET_WIDTH - 1) / 2));
-}
-
-static inline int inlet_closest (int x, int n, t_rectangle *r)
-{
-    int a = rectangle_getTopLeftX (r);
-    int w = rectangle_getWidth (r);
-    
-    int i = (((x - a) * (n - 1) + (w / 2)) / w);
-    
-    PD_ASSERT (n > 0); return PD_CLAMP (i, 0, n - 1);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define BOX_TAG_SIZE    50
+#define BOX_TAG_SIZE            50
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 struct _box {
-    struct _box         *box_next;
-    t_object            *box_object;
-    t_glist             *box_owner;
-    char                *box_string;                        /* Unzeroed string UTF-8 formatted. */
-    int                 box_stringSizeInBytes;
-    int                 box_selectionStart; 
-    int                 box_selectionEnd;
-    int                 box_draggedFrom;
-    int                 box_isActivated;
-    int                 box_widthInPixels;
-    int                 box_heightInPixels;
-    int                 box_checked;
-    char                box_tag[BOX_TAG_SIZE];
+    struct _box     *box_next;
+    t_object        *box_object;
+    t_glist         *box_owner;
+    char            *box_string;                        /* Unzeroed string UTF-8 formatted. */
+    int             box_stringSizeInBytes;
+    int             box_selectionStart;
+    int             box_selectionEnd;
+    int             box_draggedFrom;
+    int             box_isActivated;
+    int             box_widthInPixels;
+    int             box_heightInPixels;
+    int             box_checked;
+    char            box_tag[BOX_TAG_SIZE];
     };
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 typedef struct _cord {
-    int                 tr_lineStartX;
-    int                 tr_lineStartY;
-    int                 tr_lineEndX;
-    int                 tr_lineEndY;
-    int                 tr_lineIsSignal;
-    t_outconnect        *tr_lineConnection;
+    int             tr_lineStartX;
+    int             tr_lineStartY;
+    int             tr_lineEndX;
+    int             tr_lineEndY;
+    int             tr_lineIsSignal;
+    t_outconnect    *tr_lineConnection;
     } t_cord;
     
 typedef struct _traverser {
-    t_glist             *tr_owner;
-    t_outconnect        *tr_connectionCached;
-    t_object            *tr_srcObject;
-    t_outlet            *tr_srcOutlet;
-    t_object            *tr_destObject;
-    t_inlet             *tr_destInlet;
-    int                 tr_srcIndexOfOutlet;
-    int                 tr_srcNumberOfOutlets;
-    int                 tr_destIndexOfInlet;
-    int                 tr_destNumberOfInlets;
-    int                 tr_srcIndexOfNextOutlet;
-    t_cord              tr_cord;
+    t_glist         *tr_owner;
+    t_outconnect    *tr_connectionCached;
+    t_object        *tr_srcObject;
+    t_outlet        *tr_srcOutlet;
+    t_object        *tr_destObject;
+    t_inlet         *tr_destInlet;
+    int             tr_srcIndexOfOutlet;
+    int             tr_srcNumberOfOutlets;
+    int             tr_destIndexOfInlet;
+    int             tr_destNumberOfInlets;
+    int             tr_srcIndexOfNextOutlet;
+    t_cord          tr_cord;
     } t_traverser;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -219,6 +178,7 @@ void        box_key                         (t_box *x, t_keycode n, t_symbol *s)
 // MARK: -
 
 void        message_makeObject              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+
 void        message_click                   (t_message *x, t_symbol *s, int argc, t_atom *argv);
                                                             
 // -----------------------------------------------------------------------------------------------------------

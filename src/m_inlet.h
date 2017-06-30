@@ -15,7 +15,7 @@
 // MARK: -
 
 struct _inlet {
-    t_pd            i_pd;       /* MUST be the first. */
+    t_pd            i_pd;                   /* MUST be the first. */
     struct _inlet   *i_next;
     t_object        *i_owner;
     t_pd            *i_receiver;
@@ -57,6 +57,41 @@ static inline t_object *inlet_getOwner (t_inlet *x)
 static inline t_float *inlet_getSignal (t_inlet *x)
 {
     return &x->i_un.i_signal;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define INLET_WIDTH     7
+#define INLET_HEIGHT    2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* Handy functions to draw inlets. */
+
+static inline int inlet_getOffset (int i, int n, t_rectangle *r)
+{
+    int a = rectangle_getTopLeftX (r);
+    int w = rectangle_getWidth (r);
+    
+    return (a + (((w - INLET_WIDTH) * i) / ((n == 1) ? 1 : (n - 1))));
+}
+
+static inline int inlet_getMiddle (int i, int n, t_rectangle *r)
+{
+    return (inlet_getOffset (i, n, r) + ((INLET_WIDTH - 1) / 2));
+}
+
+static inline int inlet_getClosest (int x, int n, t_rectangle *r)
+{
+    int a = rectangle_getTopLeftX (r);
+    int w = rectangle_getWidth (r);
+    int i = (((x - a) * (n - 1) + (w / 2)) / w);
+    
+    PD_ASSERT (n > 0); return PD_CLAMP (i, 0, n - 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------

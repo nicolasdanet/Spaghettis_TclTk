@@ -945,7 +945,9 @@
 				37D6430D1D47944400071C3C /* g_getsize.c */,
 				37D642F21D4793A800071C3C /* g_setsize.c */,
 				37D642BB1D47924100071C3C /* g_append.c */,
-				3727F3201EAF4B5200D9738C /* Painters */,
+				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
+				379C1B711D37934500C4D92C /* g_plot.c */,
+				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -1171,16 +1173,6 @@
 				37A59CDC1C538B4800FBD0AD /* Audio */,
 			);
 			name = API;
-			sourceTree = "<group>";
-		};
-		3727F3201EAF4B5200D9738C /* Painters */ = {
-			isa = PBXGroup;
-			children = (
-				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
-				379C1B711D37934500C4D92C /* g_plot.c */,
-				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
-			);
-			name = Painters;
 			sourceTree = "<group>";
 		};
 		3735D9701E5995B300858959 /* Objects */ = {
