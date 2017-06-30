@@ -22,15 +22,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _clipboard {
-    int         cb_count;
-    t_buffer    *cb_buffer;
-    } t_clipboard;
+static int clipboard_count;                 /* Global. */
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_clipboard clipboard;           /* Global. */
+static t_buffer *clipboard_buffer;          /* Global. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,7 +40,7 @@ void clipboard_copy (t_glist *glist)
     t_outconnect *connection = NULL;
     t_traverser t;
     
-    clipboard.cb_count = 0;
+    clipboard_count = 0;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (glist_objectIsSelected (glist, y)) { gobj_save (y, b); }
@@ -71,9 +65,9 @@ void clipboard_copy (t_glist *glist)
     //
     }
     
-    buffer_free (clipboard.cb_buffer);
+    buffer_free (clipboard_buffer);
     
-    clipboard.cb_buffer = b;
+    clipboard_buffer = b;
     //
     }
 }
@@ -83,18 +77,18 @@ void clipboard_paste (t_glist *glist)
     t_gobj *y = NULL;
     t_selection *s = NULL;
     int i = 0;
-    int n = (++clipboard.cb_count) * CLIPBOARD_CUMULATIVE_OFFSET;
+    int n = (++clipboard_count) * CLIPBOARD_CUMULATIVE_OFFSET;
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     int isDirty = 0;
     
     glist_deselectAll (glist);
     
-    snippet_addOffsetToLines (clipboard.cb_buffer, alreadyThere);
+    snippet_addOffsetToLines (clipboard_buffer, alreadyThere);
     
-        instance_loadSnippet (glist, clipboard.cb_buffer);
+        instance_loadSnippet (glist, clipboard_buffer);
     
-    snippet_substractOffsetToLines (clipboard.cb_buffer, alreadyThere);
+    snippet_substractOffsetToLines (clipboard_buffer, alreadyThere);
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (i >= alreadyThere) { glist_objectSelect (glist, y); isDirty = 1; }
@@ -117,13 +111,13 @@ void clipboard_paste (t_glist *glist)
 
 void clipboard_initialize (void)
 {
-    clipboard.cb_count  = 0;
-    clipboard.cb_buffer = buffer_new();
+    clipboard_count  = 0;
+    clipboard_buffer = buffer_new();
 }
 
 void clipboard_release (void)
 {
-    if (clipboard.cb_buffer) { buffer_free (clipboard.cb_buffer); }
+    if (clipboard_buffer) { buffer_free (clipboard_buffer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
