@@ -20,28 +20,24 @@ static t_class *proxy_class;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 /* Listener destroyed. */
-/* No sender thus free it now. */
-/* Sender alive thus free it later. */
- 
+
 void proxy_release (t_proxy *x)
 {
     x->x_owner = NULL;
     
-    if (!x->x_bound) { pd_free (cast_pd (x)); } 
+    if (!x->x_bound) { pd_free (cast_pd (x)); }                         /* No sender thus free it now. */
     else {
-        instance_autoreleaseRegister (cast_pd (x)); 
+        instance_autoreleaseRegister (cast_pd (x));                     /* Sender alive thus free it later. */
     }    
 }
 
 /* Sender destroyed. */
-/* No listener thus free it now. */
-/* Listener alive thus unbind it. */
 
 static void proxy_signoff (t_proxy *x)  
 {
-    if (!x->x_owner) { instance_autoreleaseProceed (cast_pd (x)); }     
+    if (!x->x_owner) { instance_autoreleaseProceed (cast_pd (x)); }     /* No listener thus free it now. */
     else {
-        pd_unbind (cast_pd (x), x->x_bound); x->x_bound = NULL;
+        pd_unbind (cast_pd (x), x->x_bound); x->x_bound = NULL;         /* Listener alive thus unbind it. */
     }
 }
 

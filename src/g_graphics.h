@@ -14,12 +14,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* It aims to manage properties window. */
-/* While sending attributes it creates a proxy bound to a unique key name. */
+/* A stub aims to manage properties window. */
+/* While sending content, a remote is created bound to a unique key name. */
 /* This key is used as a label in order to forward changes from the GUI. */
-/* This key is used as a master name for the GUI widgets. */
-/* Destroying the proxy from the owner side closes the window. */
-/* It can also be freely canceled from the interpreter side. */
+/* This key is used also as a master name for the GUI widgets. */
+/* Destroying the remote from the owner side closes the window. */
+/* It can be freely canceled (signoff) from the interpreter side. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -33,8 +33,8 @@ void    stub_destroyWithKey     (void *key);
 
 /* A proxy is used to bind a listener to an unique symbol. */
 /* Messages sent to this symbol are forwarded to it. */
-/* The listener destroyed, the proxy is kept alive for a short time. */
-/* When the sender is destroyed, listening is cancelled. */
+/* The listener destroyed, the proxy is kept alive (muted) for a short time. */
+/* When the sender is destroyed (signoff) listening is cancelled. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
