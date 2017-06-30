@@ -21,7 +21,8 @@ t_pdinstance *pd_this;  /* Global. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_new (void *, t_symbol *, int, t_atom *);
+void canvas_new                 (void *, t_symbol *, int, t_atom *);
+void scheduler_setLogicalTime   (t_systime);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -221,13 +222,11 @@ void instance_clockTick (t_systime t)
     while (instance_get()->pd_clocks && clock_getLogicalTime (instance_get()->pd_clocks) < t) {
     //
     t_clock *c = instance_get()->pd_clocks;
-    instance_get()->pd_systime = clock_getLogicalTime (c);
+    scheduler_setLogicalTime (clock_getLogicalTime (c));
     clock_unset (c);
     clock_execute (c);
     //
     }
-    
-    instance_get()->pd_systime = t;
 }
 
 // -----------------------------------------------------------------------------------------------------------

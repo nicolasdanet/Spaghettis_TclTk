@@ -36,26 +36,32 @@ static volatile sig_atomic_t scheduler_quit;            /* Global. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int scheduler_audioState;                        /* Global. */
+static int          scheduler_audioState;               /* Global. */
+static t_systime    scheduler_systime;                  /* Global. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void scheduler_setLogicalTime (t_systime t)
+{
+    scheduler_systime = t;
+}
+
 t_systime scheduler_getLogicalTime (void)
 {
-    return instance_getLogicalTime();
+    return scheduler_systime;
 }
 
 t_systime scheduler_getLogicalTimeAfter (double ms)
 {
-    return (instance_getLogicalTime() + (SYSTIME_PER_MILLISECOND * ms));
+    return (scheduler_getLogicalTime() + (SYSTIME_PER_MILLISECOND * ms));
 }
 
 double scheduler_getUnitsSince (t_systime systime, double unit, int isSamples)
 {
     double d;
-    t_systime elapsed = instance_getLogicalTime() - systime;
+    t_systime elapsed = scheduler_getLogicalTime() - systime;
     
     PD_ASSERT (elapsed >= 0.0);
     
@@ -69,7 +75,7 @@ double scheduler_getUnitsSince (t_systime systime, double unit, int isSamples)
 
 double scheduler_getMillisecondsSince (t_systime systime)
 {
-    t_systime elapsed = instance_getLogicalTime() - systime;
+    t_systime elapsed = scheduler_getLogicalTime() - systime;
     
     return (elapsed / SYSTIME_PER_MILLISECOND);
 }
@@ -125,9 +131,11 @@ static void scheduler_tick (void)
 {
     if (!scheduler_quit) { 
     //
-    t_systime t = instance_getLogicalTime() + scheduler_getSystimePerDSPTick();
+    t_systime t = scheduler_getLogicalTime() + scheduler_getSystimePerDSPTick();
     
     instance_clockTick (t);
+    
+    scheduler_setLogicalTime (t);
     //
     }
     

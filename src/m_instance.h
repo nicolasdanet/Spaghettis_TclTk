@@ -41,7 +41,6 @@ typedef struct _position {
 // MARK: -
 
 struct _pdinstance {
-    t_systime       pd_systime;
     t_stack         pd_stack;
     t_environment   pd_environment;
     t_position      pd_locate;
@@ -245,11 +244,6 @@ static inline int instance_isMakerObject (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-static inline t_systime instance_getLogicalTime (void)
-{
-    return instance_get()->pd_systime;
-}
 
 static inline int instance_getDspState (void)
 {
