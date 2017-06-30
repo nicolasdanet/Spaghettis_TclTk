@@ -24,13 +24,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int midipm_numberOfDevicesIn;                        /* Static. */
-static int midipm_numberOfDevicesOut;                       /* Static. */
+static int midipm_numberOfDevicesIn;                        /* Global. */
+static int midipm_numberOfDevicesOut;                       /* Global. */
 
-static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];      /* Static. */
-static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];     /* Static. */
+static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];      /* Global. */
+static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];     /* Global. */
 
-static int midipm_sysexFlag;                                /* Static. */
+static int midipm_sysexFlag;                                /* Global. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -29,11 +29,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int midialsa_numberOfDevicesIn;                  /* Static. */
-static int midialsa_numberOfDevicesOut;                 /* Static. */
+static int midialsa_numberOfDevicesIn;                  /* Global. */
+static int midialsa_numberOfDevicesOut;                 /* Global. */
 
-static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];      /* Static. */
-static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];     /* Static. */
+static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];      /* Global. */
+static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];     /* Global. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
