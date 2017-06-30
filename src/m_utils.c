@@ -39,7 +39,7 @@ t_error utils_version (char *dest, size_t size)
 
 t_unique utils_unique (void)
 {
-    static t_unique unique = 10000;     /* Shared. */
+    static t_unique unique = 10000;     /* Global. */
     
     unique++;
     

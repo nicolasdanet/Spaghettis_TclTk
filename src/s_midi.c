@@ -44,17 +44,17 @@ typedef struct _midiparser {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_midiqelem  midi_outQueue[MIDI_QUEUE_SIZE];     /* Shared. */
-static int          midi_outHead;                       /* Shared. */
-static int          midi_outTail;                       /* Shared. */
+static t_midiqelem  midi_outQueue[MIDI_QUEUE_SIZE];     /* Global. */
+static int          midi_outHead;                       /* Global. */
+static int          midi_outTail;                       /* Global. */
 
-static t_midiqelem  midi_inQueue[MIDI_QUEUE_SIZE];      /* Shared. */
-static int          midi_inHead;                        /* Shared. */
-static int          midi_inTail;                        /* Shared. */
+static t_midiqelem  midi_inQueue[MIDI_QUEUE_SIZE];      /* Global. */
+static int          midi_inHead;                        /* Global. */
+static int          midi_inTail;                        /* Global. */
 
-static t_midiparser midi_parser[DEVICES_MAXIMUM_IO];    /* Shared. */
+static t_midiparser midi_parser[DEVICES_MAXIMUM_IO];    /* Global. */
     
-static t_systime    midi_logicalTimeAtStart;            /* Shared. */
+static t_systime    midi_logicalTimeAtStart;            /* Global. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
