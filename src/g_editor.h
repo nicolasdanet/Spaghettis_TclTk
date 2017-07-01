@@ -32,7 +32,6 @@ typedef struct _editor {
     t_box               *e_selectedBox;
     t_selection         *e_selectedObjects;
     t_gobj              *e_grabbed;
-    t_clock             *e_clock;
     t_buffer            *e_cachedLines;
     t_outconnect        *e_selectedLineConnection;
     int                 e_selectedLine[4];

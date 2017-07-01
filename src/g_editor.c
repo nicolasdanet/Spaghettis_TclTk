@@ -15,20 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void editor_task (t_editor *x)
-{
-    int deltaX = drag_getMoveX (editor_getDrag (x));
-    int deltaY = drag_getMoveY (editor_getDrag (x));
-    
-    glist_objectDisplaceSelected (x->e_owner, deltaX, deltaY);
-        
-    drag_close (editor_getDrag (x));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_box *editor_boxFetch (t_editor *x, t_object *object)
 {
     t_box *box = NULL;
@@ -128,8 +114,12 @@ int editor_selectionRemove (t_editor *x, t_gobj *y)
 
 void editor_selectionDeplace (t_editor *x)
 {
-    clock_unset (x->e_clock);
-    clock_delay (x->e_clock, 5.0);
+    int deltaX = drag_getMoveX (editor_getDrag (x));
+    int deltaY = drag_getMoveY (editor_getDrag (x));
+    
+    glist_objectDisplaceSelected (x->e_owner, deltaX, deltaY);
+        
+    drag_close (editor_getDrag (x));
 }
 
 void editor_selectionCacheLines (t_editor *x)
@@ -246,7 +236,6 @@ t_editor *editor_new (t_glist *owner)
     
     x->e_owner       = owner;
     x->e_proxy       = proxy_new (cast_pd (owner));
-    x->e_clock       = clock_new ((void *)x, (t_method)editor_task);
     x->e_cachedLines = buffer_new();
     
     for (y = owner->gl_graphics; y; y = y->g_next) {
@@ -263,7 +252,6 @@ void editor_free (t_editor *x)
     while ((box = x->e_boxes)) { editor_boxRemove (x, box); }
     
     buffer_free (x->e_cachedLines);
-    clock_free (x->e_clock);
     proxy_release (x->e_proxy);
     
     PD_MEMORY_FREE (x);
