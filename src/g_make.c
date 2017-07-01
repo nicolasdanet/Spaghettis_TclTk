@@ -51,6 +51,10 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void canvas_makeMessage (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     message_makeObject (glist, s, argc, argv);
@@ -212,6 +216,10 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void canvas_makeIemMenu (t_glist *glist, t_symbol *name)
 {

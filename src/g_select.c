@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Get selected objects from uneselected ones and move them to the end. */
+/* Separate selected objects from uneselected ones and move them to the end. */
 
 static void glist_sortSelected (t_glist *glist)
 {

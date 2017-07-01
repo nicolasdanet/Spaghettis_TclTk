@@ -152,6 +152,10 @@ void canvas_mouseUp (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     glist_actionEnd (glist, a, b);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* Moving (drag included). */
 
 void canvas_motion (t_glist *glist, t_symbol *s, int argc, t_atom *argv)

@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void glist_behaviorVisibilityChanged   (t_gobj *, t_glist *, int);
+void glist_behaviorVisibilityChanged    (t_gobj *, t_glist *, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -24,12 +24,13 @@ void glist_behaviorVisibilityChanged   (t_gobj *, t_glist *, int);
 void glist_updateTitle (t_glist *glist)
 {
     if (glist_hasWindow (glist)) {
-
-        gui_vAdd ("::ui_patch::setTitle %s {%s} {%s} %d\n",  // --
-                        glist_getTagAsString (glist),
-                        environment_getDirectoryAsString (glist_getEnvironment (glist)),
-                        glist_getName (glist)->s_name,
-                        glist_getDirty (glist));
+    //
+    gui_vAdd ("::ui_patch::setTitle %s {%s} {%s} %d\n",  // --
+                    glist_getTagAsString (glist),
+                    environment_getDirectoryAsString (glist_getEnvironment (glist)),
+                    glist_getName (glist)->s_name,
+                    glist_getDirty (glist));
+    //
     }
 }
 
