@@ -41,9 +41,13 @@ proc setText {c tag text} {
 
 proc setEditing {top tag isEditing} {
 
-    if {$isEditing == 0} {selection clear $top.c}
+    if {$isEditing == 1} {
+        $top.c focus $tag
     
-    $top.c focus $tag
+    } else {
+        selection clear $top.c
+        $top.c focus ""
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
