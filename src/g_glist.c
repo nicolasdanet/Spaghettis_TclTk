@@ -625,16 +625,17 @@ void glist_objectRemoveAllByTemplate (t_glist *glist, t_template *template)
     t_gobj *y = NULL;
 
     for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    if (pd_class (y) == scalar_class) {
+        if (scalar_containsTemplate (cast_scalar (y), template_getTemplateIdentifier (template))) {
+            glist_objectRemove (glist, y);
+        }
+    }
     
-        if (pd_class (y) == scalar_class) {
-            if (scalar_containsTemplate (cast_scalar (y), template_getTemplateIdentifier (template))) {
-                glist_objectRemove (glist, y);
-            }
-        }
-        
-        if (pd_class (y) == canvas_class) {
-            glist_objectRemoveAllByTemplate (cast_glist (y), template);
-        }
+    if (pd_class (y) == canvas_class) {
+        glist_objectRemoveAllByTemplate (cast_glist (y), template);
+    }
+    //
     }
 }
 
@@ -643,7 +644,9 @@ void glist_objectRemoveAllScalars (t_glist *glist)
     t_gobj *y = NULL;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == scalar_class) { glist_objectRemove (glist, y); }
+        if (pd_class (y) == scalar_class) {
+            glist_objectRemove (glist, y);
+        }
     }
 }
 
@@ -688,9 +691,14 @@ void glist_objectDeleteLines (t_glist *glist, t_object *o)
     traverser_start (&t, glist);
     
     while ((connection = traverser_next (&t))) {
-        if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
-            glist_eraseLine (glist, traverser_getCord (&t)); traverser_disconnect (&t);
-        }
+    //
+    int m = (traverser_getSource (&t) == o);
+    int n = (traverser_getDestination (&t) == o);
+    
+    if (m || n) {
+        glist_eraseLine (glist, traverser_getCord (&t)); traverser_disconnect (&t);
+    }
+    //
     }
 }
 
