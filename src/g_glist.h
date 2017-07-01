@@ -14,28 +14,28 @@
 // -----------------------------------------------------------------------------------------------------------
 
 struct _glist {  
-    t_object        gl_obj;                                 /* MUST be the first. */
-    t_gobj          *gl_graphics;
-    t_gmaster       *gl_holder;
-    t_glist         *gl_parent;
-    t_glist         *gl_next;
-    t_environment   *gl_environment;
-    t_symbol        *gl_name;
-    t_editor        *gl_editor;
-    t_unique        gl_uniqueIdentifier;
-    t_bounds        gl_bounds;
-    t_rectangle     gl_geometryGraph;
-    t_rectangle     gl_geometryWindow;                      /* Screen coordinates. */
-    t_fontsize      gl_fontSize;
-    int             gl_hasWindow;
-    int             gl_isMapped;
-    int             gl_isDirty;
-    int             gl_isLoading;
-    int             gl_isDeleting;
-    int             gl_isEditing;
-    int             gl_isSelected;
-    int             gl_isGraphOnParent;
-    int             gl_isOpenedAtLoad;
+    t_object            gl_obj;                         /* MUST be the first. */
+    t_gobj              *gl_graphics;
+    t_gmaster           *gl_holder;
+    t_glist             *gl_parent;
+    t_glist             *gl_next;
+    t_environment       *gl_environment;
+    t_symbol            *gl_name;
+    t_editor            *gl_editor;
+    t_unique            gl_uniqueIdentifier;
+    t_bounds            gl_bounds;
+    t_rectangle         gl_geometryGraph;
+    t_rectangle         gl_geometryWindow;
+    t_fontsize          gl_fontSize;
+    int                 gl_hasWindow;
+    int                 gl_isMapped;
+    int                 gl_isDirty;
+    int                 gl_isLoading;
+    int                 gl_isDeleting;
+    int                 gl_isEditing;
+    int                 gl_isSelected;
+    int                 gl_isGraphOnParent;
+    int                 gl_isOpenedAtLoad;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -92,20 +92,17 @@ void    glist_unbind                        (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 void    glist_loadbang                      (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 void    glist_serialize                     (t_glist *g, t_buffer *b);
 void    glist_rename                        (t_glist *g, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 int     glist_fileExist                     (t_glist *g, char *name, char *extension, t_fileproperties *p);
 int     glist_fileOpen                      (t_glist *g, char *name, char *extension, t_fileproperties *p);

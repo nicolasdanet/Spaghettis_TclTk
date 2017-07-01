@@ -72,9 +72,13 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_APPLE
-    #define WINDOW_HEADER   22                      /* Windows don't include menu bar at top. */
+
+#define WINDOW_HEADER       22
+
 #else
-    #define WINDOW_HEADER   50
+
+#define WINDOW_HEADER       50
+
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

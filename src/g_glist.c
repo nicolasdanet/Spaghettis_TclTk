@@ -168,7 +168,7 @@ int glist_isSubpatch (t_glist *glist)
 /* Array is a GOP patch that contains only a scalar. */
 /* This scalar has an array of numbers as unique field. */
 /* Dirty bit is always owned by the top patch. */
-/* For GOP the view to draw on is owned by a parent. */
+/* For GOP the view to draw is owned by a parent. */
 /* Note that a GOP can be opened in its own window on demand. */
 
 // -----------------------------------------------------------------------------------------------------------
