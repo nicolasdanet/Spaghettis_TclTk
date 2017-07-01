@@ -203,57 +203,61 @@ typedef struct _panel {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        iemgui_serializeColors              (t_iem *iem, t_iemcolors *c);
-int         iemgui_serializeFontStyle           (t_iem *iem);
-int         iemgui_serializeLoadbang            (t_iem *iem);
-void        iemgui_serializeNames               (t_iem *iem, t_iemnames *n);
+void    iemgui_serializeColors              (t_iem *iem, t_iemcolors *c);
+int     iemgui_serializeFontStyle           (t_iem *iem);
+int     iemgui_serializeLoadbang            (t_iem *iem);
+void    iemgui_serializeNames               (t_iem *iem, t_iemnames *n);
 
-void        iemgui_deserializeColors            (t_iem *iem, t_atom *bgrd, t_atom *fgrd, t_atom *label);
-void        iemgui_deserializeFontStyle         (t_iem *iem, int n);
-void        iemgui_deserializeLoadbang          (t_iem *iem, int n);
-void        iemgui_deserializeNames             (t_iem *iem, int i, t_atom *argv);
+void    iemgui_deserializeColors            (t_iem *iem, t_atom *bgrd, t_atom *fgrd, t_atom *label);
+void    iemgui_deserializeFontStyle         (t_iem *iem, int n);
+void    iemgui_deserializeLoadbang          (t_iem *iem, int n);
+void    iemgui_deserializeNames             (t_iem *iem, int i, t_atom *argv);
 
-void        iemgui_deserializeDefault           (t_iem *iem);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        iemgui_checkSendReceiveLoop         (t_iem *iem);
+void    iemgui_deserializeDefault           (t_iem *iem);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        iemgui_behaviorDisplaced            (t_gobj *z, t_glist *glist, int deltaX, int deltaY);
-void        iemgui_behaviorSelected             (t_gobj *z, t_glist *glist, int isSelected);
-void        iemgui_behaviorVisibilityChanged    (t_gobj *z, t_glist *glist, int isVisible);
-void        iemgui_behaviorDeleted              (t_gobj *z, t_glist *glist);
-
-void        iemgui_serialize                    (t_iem *iem, t_iemnames *n, t_iemcolors *c);
-int         iemgui_fromDialog                   (t_iem *iem, int argc, t_atom *argv);
+void    iemgui_checkSendReceiveLoop         (t_iem *iem);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        iemgui_setSend                      (void *x, t_symbol *s);
-void        iemgui_setReceive                   (void *x, t_symbol *s);
-void        iemgui_setLabel                     (void *x, t_symbol *s);
-void        iemgui_setLabelPosition             (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setLabelFont                 (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setBackgroundColor           (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setForegroundColor           (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setLabelColor                (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setPosition                  (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_movePosition                 (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_boxChanged                   (void *x);
+void    iemgui_behaviorDisplaced            (t_gobj *z, t_glist *glist, int deltaX, int deltaY);
+void    iemgui_behaviorSelected             (t_gobj *z, t_glist *glist, int isSelected);
+void    iemgui_behaviorVisibilityChanged    (t_gobj *z, t_glist *glist, int isVisible);
+void    iemgui_behaviorDeleted              (t_gobj *z, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        iemgui_dummy                        (void *x, t_symbol *s, int argc, t_atom *argv);
+void    iemgui_serialize                    (t_iem *iem, t_iemnames *n, t_iemcolors *c);
+int     iemgui_fromDialog                   (t_iem *iem, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void    iemgui_setSend                      (void *x, t_symbol *s);
+void    iemgui_setReceive                   (void *x, t_symbol *s);
+void    iemgui_setLabel                     (void *x, t_symbol *s);
+void    iemgui_setLabelPosition             (void *x, t_symbol *s, int argc, t_atom *argv);
+void    iemgui_setLabelFont                 (void *x, t_symbol *s, int argc, t_atom *argv);
+void    iemgui_setBackgroundColor           (void *x, t_symbol *s, int argc, t_atom *argv);
+void    iemgui_setForegroundColor           (void *x, t_symbol *s, int argc, t_atom *argv);
+void    iemgui_setLabelColor                (void *x, t_symbol *s, int argc, t_atom *argv);
+void    iemgui_setPosition                  (void *x, t_symbol *s, int argc, t_atom *argv);
+void    iemgui_movePosition                 (void *x, t_symbol *s, int argc, t_atom *argv);
+void    iemgui_boxChanged                   (void *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void    iemgui_dummy                        (void *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
