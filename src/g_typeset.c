@@ -201,8 +201,8 @@ static void box_typesetWrap (t_box *x, t_typesethelper *p)
 }
 
 /* Get the position of the mouse in the box string. */
-/* Note that it is an approximation computed on font specifications. */
-/* It should work best with monospace fonts. */
+/* Note that it is an approximation computed with font specifications. */
+/* It work best with monospace fonts. */
 
 static void box_typesetLocateCursor (t_box *x, t_typesethelper *p)
 {
