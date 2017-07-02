@@ -25,7 +25,7 @@ static t_array *array_getTop (t_array *x)
     /* Furthermore it is never nested. */
     
     while (gpointer_isWord (&a->a_parent)) {
-        a = gpointer_getParentWord (&a->a_parent);
+        a = gpointer_getParentForWord (&a->a_parent);
         PD_BUG;
     }
     
