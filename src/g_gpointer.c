@@ -147,13 +147,6 @@ t_gpointer *gpointer_getEmpty (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void gpointer_init (t_gpointer *gp)
-{
-    gp->gp_un.gp_scalar     = NULL;
-    gp->gp_refer            = NULL;
-    gp->gp_uniqueIdentifier = 0;
-}
-
 /* Point to a scalar. */
 
 void gpointer_setAsScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)

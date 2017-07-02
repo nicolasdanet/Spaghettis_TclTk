@@ -14,17 +14,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define GPOINTER_INIT(x)    { \
-                                (x)->gp_un.gp_scalar = NULL; \
-                                (x)->gp_refer = NULL; \
-                                (x)->gp_uniqueIdentifier = 0; \
-                            }
+static inline void gpointer_init (t_gpointer *gp)
+{
+    gp->gp_un.gp_scalar     = NULL;
+    gp->gp_refer            = NULL;
+    gp->gp_uniqueIdentifier = 0;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        gpointer_init                       (t_gpointer *gp);
 void        gpointer_setAsScalar                (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
 void        gpointer_setAsWord                  (t_gpointer *gp, t_array *owner, t_word *w);
 

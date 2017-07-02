@@ -124,7 +124,7 @@ void outlet_pointer (t_outlet *x, t_gpointer *gp)
     
     for (oc = x->o_connections; oc; oc = oc->oc_next) {
     //
-    t_gpointer gpointer; GPOINTER_INIT (&gpointer);
+    t_gpointer gpointer; gpointer_init (&gpointer);
             
     gpointer_setByCopy (&gpointer, gp);
         pd_pointer (oc->oc_receiver, &gpointer);    /* Use a copy cached on the stack. */

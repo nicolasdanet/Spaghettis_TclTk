@@ -188,7 +188,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
         if (behavior) {
         //
         t_rectangle t;
-        t_gpointer gp; GPOINTER_INIT (&gp);
+        t_gpointer gp; gpointer_init (&gp);
         
         gpointer_setAsScalar (&gp, glist, x);
         (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &t);
@@ -305,7 +305,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
             
             if (behavior) {
                 
-                t_gpointer gp; GPOINTER_INIT (&gp);
+                t_gpointer gp; gpointer_init (&gp);
                 
                 gpointer_setAsScalar (&gp, glist, x);
                 
@@ -342,7 +342,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     
     if (behavior) { 
         
-        t_gpointer gp; GPOINTER_INIT (&gp);
+        t_gpointer gp; gpointer_init (&gp);
         
         gpointer_setAsScalar (&gp, glist, x);
         
@@ -558,7 +558,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 
     if (template_isValid (template)) {
 
-        t_gpointer gp; GPOINTER_INIT (&gp);
+        t_gpointer gp; gpointer_init (&gp);
         
         x = (t_scalar *)pd_new (scalar_class);
         
