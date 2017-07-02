@@ -81,6 +81,7 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 #define GARRAY_AT(n)    *((t_float *)(array_getElements (array) + (int)n))
 
@@ -810,11 +811,11 @@ void garray_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_garray,
-        NULL,
-        (t_method)garray_free,
-        sizeof (t_garray),
-        CLASS_GRAPHIC,
-        A_NULL);
+            NULL,
+            (t_method)garray_free,
+            sizeof (t_garray),
+            CLASS_GRAPHIC,
+            A_NULL);
         
     class_addList (c, (t_method)garray_list);
     

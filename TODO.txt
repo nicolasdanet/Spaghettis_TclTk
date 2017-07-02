@@ -7,16 +7,16 @@ Clean and test all patches.
 
 ###
 
-Improve the search path.
-Append recent files in preferences.
-Add unlimited undo mechanism.
-Add "Encapsulate" feature.
-
-###
-
 Profile and optimize code.
 Forbid the audio to glitch!
 Use generic containers (i.e linked list).
+
+###
+
+Extend the search path to be recursive.
+Append recent files in preferences.
+Add unlimited undo mechanism.
+Add "Encapsulate" feature.
 
 ###
 

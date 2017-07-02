@@ -25,6 +25,10 @@ typedef struct _messageresponder {
     t_outlet            *mr_outlet;
     } t_messageresponder;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 struct _message {
     t_object            m_obj;                          /* MUST be the first. */
     t_messageresponder  m_responder;

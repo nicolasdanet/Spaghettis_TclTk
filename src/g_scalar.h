@@ -15,21 +15,21 @@
 
 /*
 
-    An element is a group of words. 
+    An element is a tuple of words.
     A word can be a float, a symbol, a text or an array.
     The content of an element is defined and labelled by its template.
     
     A template is identify and fetch by its unique name.
     A template cannot be changed during its lifetime. 
     A template is instantiated by the struct object.
-    For now only one instance at time is allowed.
+    For now only one instance by template at time is allowed.
     
     An array is a vector of elements.
     For now an array can NOT contain another array.
     
     A scalar is an object that wrap an element.
-    A scalars is rendering by painter objects (i.e. plot).
-    To be considered painters must be disposed in an instance's window.
+    A scalar is rendering by painter objects (i.e. plot).
+    To be considered painters must be disposed in the instance's window.
     
     A gpointer can maintain a pointer onto a scalar.
     A gpointer can maintain a pointer onto one element of an array.
