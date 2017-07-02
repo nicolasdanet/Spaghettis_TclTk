@@ -28,22 +28,22 @@ void glist_mouse            (t_glist *, int, int, int, int);
 
 static int canvas_isKeyCodeAllowed (t_keycode n)
 {
-    if (n == '{')   { return 0; }     // --
-    if (n == '}')   { return 0; }     // --
-    if (n == '\\')  { return 0; }
+    if (n == '{')       { return 0; }   // --
+    else if (n == '}')  { return 0; }   // --
+    else if (n == '\\') { return 0; }
      
     return 1;
 }
 
 static int canvas_parseSymbolToKeyCode (t_symbol *s, t_keycode *n)
 {
-    if (s == sym_Enter)     { *n = 3;   return 1; }
-    if (s == sym_BackSpace) { *n = 8;   return 1; }
-    if (s == sym_Tab)       { *n = 9;   return 1; }
-    if (s == sym_Return)    { *n = 10;  return 1; }
-    if (s == sym_Escape)    { *n = 27;  return 1; }
-    if (s == sym_Space)     { *n = 32;  return 1; }
-    if (s == sym_Delete)    { *n = 127; return 1; }
+    if (s == sym_Enter)          { *n = 3;   return 1; }
+    else if (s == sym_BackSpace) { *n = 8;   return 1; }
+    else if (s == sym_Tab)       { *n = 9;   return 1; }
+    else if (s == sym_Return)    { *n = 10;  return 1; }
+    else if (s == sym_Escape)    { *n = 27;  return 1; }
+    else if (s == sym_Space)     { *n = 32;  return 1; }
+    else if (s == sym_Delete)    { *n = 127; return 1; }
     
     return 0;
 }

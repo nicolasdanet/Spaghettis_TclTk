@@ -14,78 +14,74 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_GUISTUB          ".guistub"
+#define PD_GUISTUB      ".guistub"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 enum {
-    ACTION_NONE             = 0,
-    ACTION_MOVE             = 1,
-    ACTION_CONNECT          = 2,
-    ACTION_REGION           = 3,
-    ACTION_PASS             = 4,
-    ACTION_DRAG             = 5,
-    ACTION_RESIZE           = 6
+    ACTION_NONE         = 0,
+    ACTION_MOVE         = 1,
+    ACTION_CONNECT      = 2,
+    ACTION_REGION       = 3,
+    ACTION_PASS         = 4,
+    ACTION_DRAG         = 5,
+    ACTION_RESIZE       = 6
     };
 
 enum {
-    CURSOR_NOTHING          = 0,            /* Must NOT be changed. */
-    CURSOR_CLICK            = 1,            /* Must NOT be changed. */
-    CURSOR_OVER             = 2,
-    CURSOR_THICKEN          = 3,
-    CURSOR_CONNECT          = 4,
-    CURSOR_RESIZE           = 5
+    CURSOR_NOTHING      = 0,    /* Must NOT be changed. */
+    CURSOR_CLICK        = 1,    /* Must NOT be changed. */
+    CURSOR_OVER         = 2,
+    CURSOR_THICKEN      = 3,
+    CURSOR_CONNECT      = 4,
+    CURSOR_RESIZE       = 5
     };
 
 enum {
-    MODIFIER_NONE           = 0,
-    MODIFIER_SHIFT          = 1,
-    MODIFIER_CTRL           = 2,            /* Command key on Mac OS X. */
-    MODIFIER_ALT            = 4,
-    MODIFIER_RIGHT          = 8,
-    MODIFIER_DOUBLE         = 16
+    MODIFIER_NONE       = 0,
+    MODIFIER_SHIFT      = 1,
+    MODIFIER_CTRL       = 2,    /* Command key on Mac OS X. */
+    MODIFIER_ALT        = 4,
+    MODIFIER_RIGHT      = 8,
+    MODIFIER_DOUBLE     = 16
     };
 
 enum {
-    BOX_DOWN                = 1,
-    BOX_DRAG                = 2,
-    BOX_DOUBLE              = 3,
-    BOX_SHIFT               = 4
+    BOX_DOWN            = 1,
+    BOX_DRAG            = 2,
+    BOX_DOUBLE          = 3,
+    BOX_SHIFT           = 4
     };
 
 enum {
-    BOX_CHECK               = 0,
-    BOX_CREATE              = 1,
-    BOX_UPDATE              = 2
+    BOX_CHECK           = 0,
+    BOX_CREATE          = 1,
+    BOX_UPDATE          = 2
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define WINDOW_WIDTH        450
-#define WINDOW_HEIGHT       300
+#define WINDOW_WIDTH            450
+#define WINDOW_HEIGHT           300
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_APPLE
-
-#define WINDOW_HEADER       22
-
+    #define WINDOW_HEADER       22
 #else
-
-#define WINDOW_HEADER       50
-
+    #define WINDOW_HEADER       50
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define BOX_TAG_SIZE        50
+#define BOX_TAG_SIZE            50
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

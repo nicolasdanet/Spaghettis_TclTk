@@ -300,17 +300,17 @@ static t_scalar *gpointer_getBase (t_gpointer *gp)
 
 int gpointer_isInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
 {
-    if (templateIdentifier == template_getWildcard())               { return 1; }
-    if (templateIdentifier == gpointer_getTemplateIdentifier (gp))  { return 1; }
+    if (templateIdentifier == template_getWildcard())                   { return 1; }
+    else if (templateIdentifier == gpointer_getTemplateIdentifier (gp)) { return 1; }
     
     return 0;
 }
 
 int gpointer_isValidInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
 {
-    if (!gpointer_isValid (gp))                                     { return 0; }
-    if (!gpointer_isInstanceOf (gp, templateIdentifier))            { return 0; }
-    if (!gpointer_getTemplate (gp))                                 { return 0; }
+    if (!gpointer_isValid (gp))                                         { return 0; }
+    else if (!gpointer_isInstanceOf (gp, templateIdentifier))           { return 0; }
+    else if (!gpointer_getTemplate (gp))                                { return 0; }
     
     return 1;
 }
