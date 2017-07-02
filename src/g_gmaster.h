@@ -12,6 +12,14 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Handle the case when a scalar is deleted while pointers remain. */
+/* A master create a manager that count pointers to the target. */
+/* The pointer can ask the manager about validity of the target. */
+/* The manager is freed only if no master and no pointers is alive. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 t_gmaster   *gmaster_createWithGlist        (t_glist *glist);
