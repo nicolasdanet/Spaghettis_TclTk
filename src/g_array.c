@@ -23,6 +23,7 @@ static t_array *array_getTop (t_array *x)
     
     /* For now, an array is always owned by a scalar. */
     /* Furthermore it is never nested. */
+    /* Thus while loop must never execute. */
     
     while (gpointer_isWord (&a->a_parent)) {
         a = gpointer_getParentForWord (&a->a_parent);
