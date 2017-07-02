@@ -135,6 +135,12 @@ static inline int string_startWithOneDollarAndOneNumber (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define COLOR_SCALAR_WRONG          0xdddddd    // Grey.
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 #define COLOR_OPENED                0xdddddd    // Grey.
 #define COLOR_NORMAL                0x000000    // Black.
 #define COLOR_SELECTED              0x0000ff    // Blue.

@@ -20,12 +20,12 @@ static t_class *element_class;                  /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _element {
-    t_object        x_obj;                      /* Must be the first. */
-    t_gpointer      x_gpointerWord;
-    t_gpointer      x_gpointer;
-    t_symbol        *x_templateIdentifier;
-    t_symbol        *x_fieldName;
-    t_outlet        *x_outlet;
+    t_object    x_obj;                          /* Must be the first. */
+    t_gpointer  x_gpointerWord;
+    t_gpointer  x_gpointer;
+    t_symbol    *x_templateIdentifier;
+    t_symbol    *x_fieldName;
+    t_outlet    *x_outlet;
     } t_element;
 
 // -----------------------------------------------------------------------------------------------------------

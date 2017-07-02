@@ -22,19 +22,18 @@
 // MARK: -
 
 #define SCALAR_WRONG_SIZE               20
-#define SCALAR_WRONG_COLOR              0xdddddd        /* Grey. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_class *scalar_class;                                  /* Shared. */
+t_class *scalar_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_error word_setInternalBuffer      (t_word *, t_template *, t_symbol *, t_buffer *);
-t_error word_unsetInternalBuffer    (t_word *, t_template *, t_symbol *);
+t_error word_setInternalBuffer                  (t_word *, t_template *, t_symbol *, t_buffer *);
+t_error word_unsetInternalBuffer                (t_word *, t_template *, t_symbol *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -51,7 +50,7 @@ static int  scalar_behaviorMouse                (t_gobj *, t_glist *, t_mouse *)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_widgetbehavior scalar_widgetBehavior =         /* Shared. */
+static t_widgetbehavior scalar_widgetBehavior = /* Shared. */
     {
         scalar_behaviorGetRectangle,
         scalar_behaviorDisplaced,
@@ -289,7 +288,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                             b,
                             a + SCALAR_WRONG_SIZE,
                             b + SCALAR_WRONG_SIZE,
-                            SCALAR_WRONG_COLOR,
+                            COLOR_SCALAR_WRONG,
                             x);
         } else {
             gui_vAdd ("%s.c delete %lxSCALAR\n", glist_getTagAsString (view), x);
