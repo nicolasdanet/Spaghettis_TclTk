@@ -49,6 +49,7 @@ struct _pdinstance {
     int             pd_loadingExternal;
     t_symbol        *pd_loadingAbstraction;
     t_int           *pd_dspChain;
+    t_dspcontext    *pd_ugenContext;
     t_clock         *pd_clocks;
     t_signal        *pd_signals;
     t_glist         *pd_roots;
@@ -205,6 +206,20 @@ static inline void instance_contextSetCurrent (t_glist *glist)
 static inline t_glist *instance_contextGetCurrent (void)
 {
     return cast_glist (instance_getBoundX());
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void instance_ugenSetContext (t_dspcontext *context)
+{
+    instance_get()->pd_ugenContext = context;
+}
+
+static inline t_dspcontext *instance_ugenGetContext (void)
+{
+    return instance_get()->pd_ugenContext;
 }
 
 // -----------------------------------------------------------------------------------------------------------

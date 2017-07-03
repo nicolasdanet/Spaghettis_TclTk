@@ -16,13 +16,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_dspcontext     *ugen_context;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_phase          ugen_dspPhase;
-static int              ugen_buildIdentifier;
+static t_phase  ugen_dspPhase;
+static int      ugen_buildIdentifier;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -102,7 +97,7 @@ void ugen_dspInitialize (void)
 {
     ugen_dspRelease();
     
-    PD_ASSERT (ugen_context == NULL);
+    PD_ASSERT (instance_ugenGetContext() == NULL);
     
     instance_dspChainInitialize();
     
@@ -377,9 +372,9 @@ static void ugen_graphDelete (t_dspcontext *context)
     //
     }
     
-    PD_ASSERT (ugen_context == context);
+    PD_ASSERT (instance_ugenGetContext() == context);
     
-    ugen_context = context->dc_parentContext;
+    instance_ugenSetContext (context->dc_parentContext);
     
     PD_MEMORY_FREE (context);
 }
@@ -392,17 +387,17 @@ t_dspcontext *ugen_graphStart (int isTopLevel, t_signal **sp, int m, int n)
 {
     t_dspcontext *context = (t_dspcontext *)PD_MEMORY_GET (sizeof (t_dspcontext));
 
-    PD_ASSERT (!isTopLevel || ugen_context == NULL);
+    PD_ASSERT (!isTopLevel || instance_ugenGetContext() == NULL);
     
     /* Note that an abstraction can be opened as a toplevel patch. */
     
     context->dc_numberOfInlets  = isTopLevel ? 0 : m;
     context->dc_numberOfOutlets = isTopLevel ? 0 : n;
     context->dc_ugens           = NULL;
-    context->dc_parentContext   = ugen_context;
+    context->dc_parentContext   = instance_ugenGetContext();
     context->dc_signals         = sp;
 
-    ugen_context = context;
+    instance_ugenSetContext (context);
     
     /* Just in case. */
     
