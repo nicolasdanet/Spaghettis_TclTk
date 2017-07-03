@@ -22,10 +22,10 @@ t_signal *signal_new (int vectorSize, t_float sampleRate)
     
     t_signal *s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
     
-    s->s_sampleRate = sampleRate;
-    s->s_vectorSize = vectorSize;
-    s->s_vector     = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
-    s->s_unused     = NULL;
+    s->s_sampleRate     = sampleRate;
+    s->s_vectorSize     = vectorSize;
+    s->s_vector         = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
+    s->s_unused         = NULL;
     
     instance_signalAdd (s);
     
