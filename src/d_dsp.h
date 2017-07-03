@@ -15,7 +15,7 @@
 
 /*
 
-    Ugen's routines build a graph from the DSP objects.
+    Ugen's routines build a temporary graph from the DSP objects.
     It is sorted next to obtain a linear list of operations to perform. 
     Memory for signals is allocated according to the interconnections.
     Once that's been done, the graph is deleted (while the signals remain).
@@ -23,8 +23,7 @@
     Prologue and epilogue functions manage nested graphs relations.
     With resampling and reblocking it could require additional buffers.
 
-    In case of resampling techniques, the "block~" object maintains the
-    synchronisation with the parent's DSP process.
+    The "block~" object maintains the synchronisation with the parent's DSP process.
     It does NOT do any computation in its own right.
     It triggers associated ugens at a supermultiple or submultiple of the upstream.
     Note that it can also be invoked just as a switch.
@@ -56,6 +55,7 @@ struct _signal {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 typedef struct _resample {
     int             r_type;
@@ -68,6 +68,7 @@ typedef struct _resample {
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 struct _vinlet {
     t_object        vi_obj;                         /* Must be the first. */
@@ -98,7 +99,11 @@ struct _voutlet {
     t_outlet        *vo_outlet;
     t_signal        *vo_directSignal;
     };
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 typedef struct _block {
     t_object        bk_obj;                         /* Must be the first. */
     int             bk_blockSize;
@@ -272,6 +277,8 @@ typedef int64_t t_phase;        /* Assumed -1 has all bits set (two's complement
 /* Notice that the trick below seems broken for index with a large value. */
 
 /* Does it worth the cost? */
+
+/* Benchmark required. */
 
 extern t_float *cos_tilde_table;
 
