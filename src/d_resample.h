@@ -82,12 +82,12 @@ typedef struct _block {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_int   *block_performProlog        (t_int *w);
-t_int   *block_performEpilog        (t_int *w);
+t_int       *block_performProlog        (t_int *w);
+t_int       *block_performEpilog        (t_int *w);
 
-t_float block_getRatio              (t_block *x);
-void    block_setPerformsLength     (t_block *x, int allContextLength, int epilogLength);
-void    block_getProperties         (t_block *x, int parentBlockSize, t_float parentSampleRate, t_blockproperties *properties);
+t_float     block_getRatio              (t_block *x);
+void        block_getProperties         (t_block *x, t_blockproperties *properties);
+void        block_setPerformsLength     (t_block *x, int allContextLength, int epilogLength);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

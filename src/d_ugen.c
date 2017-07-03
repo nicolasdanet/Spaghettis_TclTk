@@ -480,7 +480,7 @@ void ugen_graphClose (t_dspcontext *context)
     p.bp_downsample = 1;
     p.bp_upsample   = 1;
     
-    if (block) { block_getProperties (block, parentBlockSize, parentSampleRate, &p); }
+    if (block) { block_getProperties (block, &p); }
 
     context->dc_sampleRate = p.bp_sampleRate;
     context->dc_blockSize  = p.bp_blockSize;

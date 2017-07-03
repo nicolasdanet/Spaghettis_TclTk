@@ -33,8 +33,11 @@ t_float block_getRatio (t_block *x)
     return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
 }
 
-void block_getProperties (t_block *x, int parentBlockSize, t_float parentSampleRate, t_blockproperties *p)
+void block_getProperties (t_block *x, t_blockproperties *p)
 {
+    int parentBlockSize         = p->bp_blockSize;
+    t_float parentSampleRate    = p->bp_sampleRate;
+    
     t_phase phase       = ugen_getPhase();
     int reblocked       = p->bp_reblocked;
     int blockSize       = (x->bk_blockSize > 0) ? x->bk_blockSize : p->bp_blockSize;
