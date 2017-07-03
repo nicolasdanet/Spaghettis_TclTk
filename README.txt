@@ -13,7 +13,7 @@ Remark:
 
 Build:
 
-    On macOS install ActiveTCL 8.6.6 first.
+    On macOS install ActiveTcl 8.6.6 first.
     Download this repository.
     Open a terminal and go to the "build.sh" script.
     Run the "./build.sh" command.
