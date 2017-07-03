@@ -83,18 +83,12 @@ void instance_dspStart (void)
     for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) { 
         canvas_dspProceed (glist, 1, NULL); 
     }
-    
-    instance_setDspState (1);
 }
 
 
 void instance_dspStop (void)
 {
-    PD_ASSERT (instance_getDspState());
-    
     ugen_dspRelease();
-    
-    instance_setDspState (0);
 }
 
 void instance_dspChainInitialize (void)

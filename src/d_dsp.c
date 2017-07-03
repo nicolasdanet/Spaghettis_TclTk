@@ -15,18 +15,30 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void dsp_state (int n)
+static int dsp_status;  /* Global */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void dsp_setState (int n)
 {
-    if (n != instance_getDspState()) {
+    n = (n != 0);
+    
+    if (n != dsp_status) {
     //
-    if (n) { if (audio_start() == PD_ERROR_NONE) { instance_dspStart(); } }
+    if (n) { if (audio_start() == PD_ERROR_NONE) { instance_dspStart(); dsp_status = 1; } }
     else {
-        instance_dspStop(); audio_stop();
+        instance_dspStop(); dsp_status = 0; audio_stop();
     }
     
-    gui_vAdd ("set ::var(isDsp) %d\n", instance_getDspState());     // --
+    gui_vAdd ("set ::var(isDsp) %d\n", dsp_status);     // --
     //
     }
+}
+
+int dsp_getState (void)
+{
+    return dsp_status;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -40,12 +52,12 @@ void dsp_update (void)
 
 int dsp_suspend (void)
 {
-    int n = instance_getDspState(); if (n) { instance_dspStop(); } return n;
+    int n = dsp_status; if (n) { instance_dspStop(); dsp_status = 0; } return n;
 }
 
 void dsp_resume (int n)
 {
-    if (n) { instance_dspStart(); }
+    if (n) { instance_dspStart(); dsp_status = 1; }
 }
 
 // -----------------------------------------------------------------------------------------------------------

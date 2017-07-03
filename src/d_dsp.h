@@ -100,6 +100,9 @@ typedef int64_t t_phase;                    /* Assumed -1 has all bits set (two'
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void            dsp_setState                (int n);
+int             dsp_getState                (void);
+
 void            dsp_update                  (void);
 int             dsp_suspend                 (void);
 void            dsp_resume                  (int oldState);

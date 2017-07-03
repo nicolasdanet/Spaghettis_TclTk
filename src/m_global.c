@@ -10,12 +10,12 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void dsp_state                  (int n);
 void canvas_key                 (t_glist *, t_symbol *, int, t_atom *);
 void interface_quit             (void);
 void interface_pollWatchdog     (void *dummy);
@@ -48,7 +48,7 @@ static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
 
 static void global_dsp (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc) { dsp_state ((int)atom_getFloatAtIndex (0, argc, argv)); }
+    if (argc) { dsp_setState ((int)atom_getFloatAtIndex (0, argc, argv)); }
 }
 
 static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)

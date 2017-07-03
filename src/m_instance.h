@@ -45,7 +45,6 @@ struct _pdinstance {
     t_environment   pd_environment;
     t_position      pd_locate;
     int             pd_overflowCount;
-    int             pd_dspState;
     int             pd_dspChainSize;
     int             pd_loadingExternal;
     t_symbol        *pd_loadingAbstraction;
@@ -245,11 +244,6 @@ static inline int instance_isMakerObject (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline int instance_getDspState (void)
-{
-    return instance_get()->pd_dspState;
-}
-
 static inline int instance_getDspChainSize (void)
 {
     return instance_get()->pd_dspChainSize;
@@ -273,11 +267,6 @@ static inline t_pd *instance_getNewestObject (void)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-static inline void instance_setDspState (int n)
-{
-    instance_get()->pd_dspState = (n != 0);
-}
 
 static inline void instance_setNewestObject (t_pd *x)
 {
