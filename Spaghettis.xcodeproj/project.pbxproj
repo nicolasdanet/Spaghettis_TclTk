@@ -397,6 +397,9 @@
 		17981E141F0618A10029AD87 /* s_searchpath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_searchpath.c; path = src/s_searchpath.c; sourceTree = "<group>"; };
 		179873E21F01095100BB1B94 /* m_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_file.c; path = src/m_file.c; sourceTree = "<group>"; };
 		179E8D9C1EF91B4700FD3865 /* m_environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_environment.h; path = src/m_environment.h; sourceTree = "<group>"; };
+		17A2BD211F0A135E0071D330 /* d_resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_resample.h; path = src/d_resample.h; sourceTree = "<group>"; };
+		17A2BD221F0A2D6C0071D330 /* d_perform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_perform.h; path = src/d_perform.h; sourceTree = "<group>"; };
+		17A2BD231F0A30480071D330 /* d_macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_macros.h; path = src/d_macros.h; sourceTree = "<group>"; };
 		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
 		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_outlet.h; path = src/m_outlet.h; sourceTree = "<group>"; };
@@ -1153,6 +1156,9 @@
 			isa = PBXGroup;
 			children = (
 				376962D01DBFAF50001B91B5 /* d_dsp.h */,
+				17A2BD231F0A30480071D330 /* d_macros.h */,
+				17A2BD211F0A135E0071D330 /* d_resample.h */,
+				17A2BD221F0A2D6C0071D330 /* d_perform.h */,
 				37C000261DE2FBF800F90584 /* Graph */,
 				37ACC43E1E321BB60026E5FA /* Shared */,
 				37B1AA491DC1EDE70017355A /* Objects */,
