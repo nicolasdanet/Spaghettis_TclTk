@@ -14,6 +14,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+typedef int64_t t_phase;                    /* Assumed -1 has all bits set (two's complement). */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 typedef struct _stackelement {
     t_glist         *s_context;
     t_symbol        *s_loadedAbstraction;
@@ -45,7 +51,9 @@ struct _pdinstance {
     t_environment   pd_environment;
     t_position      pd_locate;
     int             pd_overflowCount;
+    int             pd_dspChainIdentifier;
     int             pd_dspChainSize;
+    t_phase         pd_dspPhase;
     int             pd_loadingExternal;
     t_symbol        *pd_loadingAbstraction;
     t_int           *pd_dspChain;
@@ -259,6 +267,11 @@ static inline int instance_isMakerObject (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static inline t_phase instance_getDspPhase (void)
+{
+    return instance_get()->pd_dspPhase;
+}
+
 static inline int instance_getDspChainSize (void)
 {
     return instance_get()->pd_dspChainSize;
@@ -267,6 +280,11 @@ static inline int instance_getDspChainSize (void)
 static inline t_int *instance_getDspChain (void)
 {
     return instance_get()->pd_dspChain;
+}
+
+static inline int instance_getDspChainIdentifier (void)
+{
+    return instance_get()->pd_dspChainIdentifier;
 }
 
 static inline t_glist *instance_getRoots (void)
@@ -282,6 +300,16 @@ static inline t_pd *instance_getNewestObject (void)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static inline void instance_setDspPhaseIncrement (void)
+{
+    instance_get()->pd_dspPhase++;
+}
+
+static inline void instance_setDspChainIdentifierIncrement (void)
+{
+    instance_get()->pd_dspChainIdentifier++;
+}
 
 static inline void instance_setNewestObject (t_pd *x)
 {

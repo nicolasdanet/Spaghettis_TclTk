@@ -16,12 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_phase  ugen_dspPhase;
-static int      ugen_buildIdentifier;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 typedef struct _sigoutconnect {
     int                     oc_index;
     struct _ugenbox         *oc_to;
@@ -100,35 +94,20 @@ void ugen_dspInitialize (void)
     PD_ASSERT (instance_ugenGetContext() == NULL);
     
     instance_dspChainInitialize();
-    
-    ugen_buildIdentifier++;
+    instance_setDspChainIdentifierIncrement();
 }
 
 void ugen_dspTick (void)
 {
     t_int *t = instance_getDspChain();
     
-    if (t) { while (t) { t = (*(t_perform)(*t))(t); } ugen_dspPhase++; }
+    if (t) { while (t) { t = (*(t_perform)(*t))(t); } instance_setDspPhaseIncrement(); }
 }
 
 void ugen_dspRelease (void)
 {
     instance_dspChainRelease();
     instance_signalFreeAll();
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int ugen_getBuildIdentifier (void)
-{
-    return ugen_buildIdentifier;
-}
-
-t_phase ugen_getPhase (void)
-{
-    return ugen_dspPhase;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -101,7 +101,7 @@ void vinlet_dspProlog (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     else {
     //
     t_sample *t = NULL;
-    int phase = (int)((ugen_getPhase() - 1) & (t_phase)(p->bp_period - 1));
+    int phase = (int)((instance_getDspPhase() - 1) & (t_phase)(p->bp_period - 1));
     
     x->vi_hopSize     = p->bp_period * vectorSize;
     x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (phase * vectorSize));

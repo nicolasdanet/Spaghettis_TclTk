@@ -38,7 +38,7 @@ void block_getProperties (t_block *x, t_blockproperties *p)
     int parentBlockSize         = p->bp_blockSize;
     t_float parentSampleRate    = p->bp_sampleRate;
     
-    t_phase phase       = ugen_getPhase();
+    t_phase phase       = instance_getDspPhase();
     int reblocked       = p->bp_reblocked;
     int blockSize       = (x->bk_blockSize > 0) ? x->bk_blockSize : p->bp_blockSize;
     int overlap         = PD_MIN (x->bk_overlap, blockSize);
