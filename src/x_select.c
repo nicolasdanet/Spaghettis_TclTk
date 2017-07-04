@@ -71,7 +71,7 @@ static void select2_float (t_select2 *x, t_float f)
 
         t_atom a; SET_FLOAT (&a, f); 
         
-        if (atomoutlet_isEqualTo (x->x_vector + i, &a)) {
+        if (atomoutlet_isEqualToAtom (x->x_vector + i, &a)) {
             k |= 1; outlet_bang (atomoutlet_getOutlet (x->x_vector + i));
         }
     }
@@ -87,7 +87,7 @@ static void select2_symbol (t_select2 *x, t_symbol *s)
 
         t_atom a; SET_SYMBOL (&a, s); 
         
-        if (atomoutlet_isEqualTo (x->x_vector + i, &a)) {
+        if (atomoutlet_isEqualToAtom (x->x_vector + i, &a)) {
             k |= 1; outlet_bang (atomoutlet_getOutlet (x->x_vector + i));
         }
     }

@@ -36,7 +36,7 @@ static void unpack_list (t_unpack *x, t_symbol *s, int argc, t_atom *argv)
     int i;
     
     for (i = PD_MIN (x->x_size, argc) - 1; i >= 0; i--) {
-        if (atomoutlet_outputAtom (x->x_vector + i, argv + i)) { 
+        if (atomoutlet_outputIfTypeMatch (x->x_vector + i, argv + i)) { 
             error_mismatch (sym_unpack, sym_type);
         }
     }

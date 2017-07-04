@@ -43,7 +43,7 @@ static int route_listForFloat (t_route *x, int argc, t_atom *argv)
     
     for (i = x->x_size - 1; i >= 0; i--) {
     
-        if (atomoutlet_isEqualTo (x->x_vector + i, argv)) {
+        if (atomoutlet_isEqualToAtom (x->x_vector + i, argv)) {
             t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
             if (argc > 1 && IS_SYMBOL (argv + 1)) {
                 outlet_anything (outlet, GET_SYMBOL (argv + 1), argc - 2, argv + 2);
@@ -133,7 +133,7 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
     //
     t_atom a; SET_SYMBOL (&a, s);
     
-    if (atomoutlet_isEqualTo (x->x_vector + i, &a)) {
+    if (atomoutlet_isEqualToAtom (x->x_vector + i, &a)) {
         t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
         if (!argc || !IS_SYMBOL (argv)) { outlet_list (outlet, argc, argv); }
         else {
