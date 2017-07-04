@@ -27,8 +27,8 @@ typedef struct _threshold_tilde {
     t_float     x_high;
     t_float     x_low;
     t_float     x_wait;
-    t_float     x_highDeadTime;
-    t_float     x_lowDeadTime;
+    t_float     x_deadTimeHigh;
+    t_float     x_deadTimeLow;
     t_float     x_millisecondsPerTick;
     t_clock     *x_clock;
     t_outlet    *x_outletLeft;
@@ -59,9 +59,9 @@ static void threshold_tilde_set (t_threshold_tilde *x, t_symbol *s, int argc, t_
     t_float lowDead   = atom_getFloatAtIndex (3, argc, argv);
     
     x->x_high         = high;
-    x->x_highDeadTime = highDead;
+    x->x_deadTimeHigh = highDead;
     x->x_low          = PD_MIN (low, high);
-    x->x_lowDeadTime  = lowDead;
+    x->x_deadTimeLow  = lowDead;
 }
 
 static void threshold_tilde_state (t_threshold_tilde *x, t_float f)
@@ -89,7 +89,7 @@ static t_int *threshold_tilde_perform (t_int *w)
         //
         if ((*in++) < x->x_low) {
             x->x_state = 0;
-            x->x_wait  = x->x_lowDeadTime;
+            x->x_wait  = x->x_deadTimeLow;
             clock_delay (x->x_clock, 0.0);
             break;
         }
@@ -102,7 +102,7 @@ static t_int *threshold_tilde_perform (t_int *w)
         //
         if ((*in++) >= x->x_high) {
             x->x_state = 1;
-            x->x_wait  = x->x_highDeadTime;
+            x->x_wait  = x->x_deadTimeHigh;
             clock_delay (x->x_clock, 0.0);
             break;
         }
