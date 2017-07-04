@@ -392,6 +392,7 @@
 
 /* Begin PBXFileReference section */
 		174D8A081F0BBA0200C94065 /* x_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_text.h; path = src/x_text.h; sourceTree = "<group>"; };
+		174D8A091F0BBBBE00C94065 /* x_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_array.h; path = src/x_array.h; sourceTree = "<group>"; };
 		176D2C271F06A9860023E38E /* g_objects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_objects.h; path = src/g_objects.h; sourceTree = "<group>"; };
 		177169881EFD1212003CD374 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		1794C5D81F055A6400D78A38 /* m_clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_clipboard.h; path = src/m_clipboard.h; sourceTree = "<group>"; };
@@ -1286,6 +1287,7 @@
 		3751490E1D86DC68005679B0 /* Array */ = {
 			isa = PBXGroup;
 			children = (
+				174D8A091F0BBBBE00C94065 /* x_array.h */,
 				378972081C4F716700263434 /* x_array.c */,
 				37514A401D86E4DF005679B0 /* x_arraysize.c */,
 				37514A0A1D86E38F005679B0 /* x_arraysum.c */,
