@@ -575,7 +575,7 @@
 		377CEF151DAA820C00E60461 /* x_namecanvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_namecanvas.c; path = src/x_namecanvas.c; sourceTree = "<group>"; };
 		377CEF451DAA831E00E60461 /* x_loadbang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_loadbang.c; path = src/x_loadbang.c; sourceTree = "<group>"; };
 		377CEF461DAA831E00E60461 /* x_random.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_random.c; path = src/x_random.c; sourceTree = "<group>"; };
-		378232301D6C49C300C128AD /* x_control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_control.h; path = src/x_control.h; sourceTree = "<group>"; };
+		378232301D6C49C300C128AD /* x_osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_osc.h; path = src/x_osc.h; sourceTree = "<group>"; };
 		378232431D6C4A3300C128AD /* x_textbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textbuffer.c; path = src/x_textbuffer.c; sourceTree = "<group>"; };
 		378232A21D6C50D600C128AD /* x_textclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textclient.c; path = src/x_textclient.c; sourceTree = "<group>"; };
 		378232E71D6C743D00C128AD /* x_qlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_qlist.c; path = src/x_qlist.c; sourceTree = "<group>"; };
@@ -1150,7 +1150,6 @@
 		3722C5361C4F925600D2BF6F /* Control */ = {
 			isa = PBXGroup;
 			children = (
-				378232301D6C49C300C128AD /* x_control.h */,
 				37AEFD551DB5182A0039FB59 /* Shared */,
 				37AEFD541DB518100039FB59 /* Objects */,
 			);
@@ -1224,6 +1223,7 @@
 		374905C91D99703B00377F1E /* Miscellaneous */ = {
 			isa = PBXGroup;
 			children = (
+				378232301D6C49C300C128AD /* x_osc.h */,
 				3789720B1C4F716800263434 /* x_print.c */,
 				374D7B2F1DA3E1E900FECF8F /* x_key.c */,
 				374D7B051DA3E0A500FECF8F /* x_keyup.c */,

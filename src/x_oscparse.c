@@ -16,7 +16,7 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "g_graphics.h"
-#include "x_control.h"
+#include "x_osc.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ static t_symbol *oscparse_fetchString (int argc, t_atom *argv, int *i)
     
     PD_ASSERT (j <= argc);
     
-    *i = OSC_ROUND4 (j + 1);
+    *i = OSC_4ROUND (j + 1);
     
     return gensym (t);
 }
@@ -116,7 +116,7 @@ static t_error oscparse_proceedArgumentsFloat (t_oscparse *x,
     if (k > argc - 4) { err = PD_ERROR; }
     else {
         t_rawcast32 z;
-        z.z_i = OSC_READ4INT (argv + k);
+        z.z_i = OSC_4READ (argv + k);
         t_float f = z.z_f;
         if (PD_IS_DENORMAL_OR_ZERO (f)) { f = (t_float)0.0; }
         SET_FLOAT (a + n, f);
@@ -144,7 +144,7 @@ static t_error oscparse_proceedArgumentsInteger (t_oscparse *x,
     
     if (k > argc - 4) { err = PD_ERROR; }
     else {
-        SET_FLOAT (a + n, OSC_READ4INT (argv + k));
+        SET_FLOAT (a + n, OSC_4READ (argv + k));
         n++; k += 4;
     }
     
@@ -191,7 +191,7 @@ static t_error oscparse_proceedArgumentsBlob (t_oscparse *x,
     
     if (k > argc - 4) { err = PD_ERROR; }
     else {
-        int blobSize = OSC_READ4INT (argv + k); 
+        int blobSize = OSC_4READ (argv + k);
         k += 4;
         err |= (blobSize < 0 || blobSize > argc - k);
         err |= (n + blobSize >= size);
@@ -204,7 +204,7 @@ static t_error oscparse_proceedArgumentsBlob (t_oscparse *x,
                 n++;
                 k++;
             }
-            k = OSC_ROUND4 (k);
+            k = OSC_4ROUND (k);
         }
     }
                 
@@ -258,7 +258,7 @@ static int oscparse_proceedFetch (t_oscparse *x,
     
     /* Fill the arguments. */
     
-    int k = OSC_ROUND4 (typeOnset + numberOfTypeTags + 1);
+    int k = OSC_4ROUND (typeOnset + numberOfTypeTags + 1);
     
     for (i = typeOnset; i < typeOnset + numberOfTypeTags; i++) {
         if (n >= size || oscparse_proceedArguments (x, argc, argv, i, &k, &n, a, size)) { return -1; }
@@ -282,7 +282,7 @@ static t_error oscparse_proceedBundle (t_oscparse *x, int argc, t_atom *argv)
         
     while (!err && (i < argc - headerMessage)) {
     //
-    int length = OSC_READ4INT (argv + i);
+    int length = OSC_4READ (argv + i);
         
     err = (length <= 0 || length & 3);  /* Must be a multiple of 4. */
     
@@ -319,7 +319,7 @@ static t_error oscparse_proceed (t_oscparse *x, int argc, t_atom *argv)
         }
     }
     
-    i = OSC_ROUND4 (i + 1);
+    i = OSC_4ROUND (i + 1);
     
     /* Test existence of typetags. */
     

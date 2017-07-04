@@ -16,7 +16,7 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "g_graphics.h"
-#include "x_control.h"
+#include "x_osc.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -87,12 +87,12 @@ static int oscformat_proceedGetArgumentsSize (t_oscformat *x, int argc, t_atom *
     
     if (type == 's') {
         t_symbol *s = IS_SYMBOL (a) ? GET_SYMBOL (a) : sym___arrobe__;
-        size += OSC_ROUND4 ((int)strlen (s->s_name) + 1);
+        size += OSC_4ROUND ((int)strlen (s->s_name) + 1);
         
     } else if (type == 'b') {
         int blobSize = (IS_FLOAT (a) && GET_FLOAT (a) >= 0) ? GET_FLOAT (a) : PD_INT_MAX;
         blobSize = PD_MIN (argc - i - 1, blobSize);
-        size += 4 + OSC_ROUND4 (blobSize);
+        size += 4 + OSC_4ROUND (blobSize);
         i += blobSize;
         
     } else {
@@ -115,7 +115,7 @@ static int oscformat_proceedFillFloat (t_oscformat *x, int argc, t_atom *argv, i
     
     t_rawcast32 z;
     z.z_f = atom_getFloat (argv + j);
-    OSC_WRITE4INT (a + n, z.z_i);
+    OSC_4WRITE (a + n, z.z_i);
     n += 4;
     
     *m = n; j++; return j;
@@ -126,7 +126,7 @@ static int oscformat_proceedFillInteger (t_oscformat *x, int argc, t_atom *argv,
     int n = *m;
 
     int v = (int)atom_getFloat (argv + j);
-    OSC_WRITE4INT (a + n, v);
+    OSC_4WRITE (a + n, v);
     n += 4;
     
     *m = n; j++; return j;
@@ -149,7 +149,7 @@ static int oscformat_proceedFillBlob (t_oscformat *x, int argc, t_atom *argv, in
     int i, blobSize = (IS_FLOAT (start) && GET_FLOAT (start) >= 0) ? GET_FLOAT (start) : PD_INT_MAX;
     
     blobSize = PD_MIN (argc - j - 1, blobSize);
-    OSC_WRITE4INT (a + n, blobSize);
+    OSC_4WRITE (a + n, blobSize);
     n += 4;
     
     for (i = 0; i < blobSize; i++) {
@@ -226,7 +226,7 @@ static t_error oscformat_proceed (t_oscformat *x, int argc, t_atom *argv)
     
     int numberOfTypeTags = 0;
     int argumentsSize    = oscformat_proceedGetArgumentsSize (x, argc, argv, &numberOfTypeTags);
-    int argumentsStart   = OSC_ROUND4 ((int)strlen (x->x_path) + 1) + OSC_ROUND4 (numberOfTypeTags + 2);
+    int argumentsStart   = OSC_4ROUND ((int)strlen (x->x_path) + 1) + OSC_4ROUND (numberOfTypeTags + 2);
     int size             = argumentsStart + argumentsSize;
     
     t_atom *a = NULL;
