@@ -14,13 +14,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _listinlet {
-    t_pd                li_pd;                          /* MUST be the first. */
-    int                 li_size;
-    int                 li_hasPointer;
-    t_listinletelement  *li_vector;
-    } t_listinlet;
-
 typedef struct _atomoutlet {
     t_atom              ao_atom;
     t_gpointer          ao_gpointer;
@@ -62,30 +55,6 @@ typedef struct _binop {
                                             SET_FLOAT ((x) + 1, (((unsigned int)(i) >> 16) & 0xff)); \
                                             SET_FLOAT ((x) + 2, (((unsigned int)(i) >> 8)  & 0xff)); \
                                             SET_FLOAT ((x) + 3, (((unsigned int)(i))       & 0xff))
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        listinlet_init                  (t_listinlet *x);
-void        listinlet_clear                 (t_listinlet *x);
-void        listinlet_setList               (t_listinlet *x, int argc, t_atom *argv);
-int         listinlet_getSize               (t_listinlet *x);
-int         listinlet_hasPointer            (t_listinlet *x);
-void        listinlet_copyListUnchecked     (t_listinlet *x, t_atom *a);
-void        listinlet_clone                 (t_listinlet *x, t_listinlet *newList);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        *listappend_new                 (t_symbol *s, int argc, t_atom *argv);
-void        *listprepend_new                (t_symbol *s, int argc, t_atom *argv);
-void        *listsplit_new                  (t_symbol *s, int argc, t_atom *argv);
-void        *listtrim_new                   (t_symbol *s, int argc, t_atom *argv);
-void        *listlength_new                 (t_symbol *s, int argc, t_atom *argv);
-void        *listfromsymbol_new             (t_symbol *s, int argc, t_atom *argv);
-void        *listtosymbol_new               (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
