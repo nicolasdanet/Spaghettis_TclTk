@@ -10,6 +10,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "g_graphics.h"
+#include "x_binop.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
