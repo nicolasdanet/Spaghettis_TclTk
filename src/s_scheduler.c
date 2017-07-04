@@ -139,7 +139,7 @@ static void scheduler_tick (void)
     //
     }
     
-    if (!scheduler_quit) { ugen_dspTick(); }
+    if (!scheduler_quit) { instance_dspTick(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

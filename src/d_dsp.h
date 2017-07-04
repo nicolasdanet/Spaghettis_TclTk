@@ -114,14 +114,6 @@ int             signal_isCompatibleWith     (t_signal *s1, t_signal *s2);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void            ugen_dspInitialize          (void);
-void            ugen_dspTick                (void);
-void            ugen_dspRelease             (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_dspcontext    *ugen_graphStart            (int isTopLevel, t_signal **sp, int m, int n);
 
 void            ugen_graphAdd               (t_dspcontext *context, t_object *o);

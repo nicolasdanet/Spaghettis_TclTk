@@ -87,33 +87,6 @@ static void ugen_graphMainRecursive (t_dspcontext *, t_ugenbox *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void ugen_dspInitialize (void)
-{
-    ugen_dspRelease();
-    
-    PD_ASSERT (instance_ugenGetContext() == NULL);
-    
-    instance_dspChainInitialize();
-    instance_setDspChainIdentifierIncrement();
-}
-
-void ugen_dspTick (void)
-{
-    t_int *t = instance_getDspChain();
-    
-    if (t) { while (t) { t = (*(t_perform)(*t))(t); } instance_setDspPhaseIncrement(); }
-}
-
-void ugen_dspRelease (void)
-{
-    instance_dspChainRelease();
-    instance_signalFreeAll();
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static t_ugenbox *ugen_graphFetchUgen (t_dspcontext *context, t_object *o)
 {
     t_ugenbox *u = NULL; for (u = context->dc_ugens; u && u->u_owner != o; u = u->u_next) { }; return u;

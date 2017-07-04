@@ -135,10 +135,9 @@ void    instance_rootsFreeAll                   (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void    instance_dspTick                        (void);
 void    instance_dspStart                       (void);
 void    instance_dspStop                        (void);
-void    instance_dspChainInitialize             (void);
-void    instance_dspChainRelease                (void);
 void    instance_dspChainAppend                 (t_perform f, int n, ...);
 
 void    instance_signalAdd                      (t_signal *s);

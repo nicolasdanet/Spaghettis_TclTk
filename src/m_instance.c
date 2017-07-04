@@ -28,15 +28,6 @@ void scheduler_setLogicalTime   (t_systime);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_int instance_dspDone (t_int *dummy)
-{
-    return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void instance_rootsAdd (t_glist *glist)
 {
     glist_setNext (glist, instance_get()->pd_roots); instance_get()->pd_roots = glist;
@@ -72,35 +63,14 @@ void instance_rootsFreeAll (void)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
+//MARK: -
 
-void instance_dspStart (void)
+static t_int instance_dspDone (t_int *dummy)
 {
-    t_glist *glist;
-
-    ugen_dspInitialize();
-    
-    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) { 
-        canvas_dspProceed (glist, 1, NULL); 
-    }
+    return 0;
 }
 
-
-void instance_dspStop (void)
-{
-    ugen_dspRelease();
-}
-
-void instance_dspChainInitialize (void)
-{
-    PD_ASSERT (instance_get()->pd_dspChain == NULL);
-    
-    instance_get()->pd_dspChainSize = 1;
-    instance_get()->pd_dspChain     = (t_int *)PD_MEMORY_GET (sizeof (t_int));
-    instance_get()->pd_dspChain[0]  = (t_int)instance_dspDone;
-}
-
-void instance_dspChainRelease (void)
+static void instance_dspRelease (void)
 {
     if (instance_get()->pd_dspChain != NULL) {
     //
@@ -109,6 +79,48 @@ void instance_dspChainRelease (void)
     instance_get()->pd_dspChain = NULL;
     //
     }
+    
+    instance_signalFreeAll();
+}
+
+static void instance_dspInitialize (void)
+{
+    instance_dspRelease();
+    
+    PD_ASSERT (instance_ugenGetContext() == NULL);
+    PD_ASSERT (instance_get()->pd_dspChain == NULL);
+    
+    instance_get()->pd_dspChainSize = 1;
+    instance_get()->pd_dspChain     = (t_int *)PD_MEMORY_GET (sizeof (t_int));
+    instance_get()->pd_dspChain[0]  = (t_int)instance_dspDone;
+    
+    instance_setDspChainIdentifierIncrement();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void instance_dspTick (void)
+{
+    t_int *t = instance_getDspChain();
+    
+    if (t) { while (t) { t = (*(t_perform)(*t))(t); } instance_setDspPhaseIncrement(); }
+}
+
+void instance_dspStart (void)
+{
+    t_glist *glist;
+
+    instance_dspInitialize();
+    
+    for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) { 
+        canvas_dspProceed (glist, 1, NULL); 
+    }
+}
+
+void instance_dspStop (void)
+{
+    instance_dspRelease();
 }
 
 void instance_dspChainAppend (t_perform f, int n, ...)
