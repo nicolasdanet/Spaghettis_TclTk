@@ -394,6 +394,7 @@
 		174D8A081F0BBA0200C94065 /* x_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_text.h; path = src/x_text.h; sourceTree = "<group>"; };
 		174D8A091F0BBBBE00C94065 /* x_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_array.h; path = src/x_array.h; sourceTree = "<group>"; };
 		174D8A0A1F0BBCD000C94065 /* x_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_list.h; path = src/x_list.h; sourceTree = "<group>"; };
+		174D8A0B1F0BBE2E00C94065 /* x_atomoutlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_atomoutlet.h; path = src/x_atomoutlet.h; sourceTree = "<group>"; };
 		176D2C271F06A9860023E38E /* g_objects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_objects.h; path = src/g_objects.h; sourceTree = "<group>"; };
 		177169881EFD1212003CD374 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		1794C5D81F055A6400D78A38 /* m_clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_clipboard.h; path = src/m_clipboard.h; sourceTree = "<group>"; };
@@ -1273,6 +1274,8 @@
 			children = (
 				174D8A081F0BBA0200C94065 /* x_text.h */,
 				378972111C4F716800263434 /* x_text.c */,
+				378232431D6C4A3300C128AD /* x_textbuffer.c */,
+				378232A21D6C50D600C128AD /* x_textclient.c */,
 				378234261D6C826800C128AD /* x_textget.c */,
 				3782340C1D6C812200C128AD /* x_textset.c */,
 				378233EA1D6C7F9400C128AD /* x_textsize.c */,
@@ -1290,6 +1293,8 @@
 			children = (
 				174D8A091F0BBBBE00C94065 /* x_array.h */,
 				378972081C4F716700263434 /* x_array.c */,
+				375D72E61D86A5F000D079B1 /* x_arrayclient.c */,
+				375148DA1D86D9E5005679B0 /* x_arrayrange.c */,
 				37514A401D86E4DF005679B0 /* x_arraysize.c */,
 				37514A0A1D86E38F005679B0 /* x_arraysum.c */,
 				375149D61D86E243005679B0 /* x_arrayget.c */,
@@ -1543,11 +1548,7 @@
 		37AEFD551DB5182A0039FB59 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				378232431D6C4A3300C128AD /* x_textbuffer.c */,
-				378232A21D6C50D600C128AD /* x_textclient.c */,
-				375D72E61D86A5F000D079B1 /* x_arrayclient.c */,
-				375148DA1D86D9E5005679B0 /* x_arrayrange.c */,
-				375E88DE1D901BA90052D22C /* x_listinlet.c */,
+				174D8A0B1F0BBE2E00C94065 /* x_atomoutlet.h */,
 				37B145831D9E97A1003A354F /* x_atomoutlet.c */,
 				3759441D1E48E04A00CF3FD7 /* tinyexpr.h */,
 				3759441C1E48E04A00CF3FD7 /* tinyexpr.c */,
@@ -1703,6 +1704,7 @@
 			children = (
 				174D8A0A1F0BBCD000C94065 /* x_list.h */,
 				3789720C1C4F716800263434 /* x_list.c */,
+				375E88DE1D901BA90052D22C /* x_listinlet.c */,
 				378E4C4D1D8FD67D00DFFDC3 /* x_listappend.c */,
 				378E4C021D8FD46100DFFDC3 /* x_listprepend.c */,
 				378E4BCF1D8FD2B000DFFDC3 /* x_listsplit.c */,
