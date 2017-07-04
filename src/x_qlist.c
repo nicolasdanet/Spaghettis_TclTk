@@ -11,6 +11,7 @@
 #include "m_core.h"
 #include "s_system.h"
 #include "g_graphics.h"
+#include "x_text.h"
 #include "x_control.h"
 
 // -----------------------------------------------------------------------------------------------------------
