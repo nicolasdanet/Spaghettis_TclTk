@@ -146,10 +146,12 @@ void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int flags, t_symb
     if (flags & ATOMOUTLET_INLET)  { inlet_newPointer (owner, &x->ao_gpointer); }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void atomoutlet_make (t_atomoutlet *x, t_object *owner, int flags, t_symbol *type, t_atom *a)
 {
-    atomoutlet_init (x);
-    
     if (IS_SYMBOL (a))       { atomoutlet_makeSymbol (x, owner, flags, type, GET_SYMBOL (a));   }
     else if (IS_POINTER (a)) { atomoutlet_makePointer (x, owner, flags, type, GET_POINTER (a)); }
     else {
@@ -157,13 +159,8 @@ void atomoutlet_make (t_atomoutlet *x, t_object *owner, int flags, t_symbol *typ
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_error atomoutlet_makeParsed (t_atomoutlet *x, t_object *owner, int flags, t_atom *a)
 {
-    t_error err = PD_ERROR_NONE;
     t_symbol *t = atom_getSymbol (a);
     
     if (t == sym_p) { t = &s_pointer; }
@@ -171,15 +168,13 @@ t_error atomoutlet_makeParsed (t_atomoutlet *x, t_object *owner, int flags, t_at
     if (t == sym_f) { t = &s_float;   }
     
     if (t == &s_pointer)     { atomoutlet_makePointer (x, owner, flags, NULL, NULL); }
-    else if (t == &s_symbol) { atomoutlet_makeSymbol (x, owner, flags, NULL, t); }
+    else if (t == &s_symbol) { atomoutlet_makeSymbol (x, owner, flags, NULL, t);     }
+    else if (t == &s_float)  { atomoutlet_makeFloat (x, owner, flags, NULL, 0.0);    }
     else {
-        atomoutlet_makeFloat (x, owner, flags, NULL, atom_getFloat (a));
-        if (!IS_FLOAT (a) && t != &s_float) {
-            err = PD_ERROR;
-        }
+        atomoutlet_make (x, owner, flags, NULL, a);
     }
     
-    return err;
+    return PD_ERROR_NONE;
 }
 
 // -----------------------------------------------------------------------------------------------------------
