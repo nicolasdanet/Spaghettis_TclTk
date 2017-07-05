@@ -96,7 +96,8 @@ static void *pack_newProceed (int argc, t_atom *argv)
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
     for (i = 0; i < x->x_size; i++) {
-        if (atomoutlet_makeParse (x->x_vector + i, cast_object (x), argv + i, (i != 0), 0)) {
+        int create = (i != 0) ? ATOMOUTLET_INLET : ATOMOUTLET_NONE;
+        if (atomoutlet_makeDefaultParsed (x->x_vector + i, cast_object (x), create, argv + i)) {
             warning_badType (sym_pipe, atom_getSymbol (argv + i));
         }
     }

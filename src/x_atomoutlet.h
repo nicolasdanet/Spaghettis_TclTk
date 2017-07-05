@@ -24,6 +24,17 @@ typedef struct _atomoutlet {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+enum {
+    ATOMOUTLET_NONE     = 0,
+    ATOMOUTLET_INLET    = 1,
+    ATOMOUTLET_OUTLET   = 2,
+    ATOMOUTLET_BOTH     = 3
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_atom      *atomoutlet_getAtom         (t_atomoutlet *x);
 t_outlet    *atomoutlet_getOutlet       (t_atomoutlet *x);
 t_gpointer  *atomoutlet_getPointer      (t_atomoutlet *x);
@@ -38,16 +49,16 @@ int         atomoutlet_isPointer        (t_atomoutlet *x);
 void    atomoutlet_copyAtom             (t_atomoutlet *x, t_atom *a);
 t_error atomoutlet_setAtom              (t_atomoutlet *x, t_atom *a);
 int     atomoutlet_isEqualToAtom        (t_atomoutlet *x, t_atom *a);
-t_error atomoutlet_outputIfTypeMatch    (t_atomoutlet *x, t_atom *a);
+t_error atomoutlet_broadcastIfTypeMatch (t_atomoutlet *x, t_atom *a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, t_float f, int inlet, int outlet);
-void    atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int inlet, int outlet);
-void    atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int inlet, int outlet);
-t_error atomoutlet_makeParse            (t_atomoutlet *x, t_object *o, t_atom *a, int inlet, int outlet);
+void    atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, int flags, t_float f);
+void    atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int flags, t_symbol *s);
+void    atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int flags, t_gpointer *gp);
+t_error atomoutlet_makeDefaultParsed    (t_atomoutlet *x, t_object *o, int flags, t_atom *a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

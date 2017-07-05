@@ -77,14 +77,14 @@ int atomoutlet_isEqualToAtom (t_atomoutlet *x, t_atom *a)
     if (IS_FLOAT (&x->ao_atom) && (GET_FLOAT (&x->ao_atom) == GET_FLOAT (a)))    { return 1; }
     if (IS_SYMBOL (&x->ao_atom) && (GET_SYMBOL (&x->ao_atom) == GET_SYMBOL (a))) { return 1; }
     
-    PD_ASSERT (IS_FLOAT (&x->ao_atom) || IS_SYMBOL (&x->ao_atom));      /* Others not implemented yet. */
+    PD_ASSERT (IS_FLOAT (&x->ao_atom) || IS_SYMBOL (&x->ao_atom));      /* A_POINTER not implemented yet. */
     //
     }
     
     return 0;
 }
 
-t_error atomoutlet_outputIfTypeMatch (t_atomoutlet *x, t_atom *a)
+t_error atomoutlet_broadcastIfTypeMatch (t_atomoutlet *x, t_atom *a)
 {
     if (!atom_typesAreEquals (&x->ao_atom, a)) { return PD_ERROR; }
     else {
@@ -121,44 +121,49 @@ void atomoutlet_release (t_atomoutlet *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void atomoutlet_makeFloat (t_atomoutlet *x, t_object *owner, t_float f, int createInlet, int createOutlet)
+void atomoutlet_makeFloat (t_atomoutlet *x, t_object *owner, int flags, t_float f)
 {
     atomoutlet_init (x);
     SET_FLOAT (&x->ao_atom, f);
-    if (createOutlet) { x->ao_outlet = outlet_new (owner, &s_float); }
-    if (createInlet)  { inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom)); }
+    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, &s_float); }
+    if (flags & ATOMOUTLET_INLET)  { inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom)); }
 }
 
-void atomoutlet_makeSymbol (t_atomoutlet *x, t_object *owner, int createInlet, int createOutlet)
+void atomoutlet_makeSymbol (t_atomoutlet *x, t_object *owner, int flags, t_symbol *s)
 {
     atomoutlet_init (x);
-    SET_SYMBOL (&x->ao_atom, &s_symbol);
-    if (createOutlet) { x->ao_outlet = outlet_new (owner, &s_symbol); }
-    if (createInlet)  { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
+    SET_SYMBOL (&x->ao_atom, s);
+    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, &s_symbol); }
+    if (flags & ATOMOUTLET_INLET)  { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
 }
 
-void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int createInlet, int createOutlet)
+void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int flags, t_gpointer *gp)
 {
     atomoutlet_init (x);
     SET_POINTER (&x->ao_atom, &x->ao_gpointer);
-    if (createOutlet) { x->ao_outlet = outlet_new (owner, &s_pointer); }
-    if (createInlet)  { inlet_newPointer (owner, &x->ao_gpointer); }
+    if (gp) { gpointer_setByCopy (&x->ao_gpointer, gp); }
+    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, &s_pointer); }
+    if (flags & ATOMOUTLET_INLET)  { inlet_newPointer (owner, &x->ao_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error atomoutlet_makeParse (t_atomoutlet *x, t_object *owner, t_atom *a, int createInlet, int createOutlet)
+t_error atomoutlet_makeDefaultParsed (t_atomoutlet *x, t_object *owner, int flags, t_atom *a)
 {
     t_error err = PD_ERROR_NONE;
     t_symbol *t = atom_getSymbol (a);
-        
-    if (t == sym_p || t == &s_pointer) { atomoutlet_makePointer (x, owner, createInlet, createOutlet); }
-    else if (t == sym_s || t == &s_symbol) { atomoutlet_makeSymbol (x, owner, createInlet, createOutlet); }
+    
+    if (t == sym_p) { t = &s_pointer; }
+    if (t == sym_s) { t = &s_symbol;  }
+    if (t == sym_f) { t = &s_float;   }
+    
+    if (t == &s_pointer)     { atomoutlet_makePointer (x, owner, flags, NULL); }
+    else if (t == &s_symbol) { atomoutlet_makeSymbol (x, owner, flags, t); }
     else {
-        atomoutlet_makeFloat (x, owner, atom_getFloat (a), createInlet, createOutlet);
-        if (!IS_FLOAT (a) && t != sym_f && t != &s_float) {
+        atomoutlet_makeFloat (x, owner, flags, atom_getFloat (a));
+        if (!IS_FLOAT (a) && t != &s_float) {
             err = PD_ERROR;
         }
     }

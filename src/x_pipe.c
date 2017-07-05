@@ -65,7 +65,7 @@ static void callback_task (t_pipecallback *h)
     }
     
     for (i = owner->x_size - 1; i >= 0; i--) {
-        t_error err = atomoutlet_outputIfTypeMatch (owner->x_vector + i, h->h_atoms + i);
+        t_error err = atomoutlet_broadcastIfTypeMatch (owner->x_vector + i, h->h_atoms + i);
         PD_UNUSED (err); PD_ASSERT (!err);
     }
     
@@ -189,11 +189,12 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     x->x_size   = PD_MAX (1, argc);     
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
-    if (!argc) { atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), (t_float)0.0, 0, 1); }
+    if (!argc) { atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), ATOMOUTLET_OUTLET, (t_float)0.0); }
     else {
     //
     for (i = 0; i < argc; i++) {
-        if (atomoutlet_makeParse (x->x_vector + i, cast_object (x), argv + i, (i != 0), 1)) {
+        int create = (i != 0) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
+        if (atomoutlet_makeDefaultParsed (x->x_vector + i, cast_object (x), create, argv + i)) {
             warning_badType (sym_pipe, atom_getSymbol (argv + i));
         }
     }

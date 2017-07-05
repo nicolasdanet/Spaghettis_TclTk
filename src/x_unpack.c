@@ -36,7 +36,7 @@ static void unpack_list (t_unpack *x, t_symbol *s, int argc, t_atom *argv)
     int i;
     
     for (i = PD_MIN (x->x_size, argc) - 1; i >= 0; i--) {
-        if (atomoutlet_outputIfTypeMatch (x->x_vector + i, argv + i)) { 
+        if (atomoutlet_broadcastIfTypeMatch (x->x_vector + i, argv + i)) { 
             error_mismatch (sym_unpack, sym_type);
         }
     }
@@ -60,7 +60,7 @@ static void *unpack_newProceed (int argc, t_atom *argv)
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
     
     for (i = 0; i < x->x_size; i++) {
-        if (atomoutlet_makeParse (x->x_vector + i, cast_object (x), argv + i, 0, 1)) {
+        if (atomoutlet_makeDefaultParsed (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i)) {
             warning_badType (sym_pipe, atom_getSymbol (argv + i));
         }
     }
