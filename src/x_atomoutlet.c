@@ -159,7 +159,7 @@ void atomoutlet_make (t_atomoutlet *x, t_object *owner, int flags, t_symbol *typ
     }
 }
 
-t_error atomoutlet_makeParsed (t_atomoutlet *x, t_object *owner, int flags, t_atom *a)
+void atomoutlet_makeParsed (t_atomoutlet *x, t_object *owner, int flags, t_atom *a)
 {
     t_symbol *t = atom_getSymbol (a);
     
@@ -173,8 +173,6 @@ t_error atomoutlet_makeParsed (t_atomoutlet *x, t_object *owner, int flags, t_at
     else {
         atomoutlet_make (x, owner, flags, NULL, a);
     }
-    
-    return PD_ERROR_NONE;
 }
 
 // -----------------------------------------------------------------------------------------------------------

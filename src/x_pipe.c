@@ -196,9 +196,7 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
 
         for (i = 0; i < argc; i++) {
             int create = (i != 0) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
-            if (atomoutlet_makeParsed (x->x_vector + i, cast_object (x), create, argv + i)) {
-                warning_badType (sym_pipe, atom_getSymbol (argv + i));
-            }
+            atomoutlet_makeParsed (x->x_vector + i, cast_object (x), create, argv + i);
         }
     }
     

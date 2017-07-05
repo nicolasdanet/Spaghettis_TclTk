@@ -60,9 +60,7 @@ static void *unpack_newProceed (int argc, t_atom *argv)
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
     
     for (i = 0; i < x->x_size; i++) {
-        if (atomoutlet_makeParsed (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i)) {
-            warning_badType (sym_pipe, atom_getSymbol (argv + i));
-        }
+        atomoutlet_makeParsed (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i);
     }
     
     return x;
