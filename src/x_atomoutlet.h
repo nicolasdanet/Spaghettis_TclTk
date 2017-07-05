@@ -59,13 +59,9 @@ void    atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, int n, t_
 void    atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int n, t_symbol *type, t_symbol *s);
 void    atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int n, t_symbol *type, t_gpointer *gp);
 void    atomoutlet_make                 (t_atomoutlet *x, t_object *o, int n, t_symbol *type, t_atom *a);
+
+void    atomoutlet_makeSymbolParsed     (t_atomoutlet *x, t_object *o, int n, t_atom *a);
 void    atomoutlet_makeParsed           (t_atomoutlet *x, t_object *o, int n, t_atom *a);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error atomoutlet_makeTypedOutletParse (t_atomoutlet *x, t_object *o, t_atom *a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
