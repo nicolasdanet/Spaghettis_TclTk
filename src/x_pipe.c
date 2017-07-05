@@ -189,16 +189,17 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     x->x_size   = PD_MAX (1, argc);     
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
-    if (!argc) { atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), ATOMOUTLET_OUTLET, (t_float)0.0); }
-    else {
-    //
-    for (i = 0; i < argc; i++) {
-        int create = (i != 0) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
-        if (atomoutlet_makeDefaultParsed (x->x_vector + i, cast_object (x), create, argv + i)) {
-            warning_badType (sym_pipe, atom_getSymbol (argv + i));
+    if (!argc) {
+        atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), ATOMOUTLET_OUTLET, NULL, (t_float)0.0);
+        
+    } else {
+
+        for (i = 0; i < argc; i++) {
+            int create = (i != 0) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
+            if (atomoutlet_makeParsed (x->x_vector + i, cast_object (x), create, argv + i)) {
+                warning_badType (sym_pipe, atom_getSymbol (argv + i));
+            }
         }
-    }
-    //
     }
     
     inlet_newFloat (cast_object (x), &x->x_delay);

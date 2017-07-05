@@ -97,7 +97,7 @@ static void *pack_newProceed (int argc, t_atom *argv)
 
     for (i = 0; i < x->x_size; i++) {
         int create = (i != 0) ? ATOMOUTLET_INLET : ATOMOUTLET_NONE;
-        if (atomoutlet_makeDefaultParsed (x->x_vector + i, cast_object (x), create, argv + i)) {
+        if (atomoutlet_makeParsed (x->x_vector + i, cast_object (x), create, argv + i)) {
             warning_badType (sym_pipe, atom_getSymbol (argv + i));
         }
     }

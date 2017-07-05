@@ -121,36 +121,47 @@ void atomoutlet_release (t_atomoutlet *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void atomoutlet_makeFloat (t_atomoutlet *x, t_object *owner, int flags, t_float f)
+void atomoutlet_makeFloat (t_atomoutlet *x, t_object *owner, int flags, t_symbol *type, t_float f)
 {
     atomoutlet_init (x);
     SET_FLOAT (&x->ao_atom, f);
-    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, &s_float); }
+    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, type ? type : &s_float); }
     if (flags & ATOMOUTLET_INLET)  { inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom)); }
 }
 
-void atomoutlet_makeSymbol (t_atomoutlet *x, t_object *owner, int flags, t_symbol *s)
+void atomoutlet_makeSymbol (t_atomoutlet *x, t_object *owner, int flags, t_symbol *type, t_symbol *s)
 {
     atomoutlet_init (x);
     SET_SYMBOL (&x->ao_atom, s);
-    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, &s_symbol); }
+    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, type ? type : &s_symbol); }
     if (flags & ATOMOUTLET_INLET)  { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
 }
 
-void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int flags, t_gpointer *gp)
+void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int flags, t_symbol *type, t_gpointer *gp)
 {
     atomoutlet_init (x);
     SET_POINTER (&x->ao_atom, &x->ao_gpointer);
     if (gp) { gpointer_setByCopy (&x->ao_gpointer, gp); }
-    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, &s_pointer); }
+    if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, type ? type : &s_pointer); }
     if (flags & ATOMOUTLET_INLET)  { inlet_newPointer (owner, &x->ao_gpointer); }
+}
+
+void atomoutlet_make (t_atomoutlet *x, t_object *owner, int flags, t_symbol *type, t_atom *a)
+{
+    atomoutlet_init (x);
+    
+    if (IS_SYMBOL (a))       { atomoutlet_makeSymbol (x, owner, flags, type, GET_SYMBOL (a));   }
+    else if (IS_POINTER (a)) { atomoutlet_makePointer (x, owner, flags, type, GET_POINTER (a)); }
+    else {
+        atomoutlet_makeFloat (x, owner, flags, type, atom_getFloat (a));
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error atomoutlet_makeDefaultParsed (t_atomoutlet *x, t_object *owner, int flags, t_atom *a)
+t_error atomoutlet_makeParsed (t_atomoutlet *x, t_object *owner, int flags, t_atom *a)
 {
     t_error err = PD_ERROR_NONE;
     t_symbol *t = atom_getSymbol (a);
@@ -159,10 +170,10 @@ t_error atomoutlet_makeDefaultParsed (t_atomoutlet *x, t_object *owner, int flag
     if (t == sym_s) { t = &s_symbol;  }
     if (t == sym_f) { t = &s_float;   }
     
-    if (t == &s_pointer)     { atomoutlet_makePointer (x, owner, flags, NULL); }
-    else if (t == &s_symbol) { atomoutlet_makeSymbol (x, owner, flags, t); }
+    if (t == &s_pointer)     { atomoutlet_makePointer (x, owner, flags, NULL, NULL); }
+    else if (t == &s_symbol) { atomoutlet_makeSymbol (x, owner, flags, NULL, t); }
     else {
-        atomoutlet_makeFloat (x, owner, flags, atom_getFloat (a));
+        atomoutlet_makeFloat (x, owner, flags, NULL, atom_getFloat (a));
         if (!IS_FLOAT (a) && t != &s_float) {
             err = PD_ERROR;
         }
@@ -211,27 +222,6 @@ t_error atomoutlet_makeTypedOutletParse (t_atomoutlet *x, t_object *owner, t_ato
     }
     
     return PD_ERROR_NONE;
-}
-
-void atomoutlet_makeTypedOutlet (t_atomoutlet *x, t_object *owner, t_symbol *type, t_atom *a, int createInlet)
-{
-    atomoutlet_init (x);
-    
-    if (IS_SYMBOL (a)) { SET_SYMBOL (&x->ao_atom, atom_getSymbol (a)); }
-    else {
-        SET_FLOAT (&x->ao_atom, atom_getFloat (a));
-    }
-    
-    if (createInlet) {
-    //
-    if (IS_SYMBOL (a)) { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
-    else {
-        inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom));        
-    }
-    //
-    }
-    
-    x->ao_outlet = outlet_new (owner, type);
 }
 
 // -----------------------------------------------------------------------------------------------------------

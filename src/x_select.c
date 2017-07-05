@@ -128,7 +128,7 @@ static void *select2_new (int argc, t_atom *argv)
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
     for (i = 0; i < argc; i++) {
-        atomoutlet_makeTypedOutlet (x->x_vector + i, cast_object (x), &s_bang, argv + i, 0);
+        atomoutlet_make (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, &s_bang, argv + i);
     }
     
     x->x_outlet = outlet_new (cast_object (x), &s_anything);

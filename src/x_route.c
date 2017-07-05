@@ -166,8 +166,9 @@ static void *route_newProceed (int argc, t_atom *argv)
     for (i = 1; i < argc; i++) { if (atom_getType (argv + i) != x->x_type) { err = PD_ERROR; } }
     
     if (!err) {
+        int create = (argc == 1) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
         for (i = 0; i < argc; i++) {
-            atomoutlet_makeTypedOutlet (x->x_vector + i, cast_object (x), &s_anything, argv + i, argc == 1);
+            atomoutlet_make (x->x_vector + i, cast_object (x), create, &s_anything, argv + i);
         }
         x->x_outlet = outlet_new (cast_object (x), &s_anything);
         
