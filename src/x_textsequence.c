@@ -393,8 +393,8 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
         }
         
     } else {
-        error_invalidArguments (sym_text__space__search, argc, argv);
-        pd_free (cast_pd (x)); x = NULL;
+    
+        error_invalidArguments (sym_text__space__search, argc, argv); pd_free (cast_pd (x)); x = NULL;
     }
     
     return x;

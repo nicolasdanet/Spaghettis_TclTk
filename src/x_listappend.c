@@ -45,13 +45,13 @@ static void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *arg
         t_listinlet cache;
         listinlet_init (&cache);
         listinlet_clone (&x->x_listinlet, &cache);
-        listinlet_copyListUnchecked (&cache, t + argc);
+        listinlet_copyAtomsUnchecked (&cache, t + argc);
         outlet_list (x->x_outlet, count, t);
         listinlet_clear (&cache);
         
     } else {
     
-        listinlet_copyListUnchecked (&x->x_listinlet, t + argc);
+        listinlet_copyAtomsUnchecked (&x->x_listinlet, t + argc);
         outlet_list (x->x_outlet, count, t);
     }
     
