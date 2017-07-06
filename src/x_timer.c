@@ -107,7 +107,7 @@ void timer_setup (void)
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)timer_unit,           sym_tempo,  A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)timer_unit,           sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
         
     #endif
     
