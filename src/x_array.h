@@ -15,7 +15,7 @@
 // MARK: -
 
 typedef struct _arrayclient {
-    t_object        ac_obj;                     /* Must be the first. */
+    t_object        ac_obj;                 /* Must be the first. */
     t_gpointer      ac_gpointer;
     t_symbol        *ac_name;
     t_symbol        *ac_templateIdentifier;
@@ -23,7 +23,7 @@ typedef struct _arrayclient {
     } t_arrayclient;
 
 typedef struct _arrayrange {
-    t_arrayclient   ar_arrayclient;             /* Must be the first. */
+    t_arrayclient   ar_arrayclient;         /* Must be the first. */
     t_float         ar_first;
     t_float         ar_size;
     t_symbol        *ar_fieldName;
