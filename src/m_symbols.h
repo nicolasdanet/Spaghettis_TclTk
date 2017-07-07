@@ -275,6 +275,7 @@ extern t_symbol *sym_flush;
 extern t_symbol *sym_foregroundcolor;
 extern t_symbol *sym_format;
 extern t_symbol *sym_framp__tilde__;
+extern t_symbol *sym_freeze;
 extern t_symbol *sym_fromlist;
 extern t_symbol *sym_fromsymbol;
 extern t_symbol *sym_fswap;

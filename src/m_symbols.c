@@ -275,6 +275,7 @@ t_symbol *sym_flush;
 t_symbol *sym_foregroundcolor;
 t_symbol *sym_format;
 t_symbol *sym_framp__tilde__;
+t_symbol *sym_freeze;
 t_symbol *sym_fromlist;
 t_symbol *sym_fromsymbol;
 t_symbol *sym_fswap;
@@ -855,6 +856,7 @@ void symbols_initialize (void)
     sym_foregroundcolor                         = gensym ("foregroundcolor");
     sym_format                                  = gensym ("format");
     sym_framp__tilde__                          = gensym ("framp~");
+    sym_freeze                                  = gensym ("freeze");
     sym_fromlist                                = gensym ("fromlist");
     sym_fromsymbol                              = gensym ("fromsymbol");
     sym_fswap                                   = gensym ("fswap");

@@ -9,65 +9,68 @@
 
 #include "m_pd.h"
 #include "m_core.h"
-#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *namecanvas_class;           /* Shared. */
+/* Avoid to accidentally edit native patches (help or examples). */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _namecanvas {
-    t_object    x_obj;                      /* Must be the first. */
-    t_symbol    *x_name;
-    t_glist     *x_owner;
-    } t_namecanvas;
+static t_class *freeze_class;       /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _freeze {
+    t_object    x_obj;
+    } t_freeze;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *namecanvas_new (t_symbol *s)
+static void *freeze_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_namecanvas *x = (t_namecanvas *)pd_new (namecanvas_class);
+    t_freeze *x = (t_freeze *)pd_new (freeze_class);
     
-    x->x_owner = instance_contextGetCurrent();
-    x->x_name  = s;
+    /* Allow to editing patches with debug build. */
+    /* Bypass the mechanism manually editing a patch file. */
     
-    if (x->x_name != &s_) { pd_bind (cast_pd (x->x_owner), x->x_name); }
+    #if ! ( PD_WITH_DEBUG )
+    
+    if (!argc) {
+        // instance_contextGetCurrent
+    }
+    
+    #endif
     
     return x;
 }
 
-static void namecanvas_free (t_namecanvas *x)
-{
-    if (x->x_name != &s_) { pd_unbind (cast_pd (x->x_owner), x->x_name); }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void namecanvas_setup (void)
+void freeze_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_namecanvas,
-            (t_newmethod)namecanvas_new,
-            (t_method)namecanvas_free,
-            sizeof (t_namecanvas),
+    c = class_new (sym_freeze,
+            (t_newmethod)freeze_new,
+            NULL,
+            sizeof (t_freeze),
             CLASS_DEFAULT | CLASS_NOINLET,
-            A_DEFSYMBOL,
+            A_GIMME,
             A_NULL);
-        
-    namecanvas_class = c;
+    
+    freeze_class = c;
 }
 
-void namecanvas_destroy (void)
+void freeze_destroy (void)
 {
-    class_free (namecanvas_class);
+    class_free (freeze_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
