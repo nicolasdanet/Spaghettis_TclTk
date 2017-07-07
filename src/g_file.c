@@ -75,9 +75,16 @@ void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     t_symbol *fileName  = atom_getSymbol (argv + 0);
     t_symbol *directory = atom_getSymbol (argv + 1);
     
-    if (fileName != glist_getName (root)) { glist_rename (root, 1, argv); }
+    if (glist_isFrozen (glist)) { error_fileIsProtected (glist_getName (root)); }
+    else {
+    //
+    if (fileName != glist_getName (root)) {
+        glist_rename (root, 1, argv);
+    }
     
     canvas_saveProceed (root, fileName, directory, (int)atom_getFloat (argv + 2));
+    //
+    }
     //
     }
 }
@@ -98,9 +105,14 @@ void canvas_save (t_glist *glist, t_float destroy)
     t_glist *root = glist_getTop (glist);
     t_symbol *fileName = environment_getFileName (glist_getEnvironment (root));
     
+    if (glist_isFrozen (glist)) { error_fileIsProtected (fileName); }
+    else {
+    //
     if (fileName == &s_ || string_startWith (fileName->s_name, "Untitled")) { canvas_saveAs (root, destroy); }
     else {
         canvas_saveProceed (root, fileName, environment_getDirectory (glist_getEnvironment (root)), destroy);
+    }
+    //
     }
 }
 
@@ -114,7 +126,7 @@ void canvas_quit (void)
     
     for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) {
     //
-    if (glist_isDirty (glist)) {
+    if (glist_isDirty (glist) && !glist_isFrozen (glist)) {
     //
     gui_vAdd ("::ui_confirm::checkClose %s"
                     " { ::ui_interface::pdsend $top save %d  }"
@@ -153,7 +165,7 @@ void canvas_closeDestroyAlreadyChecked (t_glist *glist, int destroy)
 
 void canvas_closeDestroyOrCheckIfNecessary (t_glist *glist)
 {
-    if (glist_isDirty (glist)) {
+    if (glist_isDirty (glist) && !glist_isFrozen (glist)) {
             
         gui_vAdd ("::ui_confirm::checkClose %s"
                         " { ::ui_interface::pdsend $top save %d  }"

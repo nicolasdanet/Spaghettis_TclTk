@@ -30,6 +30,7 @@ struct _glist {
     int                 gl_hasWindow;
     int                 gl_isMapped;
     int                 gl_isDirty;
+    int                 gl_isFrozen;
     int                 gl_isLoading;
     int                 gl_isDeleting;
     int                 gl_isEditing;
@@ -79,6 +80,7 @@ int     glist_isAbstraction                 (t_glist *g);
 int     glist_isSubpatch                    (t_glist *g);
 int     glist_isArray                       (t_glist *g);
 int     glist_isDirty                       (t_glist *g);
+int     glist_isFrozen                      (t_glist *g);
 int     glist_isOnScreen                    (t_glist *g);
 int     glist_isParentOnScreen              (t_glist *g);
 int     glist_isWindowable                  (t_glist *g);
@@ -113,6 +115,7 @@ int     glist_fileOpen                      (t_glist *g, char *name, char *exten
 
 void    glist_setName                       (t_glist *g, t_symbol *name);
 void    glist_setDirty                      (t_glist *g, int n);
+void    glist_setFrozen                     (t_glist *g, int n);
 void    glist_setFontSize                   (t_glist *g, int n);
 void    glist_setMotion                     (t_glist *g, t_gobj *y, t_motionfn fn, int a, int b);
 void    glist_setBounds                     (t_glist *g, t_bounds *bounds);

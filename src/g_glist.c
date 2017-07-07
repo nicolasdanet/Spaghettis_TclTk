@@ -184,6 +184,11 @@ int glist_isDirty (t_glist *glist)
     return (glist_getTop (glist)->gl_isDirty != 0);
 }
 
+int glist_isFrozen (t_glist *glist)
+{
+    return (glist_getTop (glist)->gl_isFrozen != 0);
+}
+
 int glist_isOnScreen (t_glist *glist)
 {
     return (!glist_isLoading (glist) && glist_getView (glist)->gl_isMapped);
@@ -267,6 +272,11 @@ void glist_setDirty (t_glist *glist, int n)
     glist_updateTitle (y);
     //
     }
+}
+
+void glist_setFrozen (t_glist *glist, int n)
+{
+    glist_getTop (glist)->gl_isFrozen = (n != 0);
 }
 
 void glist_setFontSize (t_glist *g, int n)

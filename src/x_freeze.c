@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Avoid to accidentally edit native patches (help or examples). */
+/* Avoid to accidentally overwrite native patches (help or examples). */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -35,16 +35,17 @@ static void *freeze_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_freeze *x = (t_freeze *)pd_new (freeze_class);
     
-    /* Allow to editing patches with debug build. */
+    /* Allow to save patches with debug build. */
     /* Bypass the mechanism manually editing a patch file. */
     
-    #if ! ( PD_WITH_DEBUG )
-    
     if (!argc) {
-        // instance_contextGetCurrent
-    }
     
-    #endif
+        #if ! ( PD_WITH_DEBUG )
+        
+        glist_setFrozen (instance_contextGetCurrent(), 1);
+        
+        #endif
+    }
     
     return x;
 }

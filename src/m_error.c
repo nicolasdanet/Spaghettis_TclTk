@@ -123,6 +123,11 @@ void error_failsToWrite (t_symbol *s)
     post_error (PD_TRANSLATE ("%s: fails to write"), s->s_name);
 }
 
+void error_fileIsProtected (t_symbol *s)
+{
+    post_error (PD_TRANSLATE ("%s: file is protected"), s->s_name);
+}
+
 void error_ignored (t_symbol *s)
 {
     post_error (PD_TRANSLATE ("%s: ignored"), s->s_name);

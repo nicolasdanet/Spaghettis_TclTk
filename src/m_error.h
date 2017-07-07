@@ -45,6 +45,7 @@ void error_canNotOpen                       (t_symbol *);
 void error_canNotCreate                     (t_symbol *);
 void error_failsToRead                      (t_symbol *);
 void error_failsToWrite                     (t_symbol *);
+void error_fileIsProtected                  (t_symbol *);
 void error_ignored                          (t_symbol *);
 void error_failed                           (t_symbol *);
 
