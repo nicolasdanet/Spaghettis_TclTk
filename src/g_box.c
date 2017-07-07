@@ -449,10 +449,22 @@ void box_activate (t_box *x, int isActivated)
 {
     PD_ASSERT (glist_hasWindow (x->box_owner));     /* Can't be activate in GOP. */
     
-    gui_vAdd ("::ui_box::setEditing %s %s %d\n",
-        glist_getTagAsString (x->box_owner),
-        x->box_tag,
-        (isActivated != 0));
+    if (isActivated) {
+    
+        gui_vAdd ("%s.c focus %s\n",
+                        glist_getTagAsString (x->box_owner),
+                        x->box_tag);
+        gui_vAdd ("%s.c icursor %s 0\n",
+                        glist_getTagAsString (x->box_owner),
+                        x->box_tag);
+    
+    } else {
+    
+        gui_vAdd ("selection clear %s.c\n",
+                        glist_getTagAsString (x->box_owner));
+        gui_vAdd ("%s.c focus \"\"\n",
+                        glist_getTagAsString (x->box_owner));
+    }
     
     if (!isActivated) { editor_boxUnselect (glist_getEditor (x->box_owner), x); }
     else {
