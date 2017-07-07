@@ -48,7 +48,7 @@ static void *bang_newBySlot (t_pd *dummy)
     return x;
 }
 
-static void *bang_newByRegular (t_bang f)
+static void *bang_newByRegular (void)
 {
     return bang_newBySlot (NULL);
 }
