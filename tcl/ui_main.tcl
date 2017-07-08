@@ -106,6 +106,7 @@ set var(isPath)                 0
 set var(isInitialized)          0
 set var(isDsp)                  0
 set var(isEditMode)             0
+set var(isSnapToGrid)           0
 
 set var(nil)                    "empty"
 

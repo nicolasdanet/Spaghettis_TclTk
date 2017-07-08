@@ -46,6 +46,7 @@ proc initialize {} {
     event add <<Duplicate>>                 <$mod-Key-d>
     event add <<SelectAll>>                 <$mod-Key-a>
     event add <<EditMode>>                  <$mod-Key-e>
+    event add <<SnapToGrid>>                <$mod-Key-g>
     event add <<NewFile>>                   <$mod-Key-n>
     event add <<OpenFile>>                  <$mod-Key-o>
     event add <<Save>>                      <$mod-Key-s>
@@ -104,29 +105,30 @@ proc initialize {} {
 
     bind all <Escape>                       { ::cancel %W }
      
-    bind all <<Cut>>                        { .menubar.edit     invoke "Cut"        }
-    bind all <<Copy>>                       { .menubar.edit     invoke "Copy"       }
-    bind all <<Paste>>                      { .menubar.edit     invoke "Paste"      }
-    bind all <<Duplicate>>                  { .menubar.edit     invoke "Duplicate"  }
-    bind all <<SelectAll>>                  { .menubar.edit     invoke "Select All" }
-    bind all <<EditMode>>                   { .menubar.edit     invoke "Edit Mode"  }
-    bind all <<NewFile>>                    { .menubar.file     invoke "New Patch"  }
-    bind all <<OpenFile>>                   { .menubar.file     invoke "Open..."    }
-    bind all <<Save>>                       { .menubar.file     invoke "Save"       }
-    bind all <<SaveAs>>                     { .menubar.file     invoke "Save As..." }
-    bind all <<Close>>                      { .menubar.file     invoke "Close"      }
+    bind all <<Cut>>                        { .menubar.edit     invoke "Cut"            }
+    bind all <<Copy>>                       { .menubar.edit     invoke "Copy"           }
+    bind all <<Paste>>                      { .menubar.edit     invoke "Paste"          }
+    bind all <<Duplicate>>                  { .menubar.edit     invoke "Duplicate"      }
+    bind all <<SelectAll>>                  { .menubar.edit     invoke "Select All"     }
+    bind all <<EditMode>>                   { .menubar.edit     invoke "Edit Mode"      }
+    bind all <<SnapToGrid>>                 { .menubar.edit     invoke "Snap To Grid"   }
+    bind all <<NewFile>>                    { .menubar.file     invoke "New Patch"      }
+    bind all <<OpenFile>>                   { .menubar.file     invoke "Open..."        }
+    bind all <<Save>>                       { .menubar.file     invoke "Save"           }
+    bind all <<SaveAs>>                     { .menubar.file     invoke "Save As..."     }
+    bind all <<Close>>                      { .menubar.file     invoke "Close"          }
     
-    bind all <<NewObject>>                  { .menubar.object   invoke "Object"     }
-    bind all <<NewMessage>>                 { .menubar.object   invoke "Message"    }
-    bind all <<NewAtom>>                    { .menubar.object   invoke "Atom"       }
-    bind all <<NewSymbol>>                  { .menubar.object   invoke "Symbol"     }
-    bind all <<NewComment>>                 { .menubar.object   invoke "Comment"    }
-    bind all <<NewBang>>                    { .menubar.object   invoke "Bang"       }
-    bind all <<NewToggle>>                  { .menubar.object   invoke "Toggle"     }
-    bind all <<NewDial>>                    { .menubar.object   invoke "Dial"       }
-    bind all <<NewArray>>                   { .menubar.object   invoke "Array"      }
+    bind all <<NewObject>>                  { .menubar.object   invoke "Object"         }
+    bind all <<NewMessage>>                 { .menubar.object   invoke "Message"        }
+    bind all <<NewAtom>>                    { .menubar.object   invoke "Atom"           }
+    bind all <<NewSymbol>>                  { .menubar.object   invoke "Symbol"         }
+    bind all <<NewComment>>                 { .menubar.object   invoke "Comment"        }
+    bind all <<NewBang>>                    { .menubar.object   invoke "Bang"           }
+    bind all <<NewToggle>>                  { .menubar.object   invoke "Toggle"         }
+    bind all <<NewDial>>                    { .menubar.object   invoke "Dial"           }
+    bind all <<NewArray>>                   { .menubar.object   invoke "Array"          }
     
-    bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"    }
+    bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"        }
     
     bind all <KeyPress>                     { ::ui_bind::_key %W %K %A 1 }
     bind all <KeyRelease>                   { ::ui_bind::_key %W %K %A 0 }

@@ -43,7 +43,7 @@ proc initialize {} {
     
     # Create the sub-menus.
     
-    foreach m {file edit object tools media} {    
+    foreach m {file edit object tools media} {
         menu .menubar.$m
         [format _%s $m] .menubar.$m
         .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
@@ -81,7 +81,7 @@ proc configureForConsole {} {
     .menubar.edit entryconfigure [_ "Paste"]        -state disabled
     .menubar.edit entryconfigure [_ "Duplicate"]    -state disabled
     .menubar.edit entryconfigure [_ "Select All"]   -state normal
-    
+
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
 }
 
@@ -236,12 +236,21 @@ proc _edit {m} {
         -accelerator "${accelerator}+A" \
         -command { ::ui_menu::_handle _selectall }
     $m add separator
-    
+
     $m add check \
         -label [_ "Edit Mode"] \
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
         -command { ::ui_menu::_handle "editmode $::var(isEditMode)" }
+    $m add separator
+    
+    $m add check \
+        -label [_ "Snap To Grid"] \
+        -accelerator "${accelerator}+G" \
+        -variable ::var(isSnapToGrid) \
+        -command {
+            ::ui_interface::pdsend  "pd _grid $::var(isSnapToGrid)"
+        }
 }
 
 proc _object {m} {

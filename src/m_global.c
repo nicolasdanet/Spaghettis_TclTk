@@ -70,6 +70,11 @@ static void global_font (void *dummy, t_symbol *s, int argc, t_atom *argv)
     font_withHostMeasured (argc, argv);
 }
 
+static void global_grid (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    post ("Snap To Grid %d", (int)atom_getFloatAtIndex (0, argc, argv));
+}
+
 static void global_audioProperties (void *dummy)
 {
     audio_requireDialog();
@@ -141,6 +146,7 @@ void global_setup (void)
     
     class_addMethod (c, (t_method)global_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_font,                  sym__font,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_grid,                  sym__grid,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_audioProperties,       sym__audioproperties,   A_NULL);
     class_addMethod (c, (t_method)global_audioDialog,           sym__audiodialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_midiProperties,        sym__midiproperties,    A_NULL);
