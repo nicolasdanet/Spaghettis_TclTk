@@ -46,8 +46,8 @@ proc initialize {} {
     event add <<Duplicate>>                 <$mod-Key-d>
     event add <<SelectAll>>                 <$mod-Key-a>
     event add <<EditMode>>                  <$mod-Key-e>
-    event add <<Snap>>                      <$mod-Key-y>
-    event add <<SnapToGrid>>                <$mod-Key-g>
+    event add <<Snap>>                      <$mod-Key-g>
+    event add <<SnapToGrid>>                <Shift-$mod-Key-g>
     event add <<NewFile>>                   <$mod-Key-n>
     event add <<OpenFile>>                  <$mod-Key-o>
     event add <<Save>>                      <$mod-Key-s>

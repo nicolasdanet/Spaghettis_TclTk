@@ -249,11 +249,11 @@ proc _edit {m} {
 
     $m add command \
         -label [_ "Snap"] \
-        -accelerator "${accelerator}+Y" \
+        -accelerator "${accelerator}+G" \
         -command { ::ui_menu::_handle _snap }
     $m add check \
         -label [_ "Snap To Grid"] \
-        -accelerator "${accelerator}+G" \
+        -accelerator "Shift+${accelerator}+G" \
         -variable ::var(isSnapToGrid) \
         -command {
             ::ui_interface::pdsend  "pd _grid $::var(isSnapToGrid)"
