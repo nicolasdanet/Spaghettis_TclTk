@@ -390,8 +390,8 @@ void iemgui_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY
 {
     t_iem *x = cast_iem (z);
 
-    object_setX (cast_object (x), object_getX (cast_object (x)) + deltaX);
-    object_setY (cast_object (x), object_getY (cast_object (x)) + deltaY);
+    object_setSnappedX (cast_object (x), object_getX (cast_object (x)) + deltaX);
+    object_setSnappedY (cast_object (x), object_getY (cast_object (x)) + deltaY);
     
     (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_MOVE);
     

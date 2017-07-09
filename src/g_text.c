@@ -73,14 +73,18 @@ void text_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_object *x = cast_object (z);
     
-    object_setX (x, object_getX (x) + deltaX);
-    object_setY (x, object_getY (x) + deltaY);
+    int m = object_setSnappedX (x, object_getX (x) + deltaX);
+    int n = object_setSnappedY (x, object_getY (x) + deltaY);
     
+    if (m || n) {
+    //
     if (glist_isOnScreen (glist)) {
     //
     t_box *text = box_fetch (glist, x);
-    box_displace (text, deltaX, deltaY);
+    box_displace (text, m, n);
     glist_updateLinesForObject (glist, x);
+    //
+    }
     //
     }
 }

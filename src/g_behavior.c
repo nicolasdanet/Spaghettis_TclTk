@@ -55,8 +55,8 @@ static void glist_behaviorDisplacedProceed (t_glist *x, t_glist *owner, int delt
 {
     if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (cast_gobj (x), owner, 0); }
     
-    object_setX (cast_object (x), object_getX (cast_object (x)) + deltaX);
-    object_setY (cast_object (x), object_getY (cast_object (x)) + deltaY);
+    object_setSnappedX (cast_object (x), object_getX (cast_object (x)) + deltaX);
+    object_setSnappedY (cast_object (x), object_getY (cast_object (x)) + deltaY);
     
     if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (cast_gobj (x), owner, 1); }
     

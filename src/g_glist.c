@@ -458,10 +458,10 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
     object_setBuffer (x, t);
     
     if (isSelected) {
-        object_setSnappedX (x, a);
+        object_setSnappedX (x, a);              /* Interactive creation. */
         object_setSnappedY (x, b);
     } else {
-        object_setX (x, a);
+        object_setX (x, a);                     /* File creation. */
         object_setY (x, b);
     }
     

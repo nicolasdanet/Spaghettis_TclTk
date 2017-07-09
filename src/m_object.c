@@ -76,7 +76,7 @@ int object_setSnappedX (t_object *x, int n)
 
     object_setX (x, snap_getSnapped (n));
     
-    return (k - object_getX (x));
+    return (object_getX (x) - k);
 }
 
 int object_setSnappedY (t_object *x, int n)
@@ -85,7 +85,7 @@ int object_setSnappedY (t_object *x, int n)
 
     object_setY (x, snap_getSnapped (n));
     
-    return (k - object_getY (x));
+    return (object_getY (x) - k);
 }
 
 // -----------------------------------------------------------------------------------------------------------

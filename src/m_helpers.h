@@ -58,6 +58,8 @@ typedef struct _drag {
     int d_startY;
     int d_endX;
     int d_endY;
+    int d_accumulateX;
+    int d_accumulateY;
     } t_drag;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -68,6 +70,9 @@ static inline void drag_begin (t_drag *x, int a, int b)
 {
     x->d_originX = x->d_startX = x->d_endX = a;
     x->d_originY = x->d_startY = x->d_endY = b;
+    
+    x->d_accumulateX = 0;
+    x->d_accumulateY = 0;
 }
 
 static inline void drag_set (t_drag *x, int a, int b)
@@ -113,12 +118,44 @@ static inline int drag_getEndY (t_drag *x)
 
 static inline int drag_getMoveX (t_drag *x)
 {
-    return x->d_endX - x->d_startX;
+    int n = (x->d_endX - x->d_startX) + x->d_accumulateX;
+    
+    if (snap_hasSnapToGrid()) {
+    //
+    int k = snap_getStep();
+    int t = 0;
+    
+    while (n >= k)  { t += k; n -= k; }
+    while (n <= -k) { t -= k; n += k; }
+    
+    x->d_accumulateX = n;
+    
+    return t;
+    //
+    }
+    
+    return n;
 }
 
 static inline int drag_getMoveY (t_drag *x)
 {
-    return x->d_endY - x->d_startY;
+    int n = (x->d_endY - x->d_startY) + x->d_accumulateY;
+    
+    if (snap_hasSnapToGrid()) {
+    //
+    int k = snap_getStep();
+    int t = 0;
+    
+    while (n >= k)  { t += k; n -= k; }
+    while (n <= -k) { t -= k; n += k; }
+    
+    x->d_accumulateY = n;
+    
+    return t;
+    //
+    }
+    
+    return n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
