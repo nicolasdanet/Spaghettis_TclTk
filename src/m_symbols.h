@@ -157,6 +157,7 @@ extern t_symbol *sym__savepreferences;
 extern t_symbol *sym__savetofile;
 extern t_symbol *sym__selectall;
 extern t_symbol *sym__signoff;
+extern t_symbol *sym__snap;
 extern t_symbol *sym__sysexin;
 extern t_symbol *sym__texttemplate;
 extern t_symbol *sym__touchin;

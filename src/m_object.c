@@ -73,8 +73,10 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 int object_setSnappedX (t_object *x, int n)
 {
     int k = object_getX (x);
-
-    object_setX (x, snap_getSnapped (n));
+    
+    if (snap_hasSnapToGrid ()) { n = snap_getSnapped (n); }
+    
+    object_setX (x, n);
     
     return (object_getX (x) - k);
 }
@@ -83,7 +85,9 @@ int object_setSnappedY (t_object *x, int n)
 {
     int k = object_getY (x);
 
-    object_setY (x, snap_getSnapped (n));
+    if (snap_hasSnapToGrid ()) { n = snap_getSnapped (n); }
+    
+    object_setY (x, n);
     
     return (object_getY (x) - k);
 }

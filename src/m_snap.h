@@ -16,6 +16,7 @@
 
 int snap_hasSnapToGrid  (void);
 int snap_getStep        (void);
+int snap_getOffset      (int n);
 int snap_getSnapped     (int n);
 
 // -----------------------------------------------------------------------------------------------------------

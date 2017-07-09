@@ -66,7 +66,7 @@ proc configureForPatch {} {
     .menubar.file entryconfigure [_ "Save"]         -state normal
     .menubar.file entryconfigure [_ "Save As..."]   -state normal
     .menubar.file entryconfigure [_ "Close"]        -state normal
-    
+
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state normal
 }
 
@@ -82,6 +82,7 @@ proc configureForConsole {} {
     .menubar.edit entryconfigure [_ "Duplicate"]    -state disabled
     .menubar.edit entryconfigure [_ "Select All"]   -state normal
 
+    .menubar.edit entryconfigure [_ "Snap"]         -state disabled
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
 }
 
@@ -92,7 +93,8 @@ proc configureForDialog {} {
     .menubar.file entryconfigure [_ "Close"]        -state normal
     
     _copying disabled
-    
+
+    .menubar.edit entryconfigure [_ "Snap"]         -state disabled
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
 }
 
@@ -103,7 +105,8 @@ proc configureForText {} {
     .menubar.file entryconfigure [_ "Close"]        -state normal
     
     _copying normal
-    
+
+    .menubar.edit entryconfigure [_ "Snap"]         -state disabled
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
 }
 
@@ -243,7 +246,11 @@ proc _edit {m} {
         -variable ::var(isEditMode) \
         -command { ::ui_menu::_handle "editmode $::var(isEditMode)" }
     $m add separator
-    
+
+    $m add command \
+        -label [_ "Snap"] \
+        -accelerator "${accelerator}+Y" \
+        -command { ::ui_menu::_handle _snap }
     $m add check \
         -label [_ "Snap To Grid"] \
         -accelerator "${accelerator}+G" \
@@ -383,6 +390,7 @@ proc _copying {mode} {
     .menubar.edit entryconfigure [_ "Paste"]            -state $mode
     .menubar.edit entryconfigure [_ "Duplicate"]        -state $mode
     .menubar.edit entryconfigure [_ "Select All"]       -state $mode
+
 }
 
 proc _editing {mode} {
@@ -400,6 +408,8 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "VU"]             -state $mode
     .menubar.object entryconfigure [_ "Vertical"]       -state $mode
     .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
+
+    .menubar.edit   entryconfigure [_ "Snap"]           -state $mode
 }
 
 # ------------------------------------------------------------------------------------------------------------

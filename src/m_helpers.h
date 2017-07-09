@@ -60,6 +60,7 @@ typedef struct _drag {
     int d_endY;
     int d_accumulateX;
     int d_accumulateY;
+    int d_movedOnce;
     } t_drag;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -73,6 +74,7 @@ static inline void drag_begin (t_drag *x, int a, int b)
     
     x->d_accumulateX = 0;
     x->d_accumulateY = 0;
+    x->d_movedOnce   = 0;
 }
 
 static inline void drag_set (t_drag *x, int a, int b)
@@ -87,9 +89,20 @@ static inline void drag_close (t_drag *x)
     x->d_startY = x->d_endY;
 }
 
-static inline int drag_moved (t_drag *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline int drag_hasMoved (t_drag *x)
 {
     return (x->d_startX != x->d_originX || x->d_startY != x->d_originY);
+}
+
+static inline int drag_hasMovedOnce (t_drag *x)
+{
+    if (drag_hasMoved (x) && !x->d_movedOnce) { x->d_movedOnce = 1; return 1; }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

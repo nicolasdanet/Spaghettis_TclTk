@@ -47,17 +47,16 @@ int snap_getStep (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int snap_getOffset (int n)
+{
+    return (snap_getSnapped (n) - n);
+}
+
 int snap_getSnapped (int n)
 {
-    if (snap_hasSnapToGrid ()) {
-    //
     int k = snap_getStep();
     
     return ((int)(n / (double)k) * k);
-    //
-    }
-    
-    return n;
 }
 
 // -----------------------------------------------------------------------------------------------------------

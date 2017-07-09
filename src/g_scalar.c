@@ -166,6 +166,15 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void scalar_snap (t_scalar *x, t_glist *glist)
+{
+    post_log ("Snap scalar");
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_scalar *x = cast_scalar (z);

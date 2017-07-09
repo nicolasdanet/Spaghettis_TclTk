@@ -181,6 +181,7 @@ void        scalar_setFloat                     (t_scalar *x, t_symbol *field, t
 void        scalar_serialize                    (t_scalar *x, t_buffer *b);
 void        scalar_deserialize                  (t_scalar *x, t_glist *glist, int argc, t_atom *argv);
 void        scalar_redraw                       (t_scalar *x, t_glist *glist);
+void        scalar_snap                         (t_scalar *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

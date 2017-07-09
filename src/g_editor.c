@@ -117,6 +117,10 @@ void editor_selectionDeplace (t_editor *x)
     int deltaX = drag_getMoveX (editor_getDrag (x));
     int deltaY = drag_getMoveY (editor_getDrag (x));
     
+    if (snap_hasSnapToGrid()) {
+        if (drag_hasMovedOnce (editor_getDrag (x))) { glist_objectSnapSelected (x->e_owner); }
+    }
+    
     if (deltaX || deltaY) { glist_objectDisplaceSelected (x->e_owner, deltaX, deltaY); }
         
     drag_close (editor_getDrag (x));

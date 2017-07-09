@@ -297,6 +297,39 @@ void glist_objectRemoveSelected (t_glist *glist)
     }
 }
 
+void glist_objectSnapSelected (t_glist *glist)
+{
+    t_selection *y = NULL;
+    
+    int sortInlets  = 0;
+    int sortOutlets = 0;
+    int isDirty = 0;
+    
+    for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
+    //
+    t_gobj *t = selection_getObject (y);
+    
+    if (pd_class (t) == scalar_class) { scalar_snap (cast_scalar (t), glist); }
+    else {
+
+        int m = snap_getOffset (object_getX (cast_object (t)));
+        int n = snap_getOffset (object_getY (cast_object (t)));
+        
+        if (m || n) {
+            gobj_displaced (t, glist, m, n);
+            sortInlets  |= (pd_class (t) == vinlet_class);
+            sortOutlets |= (pd_class (t) == voutlet_class);
+            isDirty = 1;
+        }
+    }
+    //
+    }
+    
+    if (sortInlets)  { glist_inletSort (glist);   }
+    if (sortOutlets) { glist_outletSort (glist);  }
+    if (isDirty)     { glist_setDirty (glist, 1); }
+}
+
 void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
 {
     t_selection *y = NULL;
@@ -306,10 +339,14 @@ void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
     int isDirty = 0;
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
-        gobj_displaced (selection_getObject (y), glist, deltaX, deltaY);
-        sortInlets  |= (pd_class (selection_getObject (y)) == vinlet_class);
-        sortOutlets |= (pd_class (selection_getObject (y)) == voutlet_class);
-        isDirty = 1;
+    //
+    t_gobj *t = selection_getObject (y);
+    
+    gobj_displaced (t, glist, deltaX, deltaY);
+    sortInlets  |= (pd_class (t) == vinlet_class);
+    sortOutlets |= (pd_class (t) == voutlet_class);
+    isDirty = 1;
+    //
     }
     
     if (sortInlets)  { glist_inletSort (glist);   }

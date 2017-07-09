@@ -153,6 +153,7 @@ int     glist_objectGetIndexAmongSelected   (t_glist *g, t_gobj *y);
 int     glist_objectGetNumberOf             (t_glist *g);
 int     glist_objectGetNumberOfSelected     (t_glist *g);
 void    glist_objectRemoveSelected          (t_glist *g);
+void    glist_objectSnapSelected            (t_glist *g);
 void    glist_objectDisplaceSelected        (t_glist *g, int deltaX, int deltaY);
 void    glist_objectDeleteLines             (t_glist *g, t_object *o);
 void    glist_objectDeleteLinesByInlet      (t_glist *g, t_object *o, t_inlet *inlet);

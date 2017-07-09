@@ -157,6 +157,7 @@ t_symbol *sym__savepreferences;
 t_symbol *sym__savetofile;
 t_symbol *sym__selectall;
 t_symbol *sym__signoff;
+t_symbol *sym__snap;
 t_symbol *sym__sysexin;
 t_symbol *sym__texttemplate;
 t_symbol *sym__touchin;
@@ -739,6 +740,7 @@ void symbols_initialize (void)
     sym__savetofile                             = gensym ("_savetofile");
     sym__selectall                              = gensym ("_selectall");
     sym__signoff                                = gensym ("_signoff");
+    sym__snap                                   = gensym ("_snap");
     sym__sysexin                                = gensym ("_sysexin");
     sym__texttemplate                           = gensym ("_texttemplate");
     sym__touchin                                = gensym ("_touchin");
