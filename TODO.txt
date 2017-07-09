@@ -1,7 +1,6 @@
 
 ###
 
-Add a "Snap To Grid" feature.
 Clean and test all patches.
 
 ###
