@@ -111,8 +111,8 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     instance_stackPop (glist);
     
     object_setBuffer (cast_object (x), t);
-    object_setX (cast_object (x), a);
-    object_setY (cast_object (x), b);
+    object_setSnappedX (cast_object (x), a);
+    object_setSnappedY (cast_object (x), b);
     object_setWidth (cast_object (x), 0);
     object_setType (cast_object (x), TYPE_OBJECT);
     
@@ -172,8 +172,8 @@ void canvas_makeCommentMenu (t_glist *glist)
     buffer_appendSymbol (t, sym_comment);
     
     object_setBuffer (x, t);
-    object_setX (x, a);
-    object_setY (x, b);
+    object_setSnappedX (x, a);
+    object_setSnappedY (x, b);
     object_setWidth (x, 0);
     object_setType (x, TYPE_COMMENT);
 

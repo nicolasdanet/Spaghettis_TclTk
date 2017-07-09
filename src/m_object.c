@@ -70,6 +70,28 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int object_setSnappedX (t_object *x, int n)
+{
+    int k = object_getX (x);
+
+    object_setX (x, snap_getSnapped (n));
+    
+    return (k - object_getX (x));
+}
+
+int object_setSnappedY (t_object *x, int n)
+{
+    int k = object_getY (x);
+
+    object_setY (x, snap_getSnapped (n));
+    
+    return (k - object_getY (x));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void object_distributeAtomsOnInlets (t_object *x, int argc, t_atom *argv)
 {
     if (argc) { 

@@ -227,8 +227,8 @@ static void message_makeObjectMenu (t_message *x, int argc, t_atom *argv)
     glist_deselectAll (x->m_owner);
 
     object_setBuffer (cast_object (x), buffer_new());
-    object_setX (cast_object (x), instance_getDefaultX (x->m_owner));
-    object_setY (cast_object (x), instance_getDefaultY (x->m_owner));
+    object_setSnappedX (cast_object (x), instance_getDefaultX (x->m_owner));
+    object_setSnappedY (cast_object (x), instance_getDefaultY (x->m_owner));
     object_setWidth (cast_object (x), 0);
     object_setType (cast_object (x), TYPE_MESSAGE);
     

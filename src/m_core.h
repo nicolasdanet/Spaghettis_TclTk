@@ -19,6 +19,7 @@
 #include "m_symbols.h"
 #include "m_helpers.h"
 #include "m_clipboard.h"
+#include "m_snap.h"
 #include "m_environment.h"
 #include "m_instance.h"
 #include "m_class.h"

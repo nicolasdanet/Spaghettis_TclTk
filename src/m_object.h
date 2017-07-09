@@ -20,6 +20,13 @@ void    object_setFromEntry                 (t_object *x, t_glist *glist, t_box 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int     object_setSnappedX                  (t_object *x, int n);
+int     object_setSnappedY                  (t_object *x, int n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_outconnect    *object_connect             (t_object *src, int m, t_object *dest, int n);
 
 void    object_disconnect                   (t_object *src, int m, t_object *dest, int n);

@@ -117,7 +117,7 @@ void editor_selectionDeplace (t_editor *x)
     int deltaX = drag_getMoveX (editor_getDrag (x));
     int deltaY = drag_getMoveY (editor_getDrag (x));
     
-    glist_objectDisplaceSelected (x->e_owner, deltaX, deltaY);
+    if (deltaX || deltaY) { glist_objectDisplaceSelected (x->e_owner, deltaX, deltaY); }
         
     drag_close (editor_getDrag (x));
 }

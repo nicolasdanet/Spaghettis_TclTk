@@ -492,8 +492,8 @@ static void gatom_makeObjectMenu (t_gatom *x, int argc, t_atom *argv)
 {
     glist_deselectAll (x->a_owner);
         
-    object_setX (cast_object (x), instance_getDefaultX (x->a_owner));
-    object_setY (cast_object (x), instance_getDefaultY (x->a_owner));
+    object_setSnappedX (cast_object (x), instance_getDefaultX (x->a_owner));
+    object_setSnappedY (cast_object (x), instance_getDefaultY (x->a_owner));
         
     x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
                 

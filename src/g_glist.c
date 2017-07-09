@@ -456,8 +456,15 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
     }
 
     object_setBuffer (x, t);
-    object_setX (x, a);
-    object_setY (x, b);
+    
+    if (isSelected) {
+        object_setSnappedX (x, a);
+        object_setSnappedY (x, b);
+    } else {
+        object_setX (x, a);
+        object_setY (x, b);
+    }
+    
     object_setWidth (x, w);
     object_setType (x, TYPE_OBJECT);
     

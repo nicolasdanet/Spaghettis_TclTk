@@ -35,6 +35,7 @@
 #include "m_eval.c"
 #include "m_global.c"
 #include "m_clipboard.c"
+#include "m_snap.c"
 #include "m_snippet.c"
 #include "m_setup.c"
 #include "m_dollar.c"

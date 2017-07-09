@@ -333,8 +333,8 @@ void iemgui_setPosition (void *x, t_symbol *s, int argc, t_atom *argv)
     
     if (argc > 1) {
     //
-    object_setX (cast_object (iem), atom_getFloatAtIndex (0, argc, argv));
-    object_setY (cast_object (iem), atom_getFloatAtIndex (1, argc, argv));
+    object_setSnappedX (cast_object (iem), atom_getFloatAtIndex (0, argc, argv));
+    object_setSnappedY (cast_object (iem), atom_getFloatAtIndex (1, argc, argv));
     
     iemgui_boxChanged (x);
     //
@@ -347,8 +347,11 @@ void iemgui_movePosition (void *x, t_symbol *s, int argc, t_atom *argv)
     
     if (argc > 1) {
     //
-    object_setX (cast_object (iem), object_getX (cast_object (iem)) + atom_getFloatAtIndex (0, argc, argv));
-    object_setY (cast_object (iem), object_getY (cast_object (iem)) + atom_getFloatAtIndex (1, argc, argv));
+    int m = atom_getFloatAtIndex (0, argc, argv);
+    int n = atom_getFloatAtIndex (1, argc, argv);
+    
+    object_setSnappedX (cast_object (iem), object_getX (cast_object (iem)) + m);
+    object_setSnappedY (cast_object (iem), object_getY (cast_object (iem)) + n);
 
     iemgui_boxChanged (x);
     //

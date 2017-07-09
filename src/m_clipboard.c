@@ -15,11 +15,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#define CLIPBOARD_CUMULATIVE_OFFSET     20
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static int clipboard_count;                 /* Global. */
@@ -77,7 +72,7 @@ void clipboard_paste (t_glist *glist)
     t_gobj *y = NULL;
     t_selection *s = NULL;
     int i = 0;
-    int n = (++clipboard_count) * CLIPBOARD_CUMULATIVE_OFFSET;
+    int n = (++clipboard_count) * snap_getStep();
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     int isDirty = 0;

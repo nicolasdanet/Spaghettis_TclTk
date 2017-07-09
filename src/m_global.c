@@ -20,6 +20,7 @@ void canvas_key                 (t_glist *, t_symbol *, int, t_atom *);
 void interface_quit             (void);
 void interface_pollWatchdog     (void *dummy);
 void font_withHostMeasured      (int, t_atom *);
+void snap_setSnapToGrid         (int);
 void audio_requireDialog        (void);
 void audio_fromDialog           (int, t_atom *);
 void midi_requireDialog         (void);
@@ -72,7 +73,7 @@ static void global_font (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void global_grid (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    post ("Snap To Grid %d", (int)atom_getFloatAtIndex (0, argc, argv));
+    snap_setSnapToGrid ((int)atom_getFloatAtIndex (0, argc, argv));
 }
 
 static void global_audioProperties (void *dummy)
