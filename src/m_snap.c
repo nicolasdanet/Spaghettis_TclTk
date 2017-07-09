@@ -56,7 +56,10 @@ int snap_getSnapped (int n)
 {
     int k = snap_getStep();
     
-    return ((int)(n / (double)k) * k);
+    if (n > 0) { return ((int)((n / (double)k) + 0.5) * k); }
+    else {
+        return ((int)((n / (double)k) - 0.5) * k);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
