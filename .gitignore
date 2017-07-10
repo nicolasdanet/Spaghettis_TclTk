@@ -3,8 +3,8 @@ bin/
 makefile.dependencies
 build/
 Debug/
-externals/
 Application/
+*.pdbundle64
 *.mode2v3
 *.pbxuser
 xcuserdata/
