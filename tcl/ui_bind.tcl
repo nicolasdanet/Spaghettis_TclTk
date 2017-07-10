@@ -42,6 +42,15 @@ proc initialize {} {
     
     if {[tk windowingsystem] eq "aqua"} { set opt "Option"; set mod "Command" }
 
+    # ( https://wiki.tcl-lang.org/3893 ).
+
+    if {[tk windowingsystem] eq "x11"}  {
+
+    bind all <Button-4> { event generate [focus -displayof %W] <MouseWheel> -delta  120 }
+    bind all <Button-5> { event generate [focus -displayof %W] <MouseWheel> -delta -120 }
+
+    }
+
     event add <<Copy>>                      <$mod-Key-c>
     event add <<Duplicate>>                 <$mod-Key-d>
     event add <<SelectAll>>                 <$mod-Key-a>
