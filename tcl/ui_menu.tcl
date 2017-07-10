@@ -256,7 +256,8 @@ proc _edit {m} {
         -accelerator "Shift+${accelerator}+G" \
         -variable ::var(isSnapToGrid) \
         -command {
-            ::ui_interface::pdsend  "pd _grid $::var(isSnapToGrid)"
+            ::ui_interface::pdsend "pd _grid $::var(isSnapToGrid)"
+            ::ui_interface::pdsend "pd _savepreferences"
         }
 }
 

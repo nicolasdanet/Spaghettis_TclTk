@@ -143,6 +143,11 @@ void preferences_save (void)
     string_sprintf (v, PD_STRING, "%d", devices_getBlockSize (&audio));
     properties_setKey ("BlockSize",  v);
     
+    /* GUI settings. */
+    
+    string_sprintf (v, PD_STRING, "%d", snap_hasSnapToGrid());
+    properties_setKey ("SnapToGrid", v);
+    
     /* Search paths. */
     
     l = searchpath_get();
