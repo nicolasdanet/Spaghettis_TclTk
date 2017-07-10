@@ -24,6 +24,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Note that the grip size has been kept for compatibility with legacy patches only. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #define IEM_PANEL_DEFAULT_WIDTH     250
 #define IEM_PANEL_DEFAULT_HEIGHT    45
 
@@ -78,8 +83,8 @@ void panel_drawMove (t_panel *x, t_glist *glist)
                     x,
                     a, 
                     b,
-                    a + x->x_gui.iem_width,
-                    b + x->x_gui.iem_height);
+                    a + x->x_panelWidth,
+                    b + x->x_panelHeight);
     gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
                     glist_getTagAsString (view),
                     x,
@@ -107,8 +112,8 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                     glist_getTagAsString (view),
                     a,
                     b,
-                    a + x->x_gui.iem_width,
-                    b + x->x_gui.iem_height,
+                    a + x->x_panelWidth,
+                    b + x->x_panelHeight,
                     x->x_gui.iem_colorBackground,
                     x);
     gui_vAdd ("%s.c create text %d %d -text {%s}"   // --
@@ -286,7 +291,7 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (cast_iem (z), &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Panel"
-            " %d %d {Grip Size} 0 0 $::var(nil)"    // --
+            " 0 0 $::var(nil) 0 0 $::var(nil)"      // --
             " %d {Panel Width} %d {Panel Height}"   // --
             " -1 $::var(nil) $::var(nil)"           // --
             " -1"
@@ -296,7 +301,6 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner)
             " %d"
             " %d %d %d"
             " -1\n",
-            x->x_gui.iem_width, IEM_PANEL_MINIMUM_SIZE,
             x->x_panelWidth, x->x_panelHeight,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
             names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -314,30 +318,23 @@ static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     
     PD_ASSERT (argc == IEM_DIALOG_SIZE);
     
-    int t0 = x->x_gui.iem_width;
-    int t1 = x->x_gui.iem_height;
-    int t2 = x->x_panelWidth;
-    int t3 = x->x_panelHeight;
+    int t0 = x->x_panelWidth;
+    int t1 = x->x_panelHeight;
     
     {
     //
-    int gripSize    = (int)atom_getFloatAtIndex (0, argc, argv);
     int panelWidth  = (int)atom_getFloatAtIndex (2, argc, argv);
     int panelHeight = (int)atom_getFloatAtIndex (3, argc, argv);
     
     isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
 
-    x->x_gui.iem_width  = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
-    x->x_gui.iem_height = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
     x->x_panelWidth     = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
     x->x_panelHeight    = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
     //
     }
     
-    isDirty |= (t0 != x->x_gui.iem_width);
-    isDirty |= (t1 != x->x_gui.iem_height);
-    isDirty |= (t2 != x->x_panelWidth);
-    isDirty |= (t3 != x->x_panelHeight);
+    isDirty |= (t0 != x->x_panelWidth);
+    isDirty |= (t1 != x->x_panelHeight);
     
     if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
 }
@@ -421,7 +418,6 @@ void panel_setup (void)
             A_NULL);
         
     class_addMethod (c, (t_method)panel_fromDialog,             sym__iemdialog,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_gripSize,               sym_gripsize,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_labelfont,          A_GIMME, A_NULL);
@@ -436,8 +432,8 @@ void panel_setup (void)
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)panel_gripSize,               sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_delta,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_gripSize,               sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setPosition,           sym_pos,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);

@@ -289,7 +289,6 @@ t_symbol *sym_get;
 t_symbol *sym_getposition;
 t_symbol *sym_getsize;
 t_symbol *sym_graph;
-t_symbol *sym_gripsize;
 t_symbol *sym_help;
 t_symbol *sym_hip__tilde__;
 t_symbol *sym_hold;
@@ -872,7 +871,6 @@ void symbols_initialize (void)
     sym_getposition                             = gensym ("getposition");
     sym_getsize                                 = gensym ("getsize");
     sym_graph                                   = gensym ("graph");
-    sym_gripsize                                = gensym ("gripsize");
     sym_help                                    = gensym ("help");
     sym_hip__tilde__                            = gensym ("hip~");
     sym_hold                                    = gensym ("hold");

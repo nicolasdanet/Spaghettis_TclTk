@@ -289,7 +289,6 @@ extern t_symbol *sym_get;
 extern t_symbol *sym_getposition;
 extern t_symbol *sym_getsize;
 extern t_symbol *sym_graph;
-extern t_symbol *sym_gripsize;
 extern t_symbol *sym_help;
 extern t_symbol *sym_hip__tilde__;
 extern t_symbol *sym_hold;
