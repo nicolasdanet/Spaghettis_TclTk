@@ -9,6 +9,7 @@
 
 #include "m_pd.h"
 #include "m_core.h"
+#include "s_system.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -27,6 +28,8 @@ static int snap_hasGrid;        /* Global. */
 void snap_setSnapToGrid (int n)
 {
     snap_hasGrid = (n != 0);
+    
+    gui_vAdd ("set ::var(isSnapToGrid) %d\n", snap_hasGrid);
 }
 
 int snap_hasSnapToGrid (void)

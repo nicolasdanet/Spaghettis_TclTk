@@ -38,6 +38,12 @@ void preferences_load (void)
         if (sscanf (v, "%d", &t) == 1) { devices_setBlockSize (&audio, t); }
     }
     
+    /* GUI settings. */
+    
+    if (properties_getKey ("SnapToGrid", v, PD_STRING)) {
+        if (sscanf (v, "%d", &t) == 1) { snap_setSnapToGrid ((t != 0)); }
+    }
+    
     /* Search paths. */
     
     for (i = 0; 1; i++) {
