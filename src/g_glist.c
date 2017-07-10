@@ -363,7 +363,7 @@ static void glist_loadbangAbstractions (t_glist *glist)
     t_gobj *y = NULL;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == canvas_class) {
+        if (gobj_isCanvas (y)) {
             if (glist_isAbstraction (cast_glist (y))) { glist_loadbang (cast_glist (y)); }
             else {
                 glist_loadbangAbstractions (cast_glist (y));
@@ -377,13 +377,13 @@ static void glist_loadbangSubpatches (t_glist *glist)
     t_gobj *y = NULL;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == canvas_class) {
+        if (gobj_isCanvas (y)) {
             if (!glist_isAbstraction (cast_glist (y))) { glist_loadbangSubpatches (cast_glist (y)); }
         }
     }
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if ((pd_class (y) != canvas_class) && class_hasMethod (pd_class (y), sym_loadbang)) {
+        if (!gobj_isCanvas (y) && class_hasMethod (pd_class (y), sym_loadbang)) {
             pd_message (cast_pd (y), sym_loadbang, 0, NULL);
         }
     }
@@ -643,13 +643,13 @@ void glist_objectRemoveAllByTemplate (t_glist *glist, t_template *template)
 
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    if (pd_class (y) == scalar_class) {
+    if (gobj_isScalar (y)) {
         if (scalar_containsTemplate (cast_scalar (y), template_getTemplateIdentifier (template))) {
             glist_objectRemove (glist, y);
         }
     }
     
-    if (pd_class (y) == canvas_class) {
+    if (gobj_isCanvas (y)) {
         glist_objectRemoveAllByTemplate (cast_glist (y), template);
     }
     //
@@ -661,7 +661,7 @@ void glist_objectRemoveAllScalars (t_glist *glist)
     t_gobj *y = NULL;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == scalar_class) {
+        if (gobj_isScalar (y)) {
             glist_objectRemove (glist, y);
         }
     }

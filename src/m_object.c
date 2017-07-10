@@ -31,7 +31,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
     
     {
     //
-    int m = ((utils_getFirstAtomOfObject (x) == sym_pd) && (pd_class (x) == canvas_class));
+    int m = ((utils_getFirstAtomOfObject (x) == sym_pd) && (gobj_isCanvas (cast_gobj (x))));
     int n = ((utils_getFirstAtomOfBuffer (t) == sym_pd));
     
     if (m && n) {
@@ -56,7 +56,7 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         
         /* Loadbang if the new object is an abstraction. */
         
-        if (instance_getNewestObject() && pd_class (instance_getNewestObject()) == canvas_class) {
+        if (instance_getNewestObject() && gobj_isCanvas (cast_gobj (instance_getNewestObject()))) {
             glist_loadbang (cast_glist (instance_getNewestObject())); 
         }
     }

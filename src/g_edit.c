@@ -180,7 +180,7 @@ static void glist_actionResizeBox (t_glist *glist, t_gobj *y, int width)
 
 static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
 {
-    if (pd_class (y) != canvas_class) { PD_BUG; }
+    if (!gobj_isCanvas (y)) { PD_BUG; }
     else {
     //
     t_rectangle *r = glist_getGraphGeometry (cast_glist (y));
@@ -276,7 +276,7 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     int canOpen = (y && class_hasMethod (pd_class (y), sym_open));
     int canHelp = (y != NULL);
     
-    if (y && (pd_class (y) == canvas_class)) {
+    if (y && gobj_isCanvas (y)) {
     //
     if (glist_isAbstraction (cast_glist (y))) { canProperties = 0; }
     //
@@ -335,7 +335,7 @@ static int glist_mouseOverEditResize (t_glist *glist, t_gobj *y, int a, int b, i
     if (cast_objectIfConnectable (y)) {
     //
     resizable |= object_isViewedAsBox (cast_object (y));
-    resizable |= ((pd_class (y) == canvas_class) && !glist_isAbstraction (cast_glist (y)));
+    resizable |= (gobj_isCanvas (y) && !glist_isAbstraction (cast_glist (y)));
     
     if (resizable) {
         int w = rectangle_getBottomRightX (r) - EDIT_GRIP_SIZE;

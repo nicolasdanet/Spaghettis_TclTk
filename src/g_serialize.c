@@ -57,10 +57,10 @@ static void glist_findTemplatesRecursive (t_glist *glist, int *n, t_symbol ***v)
     t_gobj *y = NULL;
 
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == scalar_class) {
+        if (gobj_isScalar (y)) {
             glist_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), n, v);
         }
-        if (pd_class (y) == canvas_class) { 
+        if (gobj_isCanvas (y)) { 
             glist_findTemplatesRecursive (cast_glist (y), n, v);
         }
     }

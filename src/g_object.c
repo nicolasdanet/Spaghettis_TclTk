@@ -139,8 +139,8 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     
     if (!gobj_isVisible (cast_gobj (owner), glist_getParent (owner))) { return 0; }
     
-    if (pd_class (x) == garray_class) { return 1; }                             /* Always true. */
-    if (pd_class (x) == scalar_class && glist_isArray (owner)) { return 1; }    /* Ditto. */
+    if (pd_class (x) == garray_class) { return 1; }                 /* Always true. */
+    if (gobj_isScalar (x) && glist_isArray (owner)) { return 1; }   /* Ditto. */
     else {
     //
     {
@@ -208,13 +208,13 @@ void gobj_help (t_gobj *y)
     char name[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
     
-    if (pd_class (y) == canvas_class && glist_isAbstraction (cast_glist (y))) {
+    if (gobj_isCanvas (y) && glist_isAbstraction (cast_glist (y))) {
         if (!(err = (buffer_getSize (object_getBuffer (cast_object (y))) < 1))) {
             atom_toString (buffer_getAtoms (object_getBuffer (cast_object (y))), name, PD_STRING);
             directory = environment_getDirectoryAsString (glist_getEnvironment (cast_glist (y)));
         }
     
-    } else if (pd_class (y) == canvas_class && glist_isArray (cast_glist (y))) {
+    } else if (gobj_isCanvas (y) && glist_isArray (cast_glist (y))) {
         err = string_copy (name, PD_STRING, sym_garray->s_name);
         directory = "";
         
@@ -235,7 +235,7 @@ void gobj_help (t_gobj *y)
 int object_isViewedAsBox (t_object *x)
 {
     return ((class_getWidgetBehavior (pd_class (x)) == &text_widgetBehavior)
-        || ((pd_class (x) == canvas_class) && !glist_isGraphOnParent (cast_glist (x))));
+        || ((gobj_isCanvas (cast_gobj (x))) && !glist_isGraphOnParent (cast_glist (x))));
 }
 
 // -----------------------------------------------------------------------------------------------------------

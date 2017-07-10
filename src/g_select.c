@@ -109,7 +109,7 @@ void glist_selectLassoEnd (t_glist *glist, int a, int b)
 
 static void glist_deselectAllRecursive (t_gobj *y)
 {
-    if (pd_class (y) == canvas_class) { 
+    if (gobj_isCanvas (y)) { 
     //
     t_gobj *o = NULL;
     for (o = cast_glist (y)->gl_graphics; o; o = o->g_next) { glist_deselectAllRecursive (o); }
@@ -309,7 +309,7 @@ void glist_objectSnapSelected (t_glist *glist)
     //
     t_gobj *t = selection_getObject (y);
     
-    if (pd_class (t) == scalar_class) { scalar_snap (cast_scalar (t), glist); }
+    if (gobj_isScalar (t)) { scalar_snap (cast_scalar (t), glist); }
     else {
 
         int m = snap_getOffset (object_getX (cast_object (t)));

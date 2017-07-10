@@ -40,7 +40,7 @@ typedef struct _ptrobj {
 
 static int pointer_nextSkip (t_gobj *z, t_glist *glist, int wantSelected)
 {
-    if (pd_class (z) != scalar_class)                            { return 1; }
+    if (!gobj_isScalar (z)) { return 1; }
     else if (wantSelected && !glist_objectIsSelected (glist, z)) { return 1; }
     else {
         return 0;

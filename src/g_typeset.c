@@ -80,7 +80,7 @@ typedef struct _typesethelper {
 
 static t_typesethelper *box_typesetAllocate (t_box *x, int a, int b, t_typesethelper *p)
 {
-    int isCanvas = (pd_class (x->box_object) == canvas_class);
+    int isCanvas = gobj_isCanvas (cast_gobj (x->box_object));
     
     /* Allocate enough space to insert as many line break as it could be required. */
     

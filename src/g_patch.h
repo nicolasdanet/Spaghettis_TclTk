@@ -135,6 +135,20 @@ typedef struct _traverser {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static inline int gobj_isScalar (t_gobj *x)
+{
+    return (pd_class (x) == scalar_class);
+}
+
+static inline int gobj_isCanvas (t_gobj *x)
+{
+    return (pd_class (x) == canvas_class);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void    gobj_getRectangle           (t_gobj *x, t_glist *owner, t_rectangle *r);
 void    gobj_displaced              (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
 void    gobj_selected               (t_gobj *x, t_glist *owner, int isSelected);

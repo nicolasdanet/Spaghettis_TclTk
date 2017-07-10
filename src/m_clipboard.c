@@ -94,7 +94,7 @@ void clipboard_paste (t_glist *glist)
         
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
         y = selection_getObject (s); gobj_displaced (y, glist, n, n);
-        if (pd_class (y) == canvas_class) { glist_loadbang (cast_glist (y)); }
+        if (gobj_isCanvas (y)) { glist_loadbang (cast_glist (y)); }
     }
     
     if (isDirty) { glist_setDirty (glist, 1); }
