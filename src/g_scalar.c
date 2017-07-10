@@ -168,7 +168,29 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 
 void scalar_snap (t_scalar *x, t_glist *glist)
 {
-    post_log ("Snap scalar");
+    t_template *template = scalar_getTemplate (x);
+    
+    if (!template) { PD_BUG; }
+    else {
+    //
+    int deltaX = 0;
+    int deltaY = 0;
+    
+    if (template_fieldIsFloat (template, sym_x)) {
+        t_float f = word_getFloat (x->sc_element, template, sym_x);
+        deltaX = snap_getOffset ((int)(f / glist_getValueForOnePixelX (glist)));
+    }
+    
+    if (template_fieldIsFloat (template, sym_y)) {
+        t_float f = word_getFloat (x->sc_element, template, sym_y);
+        deltaY = snap_getOffset ((int)(f / glist_getValueForOnePixelY (glist)));
+    }
+    
+    if (deltaX || deltaY) {
+        scalar_behaviorDisplaced (cast_gobj (x), glist, deltaX, deltaY);
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
