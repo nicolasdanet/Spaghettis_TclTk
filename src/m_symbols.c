@@ -379,7 +379,6 @@ t_symbol *sym_outlet__tilde__;
 t_symbol *sym_p;
 t_symbol *sym_pack;
 t_symbol *sym_pad;
-t_symbol *sym_panelsize;
 t_symbol *sym_path;
 t_symbol *sym_pd;
 t_symbol *sym_period;
@@ -961,7 +960,6 @@ void symbols_initialize (void)
     sym_p                                       = gensym ("p");
     sym_pack                                    = gensym ("pack");
     sym_pad                                     = gensym ("pad");
-    sym_panelsize                               = gensym ("panelsize");
     sym_path                                    = gensym ("path");
     sym_pd                                      = gensym ("pd");
     sym_period                                  = gensym ("period");

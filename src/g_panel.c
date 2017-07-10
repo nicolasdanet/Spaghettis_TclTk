@@ -195,19 +195,7 @@ void panel_draw (t_panel *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void panel_gripSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc) {
-    //
-    int i = (int)atom_getFloatAtIndex (0, argc, argv);
-    x->x_gui.iem_width  = PD_MAX (i, IEM_PANEL_MINIMUM_SIZE);
-    x->x_gui.iem_height = PD_MAX (i, IEM_PANEL_MINIMUM_SIZE);
-    iemgui_boxChanged ((void *)x);
-    //
-    }
-}
-
-static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+static void panel_size (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
     //
@@ -418,13 +406,13 @@ void panel_setup (void)
             A_NULL);
         
     class_addMethod (c, (t_method)panel_fromDialog,             sym__iemdialog,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_size,                   sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_labelfont,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_labelposition,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelColor,         sym_labelcolor,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_panelSize,              sym_panelsize,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_getPosition,            sym_getposition,        A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
@@ -433,12 +421,11 @@ void panel_setup (void)
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_delta,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_gripSize,               sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setPosition,           sym_pos,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_label_font,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_panelSize,              sym_vis_size,           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_size,                   sym_vis_size,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_getPosition,            sym_get_pos,            A_NULL);
         
     class_addCreator ((t_newmethod)panel_new, sym_my_canvas, A_GIMME, A_NULL);
