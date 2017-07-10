@@ -5,6 +5,7 @@ build/
 Debug/
 Application/
 *.pdbundle64
+*.pdobject32
 *.mode2v3
 *.pbxuser
 xcuserdata/

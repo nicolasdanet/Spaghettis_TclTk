@@ -46,8 +46,11 @@ proc initialize {} {
 
     if {[tk windowingsystem] eq "x11"}  {
 
-    bind all <Button-4> { event generate [focus -displayof %W] <MouseWheel> -delta  120 }
-    bind all <Button-5> { event generate [focus -displayof %W] <MouseWheel> -delta -120 }
+    bind all <Button-4> { event generate [focus -displayof %W] <MouseWheel> -delta  1 }
+    bind all <Button-5> { event generate [focus -displayof %W] <MouseWheel> -delta -1 }
+
+    bind all <Shift-Button-4> { event generate [focus -displayof %W] <Shift-MouseWheel> -delta  1 }
+    bind all <Shift-Button-5> { event generate [focus -displayof %W] <Shift-MouseWheel> -delta -1 }
 
     }
 
