@@ -43,7 +43,7 @@ proc initialize {} {
     
     # Create the sub-menus.
     
-    foreach m {file edit object tools media} {
+    foreach m {file edit object arrange tools media} {
         menu .menubar.$m
         [format _%s $m] .menubar.$m
         .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
@@ -63,51 +63,59 @@ proc initialize {} {
 
 proc configureForPatch {} {
 
-    .menubar.file entryconfigure [_ "Save"]         -state normal
-    .menubar.file entryconfigure [_ "Save As..."]   -state normal
-    .menubar.file entryconfigure [_ "Close"]        -state normal
+    .menubar.file entryconfigure [_ "Save"]                 -state normal
+    .menubar.file entryconfigure [_ "Save As..."]           -state normal
+    .menubar.file entryconfigure [_ "Close"]                -state normal
 
-    .menubar.edit entryconfigure [_ "Edit Mode"]    -state normal
+    .menubar.edit entryconfigure [_ "Edit Mode"]            -state normal
 }
 
 proc configureForConsole {} {
     
-    .menubar.file entryconfigure [_ "Save"]         -state disabled
-    .menubar.file entryconfigure [_ "Save As..."]   -state disabled
-    .menubar.file entryconfigure [_ "Close"]        -state disabled
+    .menubar.file entryconfigure [_ "Save"]                 -state disabled
+    .menubar.file entryconfigure [_ "Save As..."]           -state disabled
+    .menubar.file entryconfigure [_ "Close"]                -state disabled
     
-    .menubar.edit entryconfigure [_ "Cut"]          -state disabled
-    .menubar.edit entryconfigure [_ "Copy"]         -state normal
-    .menubar.edit entryconfigure [_ "Paste"]        -state disabled
-    .menubar.edit entryconfigure [_ "Duplicate"]    -state disabled
-    .menubar.edit entryconfigure [_ "Select All"]   -state normal
+    .menubar.edit entryconfigure [_ "Cut"]                  -state disabled
+    .menubar.edit entryconfigure [_ "Copy"]                 -state normal
+    .menubar.edit entryconfigure [_ "Paste"]                -state disabled
+    .menubar.edit entryconfigure [_ "Duplicate"]            -state disabled
+    .menubar.edit entryconfigure [_ "Select All"]           -state normal
+    .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
 
-    .menubar.edit entryconfigure [_ "Snap"]         -state disabled
-    .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
+    .menubar.arrange entryconfigure [_ "Bring To Front"]    -state disabled
+    .menubar.arrange entryconfigure [_ "Send To Back"]      -state disabled
+    .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
 }
 
 proc configureForDialog {} {
 
-    .menubar.file entryconfigure [_ "Save"]         -state disabled
-    .menubar.file entryconfigure [_ "Save As..."]   -state disabled
-    .menubar.file entryconfigure [_ "Close"]        -state normal
+    .menubar.file entryconfigure [_ "Save"]                 -state disabled
+    .menubar.file entryconfigure [_ "Save As..."]           -state disabled
+    .menubar.file entryconfigure [_ "Close"]                -state normal
     
     _copying disabled
 
-    .menubar.edit entryconfigure [_ "Snap"]         -state disabled
-    .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
+    .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
+
+    .menubar.arrange entryconfigure [_ "Bring To Front"]    -state disabled
+    .menubar.arrange entryconfigure [_ "Send To Back"]      -state disabled
+    .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
 }
 
 proc configureForText {} {
     
-    .menubar.file entryconfigure [_ "Save"]         -state disabled
-    .menubar.file entryconfigure [_ "Save As..."]   -state disabled
-    .menubar.file entryconfigure [_ "Close"]        -state normal
+    .menubar.file entryconfigure [_ "Save"]                 -state disabled
+    .menubar.file entryconfigure [_ "Save As..."]           -state disabled
+    .menubar.file entryconfigure [_ "Close"]                -state normal
     
     _copying normal
 
-    .menubar.edit entryconfigure [_ "Snap"]         -state disabled
-    .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
+    .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
+
+    .menubar.arrange entryconfigure [_ "Bring To Front"]    -state disabled
+    .menubar.arrange entryconfigure [_ "Send To Back"]      -state disabled
+    .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -245,15 +253,29 @@ proc _edit {m} {
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
         -command { ::ui_menu::_handle "editmode $::var(isEditMode)" }
-    $m add separator
+}
 
+proc _arrange {m} {
+
+    variable accelerator
+    
+    $m add command \
+        -label [_ "Bring To Front"] \
+        -accelerator "Shift+${accelerator}+F" \
+        -command { ::ui_menu::_handle _front }
+    $m add command \
+        -label [_ "Send To Back"] \
+        -accelerator "Shift+${accelerator}+B" \
+        -command { ::ui_menu::_handle _back }
+    $m add separator
+    
     $m add command \
         -label [_ "Snap"] \
-        -accelerator "${accelerator}+G" \
+        -accelerator "${accelerator}+Y" \
         -command { ::ui_menu::_handle _snap }
     $m add check \
         -label [_ "Snap To Grid"] \
-        -accelerator "Shift+${accelerator}+G" \
+        -accelerator "Alt+${accelerator}+G" \
         -variable ::var(isSnapToGrid) \
         -command {
             ::ui_interface::pdsend "pd _grid $::var(isSnapToGrid)"
@@ -396,21 +418,23 @@ proc _copying {mode} {
 
 proc _editing {mode} {
     
-    .menubar.object entryconfigure [_ "Object"]         -state $mode
-    .menubar.object entryconfigure [_ "Message"]        -state $mode
-    .menubar.object entryconfigure [_ "Atom"]           -state $mode
-    .menubar.object entryconfigure [_ "Symbol"]         -state $mode
-    .menubar.object entryconfigure [_ "Comment"]        -state $mode
-    .menubar.object entryconfigure [_ "Array"]          -state $mode
-    .menubar.object entryconfigure [_ "Bang"]           -state $mode
-    .menubar.object entryconfigure [_ "Toggle"]         -state $mode
-    .menubar.object entryconfigure [_ "Dial"]           -state $mode
-    .menubar.object entryconfigure [_ "Panel"]          -state $mode
-    .menubar.object entryconfigure [_ "VU"]             -state $mode
-    .menubar.object entryconfigure [_ "Vertical"]       -state $mode
-    .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
+    .menubar.object entryconfigure [_ "Object"]             -state $mode
+    .menubar.object entryconfigure [_ "Message"]            -state $mode
+    .menubar.object entryconfigure [_ "Atom"]               -state $mode
+    .menubar.object entryconfigure [_ "Symbol"]             -state $mode
+    .menubar.object entryconfigure [_ "Comment"]            -state $mode
+    .menubar.object entryconfigure [_ "Array"]              -state $mode
+    .menubar.object entryconfigure [_ "Bang"]               -state $mode
+    .menubar.object entryconfigure [_ "Toggle"]             -state $mode
+    .menubar.object entryconfigure [_ "Dial"]               -state $mode
+    .menubar.object entryconfigure [_ "Panel"]              -state $mode
+    .menubar.object entryconfigure [_ "VU"]                 -state $mode
+    .menubar.object entryconfigure [_ "Vertical"]           -state $mode
+    .menubar.object entryconfigure [_ "Horizontal"]         -state $mode
 
-    .menubar.edit   entryconfigure [_ "Snap"]           -state $mode
+    .menubar.arrange entryconfigure [_ "Bring To Front"]    -state $mode
+    .menubar.arrange entryconfigure [_ "Send To Back"]      -state $mode
+    .menubar.arrange entryconfigure [_ "Snap"]              -state $mode
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -58,8 +58,10 @@ proc initialize {} {
     event add <<Duplicate>>                 <$mod-Key-d>
     event add <<SelectAll>>                 <$mod-Key-a>
     event add <<EditMode>>                  <$mod-Key-e>
-    event add <<Snap>>                      <$mod-Key-g>
-    event add <<SnapToGrid>>                <Shift-$mod-Key-g>
+    event add <<BringFront>>                <Shift-$mod-Key-f>
+    event add <<SendBack>>                  <Shift-$mod-Key-b>
+    event add <<Snap>>                      <$mod-Key-y>
+    event add <<SnapToGrid>>                <Alt-$mod-Key-g>
     event add <<NewFile>>                   <$mod-Key-n>
     event add <<OpenFile>>                  <$mod-Key-o>
     event add <<Save>>                      <$mod-Key-s>
@@ -124,8 +126,10 @@ proc initialize {} {
     bind all <<Duplicate>>                  { .menubar.edit     invoke "Duplicate"      }
     bind all <<SelectAll>>                  { .menubar.edit     invoke "Select All"     }
     bind all <<EditMode>>                   { .menubar.edit     invoke "Edit Mode"      }
-    bind all <<Snap>>                       { .menubar.edit     invoke "Snap"           }
-    bind all <<SnapToGrid>>                 { .menubar.edit     invoke "Snap To Grid"   }
+    bind all <<BringFront>>                 { .menubar.arrange  invoke "Bring To Front" }
+    bind all <<SendBack>>                   { .menubar.arrange  invoke "Send To Back"   }
+    bind all <<Snap>>                       { .menubar.arrange  invoke "Snap"           }
+    bind all <<SnapToGrid>>                 { .menubar.arrange  invoke "Snap To Grid"   }
     bind all <<NewFile>>                    { .menubar.file     invoke "New Patch"      }
     bind all <<OpenFile>>                   { .menubar.file     invoke "Open..."        }
     bind all <<Save>>                       { .menubar.file     invoke "Save"           }
