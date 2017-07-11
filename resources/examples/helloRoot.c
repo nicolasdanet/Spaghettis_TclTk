@@ -24,11 +24,17 @@ typedef struct _hello {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *hello_class;
+static t_class  *hello_class;
+static t_symbol *hello_path;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static void hello_bang (t_hello *x)
+{
+    post ("My path is %s", hello_path->s_name);
+}
 
 static void *hello_new (void)
 {
@@ -39,6 +45,8 @@ static void *hello_new (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Argument is the path to the directory that contains the external. */
+
 PD_STUB void helloRoot_setup (t_symbol *s)
 {
     t_class *c = NULL;
@@ -47,14 +55,15 @@ PD_STUB void helloRoot_setup (t_symbol *s)
             (t_newmethod)hello_new,
             NULL,
             sizeof (t_hello),
-            CLASS_BOX | CLASS_NOINLET,          /* Avoid the default inlet. */
+            CLASS_BOX,
             A_NULL);
     
-    post ("I am at %s", s->s_name);             /* Path to the directory that contains the external. */
+    class_addBang (c, (t_method)hello_bang);
     
-    class_setHelpDirectory (c, s);              /* Use it to locate the depedencies. */
+    class_setHelpDirectory (c, s);                  /* Use it to locate the depedencies. */
     
     hello_class = c;
+    hello_path  = s;
 }
 
 PD_STUB void helloRoot_destroy (void)

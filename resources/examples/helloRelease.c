@@ -47,7 +47,7 @@ PD_STUB void helloRelease_setup (t_symbol *s)
             (t_newmethod)hello_new,
             NULL,
             sizeof (t_hello),
-            CLASS_BOX | CLASS_NOINLET,
+            CLASS_BOX | CLASS_NOINLET,              /* Avoid the default inlet. */
             A_NULL);
     
     hello_class = c;
