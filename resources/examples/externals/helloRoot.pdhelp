@@ -1,8 +1,6 @@
 #N canvas 549 144 500 350 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#X obj 48 120 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 60 156 hello;
-#X text 24 24 Hello;
-#X connect 2 0 3 0;
+#X obj 60 156 helloRoot;
+#X text 24 24 HelloRoot;
 #X coords 0 0 1 1 250 175 0 0 0;
