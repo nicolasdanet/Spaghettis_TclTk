@@ -451,6 +451,8 @@ void box_activate (t_box *x, int isActivated)
     
     if (isActivated) {
     
+        gui_vAdd ("focus %s.c\n",
+                        glist_getTagAsString (x->box_owner));
         gui_vAdd ("%s.c focus %s\n",
                         glist_getTagAsString (x->box_owner),
                         x->box_tag);
