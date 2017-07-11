@@ -53,9 +53,9 @@ typedef struct _hello {
         }
 
     public:
-        t_object          x_obj;                /* MUST be the first. */
+        t_object          x_obj;            /* MUST be the first. */
         t_error           x_error;
-        auto_ptr < Jojo > x_jojo;
+        auto_ptr < Jojo > x_jojo;           /* You may use C++11 smart pointers instead. */
 
 } t_hello;
 
@@ -63,6 +63,15 @@ typedef struct _hello {
 // -----------------------------------------------------------------------------------------------------------
 
 static t_class *hello_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void hello_bang (t_hello *x)
+{
+    post ("C++ spoken!");
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -119,8 +128,10 @@ PD_STUB void helloCPP_setup (t_symbol *s)
             (t_newmethod)hello_new,
             (t_method)hello_free,
             sizeof (t_hello),
-            CLASS_BOX | CLASS_NOINLET,
+            CLASS_BOX,
             A_NULL);
+    
+    class_addBang (c, (t_method)hello_bang);
     
     hello_class = c;
 }

@@ -18,7 +18,7 @@
 // MARK: -
 
 typedef struct _hello {
-    t_object x_obj;                         /* MUST be the first. */
+    t_object x_obj;
     } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ static t_class *hello_class;
 
 static void *hello_new (void)
 {
-    t_hello *x = (t_hello *)pd_new (hello_class);
+    t_hello *x  = (t_hello *)pd_new (hello_class);
 
     t_error err = PD_ERROR_NONE;
     
