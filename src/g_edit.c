@@ -37,7 +37,8 @@ static t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
     //
     if (gobj_hit (selection_getObject (s), glist, a, b, EDIT_GRIP_SIZE, &t)) {
         rectangle_setCopy (r, &t);
-        object = selection_getObject (s); 
+        object = selection_getObject (s);
+        break;
     }
     //
     }
@@ -46,19 +47,19 @@ static t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
     
     if (!object) {
     //
-    int k = -PD_INT_MAX;
+    int i, n = glist_objectGetNumberOf (glist);
     
-    for (y = glist->gl_graphics; y; y = y->g_next) {
+    for (i = n - 1; i >= 0; i--) {
+        y = glist_objectGetAt (glist, i);
         if (gobj_hit (y, glist, a, b, EDIT_GRIP_SIZE, &t)) {
-            if (rectangle_getTopLeftX (&t) > k) {
-                rectangle_setCopy (r, &t);
-                object = y; k = rectangle_getTopLeftX (&t);
-            }
+            rectangle_setCopy (r, &t);
+            object = y;
+            break;
         }
     }
     //
     }
-
+    
     return object;
 }
 
@@ -444,13 +445,15 @@ static int glist_mouseOverEdit (t_glist *glist, int a, int b, int m, int clicked
 
 static void glist_mouseOverRun (t_glist *glist, int a, int b, int m, int clicked)
 {
-    t_gobj *y = NULL;
+    t_gobj *y = NULL; int k = 0;
     
-    int k = 0;
-        
-    for (y = glist->gl_graphics; y; y = y->g_next) {
+    int i, n = glist_objectGetNumberOf (glist);
+    
+    for (i = n - 1; i >= 0; i--) {
     //
     t_rectangle r;
+    
+    y = glist_objectGetAt (glist, i);
     
     if (gobj_hit (y, glist, a, b, 0, &r)) {
     

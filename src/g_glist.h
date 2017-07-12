@@ -163,6 +163,8 @@ void    glist_objectDeleteLines             (t_glist *g, t_object *o);
 void    glist_objectDeleteLinesByInlet      (t_glist *g, t_object *o, t_inlet *inlet);
 void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *outlet);
 
+t_gobj  *glist_objectGetAt                  (t_glist *g, int n);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

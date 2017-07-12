@@ -263,12 +263,14 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     int a = (int)atom_getFloatAtIndex (1, argc, argv);
     int b = (int)atom_getFloatAtIndex (2, argc, argv);
     
-    t_gobj *y = NULL;
+    int i, n = glist_objectGetNumberOf (glist);
     
     PD_ASSERT (argc == 3);
     
-    for (y = glist->gl_graphics; y; y = y->g_next) {
+    for (i = n - 1; i >= 0; i--) {
     //
+    t_gobj *y = glist_objectGetAt (glist, i);
+    
     t_rectangle t;
     
     if (gobj_hit (y, glist, a, b, 0, &t)) {

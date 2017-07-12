@@ -94,15 +94,20 @@ static int glist_behaviorMouseProceed (t_glist *x, t_glist *owner, t_mouse *m)
         int a = m->m_x;
         int b = m->m_y;
         
-        t_gobj *y = NULL;
+        int i, n = glist_objectGetNumberOf (x);
+        
+        for (i = n - 1; i >= 0; i--) {
+        //
+        t_gobj *y = glist_objectGetAt (x, i);
             
-        for (y = x->gl_graphics; y; y = y->g_next) {
-            t_rectangle t;
-            if (gobj_hit (y, x, a, b, 0, &t)) {
-                if ((k = gobj_mouse (y, x, m))) {
-                    break;
-                }
+        t_rectangle t;
+        
+        if (gobj_hit (y, x, a, b, 0, &t)) {
+            if ((k = gobj_mouse (y, x, m))) {
+                break;
             }
+        }
+        //
         }
 
         return k; 

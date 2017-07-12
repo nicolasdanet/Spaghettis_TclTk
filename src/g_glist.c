@@ -676,7 +676,7 @@ void glist_objectRemoveAllScalars (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_gobj *glist_objectGetAt (t_glist *glist, int n)
+t_gobj *glist_objectGetAt (t_glist *glist, int n)
 {
     t_gobj *t = NULL;
     int i = 0;
