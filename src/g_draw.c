@@ -36,7 +36,7 @@ void glist_updateTitle (t_glist *glist)
 
 void glist_updateWindow (t_glist *glist)
 {
-    if (glist_isWindowable (glist) && glist_isOnScreen (glist)) { 
+    if (glist_isWindowable (glist) && glist_isOnScreen (glist)) {
         glist_windowMapped (glist, 0);
         glist_windowMapped (glist, 1);
     }
@@ -508,12 +508,13 @@ static void glist_windowMappedDrawContent (t_glist *glist)
     t_gobj *y = NULL;
     t_selection *s = NULL;
     
+    glist_setMapped (glist, 1);
+    
     for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
         gobj_selected (selection_getObject (s), glist, 1);
     }
 
-    glist_setMapped (glist, 1);
     glist_drawAllLines (glist);
     glist_drawRectangle (glist);
 }

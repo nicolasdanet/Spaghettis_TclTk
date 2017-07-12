@@ -374,12 +374,7 @@ void glist_objectMoveSelected (t_glist *glist, int backward)
     //
     }
     
-    if (isDirty) {
-    //
-    glist_setDirty (glist, 1);
-    glist_redraw (glist);
-    //
-    }
+    if (isDirty) { glist_setDirty (glist, 1); glist_redraw (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

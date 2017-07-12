@@ -536,39 +536,40 @@ void glist_objectSetWidthOfLast (t_glist *glist, int w)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void glist_objectAddProceed (t_glist *glist, t_gobj *first, t_gobj *next)
+static void glist_objectAddProceed (t_glist *glist, t_gobj *y, t_gobj *first, int prepend)
 {
-    next->g_next = NULL;
+    y->g_next = NULL;
     
-    if (first != NULL) { next->g_next = first->g_next; first->g_next = next; }
+    if (first != NULL) { y->g_next = first->g_next; first->g_next = y; }
     else {
     //    
-    if (!glist->gl_graphics) { glist->gl_graphics = next; }
-    else {
-        t_gobj *t = NULL; for (t = glist->gl_graphics; t->g_next; t = t->g_next) { } 
-        t->g_next = next;
+    if (prepend || !glist->gl_graphics) {
+        y->g_next = glist->gl_graphics; glist->gl_graphics = y;
+    } else {
+        t_gobj *t = NULL; for (t = glist->gl_graphics; t->g_next; t = t->g_next) { }
+        t->g_next = y;
     }
     //
     }
 }
 
-void glist_objectAddNext (t_glist *glist, t_gobj *first, t_gobj *next)
+void glist_objectAddNext (t_glist *glist, t_gobj *y, t_gobj *first)
 {
-    int needToRepaint = class_hasPainterBehavior (pd_class (next));
+    int needToRepaint = class_hasPainterBehavior (pd_class (y));
     
     if (needToRepaint) { paint_erase(); }
     
-    glist_objectAddProceed (glist, first, next);
+    glist_objectAddProceed (glist, y, first, 0);
     
-    if (cast_objectIfConnectable (next)) { editor_boxAdd (glist_getEditor (glist), cast_object (next)); }
-    if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (next, glist, 1); }
+    if (cast_objectIfConnectable (y)) { editor_boxAdd (glist_getEditor (glist), cast_object (y)); }
+    if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
     
     if (needToRepaint) { paint_draw(); }
 }
 
 void glist_objectAdd (t_glist *glist, t_gobj *y)
 {
-    glist_objectAddNext (glist, NULL, y);
+    glist_objectAddNext (glist, y, NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -708,13 +709,13 @@ int glist_objectGetNumberOf (t_glist *glist)
 void glist_objectMoveAtFirst (t_glist *glist, t_gobj *y)
 {
     glist_objectRemoveProceed (glist, y);
-    glist_objectAddProceed (glist, glist->gl_graphics, y);
+    glist_objectAddProceed (glist, y, NULL, 1);
 }
 
 void glist_objectMoveAtLast (t_glist *glist, t_gobj *y)
 {
     glist_objectRemoveProceed (glist, y);
-    glist_objectAddProceed (glist, NULL, y);
+    glist_objectAddProceed (glist, y, NULL, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
