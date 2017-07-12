@@ -12,6 +12,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 struct _glist {  
     t_object            gl_obj;                         /* MUST be the first. */
@@ -148,14 +149,15 @@ int     glist_objectDeselect                (t_glist *g, t_gobj *y);
 int     glist_objectDeselectIfSelected      (t_glist *g, t_gobj *y);
 int     glist_objectIsSelected              (t_glist *g, t_gobj *y);
 void    glist_objectSwapSelected            (t_glist *g, t_gobj *y);
+void    glist_objectMoveAtFirst             (t_glist *g, t_gobj *y);
+void    glist_objectMoveAtLast              (t_glist *g, t_gobj *y);
 int     glist_objectGetIndexOf              (t_glist *g, t_gobj *y);
 int     glist_objectGetIndexAmongSelected   (t_glist *g, t_gobj *y);
 int     glist_objectGetNumberOf             (t_glist *g);
 int     glist_objectGetNumberOfSelected     (t_glist *g);
 void    glist_objectRemoveSelected          (t_glist *g);
 void    glist_objectSnapSelected            (t_glist *g);
-void    glist_objectMoveFrontSelected       (t_glist *g);
-void    glist_objectMoveBackSelected        (t_glist *g);
+void    glist_objectMoveSelected            (t_glist *g, int backward);
 void    glist_objectDisplaceSelected        (t_glist *g, int deltaX, int deltaY);
 void    glist_objectDeleteLines             (t_glist *g, t_object *o);
 void    glist_objectDeleteLinesByInlet      (t_glist *g, t_object *o, t_inlet *inlet);
@@ -246,6 +248,12 @@ void    glist_windowEdit                    (t_glist *g, int isEditMode);
 void    glist_windowMapped                  (t_glist *g, int isMapped);
 void    glist_windowOpen                    (t_glist *g);
 void    glist_windowClose                   (t_glist *g);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void    glist_redraw                        (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

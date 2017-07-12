@@ -532,7 +532,11 @@ void glist_objectSetWidthOfLast (t_glist *glist, int w)
     }
 }
 
-void glist_objectAddProceed (t_glist *glist, t_gobj *first, t_gobj *next)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void glist_objectAddProceed (t_glist *glist, t_gobj *first, t_gobj *next)
 {
     next->g_next = NULL;
     
@@ -570,7 +574,7 @@ void glist_objectAdd (t_glist *glist, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
+static void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
 {
     if (glist->gl_graphics == y) { glist->gl_graphics = y->g_next; }
     else {
@@ -669,6 +673,7 @@ void glist_objectRemoveAllScalars (t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static t_gobj *glist_objectGetAt (t_glist *glist, int n)
 {
@@ -699,6 +704,22 @@ int glist_objectGetNumberOf (t_glist *glist)
 {
     return glist_objectGetIndexOf (glist, NULL);
 }
+
+void glist_objectMoveAtFirst (t_glist *glist, t_gobj *y)
+{
+    glist_objectRemoveProceed (glist, y);
+    glist_objectAddProceed (glist, glist->gl_graphics, y);
+}
+
+void glist_objectMoveAtLast (t_glist *glist, t_gobj *y)
+{
+    glist_objectRemoveProceed (glist, y);
+    glist_objectAddProceed (glist, NULL, y);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void glist_objectDeleteLines (t_glist *glist, t_object *o)
 {

@@ -160,17 +160,8 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
 // MARK: -
 
 static void garray_updateGraphWindow (t_garray *x)
-{  
-    if (glist_isOnScreen (x->x_owner)) {
-    //
-    if (glist_hasWindow (x->x_owner)) { glist_updateWindow (x->x_owner); }
-    else {
-        PD_ASSERT (glist_isParentOnScreen (x->x_owner));
-        glist_behaviorVisibilityChanged (cast_gobj (x->x_owner), glist_getParent (x->x_owner), 0); 
-        glist_behaviorVisibilityChanged (cast_gobj (x->x_owner), glist_getParent (x->x_owner), 1);
-    }
-    //
-    }
+{
+    glist_redraw (x->x_owner);
 }
 
 static void garray_updateGraphName (t_garray *x)

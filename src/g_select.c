@@ -355,14 +355,31 @@ void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
     if (isDirty)     { glist_setDirty (glist, 1); }
 }
 
-void glist_objectMoveFrontSelected (t_glist *glist)
+void glist_objectMoveSelected (t_glist *glist, int backward)
 {
-    post ("Bring To Front");
-}
-
-void glist_objectMoveBackSelected (t_glist *glist)
-{
-    post ("Send To Back");
+    t_selection *y = NULL;
+    
+    int isDirty = 0;
+    
+    for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
+    //
+    t_gobj *t = selection_getObject (y);
+    
+    if (backward) { glist_objectMoveAtFirst (glist, t); }
+    else {
+        glist_objectMoveAtLast (glist, t);
+    }
+    
+    isDirty = 1;
+    //
+    }
+    
+    if (isDirty) {
+    //
+    glist_setDirty (glist, 1);
+    glist_redraw (glist);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

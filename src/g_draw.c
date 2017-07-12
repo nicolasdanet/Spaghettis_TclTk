@@ -603,3 +603,21 @@ void glist_windowClose (t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void glist_redraw (t_glist *glist)
+{
+    if (glist_isOnScreen (glist)) {
+    //
+    if (glist_hasWindow (glist))  { glist_updateWindow (glist); }
+    else {
+        PD_ASSERT (glist_isParentOnScreen (glist));
+        glist_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 0);
+        glist_behaviorVisibilityChanged (cast_gobj (glist), glist_getParent (glist), 1);
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

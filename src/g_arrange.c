@@ -101,12 +101,12 @@ void canvas_snap (t_glist *glist)
 
 void canvas_bringToFront (t_glist *glist)
 {
-    glist_objectMoveFrontSelected (glist);
+    glist_objectMoveSelected (glist, 0);
 }
 
 void canvas_sendToBack (t_glist *glist)
 {
-    glist_objectMoveBackSelected (glist);
+    glist_objectMoveSelected (glist, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
