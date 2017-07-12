@@ -90,9 +90,23 @@ void canvas_selectAll (t_glist *glist)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void canvas_snap (t_glist *glist)
 {
     glist_objectSnapSelected (glist);
+}
+
+void canvas_bringToFront (t_glist *glist)
+{
+    glist_objectMoveFrontSelected (glist);
+}
+
+void canvas_sendToBack (t_glist *glist)
+{
+    glist_objectMoveBackSelected (glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------

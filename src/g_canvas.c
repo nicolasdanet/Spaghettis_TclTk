@@ -62,6 +62,8 @@ void canvas_paste                   (t_glist *);
 void canvas_duplicate               (t_glist *);
 void canvas_selectAll               (t_glist *);
 void canvas_snap                    (t_glist *);
+void canvas_bringToFront            (t_glist *);
+void canvas_sendToBack              (t_glist *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -510,6 +512,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_duplicate,             sym__duplicate,         A_NULL);
     class_addMethod (c, (t_method)canvas_selectAll,             sym__selectall,         A_NULL);
     class_addMethod (c, (t_method)canvas_snap,                  sym__snap,              A_NULL);
+    class_addMethod (c, (t_method)canvas_bringToFront,          sym__front,             A_NULL);
+    class_addMethod (c, (t_method)canvas_sendToBack,            sym__back,              A_NULL);
     
     class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,             A_NULL);
     class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,       A_GIMME, A_NULL);

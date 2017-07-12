@@ -99,7 +99,7 @@
 #include "g_draw.c"
 #include "g_select.c"
 #include "g_edit.c"
-#include "g_shortcuts.c"
+#include "g_arrange.c"
 #include "g_interface.c"
 #include "g_file.c"
 #include "g_make.c"

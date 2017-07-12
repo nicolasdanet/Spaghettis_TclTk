@@ -77,7 +77,7 @@
 		372BDF771DCF36D00045ECE8 /* d_adc.c in Sources */ = {isa = PBXBuildFile; fileRef = 372BDF761DCF36D00045ECE8 /* d_adc.c */; };
 		372C88EA1E7FE48F00F2C23F /* m_clipboard.c in Sources */ = {isa = PBXBuildFile; fileRef = 372C88E91E7FE48F00F2C23F /* m_clipboard.c */; };
 		372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */ = {isa = PBXBuildFile; fileRef = 372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		37321C9C1E9244F2009C1EE0 /* g_shortcuts.c in Sources */ = {isa = PBXBuildFile; fileRef = 37321C9A1E9244F2009C1EE0 /* g_shortcuts.c */; };
+		37321C9C1E9244F2009C1EE0 /* g_arrange.c in Sources */ = {isa = PBXBuildFile; fileRef = 37321C9A1E9244F2009C1EE0 /* g_arrange.c */; };
 		37321C9D1E9244F2009C1EE0 /* g_interface.c in Sources */ = {isa = PBXBuildFile; fileRef = 37321C9B1E9244F2009C1EE0 /* g_interface.c */; };
 		37329A6A1E4631D5008AA5E4 /* s_defer.c in Sources */ = {isa = PBXBuildFile; fileRef = 37329A681E4631D5008AA5E4 /* s_defer.c */; };
 		37329A6B1E4631D5008AA5E4 /* s_monitor.c in Sources */ = {isa = PBXBuildFile; fileRef = 37329A691E4631D5008AA5E4 /* s_monitor.c */; };
@@ -477,7 +477,7 @@
 		372BDF761DCF36D00045ECE8 /* d_adc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_adc.c; path = src/d_adc.c; sourceTree = "<group>"; };
 		372C88E91E7FE48F00F2C23F /* m_clipboard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_clipboard.c; path = src/m_clipboard.c; sourceTree = "<group>"; };
 		372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_mac_hostapis.c; path = src/pa_mac_hostapis.c; sourceTree = "<group>"; };
-		37321C9A1E9244F2009C1EE0 /* g_shortcuts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_shortcuts.c; path = src/g_shortcuts.c; sourceTree = "<group>"; };
+		37321C9A1E9244F2009C1EE0 /* g_arrange.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_arrange.c; path = src/g_arrange.c; sourceTree = "<group>"; };
 		37321C9B1E9244F2009C1EE0 /* g_interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_interface.c; path = src/g_interface.c; sourceTree = "<group>"; };
 		37329A681E4631D5008AA5E4 /* s_defer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_defer.c; path = src/s_defer.c; sourceTree = "<group>"; };
 		37329A691E4631D5008AA5E4 /* s_monitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_monitor.c; path = src/s_monitor.c; sourceTree = "<group>"; };
@@ -1477,7 +1477,7 @@
 				374A76321CF5FA81001A57EB /* g_serialize.c */,
 				377899481CFED1B10056BE61 /* g_make.c */,
 				37321C9B1E9244F2009C1EE0 /* g_interface.c */,
-				37321C9A1E9244F2009C1EE0 /* g_shortcuts.c */,
+				37321C9A1E9244F2009C1EE0 /* g_arrange.c */,
 				378971CD1C4F716700263434 /* g_file.c */,
 				378971C11C4F716700263434 /* g_canvas.c */,
 				3735D9701E5995B300858959 /* Objects */,
@@ -2225,7 +2225,7 @@
 				37251FBD1E7FB4BC0067E434 /* g_editor.c in Sources */,
 				372C88EA1E7FE48F00F2C23F /* m_clipboard.c in Sources */,
 				373F12291E82548300508FE3 /* m_snippet.c in Sources */,
-				37321C9C1E9244F2009C1EE0 /* g_shortcuts.c in Sources */,
+				37321C9C1E9244F2009C1EE0 /* g_arrange.c in Sources */,
 				37321C9D1E9244F2009C1EE0 /* g_interface.c in Sources */,
 				37640DA01E9A667400B7B901 /* g_behavior.c in Sources */,
 				37640DA11E9A667400B7B901 /* g_geometry.c in Sources */,

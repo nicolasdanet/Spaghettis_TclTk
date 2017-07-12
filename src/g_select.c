@@ -262,6 +262,7 @@ int glist_objectGetIndexAmongSelected (t_glist *glist, t_gobj *y)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void glist_objectRemoveSelected (t_glist *glist)
 {
@@ -352,6 +353,16 @@ void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
     if (sortInlets)  { glist_inletSort (glist);   }
     if (sortOutlets) { glist_outletSort (glist);  }
     if (isDirty)     { glist_setDirty (glist, 1); }
+}
+
+void glist_objectMoveFrontSelected (t_glist *glist)
+{
+    post ("Bring To Front");
+}
+
+void glist_objectMoveBackSelected (t_glist *glist)
+{
+    post ("Send To Back");
 }
 
 // -----------------------------------------------------------------------------------------------------------
