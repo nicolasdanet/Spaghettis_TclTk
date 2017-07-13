@@ -7,17 +7,19 @@ Clean and test all patches.
 
 Profile and optimize code.
 Forbid the audio to glitch!
-Use generic containers (i.e linked list).
 
 ###
 
 Extend the search path to be recursive.
 Append recent files in preferences.
+Improve consistency for properties (i.e Atom / IEM).
+Adapt all objects to be resizable.
 Add unlimited undo mechanism.
-Add "Encapsulate" feature.
+Consider an "Encapsulate" feature.
 
 ###
 
+Use generic containers (i.e linked list).
 Make an embeddable interpreter.
 Think about an unit test suite.
 Replace the Tk GUI (make MVC more strict).
