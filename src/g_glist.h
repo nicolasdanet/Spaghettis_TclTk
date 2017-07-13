@@ -23,6 +23,7 @@ struct _glist {
     t_environment       *gl_environment;
     t_symbol            *gl_name;
     t_editor            *gl_editor;
+    t_clock             *gl_clock;
     t_unique            gl_uniqueIdentifier;
     t_bounds            gl_bounds;
     t_rectangle         gl_geometryGraph;
@@ -255,6 +256,7 @@ void    glist_windowClose                   (t_glist *g);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void    glist_redrawRequired                (t_glist *g);
 void    glist_redraw                        (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------

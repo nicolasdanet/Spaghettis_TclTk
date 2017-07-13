@@ -16,6 +16,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void glist_task (t_glist *glist)
+{
+    glist_redraw (glist);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* Note that an expanded name is expected (with or without the file extension). */
 /* At load it can be temporarly set with the unexpanded form. */
 
@@ -32,6 +41,7 @@ static t_glist *glist_new (t_glist *owner,
     x->gl_environment       = instance_environmentFetchIfAny();
     x->gl_name              = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_editor            = editor_new (x);
+    x->gl_clock             = clock_new ((void *)x, (t_method)glist_task);
     x->gl_uniqueIdentifier  = utils_unique();
     x->gl_fontSize          = (owner ? glist_getFontSize (owner) : font_getDefaultFontSize());
 
@@ -54,6 +64,7 @@ void glist_free (t_glist *glist)
     
     glist_unbind (glist);
     
+    clock_free (glist->gl_clock);
     editor_free (glist_getEditor (glist));
     environment_free (glist->gl_environment);
     gmaster_reset (glist_getMaster (glist));
@@ -264,7 +275,9 @@ void glist_setDirty (t_glist *glist, int n)
     int isDirty = (n != 0);
         
     t_glist *y = glist_getTop (glist);
-        
+    
+    glist_redrawRequired (glist);
+    
     if (y->gl_isDirty != isDirty) {
     //
     y->gl_isDirty = isDirty; 
