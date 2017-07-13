@@ -334,7 +334,9 @@ void gpointer_erase (t_gpointer *gp)
 void gpointer_draw (t_gpointer *gp)
 {
     t_glist *view = gpointer_getView (gp);
-        
+    
+    glist_redrawRequired (view);
+    
     if (glist_isOnScreen (view)) { gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), view, 1); }
 }
 
