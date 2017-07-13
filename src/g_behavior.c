@@ -135,6 +135,7 @@ void glist_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
     else {
         glist_behaviorDisplacedProceed (x, glist, deltaX, deltaY);
+        glist_redrawRequired (glist);
     }
 }
 

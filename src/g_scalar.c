@@ -268,6 +268,7 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     
     scalar_notifyDisplaced (x, glist, template, (t_float)deltaX, (t_float)deltaY);
     scalar_redraw (x, glist);
+    glist_redrawRequired (glist);
     //
     }
 }

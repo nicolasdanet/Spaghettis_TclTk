@@ -276,8 +276,6 @@ void glist_setDirty (t_glist *glist, int n)
         
     t_glist *y = glist_getTop (glist);
     
-    glist_redrawRequired (glist);
-    
     if (y->gl_isDirty != isDirty) {
     //
     y->gl_isDirty = isDirty; 
