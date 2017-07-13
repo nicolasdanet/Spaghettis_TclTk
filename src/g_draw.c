@@ -472,6 +472,23 @@ static void glist_eraseAllCommentBars (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void glist_redrawTemporary (t_glist *glist)
+{
+
+}
+
+static void glist_redrawLasso (t_glist *glist)
+{
+    t_drag *drag = editor_getDrag (glist_getEditor (glist));
+    
+    glist_drawLasso (glist, drag_getStartX (drag), drag_getStartY (drag));
+    glist_updateLasso (glist, drag_getEndX (drag), drag_getEndY (drag));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void glist_windowEdit (t_glist *glist, int isEditMode)
 {
     int hasEditMode = 0;
@@ -513,6 +530,7 @@ static void glist_windowMappedDrawContent (t_glist *glist)
 {
     t_gobj *y = NULL;
     t_selection *s = NULL;
+    int action = editor_getAction (glist_getEditor (glist));
     
     glist_setMapped (glist, 1);
     
@@ -523,6 +541,9 @@ static void glist_windowMappedDrawContent (t_glist *glist)
 
     glist_drawAllLines (glist);
     glist_drawRectangle (glist);
+    
+    if (action == ACTION_REGION)  { glist_redrawLasso (glist);     }
+    if (action == ACTION_CONNECT) { glist_redrawTemporary (glist); }
 }
 
 /* When a window is put or removed from screen. */
