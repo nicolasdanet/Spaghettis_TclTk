@@ -23,11 +23,12 @@
 enum {
     ACTION_NONE         = 0,
     ACTION_MOVE         = 1,
-    ACTION_CONNECT      = 2,
-    ACTION_REGION       = 3,
-    ACTION_PASS         = 4,
-    ACTION_DRAG         = 5,
-    ACTION_RESIZE       = 6
+    ACTION_LINE         = 2,
+    ACTION_SIGNAL       = 3,
+    ACTION_REGION       = 4,
+    ACTION_PASS         = 5,
+    ACTION_DRAG         = 6,
+    ACTION_RESIZE       = 7
     };
 
 enum {

@@ -109,7 +109,7 @@ static void glist_makeLineProceed (t_glist *glist, int a, int b, int end)
     
     if (end) { glist_eraseTemporary (glist); }
     else {
-        glist_updateTemporary (glist, startX, startY, a, b);
+        glist_updateTemporary (glist, a, b);
     }
 
     if (t1 && t2) {
@@ -227,7 +227,8 @@ void glist_actionEnd (t_glist *glist, int a, int b)
     
     int action = editor_getAction (e);
     
-    if (action == ACTION_CONNECT)     { glist_makeLineEnd (glist, a, b);    }
+    if (action == ACTION_LINE)        { glist_makeLineEnd (glist, a, b);    }
+    else if (action == ACTION_SIGNAL) { glist_makeLineEnd (glist, a, b);    }
     else if (action == ACTION_REGION) { glist_selectLassoEnd (glist, a, b); }
     else if (action == ACTION_MOVE)   {
     //
@@ -255,7 +256,8 @@ void glist_action (t_glist *glist, int a, int b, int m)
     switch (editor_getAction (e)) {
     //
     case ACTION_MOVE    : editor_selectionDeplace (e);                          break;
-    case ACTION_CONNECT : glist_makeLineBegin (glist, a, b);                    break;
+    case ACTION_LINE    :
+    case ACTION_SIGNAL  : glist_makeLineBegin (glist, a, b);                    break;
     case ACTION_REGION  : glist_selectLassoBegin (glist, a, b);                 break;
     case ACTION_PASS    : editor_motionProceed (e, a - endX, b - endY, m);      break; 
     case ACTION_DRAG    : box_mouse (box, a - startX, b - startY, BOX_DRAG);    break;
@@ -381,8 +383,9 @@ static int glist_mouseOverEditLine (t_glist *glist, t_gobj *y, int a, int b, int
         else {
             int t1 = hotspot;
             int t2 = rectangle_getBottomRightY (r);
-            glist_drawTemporary (glist, t1, t2, object_isSignalOutlet (cast_object (y), outlet));
-            editor_startAction (e, ACTION_CONNECT, t1, t2);
+            int action = object_isSignalOutlet (cast_object (y), outlet) ? ACTION_SIGNAL : ACTION_LINE;
+            editor_startAction (e, action, t1, t2);
+            glist_drawTemporary (glist, t1, t2);
         }
     }
     //

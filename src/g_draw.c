@@ -102,7 +102,7 @@ void glist_updateLasso (t_glist *glist, int a, int b)
     }
 }
 
-void glist_updateTemporary (t_glist *glist, int a, int b, int c, int d)
+void glist_updateTemporary (t_glist *glist, int a, int b)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
     //
@@ -110,10 +110,10 @@ void glist_updateTemporary (t_glist *glist, int a, int b, int c, int d)
     //
     gui_vAdd ("%s.c coords TEMPORARY %d %d %d %d\n",
                     glist_getTagAsString (glist),
+                    drag_getStartX (editor_getDrag (glist_getEditor (glist))),
+                    drag_getStartY (editor_getDrag (glist_getEditor (glist))),
                     a,
-                    b,
-                    c,
-                    d);
+                    b);
     //
     }
     //
@@ -328,12 +328,14 @@ void glist_drawLasso (t_glist *glist, int a, int b)
     }
 }
 
-void glist_drawTemporary (t_glist *glist, int a, int b, int isSignal)
+void glist_drawTemporary (t_glist *glist, int a, int b)
 {
     if (glist_hasWindow (glist))  {             /* Not shown in GOP. */
     //
     if (glist_isOnScreen (glist)) {
     //
+    int isSignal = (editor_getAction (glist_getEditor (glist)) == ACTION_SIGNAL);
+    
     gui_vAdd ("%s.c create line %d %d %d %d -width %d -tags TEMPORARY\n",
                     glist_getTagAsString (glist),
                     a,
@@ -474,7 +476,10 @@ static void glist_eraseAllCommentBars (t_glist *glist)
 
 static void glist_redrawTemporary (t_glist *glist)
 {
-
+    t_drag *drag = editor_getDrag (glist_getEditor (glist));
+    
+    glist_drawTemporary (glist, drag_getStartX (drag), drag_getStartY (drag));
+    glist_updateTemporary (glist, drag_getEndX (drag), drag_getEndY (drag));
 }
 
 static void glist_redrawLasso (t_glist *glist)
@@ -542,8 +547,9 @@ static void glist_windowMappedDrawContent (t_glist *glist)
     glist_drawAllLines (glist);
     glist_drawRectangle (glist);
     
-    if (action == ACTION_REGION)  { glist_redrawLasso (glist);     }
-    if (action == ACTION_CONNECT) { glist_redrawTemporary (glist); }
+    if (action == ACTION_REGION) { glist_redrawLasso (glist);     }
+    if (action == ACTION_LINE)   { glist_redrawTemporary (glist); }
+    if (action == ACTION_SIGNAL) { glist_redrawTemporary (glist); }
 }
 
 /* When a window is put or removed from screen. */

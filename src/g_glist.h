@@ -220,7 +220,7 @@ void    glist_updateLineSelected            (t_glist *g, int isSelected);
 void    glist_updateRectangleOnParent       (t_glist *g);
 void    glist_updateRectangle               (t_glist *g);
 void    glist_updateLasso                   (t_glist *g, int a, int b);
-void    glist_updateTemporary               (t_glist *g, int a, int b, int c, int d);
+void    glist_updateTemporary               (t_glist *g, int a, int b);
 void    glist_updateLine                    (t_glist *g, t_cord *c);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ void    glist_drawAllLines                  (t_glist *g);
 void    glist_drawRectangleOnParent         (t_glist *g);
 void    glist_drawRectangle                 (t_glist *g);
 void    glist_drawLasso                     (t_glist *g, int a, int b);
-void    glist_drawTemporary                 (t_glist *g, int a, int b, int isSignal);
+void    glist_drawTemporary                 (t_glist *g, int a, int b);
 void    glist_drawLine                      (t_glist *g, t_cord *c);
 
 // -----------------------------------------------------------------------------------------------------------
