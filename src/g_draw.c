@@ -612,6 +612,8 @@ void glist_windowClose (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* To maintain z order consistency, redraw everything is need. */
+
 void glist_redrawRequired (t_glist *glist)
 {
     clock_delay (glist->gl_clock, GLIST_REDRAW_DELAY);
