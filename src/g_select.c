@@ -266,12 +266,6 @@ int glist_objectGetIndexAmongSelected (t_glist *glist, t_gobj *y)
 
 void glist_objectRemoveSelected (t_glist *glist)
 {
-    /* If box text is selected, deselecting it might recreate the object. */ 
-    /* Just forbid that. */
-    
-    if (editor_hasSelectedBox (glist_getEditor (glist))) { PD_BUG; glist_deselectAll (glist); }
-    else {
-    //
     t_gobj *t1 = NULL;
     t_gobj *t2 = NULL;
     
@@ -294,8 +288,6 @@ void glist_objectRemoveSelected (t_glist *glist)
     glist_setDirty (glist, 1);
     
     if (dspSuspended) { dsp_resume (dspState); }
-    //
-    }
 }
 
 void glist_objectSnapSelected (t_glist *glist)

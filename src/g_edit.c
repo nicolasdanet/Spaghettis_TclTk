@@ -545,6 +545,15 @@ void glist_mouse (t_glist *glist, int a, int b, int m, int clicked)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void glist_cancelEditingBox (t_glist *glist)
+{
+    if (editor_hasSelectedBox (glist_getEditor (glist))) { glist_deselectAll (glist); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void glist_key (t_glist *glist, t_keycode n, t_symbol *s)
 {
     t_editor *e = glist_getEditor (glist);

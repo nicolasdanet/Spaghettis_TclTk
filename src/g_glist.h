@@ -128,6 +128,8 @@ void    glist_setWindowGeometry             (t_glist *g, t_rectangle *r);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void    glist_cancelEditingBox              (t_glist *glist);
+
 void    glist_key                           (t_glist *g, t_keycode n, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------

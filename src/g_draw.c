@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define GLIST_REDRAW_DELAY              SECONDS_TO_MILLISECONDS (1.0)
+#define GLIST_REDRAW_DELAY              250.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -560,6 +560,8 @@ void glist_windowMapped (t_glist *glist, int isMapped)
     if (isMapped != glist_isOnScreen (glist)) {
     //
     PD_ASSERT (glist_hasWindow (glist));
+    
+    glist_cancelEditingBox (glist);
     
     if (isMapped) { glist_windowMappedDrawContent (glist); }
     else {
