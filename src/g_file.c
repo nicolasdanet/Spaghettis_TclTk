@@ -75,6 +75,8 @@ void canvas_saveToFile (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     t_symbol *fileName  = atom_getSymbol (argv + 0);
     t_symbol *directory = atom_getSymbol (argv + 1);
     
+    glist_cancelEditingBox (glist);
+    
     if (glist_isFrozen (glist)) { error_fileIsProtected (glist_getName (root)); }
     else {
     //

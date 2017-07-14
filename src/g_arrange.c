@@ -71,6 +71,7 @@ void canvas_duplicate (t_glist *glist)
 {
     if (glist_hasEditMode (glist)) {
     //
+    glist_cancelEditingBox (glist);
     canvas_copy (glist);
     clipboard_paste (glist);
     //
@@ -83,6 +84,8 @@ void canvas_selectAll (t_glist *glist)
     //
     t_gobj *y = NULL;
 
+    glist_cancelEditingBox (glist);
+    
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (!glist_objectIsSelected (glist, y)) { glist_objectSelect (glist, y); }
     }
@@ -96,16 +99,19 @@ void canvas_selectAll (t_glist *glist)
 
 void canvas_snap (t_glist *glist)
 {
+    glist_cancelEditingBox (glist);
     glist_objectSnapSelected (glist);
 }
 
 void canvas_bringToFront (t_glist *glist)
 {
+    glist_cancelEditingBox (glist);
     glist_objectMoveSelected (glist, 0);
 }
 
 void canvas_sendToBack (t_glist *glist)
 {
+    glist_cancelEditingBox (glist);
     glist_objectMoveSelected (glist, 1);
 }
 
