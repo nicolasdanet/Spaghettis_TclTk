@@ -121,7 +121,7 @@ proc configureForText {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp} {
+proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasOrder} {
 
     variable popupX
     variable popupY
@@ -130,21 +130,35 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp} {
     set popupY $ycanvas
     
     if {$hasProperties} {
-        .popup entryconfigure [_ "Properties"]      -state normal
+        .popup entryconfigure [_ "Properties"]          -state normal
     } else {
-        .popup entryconfigure [_ "Properties"]      -state disabled
+        .popup entryconfigure [_ "Properties"]          -state disabled
     }
     
     if {$hasOpen} {
-        .popup entryconfigure [_ "Open"]            -state normal
+        .popup entryconfigure [_ "Open"]                -state normal
     } else {
-        .popup entryconfigure [_ "Open"]            -state disabled
+        .popup entryconfigure [_ "Open"]                -state disabled
     }
     
     if {$hasHelp} {
-        .popup entryconfigure [_ "Help"]            -state normal
+        .popup entryconfigure [_ "Help"]                -state normal
     } else {
-        .popup entryconfigure [_ "Help"]            -state disabled
+        .popup entryconfigure [_ "Help"]                -state disabled
+    }
+    
+    if {$hasObject} {
+        .popup entryconfigure [_ "Add Object"]          -state normal
+    } else {
+        .popup entryconfigure [_ "Add Object"]          -state disabled
+    }
+    
+    if {$hasOrder} {
+        .popup entryconfigure [_ "Bring to Front"]      -state normal
+        .popup entryconfigure [_ "Send to Back"]        -state normal
+    } else {
+        .popup entryconfigure [_ "Bring to Front"]      -state disabled
+        .popup entryconfigure [_ "Send to Back"]        -state disabled
     }
     
     set xpopup [expr {int([winfo rootx $top.c] + $xcanvas - [$top.c canvasx 0])}]
@@ -401,6 +415,85 @@ proc _popup {m} {
     $m add command \
         -label [_ "Help"]       \
         -command { ::ui_menu::_doPopup $::var(windowFocused) 2 }
+    $m add separator
+    
+    menu $m.object
+    
+        $m.object add command \
+            -label [_ "Object"] \
+            -command { ::ui_menu::_handle obj }
+        $m.object add command \
+            -label [_ "Message"] \
+            -command { ::ui_menu::_handle msg }
+        $m.object add command \
+            -label [_ "Atom"] \
+            -command { ::ui_menu::_handle floatatom }
+        $m.object add command \
+            -label [_ "Symbol"] \
+            -command { ::ui_menu::_handle symbolatom }
+        $m.object add command \
+            -label [_ "Comment"] \
+            -command { ::ui_menu::_handle comment }
+        $m.object add separator
+        
+        $m.object add command \
+            -label [_ "Bang"] \
+            -command { ::ui_menu::_handle bng }
+        $m.object add command \
+            -label [_ "Toggle"] \
+            -command { ::ui_menu::_handle tgl }
+        $m.object add command \
+            -label [_ "Dial"] \
+            -command { ::ui_menu::_handle nbx }
+        $m.object add command \
+            -label [_ "Array"] \
+            -command { ::ui_menu::_handle _array }
+        $m.object add separator
+        
+        $m.object add command \
+            -label [_ "VU"] \
+            -command { ::ui_menu::_handle vu }
+        $m.object add command \
+            -label [_ "Panel"] \
+            -command { ::ui_menu::_handle cnv }
+        $m.object add separator
+        
+        menu $m.object.vertical
+        
+        $m.object.vertical add command \
+            -label [_ "Slider"] \
+            -command { ::ui_menu::_handle vslider }
+        $m.object.vertical add command \
+            -label [_ "Radio Button"] \
+            -command { ::ui_menu::_handle vradio }
+        
+        menu $m.object.horizontal
+            
+        $m.object.horizontal add command \
+            -label [_ "Slider"] \
+            -command { ::ui_menu::_handle hslider }
+        $m.object.horizontal add command \
+            -label [_ "Radio Button"] \
+            -command { ::ui_menu::_handle hradio }
+            
+        $m.object add cascade \
+            -label [_ "Vertical"] \
+            -menu $m.object.vertical
+        $m.object add cascade \
+            -label [_ "Horizontal"] \
+            -menu $m.object.horizontal
+    
+    $m add cascade \
+        -label [_ "Add Object"] \
+        -menu $m.object
+    $m add separator
+    
+    $m add command \
+        -label [_ "Bring to Front"] \
+        -command { ::ui_menu::_handle _front }
+    $m add command \
+        -label [_ "Send to Back"] \
+        -command { ::ui_menu::_handle _back }
 }
 
 # ------------------------------------------------------------------------------------------------------------
