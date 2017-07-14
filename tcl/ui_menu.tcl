@@ -83,8 +83,8 @@ proc configureForConsole {} {
     .menubar.edit entryconfigure [_ "Select All"]           -state normal
     .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
 
-    .menubar.arrange entryconfigure [_ "Bring To Front"]    -state disabled
-    .menubar.arrange entryconfigure [_ "Send To Back"]      -state disabled
+    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state disabled
+    .menubar.arrange entryconfigure [_ "Send to Back"]      -state disabled
     .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
 }
 
@@ -98,8 +98,8 @@ proc configureForDialog {} {
 
     .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
 
-    .menubar.arrange entryconfigure [_ "Bring To Front"]    -state disabled
-    .menubar.arrange entryconfigure [_ "Send To Back"]      -state disabled
+    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state disabled
+    .menubar.arrange entryconfigure [_ "Send to Back"]      -state disabled
     .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
 }
 
@@ -113,8 +113,8 @@ proc configureForText {} {
 
     .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
 
-    .menubar.arrange entryconfigure [_ "Bring To Front"]    -state disabled
-    .menubar.arrange entryconfigure [_ "Send To Back"]      -state disabled
+    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state disabled
+    .menubar.arrange entryconfigure [_ "Send to Back"]      -state disabled
     .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
 }
 
@@ -260,11 +260,11 @@ proc _arrange {m} {
     variable accelerator
     
     $m add command \
-        -label [_ "Bring To Front"] \
+        -label [_ "Bring to Front"] \
         -accelerator "Shift+${accelerator}+F" \
         -command { ::ui_menu::_handle _front }
     $m add command \
-        -label [_ "Send To Back"] \
+        -label [_ "Send to Back"] \
         -accelerator "Shift+${accelerator}+B" \
         -command { ::ui_menu::_handle _back }
     $m add separator
@@ -274,7 +274,7 @@ proc _arrange {m} {
         -accelerator "${accelerator}+Y" \
         -command { ::ui_menu::_handle _snap }
     $m add check \
-        -label [_ "Snap To Grid"] \
+        -label [_ "Snap to Grid"] \
         -accelerator "Alt+${accelerator}+G" \
         -variable ::var(isSnapToGrid) \
         -command {
@@ -432,8 +432,8 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "Vertical"]           -state $mode
     .menubar.object entryconfigure [_ "Horizontal"]         -state $mode
 
-    .menubar.arrange entryconfigure [_ "Bring To Front"]    -state $mode
-    .menubar.arrange entryconfigure [_ "Send To Back"]      -state $mode
+    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state $mode
+    .menubar.arrange entryconfigure [_ "Send to Back"]      -state $mode
     .menubar.arrange entryconfigure [_ "Snap"]              -state $mode
 }
 

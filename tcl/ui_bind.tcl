@@ -140,10 +140,10 @@ proc initialize {} {
     bind all <<Duplicate>>                  { .menubar.edit     invoke "Duplicate"      }
     bind all <<SelectAll>>                  { .menubar.edit     invoke "Select All"     }
     bind all <<EditMode>>                   { .menubar.edit     invoke "Edit Mode"      }
-    bind all <<BringFront>>                 { .menubar.arrange  invoke "Bring To Front" }
-    bind all <<SendBack>>                   { .menubar.arrange  invoke "Send To Back"   }
+    bind all <<BringFront>>                 { .menubar.arrange  invoke "Bring to Front" }
+    bind all <<SendBack>>                   { .menubar.arrange  invoke "Send to Back"   }
     bind all <<Snap>>                       { .menubar.arrange  invoke "Snap"           }
-    bind all <<SnapToGrid>>                 { .menubar.arrange  invoke "Snap To Grid"   }
+    bind all <<SnapToGrid>>                 { .menubar.arrange  invoke "Snap to Grid"   }
     bind all <<NewFile>>                    { .menubar.file     invoke "New Patch"      }
     bind all <<OpenFile>>                   { .menubar.file     invoke "Open..."        }
     bind all <<Save>>                       { .menubar.file     invoke "Save"           }
