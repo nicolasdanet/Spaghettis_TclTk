@@ -32,6 +32,8 @@ void dsp_setState (int n)
     }
     
     gui_vAdd ("set ::var(isDsp) %d\n", dsp_status);     // --
+    
+    post ("dsp: %d", dsp_status);
     //
     }
 }
