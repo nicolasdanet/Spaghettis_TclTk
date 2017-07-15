@@ -316,15 +316,15 @@ void binop3_setup (void)
     class_addFloat (binopIntegerModulo_class,       (t_method)binopIntegerModulo_float);
     class_addFloat (binopIntegerDivide_class,       (t_method)binopIntegerDivide_float);
         
-    class_setHelpName (binopBitwiseAnd_class,       sym___ampersand____ampersand__);
-    class_setHelpName (binopLogicalAnd_class,       sym___ampersand____ampersand__);
-    class_setHelpName (binopBitwiseOr_class,        sym___ampersand____ampersand__);
-    class_setHelpName (binopLogicalOr_class,        sym___ampersand____ampersand__);
-    class_setHelpName (binopShiftLeft_class,        sym___ampersand____ampersand__);
-    class_setHelpName (binopShiftRight_class,       sym___ampersand____ampersand__);
-    class_setHelpName (binopModulo_class,           sym___ampersand____ampersand__);
-    class_setHelpName (binopIntegerModulo_class,    sym___ampersand____ampersand__);
-    class_setHelpName (binopIntegerDivide_class,    sym___ampersand____ampersand__);
+    class_setHelpName (binopBitwiseAnd_class,       sym_bitwise);
+    class_setHelpName (binopLogicalAnd_class,       sym_logical);
+    class_setHelpName (binopBitwiseOr_class,        sym_bitwise);
+    class_setHelpName (binopLogicalOr_class,        sym_logical);
+    class_setHelpName (binopShiftLeft_class,        sym_bitwise);
+    class_setHelpName (binopShiftRight_class,       sym_bitwise);
+    class_setHelpName (binopModulo_class,           sym_modulo);
+    class_setHelpName (binopIntegerModulo_class,    sym_modulo);
+    class_setHelpName (binopIntegerDivide_class,    sym_modulo);
 }
 
 void binop3_destroy (void)

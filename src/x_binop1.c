@@ -249,13 +249,13 @@ void binop1_setup (void)
     class_addFloat (binopMaximum_class,     (t_method)binopMaximum_float);
     class_addFloat (binopMinimum_class,     (t_method)binopMinimum_float);
         
-    class_setHelpName (binopAdd_class,      sym_pow);
-    class_setHelpName (binopSubtract_class, sym_pow);
-    class_setHelpName (binopMultiply_class, sym_pow);
-    class_setHelpName (binopDivide_class,   sym_pow);
-    class_setHelpName (binopPower_class,    sym_pow);
-    class_setHelpName (binopMaximum_class,  sym_pow);
-    class_setHelpName (binopMinimum_class,  sym_pow);
+    class_setHelpName (binopAdd_class,      sym_operator);
+    class_setHelpName (binopSubtract_class, sym_operator);
+    class_setHelpName (binopMultiply_class, sym_operator);
+    class_setHelpName (binopDivide_class,   sym_operator);
+    class_setHelpName (binopPower_class,    sym_operator);
+    class_setHelpName (binopMaximum_class,  sym_operator);
+    class_setHelpName (binopMinimum_class,  sym_operator);
 }
 
 void binop1_destroy (void)

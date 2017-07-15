@@ -191,12 +191,12 @@ void acoustic_setup (void)
     class_addFloat (rmstodb_class, (t_method)rmstodb_float);
     class_addFloat (dbtorms_class, (t_method)dbtorms_float);
     
-    class_setHelpName (mtof_class, sym_mtof);
-    class_setHelpName (ftom_class, sym_mtof);
-    class_setHelpName (powtodb_class, sym_mtof);
-    class_setHelpName (dbtopow_class, sym_mtof);
-    class_setHelpName (rmstodb_class, sym_mtof);
-    class_setHelpName (dbtorms_class, sym_mtof);
+    class_setHelpName (mtof_class, sym_acoustic);
+    class_setHelpName (ftom_class, sym_acoustic);
+    class_setHelpName (powtodb_class, sym_acoustic);
+    class_setHelpName (dbtopow_class, sym_acoustic);
+    class_setHelpName (rmstodb_class, sym_acoustic);
+    class_setHelpName (dbtorms_class, sym_acoustic);
 }
 
 void acoustic_destroy (void)

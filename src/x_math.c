@@ -281,15 +281,15 @@ void math_setup (void)
     class_addFloat (sqrt_class,     (t_method)sqrt_float);
     class_addFloat (atan_class,     (t_method)atan_float);
             
-    class_setHelpName (sin_class,   sym_sqrt);
-    class_setHelpName (cos_class,   sym_sqrt);
-    class_setHelpName (tan_class,   sym_sqrt);
-    class_setHelpName (log_class,   sym_sqrt);
-    class_setHelpName (exp_class,   sym_sqrt);
-    class_setHelpName (abs_class,   sym_sqrt);
-    class_setHelpName (sqrt_class,  sym_sqrt);
-    class_setHelpName (wrap_class,  sym_sqrt);
-    class_setHelpName (atan_class,  sym_sqrt);
+    class_setHelpName (sin_class,   sym_math);
+    class_setHelpName (cos_class,   sym_math);
+    class_setHelpName (tan_class,   sym_math);
+    class_setHelpName (log_class,   sym_math);
+    class_setHelpName (exp_class,   sym_math);
+    class_setHelpName (abs_class,   sym_math);
+    class_setHelpName (sqrt_class,  sym_math);
+    class_setHelpName (wrap_class,  sym_math);
+    class_setHelpName (atan_class,  sym_math);
 }
 
 void math_destroy (void)

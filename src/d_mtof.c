@@ -81,6 +81,8 @@ void mtof_tilde_setup (void)
     
     class_addDSP (c, (t_method)mtof_tilde_dsp);
     
+    class_setHelpName (c, sym_acoustic__tilde__);
+    
     mtof_tilde_class = c;
 }
 

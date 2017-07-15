@@ -112,8 +112,8 @@ void divide_tilde_setup (void)
     class_addDSP (divide_tilde_class, (t_method)divide_tilde_dsp);
     class_addDSP (divideScalar_tilde_class, (t_method)divideScalar_tilde_dsp);
     
-    class_setHelpName (divide_tilde_class, sym_max__tilde__);
-    class_setHelpName (divideScalar_tilde_class, sym_max__tilde__);
+    class_setHelpName (divide_tilde_class, sym_operator__tilde__);
+    class_setHelpName (divideScalar_tilde_class, sym_operator__tilde__);
 }
 
 void divide_tilde_destroy (void)

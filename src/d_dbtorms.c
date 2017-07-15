@@ -81,7 +81,7 @@ void dbtorms_tilde_setup (void)
     
     class_addDSP (c, (t_method)dbtorms_tilde_dsp);
     
-    class_setHelpName (c, sym_mtof__tilde__);
+    class_setHelpName (c, sym_acoustic__tilde__);
     
     dbtorms_tilde_class = c;
 }

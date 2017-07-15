@@ -203,12 +203,12 @@ void binop2_setup (void)
     class_addFloat (binopGreaterEquals_class,       (t_method)binopGreaterEquals_float);
     class_addFloat (binopLessEquals_class,          (t_method)binopLessEquals_float);
     
-    class_setHelpName (binopEquals_class,           sym___ampersand____ampersand__);
-    class_setHelpName (binopNotEquals_class,        sym___ampersand____ampersand__);
-    class_setHelpName (binopGreater_class,          sym___ampersand____ampersand__);
-    class_setHelpName (binopLess_class,             sym___ampersand____ampersand__);
-    class_setHelpName (binopGreaterEquals_class,    sym___ampersand____ampersand__);
-    class_setHelpName (binopLessEquals_class,       sym___ampersand____ampersand__);
+    class_setHelpName (binopEquals_class,           sym_logical);
+    class_setHelpName (binopNotEquals_class,        sym_logical);
+    class_setHelpName (binopGreater_class,          sym_logical);
+    class_setHelpName (binopLess_class,             sym_logical);
+    class_setHelpName (binopGreaterEquals_class,    sym_logical);
+    class_setHelpName (binopLessEquals_class,       sym_logical);
 }
 
 void binop2_destroy (void)
