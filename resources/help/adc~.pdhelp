@@ -1,4 +1,4 @@
-#N canvas 391 87 526 465 12;
+#N canvas 126 89 526 465 12;
 #X obj 8 11 adc~;
 #X obj 57 11 dac~;
 #X obj 63 121 adc~ 5;
@@ -15,6 +15,7 @@ are stereo but you can specify channel numbers as in:;
 channel or channels. This requires Pd to restart DSP and so should
 only be done at setup time \, not while audio is being computed.,
 f 51;
+#X text 288 418 updated for Pd version 0.47;
 #X text 35 348 If more than one dac~ outputs to the same channel \,
 the signals are added. More than one adc~ may read the same input channel.
 ;
