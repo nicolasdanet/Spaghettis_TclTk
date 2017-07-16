@@ -24,6 +24,7 @@ typedef struct _snapshot_tilde {
     t_object    x_obj;                      /* Must be the first. */
     t_float     x_f;
     t_sample    x_value;
+    int         x_hasPolling;
     t_outlet    *x_outlet;
     } t_snapshot_tilde;
 
@@ -39,6 +40,11 @@ static void snapshot_tilde_bang (t_snapshot_tilde *x)
 static void snapshot_tilde_set (t_snapshot_tilde *x, t_float f)
 {
     x->x_value = f;
+}
+
+static void snapshot_tilde_polling (t_snapshot_tilde *x)
+{
+    if (dsp_getState()) { snapshot_tilde_bang (x); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -66,13 +72,32 @@ static void snapshot_tilde_dsp (t_snapshot_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *snapshot_tilde_new (void)
+static void *snapshot_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_snapshot_tilde *x = (t_snapshot_tilde *)pd_new (snapshot_tilde_class);
+    
+    int n = (atom_getSymbolAtIndex (0, argc, argv) == sym_automatic);
+    
+    /* For convenience number 1 can be used instead of "automatic" keyword. */
+    
+    n |= (atom_getFloatAtIndex (0, argc, argv) == 1.0);
+    
+    if (n) {
+        instance_pollingRegister (cast_pd (x));
+        x->x_hasPolling = 1;
+        argc--; argv++;
+    }
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     x->x_outlet = outlet_new (cast_object (x), &s_float);
 
     return x;
+}
+
+static void snapshot_tilde_free (t_snapshot_tilde *x)
+{
+    if (x->x_hasPolling) { instance_pollingUnregister (cast_pd (x)); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -85,9 +110,10 @@ void snapshot_tilde_setup (void)
     
     c = class_new (sym_snapshot__tilde__,
             (t_newmethod)snapshot_tilde_new,
-            NULL,
+            (t_method)snapshot_tilde_free,
             sizeof (t_snapshot_tilde),
             CLASS_DEFAULT,
+            A_GIMME,
             A_NULL);
     
     class_addCreator ((t_newmethod)snapshot_tilde_new, sym_vsnapshot__tilde__, A_NULL);
@@ -96,7 +122,8 @@ void snapshot_tilde_setup (void)
     
     class_addDSP (c, (t_method)snapshot_tilde_dsp);
     class_addBang (c, (t_method)snapshot_tilde_bang);
-        
+    class_addPolling (c, (t_method)snapshot_tilde_polling);
+    
     class_addMethod (c, (t_method)snapshot_tilde_set, sym_set, A_DEFFLOAT, A_NULL);
 
     snapshot_tilde_class = c;
