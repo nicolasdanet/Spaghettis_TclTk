@@ -15,6 +15,7 @@ Append recent files in preferences.
 Improve consistency for properties (i.e Atom / IEM).
 Adapt all objects to be resizable.
 Add unlimited undo mechanism.
+Allow to select more that one line.
 Consider an "Encapsulate" feature.
 
 ###
