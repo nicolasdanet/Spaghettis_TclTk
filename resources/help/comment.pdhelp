@@ -1,4 +1,7 @@
-#N canvas 74 127 544 214 12;
-#X text 107 13 comments;
-#X text 38 73 This is Pd's help window for comments \, which don't
-do anything.;
+#N canvas 831 199 478 175 12;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 comment;
+#X text 24 84 To avoid artefacts with numbers \, it is recommended to quote them such '3.14'.;
+#X f 51;
+#X coords 0 0 1 1 250 175 0 0 0;

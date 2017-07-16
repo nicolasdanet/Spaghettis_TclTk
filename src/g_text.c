@@ -179,6 +179,8 @@ void text_setup (void)
         
     class_addAnything (c, (t_method)text_anything);
     
+    class_setHelpName (c, sym_comment);
+    
     text_class = c;
 }
 
