@@ -3,8 +3,8 @@
 #X obj 24 180 abs~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 abs~;
-#X text 108 168 Passes nonnegative values unchanged.;
-#X text 108 192 Replaces negative ones with their inverses.;
+#X text 96 168 Passes nonnegative values unchanged.;
+#X text 96 192 Replaces negative ones with their inverses.;
 #X floatatom 24 288 5 0 0 1 - - -;
 #X f 5;
 #X floatatom 24 84 5 0 0 1 - - -;
