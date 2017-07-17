@@ -46,7 +46,10 @@ proc create {top width height coordinates isEditMode} {
     canvas $top.c   -width $width \
                     -height $height \
                     -highlightthickness 0 \
-                    -background "#ffffff"
+                    -background "#ffffff" \
+                    -insertofftime 0 \
+                    -insertbackground black \
+                    -insertwidth 2
     
     if {[tk windowingsystem] eq "win32"} { $top.c configure -xscrollincrement 1 -yscrollincrement 1 }
     
