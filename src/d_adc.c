@@ -125,6 +125,8 @@ void adc_tilde_setup (void)
     
     class_addMethod (c, (t_method)adc_tilde_set, sym_set, A_GIMME, A_NULL);
     
+    class_setHelpName (c, sym_audio);
+    
     adc_tilde_class = c;
 }
 

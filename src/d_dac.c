@@ -125,7 +125,7 @@ void dac_tilde_setup (void)
     
     class_addMethod (c, (t_method)dac_tilde_set, sym_set, A_GIMME, A_NULL);
     
-    class_setHelpName (c, sym_adc__tilde__);
+    class_setHelpName (c, sym_audio);
     
     dac_tilde_class = c;
 }
