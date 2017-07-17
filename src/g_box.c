@@ -397,11 +397,14 @@ void box_retext (t_box *x)
 
 void box_create (t_box *x)      /* Draw content and borders. */
 {
-    PD_MEMORY_FREE (x->box_string);
-    
     /* Due to loadbang cases the content is set again here. */
     
+    if (!object_isObject (x->box_object)) {
+    //
+    PD_MEMORY_FREE (x->box_string);
     buffer_toStringUnzeroed (object_getBuffer (x->box_object), &x->box_string, &x->box_stringSizeInBytes);
+    //
+    }
     
     box_send (x, BOX_CREATE, 0, 0);
     
@@ -410,6 +413,16 @@ void box_create (t_box *x)      /* Draw content and borders. */
 
 void box_erase (t_box *x)       /* Erase content and borders. */
 {
+    /* Required while resizing the object. */
+    
+    if (!object_isObject (x->box_object)) {
+    //
+    char *s = NULL; int size;
+    box_getText (x, &s, &size);
+    buffer_withStringUnzeroed (object_getBuffer (x->box_object), s, size);
+    //
+    }
+    
     box_eraseBox (x->box_owner, x->box_object, x->box_tag);
 }
 
