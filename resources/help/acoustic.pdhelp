@@ -1,11 +1,11 @@
-#N canvas 484 78 538 519 12;
+#N canvas 811 74 538 519 12;
 #X obj 36 384 ftom;
 #X obj 36 312 mtof;
 #X obj 144 312 dbtorms;
 #X obj 144 384 rmstodb;
 #X obj 276 312 dbtopow;
 #X obj 276 384 powtodb;
-#X text 24 216 Finally \, dbtopow and powtodb convert decibels to and from power units \, equal to the square of the "RMS" amplitude.;
+#X text 24 204 Finally \, dbtopow and powtodb convert decibels to and from power units \, equal to the square of the "RMS" amplitude.;
 #X f 57;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 acoustic;
@@ -40,7 +40,7 @@
 #X restore 408 420 pd limits;
 #X text 24 72 The mtof object transposes a midi value into a frequency in Hertz \, so that '69' goes to '440'. You can specify microtonal pitches as in '69.5' (a quarter tone higher than '69'). Ftom does the reverse.;
 #X f 57;
-#X text 24 156 The dbtorms and rmstodb objects convert from decibels to linear ("RMS") amplitude \, so that '100' dB corresponds to an "RMS" of '1'.;
+#X text 24 144 The dbtorms and rmstodb objects convert from decibels to linear ("RMS") amplitude \, so that '100' dB corresponds to an "RMS" of '1'.;
 #X f 57;
 #X text 24 480 See also:;
 #X obj 108 480 mtof~;
