@@ -110,7 +110,7 @@ static void pointer_send (t_pointer *x, t_symbol *s)
 
 static void pointer_traverse (t_pointer *x, t_symbol *s)
 {
-    t_glist *glist = cast_glist (pd_getThingByClass (s, canvas_class));
+    t_glist *glist = cast_glist (pd_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
     
     if (glist) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
     else { 

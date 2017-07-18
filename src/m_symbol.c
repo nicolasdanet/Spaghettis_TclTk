@@ -190,6 +190,14 @@ t_symbol *symbol_makeBind (t_symbol *s)
     return gensym (t);
 }
 
+t_symbol *symbol_makeBindIfNot (t_symbol *s)
+{
+    if (string_startWith (s->s_name, SYMBOL_BIND)) { return s; }
+    else {
+        return symbol_makeBind (s);
+    }
+}
+
 t_symbol *symbol_makeTemplateIdentifier (t_symbol *s)
 {
     t_error err = PD_ERROR_NONE;
