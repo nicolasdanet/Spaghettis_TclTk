@@ -34,6 +34,8 @@ typedef struct _random {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Homebrew PRNG kept for compatbility. */
+
 static int random_makeSeed (void)
 {
     static unsigned int random_seed = 1489853723;
@@ -43,21 +45,34 @@ static int random_makeSeed (void)
     return (random_seed & PD_INT_MAX);
 }
 
+static int random_getInteger (t_random *x, int n)
+{
+    int k = 0;
+    
+    x->x_state = x->x_state * 472940017 + 832416023;
+    k = (int)((double)n * (double)x->x_state * (1.0 / 4294967296.0));
+    k = PD_MIN (k, n - 1);
+    
+    return k;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void random_bang (t_random *x)                       /* Weird LCG kept for compatbility. */
+static void random_bang (t_random *x)
 {
-    int range = PD_MAX (1, (int)x->x_range);
-    int k = 0;
-        
-    x->x_state = x->x_state * 472940017 + 832416023;
-    k = (int)((double)range * (double)x->x_state * (1.0 / 4294967296.0));
-    k = PD_MIN (k, range - 1);
-    
-    outlet_float (x->x_outlet, (t_float)k);
+    outlet_float (x->x_outlet, (t_float)random_getInteger (x, PD_MAX (1, (int)x->x_range)));
 }
+
+static void random_float (t_random *x, t_float f)
+{
+    
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void random_seed (t_random *x, t_float f)
 {
@@ -98,6 +113,7 @@ void random_setup (void)
             A_NULL);
             
     class_addBang (c, (t_method)random_bang);
+    class_addFloat (c, (t_method)random_float);
     
     class_addMethod (c, (t_method)random_seed, sym_seed, A_FLOAT, A_NULL);
     
