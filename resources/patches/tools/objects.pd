@@ -245,10 +245,10 @@
 #X text 129 3406 - read from a delay line;
 #X obj 29 3430 vd~;
 #X text 129 3430 - read from a delay line at a variable delay time;
-#N canvas 0 50 450 300 (subpatch) 0;
+#N canvas 0 50 450 300 Patch 0;
+#X coords 0 0 1 1 250 175 0 0 0;
 #X restore 29 3490 pd;
 #X text 129 3490 - define a subwindow;
-#X obj 30 1366 table;
 #X obj 28 3552 inlet;
 #X text 128 3552 - add an inlet to a pd;
 #X obj 27 3580 outlet;
@@ -281,7 +281,6 @@
 #X text 128 3953 - change the size of an array;
 #X obj 28 3977 append;
 #X text 128 3977 - add an element to a list;
-#X obj 28 4001 scalar;
 #X obj 147 3320 czero_rev~;
 #X obj 31 2401 threshold~;
 #X text 131 2401 - detect signal thresholds;
@@ -328,13 +327,9 @@
 #X obj 29 510 list;
 #X text 129 510 - manipulate lists;
 #X text 117 1152 - schedule delayed "note off" message for a note-on;
-#X obj 30 1390 array;
-#X text 132 1365 - create a named table;
 #X text 31 2250 ------------- GENERAL AUDIO MANIPULATION --------------;
 #X text 130 1609 - general text handling;
-#X text 133 1392 - general array creation and manipulation;
 #X text 22 1246 ----------------- ARRAYS/TABLES -------------------;
-#X text 128 4000 - create a single scalar;
 #X obj 30 1585 textfile;
 #X obj 30 1609 text;
 #X obj 185 810 <<;
@@ -348,3 +343,4 @@
 #X text 118 1229 - Pd lists to OSC messages;
 #X obj 29 3519 namecanvas;
 #X text 128 3520 - attach this canvas to a name;
+#X coords 0 0 1 1 250 175 0 0 0;

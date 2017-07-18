@@ -116,7 +116,7 @@ void snapshot_tilde_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addCreator ((t_newmethod)snapshot_tilde_new, sym_vsnapshot__tilde__, A_NULL);
+    class_addCreator ((t_newmethod)snapshot_tilde_new, sym_vsnapshot__tilde__, A_GIMME, A_NULL);
     
     CLASS_SIGNAL (c, t_snapshot_tilde, x_f);
     
