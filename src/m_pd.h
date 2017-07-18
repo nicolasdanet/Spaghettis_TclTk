@@ -744,7 +744,6 @@ PD_DLL t_float  atom_getFloatAtIndex            (int n, int argc, t_atom *argv);
 
 PD_DLL void     atom_copyAtoms                  (t_atom *src, int m, t_atom *dest, int n);
 PD_DLL int      atom_copyAtomsExpanded          (t_atom *src, int m, t_atom *dest, int n, t_glist *glist);
-PD_DLL int      atom_copyAtomsZeroExpanded      (t_atom *src, int m, t_atom *dest, int n, t_glist *glist);
 
 PD_DLL char     *atom_atomsToString             (int argc, t_atom *argv);   /* Caller acquires ownership. */
 

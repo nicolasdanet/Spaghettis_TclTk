@@ -45,6 +45,12 @@ static t_class *messageresponder_class;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int atom_copyAtomsExpandedWithArguments (t_atom *, int, t_atom *, int, t_glist *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static void messageresponder_bang (t_messageresponder *x)
 {
@@ -83,7 +89,7 @@ static void message_eval (t_message *x, int argc, t_atom *argv)
     
     PD_ATOMS_ALLOCA (a, n);
     
-    if (atom_copyAtomsZeroExpanded (buffer_getAtoms (b), n, a, n, x->m_owner)) {
+    if (atom_copyAtomsExpandedWithArguments (buffer_getAtoms (b), n, a, n, x->m_owner, argc, argv)) {
 
         t_buffer *t = buffer_new();
         buffer_append (t, n, a);

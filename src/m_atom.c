@@ -138,33 +138,6 @@ void atom_copyAtoms (t_atom *src, int m, t_atom *dest, int n)
     int size = PD_MIN (m, n); int i; for (i = 0; i < size; i++) { dest[i] = src[i]; }
 }
 
-int atom_copyAtomsZeroExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist *glist)
-{
-    int i;
-    int size = PD_MIN (m, n);
-    int expanded = 0;
-    
-    for (i = 0; i < size; i++) {
-    //
-    t_atom *a = src + i; t_atom *b = dest + i;
-    
-    if (IS_DOLLARSYMBOL (a) && string_contains (GET_SYMBOL (a)->s_name, "$0")) {
-        t_symbol *s = dollar_expandSymbolWithArguments (GET_SYMBOL (a), glist, 0, NULL);
-        if (s) { SET_SYMBOL (b, s); expanded = 1; }
-        else {
-            SET_DOLLARSYMBOL (b, GET_SYMBOL (a));
-        }
-    } else if (IS_DOLLAR (a) && (GET_DOLLAR (a) == 0)) {
-        SET_FLOAT (b, dollar_getDollarZero (glist)); expanded = 1;
-    } else {
-        *b = *a;
-    }
-    //
-    }
-    
-    return expanded;
-}
-
 int atom_copyAtomsExpandedWithArguments (t_atom *src,
     int m,
     t_atom *dest,
