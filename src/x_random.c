@@ -45,7 +45,14 @@ static int random_makeSeed (void)
     return (random_seed & PD_INT_MAX);
 }
 
-static int random_getInteger (t_random *x, int n)
+static t_float random_getNextFloat (t_random *x)
+{
+    x->x_state = x->x_state * 472940017 + 832416023;
+    
+    return ((double)x->x_state * (1.0 / 4294967296.0));
+}
+
+static t_float random_getNextInteger (t_random *x, int n)
 {
     int k = 0;
     
@@ -56,13 +63,21 @@ static int random_getInteger (t_random *x, int n)
     return k;
 }
 
+static t_float random_getNext (t_random *x, int n)
+{
+    if (n > 0) { return (t_float)random_getNextInteger (x, n); }
+    else {
+        return random_getNextFloat (x);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void random_bang (t_random *x)
 {
-    outlet_float (x->x_outlet, (t_float)random_getInteger (x, PD_MAX (1, (int)x->x_range)));
+    outlet_float (x->x_outlet, random_getNext (x, PD_MAX (0, (int)x->x_range)));
 }
 
 static void random_float (t_random *x, t_float f)
