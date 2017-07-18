@@ -33,7 +33,10 @@ int dollar_getDollarZero (t_glist *glist)
 
 static int dollar_expandSymbolProceed (char *s, char *buffer, int size, int argc, t_atom *argv, t_glist *glist)
 {
-    int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
+    /* Note that atol return zero for an invalid number. */
+    /* Note that atol return 1234 for '1234Foo'. */
+    
+    int n = (int)atol (s);
     char *ptr = s;
     char c = 0;
     int length = 0;
@@ -110,7 +113,7 @@ t_symbol *dollar_expandSymbolWithArguments (t_symbol *s, t_glist *glist, int arg
     //
     }
     
-    if (err) { error_invalid (&s_, sym_expansion); return NULL; }
+    if (err) { PD_BUG; error_invalid (&s_, sym_expansion); return NULL; }
     else {
         return gensym (result);
     }

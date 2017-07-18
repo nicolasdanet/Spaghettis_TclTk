@@ -152,7 +152,7 @@ int atom_copyAtomsZeroExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist
         t_symbol *s = dollar_expandSymbolWithArguments (GET_SYMBOL (a), glist, 0, NULL);
         if (s) { SET_SYMBOL (b, s); expanded = 1; }
         else {
-            SET_SYMBOL (b, GET_SYMBOL (a));
+            SET_DOLLARSYMBOL (b, GET_SYMBOL (a));
         }
     } else if (IS_DOLLAR (a) && (GET_DOLLAR (a) == 0)) {
         SET_FLOAT (b, dollar_getDollarZero (glist)); expanded = 1;
@@ -185,7 +185,7 @@ int atom_copyAtomsExpandedWithArguments (t_atom *src,
         t_symbol *s = dollar_expandSymbolWithArguments (GET_SYMBOL (a), glist, argc, argv);
         if (s) { SET_SYMBOL (b, s); expanded = 1; }
         else {
-            SET_SYMBOL (b, GET_SYMBOL (a));
+            SET_DOLLARSYMBOL (b, GET_SYMBOL (a));
         }
     } else if (IS_DOLLAR (a)) {
         expanded |= dollar_expandWithArguments (a, b, glist, argc, argv);
