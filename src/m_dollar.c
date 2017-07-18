@@ -27,7 +27,11 @@ int dollar_getDollarZero (t_glist *glist)
     }
 }
 
-static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *argv, t_glist *glist)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static int dollar_expandSymbolProceed (char *s, char *buffer, int size, int argc, t_atom *argv, t_glist *glist)
 {
     int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
     char *ptr = s;
@@ -68,7 +72,6 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 /* Dollar symbol expansion (e.g. '$1-foo' to 'bar-foo'). */
 /* Note that 'foo$1' is valid and expanded to 'foobar' in that case. */
@@ -90,7 +93,7 @@ t_symbol *dollar_expandSymbolWithArguments (t_symbol *s, t_glist *glist, int arg
         str = substr + 1;
     }
 
-    while (!err && ((next = dollar_expand (str, t, PD_STRING, argc, argv, glist)) >= 0)) {
+    while (!err && ((next = dollar_expandSymbolProceed (str, t, PD_STRING, argc, argv, glist)) >= 0)) {
     //
     if ((next == 0) && (*t == 0)) { return NULL; }      /* Dollar's number argument is out of bound. */
 
