@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int dollar_getDollarZero (t_glist *glist)
+int dollar_getDollarZero (t_glist *glist)
 {
     t_environment *environment = NULL;
     
@@ -143,17 +143,19 @@ t_symbol *dollar_expandSymbol (t_symbol *s, t_glist *glist)
 
 /* Dollar number expansion (e.g. '$1' to 'foo'). */
 
-void dollar_expandWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv)
+int dollar_expandWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int argc, t_atom *argv)
 {
     int n = GET_DOLLAR (dollar);
         
     PD_ASSERT (IS_DOLLAR (dollar));
     
-    if (n > 0 && n <= argc) { *a = *(argv + n - 1); }
-    else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero (glist)); }
+    if (n > 0 && n <= argc) { *a = *(argv + n - 1); return 1; }
+    else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero (glist)); return 1; }
     else {
         error_invalid (&s_, sym_expansion); SET_FLOAT (a, (t_float)0.0);
     }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

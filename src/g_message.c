@@ -77,7 +77,24 @@ static void messageresponder_anything (t_messageresponder *x, t_symbol *s, int a
 
 static void message_eval (t_message *x, int argc, t_atom *argv)
 {
-    eval_buffer (object_getBuffer (cast_object (x)), cast_pd (&x->m_responder), argc, argv);
+    t_buffer *b = object_getBuffer (cast_object (x));
+    t_atom *a   = NULL;
+    int n       = buffer_getSize (b);
+    
+    PD_ATOMS_ALLOCA (a, n);
+    
+    if (atom_copyAtomsZeroExpanded (buffer_getAtoms (b), n, a, n, x->m_owner)) {
+
+        t_buffer *t = buffer_new();
+        buffer_append (t, n, a);
+        eval_buffer (t, cast_pd (&x->m_responder), argc, argv);
+        buffer_free (t);
+        
+    } else {
+        eval_buffer (b, cast_pd (&x->m_responder), argc, argv);
+    }
+    
+    PD_ATOMS_FREEA (a, n);
 }
 
 // -----------------------------------------------------------------------------------------------------------
