@@ -122,17 +122,6 @@ static inline int string_startWithOneDollarAndOneNumber (const char *s)
     return 1;
 }
 
-/* True if the string start with a dollar following by a zero. */
-
-static inline int string_startWithOneDollarAndZero (const char *s)
-{
-    PD_ASSERT (s[0] != 0);
-    
-    if (s[0] != '$' || s[1] != '0') { return 0; }
-    
-    return 1;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

@@ -143,7 +143,7 @@ int atom_copyAtomsZeroExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist
     //
     t_atom *a = src + i; t_atom *b = dest + i;
     
-    if (IS_DOLLARSYMBOL (a) && string_startWithOneDollarAndZero (GET_SYMBOL (a)->s_name)) {
+    if (IS_DOLLARSYMBOL (a) && string_contains (GET_SYMBOL (a)->s_name, "$0")) {
         t_symbol *s = dollar_expandSymbolWithArguments (GET_SYMBOL (a), glist, 0, NULL);
         if (s) { SET_SYMBOL (b, s); expanded = 1; }
         else {

@@ -71,6 +71,7 @@ static int dollar_expand (char *s, char *buffer, int size, int argc, t_atom *arg
 // MARK: -
 
 /* Dollar symbol expansion (e.g. '$1-foo' to 'bar-foo'). */
+/* Note that 'foo$1' is valid and expanded to 'foobar' in that case. */
 
 t_symbol *dollar_expandSymbolWithArguments (t_symbol *s, t_glist *glist, int argc, t_atom *argv)
 {
