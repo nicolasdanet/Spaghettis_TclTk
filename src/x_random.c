@@ -9,6 +9,7 @@
 
 #include "m_pd.h"
 #include "m_core.h"
+#include "s_system.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -80,7 +81,16 @@ static void random_bang (t_random *x)
 
 static void random_float (t_random *x, t_float f)
 {
+    int i, argc  = PD_MAX (1, (int)f);
+    t_atom *argv = NULL;
     
+    PD_ATOMS_ALLOCA (argv, argc);
+    
+    for (i = 0; i < argc; i++) { SET_FLOAT (argv + i, random_getNext (x, PD_MAX (0, (int)x->x_range))); }
+    
+    outlet_list (x->x_outlet, argc, argv);
+    
+    PD_ATOMS_FREEA (argv, argc);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -102,7 +112,7 @@ static void *random_new (t_float f)
     
     x->x_range  = f;
     x->x_state  = (unsigned int)random_makeSeed();
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_new (cast_object (x), &s_anything);
     
     inlet_newFloat (cast_object (x), &x->x_range);
     
