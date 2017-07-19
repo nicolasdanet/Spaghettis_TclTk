@@ -37,7 +37,7 @@
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 396 420 pd limits;
+#X restore 408 420 pd limits;
 #X text 12 72 The mtof object transposes a midi value into a frequency in Hertz \, so that '69' goes to '440'. You can specify microtonal pitches as in '69.5' (a quarter tone higher than '69'). Ftom does the reverse.;
 #X f 57;
 #X text 12 144 The dbtorms and rmstodb objects convert from decibels to linear ("RMS") amplitude \, so that '100' dB corresponds to an "RMS" of '1'.;
