@@ -127,13 +127,6 @@ static int gatom_isFloat (t_gatom *x)
     return IS_FLOAT (&x->a_atom);
 }
 
-static void gatom_setFloat (t_gatom *x, t_float f)
-{
-    if (x->a_lowRange != 0.0 || x->a_highRange != 0.0) { f = PD_CLAMP (f, x->a_lowRange, x->a_highRange); }
-    
-    gatom_float (x, f);
-}
-
 static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *positionY)
 {
     double width  = font_getHostFontWidth (x->a_fontSize);
@@ -231,9 +224,15 @@ static void gatom_set (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
     //
-    if (gatom_isFloat (x)) { SET_FLOAT (&x->a_atom, atom_getFloat (argv)); }
+    if (!gatom_isFloat (x)) { SET_SYMBOL (&x->a_atom, atom_getSymbol (argv)); }
     else {
-        SET_SYMBOL (&x->a_atom, atom_getSymbol (argv));
+    //
+    t_float f = atom_getFloat (argv);
+    if (x->a_lowRange != 0.0 || x->a_highRange != 0.0) {
+        f = PD_CLAMP (f, x->a_lowRange, x->a_highRange);
+    }
+    SET_FLOAT (&x->a_atom, f);
+    //
     }
 
     gatom_update (x);
@@ -260,7 +259,7 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
         f -= deltaY;
     }
     
-    gatom_setFloat (x, (t_float)f);
+    gatom_float (x, (t_float)f);
     //
     }
 }
