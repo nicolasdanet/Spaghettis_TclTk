@@ -1,4 +1,4 @@
-#N canvas 663 164 465 387 12;
+#N canvas 663 164 448 391 12;
 #X obj 36 180 adc~ 5;
 #X obj 36 288 dac~ 1;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
@@ -11,10 +11,10 @@
 #X text 144 180 Input from '5' only.;
 #X text 144 204 Output to '1' \, '2' and '5'.;
 #X text 144 252 Do NOT do that with DSP on.;
-#X text 24 72 Providing real-time audio input and output. Note that out of range channels are dropped (or appear as zero). On each output \, signals are cumulated.;
+#X text 12 72 Providing real-time audio input and output. Note that out of range channels are dropped (or appear as zero). On each output \, signals are cumulated.;
 #X f 49;
-#X text 24 348 See also:;
-#X obj 108 348 midiin;
-#X obj 180 348 midiout;
+#X text 12 348 See also:;
+#X obj 96 348 midiin;
+#X obj 168 348 midiout;
 #X connect 5 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
