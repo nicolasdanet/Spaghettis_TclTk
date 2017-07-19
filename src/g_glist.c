@@ -244,7 +244,7 @@ t_garray *glist_getArray (t_glist *glist)
     
     if (y && pd_class (y) == garray_class) { return (t_garray *)y; }
     else {
-        PD_BUG; return NULL;
+        PD_BUG; return NULL;    /* Could be NULL in legacy patches. */
     }
 }
 
