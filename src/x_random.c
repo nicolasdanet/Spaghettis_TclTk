@@ -45,20 +45,18 @@ static int random_makeSeed (void)
     return (random_seed & PD_INT_MAX);
 }
 
-static t_float random_getNextFloat (t_random *x)
+static double random_getNextFloat (t_random *x)
 {
     x->x_state = x->x_state * 472940017 + 832416023;
     
-    return ((double)x->x_state * (1.0 / 4294967296.0));
+    return (x->x_state * (1.0 / 4294967296.0));
 }
 
-static t_float random_getNextInteger (t_random *x, int n)
+static int random_getNextInteger (t_random *x, int n)
 {
-    int k = 0;
+    int k = (int)(n * random_getNextFloat (x));
     
-    x->x_state = x->x_state * 472940017 + 832416023;
-    k = (int)((double)n * (double)x->x_state * (1.0 / 4294967296.0));
-    k = PD_MIN (k, n - 1);
+    PD_ASSERT (k < n);
     
     return k;
 }
@@ -67,7 +65,7 @@ static t_float random_getNext (t_random *x, int n)
 {
     if (n > 0) { return (t_float)random_getNextInteger (x, n); }
     else {
-        return random_getNextFloat (x);
+        return (t_float)random_getNextFloat (x);
     }
 }
 
