@@ -50,6 +50,7 @@ t_glist         *glist_newPatchPop          (t_symbol *name,
                                                 t_rectangle *graph,
                                                 t_rectangle *window, 
                                                 int isOpened,
+                                                int isEditMode,
                                                 int isGOP,
                                                 int fontSize);
 
@@ -58,6 +59,7 @@ t_glist         *glist_newPatch             (t_symbol *name,
                                                 t_rectangle *graph,
                                                 t_rectangle *window, 
                                                 int isOpened,
+                                                int isEditMode,
                                                 int isGOP,
                                                 int fontSize);
                                                             

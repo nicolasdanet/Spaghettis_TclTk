@@ -410,7 +410,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
 
 static void *canvas_newSubpatch (t_symbol *s)
 {
-    return glist_newPatchPop (s, NULL, NULL, NULL, 0, 0, 0);
+    return glist_newPatchPop (s, NULL, NULL, NULL, 0, 1, 0, 0);
 }
 
 void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
@@ -423,7 +423,8 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
         NULL, 
         NULL, 
         &r, 
-        (int)atom_getFloatAtIndex (5, argc, argv), 
+        (int)atom_getFloatAtIndex (5, argc, argv),
+        0,
         0, 
         (int)atom_getFloatAtIndex (4, argc, argv));
 }

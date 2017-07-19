@@ -198,7 +198,7 @@ void instance_patchNew (t_symbol *name, t_symbol *directory)
 {
     instance_environmentSetFile (name, directory);
     
-    glist_newPatchPop (&s_, NULL, NULL, NULL, 1, 0, 0);
+    glist_newPatchPop (&s_, NULL, NULL, NULL, 1, 1, 0, 0);
     
     instance_environmentResetFile();
 }

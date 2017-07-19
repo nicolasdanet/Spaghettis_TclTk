@@ -79,6 +79,7 @@ t_glist *glist_newPatchPop (t_symbol *name,
     t_rectangle *graph,
     t_rectangle *window, 
     int isOpened,
+    int isEditMode,
     int isGOP,
     int fontSize)
 {
@@ -86,7 +87,7 @@ t_glist *glist_newPatchPop (t_symbol *name,
     
     {
     //
-    t_glist *x = glist_newPatch (name, bounds, graph, window, isOpened, isGOP, fontSize);
+    t_glist *x = glist_newPatch (name, bounds, graph, window, isOpened, isEditMode, isGOP, fontSize);
         
     PD_ASSERT (instance_contextGetCurrent() == x);
     
@@ -102,6 +103,7 @@ t_glist *glist_newPatch (t_symbol *name,
     t_rectangle *graph,
     t_rectangle *window, 
     int isOpened,
+    int isEditMode,
     int isGOP,
     int fontSize)
 {
@@ -129,7 +131,7 @@ t_glist *glist_newPatch (t_symbol *name,
     
     glist_setFontSize (x, fontSize);
     glist_setGraphOnParent (x, (isGOP != 0));
-    glist_setEditMode (x, 0);
+    glist_setEditMode (x, isEditMode);
     glist_setOpenedAtLoad (x, isOpened);
     
     glist_loadBegin (x); instance_stackPush (x);

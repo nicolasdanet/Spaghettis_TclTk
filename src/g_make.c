@@ -106,7 +106,7 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     
     instance_stackPush (glist);
     
-    x = glist_newPatchPop (utils_getUnusedBindName (canvas_class, sym__graph), &bounds, NULL, NULL, 0, 1, 0);
+    x = glist_newPatchPop (utils_getUnusedBindName (canvas_class, sym__graph), &bounds, NULL, NULL, 0, 0, 1, 0);
     
     instance_stackPop (glist);
     
