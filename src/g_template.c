@@ -395,7 +395,7 @@ static t_error template_newParse (t_template *x, int *ac, t_atom **av)
             }
         }
         
-        if (k < 0) { PD_BUG; }
+        if (k < 0) { error_invalid (sym_template, sym_type); }
         else {
         //
         int oldSize = x->tp_size;
