@@ -75,6 +75,8 @@ t_float     math_decibelToRootMeanSquare    (t_float f);
 t_float     math_powerToDecibel             (t_float f);
 t_float     math_decibelToPower             (t_float f);
 
+t_seed      math_makeRandomSeed             (void);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

@@ -14,43 +14,25 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Notice that it is a strictly homebrew and untested PRNG. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_class *random_class;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _random {
-    t_object        x_obj;          /* Must be the first. */
-    t_float         x_range;
-    unsigned int    x_state;
-    t_outlet        *x_outlet;
+    t_object    x_obj;              /* Must be the first. */
+    t_float     x_range;
+    t_seed      x_state;
+    t_outlet    *x_outlet;
     } t_random;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Homebrew PRNG kept for compatibility. */
-
-static int random_makeSeed (void)
-{
-    static unsigned int random_seed = 1489853723;
-    
-    random_seed = random_seed * 435898247 + 938284287;
-    
-    return (random_seed & PD_INT_MAX);
-}
-
 static double random_getNextFloat (t_random *x)
 {
-    x->x_state = x->x_state * 472940017 + 832416023;
-    
-    return (x->x_state * (1.0 / 4294967296.0));
+    return PD_RAND48_DOUBLE (x->x_state);
 }
 
 static int random_getNextInteger (t_random *x, int n)
@@ -99,7 +81,7 @@ static void random_float (t_random *x, t_float f)
 
 static void random_seed (t_random *x, t_float f)
 {
-    x->x_state = f;
+    x->x_state = (t_seed)f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -111,8 +93,9 @@ static void *random_new (t_float f)
     t_random *x = (t_random *)pd_new (random_class);
     
     x->x_range  = f;
-    x->x_state  = (unsigned int)random_makeSeed();
     x->x_outlet = outlet_new (cast_object (x), &s_anything);
+    
+    PD_RAND48_INIT (x->x_state);
     
     inlet_newFloat (cast_object (x), &x->x_range);
     

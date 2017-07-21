@@ -8,6 +8,7 @@
 
 #include "m_pd.h"
 #include "m_core.h"
+#include "s_system.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -76,6 +77,34 @@ t_float math_decibelToRootMeanSquare (t_float f)
     else {
         f = (t_float)PD_MIN (f, 485.0); return (t_float)(exp ((PD_LOG_TEN * 0.05) * (f - 100.0)));
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Do NOT fit for cryptography purpose. */
+
+t_seed math_makeRandomSeed (void)
+{
+    static t_seed seed = 0;
+    
+    t_rawcast64 z;
+    
+    z.z_d = clock_getRealTimeInSeconds();
+    
+    seed ^= utils_unique();             PD_RAND48_NEXT (seed);
+    seed ^= z.z_i[PD_RAWCAST64_LSB];    PD_RAND48_NEXT (seed);
+    seed ^= z.z_i[PD_RAWCAST64_MSB];    PD_RAND48_NEXT (seed);
+    
+    #if PD_WINDOWS
+        seed ^= _getpid();
+    #else
+        seed ^= getpid();
+    #endif
+    
+    PD_RAND48_NEXT (seed);
+    
+    return seed;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -426,15 +426,18 @@ typedef int                         t_error;
 typedef int                         t_color;
 typedef int                         t_fontsize;
 typedef double                      t_systime;
-typedef unsigned long               t_unique;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_LP64
     typedef unsigned int            t_keycode;          // uint32_t
+    typedef unsigned long           t_seed;             // uint64_t
+    typedef unsigned long           t_unique;           // uint64_t
 #else
     typedef unsigned long           t_keycode;
+    typedef unsigned long long      t_seed;
+    typedef unsigned long long      t_unique;
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
