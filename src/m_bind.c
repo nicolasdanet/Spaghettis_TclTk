@@ -268,7 +268,10 @@ t_pd *pd_getThingByClass (t_symbol *s, t_class *c)
         t_bindelement *e = NULL;
         
         for (e = b->b_list; e; e = e->e_next) {
-            if (*e->e_what == c) { PD_ASSERT (x == NULL); x = e->e_what; }
+            if (*e->e_what == c) {
+                if (x != NULL) { warning_multipleBinding (s); }
+                x = e->e_what;
+            }
         }
     }
     

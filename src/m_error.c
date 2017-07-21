@@ -264,5 +264,10 @@ void warning_tooManyCharacters (t_symbol *s)
     post_warning (PD_TRANSLATE ("%s: too many characters"), s->s_name);
 }
 
+void warning_multipleBinding (t_symbol *s)
+{ 
+    post_warning (PD_TRANSLATE ("%s: multiple binding"), s->s_name);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

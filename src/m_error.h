@@ -81,6 +81,7 @@ void error_invalidArgumentsForMethod        (t_symbol *, t_symbol *, int argc, t
 // MARK: -
 
 void warning_tooManyCharacters              (t_symbol *);
+void warning_multipleBinding                (t_symbol *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
