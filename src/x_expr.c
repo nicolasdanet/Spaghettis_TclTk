@@ -30,6 +30,7 @@ static t_class *expr_class;                     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 #define EXPR_VARIABLES  9
+#define EXPR_FUNCTIONS  1
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -39,7 +40,7 @@ typedef struct _expr {
     t_object    x_obj;                          /* Must be the first. */
     t_float     x_f[EXPR_VARIABLES];
     double      x_v[EXPR_VARIABLES];
-    te_variable x_variables[EXPR_VARIABLES];
+    te_variable x_variables[EXPR_VARIABLES + EXPR_FUNCTIONS];
     te_expr     *x_expression;
     t_outlet    *x_outlet;
     } t_expr;
@@ -48,12 +49,33 @@ typedef struct _expr {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define EXPR_TE_VARIABLE(i, s)  { \
-                                        x->x_variables[i].name      = (s)->s_name;  \
-                                        x->x_variables[i].address   = x->x_v + (i); \
-                                        x->x_variables[i].type      = TE_VARIABLE;  \
-                                        x->x_variables[i].context   = NULL; \
-                                }
+#define EXPR_TE_VARIABLE(i, s)          { \
+                                            x->x_variables[i].name      = (s)->s_name;  \
+                                            x->x_variables[i].address   = x->x_v + (i); \
+                                            x->x_variables[i].type      = TE_VARIABLE;  \
+                                            x->x_variables[i].context   = NULL; \
+                                        }
+
+#define EXPR_TE_FUNCTION(i, s, f, t) { \
+                                            x->x_variables[i].name      = s;    \
+                                            x->x_variables[i].address   = f;    \
+                                            x->x_variables[i].type      = t;    \
+                                            x->x_variables[i].context   = NULL; \
+                                        }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+double expr_functionRand (void)
+{
+    static t_seed once = 0;
+    static t_seed seed = 0;
+    
+    if (!once) { seed = math_makeRandomSeed(); }
+    
+    return PD_RAND48_DOUBLE (seed);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -68,6 +90,15 @@ static void expr_initializeVariables (t_expr *x)
         string_sprintf (t, PD_STRING, "vf%d", i + 1);
         EXPR_TE_VARIABLE (i, gensym (t));
     }
+}
+
+static void expr_initializeFunctions (t_expr *x, int i)
+{
+    PD_ASSERT (i < (EXPR_VARIABLES + EXPR_FUNCTIONS));
+    
+    /* Add extended functions. */
+    
+    EXPR_TE_FUNCTION (i, "rand", expr_functionRand, TE_FUNCTION0);
 }
 
 static int expr_getNumberOfVariables (char *expression)
@@ -117,7 +148,8 @@ static void *expr_new (t_symbol *s, int argc, t_atom *argv)
         size = expr_getNumberOfVariables (t);
         expr_initializeVariables (x);
         string_replaceCharacter (t, '$', 'v');
-        x->x_expression = te_compile (t, x->x_variables, size, &err);
+        expr_initializeFunctions  (x, size);
+        x->x_expression = te_compile (t, x->x_variables, size + EXPR_FUNCTIONS, &err);
         
         if (argc) { PD_MEMORY_FREE (t); }
     }
