@@ -112,7 +112,7 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
 {
     t_glist *glist = cast_glist (pd_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
     
-    if (glist) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
+    if (glist && !glist_isArray (glist)) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
     else { 
         error_invalid (&s_pointer, &s_pointer);
     }

@@ -35,7 +35,7 @@ typedef struct _random {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Homebrew PRNG kept for compatbility. */
+/* Homebrew PRNG kept for compatibility. */
 
 static int random_makeSeed (void)
 {

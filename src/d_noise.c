@@ -29,7 +29,7 @@ typedef struct _noise_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_int *noise_tilde_perform (t_int *w)                    /* Homebrew PRNG kept for compatbility. */
+static t_int *noise_tilde_perform (t_int *w)                    /* Homebrew PRNG kept for compatibility. */
 {
     int *p = (int *)(w[1]);
     PD_RESTRICTED out = (t_sample *)(w[2]);
