@@ -201,6 +201,7 @@
 #include "x_spigot.c"
 #include "x_moses.c"
 #include "x_until.c"
+#include "x_uzi.c"
 #include "x_swap.c"
 #include "x_change.c"
 #include "x_clip.c"

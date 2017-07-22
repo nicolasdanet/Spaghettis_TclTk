@@ -529,6 +529,7 @@ extern t_symbol *sym_type;
 extern t_symbol *sym_unit;
 extern t_symbol *sym_unpack;
 extern t_symbol *sym_until;
+extern t_symbol *sym_uzi;
 extern t_symbol *sym_v;
 extern t_symbol *sym_value;
 extern t_symbol *sym_vcf__tilde__;

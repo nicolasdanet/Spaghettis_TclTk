@@ -529,6 +529,7 @@ t_symbol *sym_type;
 t_symbol *sym_unit;
 t_symbol *sym_unpack;
 t_symbol *sym_until;
+t_symbol *sym_uzi;
 t_symbol *sym_v;
 t_symbol *sym_value;
 t_symbol *sym_vcf__tilde__;
@@ -1120,6 +1121,7 @@ void symbols_initialize (void)
     sym_unit                                    = gensym ("unit");
     sym_unpack                                  = gensym ("unpack");
     sym_until                                   = gensym ("until");
+    sym_uzi                                     = gensym ("uzi");
     sym_v                                       = gensym ("v");
     sym_value                                   = gensym ("value");
     sym_vcf__tilde__                            = gensym ("vcf~");
