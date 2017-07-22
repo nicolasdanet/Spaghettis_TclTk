@@ -1,4 +1,4 @@
-#N canvas 648 186 446 426 12;
+#N canvas 648 186 440 427 12;
 #X obj 36 252 mtof~;
 #X obj 36 228 ftom~;
 #X obj 168 228 dbtorms~;
@@ -26,11 +26,11 @@
 #X f 5;
 #X floatatom 300 324 5 0 0 1 - - -;
 #X f 5;
-#X text 12 72 These objects convert MIDI pitch to frequency and back \, and dB to and from RMS and power. They take audio signals as input and work sample by sample.;
-#X f 50;
 #X text 60 528 see also:;
 #X text 12 384 See also:;
 #X obj 96 384 mtof;
+#X text 12 72 Convert MIDI pitch to and from frequency \, as also dB to RMS and power (note that it works sample by sample).;
+#X f 46;
 #X connect 0 0 12 0;
 #X connect 1 0 0 0;
 #X connect 2 0 6 0;

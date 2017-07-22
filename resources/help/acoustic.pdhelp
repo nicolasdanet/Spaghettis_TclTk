@@ -1,4 +1,4 @@
-#N canvas 735 87 514 520 12;
+#N canvas 822 67 514 520 12;
 #X obj 36 372 ftom;
 #X obj 36 324 mtof;
 #X obj 156 324 dbtorms;
@@ -38,11 +38,11 @@
 #X restore 408 420 pd limits;
 #X text 12 480 See also:;
 #X obj 96 480 mtof~;
-#X text 12 72 The mtof object transposes a MIDI value into a frequency in Hertz \, so that '69' goes to '440'. You can specify microtonal pitches as in '69.5' (a quarter tone higher than '69').;
-#X f 57;
 #X text 12 144 The dbtorms object converts from decibels to linear ("RMS") amplitude \, so that '100' dB corresponds to an "RMS" of '1'.;
 #X f 57;
 #X text 12 204 The dbtopow object converts from decibels to power units \, equal to the square of the "RMS" amplitude.;
+#X f 57;
+#X text 12 72 The mtof object converts a MIDI value into a frequency in Hertz \, so that '69' goes to '440'. You can specify microtonal pitches as in '69.5' (a quarter tone higher than '69').;
 #X f 57;
 #X connect 0 0 15 0;
 #X connect 1 0 12 0;
