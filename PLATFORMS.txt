@@ -5,8 +5,7 @@ Currently tested.
 
 GNU/Linux:
 
-    - Debian / Jessie (i386) / Tk 8.6
-    - Debian / Stretch (i386) / Tk 8.6
+    - Debian / Stretch (i386) / Tk 8.6 / Openbox
 
 Apple:
 
