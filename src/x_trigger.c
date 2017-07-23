@@ -67,8 +67,9 @@ static void trigger_list (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
     t_symbol *t = atom_getSymbol (atomoutlet_getAtom (x->x_vector + i));
     t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
     
-    PD_ASSERT (t != &s_);
-    
+    if (t == &s_) { outlet_float (outlet, atom_getFloat (atomoutlet_getAtom (x->x_vector + i))); }
+    else {
+    //
     if (t == &s_float)        { outlet_float (outlet, atom_getFloatAtIndex (0, argc, argv)); }
     else if (t == &s_bang)    { outlet_bang (outlet); }
     else if (t == &s_symbol)  { outlet_symbol (outlet, atom_getSymbolAtIndex (0, argc, argv)); }
@@ -79,11 +80,19 @@ static void trigger_list (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
         }
         
     } else {
-        if (t == &s_anything && isCalledByAnything && argc) {
-            outlet_anything (outlet, atom_getSymbol (argv), argc - 1, argv + 1); 
-        } else {
+        if (t == &s_anything) {
+            if (isCalledByAnything && argc) {
+                outlet_anything (outlet, atom_getSymbol (argv), argc - 1, argv + 1);
+            } else {
+                outlet_list (outlet, argc, argv);
+            }
+        } else if (t == &s_list) {
             outlet_list (outlet, argc, argv);
+        } else {
+            outlet_symbol (outlet, t);
         }
+    }
+    //
     }
     //
     }
@@ -107,7 +116,11 @@ static void *trigger_newProceed (int argc, t_atom *argv)
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
     
     for (i = 0; i < argc; i++) {
-        atomoutlet_makeSymbolParsed (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i);
+        if (IS_SYMBOL (argv + i)) {
+            atomoutlet_makeSymbolParsed (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i);
+        } else {
+            atomoutlet_makeParsed (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i);
+        }
     }
     
     return x;
