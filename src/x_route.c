@@ -41,16 +41,15 @@ static int route_listForFloat (t_route *x, int argc, t_atom *argv)
     //
     int i;
     
-    for (i = x->x_size - 1; i >= 0; i--) {
+    for (i = 0; i < x->x_size; i++) {
     
         if (atomoutlet_isEqualToAtom (x->x_vector + i, argv)) {
             t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
-            if (argc > 1 && IS_SYMBOL (argv + 1)) {
+            if (!argc || !IS_SYMBOL (argv + 1)) { outlet_list (outlet, argc - 1, argv + 1); }
+            else {
                 outlet_anything (outlet, GET_SYMBOL (argv + 1), argc - 2, argv + 2);
-            } else { 
-                outlet_list (outlet, argc - 1, argv + 1);
             }
-            k = 1;
+            k = 1; break;
         }
     }
     //
@@ -64,7 +63,7 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     int i, k = 0;
     
     if (argc > 1) {
-        for (i = x->x_size - 1; i >= 0; i--) {
+        for (i = 0; i < x->x_size; i++) {
         
             if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_list) {
                 t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
@@ -72,34 +71,34 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
                 else {
                     outlet_anything (outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
                 }
-                k = 1;
+                k = 1; break;
             }
         }
         
     } else if (argc == 0) {
-        for (i = x->x_size - 1; i >= 0; i--) {
+        for (i = 0; i < x->x_size; i++) {
         
             if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_bang) {
                 outlet_bang (atomoutlet_getOutlet (x->x_vector + i)); 
-                k = 1;
+                k = 1; break;
             }
         }
         
     } else if (IS_FLOAT (argv)) {
-        for (i = x->x_size - 1; i >= 0; i--) {
+        for (i = 0; i < x->x_size; i++) {
 
             if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_float) {
                 outlet_float (atomoutlet_getOutlet (x->x_vector + i), GET_FLOAT (argv));
-                k = 1;
+                k = 1; break;
             }
         }
         
     } else if (IS_SYMBOL (argv)) {
-        for (i = x->x_size - 1; i >= 0; i--) {
+        for (i = 0; i < x->x_size; i++) {
         
             if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_symbol) {
                 outlet_symbol (atomoutlet_getOutlet (x->x_vector + i), GET_SYMBOL (argv));
-                k = 1;
+                k = 1; break;
             }
         }
     }
@@ -129,7 +128,7 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
     
     if (x->x_type == A_SYMBOL) {
     //
-    for (i = x->x_size - 1; i >= 0; i--) {
+    for (i = 0; i < x->x_size; i++) {
     //
     t_atom a; SET_SYMBOL (&a, s);
     
@@ -139,7 +138,7 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
         else {
             outlet_anything (outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
         } 
-        k = 1;
+        k = 1; break;
     }
     //
     }
