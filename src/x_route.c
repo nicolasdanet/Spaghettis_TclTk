@@ -101,6 +101,14 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
                 k = 1; break;
             }
         }
+    } else if (IS_POINTER (argv)) {
+        for (i = 0; i < x->x_size; i++) {
+        
+            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_pointer) {
+                outlet_pointer (atomoutlet_getOutlet (x->x_vector + i), GET_POINTER (argv));
+                k = 1; break;
+            }
+        }
     }
     
     return k;
