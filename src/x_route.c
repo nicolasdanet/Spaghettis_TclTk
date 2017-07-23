@@ -165,9 +165,14 @@ static void *route_newProceed (int argc, t_atom *argv)
     
     for (i = 1; i < argc; i++) { if (atom_getType (argv + i) != x->x_type) { err = PD_ERROR; } }
     
+    PD_ASSERT (x->x_type == A_FLOAT || x->x_type == A_SYMBOL);
+    
     if (!err) {
         int create = (argc == 1) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
         for (i = 0; i < argc; i++) {
+            if (IS_SYMBOL (argv + i)) {
+                SET_SYMBOL (argv + i, atomoutlet_parseAbbreviated (GET_SYMBOL (argv + i)));
+            }
             atomoutlet_make (x->x_vector + i, cast_object (x), create, &s_anything, argv + i);
         }
         x->x_outlet = outlet_new (cast_object (x), &s_anything);
