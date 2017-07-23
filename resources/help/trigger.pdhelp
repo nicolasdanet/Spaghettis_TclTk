@@ -15,9 +15,7 @@
 #X obj 24 432 print;
 #X obj 24 324 t bang float symbol list anything;
 #X f 33;
-#X text 12 72 Trigger the input from right to left \, converting to the types indicated by its creation arguments. Mostly used with the abbreviated form "t".;
-#X f 49;
-#N canvas 492 113 580 257 \$0-more 0;
+#N canvas 797 224 488 256 \$0-more 0;
 #X obj 48 156 t b;
 #X obj 48 60 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 144 120 pointer;
@@ -34,6 +32,8 @@
 #X connect 6 0 2 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 312 432 pd \$0-more;
+#X text 12 72 Trigger the input from right to left \, converting to the types indicated by its creation arguments. Mostly used with the short form "t".;
+#X f 49;
 #X connect 0 0 13 0;
 #X connect 1 0 13 0;
 #X connect 2 0 13 0;
