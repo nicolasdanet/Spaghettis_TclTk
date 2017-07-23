@@ -1,4 +1,4 @@
-#N canvas 685 65 415 403 12;
+#N canvas 685 65 419 402 12;
 #X obj 96 360 pack;
 #X text 12 360 See also;
 #X msg 36 156 1 2;
@@ -22,6 +22,19 @@
 #X f 4;
 #X text 12 72 Distributes atoms to its outlets. The creation arguments determines the number of outlets.;
 #X f 46;
+#N canvas 755 218 311 286 \$0-more 0;
+#X obj 36 84 pointer;
+#X msg 36 48 traverse \$0-more \, bang;
+#X obj 36 144 pack p moon;
+#X obj 36 180 unpack p s;
+#X obj 36 240 print;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 3 1 4 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 276 240 pd \$0-more;
 #X connect 2 0 7 0;
 #X connect 3 0 7 0;
 #X connect 4 0 7 0;
