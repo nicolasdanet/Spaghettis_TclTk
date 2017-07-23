@@ -169,11 +169,15 @@ static void *route_newProceed (int argc, t_atom *argv)
     
     if (!err) {
         int create = (argc == 1) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
+        
         for (i = 0; i < argc; i++) {
             if (IS_SYMBOL (argv + i)) {
-                SET_SYMBOL (argv + i, atomoutlet_parseAbbreviated (GET_SYMBOL (argv + i)));
+                t_symbol *t = atomoutlet_parseAbbreviated (atom_getSymbol (argv + i));
+                atomoutlet_makeSymbol (x->x_vector + i, cast_object (x), create, &s_anything, t);
+            } else {
+                t_float t = atom_getFloat (argv + i);
+                atomoutlet_makeFloat (x->x_vector + i, cast_object (x), create, &s_anything, t);
             }
-            atomoutlet_make (x->x_vector + i, cast_object (x), create, &s_anything, argv + i);
         }
         x->x_outlet = outlet_new (cast_object (x), &s_anything);
         
