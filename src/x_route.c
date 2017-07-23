@@ -132,10 +132,12 @@ static void route_list (t_route *x, t_symbol *dummy, int argc, t_atom *argv)
 
 static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int i, k = 0;
+    int k = 0;
     
     if (x->x_type == A_SYMBOL) {
     //
+    int i;
+    
     for (i = 0; i < x->x_size; i++) {
     //
     t_atom a; SET_SYMBOL (&a, s);
@@ -147,6 +149,19 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
             outlet_anything (outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
         } 
         k = 1; break;
+    }
+    //
+    }
+
+    if (!k) {
+    //
+    for (i = 0; i < x->x_size; i++) {
+    //
+    if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_anything) {
+        outlet_anything (atomoutlet_getOutlet (x->x_vector + i), s, argc, argv);
+        k = 1; break;
+    }
+    //
     }
     //
     }
