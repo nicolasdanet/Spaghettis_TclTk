@@ -119,7 +119,7 @@ static void *trigger_newProceed (int argc, t_atom *argv)
         if (IS_SYMBOL (argv + i)) {
             atomoutlet_makeSymbolParsed (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i);
         } else {
-            atomoutlet_makeParsed (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i);
+            atomoutlet_make (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, NULL, argv + i);
         }
     }
     

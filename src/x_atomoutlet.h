@@ -35,6 +35,24 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static inline t_symbol *atomoutlet_parseAbbreviated (t_symbol *s)
+{
+    t_symbol *t = s;
+    
+    if (t == sym_b)      { t = &s_bang;     }
+    else if (t == sym_p) { t = &s_pointer;  }
+    else if (t == sym_l) { t = &s_list;     }
+    else if (t == sym_s) { t = &s_symbol;   }
+    else if (t == sym_a) { t = &s_anything; }
+    else if (t == sym_f) { t = &s_float;    }
+    
+    return t;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_atom      *atomoutlet_getAtom         (t_atomoutlet *x);
 t_outlet    *atomoutlet_getOutlet       (t_atomoutlet *x);
 t_gpointer  *atomoutlet_getPointer      (t_atomoutlet *x);
