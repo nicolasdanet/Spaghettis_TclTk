@@ -95,6 +95,21 @@ static void select2_symbol (t_select2 *x, t_symbol *s)
     if (!k) { outlet_symbol (x->x_outlet, s); }
 }
 
+/* Default list handling is weird. */
+/* Select according to the first atom is smarter. */
+
+static void select2_anything (t_select2 *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (s != &s_list) { select2_symbol (x, s); }
+    else if (argc) {
+        if (IS_SYMBOL (argv))     { select2_symbol (x, GET_SYMBOL (argv)); }
+        else if (IS_FLOAT (argv)) { select2_float (x, GET_FLOAT (argv)); }
+        else {
+            error_invalid (sym_select, sym_type);
+        }
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -106,9 +121,9 @@ static void *select1_new (int argc, t_atom *argv)
     x->x_atom = *argv;
     x->x_outletLeft = outlet_new (cast_object (x), &s_bang);
     
-    if (IS_FLOAT (argv)) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    if (IS_FLOAT (argv)) { x->x_outletRight = outlet_new (cast_object (x), &s_anything); }
     else {
-        x->x_outletRight = outlet_new (cast_object (x), &s_symbol);
+        x->x_outletRight = outlet_new (cast_object (x), &s_anything);
     }
     
     if (IS_FLOAT (argv)) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_atom)); } 
@@ -180,10 +195,12 @@ void select_setup (void)
     class_addCreator ((t_newmethod)select_new, sym_select,  A_GIMME, A_NULL);
     class_addCreator ((t_newmethod)select_new, sym_sel,     A_GIMME, A_NULL);
     
-    class_addFloat (select1_class,  (t_method)select1_float);
-    class_addFloat (select2_class,  (t_method)select2_float);
+    class_addFloat (select1_class, (t_method)select1_float);
     class_addSymbol (select1_class, (t_method)select1_symbol);
+    
+    class_addFloat (select2_class, (t_method)select2_float);
     class_addSymbol (select2_class, (t_method)select2_symbol);
+    class_addAnything (select2_class, (t_method)select2_anything);
 }
 
 void select_destroy (void)
