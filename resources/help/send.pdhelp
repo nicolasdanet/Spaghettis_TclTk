@@ -50,7 +50,7 @@
 #X obj 36 384 s \$0-foo;
 #X text 12 12 Without any argument a inlet is added to set the target.;
 #X text 12 216 Works for any type of messages.;
-#X obj 324 288 text define;
+#X obj 324 288 text;
 #X connect 0 0 2 0;
 #X connect 0 0 6 0;
 #X connect 1 0 3 0;
