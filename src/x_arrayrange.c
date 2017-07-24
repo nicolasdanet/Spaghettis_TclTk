@@ -62,11 +62,11 @@ void *arrayrange_new (t_class *class, int argc, t_atom *argv, int makeOnsetInlet
         } else {
             inlet_newSymbol (cast_object (x),  ARRAYCLIENT_GETNAME    (&x->ar_arrayclient));
         }
-     
-        return x;
     }
     
-    return NULL;
+    x->ar_error = err;
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------

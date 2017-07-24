@@ -24,6 +24,7 @@ typedef struct _arrayclient {
 
 typedef struct _arrayrange {
     t_arrayclient   ar_arrayclient;         /* Must be the first. */
+    t_error         ar_error;
     t_float         ar_first;
     t_float         ar_size;
     t_symbol        *ar_fieldName;
@@ -36,6 +37,12 @@ typedef struct _arrayrange {
 #define ARRAYCLIENT_ASPOINTER(x)            ((x)->ac_templateIdentifier)
 #define ARRAYCLIENT_GETPOINTER(x)           &((x)->ac_gpointer)
 #define ARRAYCLIENT_GETNAME(x)              &((x)->ac_name)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define ARRAYRANGE_GOOD(x)                  (((t_arrayrange *)(x))->ar_error == PD_ERROR_NONE)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

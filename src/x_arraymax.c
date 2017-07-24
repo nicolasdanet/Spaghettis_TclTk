@@ -65,7 +65,7 @@ void *arraymax_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_arraymax *x = (t_arraymax *)arrayrange_new (arraymax_class, argc, argv, 0, 1);
     
-    if (x) {
+    if (ARRAYRANGE_GOOD (x)) {
         x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
         x->x_outletRight = outlet_new (cast_object (x), &s_float);
 

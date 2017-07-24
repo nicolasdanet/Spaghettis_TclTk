@@ -57,7 +57,7 @@ void *arrayrandom_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_arrayrandom *x = (t_arrayrandom *)arrayrange_new (arrayrandom_class, argc, argv, 0, 1);
     
-    if (x) {
+    if (ARRAYRANGE_GOOD (x)) {
         PD_RAND48_INIT (x->x_state);
         x->x_outlet = outlet_new (cast_object (x), &s_float);
         

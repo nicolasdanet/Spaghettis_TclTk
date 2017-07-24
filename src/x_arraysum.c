@@ -58,7 +58,7 @@ void *arraysum_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_arraysum *x = (t_arraysum *)arrayrange_new (arraysum_class, argc, argv, 0, 1);
     
-    if (x) { x->x_outlet = outlet_new (cast_object (x), &s_float); }
+    if (ARRAYRANGE_GOOD (x)) { x->x_outlet = outlet_new (cast_object (x), &s_float); }
     else {
         error_invalidArguments (sym_array__space__sum, argc, argv);
         pd_free (cast_pd (x)); x = NULL; 

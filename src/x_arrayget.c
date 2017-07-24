@@ -64,7 +64,7 @@ void *arrayget_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_arrayget *x = (t_arrayget *)arrayrange_new (arrayget_class, argc, argv, 0, 1);
     
-    if (x) { x->x_outlet = outlet_new (cast_object (x), &s_list); }
+    if (ARRAYRANGE_GOOD (x)) { x->x_outlet = outlet_new (cast_object (x), &s_list); }
     else {
         error_invalidArguments (sym_array__space__get, argc, argv);
         pd_free (cast_pd (x)); x = NULL; 
