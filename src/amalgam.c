@@ -198,6 +198,7 @@
 #include "x_pack.c"
 #include "x_unpack.c"
 #include "x_trigger.c"
+#include "x_prepend.c"
 #include "x_spigot.c"
 #include "x_moses.c"
 #include "x_until.c"

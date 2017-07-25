@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		172EBDFD1F273EC9003C0B66 /* x_prepend.c in Sources */ = {isa = PBXBuildFile; fileRef = 172EBDFC1F273EC9003C0B66 /* x_prepend.c */; };
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
 		17981E151F0618A10029AD87 /* s_searchpath.c in Sources */ = {isa = PBXBuildFile; fileRef = 17981E141F0618A10029AD87 /* s_searchpath.c */; };
 		179873E31F01095100BB1B94 /* m_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 179873E21F01095100BB1B94 /* m_file.c */; };
@@ -394,6 +395,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		172EBDFC1F273EC9003C0B66 /* x_prepend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_prepend.c; path = src/x_prepend.c; sourceTree = "<group>"; };
 		174D8A081F0BBA0200C94065 /* x_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_text.h; path = src/x_text.h; sourceTree = "<group>"; };
 		174D8A091F0BBBBE00C94065 /* x_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_array.h; path = src/x_array.h; sourceTree = "<group>"; };
 		174D8A0A1F0BBCD000C94065 /* x_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_list.h; path = src/x_list.h; sourceTree = "<group>"; };
@@ -1218,6 +1220,7 @@
 				374907661D9A419200377F1E /* x_pack.c */,
 				3749073B1D9A40A600377F1E /* x_unpack.c */,
 				3749071B1D9A3FC000377F1E /* x_trigger.c */,
+				172EBDFC1F273EC9003C0B66 /* x_prepend.c */,
 				374906EE1D997BAC00377F1E /* x_spigot.c */,
 				374906C21D997AC500377F1E /* x_moses.c */,
 				3749068F1D9978FF00377F1E /* x_until.c */,
@@ -2007,6 +2010,7 @@
 				377899DD1CFEDB5B0056BE61 /* g_gatom.c in Sources */,
 				3709BE1E1D016C9400D9B48C /* m_eval.c in Sources */,
 				3709BE591D01726800D9B48C /* m_parse.c in Sources */,
+				172EBDFD1F273EC9003C0B66 /* x_prepend.c in Sources */,
 				37A7BBF31D030B45000C7AB5 /* m_string.c in Sources */,
 				371430B11D0D46BC00E68D11 /* g_paint.c in Sources */,
 				3720EBB61D239650001675BD /* g_vinlet.c in Sources */,
