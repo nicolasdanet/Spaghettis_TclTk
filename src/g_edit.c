@@ -174,8 +174,8 @@ static void glist_actionResizeBox (t_glist *glist, t_gobj *y, int width)
     
     gobj_visibilityChanged (y, glist, 0);
     object_setWidth (cast_object (y), PD_MAX (1, w));
-    glist_updateLinesForObject (glist, cast_object (y));
     gobj_visibilityChanged (y, glist, 1);
+    glist_updateLinesForObject (glist, cast_object (y));
     glist_setDirty (glist, 1);
 }
 
