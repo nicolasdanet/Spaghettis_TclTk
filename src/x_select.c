@@ -59,6 +59,31 @@ static void select1_symbol (t_select1 *x, t_symbol *s)
     }
 }
 
+static void select1_list (t_select1 *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    if (argc > 1) {
+        err = !atom_typesAreEquals (&x->x_atom, argv + 1);
+        if (!err) { x->x_atom = *(argv + 1); }
+    }
+    
+    if (argc) {
+        if (IS_FLOAT (argv)) { select1_float (x, GET_FLOAT (argv)); }
+        else if (IS_SYMBOL (argv)) { select1_symbol (x, GET_SYMBOL (argv)); }
+        else {
+            err = PD_ERROR;
+        }
+    }
+    
+    if (err) { error_invalid (sym_select, sym_type); }
+}
+
+static void select1_anything (t_select1 *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)select1_list, s, argc, argv);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -94,9 +119,6 @@ static void select2_symbol (t_select2 *x, t_symbol *s)
     
     if (!k) { outlet_symbol (x->x_outlet, s); }
 }
-
-/* Default list handling is weird. */
-/* Select according to the first atom is smarter. */
 
 static void select2_anything (t_select2 *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -197,6 +219,8 @@ void select_setup (void)
     
     class_addFloat (select1_class, (t_method)select1_float);
     class_addSymbol (select1_class, (t_method)select1_symbol);
+    class_addList (select1_class, (t_method)select1_list);
+    class_addAnything (select1_class, (t_method)select1_anything);
     
     class_addFloat (select2_class, (t_method)select2_float);
     class_addSymbol (select2_class, (t_method)select2_symbol);
