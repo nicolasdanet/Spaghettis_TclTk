@@ -192,9 +192,9 @@ static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int 
     gobj_visibilityChanged (y, glist, 0);
     rectangle_setWidth (r, PD_MAX (EDIT_GRIP_SIZE, w));
     rectangle_setHeight (r, PD_MAX (EDIT_GRIP_SIZE, h));
-    glist_updateLinesForObject (glist, cast_object (y));
     glist_updateRectangle (cast_glist (y));
     gobj_visibilityChanged (y, glist, 1);
+    glist_updateLinesForObject (glist, cast_object (y));
     glist_setDirty (glist, 1);
     //
     }
