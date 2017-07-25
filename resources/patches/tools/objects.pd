@@ -345,4 +345,5 @@
 #X text 128 3520 - attach this canvas to a name;
 #X obj 24 1824 freeze;
 #X obj 84 360 uzi;
+#X obj 84 504 prepend;
 #X coords 0 0 1 1 250 175 0 0 0;
