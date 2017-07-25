@@ -64,32 +64,34 @@ static void trigger_list (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
     
     for (i = x->x_size - 1; i >= 0; i--) {
     //
-    t_symbol *t = atom_getSymbol (atomoutlet_getAtom (x->x_vector + i));
+    t_symbol *type = atom_getSymbol (atomoutlet_getAtom (x->x_vector + i));
     t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
     
-    if (t == &s_) { outlet_float (outlet, atom_getFloat (atomoutlet_getAtom (x->x_vector + i))); }
+    if (type == &s_) { outlet_float (outlet, atom_getFloat (atomoutlet_getAtom (x->x_vector + i))); }
     else {
     //
-    if (t == &s_float)        { outlet_float (outlet, atom_getFloatAtIndex (0, argc, argv)); }
-    else if (t == &s_bang)    { outlet_bang (outlet); }
-    else if (t == &s_symbol)  { outlet_symbol (outlet, atom_getSymbolAtIndex (0, argc, argv)); }
-    else if (t == &s_pointer) { 
+    if (type == &s_float)       { outlet_float (outlet, atom_getFloatAtIndex (0, argc, argv)); }
+    else if (type == &s_bang)   { outlet_bang (outlet); }
+    else if (type == &s_symbol) {
+        t_symbol *t = atom_getSymbolAtIndex (0, argc, argv); outlet_symbol (outlet, t == &s_ ? s : t);
+        
+    } else if (type == &s_pointer) {
         if (argc && IS_POINTER (argv)) { outlet_pointer (outlet, GET_POINTER (argv)); }
         else {
             outlet_pointer (outlet, gpointer_getEmpty());
         }
         
     } else {
-        if (t == &s_anything) {
+        if (type == &s_anything) {
             if (isCalledByAnything && argc) {
                 outlet_anything (outlet, atom_getSymbol (argv), argc - 1, argv + 1);
             } else {
                 outlet_list (outlet, argc, argv);
             }
-        } else if (t == &s_list) {
+        } else if (type == &s_list) {
             outlet_list (outlet, argc, argv);
         } else {
-            outlet_symbol (outlet, t);
+            outlet_symbol (outlet, type);
         }
     }
     //
