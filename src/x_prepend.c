@@ -106,10 +106,11 @@ static void prepend_anything (t_prepend *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *prepend_new (t_symbol *s, int argc, t_atom *argv)
+static void prepend_set (t_prepend *x, t_symbol *dummy, int argc, t_atom *argv)
 {
-    t_prepend *x = (t_prepend *)pd_new (prepend_class);
     int i;
+    
+    if (x->x_vector) { PD_MEMORY_FREE (x->x_vector); }
     
     x->x_size   = argc;
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
@@ -117,8 +118,21 @@ static void *prepend_new (t_symbol *s, int argc, t_atom *argv)
     for (i = 0; i < x->x_size; i++) {
         atomoutlet_make (x->x_vector + i, cast_object (x), ATOMOUTLET_NONE, NULL, argv + i);
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void *prepend_new (t_symbol *s, int argc, t_atom *argv)
+{
+    t_prepend *x = (t_prepend *)pd_new (prepend_class);
+
+    prepend_set (x, s, argc, argv);
     
     x->x_outlet = outlet_new (cast_object (x), &s_anything);
+    
+    inlet_new2 (x, sym_set);
     
     return x;
 }
@@ -155,6 +169,8 @@ void prepend_setup (void)
     class_addList (c, (t_method)prepend_list);
     class_addAnything (c, (t_method)prepend_anything);
     
+    class_addMethod (c, (t_method)prepend_set, sym__inlet2, A_GIMME, A_NULL);
+
     prepend_class = c;
 }
 
