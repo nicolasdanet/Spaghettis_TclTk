@@ -535,9 +535,11 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     object_setWidth (cast_object (x),  type == A_FLOAT ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL);
     object_setType (cast_object (x),   TYPE_ATOM);
     
-    if (argc > 1) { gatom_makeObjectFile (x, argc, argv); } 
+    if (argc <= 1) { gatom_makeObjectMenu (x, argc, argv); }
     else {
-        gatom_makeObjectMenu (x, argc, argv);
+        t_atom a; SET_SYMBOL (&a, &s_symbol);
+        gatom_makeObjectFile (x, argc, argv);
+        gatom_set (x, NULL, 1, &a);
     }
 }
 
