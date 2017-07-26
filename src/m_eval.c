@@ -52,6 +52,7 @@ static int eval_bufferGetMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *
                             break;
     case A_FLOAT        :   *m = *v; break;
     case A_SYMBOL       :   *m = *v; break;
+    case A_POINTER      :   *m = *v; break;
     case A_DOLLAR       :   dollar_expandWithArguments (v, m, NULL, argc, argv); break;
     case A_DOLLARSYMBOL :   s = dollar_expandSymbolWithArguments (GET_SYMBOL (v), NULL, argc, argv);
                             if (s) { SET_SYMBOL (m, s); }
@@ -118,12 +119,19 @@ void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     }
     
     if (args) {
-        if (IS_SYMBOL (message)) { pd_message (object, GET_SYMBOL (message), args - 1, message + 1); }
+        if (IS_SYMBOL (message))     { pd_message (object, GET_SYMBOL (message), args - 1, message + 1); }
         else if (IS_FLOAT (message)) {
             if (args == 1) { pd_float (object, GET_FLOAT (message)); }
             else { 
                 pd_list (object, args, message); 
             }
+        } else if (IS_POINTER (message)) {
+            if (args == 1) { pd_pointer (object, GET_POINTER (message)); }
+            else { 
+                pd_list (object, args, message); 
+            }
+        } else {
+            PD_BUG;
         }
     }
     

@@ -67,6 +67,11 @@ static void messageresponder_symbol (t_messageresponder *x, t_symbol *s)
     outlet_symbol (x->mr_outlet, s);
 }
 
+static void messageresponder_pointer (t_messageresponder *x, t_gpointer *gp)
+{
+    outlet_pointer (x->mr_outlet, gp);
+}
+
 static void messageresponder_list (t_messageresponder *x, t_symbol *s, int argc, t_atom *argv)
 {
     outlet_list (x->mr_outlet, argc, argv);
@@ -126,9 +131,21 @@ static void message_symbol (t_message *x, t_symbol *s)
     message_eval (x, 1, &a);
 }
 
+static void message_pointer (t_message *x, t_gpointer *gp)
+{
+    t_atom a; SET_POINTER (&a, gp);
+    
+    message_eval (x, 1, &a);
+}
+
 static void message_list (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     message_eval (x, argc, argv);
+}
+
+static void message_anything (t_message *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)message_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -309,8 +326,9 @@ void message_setup (void)
     class_addBang (c, (t_method)message_bang);
     class_addFloat (c, (t_method)message_float);
     class_addSymbol (c, (t_method)message_symbol);
+    class_addPointer (c, (t_method)message_pointer);
     class_addList (c, (t_method)message_list);
-    class_addAnything (c, (t_method)message_list);
+    class_addAnything (c, (t_method)message_anything);
 
     class_addClick (c, (t_method)message_click);
         
@@ -342,6 +360,7 @@ void message_setup (void)
     class_addBang (c, (t_method)messageresponder_bang);
     class_addFloat (c, (t_method)messageresponder_float);
     class_addSymbol (c, (t_method)messageresponder_symbol);
+    class_addPointer (c, (t_method)messageresponder_pointer);
     class_addList (c, (t_method)messageresponder_list);
     class_addAnything (c, (t_method)messageresponder_anything);
     
