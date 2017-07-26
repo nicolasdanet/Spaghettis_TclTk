@@ -80,15 +80,13 @@ typedef struct _typesethelper {
 
 static t_typesethelper *box_typesetAllocate (t_box *x, int a, int b, t_typesethelper *p)
 {
-    int isCanvas = gobj_isCanvas (cast_gobj (x->box_object));
-    
     /* Allocate enough space to insert as many line break as it could be required. */
     
     int size = PD_MAX (BOX_WIDTH_EMPTY, (2 * x->box_stringSizeInBytes)) + 1;
     
     p->p_x                      = a;
     p->p_y                      = b;
-    p->p_fontSize               = glist_getFontSize (isCanvas ? cast_glist (x->box_object) : x->box_owner);
+    p->p_fontSize               = glist_getFontSize (x->box_owner);
     p->p_fontWidth              = font_getHostFontWidth (p->p_fontSize);
     p->p_fontHeight             = font_getHostFontHeight (p->p_fontSize);
     p->p_numberOfCharacters     = u8_charnum (x->box_string, x->box_stringSizeInBytes);
@@ -124,6 +122,7 @@ static void box_typesetFree (t_typesethelper *p)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 /* Cut string to a given width in case of gatom. */
 /* Assumed that the asterisk (0x2A) is a single octet long. */
@@ -144,7 +143,9 @@ static void box_typesetEllipsis (t_box *x, t_typesethelper *p)
     x->box_stringSizeInBytes = t;
     x->box_string[x->box_stringSizeInBytes - 1] = '*';
     
-    PD_ASSERT (p->p_widthOfObject = u8_charnum (x->box_string, x->box_stringSizeInBytes));
+    /* Note that the string is unzeroed. */
+    
+    PD_ASSERT (p->p_widthOfObject == u8_charnum (x->box_string, x->box_stringSizeInBytes));
     
     p->p_numberOfCharacters = p->p_widthOfObject;
     //
@@ -290,8 +291,7 @@ static int box_typeset (t_box *x, t_typesethelper *p)
     if (p->p_widthOfObject) { p->p_numberOfColumns = p->p_widthOfObject; } 
     else {
         while (p->p_numberOfColumns < BOX_WIDTH_EMPTY) { 
-            p->p_typeset[p->p_typesetIndex++] = ' ';
-            p->p_numberOfColumns++;
+            p->p_typeset[p->p_typesetIndex++] = ' '; p->p_numberOfColumns++;
         }
     }
     
