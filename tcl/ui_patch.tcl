@@ -47,7 +47,6 @@ proc create {top width height coordinates isEditMode} {
                     -height $height \
                     -highlightthickness 0 \
                     -background "#ffffff" \
-                    -insertofftime 0 \
                     -insertbackground black \
                     -insertwidth 2
     
