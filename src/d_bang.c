@@ -86,7 +86,7 @@ void bang_tilde_setup (void)
             (t_newmethod)bang_tilde_new,
             (t_method)bang_tilde_free,
             sizeof (t_bang_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
             
     class_addDSP (c, (t_method)bang_tilde_dsp);

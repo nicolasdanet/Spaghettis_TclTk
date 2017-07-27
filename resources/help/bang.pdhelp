@@ -9,6 +9,7 @@
 #X obj 96 300 trigger;
 #X obj 48 252 print;
 #X msg 96 156 Is that launch the GBU-43/B MOAB?;
+#X obj 168 300 bang~;
 #X connect 0 0 1 0;
 #X connect 1 0 8 0;
 #X connect 9 0 1 0;
