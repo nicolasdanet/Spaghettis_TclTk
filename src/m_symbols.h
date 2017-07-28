@@ -387,6 +387,7 @@ extern t_symbol *sym_oscparse;
 extern t_symbol *sym_outlet;
 extern t_symbol *sym_outlet__tilde__;
 extern t_symbol *sym_p;
+extern t_symbol *sym_pak;
 extern t_symbol *sym_pack;
 extern t_symbol *sym_pad;
 extern t_symbol *sym_path;

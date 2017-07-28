@@ -387,6 +387,7 @@ t_symbol *sym_oscparse;
 t_symbol *sym_outlet;
 t_symbol *sym_outlet__tilde__;
 t_symbol *sym_p;
+t_symbol *sym_pak;
 t_symbol *sym_pack;
 t_symbol *sym_pad;
 t_symbol *sym_path;
@@ -979,6 +980,7 @@ void symbols_initialize (void)
     sym_outlet                                  = gensym ("outlet");
     sym_outlet__tilde__                         = gensym ("outlet~");
     sym_p                                       = gensym ("p");
+    sym_pak                                     = gensym ("pak");
     sym_pack                                    = gensym ("pack");
     sym_pad                                     = gensym ("pad");
     sym_path                                    = gensym ("path");
