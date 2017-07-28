@@ -162,8 +162,6 @@ void prepend_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addCreator ((t_newmethod)prepend_new, sym_p, A_GIMME, A_NULL);
-    
     class_addBang (c, (t_method)prepend_bang);
     class_addFloat (c, (t_method)prepend_float);
     class_addSymbol (c, (t_method)prepend_symbol);
