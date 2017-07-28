@@ -20,6 +20,11 @@ t_atom *atomoutlet_getAtom (t_atomoutlet *x)
     return &x->ao_atom;
 }
 
+t_inlet *atomoutlet_getInlet (t_atomoutlet *x)
+{
+    return x->ao_inlet;
+}
+
 t_outlet *atomoutlet_getOutlet (t_atomoutlet *x)
 {
     return x->ao_outlet;
@@ -126,7 +131,7 @@ void atomoutlet_makeFloat (t_atomoutlet *x, t_object *owner, int flags, t_symbol
     atomoutlet_init (x);
     SET_FLOAT (&x->ao_atom, f);
     if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, type ? type : &s_float); }
-    if (flags & ATOMOUTLET_INLET)  { inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom)); }
+    if (flags & ATOMOUTLET_INLET)  { x->ao_inlet  = inlet_newFloat (owner, ADDRESS_FLOAT (&x->ao_atom)); }
 }
 
 void atomoutlet_makeSymbol (t_atomoutlet *x, t_object *owner, int flags, t_symbol *type, t_symbol *s)
@@ -134,7 +139,7 @@ void atomoutlet_makeSymbol (t_atomoutlet *x, t_object *owner, int flags, t_symbo
     atomoutlet_init (x);
     SET_SYMBOL (&x->ao_atom, s);
     if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, type ? type : &s_symbol); }
-    if (flags & ATOMOUTLET_INLET)  { inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
+    if (flags & ATOMOUTLET_INLET)  { x->ao_inlet  = inlet_newSymbol (owner, ADDRESS_SYMBOL (&x->ao_atom)); }
 }
 
 void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int flags, t_symbol *type, t_gpointer *gp)
@@ -143,7 +148,7 @@ void atomoutlet_makePointer (t_atomoutlet *x, t_object *owner, int flags, t_symb
     SET_POINTER (&x->ao_atom, &x->ao_gpointer);
     if (gp) { gpointer_setByCopy (&x->ao_gpointer, gp); }
     if (flags & ATOMOUTLET_OUTLET) { x->ao_outlet = outlet_new (owner, type ? type : &s_pointer); }
-    if (flags & ATOMOUTLET_INLET)  { inlet_newPointer (owner, &x->ao_gpointer); }
+    if (flags & ATOMOUTLET_INLET)  { x->ao_inlet  = inlet_newPointer (owner, &x->ao_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

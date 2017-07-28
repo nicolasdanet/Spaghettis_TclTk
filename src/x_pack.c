@@ -87,7 +87,7 @@ static void pack_anything (t_pack *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *pack_newProceed (int argc, t_atom *argv)
+static void *pack_newProceed (t_symbol *s, int argc, t_atom *argv)
 {
     t_pack *x = (t_pack *)pd_new (pack_class);
     int i;
@@ -98,6 +98,11 @@ static void *pack_newProceed (int argc, t_atom *argv)
     for (i = 0; i < x->x_size; i++) {
         int create = (i != 0) ? ATOMOUTLET_INLET : ATOMOUTLET_NONE;
         atomoutlet_makeParsed (x->x_vector + i, cast_object (x), create, argv + i);
+        if (s == sym_pak) {
+            if (create == ATOMOUTLET_INLET) {
+                inlet_setHot (atomoutlet_getInlet (x->x_vector + i));
+            }
+        }
     }
     
     x->x_outlet = outlet_new (cast_object (x), &s_list);
@@ -107,12 +112,12 @@ static void *pack_newProceed (int argc, t_atom *argv)
 
 static void *pack_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc) { return pack_newProceed (argc, argv); }
+    if (argc) { return pack_newProceed (s, argc, argv); }
     else {
         t_atom a[2];
         SET_FLOAT (&a[0], (t_float)0.0);
         SET_FLOAT (&a[1], (t_float)0.0);
-        return pack_newProceed (2, a);
+        return pack_newProceed (s, 2, a);
     }
 }
 
@@ -140,7 +145,9 @@ void pack_setup (void)
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-            
+
+    class_addCreator ((t_newmethod)pack_new, sym_pak, A_GIMME, A_NULL);
+    
     class_addBang (c, (t_method)pack_bang);
     class_addFloat (c, (t_method)pack_float);
     class_addSymbol (c, (t_method)pack_symbol);

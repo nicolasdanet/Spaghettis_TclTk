@@ -17,6 +17,7 @@
 typedef struct _atomoutlet {
     t_atom      ao_atom;
     t_gpointer  ao_gpointer;
+    t_inlet     *ao_inlet;
     t_outlet    *ao_outlet;
     } t_atomoutlet;
 
@@ -54,6 +55,7 @@ static inline t_symbol *atomoutlet_parseAbbreviated (t_symbol *s)
 // MARK: -
 
 t_atom      *atomoutlet_getAtom         (t_atomoutlet *x);
+t_inlet     *atomoutlet_getInlet        (t_atomoutlet *x);
 t_outlet    *atomoutlet_getOutlet       (t_atomoutlet *x);
 t_gpointer  *atomoutlet_getPointer      (t_atomoutlet *x);
 

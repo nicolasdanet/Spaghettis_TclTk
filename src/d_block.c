@@ -224,10 +224,7 @@ void block_tilde_setup (void)
             A_GIMME,
             A_NULL);
             
-    class_addCreator ((t_newmethod)block_newSwitch,
-            sym_switch__tilde__, 
-            A_GIMME,
-            A_NULL);
+    class_addCreator ((t_newmethod)block_newSwitch, sym_switch__tilde__, A_GIMME, A_NULL);
             
     class_addDSP (c, (t_method)block_dsp);
     class_addFloat (c, (t_method)block_float);

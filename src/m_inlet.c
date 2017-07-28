@@ -183,17 +183,28 @@ static void inlet_anything (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
 
 static void inlet_forFloat (t_inlet *x, t_float f)
 {
-    *(x->i_un.i_float) = f;
+    *(x->i_un.i_float) = f; if (x->i_hot) { pd_bang (cast_pd (x->i_owner)); }
 }
 
 static void inlet_forSymbol (t_inlet *x, t_symbol *s)
 {
-    *(x->i_un.i_symbol) = s;
+    *(x->i_un.i_symbol) = s; if (x->i_hot) { pd_bang (cast_pd (x->i_owner)); }
 }
 
 static void inlet_forPointer (t_inlet *x, t_gpointer *gp)
 {
-    gpointer_setByCopy (x->i_un.i_pointer, gp);
+    gpointer_setByCopy (x->i_un.i_pointer, gp); if (x->i_hot) { pd_bang (cast_pd (x->i_owner)); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void inlet_setHot (t_inlet *x)
+{
+    t_class *c = pd_class (x);
+    
+    if (c == floatinlet_class || c == symbolinlet_class || c == pointerinlet_class) { x->i_hot = 1; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -206,9 +217,12 @@ t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
 {
     t_inlet *x = (t_inlet *)pd_new (floatinlet_class);
     
+    PD_ASSERT (owner);
+    
     x->i_owner          = owner;
     x->i_receiver       = NULL;
     x->i_type           = &s_float;
+    x->i_hot            = 0;
     x->i_un.i_float     = fp;
     x->i_next           = NULL;
     
@@ -221,9 +235,12 @@ t_inlet *inlet_newSymbol (t_object *owner, t_symbol **sp)
 {
     t_inlet *x = (t_inlet *)pd_new (symbolinlet_class);
     
+    PD_ASSERT (owner);
+    
     x->i_owner          = owner;
     x->i_receiver       = NULL;
     x->i_type           = &s_symbol;
+    x->i_hot            = 0;
     x->i_un.i_symbol    = sp;
     x->i_next           = NULL;
     
@@ -236,9 +253,12 @@ t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
 {
     t_inlet *x = (t_inlet *)pd_new (pointerinlet_class);
     
+    PD_ASSERT (owner);
+    
     x->i_owner          = owner;
     x->i_receiver       = NULL;
     x->i_type           = &s_pointer;
+    x->i_hot            = 0;
     x->i_un.i_pointer   = gp;
     x->i_next           = NULL;
     
@@ -275,6 +295,8 @@ t_inlet *inlet_newSignal (t_object *owner)
 t_inlet *inlet_new (t_object *owner, t_pd *receiver, t_symbol *type, t_symbol *method)
 {
     t_inlet *x = (t_inlet *)pd_new (inlet_class);
+    
+    PD_ASSERT (owner);
     
     x->i_owner    = owner;
     x->i_receiver = receiver;
