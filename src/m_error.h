@@ -74,7 +74,6 @@ void error_canNotMake                       (int argc, t_atom *argv);
 // MARK: -
 
 void error_invalidArguments                 (t_symbol *, int argc, t_atom *argv);
-void error_invalidArgumentsForMethod        (t_symbol *, t_symbol *, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -105,7 +105,9 @@ static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_
     int n = 0;
     
     if (!instance_isMakerObject (x)) { *ip = (t_int)x; ip++; m++; }
-    if (argc > PD_ARGUMENTS) { PD_BUG; argc = PD_ARGUMENTS; }
+    if (argc > PD_ARGUMENTS) {
+        warning_unusedArguments (s, argc - PD_ARGUMENTS, argv + PD_ARGUMENTS); argc = PD_ARGUMENTS;
+    }
         
     while ((t = *p++)) {
     //
@@ -269,7 +271,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
 
-    error_invalidArgumentsForMethod (class_getName (c), s, argc, argv);
+    error_invalidArguments (s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
