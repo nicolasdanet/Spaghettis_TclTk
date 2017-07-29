@@ -98,13 +98,10 @@ static void glist_updateCursor (t_glist *glist, int type)
 
 static void glist_makeLineProceed (t_glist *glist, int a, int b, int end)
 {
-    int startX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
-    int startY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
-    
     t_rectangle r1;
     t_rectangle r2;
     
-    t_gobj *t1 = glist_objectHit (glist, startX, startY, &r1);
+    t_gobj *t1 = drag_getObject (editor_getDrag (glist_getEditor (glist)));
     t_gobj *t2 = glist_objectHit (glist, a, b, &r2);
     
     if (end) { glist_eraseTemporary (glist); }
@@ -122,9 +119,12 @@ static void glist_makeLineProceed (t_glist *glist, int a, int b, int end)
     int numberOfOutlets = object_getNumberOfOutlets (o1);
     int numberOfInlets  = object_getNumberOfInlets (o2);
     
+    gobj_getRectangle (t1, glist, &r1);
+    
     if (numberOfOutlets && numberOfInlets) {
     //
-    int k1 = inlet_getClosest (startX, numberOfOutlets, &r1);
+    int k  = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
+    int k1 = inlet_getClosest (k, numberOfOutlets, &r1);
     int k2 = inlet_getClosest (a, numberOfInlets, &r2);
 
     if (!glist_lineExist (glist, o1, k1, o2, k2)) {
@@ -310,7 +310,7 @@ static void glist_mouseOverEditDrag (t_glist *glist, t_box *box, int a, int b, i
     int t1 = rectangle_getTopLeftX (r);
     int t2 = rectangle_getTopLeftY (r);
     box_mouse (box, a - t1, b - t2, flag);
-    editor_startAction (e, ACTION_DRAG, t1, t2);
+    editor_startAction (e, ACTION_DRAG, t1, t2, NULL);
 }
 
 static void glist_mouseOverEditShift (t_glist *glist, t_gobj *y, int a, int b, int clicked, t_rectangle *r)
@@ -357,7 +357,7 @@ static int glist_mouseOverEditResize (t_glist *glist, t_gobj *y, int a, int b, i
             int t1 = rectangle_getTopLeftX (r);
             int t2 = rectangle_getTopLeftY (r);
             glist_objectSelectIfNotSelected (glist, y);
-            editor_startAction (e, ACTION_RESIZE, t1, t2);
+            editor_startAction (e, ACTION_RESIZE, t1, t2, y);
         }
     }
     
@@ -386,7 +386,7 @@ static int glist_mouseOverEditLine (t_glist *glist, t_gobj *y, int a, int b, int
             int t1 = hotspot;
             int t2 = rectangle_getBottomRightY (r);
             int action = object_isSignalOutlet (cast_object (y), outlet) ? ACTION_SIGNAL : ACTION_LINE;
-            editor_startAction (e, action, t1, t2);
+            editor_startAction (e, action, t1, t2, y);
             glist_drawTemporary (glist, t1, t2);
         }
     }
@@ -407,7 +407,7 @@ static void glist_mouseOverEditMove (t_glist *glist, t_gobj *y, int a, int b, in
     
     if (!isText) {
         glist_objectSelectIfNotSelected (glist, y);
-        editor_startAction (e, ACTION_MOVE, a, b);
+        editor_startAction (e, ACTION_MOVE, a, b, y);
         
     } else {
         glist_mouseOverEditDrag (glist, box, a, b, (m & MODIFIER_DOUBLE) ? BOX_DOUBLE : BOX_DOWN, r);
@@ -510,7 +510,9 @@ static void glist_mouseLasso (t_glist *glist, int a, int b, int m)
     if (!(m & MODIFIER_SHIFT)) { recreated = glist_deselectAll (glist); }
     
     if (!recreated) {
-        glist_drawLasso (glist, a, b); editor_startAction (glist_getEditor (glist), ACTION_REGION, a, b);
+    //
+    glist_drawLasso (glist, a, b); editor_startAction (glist_getEditor (glist), ACTION_REGION, a, b, NULL);
+    //
     }
 }
 

@@ -150,9 +150,9 @@ static inline void editor_setSelectedBoxDirty (t_editor *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline void editor_startAction (t_editor *x, int n, int a, int b)
+static inline void editor_startAction (t_editor *x, int n, int a, int b, t_gobj *y)
 {
-    x->e_action = n; drag_begin (editor_getDrag (x), a, b);
+    x->e_action = n; drag_begin (editor_getDrag (x), a, b); drag_setObject (editor_getDrag (x), y);
 }
 
 static inline void editor_resetAction (t_editor *x)

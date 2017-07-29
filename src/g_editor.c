@@ -199,7 +199,7 @@ void editor_motionSet (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b
 {
     PD_ASSERT (callback);
     
-    editor_startAction (x, ACTION_PASS, a, b);
+    editor_startAction (x, ACTION_PASS, a, b, y);
     
     x->e_grabbed  = y;
     x->e_fnMotion = callback;

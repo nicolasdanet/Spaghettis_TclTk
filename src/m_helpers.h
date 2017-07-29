@@ -61,6 +61,7 @@ typedef struct _drag {
     int d_accumulateX;
     int d_accumulateY;
     int d_movedOnce;
+    t_gobj *d_object;
     } t_drag;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -75,6 +76,7 @@ static inline void drag_begin (t_drag *x, int a, int b)
     x->d_accumulateX = 0;
     x->d_accumulateY = 0;
     x->d_movedOnce   = 0;
+    x->d_object      = NULL;
 }
 
 static inline void drag_setEnd (t_drag *x, int a, int b)
@@ -103,6 +105,20 @@ static inline int drag_hasMovedOnce (t_drag *x)
     if (drag_hasMoved (x) && !x->d_movedOnce) { x->d_movedOnce = 1; return 1; }
     
     return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline t_gobj *drag_getObject (t_drag *x)
+{
+    return x->d_object;
+}
+
+static inline void drag_setObject (t_drag *x, t_gobj *y)
+{
+    x->d_object = y;
 }
 
 // -----------------------------------------------------------------------------------------------------------
