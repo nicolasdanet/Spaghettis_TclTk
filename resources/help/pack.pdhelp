@@ -19,7 +19,7 @@
 #X f 19;
 #X text 12 72 Combine several atoms into one list. The creation arguments determines the number of inlets.;
 #X f 49;
-#N canvas 706 112 610 545 more 0;
+#N canvas 706 112 620 549 more 0;
 #X floatatom 84 60 5 0 0 1 - - -;
 #X f 5;
 #X obj 48 204 print;
@@ -45,6 +45,11 @@
 #X f 5;
 #X obj 48 492 print;
 #X text 24 276 Alternate version with all the inlets hot.;
+#X floatatom 432 324 5 0 0 1 - - -;
+#X f 5;
+#X obj 264 492 print;
+#X obj 264 444 pak set hupla hup f;
+#X msg 324 324 symbol hup;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
 #X connect 4 0 2 0;
@@ -57,6 +62,9 @@
 #X connect 12 0 11 0;
 #X connect 13 0 11 1;
 #X connect 14 0 11 2;
+#X connect 17 0 19 3;
+#X connect 19 0 18 0;
+#X connect 20 0 19 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 276 348 pd more;
 #X connect 1 0 13 2;
