@@ -202,22 +202,23 @@ static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int 
 
 static void glist_actionResize (t_glist *glist, int a, int b)
 {
+    t_gobj *y = drag_getObject (editor_getDrag (glist_getEditor (glist)));
+    
     t_rectangle r;
     
-    /* Points below are the top left coordinates of the resized object. */
-    
-    int startX = drag_getStartX (editor_getDrag (glist_getEditor (glist)));
-    int startY = drag_getStartY (editor_getDrag (glist_getEditor (glist)));
-    
-    t_gobj *y  = glist_objectHit (glist, startX, startY, &r);
+    gobj_getRectangle (y, glist, &r);
 
     if (y && cast_objectIfConnectable (y)) {
-        if (object_isViewedAsBox (cast_object (y))) { glist_actionResizeBox (glist, y, a - startX); }
-        else {
-            int c = rectangle_getBottomRightX (&r);
-            int d = rectangle_getBottomRightY (&r);
-            glist_actionResizeGraph (glist, y, a - c, b - d);
-        }
+    //
+    if (object_isViewedAsBox (cast_object (y))) {
+        glist_actionResizeBox (glist, y, a - rectangle_getTopLeftX (&r));
+        
+    } else {
+        int c = rectangle_getBottomRightX (&r);
+        int d = rectangle_getBottomRightY (&r);
+        glist_actionResizeGraph (glist, y, a - c, b - d);
+    }
+    //
     }
 }
 
@@ -354,10 +355,8 @@ static int glist_mouseOverEditResize (t_glist *glist, t_gobj *y, int a, int b, i
     
         if (!clicked) { glist_updateCursor (glist, CURSOR_RESIZE); }
         else {
-            int t1 = rectangle_getTopLeftX (r);
-            int t2 = rectangle_getTopLeftY (r);
             glist_objectSelectIfNotSelected (glist, y);
-            editor_startAction (e, ACTION_RESIZE, t1, t2, y);
+            editor_startAction (e, ACTION_RESIZE, a, b, y);
         }
     }
     
@@ -511,7 +510,8 @@ static void glist_mouseLasso (t_glist *glist, int a, int b, int m)
     
     if (!recreated) {
     //
-    glist_drawLasso (glist, a, b); editor_startAction (glist_getEditor (glist), ACTION_REGION, a, b, NULL);
+    glist_drawLasso (glist, a, b);
+    editor_startAction (glist_getEditor (glist), ACTION_REGION, a, b, NULL);
     //
     }
 }
