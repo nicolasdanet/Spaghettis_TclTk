@@ -77,7 +77,7 @@ static inline void drag_begin (t_drag *x, int a, int b)
     x->d_movedOnce   = 0;
 }
 
-static inline void drag_set (t_drag *x, int a, int b)
+static inline void drag_setEnd (t_drag *x, int a, int b)
 {
     x->d_endX = a;
     x->d_endY = b;

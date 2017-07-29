@@ -266,7 +266,7 @@ void glist_action (t_glist *glist, int a, int b, int m)
     //
     }
     
-    drag_set (editor_getDrag (e), a, b);
+    drag_setEnd (editor_getDrag (e), a, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
