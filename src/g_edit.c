@@ -204,12 +204,12 @@ static void glist_actionResize (t_glist *glist, int a, int b)
 {
     t_gobj *y = drag_getObject (editor_getDrag (glist_getEditor (glist)));
     
+    if (y && cast_objectIfConnectable (y)) {
+    //
     t_rectangle r;
     
     gobj_getRectangle (y, glist, &r);
-
-    if (y && cast_objectIfConnectable (y)) {
-    //
+    
     if (object_isViewedAsBox (cast_object (y))) {
         glist_actionResizeBox (glist, y, a - rectangle_getTopLeftX (&r));
         
