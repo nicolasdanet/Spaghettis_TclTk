@@ -249,6 +249,7 @@ extern t_symbol *sym_delread__tilde__;
 extern t_symbol *sym_delread4__tilde__;
 extern t_symbol *sym_delwrite__tilde__;
 extern t_symbol *sym_deselect;
+extern t_symbol *sym_dial;
 extern t_symbol *sym_dirty;
 extern t_symbol *sym_disconnect;
 extern t_symbol *sym_displace;

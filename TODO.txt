@@ -10,12 +10,13 @@ Forbid the audio to glitch!
 
 ###
 
+Add "Clear Console" item in menu.
 Extend the search path to be recursive.
 Append recent files in preferences.
 Improve consistency for properties (i.e Atom / IEM).
 Adapt all objects to be resizable.
 Add unlimited undo mechanism.
-Allow to select more that one line.
+Allow to select more that one cord.
 Consider an "Encapsulate" feature.
 
 ###

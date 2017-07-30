@@ -818,7 +818,9 @@ void dial_setup (void)
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-        
+    
+    class_addCreator ((t_newmethod)dial_new, sym_dial, A_GIMME, A_NULL);
+    
     class_addBang (c, (t_method)dial_bang);
     class_addFloat (c, (t_method)dial_float);
     class_addList (c, (t_method)dial_list);
