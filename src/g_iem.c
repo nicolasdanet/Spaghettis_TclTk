@@ -283,9 +283,9 @@ void iemgui_setLabelFont (void *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_iem *iem = cast_iem (x);
     
-    if (argc > 1) {
+    if (argc) {
     //
-    int f = (int)atom_getFloatAtIndex (1, argc, argv);
+    int f = (int)atom_getFloatAtIndex (argc > 1 ? 1 : 0, argc, argv);
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
     
