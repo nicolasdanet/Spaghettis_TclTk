@@ -1,4 +1,4 @@
-#N canvas 563 129 597 581 12;
+#N canvas 527 113 597 581 12;
 #N canvas 87 121 654 658 about-lists 0;
 #X obj 50 629 print message;
 #X msg 50 442 list x.wav 44100;
@@ -32,4 +32,5 @@
 #X obj 204 144 list append;
 #X obj 204 204 list trim;
 #X obj 324 144 pack;
+#X obj 252 336 1 2 3 4;
 #X coords 0 0 1 1 250 175 0 0 0;
