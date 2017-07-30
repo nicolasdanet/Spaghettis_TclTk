@@ -120,7 +120,8 @@ static void dial_setString (t_dial *x)
 
 static int dial_hasKnob (t_dial *x, t_glist *glist)
 {
-    int t = (x->x_gui.iem_height >= IEM_DIAL_SHOW_KNOB);
+    int k = dial_getWidthDigits (x);
+    int t = (x->x_gui.iem_height >= PD_MAX (IEM_DIAL_SHOW_KNOB, k));
     
     if (x->x_hasKnob != t) {
     
