@@ -227,9 +227,16 @@ void editor_motionProceed (t_editor *x, int a, int b, int m)
     int deltaX = a - endX;
     int deltaY = b - endY;
     
-    if (x->e_fnMotion) { (*x->e_fnMotion) (cast_pd (x->e_grabbed), deltaX, deltaY, m); }
+    t_rectangle r;
+    
+    gobj_getRectangle (x->e_grabbed, x->e_owner, &r);
+    
+    if (rectangle_containsX (&r, a)) { m |= MODIFIER_INSIDE_X; }
+    if (rectangle_containsY (&r, b)) { m |= MODIFIER_INSIDE_Y; }
+    
+    if (!x->e_fnMotion) { PD_BUG; }
     else { 
-        PD_BUG;
+        (*x->e_fnMotion) (cast_pd (x->e_grabbed), deltaX, deltaY, m);
     }
 }
 

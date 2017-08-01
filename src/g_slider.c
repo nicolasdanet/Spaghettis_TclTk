@@ -431,6 +431,12 @@ static void slider_click (t_slider *x, t_symbol *s, int argc, t_atom *argv)
 
 static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float modifier)
 {
+    int containsX = (int)modifier & MODIFIER_INSIDE_X;
+    int containsY = (int)modifier & MODIFIER_INSIDE_Y;
+    int k = x->x_isSteadyOnClick || (x->x_isVertical && containsY) || (!x->x_isVertical && containsX);
+    
+    if (k) {
+    //
     int old = x->x_position;
     int t = old;
     int numberOfSteps = slider_getNumberOfSteps (x);
@@ -448,6 +454,8 @@ static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float 
         x->x_floatValue = slider_getValue (x);
         (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
         slider_out (x);
+    }
+    //
     }
 }
 

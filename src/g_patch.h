@@ -46,7 +46,9 @@ enum {
     MODIFIER_CTRL       = 2,    /* Command key on Mac OS X. */
     MODIFIER_ALT        = 4,
     MODIFIER_RIGHT      = 8,
-    MODIFIER_DOUBLE     = 16
+    MODIFIER_DOUBLE     = 16,
+    MODIFIER_INSIDE_X   = 32,
+    MODIFIER_INSIDE_Y   = 64
     };
 
 enum {

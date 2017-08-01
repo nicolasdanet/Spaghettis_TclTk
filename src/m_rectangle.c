@@ -174,13 +174,28 @@ void rectangle_addPoint (t_rectangle *r, int x, int y)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int rectangle_containsX (t_rectangle *r, int x)
+{
+    if (r->rect_isNothing)                  { return 0; }
+    else if (x < r->rect_topLeftX)          { return 0; }
+    else if (x > r->rect_bottomRightX)      { return 0; }
+    
+    return 1;
+}
+
+int rectangle_containsY (t_rectangle *r, int y)
+{
+    if (r->rect_isNothing)                  { return 0; }
+    else if (y < r->rect_topLeftY)          { return 0; }
+    else if (y > r->rect_bottomRightY)      { return 0; }
+    
+    return 1;
+}
+
 int rectangle_containsPoint (t_rectangle *r, int x, int y)
 {
-    if (r->rect_isNothing)             { return 0; }
-    else if (x < r->rect_topLeftX)     { return 0; }
-    else if (x > r->rect_bottomRightX) { return 0; }
-    else if (y < r->rect_topLeftY)     { return 0; }
-    else if (y > r->rect_bottomRightY) { return 0; }
+    if (!rectangle_containsX (r, x))        { return 0; }
+    else if (!rectangle_containsY (r, y))   { return 0; }
     
     return 1;
 }

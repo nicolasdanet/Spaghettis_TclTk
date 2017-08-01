@@ -220,6 +220,8 @@ void    rectangle_addRectangle                  (t_rectangle *r, t_rectangle *to
 void    rectangle_addPoint                      (t_rectangle *r, int x, int y);
 void    rectangle_enlarge                       (t_rectangle *r, int n);
 void    rectangle_enlargeHeight                 (t_rectangle *r, int n);
+int     rectangle_containsX                     (t_rectangle *r, int x);
+int     rectangle_containsY                     (t_rectangle *r, int y);
 int     rectangle_containsPoint                 (t_rectangle *r, int x, int y);
 int     rectangle_containsRectangle             (t_rectangle *r, t_rectangle *isContained);
 
