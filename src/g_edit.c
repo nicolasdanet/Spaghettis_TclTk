@@ -251,8 +251,6 @@ void glist_action (t_glist *glist, int a, int b, int m)
     t_box *box  = editor_getSelectedBox (e);
     int startX  = drag_getStartX (editor_getDrag (e));
     int startY  = drag_getStartY (editor_getDrag (e));
-    int endX    = drag_getEndX (editor_getDrag (e));
-    int endY    = drag_getEndY (editor_getDrag (e));
     
     switch (editor_getAction (e)) {
     //
@@ -260,7 +258,7 @@ void glist_action (t_glist *glist, int a, int b, int m)
     case ACTION_LINE    :
     case ACTION_SIGNAL  : glist_makeLineBegin (glist, a, b);                    break;
     case ACTION_REGION  : glist_selectLassoBegin (glist, a, b);                 break;
-    case ACTION_PASS    : editor_motionProceed (e, a - endX, b - endY, m);      break; 
+    case ACTION_PASS    : editor_motionProceed (e, a, b, m);                    break;
     case ACTION_DRAG    : box_mouse (box, a - startX, b - startY, BOX_DRAG);    break;
     case ACTION_RESIZE  : glist_actionResize (glist, a, b);                     break;
     default             : PD_BUG;

@@ -220,8 +220,13 @@ void editor_motionUnset (t_editor *x, t_gobj *y)
     if (!x->e_grabbed || x->e_grabbed == y) { editor_motionReset (x); }
 }
 
-void editor_motionProceed (t_editor *x, int deltaX, int deltaY, int m)
+void editor_motionProceed (t_editor *x, int a, int b, int m)
 {
+    int endX = drag_getEndX (editor_getDrag (x));
+    int endY = drag_getEndY (editor_getDrag (x));
+    int deltaX = a - endX;
+    int deltaY = b - endY;
+    
     if (x->e_fnMotion) { (*x->e_fnMotion) (cast_pd (x->e_grabbed), deltaX, deltaY, m); }
     else { 
         PD_BUG;
