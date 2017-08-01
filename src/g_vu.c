@@ -391,6 +391,8 @@ static void vu_drawConfig (t_vu *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x,
                     x->x_thickness - 1);
+    
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 // -----------------------------------------------------------------------------------------------------------
