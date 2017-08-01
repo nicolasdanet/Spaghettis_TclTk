@@ -299,7 +299,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                     x->x_thickness - 1,
                     x->x_gui.iem_colorBackground,
                     x);
-    gui_vAdd ("%s.c create text %d %d -text {%s} -anchor w"              // --
+    gui_vAdd ("%s.c create text %d %d -text {%s} -anchor w"                 // --
                     " -font [::getFont %d] -fill #%06x -tags %lxLABEL\n",   // --
                     glist_getTagAsString (view),
                     a + x->x_gui.iem_labelX,
