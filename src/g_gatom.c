@@ -106,12 +106,14 @@ static void gatom_drawJob (t_gobj *z, t_glist *glist)
     
     box_retext (box_fetch (x->a_owner, cast_object (x)));
     
+    if (object_getWidth (cast_object (z)) == 0) {
     if (x->a_label != &s_) {
     if (x->a_position == ATOM_LABEL_RIGHT) {
     //
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
     //
+    }
     }
     }
 }
