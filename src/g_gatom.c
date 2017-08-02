@@ -56,6 +56,7 @@ struct _gatom {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void text_behaviorGetRectangle      (t_gobj *, t_glist *, t_rectangle *);
 void text_behaviorDisplaced         (t_gobj *, t_glist *, int, int);
@@ -236,6 +237,21 @@ static void gatom_set (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     }
 
     gatom_update (x);
+    //
+    }
+}
+
+static void gatom_range (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (gatom_isFloat (x)) {
+    //
+    t_float minimum = atom_getFloatAtIndex (0, argc, argv);
+    t_float maximum = atom_getFloatAtIndex (1, argc, argv);
+    
+    x->a_lowRange   = PD_MIN (minimum, maximum);
+    x->a_highRange  = PD_MAX (minimum, maximum);
+    
+    gatom_set (x, NULL, 1, &x->a_atom);
     //
     }
 }
@@ -584,6 +600,7 @@ void gatom_setup (void)
         
     class_addMethod (c, (t_method)gatom_set,        sym_set,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)gatom_fromDialog, sym__gatomdialog,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_range,      sym_range,          A_GIMME, A_NULL);
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setSaveFunction (c, gatom_functionSave);

@@ -1,32 +1,60 @@
-#N canvas 138 65 675 508 12;
-#X floatatom 107 9 0 0 0;
-#X text 155 10 atoms (number boxes);
-#X floatatom 38 85 0 0 0;
-#X floatatom 38 125 0 0 0;
-#X msg 51 260 set 45;
-#X floatatom 51 288 0 0 0;
-#X floatatom 51 317 0 0 0;
-#X text 84 40 Number boxes allow you to display numbers or to enter
-numbers using the mouse and keyboard. When a number arrives at the
-number box's inlet \, it is displayed and sent to the outlet. You can
-click on a number box and drag upward or downward to change the value
-continuously.;
-#X text 88 130 You can shift-click and drag to change the number by
-hundredths instead of units. Alt clicking toggles the value between
-0 and the last nonzero value.;
-#X text 83 184 You can also type in values by clicking and typing a
-number followed by "enter.";
-#X text 30 220 the "set" message sets the number box's value but does
-not send it to the outlet.;
-#X text 423 482 updated for Pd version 0.34;
-#X text 39 339 You can set the width of the box by right-clicking and
-choosing "properties." By default the width is 5 characters. If you
-select a width of 0 \, the number box will grow as needed to hold the
-number--BUT BEWARE \, THIS IS EXPENSIVE IN CPU TIME. In a production
-patch \, you'll want to set a specific width.;
-#X floatatom 547 439 1 0 0;
-#X text 41 438 A width of one gives a clickable toggle switch ala Max:
-;
-#X connect 2 0 3 0;
+#N canvas 512 247 474 340 12;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 gatom;
+#X obj 216 216 s \$0-to;
+#X obj 216 240 r \$0-from;
+#X floatatom 36 240 5 0 0 1 - #0-to #0-from;
+#X f 5;
+#X obj 36 288 print;
+#N canvas 841 22 492 699 more 0;
+#X symbolatom 36 120 10 0 0 1 - - -;
+#X f 10;
+#X msg 36 48 set mouse;
+#X obj 36 156 print;
+#X text 12 12 It can be a symbol instead of a number.;
+#X msg 36 240 range -10 10;
+#X floatatom 36 336 5 0 0 1 - - -;
+#X f 5;
+#X obj 36 372 print;
+#X msg 168 240 range 0 0;
+#X text 12 204 Hold down the shift key for an '1/100'increment.;
+#X floatatom 156 648 0 0 0 1 automatic - -;
+#X floatatom 36 648 4 0 0 1 - - -;
+#X f 4;
+#X floatatom 84 648 6 0 0 1 - - -;
+#X f 6;
+#X obj 36 576 t f;
+#X obj 36 504 random;
+#X obj 36 468 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X floatatom 108 504 5 0 0 1 - - -;
+#X f 5;
+#X text 12 432 Numbers can be displayed with fixed or variable size.;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
 #X connect 4 0 5 0;
 #X connect 5 0 6 0;
+#X connect 7 0 5 0;
+#X connect 12 0 10 0;
+#X connect 12 0 11 0;
+#X connect 12 0 9 0;
+#X connect 13 0 12 0;
+#X connect 14 0 13 0;
+#X connect 15 0 12 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 384 288 pd more;
+#X msg 36 120 bang;
+#X msg 96 120 set 3.14;
+#X msg 192 120 64;
+#X floatatom 216 180 5 0 0 1 - - -;
+#X f 5;
+#X floatatom 216 288 5 0 0 1 - - -;
+#X f 5;
+#X text 12 72 Interactive box that contains an atom.;
+#X connect 4 0 12 0;
+#X connect 5 0 6 0;
+#X connect 8 0 5 0;
+#X connect 9 0 5 0;
+#X connect 10 0 5 0;
+#X connect 11 0 3 0;
+#X coords 0 0 1 1 250 175 0 0 0;
