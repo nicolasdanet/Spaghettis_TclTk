@@ -32,6 +32,12 @@ typedef struct _prepend {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void prepend_free (t_prepend *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void prepend_proceed (t_prepend *x, int argc, t_atom *argv)
 {
     int n = x->x_size + argc;
@@ -110,7 +116,7 @@ static void prepend_set (t_prepend *x, t_symbol *dummy, int argc, t_atom *argv)
 {
     int i;
     
-    if (x->x_vector) { PD_MEMORY_FREE (x->x_vector); }
+    prepend_free (x);
     
     x->x_size   = argc;
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
