@@ -361,6 +361,7 @@ extern t_symbol *sym_msg;
 extern t_symbol *sym_mtof;
 extern t_symbol *sym_mtof__tilde__;
 extern t_symbol *sym_n;
+extern t_symbol *sym_name;
 extern t_symbol *sym_namecanvas;
 extern t_symbol *sym_nbx;
 extern t_symbol *sym_near;

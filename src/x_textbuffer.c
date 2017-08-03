@@ -117,6 +117,8 @@ void textbuffer_read (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     if (buffer_fileRead (x->tb_buffer, name, x->tb_owner)) { error_failsToRead (name); }
     textbuffer_update (x);
     //
+    } else {
+        error_unspecified (sym_text, sym_name);
     }
 }
 
@@ -130,6 +132,8 @@ void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     t_error err = path_withDirectoryAndName (t, PD_STRING, directory, name->s_name);
     if (err || buffer_fileWrite (x->tb_buffer, gensym (t), &s_)) { error_failsToWrite (name); }
     //
+    } else {
+        error_unspecified (sym_text, sym_name);
     }
 }
 

@@ -361,6 +361,7 @@ t_symbol *sym_msg;
 t_symbol *sym_mtof;
 t_symbol *sym_mtof__tilde__;
 t_symbol *sym_n;
+t_symbol *sym_name;
 t_symbol *sym_namecanvas;
 t_symbol *sym_nbx;
 t_symbol *sym_near;
@@ -955,6 +956,7 @@ void symbols_initialize (void)
     sym_mtof                                    = gensym ("mtof");
     sym_mtof__tilde__                           = gensym ("mtof~");
     sym_n                                       = gensym ("n");
+    sym_name                                    = gensym ("name");
     sym_namecanvas                              = gensym ("namecanvas");
     sym_nbx                                     = gensym ("nbx");
     sym_near                                    = gensym ("near");
