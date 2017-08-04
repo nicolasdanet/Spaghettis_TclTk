@@ -20,7 +20,6 @@ static t_class *textfromlist_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 typedef struct _texttolist {
     t_textclient    x_textclient;           /* Must be the first. */
@@ -33,6 +32,7 @@ typedef struct _textfromlist {
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
 {
@@ -114,6 +114,11 @@ static void textfromlist_list (t_textfromlist *x, t_symbol *s, int argc, t_atom 
     } else { error_undefined (sym_text__space__fromlist, sym_text); } 
 }
 
+static void textfromlist_anything (t_textfromlist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)textfromlist_list, s, argc, argv);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -144,6 +149,7 @@ void textlist_setup (void)
             A_NULL);
             
     class_addList (c, (t_method)textfromlist_list);
+    class_addAnything (c, (t_method)textfromlist_anything);
     
     class_setHelpName (c, sym_text);
     
