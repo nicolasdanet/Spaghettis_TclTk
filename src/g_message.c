@@ -45,12 +45,12 @@ static t_class *messageresponder_class;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 int atom_copyAtomsExpandedWithArguments (t_atom *, int, t_atom *, int, t_glist *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void messageresponder_bang (t_messageresponder *x)
 {
@@ -182,6 +182,7 @@ static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
     buffer_clear (object_getBuffer (cast_object (x)));
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
+    glist_updateLinesForObject (x->m_owner, cast_object (x));
 }
 
 static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
@@ -189,12 +190,14 @@ static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     buffer_appendSemicolon (object_getBuffer (cast_object (x)));
     box_retext (box_fetch (x->m_owner, &x->m_obj));
+    glist_updateLinesForObject (x->m_owner, cast_object (x));
 }
 
 static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
+    glist_updateLinesForObject (x->m_owner, cast_object (x));
 }
 
 static void message_addComma (t_message *x)
@@ -203,6 +206,7 @@ static void message_addComma (t_message *x)
     
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
+    glist_updateLinesForObject (x->m_owner, cast_object (x));
 }
 
 static void message_addSemicolon (t_message *x)
@@ -217,6 +221,7 @@ static void message_addDollar (t_message *x, t_float f)
     
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
+    glist_updateLinesForObject (x->m_owner, cast_object (x));
 }
 
 static void message_addDollarSymbol (t_message *x, t_symbol *s)
@@ -229,6 +234,7 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
 
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
+    glist_updateLinesForObject (x->m_owner, cast_object (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
