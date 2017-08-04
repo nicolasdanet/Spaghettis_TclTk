@@ -89,6 +89,11 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
     } else { error_undefined (sym_text__space__set, sym_text); }
 }
 
+static void textset_anything (t_textset *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)textset_list, s, argc, argv);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -143,6 +148,7 @@ void textset_setup (void)
             A_NULL);
             
     class_addList (c, (t_method)textset_list);
+    class_addAnything (c, (t_method)textset_anything);
     
     class_setHelpName (c, sym_text);
     
