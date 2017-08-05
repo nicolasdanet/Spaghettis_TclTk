@@ -26,7 +26,8 @@ typedef struct _textdefine {
     int             x_keep;
     t_symbol        *x_name;
     t_scalar        *x_scalar;
-    t_outlet        *x_outlet;
+    t_outlet        *x_outletLeft;
+    t_outlet        *x_outletRight;
     } t_textdefine;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -56,7 +57,7 @@ void textdefine_initialize (void)
 void textdefine_bang (t_textdefine *x)
 {
     gpointer_setAsScalar (&x->x_gpointer, textbuffer_getView (&x->x_textbuffer), x->x_scalar);
-    outlet_pointer (x->x_outlet, &x->x_gpointer);
+    outlet_pointer (x->x_outletLeft, &x->x_gpointer);
 }
 
 void textdefine_set (t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
@@ -70,6 +71,19 @@ static void textdefine_clear (t_textdefine *x)
     buffer_clear (textbuffer_getBuffer (&x->x_textbuffer));
     textbuffer_update (&x->x_textbuffer);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void textdefine_modified (t_textdefine *x)
+{
+    outlet_symbol (x->x_outletRight, sym_updated);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void textdefine_functionSave (t_gobj *z, t_buffer *b)
 {
@@ -131,7 +145,8 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
         PD_UNUSED (err); PD_ASSERT (!err);
     }
 
-    x->x_outlet = outlet_new (cast_object (x), &s_pointer);
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_pointer);
+    x->x_outletRight = outlet_new (cast_object (x), &s_symbol);
     
     instance_setBoundA (cast_pd (x));
     
@@ -212,7 +227,8 @@ void textdefine_setup (void)
     
     class_addMethod (c, (t_method)textdefine_set,       sym_set,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textdefine_clear,     sym_clear,      A_NULL);
-        
+    class_addMethod (c, (t_method)textdefine_modified,  sym__modified,  A_NULL);
+    
     class_setSaveFunction (c, textdefine_functionSave);
     class_setHelpName (c, sym_text);
 

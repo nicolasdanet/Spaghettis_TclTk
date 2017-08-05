@@ -115,6 +115,8 @@ proc _save {top} {
         }
     }
     
+    if {[$top.text edit modified]} { ::ui_interface::pdsend "$top _modified" }
+    
     ::ui_text::dirty $top 0
 }
 
