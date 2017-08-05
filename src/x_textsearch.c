@@ -156,6 +156,11 @@ static void textsearch_list (t_textsearch *x, t_symbol *s, int argc, t_atom *arg
     } else { error_undefined (sym_text__space__search, sym_text); }
 }
 
+static void textsearch_anything (t_textsearch *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)textsearch_list, s, argc, argv);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -249,6 +254,7 @@ void textsearch_setup (void)
             A_NULL);
             
     class_addList (c, (t_method)textsearch_list);
+    class_addAnything (c, (t_method)textsearch_anything);
     
     class_setHelpName (c, sym_text);
     
