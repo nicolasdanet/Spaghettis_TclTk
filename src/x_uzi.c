@@ -32,7 +32,7 @@ typedef struct _uzi {
 
 static void uzi_proceed (t_uzi *x)
 {
-    int i, count = PD_MAX (1, x->x_count);
+    int i, count = PD_MAX (0, x->x_count);
     
     for (i = 0; i < count; i++) {
     //
