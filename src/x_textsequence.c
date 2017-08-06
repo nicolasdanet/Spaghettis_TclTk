@@ -347,6 +347,13 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
         
             t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
+            #if PD_WITH_LEGACY
+            
+            if (t == sym___dash__t) { t = sym___dash__unit; }
+            
+            #endif
+            
+            
             if (t == sym___dash__g || t == sym___dash__global) { 
                 useGlobal = 1; argc--; argv++; 
                 
