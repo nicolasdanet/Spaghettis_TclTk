@@ -11,6 +11,7 @@
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
 		17981E151F0618A10029AD87 /* s_searchpath.c in Sources */ = {isa = PBXBuildFile; fileRef = 17981E141F0618A10029AD87 /* s_searchpath.c */; };
 		179873E31F01095100BB1B94 /* m_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 179873E21F01095100BB1B94 /* m_file.c */; };
+		179A31111F38ABA500988D23 /* x_textinsert.c in Sources */ = {isa = PBXBuildFile; fileRef = 179A31101F38ABA500988D23 /* x_textinsert.c */; };
 		179E91131F0F6B11009A4FA6 /* x_freeze.c in Sources */ = {isa = PBXBuildFile; fileRef = 179E91121F0F6B11009A4FA6 /* x_freeze.c */; };
 		17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */; };
 		17C5194A1F23195900113504 /* x_uzi.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C519491F23195900113504 /* x_uzi.c */; };
@@ -406,6 +407,7 @@
 		1794C5D81F055A6400D78A38 /* m_clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_clipboard.h; path = src/m_clipboard.h; sourceTree = "<group>"; };
 		17981E141F0618A10029AD87 /* s_searchpath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_searchpath.c; path = src/s_searchpath.c; sourceTree = "<group>"; };
 		179873E21F01095100BB1B94 /* m_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_file.c; path = src/m_file.c; sourceTree = "<group>"; };
+		179A31101F38ABA500988D23 /* x_textinsert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textinsert.c; path = src/x_textinsert.c; sourceTree = "<group>"; };
 		179E8D9C1EF91B4700FD3865 /* m_environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_environment.h; path = src/m_environment.h; sourceTree = "<group>"; };
 		179E91121F0F6B11009A4FA6 /* x_freeze.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_freeze.c; path = src/x_freeze.c; sourceTree = "<group>"; };
 		17A2BD211F0A135E0071D330 /* d_resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_resample.h; path = src/d_resample.h; sourceTree = "<group>"; };
@@ -1293,6 +1295,7 @@
 				378232A21D6C50D600C128AD /* x_textclient.c */,
 				378234261D6C826800C128AD /* x_textget.c */,
 				3782340C1D6C812200C128AD /* x_textset.c */,
+				179A31101F38ABA500988D23 /* x_textinsert.c */,
 				378233EA1D6C7F9400C128AD /* x_textsize.c */,
 				378233BF1D6C7E1A00C128AD /* x_textlist.c */,
 				378233751D6C7B8E00C128AD /* x_textsearch.c */,
@@ -2141,6 +2144,7 @@
 				17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */,
 				37B79B4A1DCB7E0300EB423B /* d_voutlet.c in Sources */,
 				372BDF771DCF36D00045ECE8 /* d_adc.c in Sources */,
+				179A31111F38ABA500988D23 /* x_textinsert.c in Sources */,
 				37C000551DE2FE1B00F90584 /* d_throw.c in Sources */,
 				37C000831DE3053200F90584 /* d_catch.c in Sources */,
 				37C000A71DE3070D00F90584 /* d_receive.c in Sources */,

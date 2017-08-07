@@ -161,6 +161,7 @@
 #include "x_textclient.c"
 #include "x_textget.c"
 #include "x_textset.c"
+#include "x_textinsert.c"
 #include "x_textsize.c"
 #include "x_textlist.c"
 #include "x_textsearch.c"
