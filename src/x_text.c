@@ -168,6 +168,7 @@ static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     else if (t == sym_get)              { newest = textget_new (s,      argc - 1, argv + 1); }
     else if (t == sym_set)              { newest = textset_new (s,      argc - 1, argv + 1); }
     else if (t == sym_insert)           { newest = textinsert_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_delete)           { newest = textdelete_new (s,   argc - 1, argv + 1); }
     else if (t == sym_size)             { newest = textsize_new (s,     argc - 1, argv + 1); }
     else if (t == sym_tolist)           { newest = texttolist_new (s,   argc - 1, argv + 1); }
     else if (t == sym_fromlist)         { newest = textfromlist_new (s, argc - 1, argv + 1); }

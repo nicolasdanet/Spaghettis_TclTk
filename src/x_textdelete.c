@@ -10,43 +10,66 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "g_graphics.h"
+#include "x_text.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Avoid to accidentally overwrite native patches (help or examples). */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_class *freeze_class;       /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _freeze {
-    t_object    x_obj;
-    } t_freeze;
+typedef struct _textdelete {
+    t_textclient x_textclient;                  /* Must be the first. */
+    } t_textdelete;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Notice that it is usable only with a debug build. */
+static t_class *textdelete_class;               /* Shared. */
 
-static void *freeze_new (t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void textdelete_float (t_textdelete *x, t_float f)
 {
-    t_freeze *x = (t_freeze *)pd_new (freeze_class);
+    t_buffer *b = textclient_fetchBuffer (&x->x_textclient);
     
-    /* To bypass the mechanism manually append a dummy argument in the patch file with a text editor. */
+    if (b) {
+    //
+    int start, end;
+    t_atomtype type;
     
-    if (!argc) {
-    
-        #if ! ( PD_WITH_DEBUG )
+    if (buffer_getMessageAtWithTypeOfEnd (b, (int)f, &start, &end, &type) == PD_ERROR_NONE) {
+        if (type == A_COMMA || type == A_SEMICOLON) { end++; }
+        buffer_resizeBetween (b, start, end , 0);
+    }
         
-        glist_setFrozen (instance_contextGetCurrent(), 1);
+    textclient_update (&x->x_textclient);
+    //
+    } else { error_undefined (sym_text__space__delete, sym_text); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void *textdelete_new (t_symbol *s, int argc, t_atom *argv)
+{
+    t_textdelete *x = (t_textdelete *)pd_new (textdelete_class);
+    
+    t_error err = textclient_init (&x->x_textclient, &argc, &argv);         /* It may consume arguments. */
+    
+    if (!err) {
+    
+        if (argc) { warning_unusedArguments (sym_text__space__delete, argc, argv); }
         
-        #endif
+        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
+            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
+        } else {
+            inlet_newSymbol (cast_object (x),  TEXTCLIENT_GETNAME    (&x->x_textclient));
+        }
+    
+    } else {
+        
+        error_invalidArguments (sym_text__space__delete, argc, argv); pd_free (cast_pd (x)); x = NULL;
     }
     
     return x;
@@ -56,24 +79,28 @@ static void *freeze_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void freeze_setup (void)
+void textdelete_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_freeze,
-            (t_newmethod)freeze_new,
-            NULL,
-            sizeof (t_freeze),
-            CLASS_DEFAULT | CLASS_NOINLET,
+    c = class_new (sym_text__space__delete,
+            (t_newmethod)textdelete_new,
+            (t_method)textclient_free,
+            sizeof (t_textdelete),
+            CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
+            
+    class_addFloat (c, (t_method)textdelete_float);
     
-    freeze_class = c;
+    class_setHelpName (c, sym_text);
+    
+    textdelete_class = c;
 }
 
-void freeze_destroy (void)
+void textdelete_destroy (void)
 {
-    class_free (freeze_class);
+    class_free (textdelete_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17073FB61F398EE2004042C0 /* x_textdelete.c in Sources */ = {isa = PBXBuildFile; fileRef = 17073FB51F398EE2004042C0 /* x_textdelete.c */; };
 		172EBDFD1F273EC9003C0B66 /* x_prepend.c in Sources */ = {isa = PBXBuildFile; fileRef = 172EBDFC1F273EC9003C0B66 /* x_prepend.c */; };
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
 		17981E151F0618A10029AD87 /* s_searchpath.c in Sources */ = {isa = PBXBuildFile; fileRef = 17981E141F0618A10029AD87 /* s_searchpath.c */; };
@@ -396,6 +397,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		17073FB51F398EE2004042C0 /* x_textdelete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textdelete.c; path = src/x_textdelete.c; sourceTree = "<group>"; };
 		172EBDFC1F273EC9003C0B66 /* x_prepend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_prepend.c; path = src/x_prepend.c; sourceTree = "<group>"; };
 		174D8A081F0BBA0200C94065 /* x_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_text.h; path = src/x_text.h; sourceTree = "<group>"; };
 		174D8A091F0BBBBE00C94065 /* x_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_array.h; path = src/x_array.h; sourceTree = "<group>"; };
@@ -1296,6 +1298,7 @@
 				378234261D6C826800C128AD /* x_textget.c */,
 				3782340C1D6C812200C128AD /* x_textset.c */,
 				179A31101F38ABA500988D23 /* x_textinsert.c */,
+				17073FB51F398EE2004042C0 /* x_textdelete.c */,
 				378233EA1D6C7F9400C128AD /* x_textsize.c */,
 				378233BF1D6C7E1A00C128AD /* x_textlist.c */,
 				378233751D6C7B8E00C128AD /* x_textsearch.c */,
@@ -2234,6 +2237,7 @@
 				3710DC561E69C79C00B65CE9 /* m_method.c in Sources */,
 				373545611E6D6BF700BCFBE1 /* m_bounds.c in Sources */,
 				37F6E1721E7C3D6100A42588 /* g_typeset.c in Sources */,
+				17073FB61F398EE2004042C0 /* x_textdelete.c in Sources */,
 				37251FBD1E7FB4BC0067E434 /* g_editor.c in Sources */,
 				372C88EA1E7FE48F00F2C23F /* m_clipboard.c in Sources */,
 				373F12291E82548300508FE3 /* m_snippet.c in Sources */,

@@ -84,6 +84,7 @@ t_buffer    *textclient_fetchBuffer         (t_textclient *x);
 void        *textget_new                    (t_symbol *s, int argc, t_atom *argv);
 void        *textset_new                    (t_symbol *s, int argc, t_atom *argv);
 void        *textinsert_new                 (t_symbol *s, int argc, t_atom *argv);
+void        *textdelete_new                 (t_symbol *s, int argc, t_atom *argv);
 void        *textsize_new                   (t_symbol *s, int argc, t_atom *argv);
 void        *textfromlist_new               (t_symbol *s, int argc, t_atom *argv);
 void        *texttolist_new                 (t_symbol *s, int argc, t_atom *argv);
