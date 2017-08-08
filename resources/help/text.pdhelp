@@ -1,4 +1,4 @@
-#N canvas 837 64 499 748 12;
+#N canvas 693 62 539 720 12;
 #X obj 96 672 list;
 #X obj 36 144 text get;
 #N canvas 915 202 502 672 get 0;
@@ -357,7 +357,6 @@
 #X msg 264 516 write ionesco.txt;
 #X obj 216 600 text define -keep \$0-ionesco;
 #A set Bérenger \, venant de la gauche \; Bonjour \, Jean. \; Jean \; Toujours en retard \, évidemment !;
-#X text 12 384 Optional -keep flag to save contents with patcher.;
 #X obj 216 624 text define -k \$0-camus;
 #A set ANNENKOV \; Il a fallu changer d'appartement \, une fois de plus. \; STEPAN \; Je sais. \; DORA \; Et là-bas \, Stepan ? \; STEPAN \; Là-bas ? \; DORA \; Le bagne ? \; STEPAN \; On s'en évade. \;;
 #N canvas 683 85 579 378 list 0;
@@ -426,6 +425,7 @@
 #X connect 6 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 504 pd add;
+#X text 12 384 Below optional -keep flag to save contents with patcher.;
 #X connect 28 0 31 0;
 #X connect 29 0 31 0;
 #X connect 30 0 31 0;
