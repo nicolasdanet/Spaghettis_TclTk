@@ -28,9 +28,11 @@
 #X connect 13 0 14 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 53 386 pd about-lists;
-#X obj 84 144 prepend;
-#X obj 204 144 list append;
-#X obj 204 204 list trim;
-#X obj 324 144 pack;
-#X obj 252 336 1 2 3 4;
+#X obj 48 60 prepend;
+#X obj 300 96 list append;
+#X obj 48 132 list trim;
+#X obj 300 60 pack;
+#X obj 300 132 1 2 3 4;
+#X text 48 96 make anything;
+#X text 312 192 make list;
 #X coords 0 0 1 1 250 175 0 0 0;
