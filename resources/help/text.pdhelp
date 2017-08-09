@@ -1,8 +1,7 @@
-#N struct 1003-template float x float y text z;
-#N canvas 693 62 539 720 12;
+#N canvas 202 116 539 720 12;
 #X obj 96 672 list;
 #X obj 36 144 text get;
-#N canvas 666 61 502 672 get 0;
+#N canvas 534 88 502 672 get 0;
 #X text 12 12 Get the nth message from a given defined text.;
 #X obj 36 396 print;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
@@ -24,9 +23,9 @@
 #X msg 108 492 1 1 3;
 #X text 12 456 Slices can be fetched (line \, offset \, number of fields).;
 #X f 56;
-#X obj 240 564 text get \$0-ionesco 1 3;
-#X obj 240 612 print;
-#X msg 240 492 1 \, 5 \, 6;
+#X obj 252 564 text get \$0-ionesco 1 3;
+#X obj 252 612 print;
+#X msg 252 492 1 \, 5 \, 6;
 #X connect 2 0 4 0;
 #X connect 3 0 5 0;
 #X connect 4 2 3 0;
@@ -66,7 +65,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 528 pd size;
 #X obj 36 168 text set;
-#N canvas 553 34 486 808 set 0;
+#N canvas 844 79 486 808 set 0;
 #X obj 36 156 text set \$0-ionesco;
 #X msg 84 84 One hundred daleks;
 #X floatatom 36 240 5 1 20 1 - - -;
@@ -87,8 +86,8 @@
 #X f 41;
 #X text 12 636 ...or initialize it with arguments (line \, offset).;
 #X msg 36 48 3 daleks;
-#X text 12 12 Replaces the first line with the incoming list...;
-#X text 12 204 ...or anyone.;
+#X text 12 12 Replaces the first message with the incoming list...;
+#X text 12 204 ...or any other else.;
 #X connect 1 0 0 0;
 #X connect 2 0 8 0;
 #X connect 5 0 6 0;
@@ -108,7 +107,7 @@
 #X obj 36 264 text tolist;
 #X obj 36 288 text fromlist;
 #X obj 36 312 text search;
-#N canvas 498 59 622 632 search 0;
+#N canvas 615 44 654 618 search 0;
 #X msg 288 48 2;
 #X msg 120 48 4 5;
 #X msg 288 72 4 13;
@@ -160,8 +159,8 @@
 #X connect 9 0 6 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 288 564 pd more;
-#X text 12 12 Get the number of the line that starts with a search key (first wins).;
-#X f 70;
+#X text 12 12 Get the number of the message that starts with a search key (first wins).;
+#X f 74;
 #X connect 0 0 9 0;
 #X connect 1 0 9 0;
 #X connect 2 0 9 0;
@@ -296,7 +295,6 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 468 348 pd \$0-template;
 #N canvas 482 165 500 350 \$0-data 0;
-#X scalar 1003-template 20 20 \; bijou caillou chou genou hibou joujou pou \\\; \;;
 #X coords 0 0 1 1 400 60 1 0 0;
 #X restore 36 312 pd \$0-data;
 #N canvas 682 160 658 480 init 0;
@@ -349,9 +347,6 @@
 #X restore 36 624 pd structures;
 #X text 216 120 Create \, store \, and/or edit.;
 #X obj 36 120 text define;
-#X text 216 144 Read a line.;
-#X text 216 168 Replace or add a line.;
-#X text 216 240 Get the number of lines.;
 #X text 216 264 Convert to a list.;
 #X text 216 336 Sequencing.;
 #X text 216 288 Convert from a list.;
@@ -411,9 +406,7 @@
 #X obj 144 672 qlist;
 #X obj 204 672 textfile;
 #X obj 36 192 text insert;
-#X text 216 192 Insert a line.;
 #X obj 36 216 text delete;
-#X text 216 216 Delete a line.;
 #N canvas 774 232 425 410 add 0;
 #X text 12 12 Insert a message before a given one.;
 #X floatatom 144 132 5 0 0 1 - - -;
@@ -431,7 +424,12 @@
 #X restore 36 504 pd add;
 #X text 12 384 Below optional -keep flag to save contents with patcher.;
 #X obj 288 672 array;
-#X connect 28 0 31 0;
-#X connect 29 0 31 0;
-#X connect 30 0 31 0;
+#X text 216 144 Read a message.;
+#X text 216 168 Replace or add a message.;
+#X text 216 192 Insert a message.;
+#X text 216 216 Delete a message.;
+#X text 216 240 Get the number of messages.;
+#X connect 25 0 28 0;
+#X connect 26 0 28 0;
+#X connect 27 0 28 0;
 #X coords 0 0 1 1 250 175 0 0 0;
