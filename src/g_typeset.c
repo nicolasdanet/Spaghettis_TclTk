@@ -139,7 +139,7 @@ static void box_typesetEllipsis (t_box *x, t_typesethelper *p)
     //
     int t = u8_offset (x->box_string, p->p_widthOfObject - 1) + 1;
         
-    x->box_string = PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, t);
+    x->box_string = (char *)PD_MEMORY_RESIZE (x->box_string, x->box_stringSizeInBytes, t);
     x->box_stringSizeInBytes = t;
     x->box_string[x->box_stringSizeInBytes - 1] = '*';
     

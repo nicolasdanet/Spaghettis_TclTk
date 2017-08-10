@@ -222,20 +222,29 @@ void editor_motionUnset (t_editor *x, t_gobj *y)
 
 void editor_motionProceed (t_editor *x, int a, int b, int m)
 {
-    int endX = drag_getEndX (editor_getDrag (x));
-    int endY = drag_getEndY (editor_getDrag (x));
-    int deltaX = a - endX;
-    int deltaY = b - endY;
-    
-    t_rectangle r;
-    
-    gobj_getRectangle (x->e_grabbed, x->e_owner, &r);
-    
-    if (rectangle_containsX (&r, a)) { m |= MODIFIER_INSIDE_X; }
-    if (rectangle_containsY (&r, b)) { m |= MODIFIER_INSIDE_Y; }
-    
     if (!x->e_fnMotion) { PD_BUG; }
-    else { 
+    else {
+        int endX = drag_getEndX (editor_getDrag (x));
+        int endY = drag_getEndY (editor_getDrag (x));
+        int deltaX = a - endX;
+        int deltaY = b - endY;
+    
+        /*
+        if (x->e_grabbed) {
+        //
+        t_rectangle r;
+
+        gobj_getRectangle (x->e_grabbed, x->e_owner, &r);
+    
+        if (rectangle_containsX (&r, a)) { m |= MODIFIER_INSIDE_X; }
+        if (rectangle_containsY (&r, b)) { m |= MODIFIER_INSIDE_Y; }
+        //
+        }
+        */
+        
+        m |= MODIFIER_INSIDE_X;
+        m |= MODIFIER_INSIDE_Y;
+        
         (*x->e_fnMotion) (cast_pd (x->e_grabbed), deltaX, deltaY, m);
     }
 }

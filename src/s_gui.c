@@ -53,7 +53,7 @@ static void gui_bufferEnlarge()
     PD_ASSERT (newSize <= GUI_BUFFER_ABORT); 
     PD_ABORT (newSize > GUI_BUFFER_ABORT);          /* GUI buffer no more consumed? */
     
-    gui_buffer = PD_MEMORY_RESIZE (gui_buffer, oldSize, newSize);
+    gui_buffer = (char *)PD_MEMORY_RESIZE (gui_buffer, oldSize, newSize);
     gui_bufferSize = newSize;
 }
 

@@ -201,7 +201,7 @@ static void jack_fetchClientNames (void)
     
     if (!seen) {
     //
-    jack_clientNames[n] = PD_MEMORY_GET (strlen (t) + 1);
+    jack_clientNames[n] = (char *)PD_MEMORY_GET (strlen (t) + 1);
 
     if ((strcmp ("alsa_pcm", t) == 0) && (n > 0)) {    /* The "alsa_pcm" client MUST be the first. */
         char *tmp = jack_clientNames[n];
@@ -317,12 +317,16 @@ t_error audio_openNative (t_devicesproperties *p)
     if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  }
     if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); }
     
-    if (numberOfChannelsIn) { 
-        jack_bufferIn = PD_MEMORY_GET (numberOfChannelsIn * JACK_BUFFER_SIZE * sizeof (t_sample));
+    if (numberOfChannelsIn) {
+    //
+    jack_bufferIn = (t_sample *)PD_MEMORY_GET (numberOfChannelsIn * JACK_BUFFER_SIZE * sizeof (t_sample));
+    //
     }
 
     if (numberOfChannelsOut) {
-        jack_bufferOut = PD_MEMORY_GET (numberOfChannelsOut * JACK_BUFFER_SIZE * sizeof (t_sample));
+    //
+    jack_bufferOut = (t_sample *)PD_MEMORY_GET (numberOfChannelsOut * JACK_BUFFER_SIZE * sizeof (t_sample));
+    //
     }
 
     jack_set_process_callback (jack_client, jack_pollCallback, NULL);

@@ -205,7 +205,7 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
     
     if (length == preallocated) {
         size_t oldSize = preallocated * sizeof (t_atom);
-        x->b_vector = PD_MEMORY_RESIZE (x->b_vector, oldSize, oldSize * 2);
+        x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, oldSize, oldSize * 2);
         preallocated = preallocated * 2;
         a = x->b_vector + length;
     }
@@ -214,8 +214,12 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
     
     /* Crop to truly used memory. */
     
-    x->b_size   = length;
-    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, preallocated * sizeof (t_atom), length * sizeof (t_atom));
+    {
+        int oldSize = preallocated * sizeof (t_atom);
+        int newSize = length * sizeof (t_atom);
+        x->b_size   = length;
+        x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, oldSize, newSize);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -244,7 +248,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     if (IS_SEMICOLON_OR_COMMA (a)) {
     //
     if (length && buffer[length - 1] == ' ') { 
-        buffer = PD_MEMORY_RESIZE (buffer, length, length - 1); length--; 
+        buffer = (char *)PD_MEMORY_RESIZE (buffer, length, length - 1); length--;
     }
     //
     }
@@ -255,7 +259,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     
     if (length > (PD_INT_MAX - n)) { PD_BUG; }
     else {
-        buffer = PD_MEMORY_RESIZE (buffer, length, length + n);
+        buffer = (char *)PD_MEMORY_RESIZE (buffer, length, length + n);
         strcpy (buffer + length, t);
         length += n;
     }
@@ -270,7 +274,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     /* Remove ending whitespace. */
     
     if (length && buffer[length - 1] == ' ') { 
-        buffer = PD_MEMORY_RESIZE (buffer, length, length - 1); length--; 
+        buffer = (char *)PD_MEMORY_RESIZE (buffer, length, length - 1); length--;
     }
     
     *s = buffer;
@@ -284,7 +288,7 @@ char *buffer_toString (t_buffer *x)
     
     buffer_toStringUnzeroed (x, &s, &length);
     n = length + 1; 
-    s = PD_MEMORY_RESIZE (s, length, n);
+    s = (char *)PD_MEMORY_RESIZE (s, length, n);
     s[n - 1] = 0;
     
     return s;
@@ -393,7 +397,7 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
 
     PD_ASSERT (argc >= 0);
     
-    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
+    x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
     
     for (i = 0; i < argc; i++) {
     //

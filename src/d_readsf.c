@@ -519,7 +519,7 @@ static void *readsf_tilde_new (t_float f1, t_float f2)
     x->sf_fileDescriptor        = -1;
     x->sf_numberOfAudioOutlets  = n;
     x->sf_bufferSize            = size;
-    x->sf_buffer                = PD_MEMORY_GET (x->sf_bufferSize);
+    x->sf_buffer                = (char *)PD_MEMORY_GET (x->sf_bufferSize);
     x->sf_owner                 = instance_contextGetCurrent();
     x->sf_clock                 = clock_new ((void *)x, (t_method)readsf_tilde_task);
     

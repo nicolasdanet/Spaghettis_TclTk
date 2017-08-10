@@ -132,7 +132,7 @@ void instance_dspChainAppend (t_perform f, int n, ...)
     size_t newSize = sizeof (t_int) * size;
     size_t oldSize = sizeof (t_int) * instance_get()->pd_dspChainSize;
     
-    instance_get()->pd_dspChain = PD_MEMORY_RESIZE (instance_get()->pd_dspChain, oldSize, newSize);
+    instance_get()->pd_dspChain = (t_int *)PD_MEMORY_RESIZE (instance_get()->pd_dspChain, oldSize, newSize);
     
     {
     //

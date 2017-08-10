@@ -47,7 +47,7 @@ static t_gpointer gpointer_empty;     /* Static. */
 
 t_gmaster *gmaster_createWithGlist (t_glist *glist)
 {
-    t_gmaster *master = PD_MEMORY_GET (sizeof (t_gmaster));
+    t_gmaster *master = (t_gmaster *)PD_MEMORY_GET (sizeof (t_gmaster));
     
     PD_ASSERT (glist);
     
@@ -60,7 +60,7 @@ t_gmaster *gmaster_createWithGlist (t_glist *glist)
 
 t_gmaster *gmaster_createWithArray (t_array *array)
 {
-    t_gmaster *master = PD_MEMORY_GET (sizeof (t_gmaster));
+    t_gmaster *master = (t_gmaster *)PD_MEMORY_GET (sizeof (t_gmaster));
     
     PD_ASSERT (array);
     

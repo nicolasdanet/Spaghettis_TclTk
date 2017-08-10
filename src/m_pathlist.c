@@ -21,7 +21,7 @@ t_pathlist *pathlist_newAppend (t_pathlist *x, const char *s)
     t_pathlist *l1 = x;
     t_pathlist *l2 = NULL;
     
-    l2 = (t_pathlist *)(PD_MEMORY_GET (sizeof (t_pathlist)));
+    l2 = (t_pathlist *)PD_MEMORY_GET (sizeof (t_pathlist));
     l2->pl_next   = NULL;
     l2->pl_string = (char *)PD_MEMORY_GET (strlen (s) + 1);
     

@@ -312,7 +312,7 @@ static void textsequence_arguments (t_textsequence *x, t_symbol *s, int argc, t_
     size_t newSize = argc * sizeof (t_atom);
     
     x->x_argc = argc;
-    x->x_argv = PD_MEMORY_RESIZE (x->x_argv, oldSize, newSize);
+    x->x_argv = (t_atom *)PD_MEMORY_RESIZE (x->x_argv, oldSize, newSize);
     
     for (i = 0; i < argc; i++) { x->x_argv[i] = argv[i]; }
 }

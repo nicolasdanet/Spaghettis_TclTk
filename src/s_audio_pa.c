@@ -253,7 +253,7 @@ t_error audio_openNative (t_devicesproperties *p)
     {
         size_t k = PD_MAX (size, INTERNAL_BLOCKSIZE) * pa_channelsIn;
         k = (size_t)PD_NEXT_POWER_2 (k + 1);
-        pa_bufferIn = PD_MEMORY_GET (k * sizeof (t_sample));
+        pa_bufferIn = (char *)PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
         if (PaUtil_InitializeRingBuffer (&pa_ringIn,    // --
                 (ring_buffer_size_t)sizeof (t_sample),
@@ -265,7 +265,7 @@ t_error audio_openNative (t_devicesproperties *p)
     {
         size_t k = PD_MAX (size, INTERNAL_BLOCKSIZE) * pa_channelsOut;
         k = (size_t)PD_NEXT_POWER_2 (k + 1);
-        pa_bufferOut = PD_MEMORY_GET (k * sizeof (t_sample));
+        pa_bufferOut = (char *)PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
         if (PaUtil_InitializeRingBuffer (&pa_ringOut,   // --
                 (ring_buffer_size_t)sizeof (t_sample),

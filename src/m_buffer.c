@@ -65,7 +65,7 @@ void buffer_resize (t_buffer *x, int n)
     PD_ASSERT (n >= 0); n = PD_MAX (n, 0);
     
     x->b_size   = n;
-    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
+    x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
 }
 
 t_error buffer_resizeBetween (t_buffer *x, int start, int end, int n)
@@ -99,7 +99,7 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
     t_atom *a = NULL;
     int n = x->b_size + argc;
 
-    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
+    x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
 
     for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); } x->b_size = n;
     //

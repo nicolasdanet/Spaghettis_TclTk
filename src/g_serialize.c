@@ -72,7 +72,7 @@ static void glist_findTemplatesRecursive (t_glist *glist, int *n, t_symbol ***v)
 
 static void glist_serializeTemplates (t_glist *glist, t_buffer *b)
 {
-    t_symbol **v = PD_MEMORY_GET (0);
+    t_symbol **v = (t_symbol **)PD_MEMORY_GET (0);
     int i, n = 0;
     
     glist_findTemplatesRecursive (glist, &n, &v);

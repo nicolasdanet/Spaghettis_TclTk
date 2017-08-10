@@ -85,7 +85,7 @@ t_error logger_initializeNative (void)
     
     if (!err && (logger_file = mkstemp (t)) != -1) {
     //
-    logger_buffer = PD_MEMORY_GET (k);
+    logger_buffer = (char *)PD_MEMORY_GET (k);
     
     if (!PaUtil_InitializeRingBuffer (&logger_ring,     // --
             (ring_buffer_size_t)sizeof (char),

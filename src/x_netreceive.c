@@ -46,7 +46,7 @@ static void netreceive_receiversEnlarge (t_netreceive *x)
     size_t oldSize  = sizeof (t_receiver *) * (x->nr_size);
     size_t newSize  = sizeof (t_receiver *) * (x->nr_size * 2);
     x->nr_size      = (x->nr_size * 2);
-    x->nr_vector    = PD_MEMORY_RESIZE (x->nr_vector, oldSize, newSize);
+    x->nr_vector    = (t_receiver **)PD_MEMORY_RESIZE (x->nr_vector, oldSize, newSize);
 }
 
 static void netreceive_receiversPurge (t_netreceive *x)

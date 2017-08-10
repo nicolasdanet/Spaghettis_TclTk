@@ -563,7 +563,7 @@ static void box_keyDeleteProceed (t_box *x)
     int newSize = x->box_stringSizeInBytes - toDelete;
     int i;
     for (i = x->box_selectionEnd; i < oldSize; i++) { x->box_string[i - toDelete] = x->box_string[i]; }
-    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
+    x->box_string = (char *)PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
     x->box_stringSizeInBytes = newSize;
     x->box_selectionEnd = x->box_selectionStart;
     editor_setSelectedBoxDirty (glist_getEditor (x->box_owner));
@@ -629,7 +629,7 @@ static void box_keyASCII (t_box *x, t_keycode n)
     int i;
     int oldSize = x->box_stringSizeInBytes;
     int newSize = x->box_stringSizeInBytes + 1;
-    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
+    x->box_string = (char *)PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
     for (i = oldSize; i > x->box_selectionStart; i--) { x->box_string[i] = x->box_string[i - 1]; }
     x->box_string[x->box_selectionStart] = (char)n;
     x->box_stringSizeInBytes = newSize;
@@ -647,7 +647,7 @@ static void box_keyCodePoint (t_box *x, t_keycode n, t_symbol *s)
     int i, k = u8_wc_nbytes (n);
     int oldSize = x->box_stringSizeInBytes;
     int newSize = x->box_stringSizeInBytes + k;
-    x->box_string = PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
+    x->box_string = (char *)PD_MEMORY_RESIZE (x->box_string, oldSize, newSize);
     for (i = newSize - 1; i > x->box_selectionStart; i--) { x->box_string[i] = x->box_string[i - k]; }
     x->box_stringSizeInBytes = newSize;
     strncpy (x->box_string + x->box_selectionStart, s->s_name, k);

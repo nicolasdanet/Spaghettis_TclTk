@@ -28,7 +28,7 @@ void instance_environmentSetArguments (int argc, t_atom *argv)
     PD_ASSERT (argc >= 0);
 
     instance_get()->pd_environment.env_argc = argc;
-    instance_get()->pd_environment.env_argv = argc ? PD_MEMORY_GET (argc * sizeof (t_atom)) : NULL;
+    instance_get()->pd_environment.env_argv = argc ? (t_atom *)PD_MEMORY_GET (argc * sizeof (t_atom)) : NULL;
     
     if (argc) { atom_copyAtoms (argv, argc, instance_get()->pd_environment.env_argv, argc); }
 }

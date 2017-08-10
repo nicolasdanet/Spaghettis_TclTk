@@ -52,9 +52,31 @@ void listinlet_init (t_listinlet *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void listinlet_setList (t_listinlet *x, int argc, t_atom *argv)
+void listinlet_listSet (t_listinlet *x, int argc, t_atom *argv)
 {
-    listinlet_list (x, NULL, argc, argv);
+    int i;
+    
+    listinlet_clear (x);
+    
+    x->li_size   = argc;
+    x->li_vector = (t_listinletelement *)PD_MEMORY_GET (x->li_size * sizeof (t_listinletelement));
+    
+    for (i = 0; i < x->li_size; i++) {
+    //
+    x->li_vector[i].le_atom = argv[i];
+    listinlet_cachePointer (x, i, argv + i);
+    //
+    }
+}
+
+void listinlet_listAppend (t_listinlet *x, int argc, t_atom *argv)
+{
+
+}
+
+void listinlet_listPrepend (t_listinlet *x, int argc, t_atom *argv)
+{
+    
 }
 
 int listinlet_hasPointer (t_listinlet *x)
@@ -114,19 +136,7 @@ void listinlet_copyAtomsUnchecked (t_listinlet *x, t_atom *a)
 
 static void listinlet_list (t_listinlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int i;
-    
-    listinlet_clear (x);
-    
-    x->li_size   = argc;
-    x->li_vector = (t_listinletelement *)PD_MEMORY_GET (x->li_size * sizeof (t_listinletelement));
-    
-    for (i = 0; i < x->li_size; i++) {
-    //
-    x->li_vector[i].le_atom = argv[i];
-    listinlet_cachePointer (x, i, argv + i);
-    //
-    }
+    listinlet_listSet (x, argc, argv);
 }
 
 static void listinlet_anything (t_listinlet *x, t_symbol *s, int argc, t_atom *argv)

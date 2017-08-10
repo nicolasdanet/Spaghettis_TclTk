@@ -122,7 +122,7 @@ static void *delwrite_tilde_new (t_symbol *s, t_float milliseconds)
 
     x->dw_delayInMilliseconds   = milliseconds;
     x->dw_space.c_size          = 0;
-    x->dw_space.c_vector        = PD_MEMORY_GET ((0 + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
+    x->dw_space.c_vector        = (t_sample *)PD_MEMORY_GET ((0 + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
     x->dw_name                  = (s == &s_) ? sym_delwrite__tilde__ : s;
     
     pd_bind (cast_pd (x), x->dw_name);

@@ -379,8 +379,8 @@ void ugen_graphAdd (t_dspcontext *context, t_object *o)
 
     x->u_inSize  = object_getNumberOfSignalInlets (o);
     x->u_outSize = object_getNumberOfSignalOutlets (o);
-    x->u_in      = PD_MEMORY_GET (x->u_inSize * sizeof (t_siginlet));
-    x->u_out     = PD_MEMORY_GET (x->u_outSize * sizeof (t_sigoutlet));
+    x->u_in      = (t_siginlet *)PD_MEMORY_GET (x->u_inSize * sizeof (t_siginlet));
+    x->u_out     = (t_sigoutlet *)PD_MEMORY_GET (x->u_outSize * sizeof (t_sigoutlet));
     x->u_owner   = o;
     x->u_next    = context->dc_ugens;
     

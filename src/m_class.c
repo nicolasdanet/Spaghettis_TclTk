@@ -311,7 +311,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
         size_t oldSize = sizeof (t_entry) * (c->c_methodsSize);
         size_t newSize = sizeof (t_entry) * (c->c_methodsSize + 1);
         
-        c->c_methods = PD_MEMORY_RESIZE (c->c_methods, oldSize, newSize);
+        c->c_methods = (t_entry *)PD_MEMORY_RESIZE (c->c_methods, oldSize, newSize);
         
         m = c->c_methods + c->c_methodsSize;
         m->me_name = s;
