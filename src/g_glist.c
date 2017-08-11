@@ -299,7 +299,7 @@ void glist_setFontSize (t_glist *g, int n)
 
 void glist_setMotion (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)
 {
-    editor_motionSet (glist_getEditor (glist_getView (glist)), y, callback, a, b);
+    editor_motionSet (glist_getEditor (glist_getView (glist)), y, glist, callback, a, b);
 }
 
 void glist_setBounds (t_glist *glist, t_bounds *bounds)

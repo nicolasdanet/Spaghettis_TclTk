@@ -32,6 +32,7 @@ typedef struct _editor {
     t_box               *e_selectedBox;
     t_selection         *e_selectedObjects;
     t_gobj              *e_grabbed;
+    t_glist             *e_grabbedOwner;
     t_buffer            *e_cachedLines;
     t_outconnect        *e_selectedLineConnection;
     int                 e_selectedLine[4];
@@ -70,7 +71,13 @@ void        editor_selectedLineSet              (t_editor *x,
                                                     int j);
     
 void        editor_motionProceed                (t_editor *x, int deltaX, int deltaY, int m);
-void        editor_motionSet                    (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b);
+void        editor_motionSet                    (t_editor *x,
+                                                    t_gobj  *y,
+                                                    t_glist *glist,
+                                                    t_motionfn callback,
+                                                    int a,
+                                                    int b);
+                                                    
 void        editor_motionUnset                  (t_editor *x, t_gobj *y);
 void        editor_motionReset                  (t_editor *x);
 

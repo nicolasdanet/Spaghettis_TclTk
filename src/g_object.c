@@ -29,9 +29,11 @@ void gobj_getRectangle (t_gobj *x, t_glist *owner, t_rectangle *r)
 {
     if (class_hasWidgetBehavior (pd_class (x))) {
         if (class_getWidgetBehavior (pd_class (x))->w_fnGetRectangle) {
-            (*(class_getWidgetBehavior (pd_class (x))->w_fnGetRectangle)) (x, owner, r);
+            (*(class_getWidgetBehavior (pd_class (x))->w_fnGetRectangle)) (x, owner, r); return;
         }
     }
+    
+    PD_BUG; rectangle_setNothing (r);
 }
 
 void gobj_displaced (t_gobj *x, t_glist *owner, int deltaX, int deltaY)

@@ -195,22 +195,24 @@ void editor_selectedLineDisconnect (t_editor *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void editor_motionSet (t_editor *x, t_gobj *y, t_motionfn callback, int a, int b)
+void editor_motionSet (t_editor *x, t_gobj *y, t_glist *glist, t_motionfn callback, int a, int b)
 {
     PD_ASSERT (callback);
     
     editor_startAction (x, ACTION_PASS, a, b, y);
     
-    x->e_grabbed  = y;
-    x->e_fnMotion = callback;
+    x->e_grabbed        = y;
+    x->e_grabbedOwner   = glist;
+    x->e_fnMotion       = callback;
 }
 
 void editor_motionReset (t_editor *x)
 {
     drag_close (editor_getDrag (x));
     
-    x->e_grabbed  = NULL;
-    x->e_fnMotion = NULL;
+    x->e_grabbed        = NULL;
+    x->e_grabbedOwner   = NULL;
+    x->e_fnMotion       = NULL;
     
     editor_resetAction (x);
 }
@@ -229,21 +231,16 @@ void editor_motionProceed (t_editor *x, int a, int b, int m)
         int deltaX = a - endX;
         int deltaY = b - endY;
     
-        /*
-        if (x->e_grabbed) {
+        if (x->e_grabbed && x->e_grabbedOwner) {    /* Could be NULL (for instance to plot arrays). */
         //
         t_rectangle r;
 
-        gobj_getRectangle (x->e_grabbed, x->e_owner, &r);
+        gobj_getRectangle (x->e_grabbed, x->e_grabbedOwner, &r);
     
         if (rectangle_containsX (&r, a)) { m |= MODIFIER_INSIDE_X; }
         if (rectangle_containsY (&r, b)) { m |= MODIFIER_INSIDE_Y; }
         //
         }
-        */
-        
-        m |= MODIFIER_INSIDE_X;
-        m |= MODIFIER_INSIDE_Y;
         
         (*x->e_fnMotion) (cast_pd (x->e_grabbed), deltaX, deltaY, m);
     }
