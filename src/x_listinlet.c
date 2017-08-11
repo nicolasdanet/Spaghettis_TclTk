@@ -71,7 +71,19 @@ void listinlet_listSet (t_listinlet *x, int argc, t_atom *argv)
 
 void listinlet_listAppend (t_listinlet *x, int argc, t_atom *argv)
 {
-
+    int i, t = x->li_size;
+    int oldSize = sizeof (t_listinletelement) * (t);
+    int newSize = sizeof (t_listinletelement) * (t + argc);
+    
+    x->li_vector = (t_listinletelement *)PD_MEMORY_RESIZE (x->li_vector, oldSize, newSize);
+    x->li_size   = t + argc;
+        
+    for (i = 0; i < argc; i++) {
+    //
+    x->li_vector[t + i].le_atom = argv[i];
+    listinlet_cachePointer (x, t + i, argv + i);
+    //
+    }
 }
 
 void listinlet_listPrepend (t_listinlet *x, int argc, t_atom *argv)

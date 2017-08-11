@@ -33,7 +33,7 @@ typedef struct _liststore {
 
 static void liststore_append (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
 {
-
+    if (argc) { listinlet_listAppend (&x->x_listinlet, argc, argv); }
 }
 
 static void liststore_prepend (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
