@@ -24,7 +24,8 @@ static t_class *liststore_class;           /* Shared. */
 typedef struct _liststore {
     t_object        x_obj;                  /* Must be the first. */
     t_listinlet     x_listinlet;
-    t_outlet        *x_outlet;
+    t_outlet        *x_outletLeft;
+    t_outlet        *x_outletRight;
     } t_liststore;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -43,7 +44,42 @@ static void liststore_prepend (t_liststore *x, t_symbol *s, int argc, t_atom *ar
 
 static void liststore_get (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
 {
-
+    int count = listinlet_getSize (&x->x_listinlet);
+    int m = (int)atom_getFloatAtIndex (0, argc, argv);
+    int n = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    if (m >= 0 && n > 0) {
+    //
+    if (m + n <= count) {
+    //
+    t_atom *t = NULL;
+    
+    PD_ATOMS_ALLOCA (t, count);
+    
+    if (listinlet_hasPointer (&x->x_listinlet)) {
+    
+        t_listinlet cache;
+        listinlet_init (&cache);
+        listinlet_clone (&x->x_listinlet, &cache);
+        listinlet_copyAtomsUnchecked (&cache, t);
+        outlet_list (x->x_outletLeft, n, t + m);
+        listinlet_clear (&cache);
+        
+    } else {
+    
+        listinlet_copyAtomsUnchecked (&x->x_listinlet, t);
+        outlet_list (x->x_outletLeft, n, t + m);
+    }
+    
+    PD_ATOMS_FREEA (t, count);
+    
+    return;
+    //
+    }
+    //
+    }
+    
+    outlet_bang (x->x_outletRight);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -65,13 +101,13 @@ static void liststore_list (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
         listinlet_init (&cache);
         listinlet_clone (&x->x_listinlet, &cache);
         listinlet_copyAtomsUnchecked (&cache, t + argc);
-        outlet_list (x->x_outlet, count, t);
+        outlet_list (x->x_outletLeft, count, t);
         listinlet_clear (&cache);
         
     } else {
     
         listinlet_copyAtomsUnchecked (&x->x_listinlet, t + argc);
-        outlet_list (x->x_outlet, count, t);
+        outlet_list (x->x_outletLeft, count, t);
     }
     
     PD_ATOMS_FREEA (t, count);
@@ -93,7 +129,8 @@ void *liststore_new (t_symbol *s, int argc, t_atom *argv)
     listinlet_init (&x->x_listinlet);
     listinlet_listSet (&x->x_listinlet, argc, argv);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_list);
+    x->x_outletRight = outlet_new (cast_object (x), &s_bang);
     
     inlet_new (cast_object (x), cast_pd (&x->x_listinlet), NULL, NULL);
     
