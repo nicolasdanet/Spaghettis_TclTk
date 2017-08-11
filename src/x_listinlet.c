@@ -27,12 +27,15 @@ static void listinlet_list (t_listinlet *, t_symbol *, int, t_atom *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void listinlet_cachePointer (t_listinlet *x, int i, t_atom *a)
+static void listinlet_cacheIfPointer (t_listinlet *x, int i, t_atom *a)
 {
-    if (IS_POINTER (a)) {
-        gpointer_setByCopy (&x->li_vector[i].le_gpointer, GET_POINTER (a));
-        SET_POINTER (&x->li_vector[i].le_atom, &x->li_vector[i].le_gpointer);
-        x->li_hasPointer = 1;
+    if (!IS_POINTER (a)) { gpointer_unset (&x->li_vector[i].le_gpointer); }
+    else {
+    //
+    gpointer_setByCopy (&x->li_vector[i].le_gpointer, GET_POINTER (a));
+    SET_POINTER (&x->li_vector[i].le_atom, &x->li_vector[i].le_gpointer);
+    x->li_hasPointer = 1;
+    //
     }
 }
 
@@ -64,13 +67,15 @@ void listinlet_listSet (t_listinlet *x, int argc, t_atom *argv)
     for (i = 0; i < x->li_size; i++) {
     //
     x->li_vector[i].le_atom = argv[i];
-    listinlet_cachePointer (x, i, argv + i);
+    listinlet_cacheIfPointer (x, i, argv + i);
     //
     }
 }
 
 void listinlet_listAppend (t_listinlet *x, int argc, t_atom *argv)
 {
+    if (argc) {
+    //
     int i, t = x->li_size;
     int oldSize = sizeof (t_listinletelement) * (t);
     int newSize = sizeof (t_listinletelement) * (t + argc);
@@ -81,14 +86,39 @@ void listinlet_listAppend (t_listinlet *x, int argc, t_atom *argv)
     for (i = 0; i < argc; i++) {
     //
     x->li_vector[t + i].le_atom = argv[i];
-    listinlet_cachePointer (x, t + i, argv + i);
+    listinlet_cacheIfPointer (x, t + i, argv + i);
+    //
+    }
     //
     }
 }
 
 void listinlet_listPrepend (t_listinlet *x, int argc, t_atom *argv)
 {
+    if (argc) {
+    //
+    int i, t = x->li_size;
+    int oldSize = sizeof (t_listinletelement) * (t);
+    int newSize = sizeof (t_listinletelement) * (t + argc);
     
+    x->li_vector = (t_listinletelement *)PD_MEMORY_RESIZE (x->li_vector, oldSize, newSize);
+    x->li_size   = t + argc;
+    
+    for (i = t - 1; i >= 0; i--) {
+    //
+    x->li_vector[i + argc].le_atom = x->li_vector[i].le_atom;
+    listinlet_cacheIfPointer (x, i + argc, &x->li_vector[i].le_atom);
+    //
+    }
+    
+    for (i = 0; i < argc; i++) {
+    //
+    x->li_vector[i].le_atom = argv[i];
+    listinlet_cacheIfPointer (x, i, argv + i);
+    //
+    }
+    //
+    }
 }
 
 int listinlet_hasPointer (t_listinlet *x)
@@ -132,7 +162,7 @@ void listinlet_clone (t_listinlet *x, t_listinlet *y)
     for (i = 0; i < x->li_size; i++) {
     //
     y->li_vector[i].le_atom = x->li_vector[i].le_atom;
-    listinlet_cachePointer (y, i, &x->li_vector[i].le_atom);
+    listinlet_cacheIfPointer (y, i, &x->li_vector[i].le_atom);
     //
     }
 }
