@@ -50,6 +50,7 @@ void    *listsplit_new                  (t_symbol *s, int argc, t_atom *argv);
 void    *listtrim_new                   (t_symbol *s, int argc, t_atom *argv);
 void    *listlength_new                 (t_symbol *s, int argc, t_atom *argv);
 void    *liststore_new                  (t_symbol *s, int argc, t_atom *argv);
+void    *listiterate_new                (t_symbol *s, int argc, t_atom *argv);
 void    *listfromsymbol_new             (t_symbol *s, int argc, t_atom *argv);
 void    *listtosymbol_new               (t_symbol *s, int argc, t_atom *argv);
 
