@@ -253,9 +253,9 @@ void binop1_setup (void)
     class_setHelpName (binopSubtract_class, sym_operator);
     class_setHelpName (binopMultiply_class, sym_operator);
     class_setHelpName (binopDivide_class,   sym_operator);
-    class_setHelpName (binopPower_class,    sym_operator);
-    class_setHelpName (binopMaximum_class,  sym_operator);
-    class_setHelpName (binopMinimum_class,  sym_operator);
+    class_setHelpName (binopPower_class,    sym_math);
+    class_setHelpName (binopMaximum_class,  sym_math);
+    class_setHelpName (binopMinimum_class,  sym_math);
 }
 
 void binop1_destroy (void)

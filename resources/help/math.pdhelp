@@ -1,4 +1,4 @@
-#N canvas 86 76 548 648 12;
+#N canvas 88 76 1051 661 12;
 #X floatatom 288 319 0 0 0 0 - - -;
 #X floatatom 231 405 0 0 0 0 - - -;
 #X floatatom 231 318 0 0 0 0 - - -;
@@ -29,23 +29,45 @@
 #X obj 231 346 float;
 #X obj 288 346 t b f;
 #X obj 231 375 atan2;
-#X text 29 269 The arc tangent takes two forms. The atan2 version takes
-an (x \, y) pair and gives you an output between -pi and pi.;
+#X text 29 269 The arc tangent takes two forms. The atan2 version takes an (x \, y) pair and gives you an output between -pi and pi.;
 #X floatatom 393 574 0 0 0 0 - - -;
 #X floatatom 393 513 0 0 0 0 - - -;
 #X obj 393 544 wrap;
-#X text 39 433 also \, square root \, natural logarithm and exponential
-\, and absolute value. The "wrap" object wraps the input to a value
-between 0 and 1 (including negative numbers. For instance \, -0.2 maps
-to 0.8.);
-#X text 16 87 Unlike the signal version cos~ \, control-rate trig functions
-take inputs in radians:;
+#X text 39 433 also \, square root \, natural logarithm and exponential \, and absolute value. The "wrap" object wraps the input to a value between 0 and 1 (including negative numbers. For instance \, -0.2 maps to 0.8.);
+#X text 16 87 Unlike the signal version cos~ \, control-rate trig functions take inputs in radians:;
 #X text 311 612 updated for Pd version 0.46;
 #X text 11 612 see also:;
 #X obj 99 611 cos~;
-#X text 19 37 Pd offers the mathematical functions sin \, cos \, tan
-\, atan \, atan2 \, sqrt \, log \, exp \, abs \, and wrap.;
+#X text 19 37 Pd offers the mathematical functions sin \, cos \, tan \, atan \, atan2 \, sqrt \, log \, exp \, abs \, and wrap.;
 #X text 174 6 math function in Pd;
+#N canvas 941 269 366 191 more 0;
+#X obj 48 96 / 0;
+#X floatatom 48 60 5 0 0 1 - - -;
+#X f 5;
+#X obj 48 132 print;
+#X text 12 12 Note that divide by zero gives zero.;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 900 384 pd more;
+#X obj 552 348 pow 2;
+#X obj 552 384 print;
+#X obj 648 348 pow 0.5;
+#X obj 648 384 print;
+#X obj 756 384 print;
+#X msg 756 300 1 \, 2 \, 3 \, 4;
+#X obj 756 348 pow -1;
+#X msg 552 300 2 \, 3 \, 4;
+#X msg 648 300 4 \, 9 \, 16;
+#X floatatom 900 336 5 0 0 1 - - -;
+#X f 5;
+#X floatatom 960 336 5 0 0 1 - - -;
+#X f 5;
+#X obj 900 288 min 0;
+#X f 5;
+#X obj 960 288 max 0;
+#X floatatom 900 180 5 0 0 1 - - -;
+#X f 5;
 #X connect 0 0 28 0;
 #X connect 2 0 27 0;
 #X connect 4 0 26 0;
@@ -72,3 +94,14 @@ take inputs in radians:;
 #X connect 29 0 1 0;
 #X connect 32 0 33 0;
 #X connect 33 0 31 0;
+#X connect 42 0 43 0;
+#X connect 44 0 45 0;
+#X connect 47 0 48 0;
+#X connect 48 0 46 0;
+#X connect 49 0 42 0;
+#X connect 50 0 44 0;
+#X connect 53 0 51 0;
+#X connect 54 0 52 0;
+#X connect 55 0 53 0;
+#X connect 55 0 54 0;
+#X coords 0 0 1 1 250 175 0 0 0;
