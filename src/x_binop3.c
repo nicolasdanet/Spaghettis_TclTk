@@ -322,9 +322,9 @@ void binop3_setup (void)
     class_setHelpName (binopLogicalOr_class,        sym_logical);
     class_setHelpName (binopShiftLeft_class,        sym_bitwise);
     class_setHelpName (binopShiftRight_class,       sym_bitwise);
-    class_setHelpName (binopModulo_class,           sym_modulo);
-    class_setHelpName (binopIntegerModulo_class,    sym_modulo);
-    class_setHelpName (binopIntegerDivide_class,    sym_modulo);
+    class_setHelpName (binopModulo_class,           sym_math);
+    class_setHelpName (binopIntegerModulo_class,    sym_math);
+    class_setHelpName (binopIntegerDivide_class,    sym_math);
 }
 
 void binop3_destroy (void)
