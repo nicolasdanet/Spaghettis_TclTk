@@ -204,9 +204,14 @@ static void binopIntegerDivide_bang (t_binop *x)
     int n2 = (int)x->bo_f2 == 0 ? 1 : (int)x->bo_f2;
     int k;
     
-    n2 = PD_ABS (n2);
-    
-    if (n1 < 0) { n1 -= (n2 - 1); }
+    if (n2 > 0) {
+        if (n1 < 0) { n1 -= (n2 - 1); }
+    } else {
+        if (n1 < 0) { n1 = PD_ABS (n1); n2 = PD_ABS (n2); }
+        else {
+            n1 += (n2 - 1);
+        }
+    }
     
     k = n1 / n2;
     
