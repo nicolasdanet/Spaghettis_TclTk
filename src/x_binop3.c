@@ -173,13 +173,11 @@ static void binopIntegerModulo_bang (t_binop *x)
 {
     int n1 = (int)x->bo_f1;
     int n2 = (int)x->bo_f2 == 0 ? 1 : (int)x->bo_f2;
-    int k;
-        
-    n2 = PD_ABS (n2);
+    int k  = n1 % n2;
     
-    k = n1 % n2;
-    
-    if (k < 0) { k += n2; }
+    if (n2 > 0) {
+        if (k < 0) { k += n2; }
+    }
     
     outlet_float (x->bo_outlet, (t_float)k);
 }
