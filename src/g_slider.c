@@ -435,6 +435,10 @@ static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float 
     int containsY = (int)modifier & MODIFIER_INSIDE_Y;
     int k = x->x_isSteadyOnClick || (x->x_isVertical && containsY) || (!x->x_isVertical && containsX);
     
+    double f = slider_getValue (x);
+    
+    k |= (f > x->x_minimum) && (f < x->x_maximum);
+        
     if (k) {
     //
     int old = x->x_position;
