@@ -25,7 +25,7 @@
 #X f 5;
 #X obj 252 336 sqrt;
 #X text 12 72 Basic arithmetic operators.;
-#N canvas 832 40 443 295 more 0;
+#N canvas 832 40 446 486 more 0;
 #X obj 36 84 / 0;
 #X floatatom 36 48 5 0 0 1 - - -;
 #X f 5;
@@ -35,10 +35,18 @@
 #X floatatom 36 168 5 0 0 1 - - -;
 #X f 5;
 #X obj 36 240 print;
+#X text 12 288 Arithmetic operators output last value on bang.;
+#X obj 36 396 + 3;
+#X obj 96 336 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 432 print;
+#X msg 36 336 3;
 #X connect 0 0 2 0;
 #X connect 1 0 0 0;
 #X connect 4 0 6 0;
 #X connect 5 0 4 0;
+#X connect 8 0 10 0;
+#X connect 9 0 8 0;
+#X connect 11 0 8 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 324 276 pd more;
 #X text 24 24 arithmetic;
