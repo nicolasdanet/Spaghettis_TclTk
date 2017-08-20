@@ -88,6 +88,7 @@ int dollar_expandWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int a
 
 /* Avoid typing. */
 
+extern t_class *bindlist_class;
 extern t_class *block_class;
 extern t_class *canvas_class;
 extern t_class *catch_tilde_class;

@@ -155,8 +155,23 @@ void message_release (void)
     sym1 = sym2->s_next;
     
     if (sym2->s_thing) {
-        pd_free (sym2->s_thing);        /* Empty bindlists. */
+        if (pd_class (sym2->s_thing) == bindlist_class) { pd_free (sym2->s_thing); }
+        else {
+            PD_BUG; post_log ("%s", sym2->s_name);
+        }
     }
+    //
+    }
+    //
+    }
+    
+    for (i = 0; i < MESSAGE_HASH_SIZE; i++) {
+    //
+    sym1 = message_hashTable[i];
+    
+    while ((sym2 = sym1)) {
+    //
+    sym1 = sym2->s_next;
     
     if (!message_isStaticSymbol (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
     //
