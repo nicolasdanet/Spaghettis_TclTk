@@ -28,6 +28,7 @@ static t_class *atan_class;         /* Shared. */
 
 typedef struct _math {
     t_object    x_obj;              /* Must be the first. */
+    t_float     x_f;
     t_outlet    *x_outlet;
     } t_math;
 
@@ -50,9 +51,14 @@ static void *sin_new (void)
     return x;
 }
 
+static void sin_bang (t_math *x)
+{
+    outlet_float (x->x_outlet, sinf (x->x_f));
+}
+
 static void sin_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, sinf (f));
+    x->x_f = f; sin_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -68,9 +74,14 @@ static void *cos_new (void)
     return x;
 }
 
+static void cos_bang (t_math *x)
+{
+    outlet_float (x->x_outlet, cosf (x->x_f));
+}
+
 static void cos_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, cosf (f));
+    x->x_f = f; cos_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -86,12 +97,17 @@ static void *tan_new (void)
     return x;
 }
 
-static void tan_float (t_math *x, t_float f)
+static void tan_bang (t_math *x)
 {
-    t_float c = cosf (f);
-    t_float t = (t_float)(c == 0.0 ? 0.0 : sinf (f) / c);
+    t_float c = cosf (x->x_f);
+    t_float t = (t_float)(c == 0.0 ? 0.0 : sinf (x->x_f) / c);
     
     outlet_float (x->x_outlet, t);
+}
+
+static void tan_float (t_math *x, t_float f)
+{
+    x->x_f = f; tan_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -107,9 +123,14 @@ static void *log_new (void)
     return x;
 }
 
+static void log_bang (t_math *x)
+{
+    outlet_float (x->x_outlet, (t_float)(x->x_f > 0.0 ? logf (x->x_f) : -1000.0));
+}
+
 static void log_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, (t_float)(f > 0.0 ? logf (f) : -1000.0));
+    x->x_f = f; log_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -125,9 +146,14 @@ static void *exp_new (void)
     return x;
 }
 
+static void exp_bang (t_math *x)
+{
+    outlet_float (x->x_outlet, expf ((t_float)PD_MIN (x->x_f, MATH_MAXIMUM_LOGARITHM)));
+}
+
 static void exp_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, expf ((t_float)PD_MIN (f, MATH_MAXIMUM_LOGARITHM)));
+    x->x_f = f; exp_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -143,9 +169,14 @@ static void *abs_new (void)
     return x;
 }
 
+static void abs_bang (t_math *x)
+{
+    outlet_float (x->x_outlet, fabsf (x->x_f));
+}
+
 static void abs_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, fabsf (f));
+    x->x_f = f; abs_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -161,9 +192,14 @@ static void *sqrt_new (void)
     return x;
 }
 
+static void sqrt_bang (t_math *x)
+{
+    outlet_float (x->x_outlet, (t_float)(x->x_f > 0.0 ? sqrtf (x->x_f) : 0.0));
+}
+
 static void sqrt_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, (t_float)(f > 0.0 ? sqrtf (f) : 0.0));
+    x->x_f = f; sqrt_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -179,9 +215,14 @@ static void *wrap_new (void)
     return x;
 }
 
+static void wrap_bang (t_math *x)
+{
+    outlet_float (x->x_outlet, (t_float)(x->x_f - floor (x->x_f)));
+}
+
 static void wrap_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, (t_float)(f - floor (f)));
+    x->x_f = f; wrap_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -197,9 +238,14 @@ static void *atan_new (void)
     return x;
 }
 
+static void atan_bang (t_math *x)
+{
+    outlet_float (x->x_outlet, atanf (x->x_f));
+}
+
 static void atan_float (t_math *x, t_float f)
 {
-    outlet_float (x->x_outlet, atanf (f));
+    x->x_f = f; atan_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -270,7 +316,17 @@ void math_setup (void)
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
-        
+    
+    class_addBang (sin_class,       (t_method)sin_bang);
+    class_addBang (cos_class,       (t_method)cos_bang);
+    class_addBang (tan_class,       (t_method)tan_bang);
+    class_addBang (log_class,       (t_method)log_bang);
+    class_addBang (exp_class,       (t_method)exp_bang);
+    class_addBang (abs_class,       (t_method)abs_bang);
+    class_addBang (wrap_class,      (t_method)wrap_bang);
+    class_addBang (sqrt_class,      (t_method)sqrt_bang);
+    class_addBang (atan_class,      (t_method)atan_bang);
+    
     class_addFloat (sin_class,      (t_method)sin_float);  
     class_addFloat (cos_class,      (t_method)cos_float);
     class_addFloat (tan_class,      (t_method)tan_float);
