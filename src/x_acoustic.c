@@ -25,6 +25,7 @@ static t_class *dbtorms_class;      /* Shared. */
 
 typedef struct _acoustic {
     t_object    x_obj;              /* Must be the first. */
+    t_float     x_f;
     t_outlet    *x_outlet;
     } t_acoustic;
 
@@ -41,9 +42,14 @@ static void *mtof_new (void)
     return x;
 }
 
+static void mtof_bang (t_acoustic *x)
+{
+    outlet_float (x->x_outlet, math_midiToFrequency (x->x_f));
+}
+
 static void mtof_float (t_acoustic *x, t_float f)
 {
-    outlet_float (x->x_outlet, math_midiToFrequency (f));
+    x->x_f = f; mtof_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -59,9 +65,14 @@ static void *ftom_new (void)
     return x;
 }
 
+static void ftom_bang (t_acoustic *x)
+{
+    outlet_float (x->x_outlet, math_frequencyToMidi (x->x_f));
+}
+
 static void ftom_float (t_acoustic *x, t_float f)
 {
-    outlet_float (x->x_outlet, math_frequencyToMidi (f));
+    x->x_f = f; ftom_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -77,9 +88,14 @@ static void *powtodb_new (void)
     return x;
 }
 
+static void powtodb_bang (t_acoustic *x)
+{
+    outlet_float (x->x_outlet, math_powerToDecibel (x->x_f));
+}
+
 static void powtodb_float (t_acoustic *x, t_float f)
 {
-    outlet_float (x->x_outlet, math_powerToDecibel (f));
+    x->x_f = f; powtodb_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -95,9 +111,14 @@ static void *dbtopow_new (void)
     return x;
 }
 
+static void dbtopow_bang (t_acoustic *x)
+{
+    outlet_float (x->x_outlet, math_decibelToPower (x->x_f));
+}
+
 static void dbtopow_float (t_acoustic *x, t_float f)
 {
-    outlet_float (x->x_outlet, math_decibelToPower (f));
+    x->x_f = f; dbtopow_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,9 +134,14 @@ static void *rmstodb_new (void)
     return x;
 }
 
+static void rmstodb_bang (t_acoustic *x)
+{
+    outlet_float (x->x_outlet, math_rootMeanSquareToDecibel (x->x_f));
+}
+
 static void rmstodb_float (t_acoustic *x, t_float f)
 {
-    outlet_float (x->x_outlet, math_rootMeanSquareToDecibel (f));
+    x->x_f = f; rmstodb_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -131,9 +157,14 @@ static void *dbtorms_new (void)
     return x;
 }
 
+static void dbtorms_bang (t_acoustic *x)
+{
+    outlet_float (x->x_outlet, math_decibelToRootMeanSquare (x->x_f));
+}
+
 static void dbtorms_float (t_acoustic *x, t_float f)
 {
-    outlet_float (x->x_outlet, math_decibelToRootMeanSquare (f));
+    x->x_f = f; dbtorms_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -183,6 +214,13 @@ void acoustic_setup (void)
                         sizeof (t_acoustic),
                         CLASS_DEFAULT,
                         A_NULL);
+    
+    class_addBang (mtof_class, (t_method)mtof_bang);
+    class_addBang (ftom_class, (t_method)ftom_bang);
+    class_addBang (powtodb_class, (t_method)powtodb_bang);
+    class_addBang (dbtopow_class, (t_method)dbtopow_bang);
+    class_addBang (rmstodb_class, (t_method)rmstodb_bang);
+    class_addBang (dbtorms_class, (t_method)dbtorms_bang);
     
     class_addFloat (mtof_class, (t_method)mtof_float);
     class_addFloat (ftom_class, (t_method)ftom_float);
