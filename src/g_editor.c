@@ -231,7 +231,10 @@ void editor_motionProceed (t_editor *x, int a, int b, int m)
         int deltaX = a - endX;
         int deltaY = b - endY;
     
-        if (x->e_grabbed && x->e_grabbedOwner) {    /* Could be NULL (for instance to plot arrays). */
+        /* Could be NULL (for instance to plot arrays). */
+        /* For scalars the grabbed object is the painter. */
+        
+        if (x->e_grabbed && x->e_grabbedOwner && !class_hasPainterBehavior (pd_class (x->e_grabbed))) {
         //
         t_rectangle r;
 
