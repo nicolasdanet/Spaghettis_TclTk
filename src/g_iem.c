@@ -478,8 +478,9 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     if (symbol_isNil (s1)) { canSend = 0;    }
     if (symbol_isNil (s2)) { canReceive = 0; }
     
+    if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
+    
     if (canReceive) {
-        if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
         iem->iem_receive = s2;
         pd_bind (cast_pd (iem), iem->iem_receive);
     }
