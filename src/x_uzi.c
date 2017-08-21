@@ -71,7 +71,7 @@ static void *uzi_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc && IS_FLOAT (argv)) {
         x->x_count = GET_FLOAT (argv);
-        argc-- ; argv++;
+        argc--; argv++;
     }
     
     if (argc) {

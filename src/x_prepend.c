@@ -90,7 +90,7 @@ static void prepend_float (t_prepend *x, t_float f)
 
 static void prepend_symbol (t_prepend *x, t_symbol *s)
 {
-    t_atom a; SET_SYMBOL(&a, s); prepend_proceed (x, 1, &a);
+    t_atom a; SET_SYMBOL (&a, s); prepend_proceed (x, 1, &a);
 }
 
 static void prepend_pointer (t_prepend *x, t_gpointer *gp)

@@ -74,7 +74,7 @@ int object_setSnappedX (t_object *x, int n)
 {
     int k = object_getX (x);
     
-    if (snap_hasSnapToGrid ()) { n = snap_getSnapped (n); }
+    if (snap_hasSnapToGrid()) { n = snap_getSnapped (n); }
     
     object_setX (x, n);
     
@@ -85,7 +85,7 @@ int object_setSnappedY (t_object *x, int n)
 {
     int k = object_getY (x);
 
-    if (snap_hasSnapToGrid ()) { n = snap_getSnapped (n); }
+    if (snap_hasSnapToGrid()) { n = snap_getSnapped (n); }
     
     object_setY (x, n);
     

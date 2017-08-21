@@ -106,18 +106,18 @@ int outlet_getIndexAsSignal (t_outlet *x)
 
 void outlet_bang (t_outlet *x)
 {
-    if (instance_overflowPush ()) { error_stackOverflow(); }
+    if (instance_overflowPush()) { error_stackOverflow(); }
     else {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_bang (oc->oc_receiver); }
     }
     
-    instance_overflowPop ();
+    instance_overflowPop();
 }
 
 void outlet_pointer (t_outlet *x, t_gpointer *gp)
 {
-    if (instance_overflowPush ()) { error_stackOverflow(); }
+    if (instance_overflowPush()) { error_stackOverflow(); }
     else {
     //
     t_outconnect *oc = NULL;
@@ -134,51 +134,51 @@ void outlet_pointer (t_outlet *x, t_gpointer *gp)
     //
     }
     
-    instance_overflowPop ();
+    instance_overflowPop();
 }
 
 void outlet_float (t_outlet *x, t_float f)
 {
-    if (instance_overflowPush ()) { error_stackOverflow(); }
+    if (instance_overflowPush()) { error_stackOverflow(); }
     else {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_float (oc->oc_receiver, f); }
     }
     
-    instance_overflowPop ();
+    instance_overflowPop();
 }
 
 void outlet_symbol (t_outlet *x, t_symbol *s)
 {
-    if (instance_overflowPush ()) { error_stackOverflow(); }
+    if (instance_overflowPush()) { error_stackOverflow(); }
     else {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_symbol (oc->oc_receiver, s); }
     }
     
-    instance_overflowPop ();
+    instance_overflowPop();
 }
 
 void outlet_list (t_outlet *x, int argc, t_atom *argv)
 {
-    if (instance_overflowPush ()) { error_stackOverflow(); }
+    if (instance_overflowPush()) { error_stackOverflow(); }
     else {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_list (oc->oc_receiver, argc, argv); }
     }
     
-    instance_overflowPop ();
+    instance_overflowPop();
 }
 
 void outlet_anything (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (instance_overflowPush ()) { error_stackOverflow(); }
+    if (instance_overflowPush()) { error_stackOverflow(); }
     else {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_message (oc->oc_receiver, s, argc, argv); }
     }
     
-    instance_overflowPop ();
+    instance_overflowPop();
 }
 
 // -----------------------------------------------------------------------------------------------------------

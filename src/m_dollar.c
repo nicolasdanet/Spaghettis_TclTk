@@ -31,7 +31,12 @@ int dollar_getDollarZero (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int dollar_expandSymbolProceed (char *s, char *buffer, int size, int argc, t_atom *argv, t_glist *glist)
+static int dollar_expandSymbolProceed (char *s,
+    char *buffer,
+    int size,
+    int argc,
+    t_atom *argv,
+    t_glist *glist)
 {
     /* Note that atol return zero for an invalid number. */
     /* Note that atol return 1234 for '1234Foo'. */
