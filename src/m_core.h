@@ -102,6 +102,7 @@ extern t_class *scalar_class;
 extern t_class *send_tilde_class;
 extern t_class *struct_class;
 extern t_class *symbolinlet_class;
+extern t_class *template_class;
 extern t_class *text_class;
 extern t_class *textdefine_class;
 extern t_class *vinlet_class;
