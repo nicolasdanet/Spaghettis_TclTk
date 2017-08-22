@@ -1235,7 +1235,6 @@
 				17C519491F23195900113504 /* x_uzi.c */,
 				3749063D1D99754D00377F1E /* x_swap.c */,
 				374906171D99741000377F1E /* x_change.c */,
-				37DB520F1D97D03100FEEBE0 /* x_clip.c */,
 				374905EA1D9971C900377F1E /* x_value.c */,
 			);
 			name = Flow;
@@ -1428,6 +1427,7 @@
 				37FFF6871D97C17C00669135 /* x_binop2.c */,
 				37FFF6431D97BF0600669135 /* x_binop3.c */,
 				377CEF461DAA831E00E60461 /* x_random.c */,
+				37DB520F1D97D03100FEEBE0 /* x_clip.c */,
 				371526B51E49D03E00712D43 /* x_expr.c */,
 			);
 			name = Math;

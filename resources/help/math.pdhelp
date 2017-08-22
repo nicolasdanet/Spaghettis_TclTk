@@ -1,4 +1,4 @@
-#N canvas 536 154 534 355 12;
+#N canvas 536 154 571 356 12;
 #X text 12 312 See also:;
 #X obj 96 312 expr;
 #X obj 144 312 &&;
@@ -95,7 +95,7 @@
 #X connect 15 0 14 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 156 pd power;
-#N canvas 493 113 531 231 miscellaneous 0;
+#N canvas 493 113 596 233 miscellaneous 0;
 #X obj 144 132 abs;
 #X floatatom 24 180 5 0 0 1 - - -;
 #X f 5;
@@ -108,14 +108,19 @@
 #X f 5;
 #X floatatom 144 180 5 0 0 1 - - -;
 #X f 5;
-#X obj 252 24 hslider 128 15 -10 10 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 0;
-#X floatatom 252 60 6 0 0 1 - - -;
+#X obj 324 24 hslider 128 15 -10 10 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 0;
+#X floatatom 324 60 6 0 0 1 - - -;
 #X f 6;
-#X obj 252 132 wrap;
-#X floatatom 252 180 5 0 0 1 - - -;
-#X f 5;
-#X obj 324 132 expr $f1-floor($f1);
+#X obj 324 132 wrap;
 #X floatatom 324 180 5 0 0 1 - - -;
+#X f 5;
+#X obj 396 132 expr $f1-floor($f1);
+#X floatatom 396 180 5 0 0 1 - - -;
+#X f 5;
+#X obj 204 132 clip -10 10;
+#X floatatom 204 24 5 0 0 1 - - -;
+#X f 5;
+#X floatatom 204 180 5 0 0 1 - - -;
 #X f 5;
 #X connect 0 0 6 0;
 #X connect 3 0 1 0;
@@ -128,6 +133,8 @@
 #X connect 8 0 11 0;
 #X connect 9 0 10 0;
 #X connect 11 0 12 0;
+#X connect 13 0 15 0;
+#X connect 14 0 13 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 204 pd miscellaneous;
 #N canvas 532 157 513 281 modulo 0;
@@ -209,7 +216,6 @@
 #X text 216 132 Functions: log \, exp.;
 #X text 216 156 Functions: pow \, sqrt.;
 #X text 216 180 Functions: % \, mod \, div.;
-#X text 216 204 Functions: min \, max \, abs \, wrap.;
 #X text 12 276 < https://docs.python.org/3/tutorial/floatingpoint.html >.;
 #X f 58;
 #N canvas 855 267 436 202 more 0;
@@ -223,4 +229,5 @@
 #X connect 3 0 2 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 228 pd more;
+#X text 216 204 Functions: min \, max \, clip \, abs \, wrap.;
 #X coords 0 0 1 1 250 175 0 0 0;

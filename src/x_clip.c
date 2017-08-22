@@ -81,6 +81,8 @@ void clip_setup (void)
     class_addBang (c, (t_method)clip_bang);
     class_addFloat (c, (t_method)clip_float); 
     
+    class_setHelpName (c, sym_math);
+    
     clip_class = c;
 }
 
