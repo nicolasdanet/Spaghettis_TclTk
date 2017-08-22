@@ -1,4 +1,4 @@
-#N canvas 634 137 435 328 12;
+#N canvas 634 137 420 329 12;
 #X msg 36 108 45;
 #X obj 36 204 bang;
 #X text 12 72 Outputs a "bang" message whatever it receives.;
@@ -8,9 +8,9 @@
 #X text 12 288 See also:;
 #X obj 96 288 trigger;
 #X obj 36 240 print;
-#X msg 84 144 Is that launch the GBU-43/B MOAB?;
 #X obj 168 288 bang~;
+#X msg 84 144 Launch the GBU-43/B MOAB.;
 #X connect 0 0 1 0;
 #X connect 1 0 8 0;
-#X connect 9 0 1 0;
+#X connect 10 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;

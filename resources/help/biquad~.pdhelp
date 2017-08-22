@@ -22,7 +22,7 @@
 #X text 12 72 Two-Pole Two-Zero filter (Direct Form II with additions only).;
 #X f 63;
 #X obj 156 336 r \$0-biquad;
-#N canvas 495 278 450 190 more 0;
+#N canvas 415 422 434 179 more 0;
 #X msg 108 24 set 0 0;
 #X msg 36 24 clear;
 #X obj 36 132 s \$0-biquad;
