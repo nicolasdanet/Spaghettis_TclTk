@@ -1,4 +1,4 @@
-#N canvas 648 186 451 364 12;
+#N canvas 519 141 451 364 12;
 #X obj 36 204 mtof~;
 #X obj 36 180 ftom~;
 #X obj 168 180 dbtorms~;
@@ -28,9 +28,11 @@
 #X f 5;
 #X text 60 528 see also:;
 #X text 12 324 See also:;
-#X obj 96 324 mtof;
-#X text 12 72 Accoustic domain converters.;
-#X f 28;
+#X text 12 72 Mathematics into the acoustic domain.;
+#X f 37;
+#X obj 144 324 dbtorms;
+#X obj 96 324 ftom;
+#X obj 216 324 dbtopow;
 #X connect 0 0 12 0;
 #X connect 1 0 0 0;
 #X connect 2 0 6 0;
