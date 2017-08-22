@@ -1,4 +1,4 @@
-#N canvas 902 137 471 149 12;
+#N canvas 628 216 475 140 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 comment;
