@@ -28,7 +28,7 @@
 #X connect 10 0 3 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 396 228 pd edit;
-#X obj 60 156 cnv 15 50 50 \$0-from \$0-to empty 0 -7 0 10 #9999cc #000000;
+#X obj 36 108 cnv 15 50 50 \$0-from \$0-to empty 0 -7 0 10 #9999cc #000000;
 #X obj 204 156 s \$0-to;
 #X obj 204 180 r \$0-from;
 #X msg 204 108 getposition;
