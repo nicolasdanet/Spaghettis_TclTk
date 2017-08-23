@@ -80,7 +80,7 @@ proc _create {top name size up down save style} {
         
     ttk::frame      $top.f                          {*}[::styleFrame]
     ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
-    ttk::labelframe $top.f.bounds                   {*}[::styleLabelFrame]  -text [_ "Bounds"]
+    ttk::labelframe $top.f.bounds                   {*}[::styleLabelFrame]  -text [_ "Range"]
     
     pack $top.f                                     {*}[::packMain]
     pack $top.f.properties                          {*}[::packCategory]
