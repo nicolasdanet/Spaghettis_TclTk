@@ -559,6 +559,16 @@ void garray_resize (t_garray *x, t_float f)
     if (x->x_isUsedInDSP) { dsp_update(); }
 }
 
+static void garray_range (t_garray *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_float down = atom_getFloatAtIndex (0, argc, argv);
+    t_float up   = atom_getFloatAtIndex (1, argc, argv);
+    
+    garray_updateGraphRange (x, up, down);
+    garray_updateGraphWindow (x);
+    garray_redraw (x);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -818,6 +828,7 @@ void garray_setup (void)
     class_addMethod (c, (t_method)garray_read,          sym_read,           A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_write,         sym_write,          A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)garray_range,         sym_range,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)garray_fromDialog,    sym__arraydialog,   A_GIMME, A_NULL);
         
     #if PD_WITH_LEGACY
