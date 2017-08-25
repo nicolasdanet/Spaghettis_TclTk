@@ -78,7 +78,6 @@ proc removeFromScreen {top} {
 
 proc encoded   {x} { return @[string map {" " "@_" "$" "@d" ";" "@s" "," "@c" "@" "@@"} $x] }
 proc escaped   {x} { return [string map {"," "\\," ";" "\\;" "$" "\\$" " " "\\ "} $x] }
-proc expanded  {x} { return [string map {"," " \\, " ";" " \\; " "$" "\\$"} $x] }
 proc sanitized {x} { return [string map {" " "_" ";" "" "," "" "{" "" "}" "" "\\" ""} $x] }
 
 # ------------------------------------------------------------------------------------------------------------
