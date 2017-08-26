@@ -21,7 +21,9 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
     char *s = NULL; int size;
 
     box_getText (z, &s, &size);
-        
+    
+    if (object_isMessage (x)) { message_dirty ((t_message *)x); }
+    
     if (!object_isObject (x)) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }
     else {
     //

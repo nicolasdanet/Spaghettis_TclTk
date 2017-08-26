@@ -84,10 +84,9 @@ int symbol_isNilOrDash (t_symbol *s)
 
 t_symbol *symbol_dollarToHash (t_symbol *s)
 {
-    char t[PD_STRING + 1] = { 0 };
-    
     if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
     else {
+        char t[PD_STRING + 1] = { 0 };
         string_copy (t, PD_STRING, s->s_name);
         string_replaceCharacter (t, '$', '#');
         return gensym (t);
@@ -96,12 +95,30 @@ t_symbol *symbol_dollarToHash (t_symbol *s)
 
 t_symbol *symbol_hashToDollar (t_symbol *s)
 {
-    char t[PD_STRING + 1] = { 0 };
-    
     if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
     else {
+        char t[PD_STRING + 1] = { 0 };
         string_copy (t, PD_STRING, s->s_name);
         string_replaceCharacter (t, '#', '$');
+        return gensym (t);
+    }
+}
+
+/* Merge two dollars in just one. */
+
+t_symbol *symbol_replaceDoubleDollar (t_symbol *s)
+{
+    size_t size = strlen (s->s_name);
+    
+    if (size >= PD_STRING) { PD_BUG; return s; }
+    else {
+        char t[PD_STRING + 1] = { 0 };
+        char *p = s->s_name;
+        int i, j = 0;
+        for (i = 0; i < (int)size; i++, j++) {
+            t[j] = p[i];
+            if (p[i] == '$' && p[i + 1] == '$') { i++; }
+        }
         return gensym (t);
     }
 }

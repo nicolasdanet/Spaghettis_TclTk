@@ -42,6 +42,7 @@ int         symbol_isNilOrDash              (t_symbol *s);
 
 t_symbol    *symbol_dollarToHash            (t_symbol *s);
 t_symbol    *symbol_hashToDollar            (t_symbol *s);
+t_symbol    *symbol_replaceDoubleDollar     (t_symbol *s);
 t_symbol    *symbol_decode                  (t_symbol *s);
 t_symbol    *symbol_removeExtension         (t_symbol *s);
 

@@ -20,26 +20,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _messageresponder {
-    t_pd                mr_pd;                          /* MUST be the first. */
-    t_outlet            *mr_outlet;
-    } t_messageresponder;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-struct _message {
-    t_object            m_obj;                          /* MUST be the first. */
-    t_messageresponder  m_responder;
-    t_glist             *m_owner;
-    t_clock             *m_clock;
-    };
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static t_class *message_class;                          /* Shared. */
 static t_class *messageresponder_class;                 /* Shared. */
 
@@ -86,9 +66,44 @@ static void messageresponder_anything (t_messageresponder *x, t_symbol *s, int a
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void message_dirty (t_message *x)
+{
+    x->m_dirty = 1;
+}
+
+static t_buffer *message_getBuffer (t_message *x)
+{
+    if (x->m_dirty) {
+    //
+    buffer_clear (x->m_eval);
+    buffer_appendBuffer (x->m_eval, object_getBuffer (cast_object (x)));
+    
+    {
+        t_atom *a   = buffer_getAtoms (x->m_eval);
+        int i, size = buffer_getSize (x->m_eval);
+    
+        for (i = 0; i < size; i++) {
+            t_symbol *s = atom_getDollarSymbol (a + i);
+            if (s != &s_ && string_contains (s->s_name, "$$")) {
+                SET_SYMBOL (a + i, symbol_replaceDoubleDollar (s));
+            }
+        }
+    }
+    
+    x->m_dirty = 0;
+    //
+    }
+    
+    return x->m_eval;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void message_eval (t_message *x, int argc, t_atom *argv)
 {
-    t_buffer *b = object_getBuffer (cast_object (x));
+    t_buffer *b = message_getBuffer (x);
     t_atom *a   = NULL;
     int n       = buffer_getSize (b);
     
@@ -183,6 +198,7 @@ static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
+    message_dirty (x);
 }
 
 static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
@@ -191,6 +207,7 @@ static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
     buffer_appendSemicolon (object_getBuffer (cast_object (x)));
     box_retext (box_fetch (x->m_owner, &x->m_obj));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
+    message_dirty (x);
 }
 
 static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
@@ -198,6 +215,7 @@ static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
+    message_dirty (x);
 }
 
 static void message_addComma (t_message *x)
@@ -207,6 +225,7 @@ static void message_addComma (t_message *x)
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
+    message_dirty (x);
 }
 
 static void message_addSemicolon (t_message *x)
@@ -222,6 +241,7 @@ static void message_addDollar (t_message *x, t_float f)
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
+    message_dirty (x);
 }
 
 static void message_addDollarSymbol (t_message *x, t_symbol *s)
@@ -235,6 +255,7 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
     buffer_appendAtom (object_getBuffer (cast_object (x)), &a);
     box_retext (box_fetch (x->m_owner, cast_object (x)));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
+    message_dirty (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -300,6 +321,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     x->m_responder.mr_pd     = messageresponder_class;
     x->m_responder.mr_outlet = outlet_new (cast_object (x), &s_anything);
+    x->m_eval                = buffer_new();
     x->m_owner               = glist;
     x->m_clock               = clock_new ((void *)x, (t_method)message_taskTick);
     
@@ -307,10 +329,13 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     else {
         message_makeObjectMenu (x, argc, argv);
     }
+    
+    message_dirty (x);
 }
 
 static void message_free (t_message *x)
 {
+    buffer_free (x->m_eval);
     clock_free (x->m_clock);
 }
 

@@ -26,8 +26,8 @@
 #X msg 36 192 normalize 0.5;
 #X msg 36 120 read garray.txt;
 #X msg 36 408 \; \$0-array write \$1;
-#X msg 36 468 \; \$0-array rename \$0-george;
-#X msg 36 516 \; \$0-george rename \$0-array;
+#X msg 36 468 \; \$0-array rename $\$0-george;
+#X msg 36 516 \; \$0-george rename $\$0-array;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 2 0 3 0;
