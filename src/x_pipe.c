@@ -150,6 +150,15 @@ static void pipe_list (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
     callback_new (x, argc, argv);
 }
 
+static void pipe_anything (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)pipe_list, s, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void pipe_flush (t_pipe *x)      /* FIFO. */
 {
     while (x->x_callbacks) {
@@ -235,6 +244,7 @@ void pipe_setup (void)
             A_NULL);
             
     class_addList (c, (t_method)pipe_list);
+    class_addAnything (c, (t_method)pipe_anything);
     
     class_addMethod (c, (t_method)pipe_flush,   sym_flush,  A_NULL);
     class_addMethod (c, (t_method)pipe_clear,   sym_clear,  A_NULL);
