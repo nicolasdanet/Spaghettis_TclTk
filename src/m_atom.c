@@ -20,7 +20,7 @@ int dollar_getDollarZero (t_glist *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_error atom_symbolToQuotedString (t_atom *a, char *s, int size)
+static t_error atom_symbolToBackslashedString (t_atom *a, char *s, int size)
 {
     char *p = NULL;
     int quote = 0;
@@ -218,7 +218,7 @@ t_error atom_toString (t_atom *a, char *dest, int size)
     PD_ASSERT (size > 0);
     
     switch (a->a_type) {
-        case A_SYMBOL       : err = atom_symbolToQuotedString (a, dest, size);                  break;
+        case A_SYMBOL       : err = atom_symbolToBackslashedString (a, dest, size);                  break;
         case A_FLOAT        : err = string_sprintf (dest, (size_t)size, "%g", GET_FLOAT (a));   break;
         case A_DOLLAR       : err = string_sprintf (dest, (size_t)size, "$%d", GET_DOLLAR (a)); break;
         case A_DOLLARSYMBOL : err = string_copy (dest,  (size_t)size, GET_SYMBOL (a)->s_name);  break;

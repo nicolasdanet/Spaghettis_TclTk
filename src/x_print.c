@@ -52,6 +52,8 @@ static void print_list (t_print *x, t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
+    string_removeCharacter (t, '\\');
+    
     post ("%s: [ %s ]", x->x_name->s_name, t);                  // --
     
     PD_MEMORY_FREE (t);
@@ -60,6 +62,8 @@ static void print_list (t_print *x, t_symbol *s, int argc, t_atom *argv)
 static void print_anything (t_print *x, t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
+    
+    string_removeCharacter (t, '\\');
     
     post ("%s: %s [ %s ]", x->x_name->s_name, s->s_name, t);    // --
     

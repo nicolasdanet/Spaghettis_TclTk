@@ -28,6 +28,7 @@ t_symbol *symbol_withAtoms (int argc, t_atom *argv)
     if (argc == 1 && IS_SYMBOL (argv)) { s = GET_SYMBOL (argv); }
     else if (argc) {
         char *t = atom_atomsToString (argc, argv);
+        string_removeCharacter (t, '\\');
         s = gensym (t);
         PD_MEMORY_FREE (t);
     }

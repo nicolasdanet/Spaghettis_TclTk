@@ -195,6 +195,8 @@ void error_canNotMake (int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
     
+    string_removeCharacter (t, '\\');
+    
     post_error (PD_TRANSLATE ("%s: can't make [ %s ]"), PD_NAME_LOWERCASE, t);
     
     PD_MEMORY_FREE (t);
@@ -207,6 +209,8 @@ void error_canNotMake (int argc, t_atom *argv)
 void error_invalidArguments (t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
+    
+    string_removeCharacter (t, '\\');
     
     post_error (PD_TRANSLATE ("%s: [ %s ] invalid argument(s)"), s->s_name, t);
     
@@ -240,6 +244,8 @@ void warning_unusedOption (t_symbol *s1, t_symbol *s2)
 void warning_unusedArguments (t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
+    
+    string_removeCharacter (t, '\\');
     
     post_warning (PD_TRANSLATE ("%s: [ %s ] unused argument(s)"), s->s_name, t);
     

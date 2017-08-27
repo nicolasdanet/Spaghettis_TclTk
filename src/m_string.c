@@ -253,5 +253,17 @@ void string_replaceCharacter (char *s, char toBeReplaced, char c)
     while (*s) { if (*s == toBeReplaced) { *s = c; } s++; }
 }
 
+void string_removeCharacter (char *s, char toBeRemoved)
+{
+    PD_ASSERT (toBeRemoved);
+    
+    char *r = s;
+    char *w = s;
+    
+    while (*r) { *w = *r; r++; w += (*w != toBeRemoved); }
+    
+    *w = 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
