@@ -351,7 +351,7 @@ t_error buffer_getMessageAtWithTypeOfEnd (t_buffer *x, int n, int *start, int *e
     
     if (!err) {
     //
-    if (buffer_getAtomAtIndex (x, *end)) { *type = atom_getType (buffer_getAtomAtIndex (x, *end)); }
+    if (buffer_getAtomAtIndexChecked (x, *end)) { *type = atom_getType (buffer_getAtomAtIndex (x, *end)); }
     else {
         *type = A_NULL;
     }

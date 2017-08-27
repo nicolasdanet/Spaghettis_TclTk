@@ -50,7 +50,12 @@ t_atom *buffer_getAtoms (t_buffer *x)
 
 t_atom *buffer_getAtomAtIndex (t_buffer *x, int n)
 {
-    if (n >= 0 && n < buffer_getSize (x)) { return (buffer_getAtoms (x) + n); }
+    return x->b_vector + n;
+}
+
+t_atom *buffer_getAtomAtIndexChecked (t_buffer *x, int n)
+{
+    if (n >= 0 && n < buffer_getSize (x)) { return x->b_vector + n; }
     
     return NULL;
 }
@@ -181,14 +186,14 @@ void buffer_appendSemicolon (t_buffer *x)
 
 t_error buffer_setAtomAtIndex (t_buffer *x, int n, t_atom *a)
 {
-    t_atom *t = buffer_getAtomAtIndex (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
+    t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
     
     return PD_ERROR;
 }
 
 t_error buffer_copyAtomAtIndex (t_buffer *x, int n, t_atom *a)
 {
-    t_atom *t = buffer_getAtomAtIndex (x, n); if (t) { *a = *t; return PD_ERROR_NONE; }
+    t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t) { *a = *t; return PD_ERROR_NONE; }
     
     return PD_ERROR;
 }
