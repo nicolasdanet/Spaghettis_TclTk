@@ -1,60 +1,88 @@
-#N canvas 192 35 659 724 12;
-#X obj 148 9 delay;
-#X floatatom 153 416 0 0 0 0 - - -;
-#X text 193 10 - CALLBACK AFTER TIME DELAY;
-#X msg 20 182 stop;
-#X text 33 665 see also:;
-#X obj 158 664 timer;
-#X obj 110 664 metro;
-#X msg 20 206 2000;
-#X obj 21 470 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
-#X obj 20 160 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
-#X obj 165 640 del;
-#X text 42 640 Also known as:;
-#X text 396 657 updated for Pd version 0.45;
-#X text 41 157 bang: start;
-#X text 80 180 stop: cancel the delay;
-#X text 79 206 number: set delay time and start;
-#X text 182 417 <-- number in inlet: set delay time but don't start
-;
-#X text 207 444 <-- optional creation arguments:;
-#X obj 20 443 delay 1000 1 msec;
-#X msg 20 232 tempo 0.5 msec;
-#X text 256 463 - delay time (float);
-#X text 257 481 - tempo (float) and time unit (symbol) as in "tempo"
-message, f 31;
-#X obj 299 545 delay 1 60 permin;
-#X text 39 536 example: specify a delay of one beat at 60 beats per
-minute, f 31;
-#X obj 330 602 delay 1 1 persec;
-#X obj 330 578 delay 1 1 sec;
-#X obj 471 578 delay 1 44100 samp;
-#X obj 471 602 delay 44100 1 samp;
-#X obj 330 625 delay 0.01676 1 min;
-#X text 39 577 other possible ways to get a one-second delay (but the
-rightmost ones are sample-rate dependent), f 35;
-#X text 70 35 The delay object sends a bang to its outlet after a delay
-in milliseconds specified by its right inlet or its creation argument.
-Sending a bang to a delay which is already set will reschedule its
-output \, replacing any previous setting.;
-#X text 67 112 Delays are in millisconds by default \, but you can
-set the time units in the creation arguments or with a "tempo" message.
-, f 63;
-#X text 142 366 If the tempo is changed while the delay is in progress
-\, the change only applies to the remaining fraction of the delay.
-;
-#X text 150 232 Set tempo. Units can be miliseconds (msec for short)
-\, seconds (sec) \, minutes (min) or samples (samp). In this example
-the unit is set to 1/2 millisecond so that '1000' gives a delay of
-500 msec (1/2 second). Equivalently you can say "tempo 2 permsec" or
-even "120000 permin". A more traditionally musical way to specify a
-one-second delay would be "delay 1" with "tempo 60 permin" as in the
-second example below.;
-#X connect 1 0 18 1;
-#X connect 3 0 18 0;
-#X connect 7 0 18 0;
-#X connect 9 0 18 0;
+#N canvas 534 191 390 346 12;
+#X msg 132 108 stop;
+#X obj 204 300 timer;
+#X obj 144 300 metro;
+#X msg 72 108 2000;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 delay;
+#X text 12 300 See also:;
+#X obj 96 300 pipe;
+#X text 12 72 Sends a bang to its outlet after a delay.;
+#N canvas 727 236 528 409 more 0;
+#X obj 36 120 delay 500;
+#X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 168 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X msg 72 48 unit 4 millisecond;
+#X text 12 12 Unit of time can be changed.;
+#X text 12 204 Interrupted \, a delay stops and simply reschedules the bang.;
+#X f 59;
+#X obj 36 324 delay 1 1 second;
+#X msg 36 240 3600;
+#X obj 36 360 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X msg 108 240 1;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
+#X connect 3 0 0 0;
+#X connect 6 0 8 0;
+#X connect 7 0 6 0;
+#X connect 9 0 6 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 264 192 pd more;
+#X obj 36 216 delay 1000;
+#X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 264 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#N canvas 527 109 536 606 units 0;
+#X obj 36 228 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 300 228 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 300 336 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 552 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 300 552 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 444 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 300 444 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 336 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 192 del 1 120 perminute;
+#X obj 300 192 del 2 4 persecond;
+#X obj 300 300 del 5 100 millisecond;
+#X obj 36 300 del 1000 2 permillisecond;
+#X obj 36 408 del 0.5 1 second;
+#X obj 300 408 del 1 0.5 second;
+#X obj 300 516 del 10 2205 sample;
+#X obj 36 516 del 1 22050 sample;
+#X obj 36 24 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 60 s \$0-bng;
+#X obj 36 156 r \$0-bng;
+#X obj 300 156 r \$0-bng;
+#X obj 36 264 r \$0-bng;
+#X obj 300 264 r \$0-bng;
+#X obj 36 372 r \$0-bng;
+#X obj 300 372 r \$0-bng;
+#X obj 36 480 r \$0-bng;
+#X obj 300 480 r \$0-bng;
+#X connect 8 0 0 0;
+#X connect 9 0 1 0;
+#X connect 10 0 2 0;
+#X connect 11 0 7 0;
+#X connect 12 0 5 0;
+#X connect 13 0 6 0;
+#X connect 14 0 4 0;
+#X connect 15 0 3 0;
+#X connect 16 0 17 0;
 #X connect 18 0 8 0;
-#X connect 19 0 18 0;
+#X connect 19 0 9 0;
+#X connect 20 0 11 0;
+#X connect 21 0 10 0;
+#X connect 22 0 12 0;
+#X connect 23 0 13 0;
+#X connect 24 0 15 0;
+#X connect 25 0 14 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 264 216 pd units;
+#X floatatom 132 180 5 0 0 1 - - -;
+#X f 5;
+#X connect 0 0 11 0;
+#X connect 3 0 11 0;
+#X connect 11 0 13 0;
+#X connect 12 0 11 0;
+#X connect 15 0 11 1;
+#X coords 0 0 1 1 250 175 0 0 0;

@@ -1,4 +1,4 @@
-#N canvas 514 88 432 389 12;
+#N canvas 514 88 402 387 12;
 #X obj 36 252 pipe 2000;
 #X msg 108 108 flush;
 #X msg 180 108 clear;
@@ -8,7 +8,7 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 pipe;
-#N canvas 685 99 645 483 more 0;
+#N canvas 685 99 607 490 more 0;
 #X obj 264 432 print;
 #X obj 264 348 pipe 1 2 Liline 1000;
 #X obj 264 216 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
