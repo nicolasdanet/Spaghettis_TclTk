@@ -36,6 +36,8 @@ typedef struct _pipe {
     t_object                x_obj;                  /* Must be the first. */
     t_float                 x_delay;
     int                     x_size;
+    t_float                 x_unit;
+    t_symbol                *x_unitName;
     t_atomoutlet            *x_vector;
     t_pipecallback          *x_callbacks;
     } t_pipe;
@@ -43,6 +45,11 @@ typedef struct _pipe {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+t_error clock_parseUnit (t_float,  t_symbol *, t_float *, int *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static void callback_free (t_pipecallback *);
 
@@ -87,6 +94,11 @@ static void callback_new (t_pipe *x, int argc, t_atom *argv)
     h->h_owner      = x;
     h->h_next       = x->x_callbacks;
     
+    if (x->x_unitName != &s_) {
+        t_error err = clock_setUnitParsed (h->h_clock, x->x_unit, x->x_unitName);
+        PD_UNUSED (err); PD_ASSERT (!err);
+    }
+    
     for (i = 0; i < x->x_size; i++) {
     
         t_atomoutlet *a = x->x_vector + i;
@@ -114,6 +126,25 @@ static void callback_free (t_pipecallback *h)
     PD_MEMORY_FREE (h->h_gpointers);
     PD_MEMORY_FREE (h->h_atoms);
     PD_MEMORY_FREE (h);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static int pipe_unitIsValid (t_float f, t_symbol *unitName, int verbose)
+{
+    if (f != 0.0 && unitName != &s_) {
+    //
+    int n; t_float t; t_error err = clock_parseUnit (f, unitName, &t, &n);
+    
+    if (err && verbose) { error_invalid (sym_pipe, sym_unit); }
+    
+    return (!err);
+    //
+    }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -178,6 +209,13 @@ static void pipe_clear (t_pipe *x)
     t_pipecallback *h = NULL; while ((h = x->x_callbacks)) { x->x_callbacks = h->h_next; callback_free (h); }
 }
 
+/* Note that float arguments are always passed at last. */
+
+static void pipe_unit (t_pipe *x, t_symbol *unitName, t_float f)
+{
+    if (pipe_unitIsValid (f, unitName, 1)) { x->x_unit = f; x->x_unitName = unitName; }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -187,15 +225,29 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     t_pipe *x = (t_pipe *)pd_new (pipe_class);
     int i;
     
-    x->x_delay = (t_float)0.0;
-        
+    x->x_delay    = (t_float)0.0;
+    x->x_unit     = (t_float)0.0;
+    x->x_unitName = &s_;
+    
+    if (argc > 2) {
+    //
+    t_float f = atom_getFloatAtIndex (argc - 2, argc, argv);
+    t_symbol *unitName = atom_getSymbolAtIndex (argc - 1, argc, argv);
+    if (pipe_unitIsValid (f, unitName, 0)) {
+        x->x_unit     = f;
+        x->x_unitName = unitName;
+        argc -= 2;
+    }
+    //
+    }
+    
     if (argc) {
     //
     t_atom *a = argv + (argc - 1); if (IS_FLOAT (a)) { x->x_delay = GET_FLOAT (a); argc--; }
     //
     }
 
-    x->x_size   = PD_MAX (1, argc);     
+    x->x_size   = PD_MAX (1, argc);
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
     if (!argc) {
@@ -248,7 +300,8 @@ void pipe_setup (void)
     
     class_addMethod (c, (t_method)pipe_flush,   sym_flush,  A_NULL);
     class_addMethod (c, (t_method)pipe_clear,   sym_clear,  A_NULL);
-    
+    class_addMethod (c, (t_method)pipe_unit,    sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+
     pipe_class = c;
 }
 
