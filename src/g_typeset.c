@@ -268,6 +268,21 @@ static void box_typesetSlice (t_box *x, t_typesethelper *p)
     box_typesetAppendLine (x, p);
 }
 
+/* An ending backslash breaks the interpreter. */
+
+static char *box_typesetChecked (t_typesethelper *p)
+{
+    int n = PD_MAX (0, p->p_typesetIndex - 1);
+    
+    if (p->p_typeset[n] == '\\') {
+    //
+    p->p_typeset[n] = '/';
+    //
+    }
+    
+    return p->p_typeset;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -317,7 +332,7 @@ static void box_sendCreate (t_box *x, t_typesethelper *p)
                     x->box_tag,
                     (int)(glist_getPixelX (x->box_owner, x->box_object) + BOX_MARGIN_LEFT), 
                     (int)(glist_getPixelY (x->box_owner, x->box_object) + BOX_MARGIN_TOP),
-                    p->p_typeset, 
+                    box_typesetChecked (p),
                     font_getHostFontSize (p->p_fontSize),
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
@@ -329,7 +344,7 @@ static void box_sendUpdate (t_box *x, t_typesethelper *p)
     gui_vAdd ("::ui_box::setText %s.c %s {%s}\n",                       // --
                     glist_getTagAsString (glist),
                     x->box_tag,
-                    p->p_typeset);
+                    box_typesetChecked (p));
                 
     if (x->box_isActivated) {
     
@@ -371,7 +386,7 @@ int box_send (t_box *x, int action, int a, int b)
     
     int indexOfMouse = box_typeset (x, box_typesetAllocate (x, a, b, &p));
     int resized      = box_typesetHasBeenResized (x, &p);
-        
+    
     if (action == BOX_CHECK)       { x->box_checked = 1;     }   /* Required only once at creation time. */
     else if (action == BOX_CREATE) { box_sendCreate (x, &p); }
     else if (action == BOX_UPDATE) { 
