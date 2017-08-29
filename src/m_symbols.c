@@ -210,6 +210,7 @@ t_symbol *sym_bp__tilde__;
 t_symbol *sym_bundle;
 t_symbol *sym_buttonsnumber;
 t_symbol *sym_callback;
+t_symbol *sym_cancel;
 t_symbol *sym_canvas;
 t_symbol *sym_canvasmaker;
 t_symbol *sym_catch__tilde__;
@@ -815,6 +816,7 @@ void symbols_initialize (void)
     sym_bundle                                  = gensym ("bundle");
     sym_buttonsnumber                           = gensym ("buttonsnumber");
     sym_callback                                = gensym ("callback");
+    sym_cancel                                  = gensym ("cancel");
     sym_canvas                                  = gensym ("canvas");
     sym_canvasmaker                             = gensym ("canvasmaker");
     sym_catch__tilde__                          = gensym ("catch~");

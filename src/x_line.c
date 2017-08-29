@@ -117,7 +117,7 @@ static void line_floatGrain (t_line *x, t_float f)
     x->x_grain = (f <= 0.0 ? (t_float)LINE_DEFAULT_GRAIN : f);
 }
 
-static void line_stop (t_line *x)
+static void line_cancel (t_line *x)
 {
     line_set (x, x->x_valueStart);
 }
@@ -177,9 +177,15 @@ void line_setup (void)
         
     class_addMethod (c, (t_method)line_floatRamp,   sym__inlet2,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)line_floatGrain,  sym__inlet3,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)line_stop,        sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)line_cancel,      sym_cancel,     A_NULL);
     class_addMethod (c, (t_method)line_set,         sym_set,        A_FLOAT, A_NULL);
 
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)line_cancel,      sym_stop,       A_NULL);
+    
+    #endif
+    
     line_class = c;
 }
 

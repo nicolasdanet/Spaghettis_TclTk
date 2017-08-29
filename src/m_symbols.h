@@ -210,6 +210,7 @@ extern t_symbol *sym_bp__tilde__;
 extern t_symbol *sym_bundle;
 extern t_symbol *sym_buttonsnumber;
 extern t_symbol *sym_callback;
+extern t_symbol *sym_cancel;
 extern t_symbol *sym_canvas;
 extern t_symbol *sym_canvasmaker;
 extern t_symbol *sym_catch__tilde__;
