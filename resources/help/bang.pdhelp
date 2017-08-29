@@ -10,6 +10,7 @@
 #X obj 36 240 print;
 #X obj 168 288 bang~;
 #X msg 84 144 Launch the GBU-43/B MOAB.;
+#X obj 228 288 int;
 #X connect 0 0 1 0;
 #X connect 1 0 8 0;
 #X connect 10 0 1 0;

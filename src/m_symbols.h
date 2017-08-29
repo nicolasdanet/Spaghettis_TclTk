@@ -326,7 +326,6 @@ extern t_symbol *sym_line;
 extern t_symbol *sym_line__tilde__;
 extern t_symbol *sym_linear;
 extern t_symbol *sym_linewidth;
-extern t_symbol *sym_list;
 extern t_symbol *sym_list__space__append;
 extern t_symbol *sym_list__space__fromsymbol;
 extern t_symbol *sym_list__space__iterate;

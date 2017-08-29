@@ -326,7 +326,6 @@ t_symbol *sym_line;
 t_symbol *sym_line__tilde__;
 t_symbol *sym_linear;
 t_symbol *sym_linewidth;
-t_symbol *sym_list;
 t_symbol *sym_list__space__append;
 t_symbol *sym_list__space__fromsymbol;
 t_symbol *sym_list__space__iterate;
@@ -932,7 +931,6 @@ void symbols_initialize (void)
     sym_line__tilde__                           = gensym ("line~");
     sym_linear                                  = gensym ("linear");
     sym_linewidth                               = gensym ("linewidth");
-    sym_list                                    = gensym ("list");
     sym_list__space__append                     = gensym ("list append");
     sym_list__space__fromsymbol                 = gensym ("list fromsymbol");
     sym_list__space__iterate                    = gensym ("list iterate");
