@@ -1,0 +1,13 @@
+#N canvas 513 462 495 153 12;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 freeze;
+#X text 12 72 Make a patch unchangeable (editable but not savable).;
+#X obj 36 108 freeze;
+#N canvas 556 225 479 98 more 0;
+#X obj 36 48 freeze 1;
+#X text 12 12 Append a dummy argument (with an editor) to block it.;
+#X f 54;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 120 108 pd more;
+#X coords 0 0 1 1 250 175 0 0 0;
