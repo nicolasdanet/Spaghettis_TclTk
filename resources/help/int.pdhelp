@@ -34,6 +34,7 @@
 #X obj 96 312 bang;
 #X text 12 72 Stores (casts to) an integer.;
 #X f 31;
+#X obj 264 312 value;
 #X connect 0 0 1 0;
 #X connect 1 0 9 0;
 #X connect 2 0 1 0;
