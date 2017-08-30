@@ -1,3 +1,4 @@
+#N struct 1006-template float x float y text z;
 #N canvas 417 114 541 695 12;
 #X obj 96 648 list;
 #X obj 36 132 text get;
@@ -295,6 +296,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 384 432 pd \$0-template;
 #N canvas 482 165 500 350 \$0-data 0;
+#X scalar 1006-template 20 20 \; bijou \\\; caillou \\\; chou \\\; genou \\\; hibou \\\; joujou \\\; pou \\\; \;;
 #X coords 0 0 1 1 301 154 1 0 0;
 #X restore 36 300 pd \$0-data;
 #N canvas 682 160 652 493 init 0;
@@ -433,6 +435,7 @@
 #X text 216 180 Insert a message.;
 #X text 216 204 Delete a message.;
 #X text 216 228 Get the number of messages.;
+#X obj 348 648 metro;
 #X connect 25 0 28 0;
 #X connect 26 0 28 0;
 #X connect 27 0 28 0;

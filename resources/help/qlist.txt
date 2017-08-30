@@ -1,3 +1,4 @@
-this text file is read by qlist.pd;
-1000 that should explain everything;
+this ping;
+1000 that pong;
+1000 1234 this ping;
 1000;

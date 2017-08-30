@@ -203,11 +203,15 @@ void qlist_append (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 
 void qlist_read (t_qlist *x, t_symbol *s)
 {
+    if (s != &s_) {
+    //
     t_atom a;
     SET_SYMBOL (&a, s);
     qlist_clear (x);
     textbuffer_read (&x->ql_textbuffer, sym_read, 1, &a);
     textbuffer_update (&x->ql_textbuffer);
+    //
+    }
 }
 
 void qlist_write (t_qlist *x, t_symbol *s)
@@ -232,7 +236,7 @@ static void qlist_unit (t_qlist *x, t_symbol *unitName, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *qlist_new (void)
+static void *qlist_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_qlist *x = (t_qlist *)pd_new (qlist_class);
     
@@ -244,6 +248,8 @@ static void *qlist_new (void)
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
     x->ql_clock          = clock_new ((void *)x, (t_method)qlist_task);
 
+    if (argc) { qlist_read (x, symbol_withAtoms (argc, argv)); }
+    
     return x;
 }
 
@@ -266,6 +272,7 @@ void qlist_setup (void)
             (t_method)qlist_free,
             sizeof (t_qlist),
             CLASS_DEFAULT,
+            A_GIMME,
             A_NULL);
     
     class_addBang (c, (t_method)qlist_bang);
