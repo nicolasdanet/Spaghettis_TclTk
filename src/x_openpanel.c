@@ -108,7 +108,7 @@ void openpanel_setup (void)
     class_addList (c, (t_method)openpanel_list);
     class_addAnything (c, (t_method)openpanel_anything);
     
-    class_addMethod (c, (t_method)openpanel_callback, sym_callback, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)openpanel_callback, sym__callback, A_SYMBOL, A_NULL);
     
     openpanel_class = c;
 }

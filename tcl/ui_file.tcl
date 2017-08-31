@@ -141,7 +141,7 @@ proc openPanel {target directory} {
     set filename [tk_getOpenFile -initialdir $directory]
     
     if {$filename ne ""} {
-        ::ui_interface::pdsend "$target callback [::escaped $filename]"
+        ::ui_interface::pdsend "$target _callback [::escaped $filename]"
     }
 }
 
@@ -156,7 +156,7 @@ proc savePanel {target directory} {
     set filename [tk_getSaveFile -initialdir $directory]
     
     if {$filename ne ""} {
-        ::ui_interface::pdsend "$target callback [::escaped $filename]"
+        ::ui_interface::pdsend "$target _callback [::escaped $filename]"
     }
 }
 
