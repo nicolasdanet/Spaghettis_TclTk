@@ -1,4 +1,4 @@
-#N canvas 483 73 476 457 12;
+#N canvas 483 73 481 448 12;
 #X obj 36 192 print;
 #X obj 36 348 print;
 #X obj 36 312 makefilename dog%s.aif;

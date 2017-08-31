@@ -19,11 +19,11 @@ static t_class *makefilename_class;                 /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _makefilename {
-    t_object        x_obj;                          /* Must be the first. */
-    t_atomtype      x_typeRequired;
-    int             x_isIntegerCastRequired;
-    t_symbol        *x_format;
-    t_outlet        *x_outlet;
+    t_object    x_obj;                              /* Must be the first. */
+    t_atomtype  x_typeRequired;
+    int         x_isIntegerCastRequired;
+    t_symbol    *x_format;
+    t_outlet    *x_outlet;
     } t_makefilename;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -119,11 +119,6 @@ static void makefilename_symbol (t_makefilename *x, t_symbol *s)
     }
 }
 
-static void makefilename_set (t_makefilename *x, t_symbol *s)
-{
-    x->x_format = s; if (makefilename_scanFormat (x)) { error_invalid (sym_makefilename, sym_format); }
-}
-
 static void makefilename_list (t_makefilename *x, t_symbol *s, int argc, t_atom *argv)
 {
     makefilename_symbol (x, symbol_withAtoms (argc, argv));
@@ -138,17 +133,28 @@ static void makefilename_anything (t_makefilename *x, t_symbol *s, int argc, t_a
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *makefilename_new (t_symbol *s)
+static void makefilename_set (t_makefilename *x, t_symbol *dummy, int argc, t_atom *argv)
+{
+    x->x_format = symbol_withAtoms (argc, argv);
+    
+    if (makefilename_scanFormat (x)) { error_invalid (sym_makefilename, sym_format); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void *makefilename_new (t_symbol *dummy, int argc, t_atom *argv)
 {
     t_makefilename *x = (t_makefilename *)pd_new (makefilename_class);
     
-    PD_ASSERT (s);
+    t_symbol *t = symbol_withAtoms (argc, argv);
     
-    if (s == &s_) { s = sym_file__dot____percent__d; }
+    if (t == &s_) { t = sym_file__dot____percent__d; }
         
     x->x_typeRequired           = A_NULL;
     x->x_isIntegerCastRequired  = 0;
-    x->x_format                 = s;
+    x->x_format                 = t;
     x->x_outlet                 = outlet_new (cast_object (x), &s_symbol);
     
     if (makefilename_scanFormat (x)) { error_invalid (sym_makefilename, sym_format); }
@@ -169,7 +175,7 @@ void makefilename_setup (void)
             NULL,
             sizeof (t_makefilename),
             CLASS_DEFAULT,
-            A_DEFSYMBOL,
+            A_GIMME,
             A_NULL);
             
     class_addFloat (c, (t_method)makefilename_float);
@@ -177,7 +183,7 @@ void makefilename_setup (void)
     class_addList (c, (t_method)makefilename_list);
     class_addAnything (c, (t_method)makefilename_anything);
     
-    class_addMethod (c, (t_method)makefilename_set, sym_set, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)makefilename_set, sym_set, A_GIMME, A_NULL);
     
     makefilename_class = c;
 }
