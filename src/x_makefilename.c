@@ -124,6 +124,16 @@ static void makefilename_set (t_makefilename *x, t_symbol *s)
     x->x_format = s; if (makefilename_scanFormat (x)) { error_invalid (sym_makefilename, sym_format); }
 }
 
+static void makefilename_list (t_makefilename *x, t_symbol *s, int argc, t_atom *argv)
+{
+    makefilename_symbol (x, symbol_withAtoms (argc, argv));
+}
+
+static void makefilename_anything (t_makefilename *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)makefilename_list, s, argc, argv);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -164,6 +174,8 @@ void makefilename_setup (void)
             
     class_addFloat (c, (t_method)makefilename_float);
     class_addSymbol (c, (t_method)makefilename_symbol);
+    class_addList (c, (t_method)makefilename_list);
+    class_addAnything (c, (t_method)makefilename_anything);
     
     class_addMethod (c, (t_method)makefilename_set, sym_set, A_SYMBOL, A_NULL);
     
