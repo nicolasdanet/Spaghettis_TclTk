@@ -48,6 +48,20 @@ static void openpanel_symbol (t_openpanel *x, t_symbol *s)
                     s->s_name);
 }
 
+static void openpanel_list (t_openpanel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    openpanel_symbol (x, symbol_withAtoms (argc, argv));
+}
+
+static void openpanel_anything (t_openpanel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)openpanel_list, s, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void openpanel_callback (t_openpanel *x, t_symbol *s)
 {
     outlet_symbol (x->x_outlet, s);
@@ -91,6 +105,8 @@ void openpanel_setup (void)
             
     class_addBang (c, (t_method)openpanel_bang);
     class_addSymbol (c, (t_method)openpanel_symbol);
+    class_addList (c, (t_method)openpanel_list);
+    class_addAnything (c, (t_method)openpanel_anything);
     
     class_addMethod (c, (t_method)openpanel_callback, sym_callback, A_SYMBOL, A_NULL);
     
