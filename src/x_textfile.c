@@ -52,7 +52,7 @@ static void textfile_rewind (t_qlist *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *textfile_new (void)
+static void *textfile_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_qlist *x = (t_qlist *)pd_new (textfile_class);
     
@@ -61,7 +61,9 @@ static void *textfile_new (void)
     x->ql_indexOfMessage = 0;
     x->ql_outletLeft     = outlet_new (cast_object (x), &s_list);
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
-
+    
+    if (argc) { qlist_read (x, symbol_withAtoms (argc, argv)); }
+    
     return x;
 }
 
@@ -78,6 +80,7 @@ void textfile_setup (void)
             (t_method)textbuffer_free,
             sizeof (t_qlist),
             CLASS_DEFAULT,
+            A_GIMME,
             A_NULL);
     
     class_addBang (c, (t_method)textfile_bang);

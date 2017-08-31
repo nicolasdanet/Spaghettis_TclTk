@@ -46,12 +46,13 @@
 #X obj 240 336 metro;
 #N canvas 460 380 373 310 edit 0;
 #X obj 36 264 qlist;
-#X msg 60 204 write /tmp/qlist.txt;
+#X msg 36 204 write /tmp/qlist.txt;
 #X msg 36 24 clear;
 #X msg 36 96 add 500 this is another message;
 #X msg 36 60 add that is a message;
 #X msg 36 132 append 1000 \, append that;
 #X msg 36 168 add is the end;
+#X connect 1 0 0 0;
 #X connect 2 0 0 0;
 #X connect 3 0 0 0;
 #X connect 4 0 0 0;
