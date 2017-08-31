@@ -1,16 +1,27 @@
-#N canvas 683 185 533 321 12;
-#X obj 79 213 loadbang;
-#X floatatom 79 262 5 0 0 0 - - -, f 5;
-#X obj 21 18 loadbang;
-#X text 108 18 - send a "bang" message on load;
-#X msg 79 238 123;
-#X text 31 59 The loadbang object outputs a 'bang' message when the
-containing patch is opened as a document or included in another patch
-as an abstraction.;
-#X text 29 121 Loadbangs within abstractions send their "bang" messages
-before those of loadbangs in the calling patch. Otherwise \, the order
-in which the "bangs" are sent from two loadbang objects is undefined.
-;
-#X text 284 265 updated for Pd version 0.47;
-#X connect 0 0 4 0;
-#X connect 4 0 1 0;
+#N canvas 632 187 331 287 12;
+#X obj 36 108 loadbang;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 12 72 Send a "bang" message on load.;
+#X text 24 24 loadbang;
+#X msg 36 144 Hello!;
+#X obj 36 204 print;
+#X text 12 252 See also:;
+#X obj 96 252 trigger;
+#X obj 168 252 select;
+#N canvas 477 288 493 201 more 0;
+#X obj 36 48 bng 15 250 50 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 72 48 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
+#X obj 240 48 nbx 5 40 0 127 0 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 72 127;
+#X obj 108 48 hradio 15 1 1 8 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 4;
+#X text 12 12 Some of the graphic objects contain a loadbang setting.;
+#X obj 36 156 print;
+#X connect 0 0 5 0;
+#X connect 1 0 5 0;
+#X connect 2 0 5 0;
+#X connect 3 0 5 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 240 204 pd more;
+#X connect 0 0 5 0;
+#X connect 5 0 6 0;
+#X coords 0 0 1 1 250 175 0 0 0;
