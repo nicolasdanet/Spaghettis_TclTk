@@ -1,4 +1,4 @@
-#N canvas 483 73 481 448 12;
+#N canvas 483 73 524 474 12;
 #X obj 36 192 print;
 #X obj 36 348 print;
 #X obj 36 312 makefilename dog%s.aif;
@@ -45,14 +45,16 @@
 #X connect 19 0 9 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 360 312 pd more;
-#X text 12 408 See also:;
-#X obj 96 408 openpanel;
-#X obj 180 408 savepanel;
+#X text 12 432 See also:;
+#X obj 96 432 openpanel;
+#X obj 180 432 savepanel;
 #X floatatom 36 108 5 0 0 1 - - -;
 #X f 5;
 #X msg 36 252 meat;
 #X msg 96 252 hair;
 #X obj 36 156 makefilename dog%d.aif;
+#X text 276 552 comment;
+#X text 12 396 < https://en.wikipedia.org/wiki/Printf_format_string >.;
 #X connect 2 0 1 0;
 #X connect 11 0 14 0;
 #X connect 12 0 2 0;
