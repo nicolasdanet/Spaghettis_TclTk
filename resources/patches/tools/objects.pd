@@ -110,8 +110,6 @@
 #X text 130 1342 - read and write tables to soundfiles;
 #X obj 30 1455 loadbang;
 #X text 130 1455 - bang on load;
-#X obj 30 1481 serial;
-#X text 130 1481 - serial device control for NT only;
 #X obj 30 1507 netsend;
 #X text 130 1507 - send messages over the internet;
 #X obj 30 1530 netreceive;
