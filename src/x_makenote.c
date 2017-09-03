@@ -167,6 +167,7 @@ void makenote_setup (void)
     class_addFloat (c, (t_method)makenote_float);
     
     class_addMethod (c, (t_method)makenote_stop,    sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)makenote_stop,    sym_flush,  A_NULL);
     class_addMethod (c, (t_method)makenote_clear,   sym_clear,  A_NULL);
     
     makenote_class = c;
