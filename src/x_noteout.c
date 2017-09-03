@@ -70,8 +70,6 @@ void noteout_setup (void)
         
     class_addFloat (c, (t_method)noteout_float);
     
-    class_setHelpName (c, sym_midiout);
-    
     noteout_class = c;
 }
 

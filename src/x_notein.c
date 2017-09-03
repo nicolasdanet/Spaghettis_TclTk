@@ -92,8 +92,6 @@ void notein_setup (void)
             
     class_addList (c, (t_method)notein_list);
     
-    class_setHelpName (c, sym_midiout);
-    
     notein_class = c;
 }
 

@@ -89,8 +89,6 @@ void ctlin_setup (void)
             
     class_addList (c, (t_method)ctlin_list);
     
-    class_setHelpName (c, sym_midiout);
-    
     ctlin_class = c;
 }
 

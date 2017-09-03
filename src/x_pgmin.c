@@ -85,8 +85,6 @@ void pgmin_setup (void)
             
     class_addList (c, (t_method)pgmin_list);
     
-    class_setHelpName (c, sym_midiout);
-    
     pgmin_class = c;
 }
 

@@ -70,8 +70,6 @@ void polytouchout_setup (void)
             
     class_addFloat (c, (t_method)polytouchout_float);
     
-    class_setHelpName (c, sym_midiout);
-    
     polytouchout_class = c;
 }
 

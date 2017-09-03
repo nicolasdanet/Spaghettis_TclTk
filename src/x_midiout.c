@@ -71,8 +71,6 @@ void midiout_setup (void)
         
     class_addFloat (c, (t_method)midiout_float);
     
-    class_setHelpName (c, sym_midiout);
-    
     midiout_class = c;
 }
 

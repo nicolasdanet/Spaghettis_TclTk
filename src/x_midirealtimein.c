@@ -77,8 +77,6 @@ void midirealtimein_setup (void)
             
     class_addList (c, (t_method)midirealtimein_list);
     
-    class_setHelpName (c, sym_midiout);
-        
     midirealtimein_class = c;
 }
 

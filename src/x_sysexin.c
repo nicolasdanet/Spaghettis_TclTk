@@ -76,8 +76,6 @@ void sysexin_setup (void)
             
     class_addList (c, (t_method)sysexin_list);
     
-    class_setHelpName (c, sym_midiout);
-    
     sysexin_class = c;
 }
 

@@ -67,8 +67,6 @@ void pgmout_setup (void)
             
     class_addFloat (c, (t_method)pgmout_float);
     
-    class_setHelpName (c, sym_midiout);
-    
     pgmout_class = c;
 }
 

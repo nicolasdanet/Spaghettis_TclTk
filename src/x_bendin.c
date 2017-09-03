@@ -85,8 +85,6 @@ void bendin_setup (void)
             
     class_addList (c, (t_method)bendin_list);
     
-    class_setHelpName (c, sym_midiout);
-    
     bendin_class = c;
 }
 

@@ -71,8 +71,6 @@ void ctlout_setup (void)
             
     class_addFloat (c, (t_method)ctlout_float);
     
-    class_setHelpName (c, sym_midiout);
-    
     ctlout_class = c;
 }
 

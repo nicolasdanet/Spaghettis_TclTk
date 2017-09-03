@@ -67,8 +67,6 @@ void touchout_setup (void)
             
     class_addFloat (c, (t_method)touchout_float);
     
-    class_setHelpName (c, sym_midiout);
-    
     touchout_class = c;
 }
 
