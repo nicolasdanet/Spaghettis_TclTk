@@ -95,7 +95,7 @@ static int oscformat_proceedGetArgumentsSize (t_oscformat *x, int argc, t_atom *
         size += OSC_4ROUND ((int)strlen (s->s_name) + 1);
         
     } else if (type == 'b') {
-        int blobSize = (IS_FLOAT (a) && GET_FLOAT (a) >= 0) ? GET_FLOAT (a) : PD_INT_MAX;
+        int blobSize = (IS_FLOAT (a) && (GET_FLOAT (a) >= 0)) ? (int)GET_FLOAT (a) : (int)PD_INT_MAX;
         blobSize = PD_MIN (argc - i - 1, blobSize);
         size += 4 + OSC_4ROUND (blobSize);
         i += blobSize;
