@@ -48,11 +48,11 @@ static void pgmin_list (t_pgmin *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *pgmin_new (t_float f)
+static void *pgmin_new (t_float channel)
 {
     t_pgmin *x = (t_pgmin *)pd_new (pgmin_class);
     
-    x->x_channel    = f;
+    x->x_channel    = channel;
     x->x_outletLeft = outlet_new (cast_object (x), &s_float);
     
     if (!x->x_channel) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
