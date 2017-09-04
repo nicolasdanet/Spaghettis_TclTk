@@ -67,6 +67,8 @@ void bendout_setup (void)
             
     class_addFloat (c, (t_method)bendout_float);
     
+    class_setHelpName (c, sym_pgmout);
+    
     bendout_class = c;
 }
 

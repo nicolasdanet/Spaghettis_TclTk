@@ -85,6 +85,8 @@ void touchin_setup (void)
             
     class_addList (c, (t_method)touchin_list);
     
+    class_setHelpName (c, sym_pgmin);
+    
     touchin_class = c;
 }
 
