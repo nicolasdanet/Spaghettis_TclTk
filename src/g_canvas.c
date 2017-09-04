@@ -542,6 +542,8 @@ void canvas_setup (void)
     class_setSaveFunction (c, canvas_functionSave);
     class_setPropertiesFunction (c, canvas_functionProperties);
 
+    class_setHelpName (c, sym_pd);
+    
     canvas_class = c;
 }
 
