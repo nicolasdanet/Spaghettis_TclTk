@@ -231,8 +231,8 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc > 2) {
     //
-    t_float f = atom_getFloatAtIndex (argc - 2, argc, argv);
-    t_symbol *unitName = atom_getSymbolAtIndex (argc - 1, argc, argv);
+    t_float f = atom_getFloat (argv + (argc - 2));
+    t_symbol *unitName = atom_getSymbol (argv + (argc - 1));
     if (pipe_unitIsValid (f, unitName, 0)) {
         x->x_unit     = f;
         x->x_unitName = unitName;
