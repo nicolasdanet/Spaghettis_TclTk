@@ -145,7 +145,8 @@ static void *expr_new (t_symbol *s, int argc, t_atom *argv)
     {
         char *t = argc ? atom_atomsToString (argc, argv) : "0";
         
-        string_removeCharacter (t, '\\');
+        if (argc) { string_removeCharacter (t, '\\'); }
+        
         size = expr_getNumberOfVariables (t);
         expr_initializeVariables (x);
         string_replaceCharacter (t, '$', 'v');

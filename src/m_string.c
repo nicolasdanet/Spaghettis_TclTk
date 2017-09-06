@@ -253,6 +253,8 @@ void string_replaceCharacter (char *s, char toBeReplaced, char c)
     while (*s) { if (*s == toBeReplaced) { *s = c; } s++; }
 }
 
+/* The string must NOT be a static constant. */
+
 void string_removeCharacter (char *s, char toBeRemoved)
 {
     PD_ASSERT (toBeRemoved);
