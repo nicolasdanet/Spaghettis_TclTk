@@ -1,25 +1,17 @@
-#N struct help-drawnumber-template float x float y float cat float
-dog symbol weasel;
-#N canvas 445 324 600 204 12;
-#X text 15 103 see also:;
-#X obj 18 7 drawnumber;
-#X obj 187 132 plot;
-#X obj 83 131 drawpolygon;
-#X text 240 0 -- draw numeric fields from data structures;
-#N canvas 11 52 375 224 help-drawnumber-data 1;
-#X scalar help-drawnumber-template 50 100 23 43 ethel \;;
-#X scalar help-drawnumber-template 150 50 3.14 -1.618 fred \;;
-#X restore 273 71 pd help-drawnumber-data;
-#N canvas 439 52 565 765 help-drawnumber-template 1;
-#X text 25 567 This object defines the fields for this template. Their
-values are initialized in the "works" subwindow. You can see them by
-right-clicking on the object in the "data" window and selecting "properties."
-;
-#X text 42 211 - RGB color (0=black \, 999=white \, 900=red \, 90=green
-\, 9=blue \, 555=grey \, etc.);
-#X text 19 316 When not in "edit" mode \, you can click and drag vertically
-on the numbers to change their values. (In edit mode you can move \,
-cut \, copy \, and paste the objects.);
+#N canvas 296 257 698 368 12;
+#X obj 204 324 plot;
+#X obj 96 324 drawpolygon;
+#X obj 252 324 struct;
+#X text 12 324 See also:;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 drawtext;
+#N canvas 680 376 324 223 \$0-data 0;
+#X coords 0 0 1 1 250 120 1 0 0;
+#X restore 36 108 pd \$0-data;
+#N canvas 634 29 763 724 \$0-template 0;
+#X text 42 211 - RGB color (0=black \, 999=white \, 900=red \, 90=green \, 9=blue \, 555=grey \, etc.);
+#X text 19 316 When not in "edit" mode \, you can click and drag vertically on the numbers to change their values. (In edit mode you can move \, cut \, copy \, and paste the objects.);
 #X text 21 365 Keyboard entry isn't supported yet.;
 #X obj 25 56 drawnumber cat 0 0 0 cat=;
 #X obj 260 57 drawnumber dog 0 -15 900 dog=;
@@ -28,21 +20,41 @@ cut \, copy \, and paste the objects.);
 #X text 42 191 - an (x \, y) pair giving relative coordinates \;;
 #X text 42 171 - the number to draw;
 #X text 44 24 "0" in inlet makes invisible;
-#X obj 25 27 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
-;
+#X obj 25 27 tgl 15 0 empty empty empty 0 -6 0 8 #fcfcfc #000000 #000000 0 1;
 #X text 46 112 - optional "-n" flag to make invisible initially;
-#X text 44 133 - alternatively \, an optional "-v [variable]" flag
-to assign a variable to make this visible/invisible.;
-#X text 20 273 Any of these (except the two flags) can be numbers or
-field names \, like "dog" and "cat" here.;
-#X obj 27 646 struct help-drawnumber-template float x float y float
-cat float dog symbol weasel;
-#X obj 26 460 drawsymbol weasel 0 -30 0 weasel=;
-#X text 26 405 To draw a symbol \, use the drawsymbol object. Same
-arguments. No way to edit symbols though - they can only be changed
-through "set" objects..;
-#X connect 11 0 4 0;
-#X restore 273 44 pd help-drawnumber-template;
-#X obj 22 130 struct;
-#X text 275 159 updated for Pd version 0.39;
-#X obj 107 8 drawsymbol;
+#X text 44 133 - alternatively \, an optional "-v [variable]" flag to assign a variable to make this visible/invisible.;
+#X text 20 273 Any of these (except the two flags) can be numbers or field names \, like "dog" and "cat" here.;
+#X text 26 405 To draw a symbol \, use the drawsymbol object. Same arguments. No way to edit symbols though - they can only be changed through "set" objects..;
+#X obj 27 646 struct \$0-template float x float y float cat float dog symbol bird;
+#X f 67;
+#X obj 26 460 drawsymbol bird 0 -30 0 bird=;
+#X connect 10 0 3 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 264 pd \$0-template;
+#X text 12 72 Draw the fields of a scalar as text.;
+#N canvas 671 58 656 544 init 0;
+#X obj 348 300 pointer;
+#X msg 348 264 traverse \$0-data \, bang;
+#X obj 108 24 loadbang;
+#X msg 96 144 \; pd-\$0-data clear;
+#X obj 36 108 t b b;
+#X obj 36 24 inlet;
+#X obj 36 216 t 30 60 1 1 Cyanistes b;
+#X f 35;
+#X obj 36 348 append \$0-template x y cat dog bird;
+#X connect 0 0 7 5;
+#X connect 1 0 0 0;
+#X connect 2 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 1 3 0;
+#X connect 5 0 4 0;
+#X connect 6 0 7 0;
+#X connect 6 1 7 1;
+#X connect 6 2 7 2;
+#X connect 6 3 7 3;
+#X connect 6 5 1 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 432 192 pd init;
+#X obj 432 156 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X connect 11 0 10 0;
+#X coords 0 0 1 1 250 175 0 0 0;
