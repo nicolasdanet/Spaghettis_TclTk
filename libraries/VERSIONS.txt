@@ -9,7 +9,7 @@ PORTMIDI
 
     < https://sourceforge.net/p/portmedia/code/HEAD/tree/portmidi/trunk/ >
 
-    [r230]
+    [r232]
     
 TINYEXPR
 
