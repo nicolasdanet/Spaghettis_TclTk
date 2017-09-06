@@ -91,7 +91,7 @@ static int oscformat_proceedGetArgumentsSize (t_oscformat *x, int argc, t_atom *
     if (*t) { type = *t; t++; } else if (IS_SYMBOL (a)) { type = 's'; }
     
     if (type == 's') {
-        t_symbol *s = IS_SYMBOL (a) ? GET_SYMBOL (a) : sym___arrobe__;
+        t_symbol *s = IS_SYMBOL (a) ? GET_SYMBOL (a) : sym___question__;
         size += OSC_4ROUND ((int)strlen (s->s_name) + 1);
         
     } else if (type == 'b') {
@@ -139,7 +139,7 @@ static int oscformat_proceedFillInteger (t_oscformat *x, int argc, t_atom *argv,
 
 static int oscformat_proceedFillString (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
 {
-    t_symbol *s = IS_SYMBOL (argv + j) ? GET_SYMBOL (argv + j) : sym___arrobe__;
+    t_symbol *s = IS_SYMBOL (argv + j) ? GET_SYMBOL (argv + j) : sym___question__;
     
     oscformat_setString (a, m, s->s_name);
     

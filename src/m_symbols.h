@@ -109,6 +109,7 @@ extern t_symbol *sym___plus____tilde__;
 extern t_symbol *sym___point__aif;
 extern t_symbol *sym___point__snd;
 extern t_symbol *sym___point__wav;
+extern t_symbol *sym___question__;
 extern t_symbol *sym___semicolon__;
 extern t_symbol *sym___slash__;
 extern t_symbol *sym___slash____tilde__;
