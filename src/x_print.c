@@ -10,6 +10,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "s_system.h"
+#include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -30,22 +31,22 @@ typedef struct _print {
 
 static void print_bang (t_print *x)
 {
-    post ("%s: bang", x->x_name->s_name);                       // --
+    post ("%s: bang", x->x_name->s_name);                                       // --
 }
 
 static void print_float (t_print *x, t_float f)
 {
-    post ("%s: %g", x->x_name->s_name, f);                      // --
+    post ("%s: %g", x->x_name->s_name, f);                                      // --
 }
 
 static void print_symbol (t_print *x, t_symbol *s)
 {
-    post ("%s: %s", x->x_name->s_name, s->s_name);              // --
+    post ("%s: %s", x->x_name->s_name, s->s_name);                              // --
 }
 
 static void print_pointer (t_print *x, t_gpointer *gp)
 {
-    post ("%s: pointer", x->x_name->s_name);                    // --
+    post ("%s: %s", x->x_name->s_name, gpointer_representation (gp)->s_name);   // --
 }
 
 static void print_list (t_print *x, t_symbol *s, int argc, t_atom *argv)
@@ -54,7 +55,7 @@ static void print_list (t_print *x, t_symbol *s, int argc, t_atom *argv)
     
     string_removeCharacter (t, '\\');
     
-    post ("%s: [ %s ]", x->x_name->s_name, t);                  // --
+    post ("%s: [ %s ]", x->x_name->s_name, t);                                  // --
     
     PD_MEMORY_FREE (t);
 }

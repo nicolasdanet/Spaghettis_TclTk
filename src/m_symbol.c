@@ -194,6 +194,17 @@ t_symbol *symbol_removeExtension (t_symbol *s)
     return s;
 }
 
+t_symbol *symbol_addPrefix (t_symbol *s, t_symbol *prefix)
+{
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    PD_ASSERT (s);
+    PD_ASSERT (prefix);
+    err = string_sprintf (t, PD_STRING, "%s%s", prefix->s_name, s->s_name);
+    PD_UNUSED (err); PD_ASSERT (!err);
+    return gensym (t);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

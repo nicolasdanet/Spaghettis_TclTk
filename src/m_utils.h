@@ -46,6 +46,8 @@ t_symbol    *symbol_replaceDoubleDollar     (t_symbol *s);
 t_symbol    *symbol_decode                  (t_symbol *s);
 t_symbol    *symbol_removeExtension         (t_symbol *s);
 
+t_symbol    *symbol_addPrefix               (t_symbol *s, t_symbol *prefix);
+
 t_symbol    *symbol_makeBind                (t_symbol *s);
 t_symbol    *symbol_makeBindIfNot           (t_symbol *s);
 t_symbol    *symbol_makeTemplateIdentifier  (t_symbol *s);

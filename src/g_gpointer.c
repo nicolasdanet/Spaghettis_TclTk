@@ -39,6 +39,7 @@ struct _gmaster {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static t_gpointer gpointer_empty;     /* Static. */
 
@@ -343,6 +344,18 @@ void gpointer_draw (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+t_symbol *gpointer_representation (t_gpointer *gp)
+{
+    t_symbol *s = sym_invalid;
+    
+    if (gp) {
+        if (gpointer_isValid (gp))            { s = &s_pointer; }
+        else if (gpointer_isValidOrNull (gp)) { s = sym_head; }
+    }
+    
+    return symbol_addPrefix (s, sym___arrobe__);
+}
 
 t_error gpointer_fieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest, int size)
 {
