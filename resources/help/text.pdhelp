@@ -291,7 +291,7 @@
 #X obj 36 120 print;
 #N canvas 575 279 427 118 \$0-template 0;
 #X obj 36 60 struct \$0-template float x float y text z;
-#X obj 36 24 drawtext z 0 0 900;
+#X obj 36 24 drawtext z 0 0 800;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 384 420 pd \$0-template;
 #N canvas 482 165 500 350 \$0-data 0;
