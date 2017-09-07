@@ -15,18 +15,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class      *drawnumber_class;                      /* Shared. */
+static t_class      *drawtext_class;                        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_float      drawnumber_cumulativeY;                 /* Static. */
-static t_gpointer   drawnumber_gpointer;                    /* Static. */
+static t_float      drawtext_cumulativeY;                   /* Static. */
+static t_gpointer   drawtext_gpointer;                      /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _drawnumber {
+typedef struct _drawtext {
     t_object            x_obj;                              /* Must be the first. */
     t_fielddescriptor   x_positionX;
     t_fielddescriptor   x_positionY;
@@ -34,40 +34,40 @@ typedef struct _drawnumber {
     t_fielddescriptor   x_isVisible;
     t_symbol            *x_fieldName;
     t_symbol            *x_label;
-    } t_drawnumber;
+    } t_drawtext;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void drawnumber_behaviorGetRectangle      (t_gobj *, t_gpointer *, t_float, t_float, t_rectangle *);
-static void drawnumber_behaviorVisibilityChanged (t_gobj *, t_gpointer *, t_float, t_float, int);
-static int  drawnumber_behaviorMouse             (t_gobj *, t_gpointer *, t_float, t_float, t_mouse *);
+static void drawtext_behaviorGetRectangle      (t_gobj *, t_gpointer *, t_float, t_float, t_rectangle *);
+static void drawtext_behaviorVisibilityChanged (t_gobj *, t_gpointer *, t_float, t_float, int);
+static int  drawtext_behaviorMouse             (t_gobj *, t_gpointer *, t_float, t_float, t_mouse *);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_painterbehavior drawnumber_painterBehavior =
+static t_painterbehavior drawtext_painterBehavior =
     {
-        drawnumber_behaviorGetRectangle,
-        drawnumber_behaviorVisibilityChanged,
-        drawnumber_behaviorMouse,
+        drawtext_behaviorGetRectangle,
+        drawtext_behaviorVisibilityChanged,
+        drawtext_behaviorMouse,
     };
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void drawnumber_release (void)
+void drawtext_release (void)
 {
-    gpointer_unset (&drawnumber_gpointer);
+    gpointer_unset (&drawtext_gpointer);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_error drawnumber_getContents (t_drawnumber *x, t_gpointer *gp, char *dest, int size, int *m, int *n)
+static t_error drawtext_getContents (t_drawtext *x, t_gpointer *gp, char *dest, int size, int *m, int *n)
 {
     if (gpointer_fieldIsArray (gp, x->x_fieldName)) { return PD_ERROR; }
     else {
@@ -82,7 +82,7 @@ static t_error drawnumber_getContents (t_drawnumber *x, t_gpointer *gp, char *de
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void drawnumber_float (t_drawnumber *x, t_float f)
+static void drawtext_float (t_drawtext *x, t_float f)
 {
     if (field_isFloatConstant (&x->x_isVisible)) {
     //
@@ -99,28 +99,28 @@ static void drawnumber_float (t_drawnumber *x, t_float f)
     } else { error_unexpected (sym_drawpolygon, &s_float); }
 }
 
-static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float modifier)
+static void drawtext_motion (void *z, t_float deltaX, t_float deltaY, t_float modifier)
 {
-    t_drawnumber *x = (t_drawnumber *)z;
+    t_drawtext *x = (t_drawtext *)z;
 
-    if (gpointer_isValid (&drawnumber_gpointer)) {
+    if (gpointer_isValid (&drawtext_gpointer)) {
     //
-    drawnumber_cumulativeY -= deltaY;
+    drawtext_cumulativeY -= deltaY;
     
-    gpointer_erase (&drawnumber_gpointer);
+    gpointer_erase (&drawtext_gpointer);
     
-    gpointer_setFloat (&drawnumber_gpointer, x->x_fieldName, drawnumber_cumulativeY);
+    gpointer_setFloat (&drawtext_gpointer, x->x_fieldName, drawtext_cumulativeY);
     
-    PD_ASSERT (gpointer_isScalar (&drawnumber_gpointer));
+    PD_ASSERT (gpointer_isScalar (&drawtext_gpointer));
     
-    template_notify (gpointer_getTemplate (&drawnumber_gpointer), 
-        gpointer_getView (&drawnumber_gpointer), 
-        gpointer_getScalar (&drawnumber_gpointer),
+    template_notify (gpointer_getTemplate (&drawtext_gpointer), 
+        gpointer_getView (&drawtext_gpointer), 
+        gpointer_getScalar (&drawtext_gpointer),
         sym_change,
         0,
         NULL);
 
-    gpointer_draw (&drawnumber_gpointer);
+    gpointer_draw (&drawtext_gpointer);
     //
     }
 }
@@ -129,13 +129,13 @@ static void drawnumber_motion (void *z, t_float deltaX, t_float deltaY, t_float 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void drawnumber_behaviorGetRectangle (t_gobj *z,
+static void drawtext_behaviorGetRectangle (t_gobj *z,
     t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     t_rectangle *r)
 {
-    t_drawnumber *x = (t_drawnumber *)z;
+    t_drawtext *x = (t_drawtext *)z;
     
     int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
     
@@ -152,7 +152,7 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     int pixelY          = glist_valueToPixelY (glist, valueY);
     t_fontsize fontSize = glist_getFontSize (glist);
     
-    if (!drawnumber_getContents (x, gp, t, PD_STRING, &m, &n)) {
+    if (!drawtext_getContents (x, gp, t, PD_STRING, &m, &n)) {
     
         int a = pixelX;
         int b = pixelY;
@@ -169,13 +169,13 @@ static void drawnumber_behaviorGetRectangle (t_gobj *z,
     rectangle_setNothing (r);
 }
 
-static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
+static void drawtext_behaviorVisibilityChanged (t_gobj *z,
     t_gpointer *gp,
     t_float baseX,
     t_float baseY,
     int isVisible)
 {
-    t_drawnumber *x = (t_drawnumber *)z;
+    t_drawtext *x = (t_drawtext *)z;
     
     int visible = (int)gpointer_getFloatByDescriptor (gp, &x->x_isVisible);
 
@@ -196,7 +196,7 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     int pixelX      = glist_valueToPixelX (glist, valueX);
     int pixelY      = glist_valueToPixelY (glist, valueY);
     
-    drawnumber_getContents (x, gp, t, PD_STRING, NULL, NULL);
+    drawtext_getContents (x, gp, t, PD_STRING, NULL, NULL);
     
     gui_vAdd ("%s.c create text %d %d"
                     " -anchor nw"
@@ -217,16 +217,16 @@ static void drawnumber_behaviorVisibilityChanged (t_gobj *z,
     }
 }
 
-static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m)
+static int drawtext_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m)
 {
-    t_drawnumber *x = (t_drawnumber *)z;
+    t_drawtext *x = (t_drawtext *)z;
     
     int a = m->m_x;
     int b = m->m_y;
     
     t_rectangle t;
      
-    drawnumber_behaviorGetRectangle (z, gp, baseX, baseY, &t);
+    drawtext_behaviorGetRectangle (z, gp, baseX, baseY, &t);
 
     if (!rectangle_isNothing (&t)) {
     //
@@ -236,11 +236,11 @@ static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
     //
     if (m->m_clicked) {
     
-        drawnumber_cumulativeY = gpointer_getFloat (gp, x->x_fieldName);
+        drawtext_cumulativeY = gpointer_getFloat (gp, x->x_fieldName);
 
-        gpointer_setByCopy (&drawnumber_gpointer, gp);
+        gpointer_setByCopy (&drawtext_gpointer, gp);
         
-        glist_setMotion (gpointer_getView (gp), z, (t_motionfn)drawnumber_motion, a, b);
+        glist_setMotion (gpointer_getView (gp), z, (t_motionfn)drawtext_motion, a, b);
     }
     
     return CURSOR_OVER;
@@ -258,9 +258,9 @@ static int drawnumber_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
+static void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_drawnumber *x = (t_drawnumber *)pd_new (drawnumber_class);
+    t_drawtext *x = (t_drawtext *)pd_new (drawtext_class);
 
     field_setAsFloatConstant (&x->x_positionX,  (t_float)0.0);
     field_setAsFloatConstant (&x->x_positionY,  (t_float)0.0);
@@ -303,31 +303,31 @@ static void *drawnumber_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void drawnumber_setup (void)
+void drawtext_setup (void)
 {
     t_class *c = NULL;
     
     c = class_new (sym_drawtext,
-            (t_newmethod)drawnumber_new,
+            (t_newmethod)drawtext_new,
             NULL,
-            sizeof (t_drawnumber),
+            sizeof (t_drawtext),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
             
-    class_addFloat (c, (t_method)drawnumber_float);
+    class_addFloat (c, (t_method)drawtext_float);
     
-    class_addCreator ((t_newmethod)drawnumber_new, sym_drawsymbol, A_GIMME, A_NULL);
-    class_addCreator ((t_newmethod)drawnumber_new, sym_drawnumber, A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)drawtext_new, sym_drawsymbol, A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)drawtext_new, sym_drawnumber, A_GIMME, A_NULL);
     
-    class_setPainterBehavior (c, &drawnumber_painterBehavior);
+    class_setPainterBehavior (c, &drawtext_painterBehavior);
     
-    drawnumber_class = c;
+    drawtext_class = c;
 }
 
-void drawnumber_destroy (void)
+void drawtext_destroy (void)
 {
-    class_free (drawnumber_class);
+    class_free (drawtext_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

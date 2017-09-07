@@ -280,7 +280,7 @@
 		379A42FD1BA4291200C1CED0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A42091BA3F51100C1CED0 /* AudioToolbox.framework */; };
 		379A42FE1BA4291200C1CED0 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A420B1BA3F51C00C1CED0 /* Carbon.framework */; };
 		379A42FF1BA4291200C1CED0 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A420D1BA3F52D00C1CED0 /* CoreMIDI.framework */; };
-		379C1B401D3790C200C4D92C /* g_drawnumber.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1B3F1D3790C200C4D92C /* g_drawnumber.c */; };
+		379C1B401D3790C200C4D92C /* g_drawtext.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1B3F1D3790C200C4D92C /* g_drawtext.c */; };
 		379C1B721D37934500C4D92C /* g_plot.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1B711D37934500C4D92C /* g_plot.c */; };
 		379C1BB01D37954000C4D92C /* g_drawpolygon.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1BAF1D37954000C4D92C /* g_drawpolygon.c */; };
 		379C1BCB1D37961E00C4D92C /* g_field.c in Sources */ = {isa = PBXBuildFile; fileRef = 379C1BCA1D37961E00C4D92C /* g_field.c */; };
@@ -756,7 +756,7 @@
 		379A42D61BA427B900C1CED0 /* pdsend */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdsend; sourceTree = BUILT_PRODUCTS_DIR; };
 		379A42F11BA428D000C1CED0 /* pdreceive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdreceive; sourceTree = BUILT_PRODUCTS_DIR; };
 		379A43041BA4291200C1CED0 /* pdwatchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdwatchdog; sourceTree = BUILT_PRODUCTS_DIR; };
-		379C1B3F1D3790C200C4D92C /* g_drawnumber.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_drawnumber.c; path = src/g_drawnumber.c; sourceTree = "<group>"; };
+		379C1B3F1D3790C200C4D92C /* g_drawtext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_drawtext.c; path = src/g_drawtext.c; sourceTree = "<group>"; };
 		379C1B711D37934500C4D92C /* g_plot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_plot.c; path = src/g_plot.c; sourceTree = "<group>"; };
 		379C1BAF1D37954000C4D92C /* g_drawpolygon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_drawpolygon.c; path = src/g_drawpolygon.c; sourceTree = "<group>"; };
 		379C1BCA1D37961E00C4D92C /* g_field.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_field.c; path = src/g_field.c; sourceTree = "<group>"; };
@@ -973,7 +973,7 @@
 				37D642BB1D47924100071C3C /* g_append.c */,
 				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
 				379C1B711D37934500C4D92C /* g_plot.c */,
-				379C1B3F1D3790C200C4D92C /* g_drawnumber.c */,
+				379C1B3F1D3790C200C4D92C /* g_drawtext.c */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -2033,7 +2033,7 @@
 				37ED6A071D2CFD00007EC73D /* g_word.c in Sources */,
 				17F6BD3C1F110686001E602C /* m_snap.c in Sources */,
 				37ED6A521D2D038B007EC73D /* g_gpointer.c in Sources */,
-				379C1B401D3790C200C4D92C /* g_drawnumber.c in Sources */,
+				379C1B401D3790C200C4D92C /* g_drawtext.c in Sources */,
 				379C1B721D37934500C4D92C /* g_plot.c in Sources */,
 				379C1BB01D37954000C4D92C /* g_drawpolygon.c in Sources */,
 				379C1BCB1D37961E00C4D92C /* g_field.c in Sources */,

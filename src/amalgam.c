@@ -138,7 +138,7 @@
 #include "g_append.c"
 #include "g_drawpolygon.c"
 #include "g_plot.c"
-#include "g_drawnumber.c"
+#include "g_drawtext.c"
 
 /* Control. */
 

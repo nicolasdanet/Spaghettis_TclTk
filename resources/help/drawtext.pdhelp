@@ -1,3 +1,4 @@
+#N struct 1004-template float x float y float cat float dog symbol bird;
 #N canvas 296 257 698 368 12;
 #X obj 204 324 plot;
 #X obj 96 324 drawpolygon;
@@ -7,6 +8,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 drawtext;
 #N canvas 680 376 324 223 \$0-data 0;
+#X scalar 1004-template 30 60 1 1 symbol \;;
 #X coords 0 0 1 1 250 120 1 0 0;
 #X restore 36 108 pd \$0-data;
 #N canvas 634 29 763 724 \$0-template 0;
@@ -33,16 +35,16 @@
 #X restore 36 264 pd \$0-template;
 #X text 12 72 Draw the fields of a scalar as text.;
 #N canvas 671 58 656 544 init 0;
-#X obj 348 300 pointer;
-#X msg 348 264 traverse \$0-data \, bang;
+#X obj 312 300 pointer;
+#X msg 312 264 traverse \$0-data \, bang;
 #X obj 108 24 loadbang;
 #X msg 96 144 \; pd-\$0-data clear;
 #X obj 36 108 t b b;
 #X obj 36 24 inlet;
-#X obj 36 216 t 30 60 1 1 Cyanistes b;
-#X f 35;
-#X obj 36 348 append \$0-template x y cat dog bird;
-#X connect 0 0 7 5;
+#X obj 36 216 t 30 60 1 1 b;
+#X f 30;
+#X obj 36 348 append \$0-template x y cat dog;
+#X connect 0 0 7 4;
 #X connect 1 0 0 0;
 #X connect 2 0 4 0;
 #X connect 4 0 6 0;
@@ -52,7 +54,7 @@
 #X connect 6 1 7 1;
 #X connect 6 2 7 2;
 #X connect 6 3 7 3;
-#X connect 6 5 1 0;
+#X connect 6 4 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 432 192 pd init;
 #X obj 432 156 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
