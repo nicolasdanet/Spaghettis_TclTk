@@ -15,8 +15,8 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 444 pd \$0-data;
 #N canvas 782 245 444 115 \$0-template 0;
-#X obj 24 60 struct \$0-template float x float y float z;
-#X obj 24 24 drawnumber z;
+#X obj 36 60 struct \$0-template float x float y float z;
+#X obj 36 24 drawnumber z;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 468 pd \$0-template;
 #X msg 36 132 traverse \$0-data \, bang;
