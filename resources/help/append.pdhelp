@@ -17,7 +17,7 @@
 #N canvas 782 245 434 153 \$0-template 0;
 #X obj 36 96 struct \$0-template float x float y float z;
 #X obj 36 60 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
-#X obj 36 24 drawnumber z 7 -7;
+#X obj 36 24 drawnumber z 7 -7 800;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 468 pd \$0-template;
 #X msg 36 132 traverse \$0-data \, bang;
