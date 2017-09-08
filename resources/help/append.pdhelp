@@ -1,4 +1,4 @@
-#N canvas 561 95 630 560 12;
+#N canvas 556 94 630 560 12;
 #X obj 96 516 get;
 #X obj 132 516 set;
 #X obj 240 516 getsize;
@@ -11,12 +11,13 @@
 #X text 24 24 append;
 #X text 12 516 See also:;
 #X obj -60 12 freeze;
-#N canvas 180 382 335 326 \$0-data 1;
+#N canvas 203 371 335 326 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 444 pd \$0-data;
-#N canvas 782 245 444 115 \$0-template 0;
-#X obj 36 60 struct \$0-template float x float y float z;
-#X obj 36 24 drawnumber z;
+#N canvas 782 245 434 153 \$0-template 0;
+#X obj 36 96 struct \$0-template float x float y float z;
+#X obj 36 60 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
+#X obj 36 24 drawnumber z 7 -7;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 468 pd \$0-template;
 #X msg 36 132 traverse \$0-data \, bang;
