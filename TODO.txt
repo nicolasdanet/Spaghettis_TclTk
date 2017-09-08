@@ -18,6 +18,7 @@ Adapt all objects to be resizable.
 Add unlimited undo mechanism.
 Allow to select more that one cord.
 Consider an "Encapsulate" feature.
+Handle all options with unordered key/value pairs.
 
 ###
 
@@ -28,6 +29,7 @@ Replace the Tk GUI (make MVC more strict).
 Implement a better preferences and fonts management.
 Make translation (internationalization).
 Consider dynamic patching with a multi-core audio engine.
+Implement a new file format (reflect on extensibility).
 
 ###
 
