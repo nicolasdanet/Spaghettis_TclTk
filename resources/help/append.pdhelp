@@ -11,7 +11,7 @@
 #X text 24 24 append;
 #X text 12 516 See also:;
 #X obj -60 12 freeze;
-#N canvas 203 371 335 326 \$0-data 1;
+#N canvas 179 310 335 326 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 444 pd \$0-data;
 #N canvas 782 245 434 153 \$0-template 0;
@@ -29,14 +29,14 @@
 #X text 12 72 Add a scalar in a given window.;
 #N canvas 776 155 538 218 more 0;
 #X obj 240 120 pointer;
-#X msg 36 48 set \$0-template x;
+#X msg 60 120 set \$0-template x;
 #X msg 240 84 traverse \$0-data \, bang;
-#X obj 72 84 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X text 12 12 If there is just one field to set \, you can change it later.;
 #X f 59;
 #X obj 36 168 append \$0-template y;
 #X f 20;
-#X obj 72 120 random 300;
+#X obj 36 84 random 300;
 #X obj 240 48 loadbang;
 #X connect 0 0 5 1;
 #X connect 1 0 5 0;
