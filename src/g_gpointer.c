@@ -97,12 +97,12 @@ static void gmaster_decrement (t_gmaster *master)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int gpointer_isSet (t_gpointer *gp)
+static int gpointer_isSet (t_gpointer *gp)
 {
     return (gp->gp_refer != NULL);
 }
 
-int gpointer_isNull (t_gpointer *gp)
+static int gpointer_isNull (t_gpointer *gp)
 {
     return (gp->gp_un.gp_scalar == NULL);
 }
