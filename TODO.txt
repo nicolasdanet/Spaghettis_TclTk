@@ -13,15 +13,15 @@ Forbid the audio to glitch!
 Add "Clear Console" item in menu.
 Extend the search path to be recursive.
 Append recent files in preferences.
+Find a way to mix symbols and floats in getters for scalars.
+Think about negation before a field name for painters.
+Manage the mouse interaction with element of an array.
+Handle all options with unordered key/value pairs.
 Improve consistency for properties (i.e Atom / IEM).
 Adapt all objects to be resizable.
 Add unlimited undo mechanism.
 Allow to select more that one cord.
 Consider an "Encapsulate" feature.
-Handle all options with unordered key/value pairs.
-Find a way to mix symbols and floats in getters for scalars.
-Think about negation before a field name for painters.
-Manage the mouse interaction with element of an array.
 
 ###
 
