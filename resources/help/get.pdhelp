@@ -18,10 +18,10 @@
 #X text 24 24 get;
 #X text 12 348 See also:;
 #X text 12 72 Get values from a scalar.;
-#N canvas 321 224 466 434 \$0-data 1;
+#N canvas 359 205 466 434 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 348 276 pd \$0-data;
-#N canvas 758 152 541 555 more 0;
+#N canvas 579 89 622 563 more 0;
 #X obj 36 432 pointer;
 #X obj 36 132 pointer;
 #X obj 36 468 get - x;
@@ -35,10 +35,10 @@
 #X obj 36 228 get \$0-template y;
 #X msg 36 348 traverse \$0-data \, next;
 #X f 22;
-#X text 12 312 For heterogeneous collection you can '-' as a wild card.;
-#X f 56;
 #X msg 72 84 next;
 #X msg 72 384 next;
+#X text 12 312 For heterogeneous collection you can use '-' as a wild card.;
+#X f 61;
 #X connect 0 0 2 0;
 #X connect 1 0 8 0;
 #X connect 2 0 3 0;
@@ -46,8 +46,8 @@
 #X connect 6 0 8 0;
 #X connect 8 0 7 0;
 #X connect 9 0 0 0;
-#X connect 11 0 1 0;
-#X connect 12 0 0 0;
+#X connect 10 0 1 0;
+#X connect 11 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 348 108 pd more;
 #N canvas 843 623 454 168 \$0-template 0;
