@@ -127,10 +127,8 @@ static void pointer_rewind (t_pointer *x)
     }
 }
 
-static void pointer_nextSelected (t_pointer *x, t_float f)
+static void pointer_nextProceed (t_pointer *x, int wantSelected)
 {
-    int wantSelected = (f != 0.0);
-    
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
     t_glist *glist = gpointer_getParentForScalar (&x->x_gpointer);
@@ -160,9 +158,14 @@ static void pointer_nextSelected (t_pointer *x, t_float f)
     error_invalid (&s_pointer, &s_pointer);
 }
 
+static void pointer_nextSelected (t_pointer *x)
+{
+    pointer_nextProceed (x, 1);
+}
+
 static void pointer_next (t_pointer *x)
 {
-    pointer_nextSelected (x, (t_float)0.0);
+    pointer_nextProceed (x, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -223,11 +226,11 @@ void pointer_setup (void)
     class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,               A_SYMBOL, A_NULL); 
     class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,                 A_NULL); 
     class_addMethod (c, (t_method)pointer_next,         sym_next,                   A_NULL);
-    class_addMethod (c, (t_method)pointer_nextSelected, sym_nextselected,           A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)pointer_nextSelected, sym_nextselected,           A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)pointer_nextSelected, sym_vnext,                  A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)pointer_nextSelected, sym_vnext,                  A_NULL);
     class_addMethod (c, (t_method)pointer_sendwindow,   sym_send__dash__window,     A_GIMME, A_NULL); 
     
     #endif
