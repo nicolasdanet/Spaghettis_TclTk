@@ -53,7 +53,7 @@
 #N canvas 843 623 454 168 \$0-template 0;
 #X obj 36 72 filledpolygon 800 800 0 -20 0 0 20 20 0 0 -20;
 #X obj 36 108 struct \$0-template float x float y symbol s;
-#X obj 36 36 drawsymbol s 25 -7 555;
+#X obj 36 36 drawsymbol s 25 -7 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 348 300 pd \$0-template;
 #X msg 36 108 traverse \$0-data \, next;

@@ -1,4 +1,4 @@
-#N canvas 733 190 593 358 12;
+#N canvas 736 197 593 358 12;
 #X obj 204 312 append;
 #X obj 264 312 element;
 #X floatatom 36 108 5 0 0 0 - - -;
@@ -106,8 +106,8 @@
 #X restore 444 240 pd \$0-data;
 #N canvas 198 530 454 168 \$0-template 0;
 #X obj 36 108 struct \$0-template float x float y symbol s;
-#X obj 36 72 drawpolygon 0 0 -20 0 0 20 20 0 0 -20 -20 0;
-#X obj 36 36 drawsymbol s 25 -7 800;
+#X obj 36 36 drawsymbol s 25 -7 0;
+#X obj 36 72 drawpolygon 800 2 -20 0 0 20 20 0 0 -20 -20 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 444 264 pd \$0-template;
 #X msg 252 180 next;
