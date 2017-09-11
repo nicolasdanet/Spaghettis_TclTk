@@ -92,30 +92,33 @@ proc getDefaultWeight {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-set var(appName)                "Spaghettis"
+set var(appName)                    "Spaghettis"
 
-set var(filesExtensions)        ".pd .pdhelp"
-set var(filesOpenPended)        {}
-set var(filesTypes)             { {{Patch} {.pd}} {{Help} {.pdhelp}} }
+set var(backgroundColorRun)         "#ffffff"
+set var(backgroundColorEdit)        "#fcfcfc"
 
-set var(fontFamily)             [::getDefaultFamily]
-set var(fontWeight)             [::getDefaultWeight]
-set var(fontSizes)              "6 8 9 10 11 12 14 16 18 20 24 36"
+set var(filesExtensions)            ".pd .pdhelp"
+set var(filesOpenPended)            {}
+set var(filesTypes)                 { {{Patch} {.pd}} {{Help} {.pdhelp}} }
 
-set var(isPath)                 0
-set var(isInitialized)          0
-set var(isDsp)                  0
-set var(isEditMode)             0
-set var(isSnapToGrid)           0
+set var(fontFamily)                 [::getDefaultFamily]
+set var(fontWeight)                 [::getDefaultWeight]
+set var(fontSizes)                  "6 8 9 10 11 12 14 16 18 20 24 36"
 
-set var(nil)                    "empty"
+set var(isPath)                     0
+set var(isInitialized)              0
+set var(isDsp)                      0
+set var(isEditMode)                 0
+set var(isSnapToGrid)               0
 
-set var(searchPath)             {}
-set var(tcpHost)                ""
-set var(tcpPort)                0
+set var(nil)                        "empty"
 
-set var(windowFocused)          .
-set var(windowStagger)          0
+set var(searchPath)                 {}
+set var(tcpHost)                    ""
+set var(tcpPort)                    0
+
+set var(windowFocused)              .
+set var(windowStagger)              0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

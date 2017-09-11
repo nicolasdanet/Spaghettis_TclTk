@@ -42,11 +42,13 @@ proc create {top width height coordinates isEditMode} {
     wm geometry $top [format "=%dx%d%s" $width $height $coordinates]
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
-        
+    
+    if {$isEditMode} { set color $::var(backgroundColorEdit) } else { set color $::var(backgroundColorRun) }
+    
     canvas $top.c   -width $width \
                     -height $height \
                     -highlightthickness 0 \
-                    -background "#ffffff" \
+                    -background $color \
                     -insertbackground black \
                     -insertwidth 2
     
@@ -132,6 +134,12 @@ proc _reflectEditmode {top} {
 
     variable patchIsEditMode
 
+    if {$patchIsEditMode($top)} {
+        $top.c configure -background $::var(backgroundColorEdit)
+    } else {
+        $top.c configure -background $::var(backgroundColorRun)
+    }
+    
     set title [::ui_patch::getTitle $top]
 
     # On macOS Sierra extra space is required to avoid ellipsis.
