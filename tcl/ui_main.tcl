@@ -94,9 +94,6 @@ proc getDefaultWeight {} {
 
 set var(appName)                    "Spaghettis"
 
-set var(backgroundColorRun)         "#ffffff"
-set var(backgroundColorEdit)        "#fcfcfc"
-
 set var(filesExtensions)            ".pd .pdhelp"
 set var(filesOpenPended)            {}
 set var(filesTypes)                 { {{Patch} {.pd}} {{Help} {.pdhelp}} }
@@ -119,6 +116,21 @@ set var(tcpPort)                    0
 
 set var(windowFocused)              .
 set var(windowStagger)              0
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+if {[tk windowingsystem] eq "aqua"} {
+
+set var(backgroundColorRun)         "#ffffff"
+set var(backgroundColorEdit)        "#fcfcfc"
+
+} else {
+
+set var(backgroundColorRun)         "#ffffff"
+set var(backgroundColorEdit)        "#ffffff"
+
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
