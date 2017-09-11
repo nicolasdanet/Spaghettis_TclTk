@@ -1,26 +1,29 @@
-#N canvas 343 45 557 321 12;
-#X text 88 11 -- declare the fields in a data structure.;
-#N canvas 345 476 638 171 help-template1 0;
-#X obj 60 21 struct struct-1 float x float y symbol dog array weasel
-struct-2;
-#X text 40 76 In this example \, the "struct-1" structure is defined
-in which "x" and "y" are "floats" \, i.e. \, numbers \, but "dog" is
-a symbol and "weasel" is an array of objects of structure "struct-2".
-;
-#X restore 324 156 pd help-template1;
-#N canvas 10 274 588 157 help-template2 0;
-#X text 28 95 Here is one which specifies only the floating point "y"
-\; it's used for the elements of the array shown in the other template.
-;
-#X obj 60 21 struct struct-2 float y;
-#X restore 324 183 pd help-template2;
-#X obj 36 215 drawpolygon;
-#X text 36 195 see also:;
-#X obj 141 215 drawnumber;
-#X obj 236 216 plot;
-#X text 281 290 updated for Pd version 0.35;
-#X obj 21 10 struct;
-#X text 16 49 There should be one "struct" object in each Pd window
-you are using as a data structure template. The arguments specify the
-types and names of the fields \; and for array fields \, a third argument
-specifies the template that the array elements should belong to.;
+#N canvas 770 147 402 224 12;
+#X obj 156 180 plot;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 struct;
+#X text 12 72 Declare a template.;
+#X text 12 180 See also:;
+#X obj 204 180 pointer;
+#X obj 96 180 append;
+#N canvas 456 328 529 141 \$0-template 0;
+#X obj 36 36 plot a 777 1 10 15 50;
+#X obj 36 72 struct \$0-template float x float y array a \$0-element;
+#X f 54;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 132 pd \$0-template;
+#N canvas 502 502 392 130 \$0-element 0;
+#X obj 36 36 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
+#X obj 36 72 struct \$0-element float y;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 108 pd \$0-element;
+#N canvas 884 424 503 97 more 0;
+#X text 12 36 Only the beside painters are used for rendering.;
+#X text 12 60 All instances of the template are also destroyed with it.;
+#X text 12 12 The template name MUST be unique.;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 240 132 pd more;
+#X obj 276 180 array;
+#X obj 336 180 text;
+#X coords 0 0 1 1 250 175 0 0 0;
