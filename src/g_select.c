@@ -186,6 +186,7 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y)
         object_setFromEntry (cast_object (y), glist, z);
         glist_updateLinesForObject (glist, cast_object (y));
         editor_boxSelect (glist_getEditor (glist), NULL);
+        glist_redrawRequired (glist);
     }
     
     if (dspSuspended) { dsp_resume (dspSuspended); }

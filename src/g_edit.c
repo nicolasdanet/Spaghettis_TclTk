@@ -231,6 +231,7 @@ void glist_actionEnd (t_glist *glist, int a, int b)
     if (action == ACTION_LINE)        { glist_makeLineEnd (glist, a, b);    }
     else if (action == ACTION_SIGNAL) { glist_makeLineEnd (glist, a, b);    }
     else if (action == ACTION_REGION) { glist_selectLassoEnd (glist, a, b); }
+    else if (action == ACTION_RESIZE) { glist_redrawRequired (glist); }
     else if (action == ACTION_MOVE)   {
     //
     if (!drag_hasMoved (editor_getDrag (e))) {
