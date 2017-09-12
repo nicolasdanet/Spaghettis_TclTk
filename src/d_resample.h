@@ -62,7 +62,7 @@ typedef struct _blockproperties {
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _block {
-    t_object    bk_obj;             /* Must be the first. */
+    t_object    bk_obj;                 /* Must be the first. */
     int         bk_blockSize;
     int         bk_overlap;
     int         bk_phase;
