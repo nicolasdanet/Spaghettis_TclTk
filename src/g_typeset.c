@@ -391,9 +391,9 @@ int box_send (t_box *x, int action, int a, int b)
     else if (action == BOX_CREATE) { box_sendCreate (x, &p); }
     else if (action == BOX_UPDATE) { 
     
-        box_sendUpdate (x, &p);     
-            
         if (resized) { box_update (x); }
+        
+        box_sendUpdate (x, &p);     
     }
 
     box_typesetFree (&p);

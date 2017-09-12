@@ -641,7 +641,7 @@ void glist_windowClose (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* To maintain z order consistency, redraw everything is need. */
+/* To maintain z order consistency, redraw everything is needed. */
 
 void glist_redrawRequired (t_glist *glist)
 {

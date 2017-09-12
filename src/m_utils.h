@@ -133,6 +133,8 @@ static inline int string_startWithOneDollarAndOneNumber (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+// Default colors for IEM objects.
+
 #define COLOR_IEM_BACKGROUND        0xffffff    // White.
 #define COLOR_IEM_FOREGROUND        0x000000    // Black.
 #define COLOR_IEM_LABEL             0x000000    // Black.
@@ -148,6 +150,9 @@ static inline int string_startWithOneDollarAndOneNumber (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+// Hard coded colors for the applications.
+
+#define COLOR_BACKGROUND            0xffffff    // White.
 #define COLOR_OPENED                0xdddddd    // Grey.
 #define COLOR_NORMAL                0x000000    // Black.
 #define COLOR_SELECTED              0x0000ff    // Blue.

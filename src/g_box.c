@@ -27,8 +27,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void text_behaviorGetRectangle  (t_gobj *, t_glist *, t_rectangle *);
-int box_send                    (t_box *x, int, int, int);
+void text_behaviorGetRectangle (t_gobj *, t_glist *, t_rectangle *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int box_send (t_box *x, int, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -47,6 +52,19 @@ static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, 
     
     if (create) {
     
+        gui_vAdd ("%s.c create rectangle %d %d %d %d"
+                        " -fill #%06x"
+                        " -outline #%06x"
+                        " -tags %sBASE\n",
+                        glist_getTagAsString (view),
+                        a,
+                        b,
+                        c,
+                        d,
+                        COLOR_BACKGROUND,
+                        COLOR_BACKGROUND,
+                        tag);
+        
         gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
                         " -dash %s"
                         " -tags %sBORDER\n",
@@ -66,6 +84,14 @@ static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, 
                         
     } else {
     
+        gui_vAdd ("%s.c coords %sBASE %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        a,
+                        b,
+                        c,
+                        d);
+        
         gui_vAdd ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d\n",
                         glist_getTagAsString (view),
                         tag,
@@ -98,6 +124,27 @@ static void box_drawMessage (t_glist *glist, t_object *o, char *tag, int create,
     
     if (create) {
     
+        gui_vAdd ("%s.c create polygon %d %d %d %d %d %d %d %d %d %d %d %d"
+                        " -fill #%06x"
+                        " -outline #%06x"
+                        " -tags %sBASE\n",
+                        glist_getTagAsString (view),
+                        a,
+                        b,
+                        c + 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d - 4,
+                        c + 4,
+                        d,
+                        a,
+                        d,
+                        COLOR_BACKGROUND,
+                        COLOR_BACKGROUND,
+                        tag);
+        
         gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
                         " -tags %sBORDER\n",
                         glist_getTagAsString (view),
@@ -118,7 +165,23 @@ static void box_drawMessage (t_glist *glist, t_object *o, char *tag, int create,
                         tag);
                     
     } else {
-    
+        
+        gui_vAdd ("%s.c coords %sBASE %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        a,
+                        b,
+                        c + 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d - 4,
+                        c + 4,
+                        d,
+                        a,
+                        d);
+        
         gui_vAdd ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
                         glist_getTagAsString (view),
                         tag,
@@ -150,6 +213,25 @@ static void box_drawAtom (t_glist *glist, t_object *o, char *tag, int create, t_
     
     if (create) {
     
+        gui_vAdd ("%s.c create polygon %d %d %d %d %d %d %d %d %d %d"
+                        " -fill #%06x"
+                        " -outline #%06x"
+                        " -tags %sBASE\n",
+                        glist_getTagAsString (view),
+                        a,
+                        b,
+                        c - 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d,
+                        a,
+                        d,
+                        COLOR_BACKGROUND,
+                        COLOR_BACKGROUND,
+                        tag);
+        
         gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d %d %d"
                         " -tags %sBORDER\n",
                         glist_getTagAsString (view),
@@ -169,6 +251,20 @@ static void box_drawAtom (t_glist *glist, t_object *o, char *tag, int create, t_
                         
     } else {
     
+        gui_vAdd ("%s.c coords %sBASE %d %d %d %d %d %d %d %d %d %d\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        a,
+                        b,
+                        c - 4,
+                        b,
+                        c,
+                        b + 4,
+                        c,
+                        d,
+                        a,
+                        d);
+        
         gui_vAdd ("%s.c coords %sBORDER %d %d %d %d %d %d %d %d %d %d %d %d\n",
                         glist_getTagAsString (view),
                         tag,
@@ -323,6 +419,10 @@ static void box_eraseBox (t_glist *glist, t_object *o, char *tag)
     for (i = 0; i < m; i++) { gui_vAdd ("%s.c delete %sINLET%d\n",  glist_getTagAsString (view), tag, i); }
     for (i = 0; i < n; i++) { gui_vAdd ("%s.c delete %sOUTLET%d\n", glist_getTagAsString (view), tag, i); }
     
+    if (!object_isComment (o)) {
+        gui_vAdd ("%s.c delete %sBASE\n", glist_getTagAsString (view), tag);
+    }
+    
     gui_vAdd ("%s.c delete %sBORDER\n", glist_getTagAsString (view), tag);
     //
     }
@@ -406,9 +506,7 @@ void box_create (t_box *x)      /* Draw content and borders. */
     //
     }
     
-    box_send (x, BOX_CREATE, 0, 0);
-    
-    box_draw (x);
+    box_draw (x); box_send (x, BOX_CREATE, 0, 0);
 }
 
 void box_erase (t_box *x)       /* Erase content and borders. */
@@ -438,6 +536,7 @@ void box_update (t_box *x)      /* Update borders. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void box_displace (t_box *x, int deltaX, int deltaY)
 {
