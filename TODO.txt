@@ -7,6 +7,7 @@ Clean and test all patches.
 
 Profile and optimize code.
 Forbid the audio to glitch!
+Add reblocking/resampling examples.
 
 ###
 
