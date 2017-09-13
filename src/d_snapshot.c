@@ -76,13 +76,7 @@ static void *snapshot_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_snapshot_tilde *x = (t_snapshot_tilde *)pd_new (snapshot_tilde_class);
     
-    int n = (atom_getSymbolAtIndex (0, argc, argv) == sym_automatic);
-    
-    /* For convenience number 1 can be used instead of "automatic" keyword. */
-    
-    n |= (atom_getFloatAtIndex (0, argc, argv) == 1.0);
-    
-    if (n) {
+    if (argc) {
         instance_pollingRegister (cast_pd (x));
         x->x_hasPolling = 1;
         argc--; argv++;

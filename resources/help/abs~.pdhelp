@@ -8,10 +8,10 @@
 #X floatatom 36 108 5 0 0 1 - - -;
 #X f 5;
 #X obj -60 12 freeze;
-#X obj 36 228 snapshot~ 1;
 #X text 12 72 Replaces negative values with their inverses.;
+#X obj 36 228 snapshot~ 0;
 #X connect 0 0 1 0;
-#X connect 1 0 7 0;
+#X connect 1 0 8 0;
 #X connect 5 0 0 0;
-#X connect 7 0 4 0;
+#X connect 8 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
