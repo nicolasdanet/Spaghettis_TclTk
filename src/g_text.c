@@ -129,9 +129,15 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     //
     t_box *text = box_fetch (glist, x);
     
-    if (isVisible) { box_create (text); } 
+    if (!isVisible) { box_erase (text); }
     else {
-        box_erase (text);
+    //
+    box_create (text);
+        
+    /* Edge cases when the width is changed in dialog for instance. */
+        
+    if (object_isAtom (x)) { box_update (text); }
+    //
     }
     //
     }

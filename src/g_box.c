@@ -480,7 +480,7 @@ t_box *box_fetch (t_glist *glist, t_object *object)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Update content and borders. */
+/* Update content (background and borders if necessary). */
 
 void box_retext (t_box *x)
 {
@@ -495,7 +495,7 @@ void box_retext (t_box *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void box_create (t_box *x)      /* Draw content and borders. */
+void box_create (t_box *x)      /* Draw content, background and borders. */
 {
     /* Due to loadbang cases the content is set again here. */
     
@@ -509,7 +509,7 @@ void box_create (t_box *x)      /* Draw content and borders. */
     box_draw (x); box_send (x, BOX_CREATE, 0, 0);
 }
 
-void box_erase (t_box *x)       /* Erase content and borders. */
+void box_erase (t_box *x)       /* Erase content, background and borders. */
 {
     /* Required while resizing the object. */
     
@@ -524,12 +524,12 @@ void box_erase (t_box *x)       /* Erase content and borders. */
     box_eraseBox (x->box_owner, x->box_object, x->box_tag);
 }
 
-void box_draw (t_box *x)        /* Draw borders. */
+void box_draw (t_box *x)        /* Draw background and borders. */
 {
     box_drawBox (x->box_owner, x->box_object, x->box_tag, 1);
 }
 
-void box_update (t_box *x)      /* Update borders. */
+void box_update (t_box *x)      /* Update background and borders. */
 {
     box_drawBox (x->box_owner, x->box_object, x->box_tag, 0);
 }
