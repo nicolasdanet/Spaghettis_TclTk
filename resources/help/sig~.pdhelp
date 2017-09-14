@@ -1,4 +1,4 @@
-#N canvas 888 120 329 310 12;
+#N canvas 888 120 327 294 12;
 #X obj 36 144 sig~;
 #X obj 36 180 snapshot~ 0;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
@@ -9,8 +9,8 @@
 #X f 5;
 #X floatatom 36 216 5 0 0 1 - - -;
 #X f 5;
-#X obj 96 264 osc~;
-#X text 12 264 See also:;
+#X obj 96 252 osc~;
+#X text 12 252 See also:;
 #X connect 0 0 1 0;
 #X connect 1 0 7 0;
 #X connect 6 0 0 0;

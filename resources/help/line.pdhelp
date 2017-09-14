@@ -39,7 +39,7 @@
 #X f 5;
 #X obj 228 588 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
 #X obj 228 660 line 0 10;
-#X msg 276 600 1000;
+#X msg 276 612 1000;
 #X text 12 552 Note that time for the ramp is (uncommonly) a one-shot value.;
 #X f 62;
 #X connect 0 0 1 0;
