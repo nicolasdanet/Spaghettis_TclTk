@@ -364,6 +364,8 @@ void glist_rename (t_glist *glist, int argc, t_atom *argv)
 {
     t_symbol *s = atom_getDollarSymbolAtIndex (0, argc, argv);
     
+    if (argc > 1) { warning_unusedArguments (sym_pd, argc - 1, argv + 1); }
+    
     glist_setName (glist, dollar_expandSymbol (s, glist));
 }
 
