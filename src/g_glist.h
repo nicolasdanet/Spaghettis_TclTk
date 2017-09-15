@@ -220,6 +220,7 @@ int     glist_deselectAll                   (t_glist *g);
 void    glist_updateTitle                   (t_glist *g);
 void    glist_updateWindow                  (t_glist *g);
 void    glist_updateLinesForObject          (t_glist *g, t_object *o);
+void    glist_checkLinesForObject           (t_glist *g, t_object *o);
 void    glist_updateLineSelected            (t_glist *g, int isSelected);
 void    glist_updateRectangleOnParent       (t_glist *g);
 void    glist_updateRectangle               (t_glist *g);

@@ -271,6 +271,8 @@ static inline t_outlet *traverser_getOutlet (t_traverser *t)
     return t->tr_srcOutlet;
 }
 
+/* Can be NULL (first inlet). */
+
 static inline t_inlet *traverser_getInlet (t_traverser *t)
 {
     return t->tr_destInlet;

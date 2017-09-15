@@ -183,8 +183,8 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y)
     if (editor_selectionRemove (glist_getEditor (glist), y)) { gobj_selected (y, glist, 0); }
     
     if (z) {
-        object_setFromEntry (cast_object (y), glist, z);
-        glist_updateLinesForObject (glist, cast_object (y));
+        t_object *t = object_setFromEntry (cast_object (y), glist, z);
+        if (t) { glist_checkLinesForObject (glist, t); glist_updateLinesForObject (glist, t); }
         editor_boxSelect (glist_getEditor (glist), NULL);
         glist_redrawRequired (glist);
     }

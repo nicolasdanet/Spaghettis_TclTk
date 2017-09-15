@@ -182,6 +182,29 @@ void glist_updateLinesForObject (t_glist *glist, t_object *o)
     }
 }
 
+void glist_checkLinesForObject (t_glist *glist, t_object *o)
+{
+    t_outconnect *connection = NULL;
+    t_traverser t;
+
+    traverser_start (&t, glist);
+    
+    while ((connection = traverser_next (&t))) {
+    //
+    t_object *o1 = traverser_getSource (&t);
+    t_object *o2 = traverser_getDestination (&t);
+    
+    if (o1 == o || o2 == o) {
+        
+        int t1 = object_isSignalOutlet (o1, traverser_getIndexOfOutlet (&t));
+        int t2 = object_isSignalInlet (o2, traverser_getIndexOfInlet (&t));
+        
+        if (t1 != t2) { traverser_disconnect (&t); error_failed (sym_connect); }
+    }
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

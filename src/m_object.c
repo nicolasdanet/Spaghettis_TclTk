@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
+t_object *object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 {
     char *s = NULL; int size;
 
@@ -61,11 +61,15 @@ void object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
         if (instance_getNewestObject() && gobj_isCanvas (cast_gobj (instance_getNewestObject()))) {
             glist_loadbang (cast_glist (instance_getNewestObject())); 
         }
+        
+        return cast_objectIfConnectable (instance_getNewestObject());
     }
     //
     }
     //
     }
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
