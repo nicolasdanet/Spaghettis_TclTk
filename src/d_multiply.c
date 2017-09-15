@@ -53,7 +53,7 @@ static void multiplyScalar_tilde_dsp (t_multiplyscalar_tilde *x, t_signal **sp)
 
 static void *multiply_tilde_newWithScalar (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc > 1) { warning_unusedArguments (s, argc + 1, argv - 1); }
+    if (argc > 1) { warning_unusedArguments (s, argc - 1, argv + 1); }
     
     t_multiplyscalar_tilde *x = (t_multiplyscalar_tilde *)pd_new (multiplyScalar_tilde_class);
     
