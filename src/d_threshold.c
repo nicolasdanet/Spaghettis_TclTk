@@ -60,7 +60,7 @@ static void threshold_tilde_set (t_threshold_tilde *x, t_symbol *s, int argc, t_
     
     x->x_high         = high;
     x->x_deadTimeHigh = highDead;
-    x->x_low          = PD_MIN (low, high);
+    x->x_low          = low;
     x->x_deadTimeLow  = lowDead;
 }
 

@@ -196,10 +196,12 @@ void glist_checkLinesForObject (t_glist *glist, t_object *o)
     
     if (o1 == o || o2 == o) {
         
-        int t1 = object_isSignalOutlet (o1, traverser_getIndexOfOutlet (&t));
-        int t2 = object_isSignalInlet (o2, traverser_getIndexOfInlet (&t));
+        int m = traverser_getIndexOfOutlet (&t);
+        int n = traverser_getIndexOfInlet (&t);
         
-        if (t1 != t2) { traverser_disconnect (&t); error_failed (sym_connect); }
+        if (object_isSignalOutlet (o1, m) != object_isSignalInlet (o2, n)) {
+            traverser_disconnect (&t); error_failed (sym_connect);
+        }
     }
     //
     }
