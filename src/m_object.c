@@ -62,7 +62,10 @@ t_object *object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
             glist_loadbang (cast_glist (instance_getNewestObject())); 
         }
         
-        return cast_objectIfConnectable (instance_getNewestObject());
+        if (instance_getNewestObject()) { return cast_objectIfConnectable (instance_getNewestObject()); }
+        else {
+            return NULL;
+        }
     }
     //
     }
