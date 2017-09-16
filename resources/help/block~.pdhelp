@@ -41,7 +41,7 @@
 #X connect 10 0 9 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 156 pd arguments;
-#N canvas 811 364 474 272 warning 0;
+#N canvas 401 174 426 320 warning 0;
 #X obj 36 48 dac~;
 #X obj 36 72 adc~;
 #X obj 36 96 send~;
@@ -49,8 +49,10 @@
 #X obj 36 144 throw~;
 #X obj 36 168 catch~;
 #X obj 36 120 receive~;
-#X text 12 12 For now \, communication without cords is NOT handled.;
-#X text 12 228 Thus objects above MUST be prohibited.;
+#X obj 36 216 delread~;
+#X obj 36 240 vd~;
+#X text 12 12 Communication without cords is NOT supported.;
+#X text 12 276 Thus objects above MUST be prohibited for now.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 180 pd warning;
 #X text 12 72 Modify the block size of DSP in a subpatch.;
