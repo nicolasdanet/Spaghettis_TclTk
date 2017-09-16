@@ -197,6 +197,7 @@ void    glist_lineSelect                    (t_glist *g, t_traverser *t);
 void    glist_lineDeselect                  (t_glist *g);
 void    glist_lineDeleteSelected            (t_glist *g);
 int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
+void    glist_lineCheck                     (t_glist *g, t_object *o);
 t_error glist_lineConnect                   (t_glist *g, int m, int i, int n, int j);
 t_error glist_lineDisconnect                (t_glist *g, int m, int i, int n, int j);
 
@@ -220,7 +221,6 @@ int     glist_deselectAll                   (t_glist *g);
 void    glist_updateTitle                   (t_glist *g);
 void    glist_updateWindow                  (t_glist *g);
 void    glist_updateLinesForObject          (t_glist *g, t_object *o);
-void    glist_checkLinesForObject           (t_glist *g, t_object *o);
 void    glist_updateLineSelected            (t_glist *g, int isSelected);
 void    glist_updateRectangleOnParent       (t_glist *g);
 void    glist_updateRectangle               (t_glist *g);

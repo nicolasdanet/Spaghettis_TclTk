@@ -184,7 +184,7 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y)
     
     if (z) {
         t_object *t = object_setFromEntry (cast_object (y), glist, z);
-        if (t) { glist_checkLinesForObject (glist, t); glist_updateLinesForObject (glist, t); }
+        if (t) { glist_lineCheck (glist, t); glist_updateLinesForObject (glist, t); }
         editor_boxSelect (glist_getEditor (glist), NULL);
         glist_redrawRequired (glist);
     }

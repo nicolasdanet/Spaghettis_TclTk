@@ -1110,5 +1110,30 @@ void glist_lineDeleteSelected (t_glist *glist)
     }
 }
 
+void glist_lineCheck (t_glist *glist, t_object *o)
+{
+    t_outconnect *connection = NULL;
+    t_traverser t;
+
+    traverser_start (&t, glist);
+    
+    while ((connection = traverser_next (&t))) {
+    //
+    t_object *o1 = traverser_getSource (&t);
+    t_object *o2 = traverser_getDestination (&t);
+    
+    if (o1 == o || o2 == o) {
+        
+        int m = traverser_getIndexOfOutlet (&t);
+        int n = traverser_getIndexOfInlet (&t);
+        
+        if (object_isSignalOutlet (o1, m) && !object_isSignalInlet (o2, n)) {
+            traverser_disconnect (&t); error_failed (sym_connect);
+        }
+    }
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
