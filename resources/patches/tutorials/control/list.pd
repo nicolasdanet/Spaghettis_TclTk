@@ -30,9 +30,10 @@
 #X restore 53 386 pd about-lists;
 #X obj 48 60 prepend;
 #X obj 300 96 list append;
-#X obj 48 132 list trim;
+#X obj 48 96 list trim;
 #X obj 300 60 pack;
 #X obj 300 132 1 2 3 4;
-#X text 48 96 make anything;
-#X text 312 192 make list;
+#X text 48 132 make anything;
+#X text 300 216 make list;
+#X obj 300 168 list store;
 #X coords 0 0 1 1 250 175 0 0 0;
