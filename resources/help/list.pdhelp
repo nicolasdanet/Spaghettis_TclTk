@@ -190,7 +190,7 @@
 #X f 26;
 #X obj 36 252 list store;
 #X text 204 252 Append extended.;
-#N canvas 447 63 416 666 store 0;
+#N canvas 404 30 417 686 store 0;
 #X floatatom 36 120 5 0 0 0 - - -;
 #X f 5;
 #X msg 36 48 1 2 3;
@@ -198,7 +198,7 @@
 #X msg 36 144 bang;
 #X msg 36 96 walk the dog;
 #X obj 36 324 print;
-#X obj 36 612 print;
+#X obj 36 636 print;
 #X msg 60 444 sont dans un bateau...;
 #X obj 36 288 list store 1 2;
 #X obj 36 576 list store;
