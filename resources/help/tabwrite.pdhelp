@@ -1,11 +1,11 @@
-#N canvas 512 125 565 331 12;
+#N canvas 512 125 566 346 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#X obj 96 288 tabwrite~;
-#X text 12 288 See also:;
+#X obj 96 300 tabwrite~;
+#X text 12 300 See also:;
 #X text 24 24 tabwrite;
 #X text 12 72 Write numbers to an array.;
-#X obj 180 288 array;
+#X obj 276 300 array;
 #N canvas 0 22 500 350 \$0-array 0;
 #X array \$0-array 10 float 1;
 #A 0 0.307209 0.186797 0.346219 0.671017 0.209627 0.0818395 0.215328 0.392633 0.831738 0.0561079;
@@ -34,7 +34,8 @@
 #X obj 36 192 tabwrite \$0-array;
 #X floatatom 204 120 5 0 9 1 - - -;
 #X f 5;
-#X obj 36 108 nbx 5 40 0 1 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0.3 100;
+#X obj 36 108 nbx 5 40 0 1 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
+#X obj 192 300 tabread~;
 #X connect 10 0 9 1;
 #X connect 11 0 9 0;
 #X coords 0 0 1 1 250 175 0 0 0;
