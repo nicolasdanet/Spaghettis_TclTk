@@ -36,4 +36,5 @@
 #X text 48 132 make anything;
 #X text 300 216 make list;
 #X obj 300 168 list store;
+#X obj 312 276 list group 4;
 #X coords 0 0 1 1 250 175 0 0 0;
