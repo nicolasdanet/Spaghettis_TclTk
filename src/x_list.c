@@ -35,6 +35,7 @@ static void *list_makeObject (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     else if (t == sym_length)       { newest = listlength_new (s,       argc - 1, argv + 1); }
     else if (t == sym_store)        { newest = liststore_new (s,        argc - 1, argv + 1); }
     else if (t == sym_iterate)      { newest = listiterate_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_group)        { newest = listgroup_new (s,        argc - 1, argv + 1); }
     else if (t == sym_fromsymbol)   { newest = listfromsymbol_new (s,   argc - 1, argv + 1); }
     else if (t == sym_tosymbol)     { newest = listtosymbol_new (s,     argc - 1, argv + 1); }
     else {

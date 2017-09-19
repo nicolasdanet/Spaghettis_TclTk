@@ -156,6 +156,7 @@
 #include "x_listlength.c"
 #include "x_liststore.c"
 #include "x_listiterate.c"
+#include "x_listgroup.c"
 #include "x_listfromsymbol.c"
 #include "x_listtosymbol.c"
 #include "x_text.c"
