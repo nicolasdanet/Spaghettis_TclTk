@@ -5,7 +5,7 @@ Clean and test all patches.
 
 ###
 
-Profile and optimize code.
+Profile and optimize code (i.g. arrays with samples).
 Forbid the audio to glitch!
 
 ###
@@ -17,7 +17,7 @@ Find a way to mix symbols and floats in getters for scalars.
 Think about negation before a field name for painters.
 Manage the mouse interaction with elements of an array.
 Handle all options with unordered key/value pairs.
-Improve consistency for properties (i.e Atom / IEM).
+Improve consistency for properties (i.g. Atom / IEM).
 Adapt all objects to be resizable.
 Add unlimited undo mechanism.
 Allow to select more that one cord.
@@ -27,7 +27,7 @@ Plainly support all DSP objects in reblocked patch.
 
 ###
 
-Use generic containers (i.e linked list).
+Use generic containers (i.g. linked list).
 Make an embeddable interpreter.
 Think about an unit test suite.
 Replace the Tk GUI (make MVC more strict).
