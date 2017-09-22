@@ -2288,6 +2288,7 @@
 					libraries/portmidi/pm_mac,
 					libraries/portmidi/porttime,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "-ffast-math";
 				OTHER_LDFLAGS = (
 					"-ldl",
@@ -2320,6 +2321,7 @@
 					libraries/portmidi/pm_mac,
 					libraries/portmidi/porttime,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "-ffast-math";
 				OTHER_LDFLAGS = (
 					"-ldl",
