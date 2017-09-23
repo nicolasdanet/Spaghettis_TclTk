@@ -393,7 +393,6 @@ extern t_symbol *sym_object;
 extern t_symbol *sym_objectmaker;
 extern t_symbol *sym_open;
 extern t_symbol *sym_openpanel;
-extern t_symbol *sym_operator__tilde__;
 extern t_symbol *sym_osc__tilde__;
 extern t_symbol *sym_oscformat;
 extern t_symbol *sym_oscparse;

@@ -115,8 +115,8 @@ void add_tilde_setup (void)
     class_addDSP (add_tilde_class, (t_method)add_tilde_dsp);
     class_addDSP (addScalar_tilde_class, (t_method)addScalar_tilde_dsp);
     
-    class_setHelpName (add_tilde_class, sym_operator__tilde__);
-    class_setHelpName (addScalar_tilde_class, sym_operator__tilde__);
+    class_setHelpName (add_tilde_class, sym_arithmetic__tilde__);
+    class_setHelpName (addScalar_tilde_class, sym_arithmetic__tilde__);
 }
 
 void add_tilde_destroy (void)

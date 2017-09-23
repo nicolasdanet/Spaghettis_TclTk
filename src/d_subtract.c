@@ -112,8 +112,8 @@ void subtract_tilde_setup (void)
     class_addDSP (subtract_tilde_class, (t_method)subtract_tilde_dsp);
     class_addDSP (subtractScalar_tilde_class, (t_method)subtractScalar_tilde_dsp);
         
-    class_setHelpName (subtract_tilde_class, sym_operator__tilde__);
-    class_setHelpName (subtractScalar_tilde_class, sym_operator__tilde__);
+    class_setHelpName (subtract_tilde_class, sym_arithmetic__tilde__);
+    class_setHelpName (subtractScalar_tilde_class, sym_arithmetic__tilde__);
 }
 
 void subtract_tilde_destroy (void)

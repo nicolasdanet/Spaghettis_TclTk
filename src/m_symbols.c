@@ -393,7 +393,6 @@ t_symbol *sym_object;
 t_symbol *sym_objectmaker;
 t_symbol *sym_open;
 t_symbol *sym_openpanel;
-t_symbol *sym_operator__tilde__;
 t_symbol *sym_osc__tilde__;
 t_symbol *sym_oscformat;
 t_symbol *sym_oscparse;
@@ -1003,7 +1002,6 @@ void symbols_initialize (void)
     sym_objectmaker                             = gensym ("objectmaker");
     sym_open                                    = gensym ("open");
     sym_openpanel                               = gensym ("openpanel");
-    sym_operator__tilde__                       = gensym ("operator~");
     sym_osc__tilde__                            = gensym ("osc~");
     sym_oscformat                               = gensym ("oscformat");
     sym_oscparse                                = gensym ("oscparse");
