@@ -168,6 +168,8 @@ void rsqrt_tilde_setup (void)
     
     #endif
     
+    class_setHelpName (c, sym_math__tilde__);
+    
     rsqrt_tilde_class = c;
 }
 

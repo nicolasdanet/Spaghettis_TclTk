@@ -90,6 +90,8 @@ void sqrt_tilde_setup (void)
     
     #endif
     
+    class_setHelpName (c, sym_math__tilde__);
+    
     sqrt_tilde_class = c;
 }
 

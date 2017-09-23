@@ -80,7 +80,9 @@ void exp_tilde_setup (void)
     CLASS_SIGNAL (c, t_exp_tilde, x_f);
     
     class_addDSP (c, (t_method)exp_tilde_dsp);
-        
+    
+    class_setHelpName (c, sym_math__tilde__);
+    
     exp_tilde_class = c;
 }
 

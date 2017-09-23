@@ -99,6 +99,8 @@ void log_tilde_setup (void)
     
     class_addDSP (c, (t_method)log_tilde_dsp);
     
+    class_setHelpName (c, sym_math__tilde__);
+    
     log_tilde_class = c;
 }
 

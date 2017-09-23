@@ -353,6 +353,7 @@ extern t_symbol *sym_lrshift__tilde__;
 extern t_symbol *sym_makefilename;
 extern t_symbol *sym_makenote;
 extern t_symbol *sym_math;
+extern t_symbol *sym_math__tilde__;
 extern t_symbol *sym_max;
 extern t_symbol *sym_max__tilde__;
 extern t_symbol *sym_message;

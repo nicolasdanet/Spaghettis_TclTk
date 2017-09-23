@@ -353,6 +353,7 @@ t_symbol *sym_lrshift__tilde__;
 t_symbol *sym_makefilename;
 t_symbol *sym_makenote;
 t_symbol *sym_math;
+t_symbol *sym_math__tilde__;
 t_symbol *sym_max;
 t_symbol *sym_max__tilde__;
 t_symbol *sym_message;
@@ -962,6 +963,7 @@ void symbols_initialize (void)
     sym_makefilename                            = gensym ("makefilename");
     sym_makenote                                = gensym ("makenote");
     sym_math                                    = gensym ("math");
+    sym_math__tilde__                           = gensym ("math~");
     sym_max                                     = gensym ("max");
     sym_max__tilde__                            = gensym ("max~");
     sym_message                                 = gensym ("message");

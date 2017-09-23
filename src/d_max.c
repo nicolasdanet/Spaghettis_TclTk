@@ -111,6 +111,9 @@ void max_tilde_setup (void)
         
     class_addDSP (max_tilde_class, (t_method)max_tilde_dsp);
     class_addDSP (maxScalar_tilde_class, (t_method)maxScalar_tilde_dsp);
+    
+    class_setHelpName (max_tilde_class, sym_math__tilde__);
+    class_setHelpName (maxScalar_tilde_class, sym_math__tilde__);
 }
 
 void max_tilde_destroy (void)

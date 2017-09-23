@@ -98,6 +98,8 @@ void pow_tilde_setup (void)
     
     class_addDSP (c, (t_method)pow_tilde_dsp);
     
+    class_setHelpName (c, sym_math__tilde__);
+    
     pow_tilde_class = c;
 }
 

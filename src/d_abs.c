@@ -81,6 +81,8 @@ void abs_tilde_setup (void)
     
     class_addDSP (c, (t_method)abs_tilde_dsp);
     
+    class_setHelpName (c, sym_math__tilde__);
+    
     abs_tilde_class = c;
 }
 

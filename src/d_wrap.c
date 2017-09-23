@@ -85,6 +85,8 @@ void wrap_tilde_setup (void)
     
     class_addDSP (c, (t_method)wrap_tilde_dsp);
     
+    class_setHelpName (c, sym_math__tilde__);
+    
     wrap_tilde_class = c;
 }
 
