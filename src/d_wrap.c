@@ -40,7 +40,7 @@ static t_int *wrap_tilde_perform (t_int *w)
     while (n--) {
         t_sample f = *in++;
         int k = (int)f;
-        if (f > 0.0) { *out++ = f - k; } else { *out++ = f - (k - 1); }
+        if (f >= 0.0) { *out++ = f - k; } else { *out++ = f - (k - 1); }
     }
     
     return (w + 4);
