@@ -224,6 +224,7 @@
 #include "x_makefilename.c"
 #include "x_loadbang.c"
 #include "x_samplerate.c"
+#include "x_dspstatus.c"
 #include "x_freeze.c"
 #include "x_namecanvas.c"
 #include "x_serial.c"

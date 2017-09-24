@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		17073FB61F398EE2004042C0 /* x_textdelete.c in Sources */ = {isa = PBXBuildFile; fileRef = 17073FB51F398EE2004042C0 /* x_textdelete.c */; };
 		172EBDFD1F273EC9003C0B66 /* x_prepend.c in Sources */ = {isa = PBXBuildFile; fileRef = 172EBDFC1F273EC9003C0B66 /* x_prepend.c */; };
+		17304EBD1F77DA3E00DCA7EC /* x_dspstatus.c in Sources */ = {isa = PBXBuildFile; fileRef = 17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */; };
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
 		17981E151F0618A10029AD87 /* s_searchpath.c in Sources */ = {isa = PBXBuildFile; fileRef = 17981E141F0618A10029AD87 /* s_searchpath.c */; };
 		179873E31F01095100BB1B94 /* m_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 179873E21F01095100BB1B94 /* m_file.c */; };
@@ -402,6 +403,7 @@
 /* Begin PBXFileReference section */
 		17073FB51F398EE2004042C0 /* x_textdelete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textdelete.c; path = src/x_textdelete.c; sourceTree = "<group>"; };
 		172EBDFC1F273EC9003C0B66 /* x_prepend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_prepend.c; path = src/x_prepend.c; sourceTree = "<group>"; };
+		17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_dspstatus.c; path = src/x_dspstatus.c; sourceTree = "<group>"; };
 		174D8A081F0BBA0200C94065 /* x_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_text.h; path = src/x_text.h; sourceTree = "<group>"; };
 		174D8A091F0BBBBE00C94065 /* x_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_array.h; path = src/x_array.h; sourceTree = "<group>"; };
 		174D8A0A1F0BBCD000C94065 /* x_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_list.h; path = src/x_list.h; sourceTree = "<group>"; };
@@ -1265,6 +1267,7 @@
 				374906651D9977C700377F1E /* x_makefilename.c */,
 				377CEF451DAA831E00E60461 /* x_loadbang.c */,
 				37B1AA561DC1EE3E0017355A /* x_samplerate.c */,
+				17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */,
 				179E91121F0F6B11009A4FA6 /* x_freeze.c */,
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
 				3702414F1DAB95AC00AB5440 /* x_serial.c */,
@@ -1938,6 +1941,7 @@
 				3716556B1BA3458D00ABDE22 /* pa_trace.c in Sources */,
 				3716556D1BA3459F00ABDE22 /* pa_debugprint.c in Sources */,
 				3716556F1BA345AD00ABDE22 /* pa_ringbuffer.c in Sources */,
+				17304EBD1F77DA3E00DCA7EC /* x_dspstatus.c in Sources */,
 				371655711BA345C100ABDE22 /* pa_unix_util.c in Sources */,
 				371655751BA345E400ABDE22 /* pa_mac_core.c in Sources */,
 				371655771BA345EE00ABDE22 /* pa_mac_core_blocking.c in Sources */,

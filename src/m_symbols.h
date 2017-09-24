@@ -266,6 +266,7 @@ extern t_symbol *sym_drawpolygon;
 extern t_symbol *sym_drawtext;
 extern t_symbol *sym_drawsymbol;
 extern t_symbol *sym_dsp;
+extern t_symbol *sym_dspstatus;
 extern t_symbol *sym_editmode;
 extern t_symbol *sym_element;
 extern t_symbol *sym_empty;

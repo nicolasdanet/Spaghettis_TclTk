@@ -266,6 +266,7 @@ t_symbol *sym_drawpolygon;
 t_symbol *sym_drawtext;
 t_symbol *sym_drawsymbol;
 t_symbol *sym_dsp;
+t_symbol *sym_dspstatus;
 t_symbol *sym_editmode;
 t_symbol *sym_element;
 t_symbol *sym_empty;
@@ -877,6 +878,7 @@ void symbols_initialize (void)
     sym_drawtext                                = gensym ("drawtext");
     sym_drawsymbol                              = gensym ("drawsymbol");
     sym_dsp                                     = gensym ("dsp");
+    sym_dspstatus                               = gensym ("dspstatus");
     sym_editmode                                = gensym ("editmode");
     sym_element                                 = gensym ("element");
     sym_empty                                   = gensym ("empty");

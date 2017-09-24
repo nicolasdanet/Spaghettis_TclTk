@@ -16,71 +16,34 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *samplerate_class;         /* Shared. */
+static t_class *dspstatus_class;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _samplerate {
-    t_object    x_obj;                          /* Must be the first. */
-    t_glist     *x_owner;
+typedef struct _dspstatus {
+    t_object    x_obj;                      /* Must be the first. */
+    t_float     x_status;
     t_outlet    *x_outlet;
-    } t_samplerate;
+    } t_dspstatus;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_block *samplerate_getBlockIfContainsAny (t_glist **p)
+static void dspstatus_bang (t_dspstatus *x)
 {
-    t_block *block = NULL;
-    t_glist *glist = *p;
-    
-    t_gobj *y = NULL;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == block_class) {
-            if (block) { error_unexpected (sym_samplerate, sym_block__tilde__); }
-            else {
-                block = (t_block *)y;
-            }
-        }
-    }
-    
-    *p = glist_getParent (glist);
-    
-    return block;
+
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void samplerate_bang (t_samplerate *x)
+static void *dspstatus_new (void)
 {
-    t_float sampleRate = audio_getSampleRate();
+    t_dspstatus *x = (t_dspstatus *)pd_new (dspstatus_class);
     
-    t_glist *glist = x->x_owner;
-    
-    while (glist) {
-        t_block *b = samplerate_getBlockIfContainsAny (&glist);
-        if (b) { 
-            sampleRate *= block_getRatio (b);
-        }
-    }
-    
-    outlet_float (x->x_outlet, sampleRate);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void *samplerate_new (void)
-{
-    t_samplerate *x = (t_samplerate *)pd_new (samplerate_class);
-    
-    x->x_owner  = instance_contextGetCurrent();
     x->x_outlet = outlet_new (cast_object (x), &s_float);
     
     return x;
@@ -90,27 +53,25 @@ static void *samplerate_new (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void samplerate_setup (void)
+void dspstatus_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_samplerate,
-            (t_newmethod)samplerate_new,
+    c = class_new (sym_dspstatus,
+            (t_newmethod)dspstatus_new,
             NULL,
-            sizeof (t_samplerate),
+            sizeof (t_dspstatus),
             CLASS_DEFAULT,
             A_NULL);
-    
-    class_addCreator ((t_newmethod)samplerate_new, sym_samplerate__tilde__, A_NULL);
 
-    class_addBang (c, (t_method)samplerate_bang);
+    class_addBang (c, (t_method)dspstatus_bang);
     
-    samplerate_class = c;
+    dspstatus_class = c;
 }
 
-void samplerate_destroy (void)
+void dspstatus_destroy (void)
 {
-    class_free (samplerate_class);
+    class_free (dspstatus_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
