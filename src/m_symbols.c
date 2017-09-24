@@ -128,6 +128,7 @@ t_symbol *sym__ctlin;
 t_symbol *sym__cut;
 t_symbol *sym__duplicate;
 t_symbol *sym__dummy;
+t_symbol *sym__dspstatus;
 t_symbol *sym__floatarraytemplate;
 t_symbol *sym__floattemplate;
 t_symbol *sym__font;
@@ -740,6 +741,7 @@ void symbols_initialize (void)
     sym__cut                                    = gensym ("_cut");
     sym__duplicate                              = gensym ("_duplicate");
     sym__dummy                                  = gensym ("_dummy");
+    sym__dspstatus                              = gensym ("_dspstatus");
     sym__floatarraytemplate                     = gensym ("_floatarraytemplate");
     sym__floattemplate                          = gensym ("_floattemplate");
     sym__font                                   = gensym ("_font");

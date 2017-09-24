@@ -31,6 +31,8 @@ void dsp_setState (int n)
         instance_dspStop(); dsp_status = 0; audio_stop();
     }
     
+	if (pd_hasThingQuiet (sym__dspstatus)) { pd_float (pd_getThing (sym__dspstatus), (t_float)dsp_status); }
+
     gui_vAdd ("set ::var(isDsp) %d\n", dsp_status);     // --
     
     post ("dsp: %d", dsp_status);                       // --

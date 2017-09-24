@@ -128,6 +128,7 @@ extern t_symbol *sym__ctlin;
 extern t_symbol *sym__cut;
 extern t_symbol *sym__duplicate;
 extern t_symbol *sym__dummy;
+extern t_symbol *sym__dspstatus;
 extern t_symbol *sym__floatarraytemplate;
 extern t_symbol *sym__floattemplate;
 extern t_symbol *sym__font;

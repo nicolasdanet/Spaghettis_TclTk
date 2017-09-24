@@ -33,7 +33,12 @@ typedef struct _dspstatus {
 
 static void dspstatus_bang (t_dspstatus *x)
 {
+    outlet_float (x->x_outlet, x->x_status);
+}
 
+static void dspstatus_float (t_dspstatus *x, t_float f)
+{
+     x->x_status = (f != 0.0); dspstatus_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -46,7 +51,14 @@ static void *dspstatus_new (void)
     
     x->x_outlet = outlet_new (cast_object (x), &s_float);
     
+    pd_bind (cast_pd (x), sym__dspstatus);
+    
     return x;
+}
+
+static void dspstatus_free (t_dspstatus *x)
+{
+    pd_unbind (cast_pd (x), sym__dspstatus);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -59,12 +71,13 @@ void dspstatus_setup (void)
     
     c = class_new (sym_dspstatus,
             (t_newmethod)dspstatus_new,
-            NULL,
+            (t_method)dspstatus_free,
             sizeof (t_dspstatus),
             CLASS_DEFAULT,
             A_NULL);
 
     class_addBang (c, (t_method)dspstatus_bang);
+    class_addFloat (c, (t_method)dspstatus_float);
     
     dspstatus_class = c;
 }
