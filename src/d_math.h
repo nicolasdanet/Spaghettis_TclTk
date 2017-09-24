@@ -33,7 +33,7 @@ static inline t_float sqrt_fast (t_float f)
 
     z.z_f = f;
         
-    if (z.z_f < 0.0) { return (t_float)0.0; }
+    if (z.z_f <= 0.0) { return (t_float)0.0; }
     else {
     //
     int e = (z.z_i >> 23) & (RSQRT_EXPONENTIAL_SIZE - 1);
