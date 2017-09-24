@@ -16,22 +16,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *samplerate_tilde_class;         /* Shared. */
+static t_class *samplerate_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _samplerate_tilde {
+typedef struct _samplerate {
     t_object    x_obj;                          /* Must be the first. */
     t_glist     *x_owner;
     t_outlet    *x_outlet;
-    } t_samplerate_tilde;
+    } t_samplerate;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_block *samplerate_tilde_getBlockIfContainsAny (t_glist **p)
+static t_block *samplerate_getBlockIfContainsAny (t_glist **p)
 {
     t_block *block = NULL;
     t_glist *glist = *p;
@@ -56,14 +56,14 @@ static t_block *samplerate_tilde_getBlockIfContainsAny (t_glist **p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void samplerate_tilde_bang (t_samplerate_tilde *x)
+static void samplerate_bang (t_samplerate *x)
 {
     t_float sampleRate = audio_getSampleRate();
     
     t_glist *glist = x->x_owner;
     
     while (glist) {
-        t_block *b = samplerate_tilde_getBlockIfContainsAny (&glist);
+        t_block *b = samplerate_getBlockIfContainsAny (&glist);
         if (b) { 
             sampleRate *= block_getRatio (b);
         }
@@ -76,9 +76,9 @@ static void samplerate_tilde_bang (t_samplerate_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *samplerate_tilde_new (void)
+static void *samplerate_new (void)
 {
-    t_samplerate_tilde *x = (t_samplerate_tilde *)pd_new (samplerate_tilde_class);
+    t_samplerate *x = (t_samplerate *)pd_new (samplerate_class);
     
     x->x_owner  = instance_contextGetCurrent();
     x->x_outlet = outlet_new (cast_object (x), &s_float);
@@ -90,27 +90,27 @@ static void *samplerate_tilde_new (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void samplerate_tilde_setup (void)
+void samplerate_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_samplerate__tilde__,
-            (t_newmethod)samplerate_tilde_new,
+    c = class_new (sym_samplerate,
+            (t_newmethod)samplerate_new,
             NULL,
-            sizeof (t_samplerate_tilde),
+            sizeof (t_samplerate),
             CLASS_DEFAULT,
             A_NULL);
     
-	class_addCreator ((t_newmethod)samplerate_tilde_new, sym_samplerate, A_NULL);
+	class_addCreator ((t_newmethod)samplerate_new, sym_samplerate__tilde__, A_NULL);
 
-    class_addBang (c, (t_method)samplerate_tilde_bang);
+    class_addBang (c, (t_method)samplerate_bang);
     
-    samplerate_tilde_class = c;
+    samplerate_class = c;
 }
 
-void samplerate_tilde_destroy (void)
+void samplerate_destroy (void)
 {
-    class_free (samplerate_tilde_class);
+    class_free (samplerate_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

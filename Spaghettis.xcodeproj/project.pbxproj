@@ -291,7 +291,7 @@
 		37AB28E11E6185F7004F2F7D /* g_cord.c in Sources */ = {isa = PBXBuildFile; fileRef = 37AB28E01E6185F7004F2F7D /* g_cord.c */; };
 		37ACC4191E32190F0026E5FA /* d_fftOOURA.c in Sources */ = {isa = PBXBuildFile; fileRef = 37ACC4181E32190F0026E5FA /* d_fftOOURA.c */; };
 		37B145841D9E97A1003A354F /* x_atomoutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B145831D9E97A1003A354F /* x_atomoutlet.c */; };
-		37B1AA571DC1EE3E0017355A /* d_samplerate.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B1AA561DC1EE3E0017355A /* d_samplerate.c */; };
+		37B1AA571DC1EE3E0017355A /* x_samplerate.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B1AA561DC1EE3E0017355A /* x_samplerate.c */; };
 		37B6D30B1DBBB16000ECF049 /* x_sysexin.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B6D30A1DBBB16000ECF049 /* x_sysexin.c */; };
 		37B79AFB1DCB775900EB423B /* d_vinlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B79AFA1DCB775900EB423B /* d_vinlet.c */; };
 		37B79B4A1DCB7E0300EB423B /* d_voutlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 37B79B491DCB7E0300EB423B /* d_voutlet.c */; };
@@ -773,7 +773,7 @@
 		37AB28E01E6185F7004F2F7D /* g_cord.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_cord.c; path = src/g_cord.c; sourceTree = "<group>"; };
 		37ACC4181E32190F0026E5FA /* d_fftOOURA.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_fftOOURA.c; path = src/d_fftOOURA.c; sourceTree = "<group>"; };
 		37B145831D9E97A1003A354F /* x_atomoutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_atomoutlet.c; path = src/x_atomoutlet.c; sourceTree = "<group>"; };
-		37B1AA561DC1EE3E0017355A /* d_samplerate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_samplerate.c; path = src/d_samplerate.c; sourceTree = "<group>"; };
+		37B1AA561DC1EE3E0017355A /* x_samplerate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_samplerate.c; path = src/x_samplerate.c; sourceTree = "<group>"; };
 		37B6D30A1DBBB16000ECF049 /* x_sysexin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_sysexin.c; path = src/x_sysexin.c; sourceTree = "<group>"; };
 		37B79AFA1DCB775900EB423B /* d_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vinlet.c; path = src/d_vinlet.c; sourceTree = "<group>"; };
 		37B79B491DCB7E0300EB423B /* d_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_voutlet.c; path = src/d_voutlet.c; sourceTree = "<group>"; };
@@ -1264,6 +1264,7 @@
 				374D7B5D1DA3E30500FECF8F /* x_savepanel.c */,
 				374906651D9977C700377F1E /* x_makefilename.c */,
 				377CEF451DAA831E00E60461 /* x_loadbang.c */,
+				37B1AA561DC1EE3E0017355A /* x_samplerate.c */,
 				179E91121F0F6B11009A4FA6 /* x_freeze.c */,
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
 				3702414F1DAB95AC00AB5440 /* x_serial.c */,
@@ -1635,7 +1636,6 @@
 			children = (
 				37EECD3D1DC749AE00E02EDF /* d_print.c */,
 				37EECD3B1DC749A300E02EDF /* d_bang.c */,
-				37B1AA561DC1EE3E0017355A /* d_samplerate.c */,
 				3741A8BE1DE8196E00B32300 /* d_noise.c */,
 				37ECBA021E488A3000F1CFD1 /* d_lrshift.c */,
 			);
@@ -2156,7 +2156,7 @@
 				370793E71DBB55A700183F74 /* x_notein.c in Sources */,
 				37B6D30B1DBBB16000ECF049 /* x_sysexin.c in Sources */,
 				376963301DBFB4C4001B91B5 /* d_perform.c in Sources */,
-				37B1AA571DC1EE3E0017355A /* d_samplerate.c in Sources */,
+				37B1AA571DC1EE3E0017355A /* x_samplerate.c in Sources */,
 				3770AD8A1DC2338300ADAE26 /* d_block.c in Sources */,
 				3770AE001DC2396E00ADAE26 /* d_dsp.c in Sources */,
 				3770AE3B1DC23D2000ADAE26 /* d_signal.c in Sources */,
