@@ -570,7 +570,7 @@ void setup_setup (void)
     realtime_setup();
     receive_setup();
     route_setup();
-	samplerate_setup();
+    samplerate_setup();
     savepanel_setup();
     scalar_setup();
     select_setup();
@@ -777,7 +777,7 @@ void setup_destroy (void)
     realtime_destroy();
     receive_destroy();
     route_destroy();
-	samplerate_destroy();
+    samplerate_destroy();
     savepanel_destroy();
     scalar_destroy();
     select_destroy();

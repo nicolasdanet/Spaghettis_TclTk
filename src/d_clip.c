@@ -100,7 +100,7 @@ void clip_tilde_setup (void)
     
     class_addDSP (c, (t_method)clip_tilde_dsp);
     
-	class_setHelpName (c, sym_math__tilde__);
+    class_setHelpName (c, sym_math__tilde__);
     
     clip_tilde_class = c;
 }

@@ -101,7 +101,7 @@ void samplerate_setup (void)
             CLASS_DEFAULT,
             A_NULL);
     
-	class_addCreator ((t_newmethod)samplerate_new, sym_samplerate__tilde__, A_NULL);
+    class_addCreator ((t_newmethod)samplerate_new, sym_samplerate__tilde__, A_NULL);
 
     class_addBang (c, (t_method)samplerate_bang);
     
