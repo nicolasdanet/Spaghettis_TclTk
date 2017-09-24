@@ -459,6 +459,7 @@ extern t_symbol *sym_s;
 extern t_symbol *sym_s__tilde__;
 extern t_symbol *sym_samphold__tilde__;
 extern t_symbol *sym_sample;
+extern t_symbol *sym_samplerate;
 extern t_symbol *sym_samplerate__tilde__;
 extern t_symbol *sym_save;
 extern t_symbol *sym_saveas;

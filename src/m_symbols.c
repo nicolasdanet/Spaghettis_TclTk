@@ -459,6 +459,7 @@ t_symbol *sym_s;
 t_symbol *sym_s__tilde__;
 t_symbol *sym_samphold__tilde__;
 t_symbol *sym_sample;
+t_symbol *sym_samplerate;
 t_symbol *sym_samplerate__tilde__;
 t_symbol *sym_save;
 t_symbol *sym_saveas;
@@ -1069,6 +1070,7 @@ void symbols_initialize (void)
     sym_s__tilde__                              = gensym ("s~");
     sym_samphold__tilde__                       = gensym ("samphold~");
     sym_sample                                  = gensym ("sample");
+    sym_samplerate                              = gensym ("samplerate");
     sym_samplerate__tilde__                     = gensym ("samplerate~");
     sym_save                                    = gensym ("save");
     sym_saveas                                  = gensym ("saveas");
