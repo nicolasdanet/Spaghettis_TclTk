@@ -24,6 +24,7 @@ static t_class *dspstatus_class;            /* Shared. */
 typedef struct _dspstatus {
     t_object    x_obj;                      /* Must be the first. */
     t_float     x_status;
+    int         x_reentrant;
     t_outlet    *x_outlet;
     } t_dspstatus;
 
@@ -38,7 +39,11 @@ static void dspstatus_bang (t_dspstatus *x)
 
 static void dspstatus_float (t_dspstatus *x, t_float f)
 {
-     x->x_status = (f != 0.0); dspstatus_bang (x);
+     x->x_status = (f != 0.0);
+    
+     if (!x->x_reentrant) { x->x_reentrant = 1; dspstatus_bang (x); }
+    
+     x->x_reentrant = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
