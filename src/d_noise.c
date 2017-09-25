@@ -84,7 +84,7 @@ void noise_tilde_setup (void)
             (t_newmethod)noise_tilde_new,
             NULL,
             sizeof (t_noise_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
             
     class_addDSP (c, (t_method)noise_tilde_dsp);
