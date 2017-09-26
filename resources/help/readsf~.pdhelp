@@ -1,63 +1,41 @@
-#N canvas 113 157 888 480 12;
-#X msg 561 8 \; pd dsp 1;
-#X msg 39 240 1;
-#X msg 39 261 0;
-#X obj 516 359 print didit;
-#X obj 139 361 env~ 16384;
-#X floatatom 139 380 0 0 0 0 - - -;
-#X msg 40 283 print;
-#X obj 20 393 dac~;
-#X obj 233 360 env~ 16384;
-#X floatatom 233 379 0 0 0 0 - - -;
-#X obj 30 308 readsf~ 4 1e+06;
-#X obj 327 359 env~ 16384;
-#X floatatom 327 378 0 0 0 0 - - -;
-#X obj 421 359 env~ 16384;
-#X floatatom 421 379 0 0 0 0 - - -;
-#X msg 26 210 open ../sound/bell.aiff 0 200 4 2 b;
-#X obj 80 362 *~ 0.1;
-#X obj 21 363 *~ 0.1;
-#X text 40 7 READSF~ - read a soundfile;
-#X msg 26 189 open ../sound/bell.aiff;
-#X text 185 296 optional arguments: number of channels \; buffer size
-per channnel in bytes.;
-#X text 548 341 when the soundfile is done.;
-#X text 547 327 last outlet gives a "bang";
-#X text 359 186 Open takes a filename \, an onset in sample frames
-\, and \, as an override \, you may also supply a header size to skip
-\, a number of channels \, bytes per channel \, and endianness.;
-#X text 36 24 The readsf~ object reads a soundfile into its signal
-outputs. You must open the soundfile in advance (a couple of seconds
-before you'll need it) using the "open" message. The object immediately
-starts reading from the file \, but output will only appear after you
-send a "1" to start playback. A "0" stops it.;
-#X text 33 121 The wave \, aiff \, and nextstep formats are parsed
-automatically \, although only 2- 3- and 4- byte samples are accepted
-(4 bytes implies floating point and is not available in aiff format.)
-;
-#X text 647 450 Updated for version 0.37;
-#X obj 116 452 soundfiler;
-#X text 24 452 see also:;
-#X obj 216 452 readsf~;
-#X text 94 238 1 starts playback;
-#X text 97 261 0 stops it;
-#X connect 1 0 10 0;
-#X connect 2 0 10 0;
-#X connect 4 0 5 0;
-#X connect 6 0 10 0;
+#N canvas 387 121 529 415 12;
+#X obj 96 372 soundfiler;
+#X obj -60 12 freeze;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X text 24 24 readsf~;
+#X obj 192 372 writesf~;
+#X obj 276 372 tabplay~;
+#X text 12 372 See also:;
+#N canvas 835 140 513 289 more 0;
+#X obj 60 180 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
+#X obj 36 216 readsf~;
+#X obj 108 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X msg 36 132 open voice.wav;
+#X text 12 96 Toggle can be used instead of the start and stop message.;
+#X obj 36 48 readsf~ 2;
+#X text 12 12 Set the number of channels with the first argument.;
+#X connect 0 0 1 0;
+#X connect 1 1 2 0;
+#X connect 3 0 1 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 252 324 pd more;
+#X msg 60 144 stop;
+#X obj 36 192 readsf~;
+#X obj 36 324 tabwrite~ \$0-out;
+#X obj 72 240 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
+#N canvas 0 22 500 350 \$0-out 0;
+#X array \$0-out 512 float 3;
+#A 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
+#X coords 0 1 512 -1 250 175 1 0 0;
+#X restore 252 108 graph \$0-out;
+#X obj 108 228 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X text 12 72 Read a soundfile.;
+#X obj 72 276 metro 125;
+#X msg 36 108 open bell.aiff \, start;
 #X connect 8 0 9 0;
-#X connect 10 0 4 0;
-#X connect 10 0 17 0;
-#X connect 10 1 8 0;
-#X connect 10 1 16 0;
-#X connect 10 2 11 0;
-#X connect 10 2 16 0;
-#X connect 10 3 13 0;
-#X connect 10 3 17 0;
-#X connect 10 4 3 0;
-#X connect 11 0 12 0;
-#X connect 13 0 14 0;
+#X connect 9 0 10 0;
+#X connect 9 1 13 0;
+#X connect 11 0 15 0;
 #X connect 15 0 10 0;
-#X connect 16 0 7 1;
-#X connect 17 0 7 0;
-#X connect 19 0 10 0;
+#X connect 16 0 9 0;
+#X coords 0 0 1 1 250 175 0 0 0;
