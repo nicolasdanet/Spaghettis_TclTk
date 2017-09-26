@@ -1,67 +1,80 @@
-#N canvas 59 252 1102 576 12;
-#N canvas 0 0 450 300 (subpatch) 0;
-#X array array1 77971 float 0;
-#X coords 0 1 77971 -1 300 100 1;
-#X restore 71 353 graph;
-#N canvas 0 0 450 300 (subpatch) 0;
-#X array array2 77971 float 0;
-#X coords 0 1 77971 -1 300 100 1;
-#X restore 71 459 graph;
-#X obj 11 313 soundfiler;
-#X msg 17 241 write -aiff /tmp/foo1 array2;
-#X msg 8 152 read ../sound/bell.aiff array2;
-#X msg 17 199 read -raw 128 2 2 b ../sound/bell.aiff array1 array2
-;
-#X text 26 10 SOUNDFILER - read and write soundfiles to arrays;
-#X text 548 3 When reading you can leave soundfiler to figure out which
-of the three known soundfile formats the file belongs to or override
-all header information using the "-raw" flag.;
-#X text 665 52 Flags for reading:;
-#X text 574 68 -skip <sample frames to skip in file>;
-#X floatatom 11 337 0 0 0 0 - - -;
-#X msg 15 175 read -resize ../sound/bell.aiff array2;
-#X msg 17 288 write -nextstep -bytes 4 /tmp/foo3 array1 array2;
-#X msg 16 265 write -wave -nframes 10000 /tmp/foo2 array2;
-#X text 287 150 read a file;
-#X text 362 173 ...optionally resize;
-#X text 225 217 ...or even overriding everything;
-#X text 283 240 write a file;
-#X text 352 309 write stereo;
-#X text 9 31 The soundfiler object reads and writes floating point
-arrays to binary soundfiles which may contain 2 or 3 byte fixed point
-or 4 byte floating point samples in wave \, aiff \, or next formats
-(no floating point aiff \, though.). The number of channels of the
-soundfile need not match the number of arrays given (extras are dropped
-and unsupplied channels are zeroed out.);
-#X text 575 123 -raw <headersize> <channels> <bytespersample> <endianness>
-;
-#X text 594 141 This causes all header information to be ignored. Endianness
-is "l" ("little") for Intel machines or "b" ("big") for Macintoshes
-and SGIs. You can give "n" (natural) to take the byte order your machine
-prefers.;
-#X text 575 86 -resize;
-#X text 575 104 -maxsize <maximum number of samples we can resize to>
-;
-#X text 560 206 Flags for writing:;
-#X text 578 227 -wave \, -nextstep \, -aiff;
-#X text 579 246 -big \, -little (nextstep only!);
-#X text 578 268 -skip <number of sample frames to skip in array>;
-#X text 579 290 -nframes <maximum number to write>;
-#X text 580 334 -normalize;
-#X text 579 312 -bytes <2 \, 3 \, or 4>;
-#X text 557 378 The number of channels is limited to 64;
-#X text 612 413 see also:;
-#X obj 606 436 tabwrite~;
-#X obj 607 460 tabread4~;
-#X obj 713 415 tabplay~;
-#X obj 711 464 writesf~;
-#X obj 712 441 readsf~;
-#X text 579 354 -rate <sample rate>;
-#X text 751 539 updated for Pd version 0.37;
-#X connect 2 0 10 0;
-#X connect 3 0 2 0;
-#X connect 4 0 2 0;
-#X connect 5 0 2 0;
-#X connect 11 0 2 0;
-#X connect 12 0 2 0;
-#X connect 13 0 2 0;
+#N canvas 335 108 661 417 12;
+#X obj 36 240 soundfiler;
+#X obj 96 372 tabplay~;
+#X obj 252 372 writesf~;
+#X obj 180 372 readsf~;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 soundfiler;
+#X text 12 72 Read and write soundfiles from and to arrays.;
+#N canvas 193 149 962 452 more 0;
+#X obj 36 360 soundfiler;
+#X obj 36 396 print frames;
+#X msg 36 48 read -skip 4410 voice.wav \$0-channel2;
+#X msg 36 72 read -frames 44100 voice.wav \$0-channel2;
+#X msg 36 24 read you.aiff \$0-channel1 \$0-channel2;
+#X text 552 24 Read an audio sample with multiple channels.;
+#X text 552 48 Skip a given number of samples at start.;
+#X text 552 72 Specify the number of frames required.;
+#X msg 60 108 write /tmp/lalala.aiff \$0-channel1 \$0-channel2;
+#X msg 60 132 write -skip 22050 /tmp/lalala.aiff \$0-channel1;
+#X msg 60 156 write -frames 22050 /tmp/lalala.aiff \$0-channel1;
+#X msg 60 180 write -wave /tmp/lalala \$0-channel1;
+#X msg 60 204 write -aiff /tmp/lalala \$0-channel1;
+#X msg 60 228 write -nextstep /tmp/lalala \$0-channel1;
+#X msg 60 300 write -wave -bytes 3 /tmp/lalala \$0-channel1;
+#X msg 60 276 write -samplerate 22050 /tmp/lalala.aiff \$0-channel1;
+#X msg 60 252 write -normalize /tmp/lalala.aiff \$0-channel1;
+#X text 552 108 Write an audio sample with multiple channels.;
+#X text 552 132 Skip a given number of samples at start.;
+#X text 552 156 Specify the number of frames required.;
+#X text 552 180 Write as WAVE.;
+#X text 552 204 Write as AIFF.;
+#X text 552 228 Write as NeXTStep.;
+#X text 552 300 Write with 24-bit resolution.;
+#X text 552 252 Normalize the amplitude of the sample.;
+#X text 552 276 Define the samplerate of the file.;
+#X connect 0 0 1 0;
+#X connect 2 0 0 0;
+#X connect 3 0 0 0;
+#X connect 4 0 0 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 168 300 pd more;
+#X text 12 372 See also:;
+#N canvas 0 22 500 350 \$0-channel1 0;
+#X array \$0-channel1 4410 float 2;
+#X coords 0 1 4410 -1 250 95 1 0 0;
+#X restore 384 120 graph \$0-channel1;
+#N canvas 375 299 336 194 init 0;
+#X obj 36 24 inlet;
+#X msg 36 72 resize 4410 \, constant 0;
+#X obj 36 108 s \$0-channel1;
+#X obj 36 132 s \$0-channel2;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 1 0 3 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 324 pd init;
+#X obj 36 288 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#N canvas 0 22 500 350 \$0-channel2 0;
+#X array \$0-channel2 4410 float 2;
+#X coords 0 1 4410 -1 250 95 1 0 0;
+#X restore 384 252 graph \$0-channel2;
+#X msg 36 108 read bell.aiff \$0-channel1;
+#X msg 36 132 read -resize voice.wav \$0-channel2;
+#X msg 36 156 write /tmp/lalala.aiff \$0-channel2;
+#N canvas 530 575 563 177 formats 0;
+#X text 12 84 Note that 2-3 bytes per sample is assumed LPCM.;
+#X text 12 108 Likewise \, 4 bytes per sample is assumed 32-bit IEEE float.;
+#X text 12 12 AIFF \, WAVE and NeXTStep formats are supported.;
+#X text 12 132 Unsupported sub-chunks are not preserved at save.;
+#X text 12 36 But only uncompressed 16-bit \, 24-bit integer and 32-bit float.;
+#X f 63;
+#X text 12 60 Mu-law \, A-law and such are NOT handled.;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 168 324 pd formats;
+#X connect 12 0 11 0;
+#X connect 14 0 0 0;
+#X connect 15 0 0 0;
+#X connect 16 0 0 0;
+#X coords 0 0 1 1 250 175 0 0 0;
