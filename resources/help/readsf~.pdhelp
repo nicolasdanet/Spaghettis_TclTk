@@ -18,7 +18,7 @@
 #X connect 1 1 2 0;
 #X connect 3 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 252 324 pd more;
+#X restore 252 300 pd more;
 #X msg 60 144 stop;
 #X obj 36 192 readsf~;
 #X obj 36 324 tabwrite~ \$0-out;
@@ -32,6 +32,16 @@
 #X text 12 72 Read a soundfile.;
 #X obj 72 276 metro 125;
 #X msg 36 108 open bell.aiff \, start;
+#N canvas 530 575 563 177 formats 0;
+#X text 12 84 Note that 2-3 bytes per sample is assumed LPCM.;
+#X text 12 108 Likewise \, 4 bytes per sample is assumed 32-bit IEEE float.;
+#X text 12 12 AIFF \, WAVE and NeXTStep formats are supported.;
+#X text 12 132 Unsupported sub-chunks are not preserved at save.;
+#X text 12 36 But only uncompressed 16-bit \, 24-bit integer and 32-bit float.;
+#X f 63;
+#X text 12 60 Mu-law \, A-law and such are NOT handled.;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 252 324 pd formats;
 #X connect 8 0 9 0;
 #X connect 9 0 10 0;
 #X connect 9 1 13 0;
