@@ -6,7 +6,6 @@
 #X obj -60 12 freeze;
 #X text 24 24 lop~;
 #X text 12 348 See also:;
-#X text 12 72 One-pole lopass filter.;
 #X obj 36 240 env~;
 #X floatatom 36 276 0 0 0 0 - - -;
 #X obj 36 108 osc~ 100;
@@ -22,8 +21,9 @@
 #X obj 108 144 nbx 5 40 0 500 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
 #X obj 36 204 lop~ 5;
 #X text 12 312 < https://ccrma.stanford.edu/~jos/filters/One_Pole.html >.;
-#X connect 8 0 9 0;
-#X connect 10 0 13 0;
-#X connect 12 0 13 1;
-#X connect 13 0 8 0;
+#X text 12 72 One-Pole low-pass filter.;
+#X connect 7 0 8 0;
+#X connect 9 0 12 0;
+#X connect 11 0 12 1;
+#X connect 12 0 7 0;
 #X coords 0 0 1 1 250 175 0 0 0;
