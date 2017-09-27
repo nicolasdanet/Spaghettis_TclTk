@@ -12,7 +12,6 @@ Think about an unit test suite.
 
 ###
 
-Improve the filters help (draw the frequency domain).
 Add "Clear Console" item in menu.
 Extend the search path to be recursive.
 Append recent files in preferences.
@@ -27,6 +26,7 @@ Allow to select more that one cord.
 Consider an "Encapsulate" feature.
 Add reblocking/resampling examples.
 Plainly support all DSP objects in reblocked patch.
+Improve the filters help (i.g. draw the frequency domain).
 
 ###
 
