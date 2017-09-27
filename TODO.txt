@@ -12,6 +12,7 @@ Think about an unit test suite.
 
 ###
 
+Improve the filters help (draw the frequency domain).
 Add "Clear Console" item in menu.
 Extend the search path to be recursive.
 Append recent files in preferences.
