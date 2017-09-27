@@ -147,9 +147,11 @@ static void *vcf_tilde_new (t_float f)
 
     x->x_space.c_real       = (t_sample)0.0;
     x->x_space.c_imaginary  = (t_sample)0.0;
-    x->x_space.c_q          = (t_sample)f;
+    x->x_space.c_q          = (t_sample)0.0;
     x->x_space.c_conversion = (t_sample)0.0;
 
+    vcf_tilde_qFactor (x, f);
+    
     x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
     x->x_outletRight = outlet_new (cast_object (x), &s_signal);
 
