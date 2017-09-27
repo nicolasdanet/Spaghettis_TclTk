@@ -5,7 +5,7 @@ Clean and test all patches.
 
 ###
 
-Compile as C++ (i.g. include JUCE later)?
+Compile as C++ (i.g. include MICA later)?
 Profile and optimize code (i.g. arrays GUI for samples).
 Forbid the audio to glitch!
 Think about an unit test suite.
