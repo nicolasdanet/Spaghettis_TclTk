@@ -1,4 +1,4 @@
-#N canvas 466 127 324 350 12;
+#N canvas 466 127 407 406 12;
 #X obj 36 240 env~;
 #X floatatom 36 276 0 0 0 0 - - -;
 #X obj 36 204 hip~ 5;
@@ -7,8 +7,8 @@
 #X obj -60 12 freeze;
 #X text 24 24 hip~;
 #X text 12 72 One-Pole One-Zero hipass filter.;
-#X text 12 312 See also:;
-#X obj 96 312 lop~;
+#X text 12 360 See also:;
+#X obj 96 360 lop~;
 #N canvas 746 235 447 231 more 0;
 #X text 12 12 Creation argument initializes cutoff frequency.;
 #X obj 36 48 hip~ 10;
@@ -19,6 +19,9 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 228 204 pd more;
 #X obj 108 144 nbx 5 40 0 500 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
+#X text 12 324 < http://www.embedded.com/print/4007653 >.;
+#X obj 192 360 bp~;
+#X obj 144 360 vcf~;
 #X connect 0 0 1 0;
 #X connect 2 0 0 0;
 #X connect 3 0 2 0;
