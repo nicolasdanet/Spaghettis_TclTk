@@ -1,4 +1,4 @@
-#N canvas 500 145 789 368 12;
+#N canvas 286 398 789 368 12;
 #X obj 156 324 rpole~;
 #X obj 216 324 rzero_rev~;
 #X obj 96 324 czero~;
@@ -7,7 +7,6 @@
 #X obj -60 12 freeze;
 #X text 24 24 rzero~;
 #X text 12 324 See also:;
-#X text 12 72 Real one-zero filter.;
 #X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >.;
 #X text 12 144 It calculates the following difference equation:;
 #X f 48;
@@ -30,4 +29,5 @@
 #X text 12 204 WARNING: coefficients are not constrained. Bad ones could cause DAMAGES to your hardware.;
 #X f 89;
 #X text 12 168 y[n] = x[n] - b[n] * x[n-1];
+#X text 12 72 Real One-Zero filter.;
 #X coords 0 0 1 1 250 175 0 0 0;
