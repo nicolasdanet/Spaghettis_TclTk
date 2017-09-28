@@ -26,7 +26,7 @@ Allow to select more that one cord.
 Consider an "Encapsulate" feature.
 Add reblocking/resampling examples.
 Plainly support all DSP objects in reblocked patch.
-Improve the filters help (i.g. draw the frequency domain).
+Improve the filters help (add examples and draw the frequency domain).
 
 ###
 
