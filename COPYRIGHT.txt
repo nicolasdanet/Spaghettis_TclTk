@@ -1,7 +1,7 @@
 
 # Copyright
 
-All source files under "Standard Improved BSD License" unless explicitly disclaimed.
+All source files under BSD-3-Clause license unless explicitly disclaimed.
 
 < http://opensource.org/licenses/BSD-3-Clause >
 
