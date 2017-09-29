@@ -113,12 +113,12 @@ static inline void fft_realInverseFFT (int n, PD_RESTRICTED s)
 
 static inline void fft_complexFFT (int n, PD_RESTRICTED real, PD_RESTRICTED imaginary)
 {
-    ooura_complexFFT (real, imaginary, n, -1);
+    ooura_complexFFT (real, imaginary, n, 1);
 }
 
 static inline void fft_complexInverseFFT (int n, PD_RESTRICTED real, PD_RESTRICTED imaginary)
 {
-    ooura_complexFFT (real, imaginary, n, 1);
+    ooura_complexFFT (real, imaginary, n, -1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
