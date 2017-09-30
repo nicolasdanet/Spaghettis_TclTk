@@ -115,8 +115,6 @@ void rifft_tilde_setup (void)
     CLASS_SIGNAL (c, t_rifft_tilde, x_f);
     
     class_addDSP (c, (t_method)rifft_tilde_dsp);
-        
-    class_setHelpName (c, sym_fft__tilde__);
     
     rifft_tilde_class = c;
 }

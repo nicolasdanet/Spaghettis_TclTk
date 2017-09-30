@@ -102,8 +102,6 @@ void ifft_tilde_setup (void)
     
     class_addDSP (c, (t_method)ifft_tilde_dsp);
     
-    class_setHelpName (c, sym_fft__tilde__);
-    
     ifft_tilde_class = c;
 }
 

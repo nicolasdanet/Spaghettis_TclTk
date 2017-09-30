@@ -1423,10 +1423,10 @@
 		378B85961E2D2D6B00BDF703 /* FFT */ = {
 			isa = PBXGroup;
 			children = (
-				378971B61C4F716700263434 /* d_fft.c */,
-				3711970B1E2DF6FE007214B2 /* d_ifft.c */,
 				371196D11E2DF3D2007214B2 /* d_rfft.c */,
 				371196CA1E2DF324007214B2 /* d_rifft.c */,
+				378971B61C4F716700263434 /* d_fft.c */,
+				3711970B1E2DF6FE007214B2 /* d_ifft.c */,
 				371196C31E2DF28F007214B2 /* d_framp.c */,
 			);
 			name = FFT;

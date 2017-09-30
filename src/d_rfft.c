@@ -117,8 +117,6 @@ void rfft_tilde_setup (void)
     
     class_addDSP (c, (t_method)rfft_tilde_dsp);
     
-    class_setHelpName (c, sym_fft__tilde__);
-    
     rfft_tilde_class = c;
 }
 
