@@ -23,6 +23,7 @@ static t_class *fft_tilde_class;            /* Shared. */
 typedef struct _fft_tilde {
     t_object    x_obj;                      /* Must be the first. */
     t_float     x_f;
+    t_FFTState  x_state;
     t_outlet    *x_outletLeft;
     t_outlet    *x_outletRight;
     } t_fft_tilde;
@@ -35,13 +36,14 @@ typedef struct _fft_tilde {
 
 static t_int *fft_tilde_perform (t_int *w)
 {
-    PD_RESTRICTED in1 = (t_sample *)(w[1]);
-    PD_RESTRICTED in2 = (t_sample *)(w[2]);
-    int n = (int)w[3];
+    t_FFTState *x = (t_FFTState *)(w[1]);
+    PD_RESTRICTED in1 = (t_sample *)(w[2]);
+    PD_RESTRICTED in2 = (t_sample *)(w[3]);
+    int n = (int)w[4];
     
-    fft_complexFFT (n, in1, in2);
+    fft_complexFFT (x, n, in1, in2);
     
-    return (w + 4);
+    return (w + 5);
 }
 
 static void fft_tilde_dsp (t_fft_tilde *x, t_signal **sp)
@@ -58,11 +60,12 @@ static void fft_tilde_dsp (t_fft_tilde *x, t_signal **sp)
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
     
     fft_setSize (n);
+    fft_stateInitialize (&x->x_state, n);
     
     dsp_addCopyPerform (sp[0]->s_vector, sp[2]->s_vector, n);
     dsp_addCopyPerform (sp[1]->s_vector, sp[3]->s_vector, n);
     
-    dsp_add (fft_tilde_perform, 3, sp[2]->s_vector, sp[3]->s_vector, n);
+    dsp_add (fft_tilde_perform, 4, &x->x_state, sp[2]->s_vector, sp[3]->s_vector, n);
     //
     }
 }
@@ -83,6 +86,11 @@ static void *fft_tilde_new (void)
     return x;
 }
 
+static void fft_tilde_free (t_fft_tilde *x)
+{
+    fft_stateRelease (&x->x_state);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -93,7 +101,7 @@ void fft_tilde_setup (void)
     
     c = class_new (sym_fft__tilde__,
             (t_newmethod)fft_tilde_new,
-            NULL,
+            (t_method)fft_tilde_free,
             sizeof (t_fft_tilde), 
             CLASS_DEFAULT,
             A_NULL);

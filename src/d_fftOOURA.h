@@ -51,9 +51,13 @@ void ooura_initialize (int n);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline void ooura_complexFFT (PD_RESTRICTED real, PD_RESTRICTED imaginary, int n, int type)
+static inline void ooura_complexFFT (t_FFTState *x,
+    PD_RESTRICTED real,
+    PD_RESTRICTED imaginary,
+    int n,
+    int type)
 {
-    double *t = alloca (n * 2 * sizeof (double));
+    double *t = x->ooura_cache;
     int i;
     
     for (i = 0; i < n; i++) {
@@ -133,14 +137,14 @@ static inline void fft_realInverseFFT (t_FFTState *x, int n, PD_RESTRICTED s)
     for (i = 0; i < n; i++) { s[i] = (t_sample)(2.0 * t[i]); }
 }
 
-static inline void fft_complexFFT (int n, PD_RESTRICTED real, PD_RESTRICTED imaginary)
+static inline void fft_complexFFT (t_FFTState *x, int n, PD_RESTRICTED real, PD_RESTRICTED imaginary)
 {
-    ooura_complexFFT (real, imaginary, n, 1);
+    ooura_complexFFT (x, real, imaginary, n, 1);
 }
 
-static inline void fft_complexInverseFFT (int n, PD_RESTRICTED real, PD_RESTRICTED imaginary)
+static inline void fft_complexInverseFFT (t_FFTState *x, int n, PD_RESTRICTED real, PD_RESTRICTED imaginary)
 {
-    ooura_complexFFT (real, imaginary, n, -1);
+    ooura_complexFFT (x, real, imaginary, n, -1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
