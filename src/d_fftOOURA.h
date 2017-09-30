@@ -113,9 +113,9 @@ static inline void fft_realFFT (t_FFTState *x, int n, PD_RESTRICTED s)
     }
 }
 
-static inline void fft_realInverseFFT (int n, PD_RESTRICTED s)
+static inline void fft_realInverseFFT (t_FFTState *x, int n, PD_RESTRICTED s)
 {
-    double *t = alloca (n * sizeof (double));
+    double *t = x->ooura_cache;
     int i, half = (n >> 1);
     
     t[0] = (double)s[0];

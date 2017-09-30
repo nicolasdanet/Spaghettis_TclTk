@@ -23,6 +23,7 @@ static t_class *rifft_tilde_class;          /* Shared. */
 typedef struct _rifft_tilde {
     t_object    x_obj;                      /* Must be the first. */
     t_float     x_f;
+    t_FFTState  x_state;
     t_outlet    *x_outlet;
     } t_rifft_tilde;
 
@@ -47,12 +48,13 @@ static t_int *rifft_tilde_performFlip (t_int *w)
 
 static t_int *rifft_tilde_perform (t_int *w)
 {
-    PD_RESTRICTED in = (t_sample *)(w[1]);
-    int n = (int)w[2];
+    t_FFTState *x = (t_FFTState *)(w[1]);
+    PD_RESTRICTED in = (t_sample *)(w[2]);
+    int n = (int)w[3];
     
-    fft_realInverseFFT (n, in);
+    fft_realInverseFFT (x, n, in);
     
-    return (w + 3);
+    return (w + 4);
 }
 
 static void rifft_tilde_dsp (t_rifft_tilde *x, t_signal **sp)
@@ -73,11 +75,12 @@ static void rifft_tilde_dsp (t_rifft_tilde *x, t_signal **sp)
     PD_RESTRICTED out1 = sp[2]->s_vector;
 
     fft_setSize (n);
+    fft_stateInitialize (&x->x_state, n);
     
     dsp_addCopyPerform (in1, out1, half + 1);
     
     dsp_add (rifft_tilde_performFlip, 3, in2 + 1, out1 + n, half - 1);
-    dsp_add (rifft_tilde_perform, 2, out1, n);
+    dsp_add (rifft_tilde_perform, 3, &x->x_state, out1, n);
     //
     }
 }
@@ -97,6 +100,11 @@ static void *rifft_tilde_new (void)
     return x;
 }
 
+static void rifft_tilde_free (t_rifft_tilde *x)
+{
+    fft_stateRelease (&x->x_state);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -107,7 +115,7 @@ void rifft_tilde_setup (void)
     
     c = class_new (sym_rifft__tilde__,
             (t_newmethod)rifft_tilde_new,
-            NULL,
+            (t_method)rifft_tilde_free,
             sizeof (t_rifft_tilde),
             CLASS_DEFAULT,
             A_NULL);
