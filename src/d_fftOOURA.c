@@ -67,7 +67,7 @@ void ooura_initialize (int n)
     //
     int t    = (int)sqrt (n);
     size_t a = 2 + t;
-    size_t b = n / 2;
+    size_t b = n * 2;
     
     PD_ASSERT (PD_IS_POWER_2 (n));
     PD_ASSERT (sqrt (n) == (double)t);
