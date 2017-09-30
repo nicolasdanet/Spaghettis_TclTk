@@ -44,11 +44,13 @@ static int ooura_getNextSize (int n)
 
 static void ooura_dummy (int n)
 {
-    double *t = alloca (n * sizeof (double));
+    double *t = (double *)PD_MEMORY_GET (n * sizeof (double));
     
     int i; for (i = 0; i < n; i++) { t[i] = 0.0; }
         
     rdft (n, 1, t, ooura_ip, ooura_w);
+    
+    PD_MEMORY_FREE (t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
