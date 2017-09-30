@@ -24,6 +24,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+typedef struct _FFTState { double *ooura_cache; } t_FFTState;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern int      *ooura_ip; 
 extern double   *ooura_w;
@@ -71,10 +77,26 @@ static inline void ooura_complexFFT (PD_RESTRICTED real, PD_RESTRICTED imaginary
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline void fft_realFFT (int n, PD_RESTRICTED s)
+void fft_stateRelease       (t_FFTState *x);
+void fft_stateInitialize    (t_FFTState *x, int n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void fft_setSize (int n)
 {
-    double *t = alloca (n * sizeof (double));
-    int i, half = n / 2;
+    ooura_initialize (n);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void fft_realFFT (t_FFTState *x, int n, PD_RESTRICTED s)
+{
+    double *t = x->ooura_cache;
+    int i, half = (n >> 1);
     
     for (i = 0; i < n; i++) { t[i] = (double)s[i]; }
         
@@ -94,7 +116,7 @@ static inline void fft_realFFT (int n, PD_RESTRICTED s)
 static inline void fft_realInverseFFT (int n, PD_RESTRICTED s)
 {
     double *t = alloca (n * sizeof (double));
-    int i, half = n / 2;
+    int i, half = (n >> 1);
     
     t[0] = (double)s[0];
     t[1] = (double)s[half];
@@ -119,15 +141,6 @@ static inline void fft_complexFFT (int n, PD_RESTRICTED real, PD_RESTRICTED imag
 static inline void fft_complexInverseFFT (int n, PD_RESTRICTED real, PD_RESTRICTED imaginary)
 {
     ooura_complexFFT (real, imaginary, n, -1);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline void fft_setSize (int size)
-{
-    ooura_initialize (size);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -106,7 +106,7 @@ void rifft_tilde_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_rifft__tilde__,
-            rifft_tilde_new,
+            (t_newmethod)rifft_tilde_new,
             NULL,
             sizeof (t_rifft_tilde),
             CLASS_DEFAULT,

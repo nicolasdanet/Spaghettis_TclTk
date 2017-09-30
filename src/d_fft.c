@@ -92,7 +92,7 @@ void fft_tilde_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_fft__tilde__,
-            fft_tilde_new,
+            (t_newmethod)fft_tilde_new,
             NULL,
             sizeof (t_fft_tilde), 
             CLASS_DEFAULT,

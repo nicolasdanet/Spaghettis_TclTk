@@ -92,7 +92,7 @@ void ifft_tilde_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_ifft__tilde__,
-            ifft_tilde_new,
+            (t_newmethod)ifft_tilde_new,
             NULL,
             sizeof (t_ifft_tilde),
             CLASS_DEFAULT,

@@ -153,7 +153,7 @@ void framp_tilde_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_framp__tilde__,
-            framp_tilde_new,
+            (t_newmethod)framp_tilde_new,
             NULL,
             sizeof (t_framp_tilde),
             CLASS_DEFAULT,

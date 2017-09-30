@@ -98,6 +98,20 @@ static void ooura_release (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void fft_stateRelease (t_FFTState *x)
+{
+    if (x->ooura_cache) { PD_MEMORY_FREE (x->ooura_cache); }
+}
+
+void fft_stateInitialize (t_FFTState *x, int n)
+{
+    fft_stateRelease (x); x->ooura_cache = (double *)PD_MEMORY_GET (n * 2 * sizeof (double));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void fft_initialize (void)
 {
     ooura_initialize (AUDIO_DEFAULT_BLOCKSIZE);
