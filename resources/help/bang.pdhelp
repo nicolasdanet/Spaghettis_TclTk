@@ -1,7 +1,6 @@
 #N canvas 634 137 420 329 12;
 #X msg 36 108 45;
 #X obj 36 204 bang;
-#X text 12 72 Outputs a "bang" message whatever it receives.;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 bang;
@@ -11,7 +10,8 @@
 #X obj 168 288 bang~;
 #X msg 84 144 Launch the GBU-43/B MOAB.;
 #X obj 228 288 int;
+#X text 12 72 Output a "bang" message whatever it receives.;
 #X connect 0 0 1 0;
-#X connect 1 0 8 0;
-#X connect 10 0 1 0;
+#X connect 1 0 7 0;
+#X connect 9 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;

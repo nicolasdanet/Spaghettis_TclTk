@@ -10,12 +10,12 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 symbol;
-#X text 12 72 Stores a symbol.;
 #X msg 156 108 zorkons;
 #X obj 36 252 print;
+#X text 12 72 Store a symbol.;
 #X connect 0 0 1 0;
-#X connect 1 0 12 0;
+#X connect 1 0 11 0;
 #X connect 2 0 0 0;
 #X connect 6 0 0 0;
-#X connect 11 0 0 0;
+#X connect 10 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;

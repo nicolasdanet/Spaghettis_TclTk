@@ -30,7 +30,7 @@
 #X obj 192 276 value;
 #X floatatom 36 132 5 0 0 1 - - -;
 #X f 5;
-#X text 12 72 Stores a (floating point) number.;
+#X text 12 72 Store a (floating point) number.;
 #X connect 0 0 5 0;
 #X connect 6 0 0 0;
 #X connect 7 0 0 1;
