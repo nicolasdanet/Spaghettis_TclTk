@@ -9,7 +9,7 @@
 #X text 24 24 rpole~;
 #X text 12 72 Real One-Pole filter.;
 #X text 12 324 See also:;
-#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Pole.html >.;
+#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Pole.html >;
 #N canvas 179 27 567 324 more 0;
 #X msg 72 216 clear;
 #X msg 36 180 set 1;

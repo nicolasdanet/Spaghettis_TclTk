@@ -27,7 +27,7 @@
 #X obj 336 648 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
 #X obj 36 612 netsend -binary;
 #X obj 336 612 netsend -udp -binary;
-#X text 12 420 < http://en.wikipedia.org/wiki/FUDI >.;
+#X text 12 420 < http://en.wikipedia.org/wiki/FUDI >;
 #X text 12 360 By default the messages are ASCII text. The "-binary" argument specifies binary messages instead \, which appear as lists of numbers from '0' to '255'.;
 #X f 68;
 #X msg 60 564 send \$1 \$1;

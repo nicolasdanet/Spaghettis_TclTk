@@ -7,7 +7,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 vcf~;
 #X text 12 516 See also:;
-#X text 12 480 < https://ccrma.stanford.edu/~jos/filters/Complex_Resonator.html >.;
+#X text 12 480 < https://ccrma.stanford.edu/~jos/filters/Complex_Resonator.html >;
 #X f 67;
 #N canvas 458 77 404 109 more 0;
 #X text 12 12 Optional argument initialize the Q factor.;

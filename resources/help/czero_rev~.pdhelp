@@ -6,7 +6,7 @@
 #X text 12 72 Complex "reverse" One-Zero filter.;
 #X f 34;
 #X text 12 324 See also:;
-#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >.;
+#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >;
 #X text 12 144 It calculates the following difference equation:;
 #X f 48;
 #N canvas 604 161 567 373 more 0;

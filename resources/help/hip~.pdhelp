@@ -18,7 +18,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 228 204 pd more;
 #X obj 108 144 nbx 5 40 0 500 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
-#X text 12 324 < http://www.embedded.com/print/4007653 >.;
+#X text 12 324 < http://www.embedded.com/print/4007653 >;
 #X obj 192 360 bp~;
 #X obj 144 360 vcf~;
 #X text 12 72 One-Pole One-Zero high-pass filter.;

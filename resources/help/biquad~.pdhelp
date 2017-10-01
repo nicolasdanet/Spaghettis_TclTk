@@ -29,7 +29,7 @@
 #X connect 1 0 2 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 276 336 pd more;
-#X text 12 516 < https://en.wikipedia.org/wiki/Digital_biquad_filter#Direct_form_2 >.;
+#X text 12 516 < https://en.wikipedia.org/wiki/Digital_biquad_filter#Direct_form_2 >;
 #X f 70;
 #X text 12 192 WARNING: coefficients are not constrained. Bad ones could cause DAMAGES to your hardware.;
 #X f 89;

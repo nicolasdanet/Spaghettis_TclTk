@@ -7,7 +7,7 @@
 #X text 24 24 czero~;
 #X text 12 72 Complex One-Zero filter.;
 #X text 12 324 See also:;
-#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >.;
+#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >;
 #X text 12 144 It calculates the following difference equation:;
 #X f 48;
 #N canvas 620 82 565 357 more 0;

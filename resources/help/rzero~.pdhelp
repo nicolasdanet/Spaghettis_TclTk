@@ -7,7 +7,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 rzero~;
 #X text 12 324 See also:;
-#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >.;
+#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >;
 #X text 12 144 It calculates the following difference equation:;
 #X f 48;
 #N canvas 676 138 567 324 more 0;

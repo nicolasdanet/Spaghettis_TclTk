@@ -23,7 +23,7 @@
 #X f 5;
 #X text 156 168 Center frequency.;
 #X text 204 216 Q factor.;
-#X text 12 384 < https://ccrma.stanford.edu/~jos/filters/Two_Pole.html >.;
+#X text 12 384 < https://ccrma.stanford.edu/~jos/filters/Two_Pole.html >;
 #X obj 36 276 bp~ 440 10;
 #X f 11;
 #X text 12 72 Two-Pole band-pass filter.;

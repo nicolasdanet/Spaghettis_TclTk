@@ -9,7 +9,7 @@
 #X text 12 72 Complex One-Pole filter.;
 #X text 12 324 See also:;
 #X text 12 168 y[n] = x[n] + a[n] * y[n-1];
-#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Pole.html >.;
+#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Pole.html >;
 #N canvas 641 70 563 374 more 0;
 #X msg 72 252 clear;
 #X text 12 12 Notice that a[n] (the filter coefficient) can be also a signal.;

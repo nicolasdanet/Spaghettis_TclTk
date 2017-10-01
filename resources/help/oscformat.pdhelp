@@ -9,7 +9,7 @@
 #X text 24 24 oscformat;
 #X text 12 72 Convert message to OSC packets.;
 #X f 31;
-#X text 12 360 < http://opensoundcontrol.org/introduction-osc >.;
+#X text 12 360 < http://opensoundcontrol.org/introduction-osc >;
 #N canvas 647 34 668 723 more 0;
 #X msg 36 516 format b;
 #X obj 36 636 oscparse;

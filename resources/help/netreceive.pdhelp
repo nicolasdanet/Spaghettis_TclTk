@@ -4,7 +4,7 @@
 #N canvas 474 129 605 556 more 0;
 #X text 12 12 The Netreceive object opens a socket for TCP ("stream") or UDP ("datagram") network reception on a specified port. If using TCP \, an outlet gives you the number of Netsend objects (or other compatible clients) that have opened connections here.;
 #X f 68;
-#X text 12 336 < http://en.wikipedia.org/wiki/FUDI >.;
+#X text 12 336 < http://en.wikipedia.org/wiki/FUDI >;
 #X text 12 276 By default the messages are ASCII text. The "-binary" argument specifies binary messages instead \, which appear as lists of numbers from '0' to '255'.;
 #X f 68;
 #X obj 36 192 netreceive -udp;

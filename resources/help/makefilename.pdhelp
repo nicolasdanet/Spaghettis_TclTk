@@ -54,7 +54,7 @@
 #X msg 96 252 hair;
 #X obj 36 156 makefilename dog%d.aif;
 #X text 276 552 comment;
-#X text 12 396 < https://en.wikipedia.org/wiki/Printf_format_string >.;
+#X text 12 396 < https://en.wikipedia.org/wiki/Printf_format_string >;
 #X connect 2 0 1 0;
 #X connect 11 0 14 0;
 #X connect 12 0 2 0;

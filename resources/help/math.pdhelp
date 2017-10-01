@@ -216,7 +216,7 @@
 #X text 216 132 Functions: log \, exp.;
 #X text 216 156 Functions: pow \, sqrt.;
 #X text 216 180 Functions: % \, mod \, div.;
-#X text 12 276 < https://docs.python.org/3/tutorial/floatingpoint.html >.;
+#X text 12 276 < https://docs.python.org/3/tutorial/floatingpoint.html >;
 #X f 58;
 #N canvas 855 267 436 202 more 0;
 #X obj 36 156 print;
