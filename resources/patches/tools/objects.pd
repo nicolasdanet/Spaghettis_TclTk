@@ -1,4 +1,4 @@
-#N canvas 539 104 509 567 12;
+#N canvas 269 99 509 567 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 objects;
 #N canvas 550 216 542 343 gui 0;
@@ -129,8 +129,8 @@
 #X text 168 84 Notes in.;
 #X obj 36 492 bag;
 #X obj 36 516 poly;
-#X text 168 492 A collection of numbers.;
-#X text 168 516 Polyphonic voice allocation.;
+#X text 168 492 Maintain a collection of numbers.;
+#X text 168 516 Allocate polyphonic voices.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 276 pd midi;
 #N canvas 431 249 509 182 osc 0;
