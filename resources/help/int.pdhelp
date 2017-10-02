@@ -32,7 +32,7 @@
 #X obj 144 312 float;
 #X obj 204 312 symbol;
 #X obj 96 312 bang;
-#X obj 264 312 value;
+#X obj 276 312 value;
 #X text 12 72 Store (cast to) an integer.;
 #X f 29;
 #X connect 0 0 1 0;

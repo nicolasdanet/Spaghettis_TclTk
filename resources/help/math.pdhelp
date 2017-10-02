@@ -230,4 +230,5 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 228 pd more;
 #X text 216 204 Functions: min \, max \, clip \, abs \, wrap.;
+#X obj 360 312 int;
 #X coords 0 0 1 1 250 175 0 0 0;
