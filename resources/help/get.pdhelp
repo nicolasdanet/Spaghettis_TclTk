@@ -18,7 +18,7 @@
 #X text 24 24 get;
 #X text 12 348 See also:;
 #X text 12 72 Get values from a scalar.;
-#N canvas 359 205 466 434 \$0-data 1;
+#N canvas 496 254 375 337 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 348 276 pd \$0-data;
 #N canvas 579 89 622 563 more 0;
@@ -80,7 +80,7 @@
 #X obj 36 348 list store bijou caillou chou genou hibou joujou pou;
 #X msg 36 312 get \$1 1;
 #X obj 36 384 set -symbol \$0-template s;
-#X obj 108 156 random 400;
+#X obj 108 156 random 300;
 #X connect 0 0 10 0;
 #X connect 1 0 3 0;
 #X connect 2 0 4 2;

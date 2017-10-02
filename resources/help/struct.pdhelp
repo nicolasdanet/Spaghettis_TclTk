@@ -1,11 +1,11 @@
-#N canvas 770 147 402 224 12;
-#X obj 156 180 plot;
+#N canvas 770 147 423 224 12;
+#X obj 168 180 plot;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 struct;
 #X text 12 72 Declare a template.;
 #X text 12 180 See also:;
-#X obj 204 180 pointer;
+#X obj 216 180 pointer;
 #X obj 96 180 append;
 #N canvas 456 328 529 141 \$0-template 0;
 #X obj 36 36 plot a 777 1 10 15 50;
@@ -24,6 +24,6 @@
 #X text 12 12 The template name MUST be unique.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 240 132 pd more;
-#X obj 276 180 array;
-#X obj 336 180 text;
+#X obj 288 180 array;
+#X obj 348 180 text;
 #X coords 0 0 1 1 250 175 0 0 0;
