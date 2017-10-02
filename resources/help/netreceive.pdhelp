@@ -31,7 +31,6 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 240 204 pd more;
 #X text 12 372 See also:;
-#X text 12 72 Listen for incoming messages from network.;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 netreceive;
 #X obj -60 12 freeze;
@@ -45,8 +44,9 @@
 #X obj 36 240 print;
 #X msg 36 108 listen 3000;
 #X msg 36 132 close;
-#X connect 1 0 12 0;
-#X connect 1 1 11 0;
+#X text 12 72 Listen incoming messages from network.;
+#X connect 1 0 11 0;
+#X connect 1 1 10 0;
+#X connect 12 0 1 0;
 #X connect 13 0 1 0;
-#X connect 14 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;

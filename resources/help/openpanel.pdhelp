@@ -6,10 +6,10 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 openpanel;
-#X text 12 72 Query you for a filename.;
 #X msg 84 108 /Users;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X text 12 72 Ask for a filename.;
 #X connect 0 0 1 0;
+#X connect 7 0 0 0;
 #X connect 8 0 0 0;
-#X connect 9 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;

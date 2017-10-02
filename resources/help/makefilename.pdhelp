@@ -5,7 +5,6 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 makefilename;
-#X text 12 72 Format (ala printf) a "name" with a variable field.;
 #N canvas 343 45 515 700 more 0;
 #X obj 36 648 print;
 #X obj 108 516 makefilename dog%%d.%s;
@@ -55,9 +54,10 @@
 #X obj 36 156 makefilename dog%d.aif;
 #X text 276 552 comment;
 #X text 12 396 < https://en.wikipedia.org/wiki/Printf_format_string >;
+#X text 12 72 Make (ala printf) a file name with a variable field.;
 #X connect 2 0 1 0;
-#X connect 11 0 14 0;
+#X connect 10 0 13 0;
+#X connect 11 0 2 0;
 #X connect 12 0 2 0;
-#X connect 13 0 2 0;
-#X connect 14 0 0 0;
+#X connect 13 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;

@@ -5,7 +5,6 @@
 #X text 24 24 print;
 #X obj 36 204 print;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X text 12 72 Print messages to the terminal window.;
 #X msg 72 108 1 2 3 4;
 #N canvas 319 229 508 522 more 0;
 #X floatatom 228 48 5 0 0 0 - - -;
@@ -41,7 +40,8 @@
 #X restore 288 204 pd more;
 #X text 12 252 See also:;
 #X obj 96 252 print~;
+#X text 12 72 Print messages to the console.;
 #X connect 0 0 4 0;
 #X connect 5 0 4 0;
-#X connect 7 0 4 0;
+#X connect 6 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
