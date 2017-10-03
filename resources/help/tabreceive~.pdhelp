@@ -2,7 +2,6 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 tabreceive~;
-#X text 12 72 Read a block of a signal from an array continuously.;
 #X text 12 516 See also:;
 #X obj 96 516 tabsend~;
 #X obj 180 516 throw~;
@@ -48,9 +47,10 @@
 #X obj 36 300 tabwrite~ \$0-out;
 #X obj 72 252 metro 250;
 #X obj 72 216 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
-#X connect 10 0 15 0;
-#X connect 12 0 10 0;
-#X connect 13 0 10 0;
+#X text 12 72 Read a block from an array continuously.;
+#X connect 9 0 14 0;
+#X connect 11 0 9 0;
+#X connect 12 0 9 0;
+#X connect 15 0 14 0;
 #X connect 16 0 15 0;
-#X connect 17 0 16 0;
 #X coords 0 0 1 1 250 175 0 0 0;
