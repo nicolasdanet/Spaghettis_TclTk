@@ -35,6 +35,12 @@ typedef struct _bag {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void bag_flush (t_bag *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void bag_add (t_bag *x, t_float f)
 {
     t_bagelement *e = (t_bagelement *)PD_MEMORY_GET (sizeof (t_bagelement));
@@ -86,6 +92,11 @@ static void bag_removeAll (t_bag *x, int dump)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void bag_bang (t_bag *x)
+{
+    bag_flush (x);
+}
+
 static void bag_float (t_bag *x, t_float f)
 {
     if (x->x_velocity) { bag_add (x, f); }
@@ -112,11 +123,11 @@ static void bag_clear (t_bag *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *bag_new (void)
+static void *bag_new (t_float f)
 {
     t_bag *x = (t_bag *)pd_new (bag_class);
     
-    x->x_velocity = 0;
+    x->x_velocity = f;
     x->x_elements = NULL;
     x->x_outlet   = outlet_new (cast_object (x), &s_float);
     
@@ -143,8 +154,10 @@ void bag_setup (void)
             (t_method)bag_free,
             sizeof (t_bag),
             CLASS_DEFAULT,
+            A_DEFFLOAT,
             A_NULL);
-            
+    
+    class_addBang (c, (t_method)bag_bang);
     class_addFloat (c, (t_method)bag_float);
     
     class_addMethod (c, (t_method)bag_flush,    sym_flush,  A_NULL);
