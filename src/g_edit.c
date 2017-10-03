@@ -276,7 +276,7 @@ void glist_action (t_glist *glist, int a, int b, int m)
 static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
 {
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
-    int canOpen       = (y && class_hasMethod (pd_class (y), sym_open));
+    int canOpen       = (y && gobj_isCanvas (y));
     int canHelp       = (y != NULL);
     int canObject     = (glist_hasEditMode (glist));
     int canOrder      = (glist_objectGetNumberOfSelected (glist) != 0);

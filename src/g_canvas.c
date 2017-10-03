@@ -281,7 +281,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
         }
     } 
     if (k == POPUP_OPEN) {
-        if (class_hasMethod (pd_class (y), sym_open)) {
+        if (gobj_isCanvas (y)) {
             pd_message (cast_pd (y), sym_open, 0, NULL); return;
         }
     }
