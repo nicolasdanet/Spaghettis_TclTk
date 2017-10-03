@@ -35,7 +35,7 @@
 #X obj 180 144 t b p;
 #X obj 180 408 print;
 #X obj 180 264 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 180 312 t 343 salopes;
+#X obj 180 312 t manifeste des 343;
 #X connect 0 0 7 0;
 #X connect 4 0 8 0;
 #X connect 6 0 5 0;
@@ -51,6 +51,7 @@
 #X connect 15 0 16 0;
 #X connect 16 0 14 0;
 #X connect 16 1 14 0;
+#X connect 16 2 14 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 312 360 pd more;
 #X text 12 72 Convert and trigger the input from right to left.;

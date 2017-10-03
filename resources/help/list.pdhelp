@@ -1,4 +1,4 @@
-#N canvas 793 85 495 694 12;
+#N canvas 727 75 495 694 12;
 #X obj 36 108 list append;
 #X obj 36 132 list prepend;
 #X obj 36 180 list trim;
@@ -190,7 +190,7 @@
 #X f 26;
 #X obj 36 276 list store;
 #X text 204 276 Append extended.;
-#N canvas 404 30 417 686 store 0;
+#N canvas 404 30 469 685 store 0;
 #X floatatom 36 120 5 0 0 0 - - -;
 #X f 5;
 #X msg 36 48 1 2 3;
@@ -206,12 +206,12 @@
 #X msg 96 180 append 3 4 five;
 #X msg 36 408 Pyrame et Thisbé;
 #X msg 96 204 prepend non compliant;
-#X msg 168 252 bitch planet;
 #X msg 168 480 get 1 3;
 #X obj 132 612 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X msg 168 504 get 0 1;
 #X msg 168 528 get 2 3;
 #X text 12 372 Get sublists (index \, count).;
+#X msg 168 252 auxiliary compliance outpost;
 #X connect 0 0 8 0;
 #X connect 1 0 8 0;
 #X connect 2 0 8 0;
@@ -220,14 +220,14 @@
 #X connect 7 0 9 1;
 #X connect 8 0 5 0;
 #X connect 9 0 6 0;
-#X connect 9 1 16 0;
+#X connect 9 1 15 0;
 #X connect 11 0 8 0;
 #X connect 12 0 9 0;
 #X connect 13 0 8 0;
-#X connect 14 0 8 1;
-#X connect 15 0 9 0;
+#X connect 14 0 9 0;
+#X connect 16 0 9 0;
 #X connect 17 0 9 0;
-#X connect 18 0 9 0;
+#X connect 19 0 8 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 576 pd store;
 #X obj 36 204 list iterate;
