@@ -58,7 +58,7 @@ Excluding:
 
 
 
-
+/* < https://opensource.org/licenses/Zlib > */
 
 /*
  * TINYEXPR - Tiny recursive descent parser and evaluation engine in C
@@ -88,7 +88,7 @@ Excluding:
 
 
 /*
-    Copyright(C) 1996-2001 Takuya OOURA
+    Copyright (c) 1996-2001 Takuya OOURA
     email: ooura@mmm.t.u-tokyo.ac.jp
     download: http://momonga.t.u-tokyo.ac.jp/~ooura/fft.html
     You may use, copy, modify this code for any purpose and 
@@ -96,7 +96,7 @@ Excluding:
 */
 
 
-
+/* < https://opensource.org/licenses/MIT > */
 
 /*
  * PortAudio Portable Real-Time Audio Library
@@ -137,7 +137,7 @@ Excluding:
  */
 
 
-
+/* < https://opensource.org/licenses/MIT > */
 
  /*
  * PortMidi Portable Real-Time MIDI Library
