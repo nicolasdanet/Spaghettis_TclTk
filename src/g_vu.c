@@ -435,18 +435,6 @@ static void vu_bang (t_vu *x)
     (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
-static void vu_float (t_vu *x, t_float decibel)
-{
-    int old = x->x_decibel;
-    
-    x->x_decibelValue = decibel;
-    x->x_decibel = vu_stepWithDecibels (decibel);
-    
-    if (x->x_decibel != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
-    
-    outlet_float (x->x_outletLeft, decibel);
-}
-
 static void vu_floatPeak (t_vu *x, t_float peak)
 {
     int old = x->x_peak;
@@ -457,6 +445,20 @@ static void vu_floatPeak (t_vu *x, t_float peak)
     if (x->x_peak != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
         
     outlet_float (x->x_outletRight, peak);
+}
+
+static void vu_float (t_vu *x, t_float decibel)
+{
+    int old = x->x_decibel;
+    
+    x->x_decibelValue = decibel;
+    x->x_decibel = vu_stepWithDecibels (decibel);
+    
+    if (x->x_decibel != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    
+    if (x->x_decibelValue > x->x_peakValue) { vu_floatPeak (x, decibel); }
+    
+    outlet_float (x->x_outletLeft, decibel);
 }
 
 // -----------------------------------------------------------------------------------------------------------
