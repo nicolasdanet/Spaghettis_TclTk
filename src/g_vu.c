@@ -110,7 +110,7 @@ static int vu_decibelToStep[226] =
 
 static inline int vu_stepWithDecibels (t_float f)
 {
-    int i = (int)(2.0 * (f + 100.0)); return vu_decibelToStep[PD_CLAMP (i, 0, 225)];
+    int i = (int)(2.0 * f); return vu_decibelToStep[PD_CLAMP (i, 0, 225)];
 }
 
 static inline int vu_offsetWithStep (t_vu *x, int step)
@@ -151,7 +151,7 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
 
     int a = glist_getPixelX (glist, cast_object (x));
     int b = glist_getPixelY (glist, cast_object (x));
-    int h = vu_offsetWithStep (x, x->x_rms) + (x->x_thickness / 2);
+    int h = vu_offsetWithStep (x, x->x_decibel) + (x->x_thickness / 2);
     
     gui_vAdd ("%s.c coords %lxCOVER %d %d %d %d\n",
                     glist_getTagAsString (view),
@@ -430,21 +430,21 @@ void vu_setHeight (t_vu *x, int height)
 static void vu_bang (t_vu *x)
 {
     outlet_float (x->x_outletRight, x->x_peakValue);
-    outlet_float (x->x_outletLeft, x->x_rmsValue);
+    outlet_float (x->x_outletLeft, x->x_decibelValue);
     
     (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
-static void vu_float (t_vu *x, t_float rms)
+static void vu_float (t_vu *x, t_float decibel)
 {
-    int old = x->x_rms;
+    int old = x->x_decibel;
     
-    x->x_rmsValue = rms;
-    x->x_rms = vu_stepWithDecibels (rms);
+    x->x_decibelValue = decibel;
+    x->x_decibel = vu_stepWithDecibels (decibel);
     
-    if (x->x_rms != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_decibel != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
     
-    outlet_float (x->x_outletLeft, rms);
+    outlet_float (x->x_outletLeft, decibel);
 }
 
 static void vu_floatPeak (t_vu *x, t_float peak)
@@ -628,9 +628,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
-    x->x_hasScale    = (hasScale != 0);
-    x->x_peakValue   = (t_float)-101.0;
-    x->x_rmsValue    = (t_float)-101.0;
+    x->x_hasScale = (hasScale != 0);
     
     inlet_new2 (x, &s_float);
     

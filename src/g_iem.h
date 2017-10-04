@@ -185,9 +185,9 @@ typedef struct _vu {
     int         x_hasScale;                     /* Unused but kept for compatibility. */
     int         x_thickness;
     int         x_peak;
-    int         x_rms;
+    int         x_decibel;
     t_float     x_peakValue;
-    t_float     x_rmsValue;
+    t_float     x_decibelValue;
     t_outlet    *x_outletLeft;
     t_outlet    *x_outletRight;
     } t_vu;
