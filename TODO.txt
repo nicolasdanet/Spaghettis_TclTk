@@ -13,6 +13,7 @@ Think about an unit test suite.
 ###
 
 Add "Clear Console" item in menu.
+Improve radio buttons (bitwise mode / label per button).
 Extend the search path to be recursive.
 Append recent files in preferences.
 Find a way to mix symbols and floats in getters for scalars.
