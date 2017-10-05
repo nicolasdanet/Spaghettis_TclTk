@@ -20,7 +20,9 @@ Find a way to mix symbols and floats in getters for scalars.
 Think about negation before a field name for painters.
 Manage the mouse interaction with elements of an array.
 Handle all options with unordered key/value pairs.
+Define an approach to create scalars interactively.
 Improve consistency for properties (i.g. Atom / IEM).
+Use Cmd-I shortcut to open properties.
 Adapt all objects to be resizable.
 Add unlimited undo mechanism.
 Allow to select more that one cord.
