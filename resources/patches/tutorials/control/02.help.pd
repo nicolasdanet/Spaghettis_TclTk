@@ -1,0 +1,10 @@
+#N canvas 550 139 637 225 12;
+#X obj 36 168 print;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 help;
+#X msg 36 108 Congratulation! That's all you need to know.;
+#X text 12 72 Right-click an object and select the help entry in the contextual menu.;
+#X f 72;
+#X connect 4 0 0 0;
+#X coords 0 0 1 1 250 175 0 0 0;
