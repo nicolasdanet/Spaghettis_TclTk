@@ -38,7 +38,7 @@
 #X f 5;
 #X obj 36 396 pipe f 250;
 #X msg 108 348 unit 4 millisecond;
-#X text 12 12 Pipe can manage messages with multiple elements.;
+#X text 12 12 Pipe can manage messages with multiple atoms.;
 #X text 12 312 Supports the variable unit feature.;
 #X obj 396 396 pipe f 1 60 perminute;
 #X obj 396 480 print;

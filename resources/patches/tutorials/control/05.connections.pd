@@ -1,4 +1,4 @@
-#N canvas 711 90 636 537 12;
+#N canvas 711 90 547 540 12;
 #X obj 36 240 +;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
@@ -25,8 +25,6 @@
 #X f 5;
 #X floatatom 96 492 5 0 0 1 - - -;
 #X f 5;
-#X text 12 72 Most objects are triggered by messages in their leftmost ("hot") inlet.;
-#X f 71;
 #X obj 204 456 +;
 #X floatatom 204 384 5 0 0 0 - - -;
 #X f 5;
@@ -50,6 +48,8 @@
 #X restore 324 492 pd more;
 #X text 12 324 Broadcasting order might be considered undefined.;
 #X text 12 96 But some handy doesn't have "cold" inlets.;
+#X text 12 72 Most objects are triggered by their leftmost ("hot") inlet.;
+#X f 59;
 #X connect 0 0 6 0;
 #X connect 4 0 0 0;
 #X connect 5 0 0 1;
@@ -63,8 +63,8 @@
 #X connect 13 0 12 1;
 #X connect 13 0 12 0;
 #X connect 14 0 16 0;
+#X connect 17 0 19 0;
 #X connect 18 0 20 0;
-#X connect 19 0 21 0;
-#X connect 21 0 18 0;
-#X connect 21 1 18 1;
+#X connect 20 0 17 0;
+#X connect 20 1 17 1;
 #X coords 0 0 1 1 250 175 0 0 0;

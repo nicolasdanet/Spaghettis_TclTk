@@ -184,7 +184,6 @@
 #X text 204 132 Prepend something to a list.;
 #X text 204 324 Convert ASCII to symbol.;
 #X f 26;
-#X text 204 252 Get the number of items.;
 #X text 204 180 Trim the "list" selector.;
 #X text 204 300 Convert symbols to ASCII.;
 #X f 26;
@@ -254,14 +253,13 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 504 pd iterate;
 #X obj 36 228 list group;
-#X text 204 228 Group words to list.;
 #N canvas 548 85 450 694 group 0;
 #X obj 36 204 list group 5;
 #X obj 36 240 print;
 #X floatatom 36 48 5 0 0 1 - - -;
 #X f 5;
 #X msg 120 360 clear;
-#X text 12 12 Make given size list with collection of elements.;
+#X text 12 12 Make given size list with collection of atoms.;
 #X obj 36 468 print;
 #X msg 108 48 quilt bag;
 #X obj 228 120 t p;
@@ -293,4 +291,6 @@
 #X connect 16 0 14 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 528 pd group;
+#X text 204 252 Get the number of atoms.;
+#X text 204 228 Group atoms into a list.;
 #X coords 0 0 1 1 250 175 0 0 0;

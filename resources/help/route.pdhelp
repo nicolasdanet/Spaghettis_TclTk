@@ -124,7 +124,7 @@
 #X obj 168 312 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 336 print;
 #X obj 204 312 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X text 12 72 Route a message according to its first element.;
+#X text 12 72 Route a message according to its first atom.;
 #X f 47;
 #X connect 0 0 16 0;
 #X connect 0 0 19 0;

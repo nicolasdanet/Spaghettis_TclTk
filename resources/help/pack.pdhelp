@@ -1,4 +1,4 @@
-#N canvas 707 117 432 389 12;
+#N canvas 709 125 432 389 12;
 #X obj 36 300 print;
 #X msg 168 180 symbol cat;
 #X text 12 348 See also;
@@ -41,12 +41,12 @@
 #X floatatom 144 336 5 0 0 1 - - -;
 #X f 5;
 #X obj 36 432 print;
-#X text 12 240 Alternate version with all the inlets hot.;
 #X floatatom 432 276 5 0 0 1 - - -;
 #X f 5;
 #X obj 264 432 print;
 #X obj 264 396 pak set hupla hup f;
 #X msg 324 276 symbol hup;
+#X text 12 240 Alternate version with all the inlets "hot".;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
 #X connect 4 0 2 0;
@@ -59,12 +59,12 @@
 #X connect 12 0 11 0;
 #X connect 13 0 11 1;
 #X connect 14 0 11 2;
-#X connect 17 0 19 3;
-#X connect 19 0 18 0;
-#X connect 20 0 19 1;
+#X connect 16 0 18 3;
+#X connect 18 0 17 0;
+#X connect 19 0 18 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 300 300 pd more;
-#X text 12 72 Combine several elements into one list.;
+#X text 12 72 Combine several atoms into one list.;
 #X f 39;
 #X connect 1 0 12 2;
 #X connect 4 0 12 0;

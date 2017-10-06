@@ -47,7 +47,7 @@
 #X msg 36 636 1 \; \$0-a 2 \; \$0-b 3;
 #X msg 612 684 \; pd dsp 0;
 #X msg 516 684 \; pd dsp 1;
-#X text 12 600 Semicolon end a message (first element next must be the name of a receiver object).;
+#X text 12 600 Semicolon end a message (first atom next must be the name of a receiver object).;
 #X f 84;
 #X text 12 444 Use a double dollar to avoid the substitution.;
 #X msg 264 480 label $\$0-Hermione;
