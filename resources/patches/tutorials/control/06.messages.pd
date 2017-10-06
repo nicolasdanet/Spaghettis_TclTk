@@ -1,10 +1,10 @@
-#N canvas 479 155 961 642 12;
+#N canvas 407 126 961 642 12;
 #X floatatom 264 228 0 0 0 0 - - -;
 #X floatatom 216 228 0 0 0 0 - - -;
 #X msg 216 180 5 6;
 #X floatatom 168 228 0 0 0 0 - - -;
 #X floatatom 96 228 0 0 0 0 - - -;
-#X text 72 144 Most Pd messages are just numbers or short lists of numbers:;
+#X text 24 96 Most Pd messages are just numbers or short lists of numbers:;
 #X msg 96 180 5;
 #X obj 96 204 + 9;
 #X obj 168 204 +;
