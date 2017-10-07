@@ -1,4 +1,4 @@
-#N canvas 513 41 657 762 12;
+#N canvas 600 39 656 758 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 taxonomy;
@@ -57,7 +57,6 @@
 #X msg 36 540 list 1 2 three;
 #X text 216 540 A list.;
 #X text 216 564 Anything.;
-#X text 12 432 The type of the message is defined by its first atom.;
 #X msg 36 672 list 1 2 three;
 #X msg 216 672 1 2 three;
 #X obj 36 708 print;
@@ -67,9 +66,6 @@
 #X f 57;
 #X text 12 144 ...but most of the times it refers only to "something sendable".;
 #X f 64;
-#X text 12 216 Such message is composed of atoms (three in the case below).;
-#X text 12 636 The list selector is implicit with multiple atoms starting with a number.;
-#X f 73;
 #N canvas 282 48 689 593 again 0;
 #X obj 240 168 prepend;
 #X obj 240 348 list append;
@@ -118,13 +114,18 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 516 492 pd again;
 #X msg 36 564 Beam me up Scotty;
+#X text 12 216 Such message is composed of atoms (three in the case below).;
+#X f 62;
+#X text 12 432 The type of a message is defined by its first atom.;
+#X text 12 636 The list selector is implicit with multiple atoms starting with a number.;
+#X f 74;
 #X connect 8 0 7 0;
 #X connect 10 0 11 0;
 #X connect 13 0 11 0;
 #X connect 15 0 11 0;
 #X connect 17 0 11 0;
+#X connect 20 0 22 0;
 #X connect 21 0 23 0;
-#X connect 22 0 24 0;
-#X connect 25 0 8 0;
-#X connect 31 0 11 0;
+#X connect 24 0 8 0;
+#X connect 28 0 11 0;
 #X coords 0 0 1 1 250 175 0 0 0;
