@@ -1,4 +1,4 @@
-#N canvas 454 97 752 704 12;
+#N canvas 449 93 752 704 12;
 #N canvas 667 66 773 772 about-lists 0;
 #X obj 50 629 print message;
 #X msg 50 442 list x.wav 44100;
@@ -42,6 +42,7 @@
 #X text 12 72 Message is a vague term. It can be the message object.;
 #X f 54;
 #X msg 36 108;
-#X text 12 144 Or something sent between objects. It might be confusing.;
-#X text 24 24 anatomy;
+#X text 24 24 taxonomy;
+#X text 12 144 Or a generic for something sent between objects. It might be confusing.;
+#X f 71;
 #X coords 0 0 1 1 250 175 0 0 0;
