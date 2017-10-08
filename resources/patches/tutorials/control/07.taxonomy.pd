@@ -66,7 +66,7 @@
 #X f 57;
 #X text 12 144 ...but most of the times it refers only to "something sendable".;
 #X f 64;
-#N canvas 282 48 689 593 again 0;
+#N canvas 277 32 890 595 again 0;
 #X obj 240 168 prepend;
 #X obj 240 348 list append;
 #X obj 444 168 list trim;
@@ -94,6 +94,9 @@
 #X obj 36 504 list group 6;
 #X msg 36 444 Holy \, Priceless \, Collection \, Of \, Etruscan \, Snoods;
 #X obj 36 540 print;
+#X msg 696 288 Eat my shorts!;
+#X obj 696 348 t l;
+#X obj 696 396 print;
 #X connect 0 0 4 0;
 #X connect 1 0 18 0;
 #X connect 2 0 7 0;
@@ -111,6 +114,8 @@
 #X connect 22 0 21 0;
 #X connect 23 0 25 0;
 #X connect 24 0 23 0;
+#X connect 26 0 27 0;
+#X connect 27 0 28 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 516 492 pd again;
 #X msg 36 564 Beam me up Scotty;
