@@ -67,10 +67,7 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
         
             if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_list) {
                 t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
-                if (!argc || !IS_SYMBOL (argv)) { outlet_list (outlet, argc, argv); }
-                else {
-                    outlet_anything (outlet, GET_SYMBOL (argv), argc - 1, argv + 1);
-                }
+                outlet_list (outlet, argc, argv);
                 k = 1; break;
             }
         }
