@@ -60,7 +60,6 @@ static void trigger_pointer (t_trigger *x, t_gpointer *gp)
 static void trigger_list (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    int isCalledByAnything = (s == &s_anything);
     
     for (i = x->x_size - 1; i >= 0; i--) {
     //
@@ -83,7 +82,7 @@ static void trigger_list (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
         
     } else {
         if (type == &s_anything) {
-            if (isCalledByAnything && argc) {
+            if (argc && IS_SYMBOL (argv)) {
                 outlet_anything (outlet, atom_getSymbol (argv), argc - 1, argv + 1);
             } else {
                 outlet_list (outlet, argc, argv);
