@@ -33,6 +33,21 @@ typedef struct _route {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void route_listFailed (t_route *x, int argc, t_atom *argv)
+{
+    if (!argc) { outlet_bang (x->x_outlet); }
+    else if (argc == 1) {
+        if (IS_FLOAT (argv)) { outlet_float (x->x_outlet, GET_FLOAT (argv)); }
+        else if (IS_SYMBOL (argv)) { outlet_symbol (x->x_outlet, GET_SYMBOL (argv)); }
+        else if (IS_POINTER (argv)) { outlet_pointer (x->x_outlet, GET_POINTER (argv)); }
+        else {
+            PD_BUG;
+        }
+    } else {
+        outlet_list (x->x_outlet, argc, argv);
+    }
+}
+
 static int route_listForFloat (t_route *x, int argc, t_atom *argv)
 {
     int k = 0;
@@ -124,7 +139,7 @@ static void route_list (t_route *x, t_symbol *dummy, int argc, t_atom *argv)
         k = route_listForSymbol (x, argc, argv);
     }
 
-    if (!k) { outlet_list (x->x_outlet, argc, argv); }
+    if (!k) { route_listFailed (x, argc, argv); }
 }
 
 static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
