@@ -70,7 +70,7 @@ void pd_symbol (t_pd *x, t_symbol *s)
 
 void pd_list (t_pd *x, int argc, t_atom *argv)
 {
-    (*(class_getListMethod (pd_class (x)))) (x, &s_list, argc, argv);
+    (*(class_getListMethod (pd_class (x)))) (x, &s_list, argc, argc ? argv : NULL);
 }
 
 void pd_pointer (t_pd *x, t_gpointer *gp)
