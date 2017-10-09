@@ -21,6 +21,7 @@ static t_class *uzi_class;              /* Shared. */
 typedef struct _uzi {
     t_object    x_obj;                  /* Must be the first. */
     t_float     x_count;
+    int         x_inhibit;
     t_outlet    *x_outletLeft;
     t_outlet    *x_outletMiddle;
     t_outlet    *x_outletRight;
@@ -34,9 +35,14 @@ static void uzi_proceed (t_uzi *x)
 {
     int i, count = PD_MAX (0, x->x_count);
     
+    x->x_inhibit = 0;
+    
     for (i = 0; i < count; i++) {
     //
-    outlet_float (x->x_outletRight, (t_float)i); outlet_bang (x->x_outletLeft);
+    if (x->x_inhibit) { break; }
+    else {
+        outlet_float (x->x_outletRight, (t_float)i); outlet_bang (x->x_outletLeft);
+    }
     //
     }
     
@@ -55,6 +61,11 @@ static void uzi_bang (t_uzi *x)
 static void uzi_float (t_uzi *x, t_float f)
 {
     x->x_count = f; uzi_proceed (x);
+}
+
+static void uzi_stop (t_uzi *x)
+{
+    x->x_inhibit = 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -99,6 +110,8 @@ void uzi_setup (void)
             
     class_addBang (c, (t_method)uzi_bang);
     class_addFloat (c, (t_method)uzi_float);
+    
+    class_addMethod (c, (t_method)uzi_stop, sym_stop, A_NULL);
     
     uzi_class = c;
 }
