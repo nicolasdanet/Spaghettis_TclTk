@@ -14,6 +14,7 @@ Think about an unit test suite.
 
 Add "Clear Console" item in menu.
 Allow to hide the name of an array.
+Make the gop rectangle resizable with the mouse.
 Improve radio buttons (bitwise mode / label per button).
 Make gatom able to contain multiple symbols (menubutton).
 Extend the search path to be recursive.
