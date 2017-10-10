@@ -1,0 +1,5 @@
+#N canvas 527 113 597 581 12;
+#X obj -60 12 freeze;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X text 24 24 Graph On Parent;
+#X coords 0 0 1 1 250 175 0 0 0;
