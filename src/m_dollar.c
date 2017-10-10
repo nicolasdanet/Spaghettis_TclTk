@@ -118,7 +118,7 @@ t_symbol *dollar_expandSymbolWithArguments (t_symbol *s, t_glist *glist, int arg
     //
     }
     
-    if (err) { PD_BUG; error_invalid (&s_, sym_expansion); return NULL; }
+    if (err) { warning_invalid (&s_, sym_expansion); return NULL; }
     else {
         return gensym (result);
     }
@@ -164,7 +164,7 @@ int dollar_expandWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int a
     if (n > 0 && n <= argc) { *a = *(argv + n - 1); return 1; }
     else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero (glist)); return 1; }
     else {
-        error_invalid (&s_, sym_expansion); SET_FLOAT (a, (t_float)0.0);
+        warning_invalid (&s_, sym_expansion); SET_FLOAT (a, (t_float)0.0);
     }
     
     return 0;

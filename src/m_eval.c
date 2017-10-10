@@ -94,7 +94,7 @@ void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
         }
         
         if (s == NULL || !(object = pd_getThing (s))) {
-            if (!s) { error_invalid (&s_, sym_expansion); }
+            if (!s) { warning_invalid (&s_, sym_expansion); }
             else { 
                 pd_hasThing (s); 
             }
