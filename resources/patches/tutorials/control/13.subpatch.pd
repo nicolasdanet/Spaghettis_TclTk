@@ -1,7 +1,6 @@
-#N canvas 599 67 656 457 12;
+#N canvas 484 128 656 457 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#X text 24 24 Subpatch;
 #X text 12 72 You can nest entire windows inside boxes (and so on \, as deep as you wish).;
 #X f 74;
 #N canvas 443 204 353 200 hello 0;
@@ -46,8 +45,9 @@
 #X text 12 192 Note that you can click (or right-click) on the box to open it.;
 #X f 63;
 #X text 12 348 But it can be done also by a message.;
-#X connect 4 0 5 0;
-#X connect 6 0 9 0;
-#X connect 7 0 9 1;
-#X connect 9 0 8 0;
+#X text 24 24 subpatch;
+#X connect 3 0 4 0;
+#X connect 5 0 8 0;
+#X connect 6 0 8 1;
+#X connect 8 0 7 0;
 #X coords 0 0 1 1 250 175 0 0 0;
