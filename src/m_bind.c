@@ -155,6 +155,8 @@ void pd_bind (t_pd *x, t_symbol *s)
     PD_ASSERT (s != &s__N);
     PD_ASSERT (s != &s__X);
     
+    PD_ASSERT (s != &s_);
+    
     if (s->s_thing) {
     
         if (pd_class (s->s_thing) == bindlist_class) {
@@ -183,6 +185,8 @@ void pd_bind (t_pd *x, t_symbol *s)
 
 void pd_unbind (t_pd *x, t_symbol *s)
 {
+    PD_ASSERT (s != &s_);
+    
     if (s->s_thing == x) { 
         s->s_thing = NULL; 
         

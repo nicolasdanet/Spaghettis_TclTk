@@ -41,14 +41,14 @@ static void *send_tilde_new (t_symbol *s)
     x->x_vector = (t_sample *)PD_MEMORY_GET (DSP_SEND_SIZE * sizeof (t_sample));
     x->x_name   = s;
     
-    pd_bind (cast_pd (x), s);
+    if (x->x_name != &s_) { pd_bind (cast_pd (x), s); }
         
     return x;
 }
 
 static void send_tilde_free (t_send_tilde *x)
 {
-    pd_unbind (cast_pd (x), x->x_name);
+    if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
     
     PD_MEMORY_FREE (x->x_vector);
 }
