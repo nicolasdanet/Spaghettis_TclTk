@@ -360,7 +360,7 @@ static int soundfiler_writeEncode (int f,
     return framesAlreadyWritten;
 }
     
-static int soundfiler_writeProceed (t_glist *canvas, int argc, t_atom *argv)
+static int soundfiler_writeProceed (t_glist *glist, int argc, t_atom *argv)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -379,7 +379,7 @@ static int soundfiler_writeProceed (t_glist *canvas, int argc, t_atom *argv)
     
     if (!err) {
     
-        int f = soundfile_writeFileHeader (canvas, &properties);
+        int f = soundfile_writeFileHeader (glist, &properties);
     
         err = (f < 0);
         

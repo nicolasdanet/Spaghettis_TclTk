@@ -15,9 +15,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* A canvas is bind to a context (the symbol #X). */
+/* A patch is bind to a context (the symbol #X). */
 /* Most of the lines of a file can be considered as messages to the current context. */
-/* Nested canvas are handled with a stack mechanism. */
+/* Nested patch are handled with a stack mechanism. */
 /* Contexts are pushed and popped to go down and up in the tree. */
 /* Note that abstractions cannot be recursively instantiated. */
 
@@ -147,7 +147,7 @@ static void instance_loadPatchLoadbang (void)
 static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, char *s, int visible)
 {
     instance_contextStore();
-    instance_contextSetCurrent (NULL);          /* The root canvas do NOT have parent. */
+    instance_contextSetCurrent (NULL);          /* The root patch do NOT have parent. */
         
     if (s) { eval_fileByString (name, directory, s); }
     else   { eval_file (name, directory); }

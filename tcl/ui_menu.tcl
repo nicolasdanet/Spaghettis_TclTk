@@ -557,7 +557,7 @@ proc _close {} {
                 "Atom"          { ::ui_atom::closed   $top }
                 "Audio"         { ::ui_audio::closed  $top }
                 "Bang"          { ::ui_iem::closed    $top }
-                "Canvas"        { ::ui_canvas::closed $top }
+                "Patch"         { ::ui_canvas::closed $top }
                 "MIDI"          { ::ui_midi::closed   $top }
                 "Dial"          { ::ui_iem::closed    $top }
                 "Panel"         { ::ui_iem::closed    $top }
