@@ -91,6 +91,7 @@ static void method_execute (t_pd *x, t_method f, int m, t_int *ai, int n, t_floa
 // MARK: -
 
 /* Note that A_FLOAT arguments are always passed at last. */
+/* A zero number can be converted to an empty symbol (invalid substitutions in abstractions). */
 
 static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -138,6 +139,7 @@ static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_
     case A_DEFSYMBOL :  if (!argc) { *ip = (t_int)&s_; }
                         else {
                             if (IS_SYMBOL (argv)) { *ip = (t_int)GET_SYMBOL (argv); }
+                            else if (IS_FLOAT (argv) && GET_FLOAT (argv) == 0.0) { *ip = (t_int)&s_; }
                             else { 
                                 return PD_ERROR;
                             }
@@ -208,7 +210,8 @@ static t_error method_slot (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     } else if (s == &s_symbol) {
         if (argc && IS_SYMBOL (argv)) { (*(class_getSymbolMethod (c))) (x, GET_SYMBOL (argv)); }
         else {
-            if (!argc) { (*(class_getSymbolMethod (c))) (x, &s_); }
+            int k = (!argc) || (argc && IS_FLOAT (argv) && GET_FLOAT (argv) == 0.0);
+            if (k) { (*(class_getSymbolMethod (c))) (x, &s_); }
             else {
                 err = PD_ERROR;
             }
