@@ -1,4 +1,9 @@
-#N canvas 417 283 586 180 12;
-#X obj 34 68 dollarsign2 three 4;
-#X text 32 14 An abstraction's creation arguments may be either numbers
-or symbols. Gory details are inside:;
+#N canvas 720 223 538 238 12;
+#X obj 36 108 dollars three 4;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 dollars;
+#X msg 36 156 \; pd-dollars open;
+#X text 12 72 Various approaches to get abstraction's creation arguments.;
+#X f 59;
+#X coords 0 0 1 1 250 175 0 0 0;
