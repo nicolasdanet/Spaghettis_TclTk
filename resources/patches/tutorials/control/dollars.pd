@@ -1,55 +1,41 @@
-#N canvas 292 42 736 720 12;
-#X obj 90 143 send \$1;
-#X obj 201 142 + \$2;
-#X floatatom 305 124 0 0 0 0 - - -;
-#X obj 305 175 print;
-#X msg 305 149 blah \$1;
-#X text 38 199 This may sound inconsistant \, but it's not--object
-and message boxes are both actually messages \, but in the case of
-the Object box the message is passed at creation time \, and for the
-Message box \, at message time.;
-#X msg 190 308 bang;
-#X obj 190 336 symbol \$1;
-#X msg 100 308 bang;
-#X obj 100 336 float \$2;
-#X floatatom 100 363 5 0 0 0 - - -, f 5;
-#X symbolatom 190 365 10 0 0 0 - - -, f 10;
-#X text 38 269 So how do you put creation arguments in messages? Use
-"float" and "symbol" as shown:;
-#X msg 99 419 bang;
-#X obj 99 443 float \$2;
-#X msg 99 470 five \$1;
-#X text 43 393 Then if you wish \, connect to a message box as in:
-;
-#X obj 99 495 print;
-#X msg 145 548 bang;
-#X obj 145 600 symbol \$1;
-#X obj 239 596 f \$2;
-#X obj 145 576 t b b;
-#X obj 144 623 pack symbol float;
-#X msg 144 649 six \$1 \$2;
-#X obj 144 676 print;
-#X text 33 521 For messages combining more than one creation argument
-try:;
-#X text 39 86 In Object boxes \, dollar signs refer to the abstraction's
-creation arguments. In Messages \, they change dynamically:;
-#X text 40 15 This window is used by 14.dollarsigns.pd to demonstrate
-the abstraction mechanism in Pd. If you've opened this window directly
-\, you might also want to open the other one to see how it's used.
-;
-#X connect 2 0 4 0;
-#X connect 4 0 3 0;
-#X connect 6 0 7 0;
+#N canvas 529 71 522 522 12;
+#X obj 36 276 + \$2;
+#X obj 36 156 print;
+#X obj 192 156 print;
+#X msg 36 456 \; \$2 \$1;
+#X floatatom 36 240 5 0 0 1 - - -;
+#X f 5;
+#X floatatom 36 312 5 0 0 1 - - -;
+#X f 5;
+#X text 12 12 In objects \, dollar signs refer to the arguments.;
+#X f 50;
+#X obj 192 396 r cookies;
+#X obj 324 396 r pretzels;
+#X msg 36 396 67 cookies;
+#X msg 36 420 42 pretzels;
+#X floatatom 192 432 5 0 0 1 - - -;
+#X f 5;
+#X floatatom 324 432 5 0 0 1 - - -;
+#X f 5;
+#X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 192 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 192 84 symbol \$1;
+#X obj 192 120 prepend six;
+#X obj 36 120 prepend five;
+#X obj 36 84 float \$2;
+#X text 12 204 They are literally replaced at instantiation...;
+#X text 12 360 ...contrary to message expansion that occurs at run time.;
+#X f 57;
+#X connect 0 0 5 0;
+#X connect 4 0 0 0;
 #X connect 7 0 11 0;
-#X connect 8 0 9 0;
-#X connect 9 0 10 0;
-#X connect 13 0 14 0;
+#X connect 8 0 12 0;
+#X connect 9 0 3 0;
+#X connect 10 0 3 0;
+#X connect 13 0 18 0;
 #X connect 14 0 15 0;
-#X connect 15 0 17 0;
-#X connect 18 0 21 0;
-#X connect 19 0 22 0;
-#X connect 20 0 22 1;
-#X connect 21 0 19 0;
-#X connect 21 1 20 0;
-#X connect 22 0 23 0;
-#X connect 23 0 24 0;
+#X connect 15 0 16 0;
+#X connect 16 0 2 0;
+#X connect 17 0 1 0;
+#X connect 18 0 17 0;
+#X coords 0 0 1 1 250 175 0 0 0;
