@@ -24,6 +24,7 @@
 #X obj 96 228 dspstatus;
 #X text 24 24 samplerate;
 #X obj 36 144 samplerate;
+#X obj 180 228 arguments;
 #X connect 6 0 9 0;
 #X connect 9 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;

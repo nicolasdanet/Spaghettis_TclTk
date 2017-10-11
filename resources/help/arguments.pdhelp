@@ -1,0 +1,14 @@
+#N canvas 637 90 429 273 12;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 12 228 See also:;
+#X obj 36 180 print;
+#X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 96 228 dspstatus;
+#X obj 180 228 samplerate;
+#X text 24 24 arguments;
+#X obj 36 144 arguments;
+#X text 12 72 Get arguments of a patch (only in abstraction).;
+#X connect 4 0 8 0;
+#X connect 8 0 3 0;
+#X coords 0 0 1 1 250 175 0 0 0;

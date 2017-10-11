@@ -1,4 +1,4 @@
-#N canvas 529 71 522 522 12;
+#N canvas 529 71 517 681 12;
 #X obj 36 276 + \$2;
 #X obj 36 156 print;
 #X obj 192 156 print;
@@ -26,6 +26,10 @@
 #X text 12 204 They are literally replaced at instantiation...;
 #X text 12 360 ...contrary to message expansion that occurs at run time.;
 #X f 57;
+#X obj 36 588 arguments;
+#X obj 36 552 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 624 print;
+#X text 12 516 An alternate way is to fetch arguments on demand.;
 #X connect 0 0 5 0;
 #X connect 4 0 0 0;
 #X connect 7 0 11 0;
@@ -38,4 +42,6 @@
 #X connect 16 0 2 0;
 #X connect 17 0 1 0;
 #X connect 18 0 17 0;
+#X connect 21 0 23 0;
+#X connect 22 0 21 0;
 #X coords 0 0 1 1 250 175 0 0 0;

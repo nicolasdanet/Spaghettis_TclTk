@@ -49,6 +49,7 @@ void searchpath_release         (void);
 
 void acoustic_setup             (void);
 void append_setup               (void);
+void arguments_setup            (void);
 void array_setup                (void);
 void arrayget_setup             (void);
 void arraymax_setup             (void);
@@ -266,6 +267,7 @@ void zero_tilde_setup           (void);
 
 void acoustic_destroy           (void);
 void append_destroy             (void);
+void arguments_destroy          (void);
 void arrayget_destroy           (void);
 void arraymax_destroy           (void);
 void arraymin_destroy           (void);
@@ -483,6 +485,7 @@ void setup_setup (void)
 {
     acoustic_setup();
     append_setup();
+    arguments_setup();
     array_setup();
     arrayget_setup();
     arraymax_setup();
@@ -693,6 +696,7 @@ void setup_destroy (void)
 {
     acoustic_destroy();
     append_destroy();
+    arguments_destroy();
     arrayget_destroy();
     arraymax_destroy();
     arraymin_destroy();
