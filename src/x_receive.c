@@ -62,24 +62,15 @@ static void receive_anything (t_receive *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *receive_new (t_symbol *s, int argc, t_atom *argv)
+static void *receive_new (t_symbol *s)
 {
     t_receive *x = (t_receive *)pd_new (receive_class);
     
-	/* Allow invalid expansion in an abstraction to appears as successful. */
-    
-    int inAbstraction = (argc && IS_FLOAT (argv) && (GET_FLOAT (argv) == 0));
-    
-    x->x_name   = atom_getSymbolAtIndex (0, argc, argv);
+    x->x_name   = s;
     x->x_outlet = outlet_new (cast_object (x), &s_anything);
         
     if (x->x_name != &s_) { pd_bind (cast_pd (x), x->x_name); }
 
-	if (!inAbstraction && argc && IS_FLOAT (argv)) { warning_unusedArguments (s, argc, argv); }
-    else if (argc > 1) {
-        warning_unusedArguments (s, argc - 1, argv + 1);
-    }
-    
     return x;
 }
 
@@ -101,10 +92,10 @@ void receive_setup (void)
             (t_method)receive_free,
             sizeof (t_receive),
             CLASS_DEFAULT | CLASS_NOINLET,
-            A_GIMME,
+            A_DEFSYMBOL,
             A_NULL);
             
-    class_addCreator ((t_newmethod)receive_new, sym_r, A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)receive_new, sym_r, A_DEFSYMBOL, A_NULL);
     
     class_addBang (c, (t_method)receive_bang);
     class_addFloat (c, (t_method)receive_float);

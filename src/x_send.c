@@ -61,22 +61,13 @@ static void send_anything (t_send *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *send_new (t_symbol *s, int argc, t_atom *argv)
+static void *send_new (t_symbol *s)
 {
     t_send *x = (t_send *)pd_new (send_class);
     
-    /* Allow invalid expansion in an abstraction to appears as successful. */
+    x->x_name = s;
     
-    int inAbstraction = (argc && IS_FLOAT (argv) && (GET_FLOAT (argv) == 0));
-    
-    x->x_name = atom_getSymbolAtIndex (0, argc, argv);
-    
-    if (!inAbstraction && (x->x_name == &s_)) { inlet_newSymbol (cast_object (x), &x->x_name); }
-
-    if (!inAbstraction && argc && IS_FLOAT (argv)) { warning_unusedArguments (s, argc, argv); }
-    else if (argc > 1) {
-        warning_unusedArguments (s, argc - 1, argv + 1);
-    }
+    if (x->x_name == &s_) { inlet_newSymbol (cast_object (x), &x->x_name); }
 
     return x;
 }
@@ -94,10 +85,10 @@ void send_setup (void)
             NULL,
             sizeof (t_send),
             CLASS_DEFAULT,
-            A_GIMME,
+            A_DEFSYMBOL,
             A_NULL);
             
-    class_addCreator ((t_newmethod)send_new, sym_s, A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)send_new, sym_s, A_DEFSYMBOL, A_NULL);
     
     class_addBang (c, (t_method)send_bang);
     class_addFloat (c, (t_method)send_float);
