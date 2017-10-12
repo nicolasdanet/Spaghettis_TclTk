@@ -136,9 +136,9 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    /* Default expansion is zero (abstraction opened as patch). */
+    /* Dollar expansion is zero in abstraction opened as patch. */
     
-    if (argc && IS_FLOAT (argv) && GET_FLOAT (argv) == 0.0) { argc--; argv++; }
+    if (argc && IS_FLOAT (argv) && (GET_FLOAT (argv) == 0.0)) { argc--; argv++; }
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     

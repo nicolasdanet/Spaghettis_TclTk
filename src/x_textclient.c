@@ -45,10 +45,15 @@ t_error textclient_init (t_textclient *x, int *ac, t_atom **av)
     }
     
     if (!x->tc_templateIdentifier && argc) {
-        if (!IS_SYMBOL (argv)) { return PD_ERROR; }
+        
+        /* Dollar expansion is zero in abstraction opened as patch. */
+        
+        if (IS_FLOAT (argv) && (GET_FLOAT (argv) == 0.0)) { x->tc_name = &s_; argc--; argv++; }
         else {
-            x->tc_name = GET_SYMBOL (argv); 
-            argc--; argv++;
+            if (!IS_SYMBOL (argv)) { return PD_ERROR; }
+            else {
+                x->tc_name = GET_SYMBOL (argv); argc--; argv++;
+            }
         }
     }
         
