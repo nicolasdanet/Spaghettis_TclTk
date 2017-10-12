@@ -248,7 +248,7 @@ static void *qlist_new (t_symbol *s, int argc, t_atom *argv)
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
     x->ql_clock          = clock_new ((void *)x, (t_method)qlist_task);
 
-    if (argc) { qlist_read (x, symbol_withAtoms (argc, argv)); }
+    if (argc && !IS_FLOAT (argv)) { qlist_read (x, symbol_withAtoms (argc, argv)); }
     
     return x;
 }

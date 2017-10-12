@@ -62,7 +62,7 @@ static void *textfile_new (t_symbol *s, int argc, t_atom *argv)
     x->ql_outletLeft     = outlet_new (cast_object (x), &s_list);
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
     
-    if (argc) { qlist_read (x, symbol_withAtoms (argc, argv)); }
+    if (argc && !IS_FLOAT (argv)) { qlist_read (x, symbol_withAtoms (argc, argv)); }
     
     return x;
 }
