@@ -69,13 +69,16 @@ void drawtext_release (void)
 
 static t_error drawtext_getContents (t_drawtext *x, t_gpointer *gp, char *dest, int size, int *m, int *n)
 {
-    if (gpointer_fieldIsArray (gp, x->x_fieldName)) { return PD_ERROR; }
-    else {
-        t_error err = string_copy (dest, size, x->x_label->s_name);
-        err |= gpointer_fieldToString (gp, x->x_fieldName, dest, size);
-        if (m && n) { string_getNumberOfColumnsAndLines (dest, m, n); }
-        return err;
+    if (gpointer_hasField (gp, x->x_fieldName)) {
+        if (!gpointer_fieldIsArray (gp, x->x_fieldName)) {
+            t_error err = string_copy (dest, size, x->x_label->s_name);
+            err |= gpointer_fieldToString (gp, x->x_fieldName, dest, size);
+            if (m && n) { string_getNumberOfColumnsAndLines (dest, m, n); }
+            return err;
+        }
     }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
