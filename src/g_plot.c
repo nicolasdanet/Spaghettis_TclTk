@@ -45,6 +45,7 @@ static t_fielddescriptor    *plot_fieldArray;           /* Static. */
 
 typedef struct _plot {
     t_object            x_obj;                          /* Must be the first. */
+    int                 x_once;
     t_fielddescriptor   x_array;
     t_fielddescriptor   x_colorOutline;
     t_fielddescriptor   x_width;
@@ -175,7 +176,9 @@ static t_error plot_fetchProperties (t_plot *x, t_gpointer *gp, t_plotproperties
     //
     }
     
-    error_unspecified (sym_plot, sym_array);
+    /* Avoid overzealous reporting. */
+    
+    if (!x->x_once) { x->x_once = 1; error_unspecified (sym_plot, sym_array); }
     
     return PD_ERROR;
 }

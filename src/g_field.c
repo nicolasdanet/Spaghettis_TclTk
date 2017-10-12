@@ -54,8 +54,6 @@ void field_setAsArray (t_fielddescriptor *fd, int argc, t_atom *argv)
             fd->fd_type                 = DATA_ARRAY;
             fd->fd_isVariable           = 1;
             fd->fd_un.fd_variableName   = GET_SYMBOL (argv);
-        } else {
-            PD_BUG;
         }
     }
 }
