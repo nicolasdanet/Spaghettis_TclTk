@@ -37,7 +37,7 @@ static void throw_tilde_set (t_throw_tilde *x, t_symbol *s)
     
     x->x_vector = NULL;
     
-    if (!catcher) { error_canNotFind (sym_throw__tilde__, x->x_name); }
+    if (!catcher) { if (x->x_name != &s_) { error_canNotFind (sym_throw__tilde__, x->x_name); } }
     else {
         x->x_vector = catcher->x_vector;
     }

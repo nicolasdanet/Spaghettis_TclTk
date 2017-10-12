@@ -41,14 +41,14 @@ static void *catch_tilde_new (t_symbol *s)
     x->x_name   = s;
     x->x_outlet = outlet_new (cast_object (x), &s_signal);
     
-    pd_bind (cast_pd (x), x->x_name);
+    if (x->x_name != &s_) { pd_bind (cast_pd (x), x->x_name); }
     
     return x;
 }
 
 static void catch_tilde_free (t_catch_tilde *x)
 {
-    pd_unbind (cast_pd (x), x->x_name);
+    if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
     
     PD_MEMORY_FREE (x->x_vector);
 }

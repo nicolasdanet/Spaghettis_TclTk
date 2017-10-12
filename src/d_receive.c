@@ -37,7 +37,7 @@ static void receive_tilde_set (t_receive_tilde *x, t_symbol *s)
     
     x->x_vector = NULL;
     
-    if (!sender) { error_canNotFind (sym_receive__tilde__, x->x_name); }
+    if (!sender) { if (x->x_name != &s_) { error_canNotFind (sym_receive__tilde__, x->x_name); } }
     else {
         x->x_vector = sender->x_vector;
     }
