@@ -69,12 +69,12 @@ void valuecommon_release (t_symbol *s)
 
 static void value_bang (t_value *x)
 {
-    outlet_float (x->x_outlet, *x->x_raw);
+    if (x->x_raw) { outlet_float (x->x_outlet, *x->x_raw); }
 }
 
 static void value_float (t_value *x, t_float f)
 {
-    *x->x_raw = f;
+    if (x->x_raw) { *x->x_raw = f; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -86,15 +86,16 @@ static void *value_new (t_symbol *s)
     t_value *x = (t_value *)pd_new (value_class);
     
     x->x_name   = s;
-    x->x_raw    = valuecommon_fetch (s);
     x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    if (x->x_name != &s_) { x->x_raw = valuecommon_fetch (x->x_name); }
     
     return x;
 }
 
 static void value_free (t_value *x)
 {
-    valuecommon_release (x->x_name);
+    if (x->x_name != &s_) { valuecommon_release (x->x_name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
