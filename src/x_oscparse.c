@@ -413,7 +413,7 @@ static void oscparse_list (t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_oscparse *oscparse_new (t_symbol *s, int argc, t_atom *argv)
+static t_oscparse *oscparse_new (void)
 {
     t_oscparse *x = (t_oscparse *)pd_new (oscparse_class);
     
@@ -435,7 +435,6 @@ void oscparse_setup (void)
             NULL,
             sizeof (t_oscparse),
             CLASS_DEFAULT,
-            A_GIMME,
             A_NULL);
             
     class_addList (c, (t_method)oscparse_list);

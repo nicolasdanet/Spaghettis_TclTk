@@ -11,7 +11,7 @@
 #X f 33;
 #X text 12 360 < http://opensoundcontrol.org/introduction-osc >;
 #X text 24 24 oscparse;
-#N canvas 663 103 586 230 more 0;
+#N canvas 663 103 596 228 more 0;
 #X text 12 84 OSC messages may contain 'float' \, 'int' \, 'string' \, or 'blob' elements. Blobs are arrays of bytes and are copied to the output preceded by the blob's byte count.;
 #X f 67;
 #X text 12 12 This object takes incoming lists of numbers \, interpreting them as the bytes of an OSC message. The output is a list containing \, first \, the symbols making up the address of the OSC packet \, and following that \, numbers and symbols as present in the OSC message.;

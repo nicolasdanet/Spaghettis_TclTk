@@ -42,8 +42,7 @@ static void serial_float (t_serial *x, t_float f)
 
 static void *serial_new (t_float f)
 {
-    t_serial *x = (t_serial *)pd_new (serial_class);
-    return x;
+    t_serial *x = (t_serial *)pd_new (serial_class); return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
