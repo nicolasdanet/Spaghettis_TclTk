@@ -48,7 +48,7 @@ t_error arrayclient_init (t_arrayclient *x, int *ac, t_atom **av)
     
         /* Dollar expansion is zero in abstraction opened as patch. */
         
-        if (IS_FLOAT (argv) && (GET_FLOAT (argv) == 0.0)) { x->ac_name = &s_; argc--; argv++;}
+        if (IS_FLOAT (argv) && (GET_FLOAT (argv) == 0.0)) { x->ac_name = &s_; argc--; argv++; }
         else {
             if (!IS_SYMBOL (argv)) { return PD_ERROR; }
             else {
