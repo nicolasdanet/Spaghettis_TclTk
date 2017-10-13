@@ -71,6 +71,8 @@ void *listiterate_new (t_symbol *s, int argc, t_atom *argv)
     x->x_outletMiddle = outlet_new (cast_object (x), &s_bang);
     x->x_outletRight  = outlet_new (cast_object (x), &s_float);
     
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+    
     return x;
 }
 

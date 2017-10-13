@@ -139,11 +139,12 @@ void *listgroup_new (t_symbol *s, int argc, t_atom *argv)
     listinlet_init (&x->x_listinlet);
     
     if (argc) { x->x_group = atom_getFloat (argv); argc--; argv++; }
-    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     x->x_outlet = outlet_new (cast_object (x), &s_list);
     
     inlet_newFloat (cast_object (x), &x->x_group);
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     return x;
 }
