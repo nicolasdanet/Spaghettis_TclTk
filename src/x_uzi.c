@@ -72,23 +72,15 @@ static void uzi_stop (t_uzi *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *uzi_new (t_symbol *s, int argc, t_atom *argv)
+static void *uzi_new (t_float f)
 {
     t_uzi *x = (t_uzi *)pd_new (uzi_class);
     
+    x->x_count        = f;
     x->x_outletLeft   = outlet_new (cast_object (x), &s_bang);
     x->x_outletMiddle = outlet_new (cast_object (x), &s_bang);
     x->x_outletRight  = outlet_new (cast_object (x), &s_float);
     
-    if (argc && IS_FLOAT (argv)) {
-        x->x_count = GET_FLOAT (argv);
-        argc--; argv++;
-    }
-    
-    if (argc) {
-        warning_unusedArguments (s, argc, argv);
-    }
-
     return x;
 }
 
@@ -105,7 +97,7 @@ void uzi_setup (void)
             NULL,
             sizeof (t_uzi),
             CLASS_DEFAULT,
-            A_GIMME,
+            A_DEFFLOAT,
             A_NULL);
             
     class_addBang (c, (t_method)uzi_bang);

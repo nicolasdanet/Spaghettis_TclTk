@@ -11,7 +11,7 @@
 #X msg 72 108 5;
 #X obj 36 264 print;
 #X obj 84 216 pack foo f;
-#N canvas 835 352 416 304 more 0;
+#N canvas 979 320 322 301 more 0;
 #X obj 36 84 uzi 100;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 252 print;
