@@ -98,7 +98,7 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     if (argc > 1) {
         for (i = 0; i < x->x_size; i++) {
         
-            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_list) {
+            if (atom_getSymbol (atomoutlet_getAtom (x->x_vector + i)) == &s_list) {
                 t_outlet *outlet = atomoutlet_getOutlet (x->x_vector + i);
                 outlet_list (outlet, argc, argv);
                 k = 1; break;
@@ -108,7 +108,7 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     } else if (argc == 0) {
         for (i = 0; i < x->x_size; i++) {
         
-            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_bang) {
+            if (atom_getSymbol (atomoutlet_getAtom (x->x_vector + i)) == &s_bang) {
                 outlet_bang (atomoutlet_getOutlet (x->x_vector + i)); 
                 k = 1; break;
             }
@@ -117,7 +117,7 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     } else if (IS_FLOAT (argv)) {
         for (i = 0; i < x->x_size; i++) {
 
-            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_float) {
+            if (atom_getSymbol (atomoutlet_getAtom (x->x_vector + i)) == &s_float) {
                 outlet_float (atomoutlet_getOutlet (x->x_vector + i), GET_FLOAT (argv));
                 k = 1; break;
             }
@@ -126,7 +126,7 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     } else if (IS_SYMBOL (argv)) {
         for (i = 0; i < x->x_size; i++) {
         
-            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_symbol) {
+            if (atom_getSymbol (atomoutlet_getAtom (x->x_vector + i)) == &s_symbol) {
                 outlet_symbol (atomoutlet_getOutlet (x->x_vector + i), GET_SYMBOL (argv));
                 k = 1; break;
             }
@@ -134,7 +134,7 @@ static int route_listForSymbol (t_route *x, int argc, t_atom *argv)
     } else if (IS_POINTER (argv)) {
         for (i = 0; i < x->x_size; i++) {
         
-            if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_pointer) {
+            if (atom_getSymbol (atomoutlet_getAtom (x->x_vector + i)) == &s_pointer) {
                 outlet_pointer (atomoutlet_getOutlet (x->x_vector + i), GET_POINTER (argv));
                 k = 1; break;
             }
@@ -189,7 +189,7 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
     //
     for (i = 0; i < x->x_size; i++) {
     //
-    if (GET_SYMBOL (atomoutlet_getAtom (x->x_vector + i)) == &s_anything) {
+    if (atom_getSymbol (atomoutlet_getAtom (x->x_vector + i)) == &s_anything) {
         outlet_anything (atomoutlet_getOutlet (x->x_vector + i), s, argc, argv);
         k = 1; break;
     }
@@ -209,37 +209,27 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
 
 static void *route_newProceed (int argc, t_atom *argv)
 {
-    t_error err = PD_ERROR_NONE;
     t_route *x = (t_route *)pd_new (route_class);
     int i;
+    int create = (argc == 1) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
     
     x->x_type   = atom_getType (argv);
     x->x_size   = argc;
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
     
-    for (i = 1; i < argc; i++) { if (atom_getType (argv + i) != x->x_type) { err = PD_ERROR; } }
-    
     PD_ASSERT (x->x_type == A_FLOAT || x->x_type == A_SYMBOL);
     
-    if (!err) {
-        int create = (argc == 1) ? ATOMOUTLET_BOTH : ATOMOUTLET_OUTLET;
-        
-        for (i = 0; i < argc; i++) {
-            if (IS_SYMBOL (argv + i)) {
-                t_symbol *t = atomoutlet_parseAbbreviated (atom_getSymbol (argv + i));
-                atomoutlet_makeSymbol (x->x_vector + i, cast_object (x), create, &s_anything, t);
-            } else {
-                t_float t = atom_getFloat (argv + i);
-                atomoutlet_makeFloat (x->x_vector + i, cast_object (x), create, &s_anything, t);
-            }
+    for (i = 0; i < argc; i++) {
+        if (IS_SYMBOL (argv + i)) {
+            t_symbol *t = atomoutlet_parseAbbreviated (atom_getSymbol (argv + i));
+            atomoutlet_makeSymbol (x->x_vector + i, cast_object (x), create, &s_anything, t);
+        } else {
+            t_float t = atom_getFloat (argv + i);
+            atomoutlet_makeFloat (x->x_vector + i, cast_object (x), create, &s_anything, t);
         }
-        x->x_outlet = outlet_new (cast_object (x), &s_anything);
-        
-    } else {
-        error_mismatch (sym_route, sym_type);
-        pd_free (cast_pd (x));
-        x = NULL;
     }
+    
+    x->x_outlet = outlet_new (cast_object (x), &s_anything);
     
     return x;
 }
