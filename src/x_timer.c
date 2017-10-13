@@ -78,7 +78,7 @@ static void *timer_new (t_symbol *unitName, t_float unit)
     
     inlet_new2 (x, &s_bang);
     
-    if (unit != 0.0) { timer_unit (x, unitName, unit); }
+    if (unit != 0.0 && unitName != &s_) { timer_unit (x, unitName, unit); }
         
     return x;
 }

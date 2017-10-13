@@ -9,7 +9,7 @@
 #X text 12 72 Measures elapsed logical time.;
 #X f 30;
 #X obj 96 276 realtime;
-#N canvas 713 232 526 513 more 0;
+#N canvas 831 155 514 524 more 0;
 #X obj 36 336 t f f;
 #X obj 36 300 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
 #X obj 120 384 metro 1000;

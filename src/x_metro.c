@@ -130,7 +130,9 @@ static void *metro_new (t_symbol *s, int argc, t_atom *argv)
     
     metro_floatDelay (x, f);
     
-    if (unitName != &s_) { metro_unit (x, unitName, unit); }
+    if (unit != 0.0 && unitName != &s_) { metro_unit (x, unitName, unit); }
+    
+    if (argc > 3) { warning_unusedArguments (s, argc - 3, argv + 3); }
     
     return x;
 }

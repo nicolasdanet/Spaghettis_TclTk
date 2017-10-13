@@ -106,7 +106,9 @@ static void *delay_new (t_symbol *s, int argc, t_atom *argv)
     
     delay_floatDelay (x, f);
     
-    if (unit != 0.0) { delay_unit (x, unitName, unit); }
+    if (unit != 0.0 && unitName != &s_) { delay_unit (x, unitName, unit); }
+    
+    if (argc > 3) { warning_unusedArguments (s, argc - 3, argv + 3); }
     
     return x;
 }
