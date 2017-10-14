@@ -1,5 +1,3 @@
-#N struct 1010-template float x float y array a 1010-element;
-#N struct 1010-element float x float y float v;
 #N canvas 439 220 646 538 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
@@ -23,7 +21,6 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 480 420 pd \$0-element;
 #N canvas 832 65 443 328 \$0-data 0;
-#X scalar 1010-template 20 20 \; 167 92 289 \; 21 24 284 \; 40 152 76 \; 224 189 38 \; 254 38 41 \; 275 69 292 \; 90 195 137 \; 28 233 241 \; \;;
 #X coords 0 0 1 1 415 358 1 0 0;
 #X restore 36 108 pd \$0-data;
 #N canvas 898 205 454 385 init 0;
