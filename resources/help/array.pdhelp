@@ -288,7 +288,6 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 468 204 pd \$0-element;
 #N canvas 454 149 836 575 \$0-data 0;
-#X scalar 1004-template 40 100 \; 0 13.3621 11 \; 100 -20.6549 6 \; 200 15.236 7 \; 300 -8.21322 3 \; \;;
 #X coords 0 0 1 1 400 200 1 0 0;
 #X restore 36 48 pd \$0-data;
 #N canvas 207 98 460 478 init 0;
