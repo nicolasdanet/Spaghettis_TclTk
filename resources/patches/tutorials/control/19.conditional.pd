@@ -1,58 +1,49 @@
-#N canvas 327 93 641 610 12;
-#X obj 79 183 select 1 2;
-#X floatatom 79 155 0 0 0 0 - - -;
-#X obj 79 249 print select-1;
-#X obj 111 229 print select-2;
-#X obj 144 206 print select-3;
-#X floatatom 305 157 0 0 0 0 - - -;
-#X obj 305 190 pack;
-#X obj 305 217 route 1 2;
-#X obj 345 166 t b f;
-#X floatatom 345 142 0 0 0 0 - - -;
-#X obj 363 245 unpack;
-#X floatatom 305 245 0 0 0 0 - - -;
-#X floatatom 334 245 0 0 0 0 - - -;
-#X floatatom 363 268 0 0 0 0 - - -;
-#X floatatom 401 269 0 0 0 0 - - -;
-#X text 30 20 Pd provides at least four objects for doing conditional
-computations. The "select" object tests its input against its argument(s)
-\, and outputs "bang" when they match. The "route" object works similarly
-but also copies data. In other words \, "route" takes a list \, tests
-its first element \, and conditionally passes on the rest of the list.
-;
-#X text 41 301 You also get "spigot" which turns a flow of messages
-on and off (like the Gate object in Max \, but with the inputs reversed):
-;
-#X floatatom 117 370 0 0 0 0 - - -;
-#X obj 117 395 spigot;
-#X floatatom 154 370 0 0 0 0 - - -;
-#X floatatom 117 419 0 0 0 0 - - -;
-#X text 184 371 <-- nonzero to open;
-#X text 149 419 if open \, messages coming in at left are sent to output.
-;
-#X text 47 450 And finally \, "moses" sends numbers to the left if
-they're less than the argument \, right otherwise:;
-#X floatatom 117 500 0 0 0 0 - - -;
-#X floatatom 117 549 0 0 0 0 - - -;
-#X obj 117 525 moses 5;
-#X floatatom 161 549 0 0 0 0 - - -;
-#X connect 0 0 2 0;
-#X connect 0 1 3 0;
-#X connect 0 2 4 0;
-#X connect 1 0 0 0;
-#X connect 5 0 6 0;
-#X connect 6 0 7 0;
-#X connect 7 0 11 0;
-#X connect 7 1 12 0;
-#X connect 7 2 10 0;
-#X connect 8 0 6 0;
-#X connect 8 1 6 1;
-#X connect 9 0 8 0;
-#X connect 10 0 13 0;
-#X connect 10 1 14 0;
-#X connect 17 0 18 0;
-#X connect 18 0 20 0;
-#X connect 19 0 18 1;
-#X connect 24 0 26 0;
-#X connect 26 0 25 0;
-#X connect 26 1 27 0;
+#N canvas 523 78 591 534 12;
+#X obj 252 432 spigot;
+#X obj 36 360 moses 5;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 conditional;
+#X obj 36 204 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 72 204 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 108 204 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 252 108 nbx 5 40 0 127 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 127;
+#X floatatom 252 288 5 0 0 1 - - -;
+#X f 5;
+#X floatatom 312 288 5 0 0 1 - - -;
+#X f 5;
+#X obj 252 240 route 0 1;
+#X obj 384 168 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
+#X obj 252 204 list prepend 0;
+#X obj 36 108 hradio 15 1 0 8 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 1;
+#X obj 36 156 select 0 1 2;
+#X f 12;
+#X obj 144 204 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X text 12 72 There's (at least) four objects for doing conditional computations.;
+#X f 68;
+#X obj 36 288 nbx 5 40 0 10 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 10;
+#X obj 324 396 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
+#X floatatom 252 468 5 0 0 1 - - -;
+#X f 5;
+#X floatatom 36 396 5 0 0 1 - - -;
+#X f 5;
+#X floatatom 108 396 5 0 0 1 - - -;
+#X f 5;
+#X obj 252 348 hslider 128 15 0 127 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 7700 0;
+#X connect 0 0 20 0;
+#X connect 1 0 21 0;
+#X connect 1 1 22 0;
+#X connect 8 0 13 0;
+#X connect 11 0 9 0;
+#X connect 11 1 10 0;
+#X connect 12 0 13 1;
+#X connect 13 0 11 0;
+#X connect 14 0 15 0;
+#X connect 15 0 5 0;
+#X connect 15 1 6 0;
+#X connect 15 2 7 0;
+#X connect 15 3 16 0;
+#X connect 18 0 1 0;
+#X connect 19 0 0 1;
+#X connect 23 0 0 0;
+#X coords 0 0 1 1 250 175 0 0 0;
