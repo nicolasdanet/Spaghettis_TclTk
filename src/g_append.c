@@ -61,7 +61,7 @@ static void append_float (t_append *x, t_float f)
     if (scalar_fieldIsFloat (scalar, x->x_fields[i].gv_fieldName)) {
         scalar_setFloat (scalar, x->x_fields[i].gv_fieldName, x->x_fields[i].gv_f);
     } else {
-        error_mismatch (sym_set, sym_type);
+        error_mismatch (sym_append, sym_type);
     }
     //
     }
