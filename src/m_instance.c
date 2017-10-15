@@ -335,8 +335,13 @@ static t_pdinstance *instance_new()
     
     class_addAnything (x->pd_objectMaker, (t_method)instance_factory);
         
-    class_addMethod (x->pd_canvasMaker, (t_method)canvas_new,      sym_canvas, A_GIMME, A_NULL);
+    class_addMethod (x->pd_canvasMaker, (t_method)canvas_new, sym_canvas, A_GIMME, A_NULL);
+    
+    #if PD_WITH_LEGACY
+    
     class_addMethod (x->pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
+    
+    #endif
     
     return x;
 }

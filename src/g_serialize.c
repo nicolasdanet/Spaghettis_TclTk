@@ -15,77 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void glist_findTemplatesAppendProceed (t_symbol *templateIdentifier, int *n, t_symbol ***v)
-{
-    int t = *n;
-    t_symbol **templates = *v;
-    int alreadyExist = 0;
-    int i;
-    
-    for (i = 0; i < t; i++) { if (templates[i] == templateIdentifier) { alreadyExist = 1; break; } }
-
-    if (!alreadyExist) {
-    //
-    int oldSize = (int)(sizeof (t_symbol *) * (t));
-    int newSize = (int)(sizeof (t_symbol *) * (t + 1));
-        
-    templates    = (t_symbol **)PD_MEMORY_RESIZE (templates, oldSize, newSize);
-    templates[t] = templateIdentifier;
-    
-    *v = templates;
-    *n = t + 1;
-    //
-    }
-}
-
-static void glist_findTemplatesAppendRecursive (t_template *tmpl, int *n, t_symbol ***v)
-{
-    int i;
-
-    glist_findTemplatesAppendProceed (template_getTemplateIdentifier (tmpl), n, v);
-
-    for (i = 0; i < template_getSize (tmpl); i++) {
-        t_template *t = template_getTemplateIfArrayAtIndex (tmpl, i);
-        if (t) {
-            glist_findTemplatesAppendRecursive (t, n, v);
-        }
-    }
-}
-
-static void glist_findTemplatesRecursive (t_glist *glist, int *n, t_symbol ***v)
-{
-    t_gobj *y = NULL;
-
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (gobj_isScalar (y)) {
-            glist_findTemplatesAppendRecursive (scalar_getTemplate (cast_scalar (y)), n, v);
-        }
-        if (gobj_isCanvas (y)) { 
-            glist_findTemplatesRecursive (cast_glist (y), n, v);
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void glist_serializeTemplates (t_glist *glist, t_buffer *b)
-{
-    t_symbol **v = (t_symbol **)PD_MEMORY_GET (0);
-    int i, n = 0;
-    
-    glist_findTemplatesRecursive (glist, &n, &v);
-    
-    for (i = 0; i < n; i++) { template_serialize (template_findByIdentifier (v[i]), b); }
-    
-    PD_MEMORY_FREE (v);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void glist_serializeHeader (t_glist *glist, t_buffer *b)
 {
     if (glist_isSubpatch (glist)) {
@@ -115,9 +44,7 @@ static void glist_serializeHeader (t_glist *glist, t_buffer *b)
             
     } else {
     
-        glist_serializeTemplates (glist, b);
-    
-        buffer_vAppend (b, "ssiiiii;", 
+        buffer_vAppend (b, "ssiiiii;",
             sym___hash__N,
             sym_canvas,
             rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
@@ -132,7 +59,7 @@ static void glist_serializeObjects (t_glist *glist, t_buffer *b)
 {
     t_gobj *y = NULL;
     
-    for (y = glist->gl_graphics; y; y = y->g_next) { gobj_save (y, b); }
+    for (y = glist->gl_graphics; y; y = y->g_next) { if (!gobj_isScalar (y)) { gobj_save (y, b); } }
 }
 
 static void glist_serializeLines (t_glist *glist, t_buffer *b)
