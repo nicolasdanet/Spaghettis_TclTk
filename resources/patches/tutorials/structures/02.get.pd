@@ -1,76 +1,53 @@
-#N struct template2 float x float y float z float q float zz;
-#N canvas 525 25 630 580 12;
-#N canvas 42 312 598 266 stuff 0;
-#X obj 353 159 pointer;
-#X obj 117 103 t b b b;
-#X msg 117 62 bang;
-#X obj 117 31 loadbang;
-#X text 163 62 click here to re-initialize;
-#X text 127 242 Explained later...;
-#X obj 28 208 append template2 x y z q;
-#X msg 353 101 \; pd-data2 clear;
-#X msg 353 137 traverse pd-data2 \, bang;
-#X msg 28 185 50 150 30 9 \, 200 100 -20 900 \, 100 100 -50 30;
-#X connect 0 0 6 4;
-#X connect 1 0 9 0;
-#X connect 1 1 8 0;
-#X connect 1 2 7 0;
-#X connect 2 0 1 0;
-#X connect 3 0 2 0;
-#X connect 8 0 0 0;
-#X connect 9 0 6 0;
-#X restore 506 310 pd stuff;
-#X text 506 242 subpatches:;
-#X obj 15 303 pointer;
-#X msg 27 271 next;
-#X text 75 301 <- object that outputs pointers to scalars;
-#N canvas 13 22 307 198 data2 1;
-#X scalar template2 50 150 30 9 0 \;;
-#X scalar template2 200 100 -20 900 0 \;;
-#X scalar template2 100 100 -50 30 0 \;;
-#X restore 506 265 pd data2;
-#N canvas 43 251 554 155 template2 0;
-#X text 13 79 The template for the two scalars \, as in the last patch
-;
-#X obj 15 46 filledpolygon 244 q 5 0 0 20 z 40 0;
-#X obj 14 21 struct template2 float x float y float z float q;
-#X restore 506 288 pd template2;
-#X obj 15 355 get template2 x y z q;
-#X floatatom 15 384 5 0 0 0 - - -, f 5;
-#X floatatom 76 384 5 0 0 0 - - -, f 5;
-#X floatatom 137 384 5 0 0 0 - - -, f 5;
-#X floatatom 199 385 5 0 0 0 - - -, f 5;
-#X msg 15 246 traverse pd-data2;
-#X obj 59 330 print;
-#X text 111 331 <- this gets a bang when we reach the end;
-#X text 211 353 <- this takes incoming pointers;
-#X text 214 367 and outputs the values of x \, y \, z \, and q.;
-#X text 172 245 <- go to head of list (click first);
-#X text 68 273 <- output next item (click 4 times);
-#X text 14 5 The simplest thing you can do with a collection of scalars
-(a list) is to traverse it \, getting the numbers back out. This is
-done using two objects \, "pointer" which does the traversal \, and
-"get" which \, given a pointer to a scalar \, extracts numeric quantities
-from it.;
-#X text 14 85 You can send the "pointer" object a "traverse" message
-to point it to the head of the list. The argument "pd-data2" indicates
-the Pd window named "data2." The head of the list means \, not the
-first scalar in the list \, but the position before the first scalar
-\, which is a valid pointer in Pd but has no data or template.;
-#X text 14 180 The "next" message tells the "pointer" object to go
-to the next scalar in the list and output it. If there are no more
-\, "pointer" outputs a bang at right.;
-#X text 19 424 The "get" object takes a pointer \, checks that its
-template agrees with what "get" is expecting \, i.e. \, "template2"
-\, and if so outputs the values of x \, y \, z \, and q in the usual
-reverse order.;
-#X text 18 492 The pointer sent from "pointer" to "get" is an elementary
-Pd type on a level with "float" and "symbol".;
-#X connect 2 0 7 0;
-#X connect 2 1 13 0;
-#X connect 3 0 2 0;
-#X connect 7 0 8 0;
-#X connect 7 1 9 0;
-#X connect 7 2 10 0;
-#X connect 7 3 11 0;
-#X connect 12 0 2 0;
+#N canvas 698 45 526 412 12;
+#X obj 36 240 pointer;
+#X msg 60 192 next;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 get;
+#N canvas 556 256 533 400 init 0;
+#X obj 36 24 inlet;
+#X obj 36 96 t b b;
+#X obj 300 288 pointer;
+#X obj 36 180 t b b;
+#X msg 36 288 50 100 30 0 \, 200 100 -30 800;
+#X msg 108 132 \; pd-\$0-data clear;
+#X msg 300 252 traverse \$0-data \, bang;
+#X obj 36 348 append \$0-widget x y z q;
+#X obj 108 24 loadbang;
+#X connect 0 0 1 0;
+#X connect 1 0 3 0;
+#X connect 1 1 5 0;
+#X connect 2 0 7 4;
+#X connect 3 0 4 0;
+#X connect 3 1 6 0;
+#X connect 4 0 7 0;
+#X connect 6 0 2 0;
+#X connect 8 0 1 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 360 312 pd init;
+#N canvas 316 429 327 197 \$0-data 1;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 360 336 pd \$0-data;
+#X obj 360 276 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#N canvas 633 307 495 157 \$0-template 0;
+#X obj 36 60 filledpolygon q q 3 0 0 20 z 40 0;
+#X f 33;
+#X obj 36 24 drawnumber z 50 -8 q;
+#X obj 36 96 struct \$0-widget float x float y float z float q;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 360 360 pd \$0-template;
+#X text 12 72 Fetch values of scalars by traversing them as a list.;
+#X f 54;
+#X obj 108 276 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X msg 36 144 traverse \$0-data;
+#X obj 36 108 loadbang;
+#X obj 36 324 get \$0-widget z;
+#X obj 36 360 print;
+#X connect 0 0 13 0;
+#X connect 0 1 10 0;
+#X connect 1 0 0 0;
+#X connect 7 0 5 0;
+#X connect 11 0 0 0;
+#X connect 12 0 11 0;
+#X connect 13 0 14 0;
+#X coords 0 0 1 1 250 175 0 0 0;
