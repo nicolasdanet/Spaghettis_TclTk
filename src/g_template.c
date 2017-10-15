@@ -339,6 +339,8 @@ t_template *template_findByIdentifier (t_symbol *s)
     return ((t_template *)pd_getThingByClass (s, template_class));
 }
 
+#if PD_WITH_LEGACY
+
 void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && IS_SYMBOL (argv)) {
@@ -354,6 +356,8 @@ void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
     //
     }
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
