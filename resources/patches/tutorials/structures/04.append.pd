@@ -1,35 +1,50 @@
-#N canvas 423 85 688 415 12;
-#X obj 421 332 pointer;
-#X obj 108 277 t b b b;
-#X msg 120 241 bang;
-#X text 161 240 click here to re-initialize;
-#X msg 11 313 50 250 30 9 \, 200 200 -20 900 \, 100 200 -50 30;
-#X text 56 27 The objects below put three items in the data window.
-First the window is cleared. Then a "pointer" object is instructed
-to point to the beginning of the data window ("traverse pd-data") \,
-and to output its value ("bang") to the "append" object. This object
-is then given numeric values to create three items.;
-#X obj 11 336 append template4 x y z q;
-#X msg 421 269 \; pd-data4 clear;
-#N canvas 0 22 315 341 data4 1;
-#X restore 430 219 pd data4;
-#N canvas 15 278 519 148 template4 0;
-#X obj 17 44 filledpolygon 244 q 5 0 0 20 z 40 0;
-#X text 13 79 The template for the two scalars \, as in the last patch
-;
-#X obj 17 19 struct template4 float x float y float z float q;
-#X restore 428 243 pd template4;
-#X msg 421 309 traverse pd-data4 \, bang;
-#X text 57 165 The outlet of "append" is a pointer to the newly created
-scalar. You can pass that on to other append objects if you want to
-build heterogenous lists.;
-#X text 57 121 The "append" object is given the argument "template4"
-to specify what kind of data structure to append. The other arguments
-are the names of variables we'll set.;
-#X connect 0 0 6 4;
+#N canvas 543 89 496 473 12;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 append;
+#N canvas 575 279 444 118 \$0-template 0;
+#X obj 36 60 struct \$0-template float x float y symbol z;
+#X obj 36 24 drawsymbol z;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 336 420 pd \$0-template;
+#N canvas 139 384 313 319 \$0-data 1;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 336 396 pd \$0-data;
+#X obj 36 384 append \$0-template x y;
+#X obj 228 348 pointer;
+#X msg 228 312 traverse \$0-data \, bang;
+#X obj 36 252 t 2 b;
+#X f 5;
+#X text 12 72 Add a scalar to a patch.;
+#X obj 36 312 random 300;
+#X msg 132 192 \; pd-\$0-data clear;
+#X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 216 uzi 250;
+#N canvas 291 181 293 297 alphabet 0;
+#X obj 36 60 t b p;
+#X obj 36 204 list tosymbol;
+#X obj 36 132 random 26;
+#X obj 36 168 + 65;
+#X obj 36 240 set -symbol \$0-template z;
+#X obj 36 24 inlet;
+#X connect 0 0 2 0;
+#X connect 0 1 4 1;
 #X connect 1 0 4 0;
-#X connect 1 1 10 0;
-#X connect 1 2 7 0;
-#X connect 2 0 1 0;
-#X connect 4 0 6 0;
-#X connect 10 0 0 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X connect 5 0 0 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 420 pd alphabet;
+#X obj 36 144 t b b;
+#X f 5;
+#X connect 5 0 14 0;
+#X connect 6 0 5 2;
+#X connect 7 0 6 0;
+#X connect 8 0 10 0;
+#X connect 8 1 7 0;
+#X connect 10 0 5 0;
+#X connect 12 0 15 0;
+#X connect 13 0 8 0;
+#X connect 15 0 13 0;
+#X connect 15 1 11 0;
+#X coords 0 0 1 1 250 175 0 0 0;
