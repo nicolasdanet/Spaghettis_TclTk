@@ -7,7 +7,7 @@
 #X obj 36 24 drawsymbol z;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 336 420 pd \$0-template;
-#N canvas 123 412 313 319 \$0-data 1;
+#N canvas 193 391 309 318 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 336 396 pd \$0-data;
 #X obj 36 384 append \$0-template x y;

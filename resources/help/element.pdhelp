@@ -44,7 +44,7 @@
 #X connect 14 0 13 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 252 240 pd more;
-#N canvas 550 574 457 173 \$0-data 1;
+#N canvas 208 428 457 173 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 420 264 pd \$0-data;
 #N canvas 456 328 535 132 \$0-template 0;
@@ -68,7 +68,7 @@
 #X obj 36 84 t b b;
 #X obj 36 24 inlet;
 #N canvas 593 308 364 178 a 0;
-#N canvas 598 253 534 318 points 0;
+#N canvas 471 212 513 292 points 0;
 #X obj 36 24 inlet;
 #X obj 432 24 inlet;
 #X obj 216 168 element \$0-template a;
