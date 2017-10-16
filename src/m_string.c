@@ -124,7 +124,46 @@ t_error string_clear (char *dest, size_t size)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int string_startWith (const char *s, const char *isStartWith)
+static t_error string_escapeCharacter (char *dest, size_t size, char c)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    char *t = (char *)PD_MEMORY_GET (size * 2 * sizeof (char));
+    char *r = dest;
+    char *w = t;
+    
+    while (*r) {
+        if (*r == c) { *w = '\\'; w++; }
+        *w = *r;
+        w++;
+        r++;
+    }
+    
+    *w = 0;
+    
+    err = string_copy (dest, size, t);
+    
+    PD_MEMORY_FREE (t);
+    
+    return err;
+}
+
+t_error string_escapeOccurrence (char *dest, size_t size, const char *chars)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    PD_ASSERT (chars);
+    
+	while (*chars) { err |= string_escapeCharacter (dest, size, *chars); chars++; }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int string_startWith (char *s, const char *isStartWith)
 {
     size_t n = strlen (isStartWith);
     
@@ -133,7 +172,7 @@ int string_startWith (const char *s, const char *isStartWith)
     return 0;
 }
 
-int string_endWith (const char *s, const char *isEndWith)
+int string_endWith (char *s, const char *isEndWith)
 {
     size_t n = strlen (isEndWith);
     size_t m = strlen (s);
@@ -143,12 +182,17 @@ int string_endWith (const char *s, const char *isEndWith)
     return 0;
 }
 
-int string_containsCharacterAtStart (const char *s, const char *isContained)
+int string_containsOccurrenceAtStart (char *s, const char *chars)
 {
-    return (strchr (isContained, *s) != NULL);
+    return (strchr (chars, *s) != NULL);
 }
 
-int string_contains (const char *s, const char *isContained)
+int string_containsOccurrence (char *s, const char *chars)
+{
+    return (string_indexOfFirstOccurrenceFromEnd (s, chars) >= 0);
+}
+
+int string_contains (char *s, const char *isContained)
 {
     return (strstr (s, isContained) != NULL);
 }
@@ -181,7 +225,7 @@ void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numb
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int string_indexOfFirstCharUntil (char *s, char c, int n)
+static int string_indexOfFirstCharacterUntil (char *s, char c, int n)
 {
     char *s2 = s + n;
     
@@ -196,7 +240,7 @@ static int string_indexOfFirstCharUntil (char *s, char c, int n)
     return -1;
 }
 
-static int string_indexOfFirstCharFrom (char *s, char c, int n)
+static int string_indexOfFirstCharacterFrom (char *s, char c, int n)
 {
     char *s2 = s + n;
     
@@ -215,7 +259,7 @@ int string_indexOfFirstOccurrenceUntil (char *s, const char *c, int n)
     int t = 0;
     
     while (*c != 0) { 
-        t = string_indexOfFirstCharUntil (s, *c, n);
+        t = string_indexOfFirstCharacterUntil (s, *c, n);
         if ((t >= 0) && (t < k)) { k = t; }
         c++; 
     }
@@ -229,7 +273,7 @@ int string_indexOfFirstOccurrenceFrom (char *s, const char *c, int n)
     int t = 0;
     
     while (*c != 0) { 
-        t = string_indexOfFirstCharFrom (s, *c, n);
+        t = string_indexOfFirstCharacterFrom (s, *c, n);
         if (t > k) { k = t; }
         c++; 
     }

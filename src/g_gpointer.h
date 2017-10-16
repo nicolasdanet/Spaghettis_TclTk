@@ -77,7 +77,7 @@ void        gpointer_redraw                     (t_gpointer *gp);
 
 t_symbol    *gpointer_representation            (t_gpointer *gp);
 
-t_error     gpointer_fieldToString              (t_gpointer *gp, t_symbol *field, char *dest, int size);
+t_error     gpointer_addFieldToString           (t_gpointer *gp, t_symbol *field, char *dest, int size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -92,10 +92,13 @@ t_error     string_addSprintf                           (char *dest, size_t size
 t_error     string_addAtom                              (char *dest, size_t size, t_atom *a);
 t_error     string_clear                                (char *dest, size_t size);
 
-int         string_startWith                            (const char *s, const char *isStart);
-int         string_endWith                              (const char *s, const char *isEnd);
-int         string_contains                             (const char *s, const char *isContained);
-int         string_containsCharacterAtStart             (const char *s, const char *chars);
+t_error     string_escapeOccurrence                     (char *dest, size_t size, const char *chars);
+
+int         string_startWith                            (char *s, const char *isStart);
+int         string_endWith                              (char *s, const char *isEnd);
+int         string_contains                             (char *s, const char *isContained);
+int         string_containsOccurrenceAtStart            (char *s, const char *chars);
+int         string_containsOccurrence                   (char *s, const char *chars);
 
 int         string_indexOfFirstOccurrenceUntil          (char *s, const char *chars, int n);
 int         string_indexOfFirstOccurrenceFrom           (char *s, const char *chars, int n);

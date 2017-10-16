@@ -44,23 +44,23 @@ static t_error makefilename_scanFormat (t_makefilename *x)
     
     for (s = x->x_format->s_name; *s; s++) {
     
-        if (string_containsCharacterAtStart (s, "%") && k == 0) { 
+        if (string_containsOccurrenceAtStart (s, "%") && k == 0) {
             if (x->x_typeRequired == A_NULL) { k = 1; }
             else {
                 err = PD_ERROR; break;
             }
             
         } else if (k) {
-            if (string_containsCharacterAtStart (s, "s")) {
+            if (string_containsOccurrenceAtStart (s, "s")) {
                 k = 0; x->x_isIntegerCastRequired = 0; x->x_typeRequired = A_SYMBOL;
 
-            } else if (string_containsCharacterAtStart (s, "fgGeE")) {
+            } else if (string_containsOccurrenceAtStart (s, "fgGeE")) {
                 k = 0; x->x_isIntegerCastRequired = 0; x->x_typeRequired = A_FLOAT;
                 
-            } else if (string_containsCharacterAtStart (s, "xXdiouc")) {
+            } else if (string_containsOccurrenceAtStart (s, "xXdiouc")) {
                 k = 0; x->x_isIntegerCastRequired = 1; x->x_typeRequired = A_FLOAT;
             
-            } else if (string_containsCharacterAtStart (s, "%")) {
+            } else if (string_containsOccurrenceAtStart (s, "%")) {
                 k = 0;
                 
             } else {

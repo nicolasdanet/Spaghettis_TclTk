@@ -357,7 +357,7 @@ t_symbol *gpointer_representation (t_gpointer *gp)
     return symbol_addPrefix (s, sym___arrobe__);
 }
 
-t_error gpointer_fieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest, int size)
+t_error gpointer_addFieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest, int size)
 {
     t_error err = PD_ERROR_NONE;
     
