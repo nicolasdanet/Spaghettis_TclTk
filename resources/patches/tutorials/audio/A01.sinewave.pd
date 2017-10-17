@@ -1,32 +1,18 @@
-#N canvas 285 160 712 594 12;
-#X obj 108 109 osc~ 440;
-#X obj 108 168 dac~;
-#X text 187 111 <-- 440 Hz. sine wave at full blast;
-#X obj 108 138 *~ 0.05;
-#X text 202 3 MAKING A SINE WAVE;
-#X text 32 195 Audio computation can be turned on and off by sending
-messages to the global "pd" object as follows:;
-#X msg 98 239 \; pd dsp 1;
-#X msg 202 239 \; pd dsp 0;
-#X text 113 276 ON;
-#X text 222 276 OFF;
-#X text 29 297 You should see the Pd window change to reflect whether
-audio is on or off. You can also turn audio on and off using the "audio"
-menu \, but the buttons are provided as a shortcut.;
-#X text 30 368 When DSP is on \, you should hear a tone whose pitch
-is A 440 and whose amplitude is 0.05. If instead you are greeted with
-silence \, you might want to read the HTML documentation on setting
-up audio.;
-#X text 296 247 <-- click these;
-#X text 187 139 <-- reduce amplitude to 0.05;
-#X text 160 168 <----- send to the audio output device;
-#X text 32 23 Audio computation in Pd is done using "tilde objects"
-such as the three below. They use continuous audio streams to intercommunicate
-\, as well as communicating with other ("control") Pd objects using
-messages.;
-#X text 22 485 These patches are accompanied by a book which develops
-the underlying theory., f 78;
-#X text 24 526 It is freely available at: http://msp.ucsd.edu/techniques.htm
-, f 64;
-#X connect 0 0 3 0;
-#X connect 3 0 1 0;
+#N canvas 779 95 515 426 12;
+#X obj 36 108 osc~ 440;
+#X obj 36 180 dac~;
+#X obj 36 144 *~ 0.05;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 sinewave;
+#X msg 36 264 \; pd dsp 1;
+#X msg 36 360 \; pd dsp 0;
+#X text 12 228 The DSP can be turned on conveniently by messages.;
+#X f 50;
+#X text 12 72 Audio is done using tilde objects such as below.;
+#X f 50;
+#X text 12 324 You should hear a small tone whose pitch is A ('440' Hz).;
+#X f 57;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X coords 0 0 1 1 250 175 0 0 0;
