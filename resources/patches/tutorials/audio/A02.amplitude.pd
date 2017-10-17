@@ -1,36 +1,21 @@
-#N canvas 73 190 702 512 12;
-#X obj 64 65 osc~ 440;
-#X obj 64 283 dac~;
-#X text 145 66 <-- 440 Hz. sine wave at full blast;
-#X msg 431 7 \; pd dsp 1;
-#X msg 514 7 \; pd dsp 0;
-#X text 456 45 ON;
-#X text 534 43 OFF;
-#X text 164 18 CONTROLLING AMPLITUDE;
-#X text 35 327 Amplitudes of audio signals can have any reasonable
-range \, but when you output a signal via the dac~ object \, the samples
-should range between -1 and +1. Values out of that range will be "clipped."
-;
-#X obj 64 202 *~ 0;
-#X floatatom 107 165 0 0 0 0 - - -;
-#X obj 95 132 dbtorms;
-#X floatatom 95 100 0 0 80 0 - - -;
-#X text 141 100 <-- set amplitude here in dB;
-#X text 211 133 <-- this converts dB to linear units;
-#X text 210 164 <-- this shows the linear gain;
-#X text 116 204 <-- multiply the sine wave by the gain \, reducing
-its amplitude. You can also use the "*~" object to multiply two signals.
-The "0" argument here instructs it that we'll just send it messages
-to set the multiplier.;
-#X text 35 396 Here we calculate a gain for the multiplier (*~) using
-a "dbtorms" object (acronym for "dB to RMS"). 100 dB is normalized
-to one \, and zero dB artificially outputs a true 0;
-#X text 37 448 Pd assumes you have a two channel audio system unless
-you tell it otherwise.;
-#X text 114 282 <-- and out. We're sending to both channels now.;
-#X connect 0 0 9 0;
-#X connect 9 0 1 0;
-#X connect 9 0 1 1;
-#X connect 11 0 9 1;
-#X connect 11 0 10 0;
-#X connect 12 0 11 0;
+#N canvas 557 143 491 384 12;
+#X obj 36 108 osc~ 440;
+#X obj 36 336 dac~;
+#X obj 36 276 *~ 0;
+#X obj 96 228 dbtorms;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 amplitude;
+#X msg 360 312 \; pd dsp \$1;
+#X obj 360 276 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
+#X obj 96 168 nbx 5 40 0 100 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
+#X floatatom 96 276 0 0 0 1 - - -;
+#X text 12 72 Reasonable range for samples is between '-1' and '+1'.;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X connect 2 0 1 1;
+#X connect 3 0 2 1;
+#X connect 3 0 10 0;
+#X connect 8 0 7 0;
+#X connect 9 0 3 0;
+#X coords 0 0 1 1 250 175 0 0 0;
