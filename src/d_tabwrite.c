@@ -145,6 +145,8 @@ static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
 {
     tabwrite_tilde_set (x, x->x_name);
     
+    if (x->x_period > 0.0) { clock_delay (x->x_clock, x->x_period); }
+    
     dsp_add (tabwrite_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
@@ -160,8 +162,6 @@ static void *tabwrite_tilde_new (t_symbol *s, t_float f)
     x->x_period = PD_MAX (0.0, f);
     x->x_name   = s;
     x->x_clock  = clock_new ((void *)x, (t_method)tabwrite_tilde_task);
-    
-    if (x->x_period > 0.0) { clock_delay (x->x_clock, x->x_period); }
     
     instance_pollingRegister (cast_pd (x));
     

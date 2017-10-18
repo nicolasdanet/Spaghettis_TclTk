@@ -1,4 +1,4 @@
-#N canvas 779 95 515 426 12;
+#N canvas 779 95 533 428 12;
 #X obj 36 108 osc~ 440;
 #X obj 36 180 dac~;
 #X obj 36 144 *~ 0.05;
@@ -11,8 +11,8 @@
 #X f 50;
 #X text 12 72 Audio is done using tilde objects such as below.;
 #X f 50;
-#X text 12 324 You should hear a small tone whose pitch is A ('440' Hz).;
-#X f 57;
+#X text 12 324 This patch makes a small tone whose pitch is A ('440' Hz).;
+#X f 58;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
