@@ -85,7 +85,6 @@ int         template_fieldIsArrayAndValid           (t_template *x, t_symbol *fi
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        template_serialize                      (t_template *x, t_buffer *b);
 void        template_notify                         (t_template *x, 
                                                         t_glist *owner,
                                                         t_scalar *scalar,
