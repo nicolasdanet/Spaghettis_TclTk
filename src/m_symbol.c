@@ -205,6 +205,11 @@ t_symbol *symbol_addPrefix (t_symbol *s, t_symbol *prefix)
     return gensym (t);
 }
 
+t_symbol *symbol_addSuffix (t_symbol *s, t_symbol *suffix)
+{
+    return symbol_addPrefix (suffix, s);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

@@ -12,6 +12,54 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+void snippet_renameArrays (t_buffer *x, t_glist *glist)
+{
+    t_iterator *iter = iterator_new (buffer_getSize (x), buffer_getAtoms (x));
+    t_atom *atoms = NULL;
+    int count;
+    
+    while ((count = iterator_next (iter, &atoms))) {
+    //
+    if (count >= 8) {
+    if (atom_getSymbolAtIndex (0, count, atoms) == sym___hash__N) {
+    if (atom_getSymbolAtIndex (1, count, atoms) == sym_canvas) {
+
+        t_atom *t1  = atoms + 6;
+        t_atom *t2  = NULL;
+        t_atom *t3  = NULL;
+        t_symbol *s = NULL;
+        
+        while ((count = iterator_next (iter, &atoms))) {
+            if ((count > 2) && atom_getSymbolAtIndex (1, count, atoms) == sym_array) {
+                s  = atom_getDollarSymbolAtIndex (2, count, atoms);
+                t2 = atoms + 2;
+            }
+            if ((count > 5) && atom_getSymbolAtIndex (1, count, atoms) == sym_restore) {
+                t3 = atoms + 5;
+                break;
+            }
+        }
+        
+        if (s && t1 && t2 && t3) {
+            if (pd_getThingByClass (dollar_expandSymbol (s, glist), garray_class)) {
+                t_symbol *t = symbol_addSuffix (s, gensym ("Toto"));
+                SET_SYMBOL (t1, t);
+                SET_SYMBOL (t2, t);
+                SET_SYMBOL (t3, t);
+            }
+        }
+    }
+    }
+    }
+    //
+    }
+    
+    iterator_free (iter);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void snippet_addOffsetToLines (t_buffer *x, int i)

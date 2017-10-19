@@ -21,6 +21,8 @@ void clipboard_paste                    (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void snippet_renameArrays               (t_buffer *x, t_glist *glist);
+
 void snippet_addOffsetToLines           (t_buffer *x, int i);
 void snippet_substractOffsetToLines     (t_buffer *x, int i);
 

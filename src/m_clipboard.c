@@ -80,6 +80,7 @@ void clipboard_paste (t_glist *glist)
     glist_deselectAll (glist);
     
     snippet_addOffsetToLines (clipboard_buffer, alreadyThere);
+    snippet_renameArrays (clipboard_buffer, glist);
     
         instance_loadSnippet (glist, clipboard_buffer);
     
