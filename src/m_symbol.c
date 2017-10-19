@@ -210,6 +210,37 @@ t_symbol *symbol_addSuffix (t_symbol *s, t_symbol *suffix)
     return symbol_addPrefix (suffix, s);
 }
 
+t_symbol *symbol_withCopySuffix (t_symbol *s)
+{
+    PD_ASSERT (s);
+    
+    int n = string_indexOfFirstOccurrenceFromEnd (s->s_name, "-");
+    
+    if (n >= 0) {
+    //
+    int size = (int)strlen (s->s_name) - (n + 1);
+        
+    if (size > 0) {
+    //
+    t_atom a; atom_withStringUnzeroed (&a, s->s_name + n + 1, size);
+    
+    if (IS_FLOAT (&a)) {
+        t_error err = PD_ERROR_NONE;
+        char t[PD_STRING] = { 0 };
+        int k = (int)GET_FLOAT (&a) + 1;
+        err |= string_append (t, PD_STRING, s->s_name, n);
+        err |= string_addSprintf (t, PD_STRING, "-%d", k);
+        PD_UNUSED (err); PD_ASSERT (!err);
+        return gensym (t);
+    }
+    //
+    }
+    //
+    }
+    
+    return symbol_addSuffix (s, sym___dash__1);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

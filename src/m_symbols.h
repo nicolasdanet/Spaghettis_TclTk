@@ -46,6 +46,7 @@ extern t_symbol *sym___bar__;
 extern t_symbol *sym___bar____bar__;
 extern t_symbol *sym___comma__;
 extern t_symbol *sym___dash__;
+extern t_symbol *sym___dash__1;
 extern t_symbol *sym___dash__aiff;
 extern t_symbol *sym___dash__b;
 extern t_symbol *sym___dash__big;

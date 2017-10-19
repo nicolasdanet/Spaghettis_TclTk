@@ -46,6 +46,7 @@ t_symbol *sym___bar__;
 t_symbol *sym___bar____bar__;
 t_symbol *sym___comma__;
 t_symbol *sym___dash__;
+t_symbol *sym___dash__1;
 t_symbol *sym___dash__aiff;
 t_symbol *sym___dash__b;
 t_symbol *sym___dash__big;
@@ -659,6 +660,7 @@ void symbols_initialize (void)
     sym___bar____bar__                          = gensym ("||");
     sym___comma__                               = gensym (",");
     sym___dash__                                = gensym ("-");
+    sym___dash__1                               = gensym ("-1");
     sym___dash__aiff                            = gensym ("-aiff");
     sym___dash__b                               = gensym ("-b");
     sym___dash__big                             = gensym ("-big");
