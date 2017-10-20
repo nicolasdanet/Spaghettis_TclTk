@@ -49,7 +49,7 @@ struct _garray {
     t_symbol    *x_name;
     char        x_isUsedInDSP;
     char        x_saveWithParent;
-    char        x_hideName;                                 /* Unused but kept for compatibility. */
+    char        x_hideName;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -379,6 +379,11 @@ void garray_setSaveWithParent (t_garray *x, int savedWithParent)
     x->x_saveWithParent = savedWithParent;
 }
 
+void garray_setHideName (t_garray *x, int hideName)
+{
+    x->x_hideName = hideName;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -647,13 +652,14 @@ void garray_functionProperties (t_garray *x)
     PD_ASSERT (glist_isArray (x->x_owner));
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %g %g %d %d\n",
+                "::ui_array::show %%s %s %d %g %g %d %d %d\n",
                 symbol_dollarToHash (x->x_unexpandedName)->s_name,
                 array_getSize (array),
                 bounds_getTop (bounds),
                 bounds_getBottom (bounds),
                 x->x_saveWithParent,
-                PD_CLAMP (style, PLOT_POLYGONS, PLOT_CURVES));
+                PD_CLAMP (style, PLOT_POLYGONS, PLOT_CURVES),
+                x->x_hideName);
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
@@ -664,15 +670,16 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty = 0;
     
-    PD_ASSERT (argc == 6);
+    PD_ASSERT (argc == 7);
     
     t_symbol *t1 = x->x_name;
     int t2       = x->x_saveWithParent;
-    int t3       = garray_getSize (x);
-    t_float t4   = scalar_getFloat (x->x_scalar, sym_style);
-    t_bounds t5;
+    int t3       = x->x_hideName;
+    int t4       = garray_getSize (x);
+    t_float t5   = scalar_getFloat (x->x_scalar, sym_style);
+    t_bounds t6;
 
-    bounds_setCopy (&t5, glist_getBounds (x->x_owner));
+    bounds_setCopy (&t6, glist_getBounds (x->x_owner));
     
     {
     //
@@ -682,6 +689,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     t_float down   = atom_getFloatAtIndex (3, argc, argv);
     int save       = (int)atom_getFloatAtIndex (4, argc, argv);
     int style      = (int)atom_getFloatAtIndex (5, argc, argv);
+    int hide       = (int)atom_getFloatAtIndex (6, argc, argv);
 
     PD_ASSERT (size > 0);
     
@@ -705,6 +713,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     if (size != array_getSize (array)) { garray_resize (x, (t_float)size); }
     
+    garray_setHideName (x, hide);
     garray_updateGraphSize (x, size, style);
     garray_updateGraphRange (x, up, down);
     garray_updateGraphWindow (x);
@@ -715,9 +724,10 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     isDirty |= (t1 != x->x_name);
     isDirty |= (t2 != x->x_saveWithParent);
-    isDirty |= (t3 != garray_getSize (x));
-    isDirty |= (t4 != scalar_getFloat (x->x_scalar, sym_style));
-    isDirty |= !bounds_areEquals (&t5, glist_getBounds (x->x_owner));
+    isDirty |= (t3 != x->x_hideName);
+    isDirty |= (t4 != garray_getSize (x));
+    isDirty |= (t5 != scalar_getFloat (x->x_scalar, sym_style));
+    isDirty |= !bounds_areEquals (&t6, glist_getBounds (x->x_owner));
     
     if (isDirty) { glist_setDirty (x->x_owner, 1); }
 }

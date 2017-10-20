@@ -28,6 +28,7 @@ variable  arrayUp
 variable  arrayDown
 variable  arraySave
 variable  arrayDraw
+variable  arrayHide
 
 array set arrayName  {}
 array set arraySize  {}
@@ -35,19 +36,20 @@ array set arrayUp    {}
 array set arrayDown  {}
 array set arraySave  {}
 array set arrayDraw  {}
+array set arrayHide  {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top name size up down save style} {
+proc show {top name size up down save style hide} {
 
-    ::ui_array::_create $top $name $size $up $down $save $style
+    ::ui_array::_create $top $name $size $up $down $save $style $hide
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top name size up down save style} {
+proc _create {top name size up down save style hide} {
 
     variable arrayName
     variable arraySize
@@ -55,6 +57,7 @@ proc _create {top name size up down save style} {
     variable arrayDown
     variable arraySave
     variable arrayDraw
+    variable arrayHide
         
     toplevel $top -class PdDialog
     wm title $top [_ "Array"]
@@ -70,6 +73,7 @@ proc _create {top name size up down save style} {
     set arrayDown($top)         $down
     set arraySave($top)         $save
     set arrayDraw($top)         $style
+    set arrayHide($top)         $hide
     
     set arrayName(${top}.old)   [::dollarToHash $name]
     set arraySize(${top}.old)   $size
@@ -104,6 +108,12 @@ proc _create {top name size up down save style} {
                                                         -variable ::ui_array::arraySave($top) \
                                                         -takefocus 0
 
+    ttk::label $top.f.properties.hideLabel          {*}[::styleLabel] \
+                                                        -text [_ "Hide Name"]
+    ttk::checkbutton $top.f.properties.hide         {*}[::styleCheckButton] \
+                                                        -variable ::ui_array::arrayHide($top) \
+                                                        -takefocus 0
+                                                        
     ttk::label $top.f.properties.drawLabel          {*}[::styleLabel] \
                                                         -text [_ "Draw With"]
     
@@ -128,8 +138,10 @@ proc _create {top name size up down save style} {
     grid $top.f.properties.size                     -row 1 -column 1 -sticky ew
     grid $top.f.properties.saveLabel                -row 2 -column 0 -sticky ew
     grid $top.f.properties.save                     -row 2 -column 1 -sticky ew
-    grid $top.f.properties.drawLabel                -row 3 -column 0 -sticky ew
-    grid $top.f.properties.draw                     -row 3 -column 1 -sticky ew
+	grid $top.f.properties.hideLabel                -row 3 -column 0 -sticky ew
+    grid $top.f.properties.hide                     -row 3 -column 1 -sticky ew
+    grid $top.f.properties.drawLabel                -row 4 -column 0 -sticky ew
+    grid $top.f.properties.draw                     -row 4 -column 1 -sticky ew
     
     grid $top.f.bounds.upLabel                      -row 0 -column 0 -sticky ew
     grid $top.f.bounds.up                           -row 0 -column 1 -sticky ew
@@ -160,6 +172,7 @@ proc closed {top} {
     variable arrayDown
     variable arraySave
     variable arrayDraw
+    variable arrayHide
         
     ::ui_array::_apply $top
     
@@ -169,6 +182,7 @@ proc closed {top} {
     unset arrayDown($top)
     unset arraySave($top)
     unset arrayDraw($top)
+    unset arrayHide($top)
     
     unset arrayName(${top}.old)
     unset arraySize(${top}.old)
@@ -189,6 +203,7 @@ proc _apply {top} {
     variable arrayDown
     variable arraySave
     variable arrayDraw
+    variable arrayHide
         
     ::ui_array::_forceSize $top
     ::ui_array::_forceBounds $top
@@ -199,7 +214,8 @@ proc _apply {top} {
             $arrayUp($top) \
             $arrayDown($top) \
             $arraySave($top) \
-            $arrayDraw($top)"
+            $arrayDraw($top) \
+            $arrayHide($top)"
 }
 
 # ------------------------------------------------------------------------------------------------------------
