@@ -14,7 +14,7 @@
 #X floatatom 36 180 0 0 0 1 - - -;
 #X floatatom 36 108 5 0 127 1 - #0-pitch -;
 #X f 5;
-#N canvas 0 22 254 200 init 0;
+#N canvas 0 22 242 185 init 0;
 #X obj 36 24 inlet;
 #X obj 120 24 loadbang;
 #X obj 36 84 t 69;

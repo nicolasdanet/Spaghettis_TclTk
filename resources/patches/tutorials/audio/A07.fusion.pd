@@ -1,75 +1,75 @@
-#N canvas 18 22 650 653 12;
-#X floatatom 32 60 0 0 0 0 - - -;
-#X obj 32 86 mtof;
-#X obj 32 323 output~;
-#X msg 32 34 60;
-#X text 67 63 <-- choose a pitch;
-#X text 68 34 <-- reset to middle C;
-#X obj 32 154 osc~;
-#X obj 73 130 * 2;
-#X obj 73 154 osc~;
-#X obj 137 154 osc~;
-#X obj 137 130 * 3;
-#X obj 201 155 osc~;
-#X obj 201 131 * 4;
-#X obj 137 179 *~ 0.2;
-#X obj 33 289 +~;
-#X obj 74 259 *~;
-#X obj 109 260 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
-1;
-#X obj 74 210 +~;
-#X obj 74 234 +~;
-#X text 133 7 Adding sinusoids to make a complex tone;
-#N canvas 0 22 450 300 (subpatch) 0;
-#X array tab.01.07 882 float 0;
-#X coords 0 1.02 881 -1.02 200 130 1;
-#X restore 426 222 graph;
-#X msg 116 295 bang;
-#X text 165 294 <-- click to graph;
-#X text 260 129 frequencies of harmonics;
-#X text 260 155 four oscillators;
-#X text 264 181 adjust amplitudes;
-#X text 109 233 add the three overtones together;
-#X obj 116 324 tabwrite~ tab.01.07;
-#X text 429 360 ---- 0.02 seconds ----;
-#X obj 73 179 *~ 0.1;
-#X obj 201 179 *~ 0.5;
-#X text 129 259 <-- overtones ON/OFF;
-#X text 29 580 To hear the output \, choose a pitch (at top) \, optionally
-click the "overtones" control \, and mouse up the output volume. Click
-the "bang" message to graph it.;
-#X text 31 392 A simple way to build non-sinusoidal \, periodic musical
-tones is to sum a series of harmonically tuned sinusoids. Here the
-four oscillators have frequencies in a 1:2:3:4 ratio (the three "*"
-objects compute the second \, third \, and fourth one). The amplitudes
-are adjusted by the "*~ 0.1" \, etc. \, objects. Note that \, since
-the frequency (from the "mtof") is a message \, a "*" box suffices
-to operate on it \, but the oscillator's output \, being an audio signal
-\, needs "*~" instead. The control marked "overtones ON/OFF" is a toggle
-switch. Click to turn it on and off. Of the overtones are "off" you
-hear only a sinusoid from the forst oscillator. If on \, you hear all
-four.;
+#N canvas 569 133 606 426 12;
+#X obj 36 144 mtof;
+#X obj 36 336 output~;
+#X obj 36 192 osc~;
+#X obj 36 240 +~;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 fusion;
+#N canvas 0 22 500 350 \$0-output 0;
+#X array \$0-output 256 float 1;
+#A 0 -0.797724 -0.931358 -1.05441 -1.16054 -1.24428 -1.30141 -1.32925 -1.32686 -1.29508 -1.23652 -1.15538 -1.0572 -0.948531 -0.836488 -0.728313 -0.630886 -0.550301 -0.491456 -0.457669 -0.450516 -0.46964 -0.512775 -0.575868 -0.653264 -0.738106 -0.822693 -0.898981 -0.95909 -0.995786 -1.00294 -0.975987 -0.912155 -0.810774 -0.67327 -0.503202 -0.306033 -0.0888792 0.139884 0.371099 0.595325 0.80338 0.986871 1.13866 1.25328 1.32725 1.35924 1.3502 1.30319 1.22332 1.1173 0.993164 0.859689 0.725927 0.600667 0.491926 0.406439 0.349345 0.323841 0.331053 0.369994 0.43763 0.529114 0.6381 0.757168 0.878241 0.993133 1.09404 1.174 1.22731 1.24991 1.23949 1.19578 1.12036 1.01668 0.889715 0.745673 0.591604 0.434923 0.282925 0.14237 0.0190303 -0.0826505 -0.159792 -0.211291 -0.237776 -0.241632 -0.226722 -0.198167 -0.161946 -0.124502 -0.0922798 -0.0713142 -0.0667634 -0.0826167 -0.121354 -0.18383 -0.269164 -0.37478 -0.496608 -0.629294 -0.76658 -0.901675 -1.02771 -1.1382 -1.22745 -1.29091 -1.32558 -1.33005 -1.30478 -1.25199 -1.17553 -1.08068 -0.973782 -0.861867 -0.752184 -0.651752 -0.566871 -0.502725 -0.463039 -0.449794 -0.463067 -0.501047 -0.560038 -0.634756 -0.71856 -0.803908 -0.882791 -0.947245 -0.989837 -1.00418 -0.985277 -0.929968 -0.837069 -0.70754 -0.544462 -0.352876 -0.139572 0.0873403 0.318824 0.545461 0.757964 0.947719 1.10726 1.23072 1.31411 1.35565 1.35573 1.31697 1.24403 1.14329 1.02252 0.89037 0.755889 0.627967 0.51482 0.423535 0.359633 0.326763 0.326559 0.358474 0.419956 0.506536 0.612177 0.729639 0.850977 0.96798 1.07271 1.15797 1.21777 1.24761 1.2448 1.20859 1.14014 1.0425 0.920306 0.779553 0.62712 0.470373 0.316692 0.172994 0.0452922 -0.0616133 -0.144504 -0.201828 -0.233856 -0.242564 -0.231509 -0.205555 -0.17052 -0.13278 -0.0988263 -0.0748082 -0.0661294 -0.0770671 -0.110469 -0.167566 -0.247856 -0.349184 -0.467756 -0.598504 -0.735328 -0.871524 -1.00021 -1.11477 -1.20928 -1.27894 -1.32032 -1.33169 -1.31306 -1.26623 -1.19474 -1.10354 -0.998777 -0.887361 -0.776541 -0.673418 -0.584503 -0.515269 -0.469788 -0.450445 -0.457793 -0.490407 -0.545037 -0.616717 -0.699091 -0.784787 -0.865852 -0.934262 -0.982436 -1.00368 -0.992686 -0.945833 -0.861464 -0.740073 -0.584236 -0.398598 -0.189553 0.0350339 0.2663 0.494866 0.711373 0.906995 1.07399 1.20606 1.2988 1.3499 1.35925 1.32899 1.2633 1.16824 1.05128 0.920929 0.786184 0.656021 0.538855 0.442056;
+#X coords 0 2 255 -2 250 175 1 0 0;
+#X restore 324 120 graph \$0-output;
+#X obj 60 288 tabwrite~ \$0-output 250;
+#N canvas 148 353 246 184 init 0;
+#X obj 36 24 inlet;
+#X obj 120 24 loadbang;
+#X obj 36 84 t 69;
+#X obj 36 132 s \$0-pitch;
+#X connect 0 0 2 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 324 372 pd init;
+#X obj 324 336 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X floatatom 36 108 5 0 0 1 - #0-pitch -;
+#X f 5;
+#N canvas 783 92 551 489 harmonics 0;
+#X obj 36 108 * 2;
+#X obj 36 144 osc~;
+#X obj 108 144 osc~;
+#X obj 108 108 * 3;
+#X obj 180 144 osc~;
+#X obj 180 108 * 4;
+#X obj 108 180 *~ 0.2;
+#X obj 36 408 *~;
+#X obj 36 240 +~;
+#X obj 36 300 +~;
+#X obj 36 180 *~ 0.1;
+#X obj 180 180 *~ 0.5;
+#X obj 36 48 inlet;
+#X obj 36 444 outlet~;
+#X obj 180 300 inlet;
+#X text 12 12 Here the three oscillators have frequencies in a 2:3:4 ratio.;
+#X f 62;
 #X connect 0 0 1 0;
-#X connect 1 0 6 0;
-#X connect 1 0 7 0;
 #X connect 1 0 10 0;
-#X connect 1 0 12 0;
-#X connect 3 0 0 0;
-#X connect 6 0 14 0;
-#X connect 7 0 8 0;
-#X connect 8 0 29 0;
-#X connect 9 0 13 0;
+#X connect 2 0 6 0;
+#X connect 3 0 2 0;
+#X connect 4 0 11 0;
+#X connect 5 0 4 0;
+#X connect 6 0 8 1;
+#X connect 7 0 13 0;
+#X connect 8 0 9 0;
+#X connect 9 0 7 0;
+#X connect 10 0 8 0;
+#X connect 11 0 9 1;
+#X connect 12 0 0 0;
+#X connect 12 0 3 0;
+#X connect 12 0 5 0;
+#X connect 14 0 7 1;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 96 192 pd harmonics;
+#X obj 216 156 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
+#X text 12 72 Sum a series of sinusoids to make a complex tone.;
+#X connect 0 0 2 0;
+#X connect 0 0 12 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X connect 3 0 8 0;
 #X connect 10 0 9 0;
-#X connect 11 0 30 0;
-#X connect 12 0 11 0;
-#X connect 13 0 17 1;
-#X connect 14 0 2 0;
-#X connect 14 0 2 1;
-#X connect 14 0 27 0;
-#X connect 15 0 14 1;
-#X connect 16 0 15 1;
-#X connect 17 0 18 0;
-#X connect 18 0 15 0;
-#X connect 21 0 27 0;
-#X connect 29 0 17 0;
-#X connect 30 0 18 1;
+#X connect 11 0 0 0;
+#X connect 12 0 3 1;
+#X connect 13 0 12 1;
+#X coords 0 0 1 1 250 175 0 0 0;
