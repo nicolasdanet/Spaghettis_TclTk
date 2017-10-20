@@ -1,60 +1,35 @@
-#N canvas 264 50 693 642 12;
-#N canvas 0 22 450 300 (subpatch) 0;
-#X array osc-output 4410 float 0;
-#X coords 0 1.02 4410 -1.02 200 130 1;
-#X restore 473 167 graph;
-#X obj 98 261 tabwrite~ osc-output;
-#X msg 98 232 bang;
-#X floatatom 280 66 0 0 0 0 - - -;
-#X text 147 231 <-- click to graph;
-#X obj 15 206 r frequency;
-#X msg 280 37 set \$1;
-#X floatatom 6 66 0 0 0 0 - - -;
-#X obj 6 8 r frequency;
-#X msg 6 37 set \$1;
-#X obj 19 90 s frequency;
-#X obj 280 8 r pitch;
-#X obj 289 90 s pitch;
-#X obj 280 116 mtof;
-#X obj 280 145 s frequency;
-#X obj 6 145 s pitch;
-#X obj 6 116 ftom;
-#X text 105 66 <-- set frequency;
-#X text 372 65 <-- set MIDI pitch;
-#X text 15 429 Frequency and pitch are converted using the "ftom" and
-"mtof" objects. Frequency refers to the number of cycles per second.
-Pitch is "60" for Middle C \, 61 for C sharp \, 72 for the next C up
-\, and so on.;
-#X text 476 308 ---- 0.1 seconds ----;
-#X text 447 6 FREQUENCY AND PITCH;
-#X text 16 363 The osc~ object \, if you give it an argument \, expects
-floating-point messages to set its frequency. Without arguments \,
-its frequency is controlled by connecting an audio signal to its input.
-;
-#X text 14 496 Mtof and ftom work fine for microtones (non-integral
-"MIDI pitch" ) and don't have MIDI's range restriction-- for example
-\, MIDI -36 is about 1 Hz.;
-#X text 15 553 Note also the "set" messages going to the number boxes
-so that they can each update the other without bringing on an infinite
-loop. (get help on number boxes for details.);
-#X text 87 291 <-- output level;
-#X text 51 116 <-- convert frequency;
-#X text 106 134 to "MIDI" pitch;
-#X text 327 117 <-- convert "MIDI" pitch to frequency;
-#X obj 15 273 output~;
-#X obj 15 232 osc~;
-#X connect 2 0 1 0;
-#X connect 3 0 12 0;
-#X connect 3 0 13 0;
-#X connect 5 0 30 0;
-#X connect 6 0 3 0;
-#X connect 7 0 10 0;
-#X connect 7 0 16 0;
-#X connect 8 0 9 0;
+#N canvas 477 107 606 418 12;
+#X obj 36 324 output~;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 frequency;
+#N canvas 0 22 500 350 \$0-output 0;
+#X array \$0-output 256 float 1;
+#A 0 0.857581 0.816885 0.771653 0.722135 0.668606 0.611364 0.550726 0.48703 0.420628 0.351889 0.281196 0.20894 0.135524 0.0613535 -0.0131581 -0.087596 -0.161547 -0.2346 -0.306349 -0.376397 -0.444354 -0.509843 -0.5725 -0.631978 -0.687946 -0.740093 -0.788129 -0.831783 -0.870813 -0.905006 -0.934171 -0.958148 -0.976803 -0.990033 -0.997763 -0.999951 -0.996586 -0.987684 -0.973297 -0.953504 -0.928411 -0.898154 -0.862909 -0.822871 -0.778263 -0.729332 -0.67635 -0.619612 -0.559432 -0.496144 -0.430101 -0.361668 -0.291226 -0.219165 -0.145885 -0.0717952 0.00269295 0.0771656 0.151209 0.224413 0.29637 0.366681 0.434956 0.500814 0.563892 0.623837 0.680319 0.733017 0.78164 0.825921 0.865615 0.9005 0.930383 0.955099 0.97451 0.988507 0.997015 0.999984 0.9974 0.989275 0.975653 0.956603 0.93224 0.9027 0.868145 0.828769 0.78479 0.736451 0.684022 0.627794 0.568078 0.505206 0.439528 0.371408 0.301222 0.229362 0.156229 0.082229 0.00777236 -0.0667272 -0.140856 -0.214203 -0.286359 -0.356926 -0.425511 -0.491732 -0.555223 -0.615627 -0.672608 -0.725852 -0.775064 -0.819972 -0.860324 -0.895898 -0.926496 -0.951948 -0.972112 -0.986877 -0.996161 -0.999911 -0.998106 -0.990747 -0.977886 -0.959593 -0.93597 -0.907149 -0.873289 -0.834579 -0.791233 -0.743492 -0.691621 -0.635909 -0.576664 -0.514215 -0.448905 -0.381102 -0.311182 -0.239534 -0.166557 -0.092654 -0.0182368 0.0562817 0.130488 0.203969 0.276318 0.347133 0.41602 0.482595 0.546486 0.607341 0.664822 0.71861 0.768407 0.813935 0.854943 0.891202 0.922511 0.948696 0.969612 0.985142 0.995199 0.999719 0.998685 0.992105 0.980015 0.962481 0.939601 0.911502 0.878341 0.8403 0.797592 0.750454 0.699147 0.643957 0.585183 0.523158 0.458229 0.390754 0.321109 0.249681 0.176866 0.103069 0.0286993 -0.0458302 -0.120106 -0.193714 -0.266248 -0.337301 -0.406479 -0.473398 -0.537688 -0.59899 -0.656966 -0.711292 -0.761667 -0.807812 -0.84947 -0.88641 -0.918427 -0.945343 -0.967006 -0.98329 -0.994111 -0.999411 -0.999159 -0.993358 -0.98204 -0.965266 -0.943132 -0.915758 -0.883299 -0.845932 -0.803867 -0.757337 -0.706593 -0.651923 -0.593633 -0.532045 -0.467503 -0.400364 -0.331002 -0.259801 -0.187157 -0.113473 -0.0391588 0.0353737 0.10971 0.183438 0.256144 0.327428 0.396892 0.464152 0.528833 0.590576 0.64904 0.703898 0.754847 0.801603 0.843907 0.881525 0.914245 0.941877 0.964279 0.981323 0.992918 0.998997 0.999527 0.994505 0.98396 0.967949 0.946562 0.919917 0.888163 0.851475 0.81005 0.764124;
+#X coords 0 1 255 -1 250 175 1 0 0;
+#X restore 324 120 graph \$0-output;
+#X obj 72 276 tabwrite~ \$0-output 250;
+#X text 12 72 Controlling frequency (with pitch).;
+#X obj 36 144 mtof;
+#X floatatom 36 180 0 0 0 1 - - -;
+#X floatatom 36 108 5 0 127 1 - #0-pitch -;
+#X f 5;
+#N canvas 0 22 254 200 init 0;
+#X obj 36 24 inlet;
+#X obj 120 24 loadbang;
+#X obj 36 84 t 69;
+#X obj 36 132 s \$0-pitch;
+#X connect 0 0 2 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 324 360 pd init;
+#X obj 324 324 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 228 osc~;
+#X connect 7 0 8 0;
+#X connect 8 0 12 0;
 #X connect 9 0 7 0;
-#X connect 11 0 6 0;
-#X connect 13 0 14 0;
-#X connect 16 0 15 0;
-#X connect 30 0 1 0;
-#X connect 30 0 29 0;
-#X connect 30 0 29 1;
+#X connect 11 0 10 0;
+#X connect 12 0 0 0;
+#X connect 12 0 5 0;
+#X coords 0 0 1 1 250 175 0 0 0;

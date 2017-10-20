@@ -7,6 +7,9 @@ Clean and test all patches.
 
 Compile as C++ (i.g. include MICA later)?
 Think about an unit test suite.
+
+###
+
 Profile and optimize code (i.g. arrays GUI for samples).
 Forbid the audio to glitch!
 
@@ -37,6 +40,7 @@ Improve the filters help (add examples and draw the frequency domain).
 
 ###
 
+Add a score notation widget.
 Use generic containers (i.g. linked list).
 Make an embeddable interpreter.
 Replace the Tk GUI (make MVC more strict).
