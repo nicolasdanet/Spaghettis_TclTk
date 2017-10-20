@@ -1,29 +1,47 @@
-#N canvas 300 159 635 486 12;
-#X text 261 20 CONTROLLING OUTPUT AMPLITUDE;
-#X obj 32 27 osc~ 440;
-#X obj 54 55 osc~ 550;
-#X obj 54 116 osc~ 660;
-#X obj 32 88 +~;
-#X obj 32 142 +~;
-#X text 108 177 <-- this is a subwindow--right click on it;
-#X text 149 197 and select "open" to see inside.;
-#X text 30 401 The output control automatically starts DSP whenever
-you touch the level control. Hitting "mute" toggles between the current
-level and zero.;
-#X obj 32 173 output~;
-#X text 143 115 <-- Here we make an A major triad as a test signal.
-;
-#X text 31 250 In this and subsequent patches \, we'll use a subwindow
-\, "output" \, to control overall amplitude. The amplitudes are in
-decibels \, with 100 being full blast. In this example \, you can't
-actually push the output amplitude past 90 or so without clipping.
-You'll know you're clipping if \, instead of an A major chord \, you
-hear a single \, distorted tone two octaves down. The clipping happens
-at Pd's last stage of audio output. Audio signals internal to Pd have
-essentially no level limit.;
-#X connect 1 0 4 0;
-#X connect 2 0 4 1;
-#X connect 3 0 5 1;
+#N canvas 180 31 482 521 12;
+#X obj 36 108 osc~ 440;
+#X obj 72 144 osc~ 550;
+#X obj 72 204 osc~ 660;
+#X obj 36 180 +~;
+#X obj 36 240 +~;
+#X obj 36 312 output~;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 output;
+#X msg 132 312 \; pd-output~ open;
+#N canvas 629 80 781 545 more 0;
+#N canvas 0 22 500 350 \$0-clipping 0;
+#X array \$0-clipping 128 float 3;
+#A 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0.977872 0.867365 0.75186 0.632154 0.509054 0.383391 0.256024 0.127792 -0.000443954 -0.127829 -0.253523 -0.376713 -0.496576 -0.612358 -0.723321 -0.82874 -0.927996 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -0.966571 -0.880481 -0.790359 -0.696881 -0.600764 -0.502702 -0.403414 -0.303614 -0.203974 -0.105207 -0.00797508 0.0870878 0.179353 0.26824 0.353214 0.433752 0.509392 0.57974 0.644397 0.703054 0.755465 0.801377 0.840663 0.873216 0.898966 0.917944 0.930184 0.935798 0.934951 0.927832 0.914701 0.895833 0.871565 0.842262 0.808291 0.770098 0.728108 0.682781 0.634603 0.584045 0.531605 0.477769 0.42303 0.367869 0.312737 0.258112 0.204415 0.152051 0.101441 0.0529152 0.006803 -0.0365731 -0.0769793 -0.114189 -0.148001 -0.178284 -0.20493 -0.227841 -0.247014 -0.262455 -0.27418 -0.282305 -0.286926 -0.288189 -0.286293 -0.281408 -0.273789 -0.263682 -0.251347 -0.237093 -0.221195 -0.203977;
+#X coords 0 2 128 -2 250 175 1 0 0;
+#X restore 36 96 graph \$0-clipping;
+#X text 12 300 Internally audio signals have no level limit.;
+#X f 45;
+#X floatatom 36 372 5 0 0 1 - - -;
+#X f 5;
+#X obj 36 408 sig~;
+#X obj 36 444 snapshot~ 0;
+#X floatatom 36 480 5 0 0 1 - - -;
+#X f 5;
+#X text 12 12 Above a level signal might be clipped (i.e. you hear a distorted tone two octaves down).;
+#X f 88;
+#X text 12 36 The clipping happens according to the OS at ultimate stage of output.;
+#X f 70;
+#X text 12 324 But due to the limitations of some objects it should be kept in a reasonable range.;
+#X f 83;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
 #X connect 4 0 5 0;
-#X connect 5 0 9 0;
-#X connect 5 0 9 1;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 360 468 pd more;
+#X obj 36 432 clip~ -1 1;
+#X obj 36 468 tabwrite~ \$0-clipping 250;
+#X text 12 72 Controlling output (encapsulated in a abstraction).;
+#X connect 0 0 3 0;
+#X connect 1 0 3 1;
+#X connect 2 0 4 1;
+#X connect 3 0 4 0;
+#X connect 4 0 5 0;
+#X connect 5 0 11 0;
+#X connect 11 0 12 0;
+#X coords 0 0 1 1 250 175 0 0 0;
