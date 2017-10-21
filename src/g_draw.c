@@ -216,6 +216,8 @@ static void glist_drawArrayName (t_glist *glist)
         //
         if (pd_class (y) == garray_class) {
         //
+        if (garray_isNameShown ((t_garray *)y)) {
+        //
         gui_vAdd ("%s.c create text %d %d -text {%s}"   // --
                         " -anchor nw"
                         " -font [::getFont %d]"         // --
@@ -228,6 +230,8 @@ static void glist_drawArrayName (t_glist *glist)
                         k,
                         color,
                         glist);
+        //
+        }
         //
         }
         //
