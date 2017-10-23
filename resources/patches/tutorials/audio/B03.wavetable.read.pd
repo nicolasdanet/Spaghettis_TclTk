@@ -39,7 +39,7 @@
 #X connect 4 1 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 516 pd table;
-#X text 12 72 Alternate strategy to read through (part of) a table.;
+#X text 12 72 Alternative strategy to oscillate through (part of) a table.;
 #X connect 0 0 4 0;
 #X connect 1 0 10 0;
 #X connect 2 0 3 0;
