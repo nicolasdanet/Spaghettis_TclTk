@@ -1,4 +1,4 @@
-#N canvas 527 80 515 449 12;
+#N canvas 527 80 522 457 12;
 #N canvas 0 22 450 300 \$0-array 0;
 #X array \$0-array 10 float 1;
 #A 0 0 9 1 8 2 7 3 6 4 5;
@@ -11,7 +11,7 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 tabread4~;
-#N canvas 756 36 541 642 more 0;
+#N canvas 643 37 540 687 more 0;
 #N canvas 0 22 500 350 \$0-foo 0;
 #X array \$0-foo 10 float 1;
 #A 0 0.125796 0.426674 0.288535 0.599245 0.131304 0.107394 0.955208 0.582365 0.744718 0.728449;
@@ -25,7 +25,7 @@
 #X f 46;
 #X obj 36 192 tabread4~ \$0-foo;
 #X obj 36 228 snapshot~ 0;
-#X obj 36 348 nbx 5 40 1 7 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 3.1 100;
+#X obj 36 348 nbx 5 40 1 7 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 1 100;
 #X obj 36 552 snapshot~ 0;
 #X floatatom 36 588 0 0 0 1 - - -;
 #X obj 192 552 snapshot~ 0;
@@ -36,6 +36,17 @@
 #X obj 36 408 t f f 1;
 #X f 21;
 #X text 12 312 A number in the right inlet sets an additional onset.;
+#N canvas 492 345 759 130 again 0;
+#X text 12 12 Internally 32-bit floating-point is used for numbers.;
+#X f 54;
+#X text 12 60 The mantissa has only 24 bits out of which 16 bits are used for such onset.;
+#X f 76;
+#X text 12 84 It would remain 8 or fewer bits to supply the fractional part.;
+#X f 63;
+#X text 12 36 It's NOT good enough to use as indices into an array of more than about 32768 samples.;
+#X f 87;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 636 pd again;
 #X connect 1 0 6 0;
 #X connect 2 0 6 0;
 #X connect 3 0 6 0;
