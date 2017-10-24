@@ -36,7 +36,7 @@
 #X restore 36 408 pd alphabet;
 #X obj 36 144 t b b;
 #X f 5;
-#X obj 36 192 uzi 10;
+#X obj 36 192 uzi 250;
 #X connect 5 0 13 0;
 #X connect 6 0 5 2;
 #X connect 7 0 6 0;
