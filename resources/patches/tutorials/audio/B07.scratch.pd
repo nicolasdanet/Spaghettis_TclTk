@@ -5,7 +5,6 @@
 #X obj 36 516 output~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#X text 24 24 sampler;
 #N canvas 544 98 362 254 init 0;
 #X obj 36 24 loadbang;
 #X obj 36 96 soundfiler;
@@ -26,7 +25,7 @@
 #X coords 0 1 62079 -1 250 175 1 0 0;
 #X restore 276 168 graph \$0-table;
 #X obj 108 168 r \$0-size;
-#X obj 36 108 nbx 5 40 0 100 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 100 100;
+#X obj 36 108 nbx 5 40 0 100 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
 #X obj 36 336 tabread4~ \$0-table;
 #X obj 60 408 tabwrite~ \$0-out 250;
 #N canvas 0 22 500 350 \$0-out 0;
@@ -37,12 +36,13 @@
 #X floatatom 36 168 5 0 100 1 - - -;
 #X f 5;
 #X text 12 72 A scratch machine.;
-#X connect 0 0 11 0;
+#X text 24 24 scratch;
+#X connect 0 0 10 0;
 #X connect 1 0 2 0;
 #X connect 2 0 0 0;
-#X connect 9 0 1 1;
-#X connect 10 0 14 0;
-#X connect 11 0 3 0;
-#X connect 11 0 12 0;
-#X connect 14 0 1 0;
+#X connect 8 0 1 1;
+#X connect 9 0 13 0;
+#X connect 10 0 3 0;
+#X connect 10 0 11 0;
+#X connect 13 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
