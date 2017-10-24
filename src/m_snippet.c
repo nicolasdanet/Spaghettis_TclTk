@@ -42,11 +42,11 @@ void snippet_renameArrays (t_buffer *x, t_glist *glist)
         }
         
         if (s && t1 && t2 && t3) {
-            if (pd_getThingByClass (dollar_expandSymbol (s, glist), garray_class)) {
-                t_symbol *t = symbol_withCopySuffix (s);
-                SET_SYMBOL (t1, t);
-                SET_SYMBOL (t2, t);
-                SET_SYMBOL (t3, t);
+            while (pd_getThingByClass (dollar_expandSymbol (s, glist), garray_class)) {
+                s = symbol_withCopySuffix (s);
+                SET_SYMBOL (t1, s);
+                SET_SYMBOL (t2, s);
+                SET_SYMBOL (t3, s);
             }
         }
     }
