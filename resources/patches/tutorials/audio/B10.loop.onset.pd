@@ -1,4 +1,4 @@
-#N canvas 520 46 617 663 12;
+#N canvas 520 46 609 671 12;
 #X obj 120 240 +~ 1;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -72 12 freeze;
@@ -31,7 +31,7 @@
 #X floatatom 168 108 5 0 0 1 - #0-chunk -;
 #X f 5;
 #X obj 36 204 -~ 0.5;
-#X obj 36 276 cos~;
+#X obj 36 408 cos~;
 #X obj 36 240 *~ 0.5;
 #X obj 36 456 *~;
 #X obj 324 360 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
@@ -46,7 +46,7 @@
 #X obj 120 372 +~;
 #X floatatom 216 204 5 0 0 1 - #0-onset -;
 #X f 5;
-#X text 288 204 Onset of the chunk.;
+#X text 324 204 Onset of the chunk.;
 #X obj 72 504 tabwrite~ \$0-out 500;
 #X connect 0 0 22 0;
 #X connect 5 0 13 1;
