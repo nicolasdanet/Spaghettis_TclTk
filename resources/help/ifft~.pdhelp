@@ -9,7 +9,6 @@
 #A 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
 #X coords 0 1 63 0 250 175 1 0 0;
 #X restore 276 168 graph \$0-impulse;
-#X obj 72 444 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
 #X obj 144 264 nbx 5 40 0 63 0 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 6 63;
 #N canvas 438 393 260 248 impulse 0;
 #X obj 24 24 inlet;
@@ -24,8 +23,6 @@
 #X connect 4 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 144 324 pd impulse;
-#X obj 36 528 tabwrite~ \$0-out;
-#X obj 72 480 metro 250;
 #N canvas 0 22 500 350 \$0-out 0;
 #X array \$0-out 64 float 1;
 #A 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 9.34541e-09 0 0 0 0 0 0 0 7.92388e-09 0 0 0 0 0 0 0 4.33728e-09 0 0 0 0 0 0 0 -1.9024e-10 0 0 0 0 0 0 0 -7.60843e-09 0 0 0 0 0 0 0 2.0647e-09 0 0 0 0 0 0 0 2.48288e-09 0;
@@ -43,13 +40,12 @@
 #X obj 96 576 fft~;
 #X obj 144 576 rfft~;
 #X obj 204 576 rifft~;
-#X connect 0 0 9 0;
-#X connect 4 0 16 0;
-#X connect 6 0 10 0;
-#X connect 7 0 8 0;
-#X connect 10 0 9 0;
-#X connect 16 0 17 0;
-#X connect 16 1 17 1;
-#X connect 17 0 0 0;
-#X connect 18 0 16 1;
+#X obj 36 516 tabwrite~ \$0-out 250;
+#X connect 0 0 19 0;
+#X connect 4 0 13 0;
+#X connect 6 0 7 0;
+#X connect 13 0 14 0;
+#X connect 13 1 14 1;
+#X connect 14 0 0 0;
+#X connect 15 0 13 1;
 #X coords 0 0 1 1 250 175 0 0 0;
