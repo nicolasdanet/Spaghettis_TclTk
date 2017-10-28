@@ -220,7 +220,7 @@
 #X text 168 324 Complex "reverse" One-Zero.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 540 pd filters~;
-#N canvas 222 141 587 591 flow 0;
+#N canvas 125 142 558 609 flow 0;
 #X obj 36 84 bang;
 #X obj 36 108 float;
 #X obj 36 132 symbol;
@@ -264,6 +264,8 @@
 #X text 168 516 Prepend something to make a message.;
 #X text 168 540 Manipulate lists.;
 #X text 168 84 Output a bang message.;
+#X obj 36 564 counter;
+#X text 168 564 Count bangs received.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 156 pd flow;
 #N canvas 431 311 430 250 subpatch 0;

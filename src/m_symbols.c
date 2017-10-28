@@ -235,6 +235,7 @@ t_symbol *sym_cos;
 t_symbol *sym_cos__tilde__;
 t_symbol *sym_cosinesum;
 t_symbol *sym_count;
+t_symbol *sym_counter;
 t_symbol *sym_cpole__tilde__;
 t_symbol *sym_cputime;
 t_symbol *sym_ctlin;
@@ -849,6 +850,7 @@ void symbols_initialize (void)
     sym_cos__tilde__                            = gensym ("cos~");
     sym_cosinesum                               = gensym ("cosinesum");
     sym_count                                   = gensym ("count");
+    sym_counter                                 = gensym ("counter");
     sym_cpole__tilde__                          = gensym ("cpole~");
     sym_cputime                                 = gensym ("cputime");
     sym_ctlin                                   = gensym ("ctlin");

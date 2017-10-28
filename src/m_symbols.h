@@ -235,6 +235,7 @@ extern t_symbol *sym_cos;
 extern t_symbol *sym_cos__tilde__;
 extern t_symbol *sym_cosinesum;
 extern t_symbol *sym_count;
+extern t_symbol *sym_counter;
 extern t_symbol *sym_cpole__tilde__;
 extern t_symbol *sym_cputime;
 extern t_symbol *sym_ctlin;

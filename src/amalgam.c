@@ -215,6 +215,7 @@
 #include "x_swap.c"
 #include "x_change.c"
 #include "x_value.c"
+#include "x_counter.c"
 #include "x_print.c"
 #include "x_key.c"
 #include "x_keyup.c"
