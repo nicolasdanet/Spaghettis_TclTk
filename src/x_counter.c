@@ -30,7 +30,7 @@ typedef struct _counter {
 
 static void counter_output (t_counter *x)
 {
-	outlet_float (x->x_outlet, (t_float)x->x_count);
+    outlet_float (x->x_outlet, (t_float)x->x_count);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ static void counter_output (t_counter *x)
 
 static void counter_reset (t_counter *x)
 {
-	x->x_count = 0;
+    x->x_count = 0;
 }
 
 static void counter_set (t_counter *x, t_float f)

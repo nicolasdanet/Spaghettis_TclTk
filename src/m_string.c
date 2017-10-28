@@ -154,7 +154,7 @@ t_error string_escapeOccurrence (char *dest, size_t size, const char *chars)
     
     PD_ASSERT (chars);
     
-	while (*chars) { err |= string_escapeCharacter (dest, size, *chars); chars++; }
+    while (*chars) { err |= string_escapeCharacter (dest, size, *chars); chars++; }
     
     return err;
 }
