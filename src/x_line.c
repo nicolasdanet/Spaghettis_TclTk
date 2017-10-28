@@ -55,9 +55,10 @@ static t_float line_valueAtTime (t_line *x, t_systime t)
     double b = x->x_systimeTarget - x->x_systimeStart;
     double y = x->x_valueTarget - x->x_valueStart;
         
-    PD_ASSERT (b != 0.0); 
-    
-    return (t_float)(x->x_valueStart + (a / b * y));
+    if (b == 0.0) { return x->x_valueTarget; }      /* Might occurs at load. */
+    else {
+        return (t_float)(x->x_valueStart + (a / b * y));
+    }
 }
 
 static void line_task (t_line *x)
