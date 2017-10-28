@@ -30,7 +30,7 @@
 #X text 12 384 It implies that (in theory) infinite loop can be mistakenly done like that.;
 #X f 75;
 #X obj 36 420 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#N canvas 430 361 755 326 more 0;
+#N canvas 479 78 746 488 more 0;
 #X obj 36 96 f;
 #X obj 108 96 + 1;
 #X floatatom 84 168 5 0 0 1 - - -;
@@ -43,11 +43,18 @@
 #X f 4;
 #X text 12 216 Thus use the uzi object instead of recursive algorithms.;
 #X f 56;
+#X obj 36 336 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 372 counter;
+#X floatatom 36 420 5 0 0 1 - - -;
+#X f 5;
+#X text 12 300 And it's probably better to utilize the counter object!;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 3 0 0 0;
 #X connect 4 0 1 0;
 #X connect 4 1 2 0;
+#X connect 8 0 9 0;
+#X connect 9 0 10 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 204 456 pd more;
 #X connect 0 0 2 0;
