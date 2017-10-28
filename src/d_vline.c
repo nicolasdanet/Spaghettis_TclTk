@@ -84,11 +84,17 @@ static int vline_tilde_replaceFirstSegment (t_vline_tilde *x, double start)
     return vline_tilde_isBeforeSegment (x, start, x->x_segments);
 }
 
-static void vline_tilde_appendToUnusedSegments (t_vline_tilde *x, t_vline_tilde_segment *s)
+static void vline_tilde_addToUnusedSegments (t_vline_tilde *x, t_vline_tilde_segment *s)
 {
+    if (s) {
+    //
     if (!x->x_delete) { x->x_delete = s; }
     else {
-        t_vline_tilde_segment *t = x->x_delete; while (t->s_next) { t = t->s_next; } t->s_next = s;
+        t_vline_tilde_segment *t = s; while (t->s_next) { t = t->s_next; }
+        t->s_next = x->x_delete;
+        x->x_delete = s;
+    }
+    //
     }
 }
 
@@ -135,7 +141,7 @@ static void vline_tilde_float (t_vline_tilde *x, t_float f)
         if (!k) { s1->s_next = segment; PD_ASSERT (deleted == NULL); }
     }
     
-    if (deleted) { vline_tilde_appendToUnusedSegments (x, deleted); }
+    if (deleted) { vline_tilde_addToUnusedSegments (x, deleted); }
 
     segment->s_next       = NULL;
     segment->s_target     = (t_sample)f;
@@ -150,7 +156,7 @@ static void vline_tilde_float (t_vline_tilde *x, t_float f)
 
 static void vline_tilde_stop (t_vline_tilde *x)
 {
-    vline_tilde_appendToUnusedSegments (x, x->x_segments);
+    vline_tilde_addToUnusedSegments (x, x->x_segments);
     
     x->x_increment  = 0.0;
     x->x_timeRamp   = (t_float)0.0;
@@ -220,7 +226,7 @@ static t_int *vline_tilde_perform (t_int *w)
         x->x_timeTarget     = s->s_timeTarget;
         
         x->x_segments = s->s_next;
-        s->s_next = NULL; vline_tilde_appendToUnusedSegments (x, s);
+        s->s_next = NULL; vline_tilde_addToUnusedSegments (x, s);
         s = x->x_segments;
     }
     
