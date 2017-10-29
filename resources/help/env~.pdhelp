@@ -1,4 +1,4 @@
-#N canvas 766 116 374 359 12;
+#N canvas 735 117 464 392 12;
 #X obj 36 192 *~;
 #X obj 132 144 dbtorms;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
@@ -15,13 +15,13 @@
 #X text 12 12 First argument is the analysis window size in samples.;
 #X f 55;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 264 228 pd more;
+#X restore 276 228 pd more;
 #X floatatom 132 108 5 0 0 1 - - -;
 #X f 5;
 #X floatatom 36 264 5 0 0 1 - - -;
 #X f 5;
-#X obj 96 312 threshold~;
-#X text 12 312 See also:;
+#X obj 96 348 threshold~;
+#X text 12 348 See also:;
 #X obj 36 108 osc~ 440;
 #X obj 36 228 env~;
 #N canvas 514 539 694 109 again 0;
@@ -32,7 +32,8 @@
 #X text 12 60 Power to decibels conversion is done before to output the result.;
 #X f 65;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 264 252 pd again;
+#X restore 276 252 pd again;
+#X text 12 312 Note the 3.01 dB between peak and power amplitudes.;
 #X connect 0 0 12 0;
 #X connect 1 0 0 1;
 #X connect 7 0 1 0;

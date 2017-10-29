@@ -57,7 +57,7 @@ t_float math_powerToDecibel (t_float f)
 
 t_float math_decibelToPower (t_float f)
 {
-    if (f <= 0.0)  { return (t_float)0.0; }
+    if (f <= 0.0) { return (t_float)0.0; }
     else {
         f = (t_float)PD_MIN (f, 870.0); return (t_float)(exp ((PD_LOG_TEN * 0.10) * (f - 100.0)));
     }
