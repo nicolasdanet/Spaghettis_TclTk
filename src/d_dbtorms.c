@@ -76,7 +76,9 @@ void dbtorms_tilde_setup (void)
             sizeof (t_dbtorms_tilde),
             CLASS_DEFAULT,
             A_NULL);
-        
+    
+    class_addCreator ((t_newmethod)dbtorms_tilde_new, sym_dbtoamp__tilde__, A_NULL);
+    
     CLASS_SIGNAL (c, t_dbtorms_tilde, x_f);
     
     class_addDSP (c, (t_method)dbtorms_tilde_dsp);
@@ -93,3 +95,4 @@ void dbtorms_tilde_destroy (void)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+

@@ -324,7 +324,7 @@
 #X text 24 24 operators;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 204 pd operators;
-#N canvas 581 379 480 256 acoustic 0;
+#N canvas 581 379 464 281 acoustic 0;
 #X obj 36 84 mtof;
 #X obj 36 108 ftom;
 #X obj 36 132 powtodb;
@@ -336,9 +336,10 @@
 #X text 168 108 Frequency to MIDI.;
 #X text 168 132 Power to decibel.;
 #X text 168 156 Decibel to power.;
-#X text 168 180 Root mean square to decibel.;
-#X text 168 204 Decibel to root mean square.;
 #X text 24 24 acoustic;
+#X obj 36 228 dbtoamp;
+#X text 168 180 Amplitude to decibel.;
+#X text 168 204 Decibel to amplitude.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 228 pd acoustic;
 #N canvas 699 278 509 192 text 0;
@@ -497,7 +498,7 @@
 #X text 168 132 Convert a number to a signal.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 564 pd miscellaneous~;
-#N canvas 487 196 487 212 acoustic~ 0;
+#N canvas 487 196 443 231 acoustic~ 0;
 #X obj 36 84 mtof~;
 #X obj 36 108 ftom~;
 #X obj 36 132 rmstodb~;
@@ -506,8 +507,9 @@
 #X text 24 24 acoustic~;
 #X text 180 84 MIDI to frequency.;
 #X text 180 108 Frequency to MIDI.;
-#X text 180 132 Root mean square to decibel.;
-#X text 180 156 Decibel to root mean square.;
+#X text 180 132 Amplitude to decibel.;
+#X text 180 156 Decibel to amplitude.;
+#X obj 36 180 dbtoamp~;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 444 pd acoustic~;
 #N canvas 344 209 657 239 fft~ 0;

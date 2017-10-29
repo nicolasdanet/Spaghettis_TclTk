@@ -246,6 +246,8 @@ extern t_symbol *sym_czero_rev__tilde__;
 extern t_symbol *sym_d;
 extern t_symbol *sym_dac__tilde__;
 extern t_symbol *sym_data;
+extern t_symbol *sym_dbtoamp;
+extern t_symbol *sym_dbtoamp__tilde__;
 extern t_symbol *sym_dbtopow;
 extern t_symbol *sym_dbtopow__tilde__;
 extern t_symbol *sym_dbtorms;

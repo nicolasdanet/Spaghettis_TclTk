@@ -235,6 +235,8 @@ void acoustic_setup (void)
     class_setHelpName (dbtopow_class, sym_acoustic);
     class_setHelpName (rmstodb_class, sym_acoustic);
     class_setHelpName (dbtorms_class, sym_acoustic);
+    
+    class_addCreator ((t_newmethod)dbtorms_new, sym_dbtoamp, A_NULL);
 }
 
 void acoustic_destroy (void)

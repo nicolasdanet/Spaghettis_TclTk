@@ -246,6 +246,8 @@ t_symbol *sym_czero_rev__tilde__;
 t_symbol *sym_d;
 t_symbol *sym_dac__tilde__;
 t_symbol *sym_data;
+t_symbol *sym_dbtoamp;
+t_symbol *sym_dbtoamp__tilde__;
 t_symbol *sym_dbtopow;
 t_symbol *sym_dbtopow__tilde__;
 t_symbol *sym_dbtorms;
@@ -861,6 +863,8 @@ void symbols_initialize (void)
     sym_d                                       = gensym ("d");
     sym_dac__tilde__                            = gensym ("dac~");
     sym_data                                    = gensym ("data");
+    sym_dbtoamp                                 = gensym ("dbtoamp");
+    sym_dbtoamp__tilde__                        = gensym ("dbtoamp~");
     sym_dbtopow                                 = gensym ("dbtopow");
     sym_dbtopow__tilde__                        = gensym ("dbtopow~");
     sym_dbtorms                                 = gensym ("dbtorms");

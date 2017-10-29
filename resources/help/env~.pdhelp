@@ -1,11 +1,10 @@
 #N canvas 735 117 464 392 12;
 #X obj 36 192 *~;
-#X obj 132 144 dbtorms;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 env~;
 #X text 12 72 Envelope follower.;
-#N canvas 749 268 572 268 more 0;
+#N canvas 121 397 572 268 more 0;
 #X obj 36 48 env~ 16384;
 #X obj 36 132 env~ 16384 8192;
 #X text 12 96 Secondth is the period (the number of samples between analyses).;
@@ -34,9 +33,10 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 276 252 pd again;
 #X text 12 312 Note the 3.01 dB between peak and power amplitudes.;
-#X connect 0 0 12 0;
-#X connect 1 0 0 1;
-#X connect 7 0 1 0;
-#X connect 11 0 0 0;
-#X connect 12 0 8 0;
+#X obj 132 144 dbtoamp;
+#X connect 0 0 11 0;
+#X connect 6 0 14 0;
+#X connect 10 0 0 0;
+#X connect 11 0 7 0;
+#X connect 14 0 0 1;
 #X coords 0 0 1 1 250 175 0 0 0;
