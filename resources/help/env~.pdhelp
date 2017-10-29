@@ -24,6 +24,15 @@
 #X text 12 312 See also:;
 #X obj 36 108 osc~ 440;
 #X obj 36 228 env~;
+#N canvas 514 539 694 109 again 0;
+#X text 12 12 This object compute the sum of the powers of a signal on a given window size.;
+#X f 77;
+#X text 12 36 Then it is windowed by a hann function.;
+#X f 39;
+#X text 12 60 Power to decibels conversion is done before to output the result.;
+#X f 65;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 264 252 pd again;
 #X connect 0 0 12 0;
 #X connect 1 0 0 1;
 #X connect 7 0 1 0;
