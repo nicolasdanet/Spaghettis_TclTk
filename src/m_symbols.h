@@ -181,6 +181,8 @@ extern t_symbol *sym_addcomma;
 extern t_symbol *sym_adddollar;
 extern t_symbol *sym_adddollarsymbol;
 extern t_symbol *sym_addsemicolon;
+extern t_symbol *sym_amptodb;
+extern t_symbol *sym_amptodb__tilde__;
 extern t_symbol *sym_append;
 extern t_symbol *sym_arguments;
 extern t_symbol *sym_arithmetic;

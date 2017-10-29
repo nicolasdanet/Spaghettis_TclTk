@@ -62,7 +62,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 396 228 pd more;
 #X text 12 72 Mathematics into the acoustic domain.;
-#N canvas 567 195 639 224 again 0;
+#N canvas 567 195 640 274 again 0;
 #X text 12 12 The RMS is a misnomer.;
 #X f 22;
 #X text 12 36 The dbtorms object converts from decibels to any linear amplitude unit.;
@@ -74,6 +74,8 @@
 #X obj 36 144 dbtoamp;
 #X text 12 108 Use dbtoamp instead for readability.;
 #X obj 36 168 dbtoamp~;
+#X obj 36 192 amptodb;
+#X obj 36 216 amptodb~;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 396 252 pd again;
 #X obj 156 156 dbtorms;

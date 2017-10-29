@@ -76,7 +76,9 @@ void rmstodb_tilde_setup (void)
             sizeof (t_rmstodb_tilde),
             CLASS_DEFAULT,
             A_NULL);
-            
+
+    class_addCreator ((t_newmethod)rmstodb_tilde_new, sym_amptodb__tilde__, A_NULL);
+
     CLASS_SIGNAL (c, t_rmstodb_tilde, x_f);
     
     class_addDSP (c, (t_method)rmstodb_tilde_dsp);
