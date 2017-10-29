@@ -6,7 +6,7 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -72 12 freeze;
 #X text 24 24 one-shot;
-#N canvas 441 88 377 368 init 0;
+#N canvas 441 88 563 413 init 0;
 #X obj 36 24 loadbang;
 #X obj 36 96 soundfiler;
 #X msg 36 60 read -resize bell.aiff \$0-table;
@@ -14,6 +14,7 @@
 #X array \$0-table 155944 float 2;
 #X coords 0 1 155944 -1 250 175 1 0 0;
 #X restore 36 156 graph \$0-table;
+#X text 36 360 My apologies to Jonathan Harvey whose bell this is.;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
