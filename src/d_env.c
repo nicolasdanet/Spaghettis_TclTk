@@ -64,6 +64,8 @@ static t_int *env_tilde_perform (t_int *w)
     
     int i;
     
+    if (x->x_phase < 0) { x->x_phase = x->x_period - n; }       /* Once at startup. */
+    
     for (i = x->x_phase; i < x->x_window; i += x->x_period) {
     //
     PD_RESTRICTED hann = x->x_vector + i;
@@ -129,6 +131,7 @@ static void *env_tilde_new (t_float f1, t_float f2)
     if (period < 1 || period > window) { period = window / 2; }
     else if (!PD_IS_POWER_2 (period))  { period = (int)PD_NEXT_POWER_2 (period); }
     
+    x->x_phase  = -1;
     x->x_period = PD_MAX (period, (window / ENV_MAXIMUM_OVERLAP));
     x->x_window = window;
     x->x_vector = (t_sample *)PD_MEMORY_GET (x->x_window * sizeof (t_sample));
