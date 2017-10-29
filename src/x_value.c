@@ -67,6 +67,20 @@ void valuecommon_release (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void value_set (t_value *x, t_symbol *s)
+{
+    if (x->x_name != &s_) { valuecommon_release (x->x_name); }
+    
+    x->x_raw  = NULL;
+    x->x_name = s;
+    
+    if (x->x_name != &s_) { x->x_raw = valuecommon_fetch (x->x_name); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void value_bang (t_value *x)
 {
     if (x->x_raw) { outlet_float (x->x_outlet, *x->x_raw); }
@@ -85,17 +99,17 @@ static void *value_new (t_symbol *s)
 {
     t_value *x = (t_value *)pd_new (value_class);
     
-    x->x_name   = s;
+    x->x_name   = &s_;
     x->x_outlet = outlet_new (cast_object (x), &s_float);
     
-    if (x->x_name != &s_) { x->x_raw = valuecommon_fetch (x->x_name); }
+    value_set (x, s);
     
     return x;
 }
 
 static void value_free (t_value *x)
 {
-    if (x->x_name != &s_) { valuecommon_release (x->x_name); }
+    value_set (x, &s_);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -123,6 +137,8 @@ void value_setup (void)
     
     class_addBang (value_class, (t_method)value_bang);
     class_addFloat (value_class, (t_method)value_float);
+    
+    class_addMethod (value_class, (t_method)value_set, sym_set, A_DEFSYMBOL, A_NULL);
 }
 
 void value_destroy (void)

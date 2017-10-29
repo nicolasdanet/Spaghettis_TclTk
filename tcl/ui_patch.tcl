@@ -57,7 +57,7 @@ proc create {top width height coordinates isEditMode} {
     pack $top.c -side left -expand 1 -fill both
     
     ::ui_bind::bindPatch $top
-	 
+    
     focus $top.c
     
     set patchTitle($top)        ""

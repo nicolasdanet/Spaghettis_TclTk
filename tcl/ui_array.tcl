@@ -138,7 +138,7 @@ proc _create {top name size up down save style hide} {
     grid $top.f.properties.size                     -row 1 -column 1 -sticky ew
     grid $top.f.properties.saveLabel                -row 2 -column 0 -sticky ew
     grid $top.f.properties.save                     -row 2 -column 1 -sticky ew
-	grid $top.f.properties.hideLabel                -row 3 -column 0 -sticky ew
+    grid $top.f.properties.hideLabel                -row 3 -column 0 -sticky ew
     grid $top.f.properties.hide                     -row 3 -column 1 -sticky ew
     grid $top.f.properties.drawLabel                -row 4 -column 0 -sticky ew
     grid $top.f.properties.draw                     -row 4 -column 1 -sticky ew
