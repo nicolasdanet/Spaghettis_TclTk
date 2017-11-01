@@ -3,7 +3,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 taxonomy;
 #X msg 36 108 Beam me up Scotty;
-#N canvas 573 83 451 403 more 0;
+#N canvas 625 42 558 569 more 0;
 #X obj 108 312 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 132 312 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 156 312 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
@@ -21,6 +21,16 @@
 #X f 21;
 #X msg 36 120 1 2 three;
 #X msg 36 144 Beam me up Scotty;
+#X obj 36 468 t a;
+#X text 12 396 The trigger object can be used to convert between types.;
+#X msg 36 432 symbol Nazgûl;
+#X obj 36 516 print;
+#X msg 216 432 Nazgûl;
+#X obj 216 468 t s;
+#X obj 216 516 print;
+#X obj 336 468 t l;
+#X msg 336 432 Ash nazg durbatulûk;
+#X obj 336 516 print;
 #X connect 6 0 13 0;
 #X connect 7 0 13 0;
 #X connect 10 0 13 0;
@@ -40,6 +50,12 @@
 #X connect 13 5 9 0;
 #X connect 14 0 13 0;
 #X connect 15 0 13 0;
+#X connect 16 0 19 0;
+#X connect 18 0 16 0;
+#X connect 20 0 21 0;
+#X connect 21 0 22 0;
+#X connect 23 0 25 0;
+#X connect 24 0 23 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 516 468 pd more;
 #X obj 36 180 pack 1 2 three;
