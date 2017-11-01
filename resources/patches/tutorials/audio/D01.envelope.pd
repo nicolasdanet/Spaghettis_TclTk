@@ -1,49 +1,61 @@
-#N canvas 173 105 567 576 12;
-#X text 246 260 attack;
-#X text 317 261 release;
-#X obj 248 397 line~;
-#X msg 318 355 0 500;
-#X text 126 7 ENVELOPE GENERATORS;
-#X obj 65 369 phasor~ 50;
-#X obj 65 417 *~;
-#X obj 65 465 wrap~;
-#X msg 247 355 1 2500;
-#X obj 65 393 -~ 0.5;
-#X msg 182 331 10 200;
-#X obj 247 331 del 200;
-#X text 26 22 This patch uses an envelope generator to control a sound.
-When you hit "attack" two things happen. First \, the line~ object
-rises to 10 in 200 milliseconds. Then after a "delay" of the same 200
-msec \, the second message sends the line~ back down to 1 over another
-2500 msec. The "release" just ramps us down to zero at the end.;
-#X obj 65 513 output~;
-#X obj 65 441 +~ 0.5;
-#X obj 65 489 hip~ 5;
-#X obj 247 280 bng 15 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
--1;
-#X obj 318 281 bng 15 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
--1;
-#X msg 257 308 stop;
-#X text 28 121 You can hit the "attack" and/or "release" while something
-is still going on from a previous attack or release \, and the envelope
-generator does the ``right thing". In particular \, the release button
-sends a "stop" to the "del" object \, in case it is still scheduled
-to go off from a previous attack.;
-#X text 27 218 The synthesis method is a form of waveshaping \, which
-is the subject of a later chapter.;
-#X connect 2 0 6 1;
-#X connect 3 0 2 0;
-#X connect 5 0 9 0;
-#X connect 6 0 14 0;
-#X connect 7 0 15 0;
-#X connect 8 0 2 0;
-#X connect 9 0 6 0;
+#N canvas 274 74 696 526 12;
+#X obj 36 108 phasor~ 50;
+#X obj 36 324 *~;
+#X obj 36 396 wrap~;
+#X obj 36 144 -~ 0.5;
+#X obj 36 432 output~;
+#X obj 36 360 +~ 0.5;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 envelope;
+#X text 12 72 Simple envelope generator.;
+#X obj 168 216 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 264 216 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 168 144 t b b;
+#X obj 168 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 264 180 delay 2000;
+#N canvas 248 61 363 390 envelope 0;
+#X obj 36 300 line~;
+#X msg 264 204 0 500;
+#X msg 132 204 1 2500;
+#X msg 36 204 10 200;
+#X msg 132 132 stop;
+#X obj 36 24 inlet;
+#X obj 36 60 t b b;
+#X obj 132 24 inlet;
+#X obj 132 60 t b b;
+#X obj 36 336 outlet~;
+#X obj 132 168 delay 200;
+#X connect 0 0 9 0;
+#X connect 1 0 0 0;
+#X connect 2 0 0 0;
+#X connect 3 0 0 0;
+#X connect 4 0 10 0;
+#X connect 5 0 6 0;
+#X connect 6 0 3 0;
+#X connect 6 1 10 0;
+#X connect 7 0 8 0;
+#X connect 8 0 1 0;
+#X connect 8 1 4 0;
 #X connect 10 0 2 0;
-#X connect 11 0 8 0;
-#X connect 14 0 7 0;
-#X connect 15 0 13 0;
-#X connect 16 0 11 0;
-#X connect 16 0 10 0;
-#X connect 17 0 3 0;
-#X connect 17 0 18 0;
-#X connect 18 0 11 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 168 252 pd envelope;
+#N canvas 0 22 500 350 \$0-envelope 0;
+#X array \$0-envelope 4410 float 2;
+#X coords 0 10 4410 0 250 175 1 0 0;
+#X restore 408 108 graph \$0-envelope;
+#X obj 168 324 tabwrite~ \$0-envelope 250;
+#X connect 0 0 3 0;
+#X connect 1 0 5 0;
+#X connect 2 0 4 0;
+#X connect 3 0 1 0;
+#X connect 5 0 2 0;
+#X connect 10 0 15 0;
+#X connect 11 0 15 1;
+#X connect 12 0 10 0;
+#X connect 12 1 14 0;
+#X connect 13 0 12 0;
+#X connect 14 0 11 0;
+#X connect 15 0 1 1;
+#X connect 15 0 17 0;
+#X coords 0 0 1 1 250 175 0 0 0;
