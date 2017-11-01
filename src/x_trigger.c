@@ -90,7 +90,7 @@ static void trigger_list (t_trigger *x, t_symbol *s, int argc, t_atom *argv)
         } else if (type == &s_list) {
             outlet_list (outlet, argc, argv);
         } else {
-            outlet_symbol (outlet, type);
+            outlet_anything (outlet, type, 0, NULL);
         }
     }
     //
