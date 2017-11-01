@@ -41,7 +41,7 @@ Improve the filters help (add examples and draw the frequency domain).
 
 Add a score notation widget.
 Use generic containers (i.g. linked list).
-Make an embeddable interpreter.
+Make it embeddable (as plug-in in DAW).
 Replace the Tk GUI (make MVC more strict).
 Implement a better preferences and fonts management.
 Make translation (internationalization).
