@@ -60,11 +60,13 @@ void tab_fetchArray (t_symbol *s, int *size, t_word **data, t_symbol *err)
 static void tabwrite_tilde_bang (t_tabwrite_tilde *x)
 {
     x->x_phase = 0;
+    
+    if (x->x_period > 0.0) { clock_unset (x->x_clock); clock_delay (x->x_clock, x->x_period); }
 }
 
 static void tabwrite_tilde_task (t_tabwrite_tilde *x)
 {
-    tabwrite_tilde_bang (x); clock_delay (x->x_clock, x->x_period);
+    tabwrite_tilde_bang (x);
 }
 
 static void tabwrite_tilde_polling (t_tabwrite_tilde *x)
