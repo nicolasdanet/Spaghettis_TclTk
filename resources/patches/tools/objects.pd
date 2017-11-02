@@ -1,4 +1,4 @@
-#N canvas 788 105 527 617 12;
+#N canvas 765 104 527 617 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 objects;
 #N canvas 550 216 546 349 gui 0;
@@ -280,11 +280,11 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 subpatch;
 #X text 168 84 Define a subpatch.;
-#X text 168 108 Attach a window to it.;
 #X text 168 132 Add an inlet.;
 #X text 168 156 Add an outlet.;
 #X text 168 180 Add a signal inlet.;
 #X text 168 204 Add a signal outlet.;
+#X text 168 108 Attach a window to a name.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 132 pd subpatch;
 #N canvas 552 24 454 498 operators 0;
@@ -377,12 +377,12 @@
 #X text 168 252 Listen incoming messages from internet.;
 #X text 168 276 Ask for a filename.;
 #X text 168 300 Ask for a filename to create.;
-#X text 168 324 Make a filename with a variable field.;
 #X text 168 348 Grab the keyboard events.;
 #X text 168 372 Key release only.;
 #X text 168 396 Get the key name and the modifiers.;
 #X obj 36 180 arguments;
 #X text 168 180 Fetch arguments of an abstraction.;
+#X text 168 324 Make a symbol with a variable field.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 372 pd miscellaneous;
 #N canvas 347 245 570 445 scalars 0;
