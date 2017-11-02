@@ -13,6 +13,8 @@ Think about an unit test suite.
 Profile and optimize code (i.g. arrays GUI for samples).
 Forbid the audio to glitch!
 Remove watchdog?
+Benchmark calling trigonometric C functions vs Hoeldrich trick.
+Is LUT worth the cost nowaday?
 
 ###
 

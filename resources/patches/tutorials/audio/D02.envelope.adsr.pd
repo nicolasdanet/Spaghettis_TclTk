@@ -14,7 +14,7 @@
 #X obj 36 108 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
 #X obj 84 180 t b;
 #X obj 84 228 tabwrite~ \$0-adsr 1000;
-#X text 24 24 ADSR;
+#X text 24 24 envelope (ADSR);
 #X connect 0 0 2 0;
 #X connect 0 0 10 0;
 #X connect 1 0 2 1;
