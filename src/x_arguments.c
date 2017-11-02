@@ -23,7 +23,8 @@ static t_class *arguments_class;            /* Shared. */
 typedef struct _arguments {
     t_object    x_obj;                      /* Must be the first. */
     t_glist     *x_owner;
-    t_outlet    *x_outlet;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
     } t_arguments;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -36,7 +37,8 @@ static void arguments_bang (t_arguments *x)
     
     PD_ASSERT (e);
     
-    outlet_list (x->x_outlet, environment_getNumberOfArguments (e), environment_getArguments (e));
+    outlet_symbol (x->x_outletRight, symbol_removeExtension (environment_getFileName (e)));
+    outlet_list (x->x_outletLeft, environment_getNumberOfArguments (e), environment_getArguments (e));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -47,8 +49,9 @@ static void *arguments_new (void)
 {
     t_arguments *x = (t_arguments *)pd_new (arguments_class);
     
-    x->x_owner  = instance_contextGetCurrent();
-    x->x_outlet = outlet_new (cast_object (x), &s_anything);
+    x->x_owner       = instance_contextGetCurrent();
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_anything);
+    x->x_outletRight = outlet_new (cast_object (x), &s_symbol);
     
     return x;
 }

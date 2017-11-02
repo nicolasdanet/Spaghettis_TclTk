@@ -9,6 +9,8 @@
 #X text 24 24 arguments;
 #X obj 36 144 arguments;
 #X text 12 72 Get arguments of a patch (only in abstraction).;
+#X obj 120 180 print;
 #X connect 4 0 8 0;
 #X connect 8 0 3 0;
+#X connect 8 1 10 0;
 #X coords 0 0 1 1 250 175 0 0 0;
