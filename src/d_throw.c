@@ -37,10 +37,7 @@ static void throw_tilde_set (t_throw_tilde *x, t_symbol *s)
     
     x->x_vector = NULL;
     
-    if (!catcher) { if (x->x_name != &s_) { error_canNotFind (sym_throw__tilde__, x->x_name); } }
-    else {
-        x->x_vector = catcher->x_vector;
-    }
+    if (catcher) { x->x_vector = catcher->x_vector; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -65,7 +62,9 @@ static void throw_tilde_dsp (t_throw_tilde *x, t_signal **sp)
     if (sp[0]->s_vectorSize != DSP_SEND_SIZE) { error_mismatch (sym_throw__tilde__, sym_size); }
     else {
         throw_tilde_set (x, x->x_name);
-        PD_ASSERT (sp[0]->s_vector != x->x_vector); dsp_add (throw_tilde_perform, 2, x, sp[0]->s_vector);
+        if (!x->x_vector && x->x_name != &s_) { error_canNotFind (sym_throw__tilde__, x->x_name); }
+        PD_ASSERT (sp[0]->s_vector != x->x_vector);
+        dsp_add (throw_tilde_perform, 2, x, sp[0]->s_vector);
     }
 }
 
