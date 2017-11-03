@@ -12,6 +12,7 @@ Think about an unit test suite.
 
 Profile and optimize code (i.g. arrays GUI for samples).
 Forbid the audio to glitch!
+Add a worker thread to handle GUI (with a lock free queue)?
 Remove watchdog?
 Benchmark calling trigonometric C functions vs Hoeldrich trick.
 Is LUT worth the cost nowaday?
@@ -48,7 +49,7 @@ Make it embeddable (as plug-in in DAW).
 Replace the Tk GUI (make MVC more strict).
 Implement a better preferences and fonts management.
 Make translation (internationalization).
-Consider dynamic patching with a multi-core audio engine.
+Allow dynamic patching (with new audio graph engine).
 Implement a new file format (reflect on extensibility).
 
 ###
