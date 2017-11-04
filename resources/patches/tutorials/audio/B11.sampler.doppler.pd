@@ -44,9 +44,9 @@
 #X obj 72 540 tabwrite~ \$0-out 500;
 #X obj 180 264 samphold~;
 #X obj 276 264 samphold~;
-#X text 24 24 loop (doppler);
 #X text 12 72 Protect against doppler effect and clicks when the chunk is changed.;
 #X f 68;
+#X text 24 24 sampler (doppler);
 #X connect 0 0 18 0;
 #X connect 5 0 13 1;
 #X connect 6 0 8 0;

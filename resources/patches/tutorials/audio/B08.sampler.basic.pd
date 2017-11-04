@@ -51,9 +51,9 @@
 #X obj 72 420 hradio 15 1 1 4 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0;
 #X text 192 168 Size of chunk.;
 #X text 96 108 Loops per second.;
-#X text 24 24 loop (basic);
 #X text 12 72 Basic looper (with clicks at looping point).;
 #X f 44;
+#X text 24 24 sampler (basic);
 #X connect 0 0 7 0;
 #X connect 7 0 1 0;
 #X connect 7 0 8 0;

@@ -52,9 +52,9 @@
 #X coords 0 1 1024 -1 250 175 1 0 0;
 #X restore 384 120 graph \$0-raw;
 #X obj 132 372 tabwrite~ \$0-raw 250;
-#X text 24 24 loop (windowed);
 #X text 12 72 Looper with an envelope (half cosine) to avoid clicks.;
 #X f 54;
+#X text 24 24 sampler (windowed);
 #X connect 0 0 5 0;
 #X connect 5 0 16 1;
 #X connect 5 0 20 0;
