@@ -36,7 +36,7 @@
 #X floatatom 36 168 5 0 100 1 - - -;
 #X f 5;
 #X text 12 72 A scratch machine.;
-#X text 24 24 scratch;
+#X text 24 24 sampler;
 #X connect 0 0 10 0;
 #X connect 1 0 2 0;
 #X connect 2 0 0 0;

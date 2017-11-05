@@ -54,7 +54,7 @@
 #X obj 132 372 tabwrite~ \$0-raw 250;
 #X text 12 72 Looper with an envelope (half cosine) to avoid clicks.;
 #X f 54;
-#X text 24 24 sampler (windowed);
+#X text 24 24 sampler (smooth);
 #X connect 0 0 5 0;
 #X connect 5 0 16 1;
 #X connect 5 0 20 0;
