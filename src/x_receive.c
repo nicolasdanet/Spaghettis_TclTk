@@ -62,21 +62,44 @@ static void receive_anything (t_receive *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void receive_bind (t_receive *x, t_symbol *s)
+{
+    if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
+    
+    x->x_name = s;
+    
+    if (x->x_name != &s_) { pd_bind (cast_pd (x), x->x_name); }
+}
+
+static void receive_set (t_receive *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc && IS_SYMBOL (argv)) { receive_bind (x, GET_SYMBOL (argv)); }
+    else {
+        error_unexpected (sym_receive, sym_value);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *receive_new (t_symbol *s)
 {
     t_receive *x = (t_receive *)pd_new (receive_class);
     
-    x->x_name   = s;
+    x->x_name   = &s_;
     x->x_outlet = outlet_new (cast_object (x), &s_anything);
-        
-    if (x->x_name != &s_) { pd_bind (cast_pd (x), x->x_name); }
+    
+    receive_bind (x, s);
+    
+    if (x->x_name == &s_) { inlet_new2 (x, &s_symbol); }
 
     return x;
 }
 
 static void receive_free (t_receive *x)
 {
-    if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
+    receive_bind (x, &s_);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -103,6 +126,10 @@ void receive_setup (void)
     class_addPointer (c, (t_method)receive_pointer);
     class_addList (c, (t_method)receive_list);
     class_addAnything (c, (t_method)receive_anything);
+    
+    /* Use an A_GIMME signature (instead of A_SYMBOL) to avoid warnings with list. */
+    
+    class_addMethod (c, (t_method)receive_set, sym__inlet2, A_GIMME, A_NULL);
     
     receive_class = c;
 }
