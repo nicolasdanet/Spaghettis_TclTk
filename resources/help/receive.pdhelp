@@ -1,4 +1,4 @@
-#N canvas 464 223 403 333 12;
+#N canvas 503 221 403 333 12;
 #X obj 96 288 send;
 #X text 12 288 See also:;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
@@ -19,6 +19,7 @@
 #X text 24 24 receive;
 #X text 12 72 Receive messages from a named pipe.;
 #X f 35;
+#X obj 228 288 value;
 #X connect 5 0 9 0;
 #X connect 6 0 11 0;
 #X connect 10 0 7 0;
