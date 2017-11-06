@@ -30,7 +30,7 @@ typedef struct _makefilename {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Note that complex and multiple substitutions are rejected. */
+/* Note that for now complex and multiple substitutions are rejected. */
 
 static t_error makefilename_scanFormat (t_makefilename *x)
 {
@@ -121,7 +121,11 @@ static void makefilename_symbol (t_makefilename *x, t_symbol *s)
 
 static void makefilename_list (t_makefilename *x, t_symbol *s, int argc, t_atom *argv)
 {
-    makefilename_symbol (x, symbol_withAtoms (argc, argv));
+    if (argc && IS_FLOAT (argv) && (argc == 1 || x->x_typeRequired == A_FLOAT)) {
+        makefilename_float (x, GET_FLOAT (argv));
+    } else {
+        makefilename_symbol (x, symbol_withAtoms (argc, argv));
+    }
 }
 
 static void makefilename_anything (t_makefilename *x, t_symbol *s, int argc, t_atom *argv)

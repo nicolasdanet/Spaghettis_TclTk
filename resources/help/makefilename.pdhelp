@@ -1,4 +1,4 @@
-#N canvas 483 73 524 474 12;
+#N canvas 314 122 524 474 12;
 #X obj 36 192 print;
 #X obj 36 348 print;
 #X obj 36 312 makefilename dog%s.aif;
@@ -54,7 +54,7 @@
 #X obj 36 156 makefilename dog%d.aif;
 #X text 276 552 comment;
 #X text 12 396 < https://en.wikipedia.org/wiki/Printf_format_string >;
-#X text 12 72 Make (ala printf) a file name with a variable field.;
+#X text 12 72 Make (ala printf) a file name with ONE variable field.;
 #X connect 2 0 1 0;
 #X connect 10 0 13 0;
 #X connect 11 0 2 0;
