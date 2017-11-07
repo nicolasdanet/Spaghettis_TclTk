@@ -9,79 +9,41 @@
 
 #include "m_pd.h"
 #include "m_core.h"
-#include "s_system.h"
 #include "g_graphics.h"
-#include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *samplerate_class;           /* Shared. */
+static t_class *title_class;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _samplerate {
-    t_object    x_obj;                      /* Must be the first. */
+typedef struct _title {
+    t_object    x_obj;                  /* Must be the first. */
     t_glist     *x_owner;
     t_outlet    *x_outlet;
-    } t_samplerate;
+    } t_title;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_block *samplerate_getBlockIfContainsAny (t_glist **p)
+static void title_bang (t_title *x)
 {
-    t_block *block = NULL;
-    t_glist *glist = *p;
-    
-    t_gobj *y = NULL;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == block_class) {
-            if (block) { error_unexpected (sym_samplerate, sym_block__tilde__); }
-            else {
-                block = (t_block *)y;
-            }
-        }
-    }
-    
-    *p = glist_getParent (glist);
-    
-    return block;
+
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void samplerate_bang (t_samplerate *x)
+static void *title_new (void)
 {
-    t_float sampleRate = audio_getSampleRate();
-    
-    t_glist *glist = x->x_owner;
-    
-    while (glist) {
-        t_block *b = samplerate_getBlockIfContainsAny (&glist);
-        if (b) { 
-            sampleRate *= block_getRatio (b);
-        }
-    }
-    
-    outlet_float (x->x_outlet, sampleRate);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void *samplerate_new (void)
-{
-    t_samplerate *x = (t_samplerate *)pd_new (samplerate_class);
+    t_title *x = (t_title *)pd_new (title_class);
     
     x->x_owner  = instance_contextGetCurrent();
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
     
     return x;
 }
@@ -90,27 +52,25 @@ static void *samplerate_new (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void samplerate_setup (void)
+void title_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_samplerate,
-            (t_newmethod)samplerate_new,
+    c = class_new (sym_title,
+            (t_newmethod)title_new,
             NULL,
-            sizeof (t_samplerate),
+            sizeof (t_title),
             CLASS_DEFAULT,
             A_NULL);
-    
-    class_addCreator ((t_newmethod)samplerate_new, sym_samplerate__tilde__, A_NULL);
 
-    class_addBang (c, (t_method)samplerate_bang);
+    class_addBang (c, (t_method)title_bang);
     
-    samplerate_class = c;
+    title_class = c;
 }
 
-void samplerate_destroy (void)
+void title_destroy (void)
 {
-    class_free (samplerate_class);
+    class_free (title_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

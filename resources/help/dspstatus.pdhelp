@@ -26,5 +26,6 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 168 108 pd more;
 #X obj 192 192 arguments;
+#X obj 276 192 title;
 #X connect 6 0 7 0;
 #X coords 0 0 1 1 250 175 0 0 0;

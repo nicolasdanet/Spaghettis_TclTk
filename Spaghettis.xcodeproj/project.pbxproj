@@ -22,6 +22,7 @@
 		17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */; };
 		17C15CEA1F8E4EF8000695B7 /* x_arguments.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C15CE91F8E4EF7000695B7 /* x_arguments.c */; };
 		17C5194A1F23195900113504 /* x_uzi.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C519491F23195900113504 /* x_uzi.c */; };
+		17CA45381FB188CF0054245C /* x_title.c in Sources */ = {isa = PBXBuildFile; fileRef = 17CA45371FB188CF0054245C /* x_title.c */; };
 		17F6BD3C1F110686001E602C /* m_snap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F6BD3B1F110686001E602C /* m_snap.c */; };
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
 		370158391DFFD81B00F3FE0C /* d_delread.c in Sources */ = {isa = PBXBuildFile; fileRef = 370158381DFFD81B00F3FE0C /* d_delread.c */; };
@@ -429,6 +430,7 @@
 		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
 		17C15CE91F8E4EF7000695B7 /* x_arguments.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arguments.c; path = src/x_arguments.c; sourceTree = "<group>"; };
 		17C519491F23195900113504 /* x_uzi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_uzi.c; path = src/x_uzi.c; sourceTree = "<group>"; };
+		17CA45371FB188CF0054245C /* x_title.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_title.c; path = src/x_title.c; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
 		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_outlet.h; path = src/m_outlet.h; sourceTree = "<group>"; };
 		17F6BD3B1F110686001E602C /* m_snap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_snap.c; path = src/m_snap.c; sourceTree = "<group>"; };
@@ -1274,6 +1276,7 @@
 				37B1AA561DC1EE3E0017355A /* x_samplerate.c */,
 				17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */,
 				17C15CE91F8E4EF7000695B7 /* x_arguments.c */,
+				17CA45371FB188CF0054245C /* x_title.c */,
 				179E91121F0F6B11009A4FA6 /* x_freeze.c */,
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
 				3702414F1DAB95AC00AB5440 /* x_serial.c */,
@@ -2156,6 +2159,7 @@
 				37C5234C1DBB4D44008753D1 /* x_pgmout.c in Sources */,
 				37C5236B1DBB4DFC008753D1 /* x_ctlout.c in Sources */,
 				37C523741DBB4EA1008753D1 /* x_noteout.c in Sources */,
+				17CA45381FB188CF0054245C /* x_title.c in Sources */,
 				370793031DBB4F4B00183F74 /* x_midiout.c in Sources */,
 				3707931F1DBB507700183F74 /* x_midirealtimein.c in Sources */,
 				3707935C1DBB520A00183F74 /* x_polytouchin.c in Sources */,

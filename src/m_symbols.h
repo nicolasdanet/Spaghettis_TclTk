@@ -544,6 +544,7 @@ extern t_symbol *sym_tgl;
 extern t_symbol *sym_threshold__tilde__;
 extern t_symbol *sym_throw__tilde__;
 extern t_symbol *sym_timer;
+extern t_symbol *sym_title;
 extern t_symbol *sym_tolist;
 extern t_symbol *sym_tosymbol;
 extern t_symbol *sym_touchin;

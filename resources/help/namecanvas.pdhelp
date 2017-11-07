@@ -12,7 +12,7 @@
 #N canvas 0 22 500 350 Patch 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 96 288 pd;
-#X text 12 72 Attach the owning window to a name.;
+#X text 12 72 Attach the owning patch to a name.;
 #X connect 4 0 5 0;
 #X connect 7 0 6 0;
 #X connect 8 0 6 0;

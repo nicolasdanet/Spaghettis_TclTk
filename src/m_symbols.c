@@ -544,6 +544,7 @@ t_symbol *sym_tgl;
 t_symbol *sym_threshold__tilde__;
 t_symbol *sym_throw__tilde__;
 t_symbol *sym_timer;
+t_symbol *sym_title;
 t_symbol *sym_tolist;
 t_symbol *sym_tosymbol;
 t_symbol *sym_touchin;
@@ -1163,6 +1164,7 @@ void symbols_initialize (void)
     sym_threshold__tilde__                      = gensym ("threshold~");
     sym_throw__tilde__                          = gensym ("throw~");
     sym_timer                                   = gensym ("timer");
+    sym_title                                   = gensym ("title");
     sym_tolist                                  = gensym ("tolist");
     sym_tosymbol                                = gensym ("tosymbol");
     sym_touchin                                 = gensym ("touchin");
