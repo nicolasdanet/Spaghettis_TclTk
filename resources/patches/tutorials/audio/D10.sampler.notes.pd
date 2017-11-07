@@ -1,4 +1,4 @@
-#N canvas 482 135 513 514 12;
+#N canvas 482 135 520 549 12;
 #N canvas 546 100 706 387 samples 0;
 #X obj 36 24 loadbang;
 #X obj 36 96 soundfiler;
@@ -15,7 +15,7 @@
 #X connect 0 0 4 0;
 #X connect 4 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 276 372 pd samples;
+#X restore 156 408 pd samples;
 #N canvas 370 56 522 687 playback 0;
 #X obj 36 132 line~;
 #X obj 300 132 line~;
@@ -57,13 +57,13 @@
 #X connect 14 3 4 0;
 #X connect 15 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 36 372 pd playback;
+#X restore 36 408 pd playback;
 #X msg 36 108 60 100 10000 1 0 0 0;
 #X msg 36 156 60 90 10000 1 0 0 0;
 #X msg 36 180 60 100 10000 2 0 0 0;
 #X msg 36 252 60 100 100 1 0 0 0;
 #X msg 36 276 60 100 100 1 0 0 1000;
-#X obj 36 420 output~;
+#X obj 36 456 output~;
 #X msg 36 228 60 100 10000 1 0 750 0;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
@@ -154,6 +154,7 @@
 #X connect 6 0 2 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 336 pd control;
+#X obj 60 372 print;
 #X connect 1 0 7 0;
 #X connect 2 0 23 0;
 #X connect 3 0 23 0;
@@ -164,4 +165,5 @@
 #X connect 13 0 23 0;
 #X connect 14 0 23 0;
 #X connect 23 0 1 0;
+#X connect 23 0 24 0;
 #X coords 0 0 1 1 250 175 0 0 0;
