@@ -85,7 +85,7 @@
 #X f 5;
 #X obj 36 324 s;
 #X msg 108 276 symbol \$0-r\$1;
-#X obj 108 240 hradio 15 1 1 4 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 2;
+#X obj 108 240 hradio 15 1 1 4 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 1;
 #X floatatom 36 408 5 0 0 1 - - -;
 #X f 5;
 #X obj 36 504 v;
@@ -132,7 +132,6 @@
 #X text 12 204 Use binding (but abuse leads to confusion also).;
 #X f 48;
 #X obj 108 408 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
-#X text 12 372 Or named values to store variables.;
 #X floatatom 276 240 5 0 0 1 - #0-r0 -;
 #X f 5;
 #X floatatom 336 240 5 0 0 1 - #0-r1 -;
@@ -156,6 +155,18 @@
 #X connect 3 0 7 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 276 300 pd more;
+#N canvas 1042 136 252 198 again 0;
+#X msg 36 60 symbol \$0-r\$1;
+#X obj 36 24 hradio 15 1 1 4 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 1;
+#X obj 36 108 r;
+#X floatatom 36 144 5 0 0 1 - - -;
+#X f 5;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
+#X connect 2 0 3 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 276 324 pd again;
+#X text 12 372 Or use named values to store variables.;
 #X connect 2 0 3 0;
 #X connect 4 0 5 0;
 #X connect 6 0 7 0;
