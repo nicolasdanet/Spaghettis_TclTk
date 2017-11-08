@@ -37,6 +37,7 @@ typedef struct _qlist {
     int             ql_flagReentrant;
     t_pd            *ql_target;
     t_outlet        *ql_outletLeft;
+    t_outlet        *ql_outletMiddle;
     t_outlet        *ql_outletRight;
     t_clock         *ql_clock;
     } t_qlist;

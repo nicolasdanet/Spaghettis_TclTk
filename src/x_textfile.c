@@ -40,7 +40,7 @@ static void textfile_bang (t_qlist *x)
     
     x->ql_indexOfMessage += 1;
     //
-    } else { x->ql_indexOfMessage = PD_INT_MAX; outlet_bang (x->ql_outletRight); }
+    } else { x->ql_indexOfMessage = PD_INT_MAX; outlet_bang (x->ql_outletMiddle); }
 }
 
 static void textfile_rewind (t_qlist *x)
@@ -60,6 +60,7 @@ static void *textfile_new (t_symbol *s, int argc, t_atom *argv)
     
     x->ql_indexOfMessage = 0;
     x->ql_outletLeft     = outlet_new (cast_object (x), &s_list);
+    x->ql_outletMiddle   = outlet_new (cast_object (x), &s_bang);
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
     
     if (argc && !IS_FLOAT (argv)) { qlist_read (x, symbol_withAtoms (argc, argv)); }

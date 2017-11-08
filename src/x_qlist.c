@@ -127,7 +127,7 @@ static void qlist_proceed (t_qlist *x, int doNotSend, int isAutomatic)
 
     x->ql_flagReentrant = 0;
     
-    if (err) { x->ql_indexOfMessage = PD_INT_MAX; outlet_bang (x->ql_outletRight); }
+    if (err) { x->ql_indexOfMessage = PD_INT_MAX; outlet_bang (x->ql_outletMiddle); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ static void qlist_unit (t_qlist *x, t_symbol *unitName, t_float f)
 
 void qlist_modified (t_qlist *x)
 {
-    ;
+    outlet_bang (x->ql_outletRight);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -251,6 +251,7 @@ static void *qlist_new (t_symbol *s, int argc, t_atom *argv)
     x->ql_indexOfMessage = 0;
     x->ql_waitCount      = 0;
     x->ql_outletLeft     = outlet_new (cast_object (x), &s_list);
+    x->ql_outletMiddle   = outlet_new (cast_object (x), &s_bang);
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
     x->ql_clock          = clock_new ((void *)x, (t_method)qlist_task);
 

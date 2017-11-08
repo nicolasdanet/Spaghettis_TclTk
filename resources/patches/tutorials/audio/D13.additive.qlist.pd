@@ -1,4 +1,4 @@
-#N canvas 469 44 575 506 12;
+#N canvas 469 44 576 513 12;
 #X obj 36 420 output~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
