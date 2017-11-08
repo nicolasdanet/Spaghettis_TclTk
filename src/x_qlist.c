@@ -48,10 +48,11 @@ static int qlist_proceedNext (t_qlist *x,
     int count = end - start;
     
     if (count && !x->ql_target) {
-        if (!IS_SYMBOL (buffer_getAtomAtIndex (b, start))) { return 0; }
+        t_atom *a = buffer_getAtomAtIndex (b, start);
+        if (!IS_SYMBOL (a)) { return 0; }
         else {
-            t_symbol *t = GET_SYMBOL (buffer_getAtomAtIndex (b, start));
-            if (pd_hasThing (t)) { x->ql_target = pd_getThing (t); }
+            t_symbol *t = GET_SYMBOL (a);
+            if (pd_hasThingQuiet (t)) { x->ql_target = pd_getThing (t); }
             else {
                 return 0;
             }

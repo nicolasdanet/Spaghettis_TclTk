@@ -7,7 +7,6 @@
 #X f 62;
 #X obj 36 180 qlist additive.txt;
 #X msg 36 108 unit 1 \, bang;
-#X obj 312 216 r #;
 #X obj 36 216 additive amplitude1 pitch1;
 #X obj 36 240 additive amplitude2 pitch2;
 #X obj 36 264 additive amplitude3 pitch3;
@@ -18,13 +17,13 @@
 #X obj 36 384 additive amplitude8 pitch8;
 #X msg 36 132 unit 4 \, bang;
 #X connect 6 0 5 0;
+#X connect 7 0 8 0;
 #X connect 8 0 9 0;
 #X connect 9 0 10 0;
 #X connect 10 0 11 0;
 #X connect 11 0 12 0;
 #X connect 12 0 13 0;
 #X connect 13 0 14 0;
-#X connect 14 0 15 0;
-#X connect 15 0 0 0;
-#X connect 16 0 5 0;
+#X connect 14 0 0 0;
+#X connect 15 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
