@@ -1042,13 +1042,13 @@ t_error glist_lineConnect (t_glist *glist,
     
     /* Creates dummy outlets and inlets (failure at object creation). */
     
-    if (pd_class (srcObject) == text_class && object_isObject (srcObject)) {
+    if (object_isDummy (srcObject)) {
         while (m >= object_getNumberOfOutlets (srcObject)) {
             outlet_new (srcObject, NULL);
         }
     }
     
-    if (pd_class (destObject) == text_class && object_isObject (destObject)) {
+    if (object_isDummy (destObject)) {
         while (n >= object_getNumberOfInlets (destObject)) {
             inlet_new (destObject, cast_pd (destObject), NULL, NULL);
         }
@@ -1122,6 +1122,7 @@ void glist_lineCheck (t_glist *glist, t_object *o)
     t_object *o1 = traverser_getSource (&t);
     t_object *o2 = traverser_getDestination (&t);
     
+    if (!object_isDummy (o1) && !object_isDummy (o2)) {
     if (o1 == o || o2 == o) {
         
         int m = traverser_getIndexOfOutlet (&t);
@@ -1130,6 +1131,7 @@ void glist_lineCheck (t_glist *glist, t_object *o)
         if (object_isSignalOutlet (o1, m) && !object_isSignalInlet (o2, n)) {
             traverser_disconnect (&t); error_failed (sym_connect);
         }
+    }
     }
     //
     }
