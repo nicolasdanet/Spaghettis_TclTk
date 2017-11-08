@@ -232,6 +232,11 @@ static void qlist_unit (t_qlist *x, t_symbol *unitName, t_float f)
     }
 }
 
+void qlist_modified (t_qlist *x)
+{
+    ;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -287,7 +292,8 @@ void qlist_setup (void)
     class_addMethod (c, (t_method)qlist_read,           sym_read,       A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)qlist_write,          sym_write,      A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)qlist_unit,           sym_unit,       A_FLOAT, A_DEFSYMBOL, A_NULL); 
-
+    class_addMethod (c, (t_method)qlist_modified,       sym__modified,  A_NULL);
+    
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
     class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
 
