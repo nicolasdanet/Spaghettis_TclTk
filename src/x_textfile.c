@@ -9,6 +9,7 @@
 
 #include "m_pd.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "g_graphics.h"
 #include "x_text.h"
 
@@ -31,12 +32,19 @@ static void textfile_bang (t_qlist *x)
     //
     int size = end - start;
     t_atom *first = buffer_getAtomAtIndex (b, start);
+    t_atom *e = NULL;
+    
+    PD_ATOMS_ALLOCA (e, size);
         
-    if (size && IS_SYMBOL (first)) {
-        outlet_anything (x->ql_outletLeft, GET_SYMBOL (first), size - 1, first + 1); 
+    atom_copyAtomsExpanded (first, size, e, size, x->ql_owner);
+        
+    if (size && IS_SYMBOL (e)) {
+        outlet_anything (x->ql_outletLeft, GET_SYMBOL (e), size - 1, e + 1);
     } else {
-        outlet_list (x->ql_outletLeft, size, size ? first : NULL);
+        outlet_list (x->ql_outletLeft, size, size ? e : NULL);
     }
+    
+    PD_ATOMS_FREEA (e, size);
     
     x->ql_indexOfMessage += 1;
     //
