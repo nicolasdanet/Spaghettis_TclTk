@@ -1,4 +1,4 @@
-#N canvas 513 199 478 374 12;
+#N canvas 372 131 525 382 12;
 #X obj 36 216 qlist;
 #X obj 240 108 r this;
 #X obj 360 108 r that;
@@ -9,7 +9,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 qlist;
 #X text 12 72 Text-based sequencer.;
-#N canvas 307 113 694 436 more 0;
+#N canvas 628 60 700 436 more 0;
 #X obj 36 156 qlist qlist.txt;
 #X msg 36 72 next;
 #X f 4;
@@ -35,7 +35,7 @@
 #X connect 10 0 7 0;
 #X connect 11 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 360 216 pd more;
+#X restore 360 240 pd more;
 #X msg 84 156 read qlist.txt;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 84 108 loadbang;
@@ -63,7 +63,19 @@
 #X connect 5 0 0 0;
 #X connect 6 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 360 240 pd edit;
+#X restore 360 264 pd edit;
+#N canvas 671 154 466 260 again 0;
+#X obj 36 84 qlist dollars.txt;
+#X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 132 r \$0-this;
+#X obj 36 156 r \$0-that;
+#X obj 36 204 print this;
+#X text 12 12 Note that qlist handles dollar expansion.;
+#X connect 1 0 0 0;
+#X connect 2 0 4 0;
+#X connect 3 0 4 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 360 288 pd again;
 #X connect 0 1 16 0;
 #X connect 1 0 14 0;
 #X connect 2 0 15 0;

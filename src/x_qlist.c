@@ -49,9 +49,11 @@ static int qlist_proceedNext (t_qlist *x,
     
     if (count && !x->ql_target) {
         t_atom *a = buffer_getAtomAtIndex (b, start);
-        if (!IS_SYMBOL (a)) { return 0; }
+        t_atom e; atom_copyAtomsExpanded (a, 1, &e, 1, x->ql_owner);
+        
+        if (!IS_SYMBOL (&e)) { return 0; }
         else {
-            t_symbol *t = GET_SYMBOL (a);
+            t_symbol *t = GET_SYMBOL (&e);
             if (pd_hasThingQuiet (t)) { x->ql_target = pd_getThing (t); }
             else {
                 return 0;
@@ -69,10 +71,18 @@ static int qlist_proceedNext (t_qlist *x,
         if (!count) { pd_message (x->ql_target, &s_list, 0, NULL); }
         else {
             t_atom *first = buffer_getAtomAtIndex (b, start);
-            if (IS_FLOAT (first)) { pd_message (x->ql_target, &s_list, count, first); }
-            else if (IS_SYMBOL (first)) { 
-                pd_message (x->ql_target, GET_SYMBOL (first), count - 1, first + 1); 
+            t_atom *e = NULL;
+            
+            PD_ATOMS_ALLOCA (e, count);
+            
+            atom_copyAtomsExpanded (first, count, e, count, x->ql_owner);
+            
+            if (IS_FLOAT (e)) { pd_message (x->ql_target, &s_list, count, e); }
+            else if (IS_SYMBOL (e)) {
+                pd_message (x->ql_target, GET_SYMBOL (e), count - 1, e + 1);
             }
+            
+            PD_ATOMS_FREEA (e, count);
         }
     }
     
@@ -250,6 +260,7 @@ static void *qlist_new (t_symbol *s, int argc, t_atom *argv)
     
     x->ql_indexOfMessage = 0;
     x->ql_waitCount      = 0;
+    x->ql_owner          = instance_contextGetCurrent();
     x->ql_outletLeft     = outlet_new (cast_object (x), &s_list);
     x->ql_outletMiddle   = outlet_new (cast_object (x), &s_bang);
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);

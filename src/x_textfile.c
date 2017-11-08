@@ -59,6 +59,7 @@ static void *textfile_new (t_symbol *s, int argc, t_atom *argv)
     textbuffer_init (&x->ql_textbuffer);
     
     x->ql_indexOfMessage = 0;
+    x->ql_owner          = instance_contextGetCurrent();
     x->ql_outletLeft     = outlet_new (cast_object (x), &s_list);
     x->ql_outletMiddle   = outlet_new (cast_object (x), &s_bang);
     x->ql_outletRight    = outlet_new (cast_object (x), &s_bang);
