@@ -46,9 +46,9 @@
 #X obj 36 336 pack f 0;
 #X floatatom 120 288 5 0 0 1 - - -;
 #X f 5;
-#X text 24 24 two cosines (declick);
 #X text 12 72 Sample and hold the frequency to avoid clicks.;
 #X f 46;
+#X text 24 24 two-cosines (declick);
 #X connect 0 0 3 0;
 #X connect 0 0 8 0;
 #X connect 2 0 9 0;
