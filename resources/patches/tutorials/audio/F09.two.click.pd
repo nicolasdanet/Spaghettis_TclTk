@@ -45,7 +45,7 @@
 #X f 55;
 #X floatatom 120 288 5 0 0 1 - - -;
 #X f 5;
-#X text 24 24 two-cosines (click);
+#X text 24 24 two-cosine (click);
 #X connect 0 0 3 0;
 #X connect 0 0 8 0;
 #X connect 2 0 9 0;
