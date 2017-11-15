@@ -1,47 +1,54 @@
-#N canvas 449 186 777 377 12;
-#X text 103 7 DELAYS;
-#X text 248 79 The delwrite~ object creates the delay line \; you give
-it a name and a size in milliseconds. Each delwrite~ should have a
-different name.;
-#N canvas 208 198 548 248 sample 0;
-#N canvas 0 22 450 300 (subpatch) 0;
-#X array G01-tab 61079 float 0;
-#X coords 0 1 61078 -1 200 140 1;
-#X restore 100 20 graph;
-#X obj 61 176 loadbang;
-#X obj 60 221 soundfiler;
-#X msg 61 199 read -resize voice.wav G01-tab;
+#N canvas 531 163 414 486 12;
+#N canvas 644 168 358 321 sample 0;
+#N canvas 0 22 450 300 \$0-table 0;
+#X array \$0-table 62079 float 0;
+#X coords 0 1 62078 -1 200 140 1 0 0;
+#X restore 36 36 graph \$0-table;
+#X obj 36 204 loadbang;
+#X obj 36 276 soundfiler;
+#X msg 36 240 read -resize voice.wav \$0-table;
 #X connect 1 0 3 0;
 #X connect 3 0 2 0;
-#X restore 253 337 pd sample;
-#X floatatom 38 196 4 0 999 0 - - -, f 4;
-#X text 81 195 <-- delay time;
-#X text 46 230 read from delay line;
-#X obj 38 249 delread~ delay1;
-#X obj 14 87 tabplay~ G01-tab;
-#X obj 14 63 metro 1000;
-#X obj 14 39 loadbang;
-#X text 40 146 write to delay line;
-#X obj 16 303 output~;
-#X obj 15 275 +~;
-#X obj 24 165 delwrite~ delay1 1000;
-#X text 248 24 You can delay a signal using the delwrite~ and delread~
-objects. In this example \, a sample loops continuously and is added
-to a delayed copy of itself.;
-#X text 247 215 The delread~ object always delays the signal an integer
-number of samples and does no interpolation.;
-#X text 28 107 test signal to delay;
-#X text 248 130 Delread~'s arguments are the name of a delwrite (of
-which there should be exactly one) and an optional delay time in milliseconds
-between 0 and the length of the delay line. Each delwrite~ may have
-as many delread~s as you wish \, which can then function as multiple
-delay taps.;
-#X text 114 209 (msec);
-#X connect 3 0 6 0;
-#X connect 6 0 12 1;
-#X connect 7 0 12 0;
-#X connect 7 0 13 0;
-#X connect 8 0 7 0;
-#X connect 9 0 8 0;
-#X connect 12 0 11 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 300 348 pd sample;
+#X obj 36 180 metro 1000;
+#X obj 36 396 output~;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 delay;
+#X text 12 72 Delay a signal.;
+#X obj 36 108 dspstatus;
+#X obj 156 240 nbx 5 40 0 500 0 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 100 100;
+#X obj 36 144 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
+#N canvas 0 22 325 218 writer 0;
+#X obj 36 60 tabplay~ \$0-table;
+#X obj 72 108 delwrite~ \$0-delay 1000;
+#X obj 36 24 inlet;
+#X obj 36 168 outlet~;
+#X connect 0 0 1 0;
+#X connect 0 0 3 0;
+#X connect 2 0 0 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 216 pd writer;
+#N canvas 144 384 302 230 reader 0;
+#X obj 36 132 +~;
+#X obj 120 72 delread~ \$0-delay;
+#X obj 36 24 inlet~;
+#X obj 36 180 outlet~;
+#X obj 120 24 inlet;
+#X connect 0 0 3 0;
+#X connect 1 0 0 1;
+#X connect 2 0 0 0;
+#X connect 4 0 1 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 348 pd reader;
+#X floatatom 156 300 5 0 0 1 - - -;
+#X f 5;
+#X connect 1 0 10 0;
+#X connect 7 0 9 0;
+#X connect 8 0 12 0;
+#X connect 9 0 1 0;
+#X connect 10 0 11 0;
+#X connect 11 0 2 0;
 #X connect 12 0 11 1;
+#X coords 0 0 1 1 250 175 0 0 0;
