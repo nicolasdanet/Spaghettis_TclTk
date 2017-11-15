@@ -1,128 +1,39 @@
-#N canvas 89 22 756 700 12;
-#X obj 127 608 cos~;
-#X obj 127 585 *~;
-#X obj 170 608 cos~;
-#X obj 225 553 wrap~;
-#X obj 189 553 -~;
-#X obj 170 585 +~;
-#X obj 163 638 -~;
-#X obj 183 670 *~;
-#X obj 145 670 +~;
-#X obj 189 521 samphold~;
-#X floatatom 189 321 4 0 127 0 - - -, f 4;
-#X text 185 283 center;
-#X obj 189 388 line~;
-#X obj 189 365 pack 0 50;
-#X obj 80 464 phasor~;
-#X floatatom 80 370 4 0 127 0 - - -, f 4;
-#X text 71 331 fundamental;
-#X floatatom 387 384 4 0 127 0 - - -, f 4;
-#X obj 387 455 line~;
-#X obj 298 584 *~;
-#X obj 387 432 pack 0 50;
-#N canvas 94 264 600 388 make-table 0;
-#X msg 81 44 bang;
-#X obj 81 73 t b b;
-#X obj 159 142 f;
-#X obj 197 142 + 1;
-#X msg 175 112 0;
-#X obj 81 102 until;
-#X obj 161 177 t f f;
-#X obj 76 306 tabwrite bell-curve;
-#X obj 52 270 expr exp(-$f1*$f1);
-#X obj 63 168 sel 199;
-#X obj 51 241 expr ($f1-100)/25;
-#N canvas 0 22 450 300 (subpatch) 0;
-#X array bell-curve 200 float 1;
-#A 0 1.12535e-07 1.54727e-07 2.12059e-07 2.89706e-07 3.94519e-07 5.35535e-07
-7.24633e-07 9.77371e-07 1.31404e-06 1.76105e-06 2.35258e-06 3.13275e-06
-4.15832e-06 5.50199e-06 7.25659e-06 9.54016e-06 1.25023e-05 1.63317e-05
-2.1266e-05 2.76026e-05 3.57128e-05 4.60584e-05 5.92113e-05 7.58768e-05
-9.69224e-05 0.00012341 0.000156634 0.000198167 0.000249912 0.000314163
-0.000393669 0.000491721 0.000612231 0.000759842 0.000940028 0.00115923
-0.00142498 0.00174605 0.00213263 0.00259648 0.00315111 0.00381201 0.00459678
-0.0055254 0.0066204 0.00790705 0.0094136 0.0111714 0.013215 0.0155826
-0.0183156 0.0214592 0.0250621 0.0291763 0.0338573 0.0391639 0.0451575
-0.0519019 0.0594631 0.0679081 0.0773047 0.0877205 0.0992216 0.111872
-0.125732 0.140858 0.1573 0.1751 0.194291 0.214896 0.236928 0.260383
-0.285247 0.311486 0.339053 0.367879 0.397882 0.428956 0.46098 0.493812
-0.527292 0.561244 0.595473 0.62977 0.663916 0.697676 0.730811 0.763074
-0.794216 0.823987 0.852144 0.878447 0.902668 0.924595 0.944027 0.960789
-0.974725 0.985703 0.99362 0.998401 1 0.998401 0.99362 0.985703 0.974725
-0.960789 0.944027 0.924595 0.902668 0.878447 0.852144 0.823987 0.794216
-0.763074 0.730811 0.697676 0.663916 0.62977 0.595473 0.561244 0.527292
-0.493812 0.46098 0.428956 0.397882 0.367879 0.339053 0.311486 0.285247
-0.260383 0.236928 0.214896 0.194291 0.1751 0.1573 0.140858 0.125732
-0.111872 0.0992216 0.0877205 0.0773047 0.0679081 0.0594631 0.0519019
-0.0451575 0.0391639 0.0338573 0.0291763 0.0250621 0.0214592 0.0183156
-0.0155826 0.013215 0.0111714 0.0094136 0.00790705 0.0066204 0.0055254
-0.00459678 0.00381201 0.00315111 0.00259648 0.00213263 0.00174605 0.00142498
-0.00115923 0.000940028 0.000759842 0.000612231 0.000491721 0.000393669
-0.000314163 0.000249912 0.000198167 0.000156634 0.00012341 9.69224e-05
-7.58768e-05 5.92113e-05 4.60584e-05 3.57128e-05 2.76026e-05 2.1266e-05
-1.63317e-05 1.25023e-05 9.54016e-06 7.25659e-06 5.50199e-06 4.15832e-06
-3.13275e-06 2.35258e-06 1.76105e-06 1.31404e-06 9.77371e-07 7.24633e-07
-5.35535e-07 3.94519e-07 2.89706e-07 2.12059e-07 1.54727e-07;
-#X coords 0 1 199 0 200 140 1;
-#X restore 342 85 graph;
-#X connect 0 0 1 0;
-#X connect 1 0 5 0;
-#X connect 1 1 4 0;
-#X connect 2 0 3 0;
-#X connect 2 0 6 0;
-#X connect 2 0 9 0;
-#X connect 3 0 2 1;
-#X connect 4 0 2 1;
-#X connect 5 0 2 0;
-#X connect 6 0 10 0;
-#X connect 6 1 7 1;
-#X connect 8 0 7 0;
-#X connect 9 0 5 1;
-#X connect 10 0 8 0;
-#X restore 536 647 pd make-table;
-#X obj 298 558 cos~;
-#X obj 298 533 -~ 0.25;
-#X obj 298 610 +~ 100;
-#X obj 298 633 tabread4~ bell-curve;
-#X obj 184 699 *~;
-#X text 330 658 waveshaper;
-#X text 31 2 CHANGING PAF CONTROLS TO NATURAL UNITS;
-#X obj 80 394 mtof;
-#X obj 211 413 expr 1/$f1;
-#X obj 189 341 mtof;
-#X text 184 298 freq.;
-#X obj 189 437 *~;
-#X text 385 357 bandwidth;
-#X obj 387 406 mtof;
-#X obj 387 491 *~;
-#X obj 387 515 *~ 25;
-#X text 18 23 The more "natural" units for describing a formant might
-be center frequency and bandwidth \, so that you can change the fundamental
-without having the formant shift up and down in parallel. Here all
-three frequencies are expressed in MIDI units. The bandwidth and center
-frequency have to be divided by the fundamental (the expr 1/$f1 takes
-its reciprocal and two *~ objects finish the division.);
-#X text 427 490 divide by fundamental;
-#X text 445 514 range for table;
-#X text 364 609 offset to middle of table;
-#X text 196 459 C.F. relative;
-#X text 197 475 to fundamental;
-#X text 69 346 (MIDI units);
-#X text 220 697 ring mod;
-#X obj 184 726 output~;
-#X text 19 137 Here we take a somewhat lax approach to sampholding
-the center frequency control. The frequency itself changes instantly
-\, but the center/fundamental frequency ratio waits for the next period.
-This gives a slight "chirp" if the fundamental is abruptly raised a
-couple of octaves. There's no easy way using Pd's built-in primitives
-to avoid this. Note however that there's a "paf~" extern available
-which solves this problem better and \, moreover \, runs much faster.
-;
-#X obj 298 508 *~ 0.5;
+#N canvas 697 73 443 520 12;
+#X obj 312 216 line~;
+#X obj 312 180 pack 0 50;
+#X obj 36 432 output~;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 PAF;
+#X obj 168 180 pack 0 50;
+#X obj 168 216 line~;
+#N canvas 110 31 694 480 PAF 0;
+#X obj 120 252 *~;
+#X obj 120 204 cos~;
+#X obj 120 168 -~ 0.25;
+#X obj 120 288 +~ 100;
+#X obj 36 372 *~;
+#X obj 120 132 *~ 0.5;
+#N canvas 115 40 431 702 cosine 0;
+#X obj 36 420 cos~;
+#X obj 36 336 *~;
+#X obj 156 420 cos~;
+#X obj 240 240 wrap~;
+#X obj 156 288 -~;
+#X obj 156 384 +~;
+#X obj 156 480 -~;
+#X obj 156 540 *~;
+#X obj 36 612 +~;
+#X obj 36 660 outlet~;
+#X obj 156 168 samphold~;
+#X obj 36 24 inlet;
+#X obj 324 168 outlet~;
+#X obj 36 60 phasor~;
+#X obj 156 24 inlet~;
 #X connect 0 0 6 1;
 #X connect 0 0 8 0;
-#X connect 1 0 5 0;
 #X connect 1 0 0 0;
+#X connect 1 0 5 0;
 #X connect 2 0 6 0;
 #X connect 3 0 4 1;
 #X connect 3 0 7 1;
@@ -130,34 +41,99 @@ which solves this problem better and \, moreover \, runs much faster.
 #X connect 5 0 2 0;
 #X connect 6 0 7 0;
 #X connect 7 0 8 1;
-#X connect 8 0 26 0;
-#X connect 9 0 4 0;
-#X connect 9 0 3 0;
-#X connect 10 0 31 0;
-#X connect 12 0 33 0;
+#X connect 8 0 9 0;
+#X connect 10 0 3 0;
+#X connect 10 0 4 0;
+#X connect 11 0 13 0;
+#X connect 13 0 1 0;
+#X connect 13 0 5 1;
+#X connect 13 0 10 1;
 #X connect 13 0 12 0;
-#X connect 14 0 9 1;
-#X connect 14 0 1 0;
-#X connect 14 0 5 1;
-#X connect 14 0 48 0;
-#X connect 15 0 29 0;
-#X connect 17 0 35 0;
-#X connect 18 0 36 0;
-#X connect 19 0 24 0;
-#X connect 20 0 18 0;
-#X connect 22 0 19 0;
-#X connect 23 0 22 0;
-#X connect 24 0 25 0;
-#X connect 25 0 26 1;
-#X connect 26 0 46 0;
-#X connect 26 0 46 1;
-#X connect 29 0 30 0;
-#X connect 29 0 14 0;
-#X connect 30 0 33 1;
-#X connect 30 0 36 1;
-#X connect 31 0 13 0;
-#X connect 33 0 9 0;
-#X connect 35 0 20 0;
-#X connect 36 0 37 0;
-#X connect 37 0 19 1;
-#X connect 48 0 23 0;
+#X connect 14 0 10 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 84 pd cosine;
+#N canvas 440 248 345 348 init 0;
+#X obj 36 132 t f f;
+#X obj 156 228 expr exp(-$f1*$f1);
+#X obj 156 192 expr ($f1-100)/25;
+#X obj 24 300 tabwrite \$0-bell;
+#X obj 36 96 uzi 200;
+#X obj 36 24 loadbang;
+#X obj 36 60 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X connect 0 0 2 0;
+#X connect 0 1 3 1;
+#X connect 1 0 3 0;
+#X connect 2 0 1 0;
+#X connect 4 2 0 0;
+#X connect 5 0 6 0;
+#X connect 6 0 4 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 408 420 pd init;
+#N canvas 0 22 500 350 \$0-bell 0;
+#X array \$0-bell 200 float 1;
+#A 0 1.12535e-07 1.54728e-07 2.12059e-07 2.89706e-07 3.94519e-07 5.35535e-07 7.24633e-07 9.7737e-07 1.31404e-06 1.76105e-06 2.35258e-06 3.13275e-06 4.15832e-06 5.50199e-06 7.25659e-06 9.54016e-06 1.25023e-05 1.63317e-05 2.1266e-05 2.76026e-05 3.57128e-05 4.60584e-05 5.92112e-05 7.58768e-05 9.69224e-05 0.00012341 0.000156634 0.000198167 0.000249912 0.000314163 0.000393669 0.000491721 0.000612231 0.000759842 0.000940028 0.00115923 0.00142498 0.00174605 0.00213263 0.00259648 0.00315111 0.00381201 0.00459678 0.0055254 0.0066204 0.00790705 0.0094136 0.0111714 0.013215 0.0155826 0.0183156 0.0214592 0.0250621 0.0291763 0.0338573 0.0391639 0.0451575 0.0519019 0.0594631 0.0679081 0.0773047 0.0877205 0.0992216 0.111872 0.125732 0.140858 0.1573 0.1751 0.194291 0.214896 0.236928 0.260383 0.285247 0.311486 0.339053 0.367879 0.397882 0.428956 0.46098 0.493812 0.527292 0.561244 0.595473 0.62977 0.663916 0.697676 0.730811 0.763074 0.794216 0.823987 0.852144 0.878447 0.902668 0.924595 0.944027 0.960789 0.974725 0.985703 0.99362 0.998401 1 0.998401 0.99362 0.985703 0.974725 0.960789 0.944027 0.924595 0.902668 0.878447 0.852144 0.823987 0.794216 0.763074 0.730811 0.697676 0.663916 0.62977 0.595473 0.561244 0.527292 0.493812 0.46098 0.428956 0.397882 0.367879 0.339053 0.311486 0.285247 0.260383 0.236928 0.214896 0.194291 0.1751 0.1573 0.140858 0.125732 0.111872 0.0992216 0.0877205 0.0773047 0.0679081 0.0594631 0.0519019 0.0451575 0.0391639 0.0338573 0.0291763 0.0250621 0.0214592 0.0183156 0.0155826 0.013215 0.0111714 0.0094136 0.00790705 0.0066204 0.0055254 0.00459678 0.00381201 0.00315111 0.00259648 0.00213263 0.00174605 0.00142498 0.00115923 0.000940028 0.000759842 0.000612231 0.000491721 0.000393669 0.000314163 0.000249912 0.000198167 0.000156634 0.00012341 9.69224e-05 7.58768e-05 5.92112e-05 4.60584e-05 3.57128e-05 2.76026e-05 2.1266e-05 1.63317e-05 1.25023e-05 9.54016e-06 7.25659e-06 5.50199e-06 4.15832e-06 3.13275e-06 2.35258e-06 1.76105e-06 1.31404e-06 9.7737e-07 7.24633e-07 5.35535e-07 3.94519e-07 2.89706e-07 2.12059e-07 1.54728e-07;
+#X coords 0 1 199 0 250 175 1 0 0;
+#X restore 408 228 graph \$0-bell;
+#X obj 120 324 tabread4~ \$0-bell;
+#X obj 36 24 inlet;
+#X obj 132 24 inlet~;
+#X obj 300 24 inlet~;
+#X obj 36 420 outlet~;
+#X obj 300 168 *~ 25;
+#X connect 0 0 3 0;
+#X connect 1 0 0 0;
+#X connect 2 0 1 0;
+#X connect 3 0 9 0;
+#X connect 4 0 13 0;
+#X connect 5 0 2 0;
+#X connect 6 0 4 0;
+#X connect 6 1 5 0;
+#X connect 9 0 4 1;
+#X connect 10 0 6 0;
+#X connect 11 0 6 1;
+#X connect 12 0 14 0;
+#X connect 14 0 0 1;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 384 pd PAF;
+#X f 6;
+#X floatatom 36 108 5 0 0 1 - #0-fundamental -;
+#X f 5;
+#X obj 36 144 mtof;
+#X floatatom 168 108 5 0 0 1 - #0-center -;
+#X f 5;
+#X obj 168 144 mtof;
+#X obj 72 336 *~;
+#X obj 60 216 expr 1/$f1;
+#X obj 192 336 *~;
+#X floatatom 312 108 5 0 0 1 - #0-bandwidth -;
+#X f 5;
+#X obj 312 144 mtof;
+#X f 4;
+#N canvas 228 81 284 190 init 0;
+#X obj 36 24 inlet;
+#X obj 108 24 loadbang;
+#X msg 36 84 \; \$0-fundamental 60 \; \$0-center 84 \; \$0-bandwidth 60;
+#X connect 0 0 2 0;
+#X connect 1 0 2 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 312 468 pd init;
+#X obj 312 432 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X text 12 72 Changing PAF control to MIDI units.;
+#X connect 0 0 15 0;
+#X connect 1 0 0 0;
+#X connect 6 0 7 0;
+#X connect 7 0 13 0;
+#X connect 8 0 2 0;
+#X connect 9 0 10 0;
+#X connect 10 0 8 0;
+#X connect 10 0 14 0;
+#X connect 11 0 12 0;
+#X connect 12 0 6 0;
+#X connect 13 0 8 1;
+#X connect 14 0 13 1;
+#X connect 14 0 15 1;
+#X connect 15 0 8 2;
+#X connect 16 0 17 0;
+#X connect 17 0 1 0;
+#X connect 19 0 18 0;
+#X coords 0 0 1 1 250 175 0 0 0;
