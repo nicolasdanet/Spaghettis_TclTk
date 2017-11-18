@@ -1,4 +1,4 @@
-#N canvas 429 47 573 474 12;
+#N canvas 503 44 573 474 12;
 #X obj 132 204 mtof;
 #X obj 36 384 output~;
 #X obj 36 300 lop~;
@@ -7,7 +7,6 @@
 #X f 5;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#X text 24 24 low-pass;
 #X text 12 72 One-Pole low-pass filter.;
 #N canvas 0 22 500 350 \$0-out 0;
 #X array \$0-out 512 float 3;
@@ -25,10 +24,11 @@
 #X f 49;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 288 348 pd more;
+#X text 24 24 filter (low-pass);
 #X connect 0 0 4 0;
 #X connect 2 0 1 0;
-#X connect 2 0 10 0;
+#X connect 2 0 9 0;
 #X connect 3 0 2 0;
 #X connect 4 0 2 1;
-#X connect 11 0 0 0;
+#X connect 10 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
