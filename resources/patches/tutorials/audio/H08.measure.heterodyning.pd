@@ -1,4 +1,4 @@
-#N canvas 443 48 439 604 12;
+#N canvas 82 185 439 604 12;
 #X obj 36 108 phasor~ 100;
 #X obj 120 228 phasor~;
 #X floatatom 120 192 5 0 0 0 - #0-frequency -;
@@ -12,14 +12,14 @@
 #X obj 84 468 lop~;
 #X floatatom 36 552 5 0 0 0 - - -;
 #X f 5;
-#N canvas 215 399 806 132 more 0;
+#N canvas 215 516 739 131 more 0;
 #X text 12 12 Another method for picking out the strengths of partials in a sound is heterodyning.;
 #X f 84;
 #X text 12 60 Then a low-pass filter removes all but the DC component thus obtained.;
 #X f 70;
-#X text 12 36 We multiply the signal by a complex exponential to frequency-shift the partial down to zero.;
-#X f 92;
 #X text 12 84 It results two signals holding the real and imaginary parts of the partial we want.;
+#X f 84;
+#X text 12 36 A complex sinusoid is used as modulator to frequency-shift the partial down to zero.;
 #X f 84;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 324 312 pd more;
