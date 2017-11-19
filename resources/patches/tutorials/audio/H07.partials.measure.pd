@@ -62,7 +62,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 180 144 pd partials;
 #X text 12 72 Looking for partials in Jonathan Harvey's bell.;
-#X text 24 24 measure (spectrum);
+#X text 24 24 partials (measure);
 #X connect 0 0 4 0;
 #X connect 0 0 11 0;
 #X connect 1 0 0 0;

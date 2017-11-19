@@ -55,7 +55,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 324 288 pd init;
 #X obj 324 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X text 24 24 measure (heterodyning);
+#X text 24 24 partials (heterodyning);
 #X connect 0 0 6 0;
 #X connect 0 0 7 0;
 #X connect 1 0 3 0;
