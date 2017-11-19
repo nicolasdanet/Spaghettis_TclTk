@@ -30,7 +30,7 @@ static t_class *expr_class;                     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 #define EXPR_VARIABLES  9
-#define EXPR_FUNCTIONS  1
+#define EXPR_FUNCTIONS  9
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ typedef struct _expr {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-double expr_functionRand (void)
+double expr_functionRandom (void)
 {
     static t_seed once = 0;
     static t_seed seed = 0;
@@ -75,6 +75,46 @@ double expr_functionRand (void)
     if (!once) { seed = math_makeRandomSeed(); }
     
     return PD_RAND48_DOUBLE (seed);
+}
+
+double expr_functionMinimum (double a, double b)
+{
+    return PD_MIN (a, b);
+}
+
+double expr_functionMaximum (double a, double b)
+{
+    return PD_MAX (a, b);
+}
+
+double expr_functionEqual (double a, double b)
+{
+    return (a == b);
+}
+
+double expr_functionUnequal (double a, double b)
+{
+    return (a != b);
+}
+
+double expr_functionLessThan (double a, double b)
+{
+    return (a < b);
+}
+
+double expr_functionLessEqual (double a, double b)
+{
+    return (a <= b);
+}
+
+double expr_functionGreaterThan (double a, double b)
+{
+    return (a > b);
+}
+
+double expr_functionGreaterEqual (double a, double b)
+{
+    return (a >= b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -94,11 +134,19 @@ static void expr_initializeVariables (t_expr *x)
 
 static void expr_initializeFunctions (t_expr *x, int i)
 {
-    PD_ASSERT (i < (EXPR_VARIABLES + EXPR_FUNCTIONS));
+    PD_ASSERT (i < EXPR_VARIABLES);
     
     /* Add extended functions. */
     
-    EXPR_TE_FUNCTION (i, "rand", expr_functionRand, TE_FUNCTION0);
+    EXPR_TE_FUNCTION (i,        "rand", expr_functionRandom,        TE_FUNCTION0);
+    EXPR_TE_FUNCTION (i + 1,    "min",  expr_functionMinimum,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 2,    "max",  expr_functionMaximum,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 3,    "eq",   expr_functionEqual,         TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 4,    "ne",   expr_functionUnequal,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 5,    "lt",   expr_functionLessThan,      TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 6,    "le",   expr_functionLessEqual,     TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 7,    "gt",   expr_functionGreaterThan,   TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 8,    "ge",   expr_functionGreaterEqual,  TE_FUNCTION2);
 }
 
 static int expr_getNumberOfVariables (char *expression)
