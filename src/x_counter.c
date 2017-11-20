@@ -21,7 +21,9 @@ static t_class *counter_class;          /* Shared. */
 typedef struct _counter {
     t_object    x_obj;                  /* Must be the first. */
     int         x_count;
-    t_outlet    *x_outlet;
+    int         x_maximum;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
     } t_counter;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -30,7 +32,10 @@ typedef struct _counter {
 
 static void counter_output (t_counter *x)
 {
-    outlet_float (x->x_outlet, (t_float)x->x_count);
+    if (x->x_count <= x->x_maximum) { outlet_float (x->x_outletLeft, (t_float)x->x_count); }
+    else {
+        outlet_bang (x->x_outletRight);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -65,11 +70,15 @@ static void counter_float (t_counter *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *counter_new (t_float f)
+static void *counter_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_counter *x = (t_counter *)pd_new (counter_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_maximum     = PD_INT_MAX;
+    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletRight = outlet_new (cast_object (x), &s_bang);
+    
+    if (argc) { x->x_maximum = atom_getFloat (argv); }
     
     return x;
 }
@@ -87,6 +96,7 @@ void counter_setup (void)
             NULL,
             sizeof (t_counter),
             CLASS_DEFAULT,
+            A_GIMME,
             A_NULL);
             
     class_addBang (c, (t_method)counter_bang);
