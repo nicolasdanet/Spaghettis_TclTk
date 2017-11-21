@@ -11,7 +11,7 @@ Forbid the audio to glitch!
 Add a worker thread to handle GUI (with a lock free queue)?
 Remove watchdog?
 Benchmark calling trigonometric C functions vs Hoeldrich trick.
-Is LUT worth the cost nowaday?
+Is LUT worth the cost nowadays?
 
 ###
 
@@ -31,6 +31,7 @@ Improve consistency for properties (i.g. Atom / IEM).
 Use Cmd-I shortcut to open properties.
 Adapt all objects to be resizable.
 Add unlimited undo mechanism.
+Implement clone object.
 Allow to select more that one cord.
 Consider an "Encapsulate" feature.
 Add reblocking/resampling examples.
