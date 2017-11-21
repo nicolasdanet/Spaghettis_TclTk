@@ -20,8 +20,8 @@
 #X obj 348 456 bp~ 3000 3;
 #X msg 36 336 bang \; pd dsp 1;
 #X text 12 72 Measuring filter frequency and phase response.;
-#X obj 408 372 nbx 5 40 20 20000 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 20 100;
-#X obj 456 372 nbx 5 40 1 100 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 1 99;
+#X obj 348 348 nbx 5 40 20 20000 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 20 100;
+#X obj 396 348 nbx 5 40 1 100 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 1 99;
 #X connect 1 0 0 0;
 #X connect 1 0 7 0;
 #X connect 1 1 7 1;
