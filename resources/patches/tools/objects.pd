@@ -1,4 +1,4 @@
-#N canvas 765 104 527 617 12;
+#N canvas 754 104 527 617 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 objects;
 #N canvas 550 216 546 349 gui 0;
@@ -46,7 +46,7 @@
 #X text 168 204 Delay line for numbers (or messages).;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 180 pd time;
-#N canvas 271 109 464 594 math 0;
+#N canvas 271 109 446 617 math 0;
 #X obj 36 348 mod;
 #X obj 36 324 div;
 #X obj 36 84 sin;
@@ -89,6 +89,8 @@
 #X text 168 540 Evaluate math expressions.;
 #X text 168 420 Force a number into a range.;
 #X text 168 180 Arctangent (alternate).;
+#X obj 36 564 vexpr;
+#X text 168 564 Evaluate math expressions.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 252 pd math;
 #N canvas 162 226 535 571 midi 0;
