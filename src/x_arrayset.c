@@ -42,10 +42,10 @@ static void arrayset_list (t_arrayset *x, t_symbol *s, int argc, t_atom *argv)
         t_float f = atom_getFloatAtIndex (i, argc, argv);
         array_setFloatAtIndex (a, start + i, arrayrange_getFieldName (&x->x_arrayrange), f);
     }
-    //
-    }
     
     arrayrange_update (&x->x_arrayrange);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

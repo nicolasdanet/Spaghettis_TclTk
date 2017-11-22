@@ -41,8 +41,8 @@
 #X obj 84 108 loadbang;
 #X obj 240 156 print this;
 #X obj 360 156 print that;
-#X obj 96 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 96 288 print;
+#X obj 84 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 84 288 print;
 #X obj 240 336 metro;
 #N canvas 552 343 627 364 edit 0;
 #X obj 36 288 qlist;
