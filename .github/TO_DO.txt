@@ -6,6 +6,9 @@ Clean and test all patches.
 ###
 
 Think about an unit test suite.
+
+###
+
 Profile and optimize code (i.g. arrays GUI for samples).
 Forbid the audio to glitch!
 Add a worker thread to handle GUI (with a lock free queue)?
