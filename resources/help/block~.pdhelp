@@ -9,7 +9,7 @@
 #X text 24 24 block~;
 #X text 12 96 In addition \, switch~ can locally turn DSP on and off.;
 #X f 53;
-#N canvas 242 51 741 509 arguments 0;
+#N canvas 246 133 784 508 arguments 0;
 #X obj 36 276 bang~;
 #X obj 36 312 t b b;
 #X obj 36 348 timer;
@@ -44,7 +44,7 @@
 #X connect 10 0 9 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 156 pd arguments;
-#N canvas 566 165 531 358 warning 0;
+#N canvas 566 165 548 369 warning 0;
 #X obj 36 48 dac~;
 #X obj 36 72 adc~;
 #X obj 36 96 send~;
