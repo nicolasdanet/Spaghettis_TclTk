@@ -139,7 +139,7 @@ static inline int editor_getAction (t_editor *x)
     return x->e_action;
 }
 
-static inline char *editor_getTagAsString (t_editor *x)
+static inline const char *editor_getTagAsString (t_editor *x)
 {
     return proxy_getTagAsString (x->e_proxy);
 }

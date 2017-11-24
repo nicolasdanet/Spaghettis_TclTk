@@ -54,7 +54,7 @@ static inline t_symbol *environment_getDirectory (t_environment *e)
     return e->env_directory;
 }
 
-static inline char *environment_getDirectoryAsString (t_environment *e)
+static inline const char *environment_getDirectoryAsString (t_environment *e)
 {
     return e->env_directory->s_name;
 }
@@ -64,7 +64,7 @@ static inline t_symbol *environment_getFileName (t_environment *e)
     return (e ? e->env_fileName : sym_Patch);
 }
 
-static inline char *environment_getFileNameAsString (t_environment *e)
+static inline const char *environment_getFileNameAsString (t_environment *e)
 {
     return environment_getFileName (e)->s_name;
 }

@@ -38,7 +38,7 @@ static t_error makefilename_scanFormat (t_makefilename *x)
     
     if (x->x_format) {
     //
-    int k = 0; char *s = NULL;
+    int k = 0; const char *s = NULL;
     
     x->x_typeRequired = A_NULL; err = PD_ERROR_NONE;
     

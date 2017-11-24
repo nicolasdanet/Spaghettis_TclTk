@@ -37,7 +37,7 @@ t_atom      *atom_substituteIfPointer               (t_atom *a);
 
 t_atomtype  atom_getType                            (t_atom *a);
 int         atom_typesAreEquals                     (t_atom *a, t_atom *b);
-t_error     atom_withStringUnzeroed                 (t_atom *a, char *s, int size);
+t_error     atom_withStringUnzeroed                 (t_atom *a, const char *s, int size);
 t_error     atom_toString                           (t_atom *a, char *dest, int size);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ t_error     atom_toString                           (t_atom *a, char *dest, int 
 // MARK: -
 
 void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
-void        buffer_withStringUnzeroed               (t_buffer *x, char *s, int size);
+void        buffer_withStringUnzeroed               (t_buffer *x, const char *s, int size);
 
 int         buffer_isLastMessageProperlyEnded       (t_buffer *x);
 int         buffer_getNumberOfMessages              (t_buffer *x);

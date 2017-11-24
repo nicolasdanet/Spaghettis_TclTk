@@ -657,7 +657,7 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
     if (!err) {
     //
     char filepath[PD_STRING] = { 0 };
-    char *directory = environment_getDirectoryAsString (glist_getEnvironment (glist));
+    const char *directory = environment_getDirectoryAsString (glist_getEnvironment (glist));
     
     err = path_withDirectoryAndName (filepath, PD_STRING, directory, name);
     

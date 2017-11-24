@@ -65,7 +65,7 @@ t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
         sym->s_name  = (char *)PD_MEMORY_GET (length + 1);
         sym->s_next  = NULL;
         sym->s_thing = NULL;
-        strcpy (sym->s_name, s);
+        strcpy ((char *)sym->s_name, s);
     }
     
     *next = sym; 
@@ -174,7 +174,7 @@ void message_release (void)
     //
     sym1 = sym2->s_next;
     
-    if (!message_isStaticSymbol (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
+    if (!message_isStaticSymbol (sym2)) { PD_MEMORY_FREE ((void *)sym2->s_name); PD_MEMORY_FREE (sym2); }
     //
     }
     //

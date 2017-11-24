@@ -96,19 +96,19 @@ t_error     string_clear                                (char *dest, size_t size
 
 t_error     string_escapeOccurrence                     (char *dest, size_t size, const char *chars);
 
-int         string_startWith                            (char *s, const char *isStart);
-int         string_endWith                              (char *s, const char *isEnd);
-int         string_contains                             (char *s, const char *isContained);
-int         string_containsOccurrenceAtStart            (char *s, const char *chars);
-int         string_containsOccurrence                   (char *s, const char *chars);
+int         string_startWith                            (const char *s, const char *isStart);
+int         string_endWith                              (const char *s, const char *isEnd);
+int         string_contains                             (const char *s, const char *isContained);
+int         string_containsOccurrenceAtStart            (const char *s, const char *chars);
+int         string_containsOccurrence                   (const char *s, const char *chars);
 
-int         string_indexOfFirstOccurrenceUntil          (char *s, const char *chars, int n);
-int         string_indexOfFirstOccurrenceFrom           (char *s, const char *chars, int n);
-int         string_indexOfFirstOccurrenceFromEnd        (char *s, const char *chars);
+int         string_indexOfFirstOccurrenceUntil          (const char *s, const char *chars, int n);
+int         string_indexOfFirstOccurrenceFrom           (const char *s, const char *chars, int n);
+int         string_indexOfFirstOccurrenceFromEnd        (const char *s, const char *chars);
 void        string_replaceCharacter                     (char *s, char toBeReplaced, char c);
 void        string_removeCharacter                      (char *s, char toBeRemoved);
 
-void        string_getNumberOfColumnsAndLines           (char *s, int *numberOfColumns, int *numberOfLines);
+void        string_getNumberOfColumnsAndLines           (const char *s, int *columns, int *lines);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

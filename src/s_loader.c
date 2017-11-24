@@ -82,7 +82,7 @@ static void loader_addLoaded (t_symbol *name, t_handle handle)
 static t_error loader_makeStubName (char *dest, size_t size, t_symbol *name, const char *suffix)
 {
     t_error err = PD_ERROR_NONE;
-    char *n = name->s_name;
+    const char *n = name->s_name;
 
     while (*n && !err) {
     //

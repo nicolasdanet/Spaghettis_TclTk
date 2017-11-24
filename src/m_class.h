@@ -225,17 +225,17 @@ static inline t_symbol *class_getName (t_class *c)
     return c->c_name;
 }
 
-static inline char *class_getNameAsString (t_class *c)
+static inline const char *class_getNameAsString (t_class *c)
 {
     return c->c_name->s_name;
 }
 
-static inline char *class_getHelpNameAsString (t_class *c)
+static inline const char *class_getHelpNameAsString (t_class *c)
 {
     return c->c_helpName->s_name;
 }
 
-static inline char *class_getHelpDirectoryAsString (t_class *c)
+static inline const char *class_getHelpDirectoryAsString (t_class *c)
 {
     return c->c_helpDirectory->s_name;
 }

@@ -81,7 +81,7 @@ static int oscformat_proceedGetArgumentsSize (t_oscformat *x, int argc, t_atom *
     int k = 0;
     int size = 0;
     
-    char *t = x->x_format->s_name;
+    const char *t = x->x_format->s_name;
     
     while (i < argc) {
     //
@@ -189,7 +189,7 @@ static t_error oscformat_proceedFill (t_oscformat *x,
     int j = 0;
     int n = argumentsStart;
 
-    char *t = x->x_format->s_name;
+    const char *t = x->x_format->s_name;
     
     oscformat_setString (a, &i, x->x_path);
     
@@ -294,7 +294,7 @@ static void oscformat_set (t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
 
 static void oscformat_format (t_oscformat *x, t_symbol *s)
 {
-    char *t = NULL;
+    const char *t = NULL;
     
     for (t = s->s_name; *t; t++) {
         if (!oscformat_isValidTypetag (*t)) { error_invalid (sym_oscformat, sym_format); return; }

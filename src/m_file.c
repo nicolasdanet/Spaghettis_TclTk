@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
+t_error buffer_fromFile (t_buffer *x, const char *name, const char *directory)
 {
     t_error err = PD_ERROR;
     

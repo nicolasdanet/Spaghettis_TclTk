@@ -114,7 +114,7 @@ t_symbol *symbol_replaceDoubleDollar (t_symbol *s)
     if (size >= PD_STRING) { PD_BUG; return s; }
     else {
         char t[PD_STRING + 1] = { 0 };
-        char *p = s->s_name;
+        const char *p = s->s_name;
         int i, j = 0;
         for (i = 0; i < (int)size; i++, j++) {
             t[j] = p[i];
@@ -131,7 +131,7 @@ t_symbol *symbol_decode (t_symbol *s)
     if (!s) { PD_BUG; }
     else {
     //
-    char *p = s->s_name;
+    const char *p = s->s_name;
     
     PD_ASSERT (strlen (s->s_name) < PD_STRING);
     

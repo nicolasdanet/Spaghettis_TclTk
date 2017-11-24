@@ -206,7 +206,7 @@ static void gobj_openHelp (const char *directory, const char *name)
 
 void gobj_help (t_gobj *y)
 {
-    char *directory = NULL;
+    const char *directory = NULL;
     char name[PD_STRING] = { 0 };
     t_error err = PD_ERROR_NONE;
     

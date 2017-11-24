@@ -31,7 +31,7 @@ int dollar_getDollarZero (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int dollar_expandSymbolProceed (char *s,
+static int dollar_expandSymbolProceed (const char *s,
     char *buffer,
     int size,
     int argc,
@@ -42,7 +42,7 @@ static int dollar_expandSymbolProceed (char *s,
     /* Note that atol return 1234 for '1234Foo'. */
     
     int n = (int)atol (s);
-    char *ptr = s;
+    const char *ptr = s;
     char c = 0;
     int length = 0;
     t_error err = PD_ERROR_NONE;
@@ -88,7 +88,7 @@ t_symbol *dollar_expandSymbolWithArguments (t_symbol *s, t_glist *glist, int arg
 {
     char t[PD_STRING] = { 0 };
     char result[PD_STRING] = { 0 };
-    char *str = s->s_name;
+    const char *str = s->s_name;
     char *substr = NULL;
     int next = 0;
     t_error err = PD_ERROR_NONE;

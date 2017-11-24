@@ -420,7 +420,7 @@ void glist_loadbang (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int glist_fileExist (t_glist *glist, char *name, char *extension, t_fileproperties *p)
+int glist_fileExist (t_glist *glist, const char *name, const char *extension, t_fileproperties *p)
 {
     int f = glist_fileOpen (glist, name, extension, p);
     
@@ -431,9 +431,9 @@ int glist_fileExist (t_glist *glist, char *name, char *extension, t_fileproperti
 
 /* Caller is responsible to close the file. */
 
-int glist_fileOpen (t_glist *glist, char *name, char *extension, t_fileproperties *p)
+int glist_fileOpen (t_glist *glist, const char *name, const char *extension, t_fileproperties *p)
 {
-    char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
+    const char *directory = glist ? environment_getDirectoryAsString (glist_getEnvironment (glist)) : ".";
     
     int f = file_openReadConsideringSearchPath (directory, name, extension, p);
         

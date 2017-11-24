@@ -163,7 +163,7 @@ t_error string_escapeOccurrence (char *dest, size_t size, const char *chars)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int string_startWith (char *s, const char *isStartWith)
+int string_startWith (const char *s, const char *isStartWith)
 {
     size_t n = strlen (isStartWith);
     
@@ -172,7 +172,7 @@ int string_startWith (char *s, const char *isStartWith)
     return 0;
 }
 
-int string_endWith (char *s, const char *isEndWith)
+int string_endWith (const char *s, const char *isEndWith)
 {
     size_t n = strlen (isEndWith);
     size_t m = strlen (s);
@@ -182,25 +182,25 @@ int string_endWith (char *s, const char *isEndWith)
     return 0;
 }
 
-int string_containsOccurrenceAtStart (char *s, const char *chars)
+int string_containsOccurrenceAtStart (const char *s, const char *chars)
 {
     return (strchr (chars, *s) != NULL);
 }
 
-int string_containsOccurrence (char *s, const char *chars)
+int string_containsOccurrence (const char *s, const char *chars)
 {
     return (string_indexOfFirstOccurrenceFromEnd (s, chars) >= 0);
 }
 
-int string_contains (char *s, const char *isContained)
+int string_contains (const char *s, const char *isContained)
 {
     return (strstr (s, isContained) != NULL);
 }
 
-void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numberOfLines)
+void string_getNumberOfColumnsAndLines (const char *s, int *numberOfColumns, int *numberOfLines)
 {
-    char *end = NULL;
-    char *start = NULL;
+    const char *end = NULL;
+    const char *start = NULL;
     int m = 0;
     int n = 1;
         
@@ -225,7 +225,7 @@ void string_getNumberOfColumnsAndLines (char *s, int *numberOfColumns, int *numb
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int string_indexOfFirstCharacterUntil (char *s, char c, int n)
+static int string_indexOfFirstCharacterUntil (const char *s, char c, int n)
 {
     char *s2 = s + n;
     
@@ -240,7 +240,7 @@ static int string_indexOfFirstCharacterUntil (char *s, char c, int n)
     return -1;
 }
 
-static int string_indexOfFirstCharacterFrom (char *s, char c, int n)
+static int string_indexOfFirstCharacterFrom (const char *s, char c, int n)
 {
     char *s2 = s + n;
     
@@ -253,7 +253,7 @@ static int string_indexOfFirstCharacterFrom (char *s, char c, int n)
     return -1;
 }
 
-int string_indexOfFirstOccurrenceUntil (char *s, const char *c, int n)
+int string_indexOfFirstOccurrenceUntil (const char *s, const char *c, int n)
 {
     int k = n;
     int t = 0;
@@ -267,7 +267,7 @@ int string_indexOfFirstOccurrenceUntil (char *s, const char *c, int n)
     return (k < n ? k : -1);
 }
 
-int string_indexOfFirstOccurrenceFrom (char *s, const char *c, int n)
+int string_indexOfFirstOccurrenceFrom (const char *s, const char *c, int n)
 {
     int k = -1;
     int t = 0;
@@ -281,7 +281,7 @@ int string_indexOfFirstOccurrenceFrom (char *s, const char *c, int n)
     return k;
 }
 
-int string_indexOfFirstOccurrenceFromEnd (char *s, const char *c)
+int string_indexOfFirstOccurrenceFromEnd (const char *s, const char *c)
 {
     return string_indexOfFirstOccurrenceFrom (s, c, (int)strlen (s));
 }

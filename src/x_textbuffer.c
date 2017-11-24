@@ -81,7 +81,7 @@ void textbuffer_update (t_textbuffer *x)
     //
     int size;
     char *text = NULL;
-    char *tag  = proxy_getTagAsString (x->tb_proxy);
+    const char *tag  = proxy_getTagAsString (x->tb_proxy);
     int i = 0;
     
     buffer_toStringUnzeroed (x->tb_buffer, &text, &size);
@@ -128,7 +128,7 @@ void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
     //
     char t[PD_STRING] = { 0 };
     t_symbol *name = GET_SYMBOL (argv);
-    char *directory = environment_getDirectoryAsString (glist_getEnvironment (x->tb_owner));
+    const char *directory = environment_getDirectoryAsString (glist_getEnvironment (x->tb_owner));
     t_error err = path_withDirectoryAndName (t, PD_STRING, directory, name->s_name);
     if (err || buffer_fileWrite (x->tb_buffer, gensym (t), &s_)) { error_failsToWrite (name); }
     //

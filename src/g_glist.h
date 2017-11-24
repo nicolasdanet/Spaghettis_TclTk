@@ -110,8 +110,8 @@ void    glist_rename                        (t_glist *g, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int     glist_fileExist                     (t_glist *g, char *name, char *extension, t_fileproperties *p);
-int     glist_fileOpen                      (t_glist *g, char *name, char *extension, t_fileproperties *p);
+int     glist_fileExist     (t_glist *g, const char *name, const char *extension, t_fileproperties *p);
+int     glist_fileOpen      (t_glist *g, const char *name, const char *extension, t_fileproperties *p);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -412,7 +412,7 @@ static inline int glist_getDirty (t_glist *g)
     return g->gl_isDirty;
 }
 
-static inline char *glist_getTagAsString (t_glist *g)
+static inline const char *glist_getTagAsString (t_glist *g)
 {
     return editor_getTagAsString (glist_getEditor (g));
 }

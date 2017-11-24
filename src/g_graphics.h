@@ -63,7 +63,7 @@ static inline t_symbol *proxy_getTag (t_proxy *x)
     return x->x_bound;
 }
 
-static inline char *proxy_getTagAsString (t_proxy *x)
+static inline const char *proxy_getTagAsString (t_proxy *x)
 {
     return proxy_getTag (x)->s_name;
 }

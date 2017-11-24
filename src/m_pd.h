@@ -511,7 +511,7 @@ struct _widgetbehavior;
 // MARK: -
 
 typedef struct _symbol {
-    char            *s_name;
+    const char      *s_name;
     t_class         **s_thing;
     struct _symbol  *s_next;
     } t_symbol;

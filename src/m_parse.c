@@ -38,7 +38,7 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int buffer_parseIsMalformed (char *s, int size)
+static int buffer_parseIsMalformed (const char *s, int size)
 {
     if (size < 0) { return 1; }
     else {
@@ -137,7 +137,7 @@ static int buffer_parseNextFloatState (int floatState, char c)
     return k;
 }
 
-static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocated)
+static void buffer_parseStringUnzeroed (t_buffer *x, const char *s, int size, int preallocated)
 {
     int length = 0;
     t_atom *a = NULL;
@@ -226,7 +226,7 @@ static void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int prea
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
+void buffer_withStringUnzeroed (t_buffer *x, const char *s, int size)
 {
     buffer_parseStringUnzeroed (x, s, size, BUFFER_PREALLOCATED_ATOMS);
 }
@@ -405,7 +405,7 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
     
     if (!IS_SYMBOL (argv + i)) { *a = *(argv + i); }
     else {
-        char *s = GET_SYMBOL (argv + i)->s_name;
+        const char *s = GET_SYMBOL (argv + i)->s_name;
         t_error err = atom_withStringUnzeroed (a, s, (int)strlen (s));
         PD_UNUSED (err); PD_ASSERT (!err);
     }

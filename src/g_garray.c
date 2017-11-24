@@ -522,8 +522,8 @@ static void garray_read (t_garray *x, t_symbol *name)
 static void garray_write (t_garray *x, t_symbol *name)
 {
     char t[PD_STRING] = { 0 };
-    char *directory = environment_getDirectoryAsString (glist_getEnvironment (glist_getView (x->x_owner)));
-    t_error err = path_withDirectoryAndName (t, PD_STRING, directory, name->s_name);
+    const char *s = environment_getDirectoryAsString (glist_getEnvironment (glist_getView (x->x_owner)));
+    t_error err = path_withDirectoryAndName (t, PD_STRING, s, name->s_name);
 
     if (!err) {
     //

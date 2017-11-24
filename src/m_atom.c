@@ -22,7 +22,7 @@ int dollar_getDollarZero (t_glist *);
 
 static t_error atom_symbolToBackslashedString (t_atom *a, char *s, int size)
 {
-    char *p = NULL;
+    const char *p = NULL;
     int quote = 0;
     t_error err = PD_ERROR_NONE;
     
@@ -195,7 +195,7 @@ int atom_copyAtomsExpanded (t_atom *src, int m, t_atom *dest, int n, t_glist *gl
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error atom_withStringUnzeroed (t_atom *a, char *s, int size)
+t_error atom_withStringUnzeroed (t_atom *a, const char *s, int size)
 {
     t_buffer *t = buffer_new();
     

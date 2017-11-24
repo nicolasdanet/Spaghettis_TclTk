@@ -33,7 +33,7 @@ void error__error2 (const char *s1, const char *s2)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-char *error__empty (t_symbol *s)
+const char *error__empty (t_symbol *s)
 {
     if (s == &s_) { return "\"\""; }
     
