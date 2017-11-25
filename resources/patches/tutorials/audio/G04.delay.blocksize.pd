@@ -32,7 +32,7 @@
 #X connect 5 0 2 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 180 pd delay;
-#N canvas 227 51 565 500 play 0;
+#N canvas 227 51 567 510 play 0;
 #X obj 204 408 expr 1000/$f1;
 #X obj 204 372 mtof;
 #X obj 36 96 metro 500;
