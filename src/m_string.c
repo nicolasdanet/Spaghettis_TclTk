@@ -227,7 +227,7 @@ void string_getNumberOfColumnsAndLines (const char *s, int *numberOfColumns, int
 
 static int string_indexOfFirstCharacterUntil (const char *s, char c, int n)
 {
-    char *s2 = s + n;
+    const char *s2 = s + n;
     
     int i = 0;
     
@@ -242,7 +242,7 @@ static int string_indexOfFirstCharacterUntil (const char *s, char c, int n)
 
 static int string_indexOfFirstCharacterFrom (const char *s, char c, int n)
 {
-    char *s2 = s + n;
+    const char *s2 = s + n;
     
     while (s2 != s) { 
         s2--;
