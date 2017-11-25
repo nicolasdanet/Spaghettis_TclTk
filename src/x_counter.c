@@ -34,7 +34,7 @@ static void counter_output (t_counter *x)
 {
     if (x->x_count <= x->x_maximum) { outlet_float (x->x_outletLeft, (t_float)x->x_count); }
     else {
-        outlet_bang (x->x_outletRight);
+        if (x->x_outletRight) { outlet_bang (x->x_outletRight); }
     }
 }
 
@@ -76,9 +76,11 @@ static void *counter_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_maximum     = PD_INT_MAX;
     x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
-    x->x_outletRight = outlet_new (cast_object (x), &s_bang);
     
-    if (argc) { x->x_maximum = atom_getFloat (argv); }
+    if (argc) {
+        x->x_outletRight = outlet_new (cast_object (x), &s_bang);
+        x->x_maximum     = atom_getFloat (argv);
+    }
     
     return x;
 }
