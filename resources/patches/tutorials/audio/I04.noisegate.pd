@@ -31,7 +31,7 @@
 #X connect 6 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 168 420 pd hann;
-#N canvas 121 45 510 621 fft 0;
+#N canvas 121 45 514 615 fft 0;
 #X obj 36 516 *~;
 #X obj 204 240 *~;
 #X obj 36 96 *~;
