@@ -1,12 +1,12 @@
 #N canvas 214 49 520 467 12;
-#X obj 108 420 fft~;
-#X obj 204 420 ifft~;
-#X obj 264 420 rifft~;
+#X obj 156 420 fft~;
+#X obj 252 420 ifft~;
+#X obj 312 420 rifft~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 12 420 See also:;
 #X obj -60 12 freeze;
 #X text 24 24 mag~;
-#X obj 156 420 fft~;
+#X obj 204 420 fft~;
 #X text 12 72 Polar magnitude of a complex signal (rectangular form).;
 #X obj 36 288 mag~;
 #X obj 36 324 snapshot~ 0;
@@ -25,6 +25,7 @@
 #X floatatom 156 360 5 0 0 1 - - -;
 #X f 5;
 #X obj 156 252 +~;
+#X obj 96 420 rmag~;
 #X connect 9 0 10 0;
 #X connect 10 0 11 0;
 #X connect 12 0 14 0;

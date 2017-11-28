@@ -341,6 +341,7 @@
 #include "d_ifft.c"
 #include "d_framp.c"
 #include "d_mag.c"
+#include "d_rmag.c"
 #include "d_fftOOURA.c"
 
 /* Libraries. */
