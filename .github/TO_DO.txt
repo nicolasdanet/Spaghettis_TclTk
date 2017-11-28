@@ -14,6 +14,7 @@ Forbid the audio to glitch!
 Add a worker thread to handle GUI (with a lock free queue)?
 Remove watchdog?
 Benchmark calling trigonometric C functions vs Hoeldrich trick.
+Benchmark (reverse) square root approximation.
 Is LUT worth the cost nowadays?
 
 ###
