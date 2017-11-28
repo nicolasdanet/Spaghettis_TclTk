@@ -514,7 +514,7 @@
 #X obj 36 132 amptodb~;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 444 pd acoustic~;
-#N canvas 344 209 657 239 fft~ 0;
+#N canvas 344 209 664 263 fft~ 0;
 #X obj 36 84 fft~;
 #X obj 36 108 ifft~;
 #X obj 36 132 rfft~;
@@ -527,6 +527,8 @@
 #X text 168 132 Real DFT (Discrete Fourier Transform).;
 #X text 168 156 Inverse of Real DFT (Discrete Fourier Transform).;
 #X text 168 180 Estimate frequency and amplitude of FFT components.;
+#X obj 36 204 mag~;
+#X text 168 204 Compute magnitude of a complexe signal.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 492 pd fft~;
 #X coords 0 0 1 1 250 175 0 0 0;

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		17073FB61F398EE2004042C0 /* x_textdelete.c in Sources */ = {isa = PBXBuildFile; fileRef = 17073FB51F398EE2004042C0 /* x_textdelete.c */; };
+		171F2EA61FCC70DB00E3E53E /* d_mag.c in Sources */ = {isa = PBXBuildFile; fileRef = 171F2EA51FCC70DB00E3E53E /* d_mag.c */; };
 		172EBDFD1F273EC9003C0B66 /* x_prepend.c in Sources */ = {isa = PBXBuildFile; fileRef = 172EBDFC1F273EC9003C0B66 /* x_prepend.c */; };
 		17304EBD1F77DA3E00DCA7EC /* x_dspstatus.c in Sources */ = {isa = PBXBuildFile; fileRef = 17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */; };
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
@@ -405,6 +406,7 @@
 
 /* Begin PBXFileReference section */
 		17073FB51F398EE2004042C0 /* x_textdelete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textdelete.c; path = src/x_textdelete.c; sourceTree = "<group>"; };
+		171F2EA51FCC70DB00E3E53E /* d_mag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_mag.c; path = src/d_mag.c; sourceTree = "<group>"; };
 		172EBDFC1F273EC9003C0B66 /* x_prepend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_prepend.c; path = src/x_prepend.c; sourceTree = "<group>"; };
 		17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_dspstatus.c; path = src/x_dspstatus.c; sourceTree = "<group>"; };
 		174D8A081F0BBA0200C94065 /* x_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_text.h; path = src/x_text.h; sourceTree = "<group>"; };
@@ -1437,6 +1439,7 @@
 				378971B61C4F716700263434 /* d_fft.c */,
 				3711970B1E2DF6FE007214B2 /* d_ifft.c */,
 				371196C31E2DF28F007214B2 /* d_framp.c */,
+				171F2EA51FCC70DB00E3E53E /* d_mag.c */,
 			);
 			name = FFT;
 			sourceTree = "<group>";
@@ -2198,6 +2201,7 @@
 				373B403E1DF1736900568C3A /* d_add.c in Sources */,
 				378EB3B91DF411A900E39778 /* d_abs.c in Sources */,
 				378EB3DB1DF4129900E39778 /* d_log.c in Sources */,
+				171F2EA61FCC70DB00E3E53E /* d_mag.c in Sources */,
 				378EB3F91DF4135700E39778 /* d_exp.c in Sources */,
 				378EB4191DF413EA00E39778 /* d_pow.c in Sources */,
 				378EB4411DF4149500E39778 /* d_powtodb.c in Sources */,
