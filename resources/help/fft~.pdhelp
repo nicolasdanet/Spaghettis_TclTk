@@ -1,8 +1,8 @@
-#N canvas 439 27 622 739 12;
-#X obj 96 696 ifft~;
-#X obj 216 696 rifft~;
+#N canvas 439 27 623 753 12;
+#X obj 96 708 ifft~;
+#X obj 216 708 rifft~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
-#X text 12 696 See also:;
+#X text 12 708 See also:;
 #X obj -60 12 freeze;
 #X obj 36 120 tabreceive~ \$0-impulse;
 #N canvas 0 22 500 350 \$0-impulse 0;
@@ -40,9 +40,10 @@
 #X obj 132 252 metro 250;
 #X text 24 24 fft~;
 #X text 12 72 Complex DFT (Discrete Fourier Transform).;
-#X obj 156 696 rfft~;
+#X obj 156 708 rfft~;
 #X obj 36 204 fft~;
 #X obj 84 156 sig~ 0;
+#X obj 288 708 mag~;
 #X connect 5 0 18 0;
 #X connect 11 0 14 0;
 #X connect 12 0 13 0;

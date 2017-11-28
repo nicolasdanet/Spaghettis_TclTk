@@ -19,7 +19,7 @@
 #X f 88;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 132 264 pd more;
-#X obj 36 108 nbx 5 40 20 20000 1 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 9954.74 1000;
+#X obj 36 108 nbx 5 40 20 20000 1 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 9886.21 1000;
 #N canvas 0 22 500 350 \$0-amplitude 0;
 #X array \$0-amplitude 32 float 1;
 #A 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.146116 0.821368 0.87443 0.194959 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
@@ -35,6 +35,7 @@
 #X obj 132 348 metro 250;
 #X obj 132 312 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
 #X text 12 516 Frequency output is in bins (i.e. units of SR/N).;
+#X obj 144 552 mag~;
 #X connect 0 0 1 0;
 #X connect 0 1 1 1;
 #X connect 1 0 13 0;
