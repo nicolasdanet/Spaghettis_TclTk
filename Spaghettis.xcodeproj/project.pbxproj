@@ -12,6 +12,7 @@
 		171F2EA61FCC70DB00E3E53E /* d_mag.c in Sources */ = {isa = PBXBuildFile; fileRef = 171F2EA51FCC70DB00E3E53E /* d_mag.c */; };
 		172EBDFD1F273EC9003C0B66 /* x_prepend.c in Sources */ = {isa = PBXBuildFile; fileRef = 172EBDFC1F273EC9003C0B66 /* x_prepend.c */; };
 		17304EBD1F77DA3E00DCA7EC /* x_dspstatus.c in Sources */ = {isa = PBXBuildFile; fileRef = 17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */; };
+		1764393A1FCEEE0800D771E7 /* d_less.c in Sources */ = {isa = PBXBuildFile; fileRef = 176439391FCEEE0800D771E7 /* d_less.c */; };
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
 		17981E151F0618A10029AD87 /* s_searchpath.c in Sources */ = {isa = PBXBuildFile; fileRef = 17981E141F0618A10029AD87 /* s_searchpath.c */; };
 		179873E31F01095100BB1B94 /* m_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 179873E21F01095100BB1B94 /* m_file.c */; };
@@ -417,6 +418,7 @@
 		174D8A0A1F0BBCD000C94065 /* x_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_list.h; path = src/x_list.h; sourceTree = "<group>"; };
 		174D8A0B1F0BBE2E00C94065 /* x_atomoutlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_atomoutlet.h; path = src/x_atomoutlet.h; sourceTree = "<group>"; };
 		174D8A0C1F0BC09C00C94065 /* x_binop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_binop.h; path = src/x_binop.h; sourceTree = "<group>"; };
+		176439391FCEEE0800D771E7 /* d_less.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_less.c; path = src/d_less.c; sourceTree = "<group>"; };
 		176D2C271F06A9860023E38E /* g_objects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_objects.h; path = src/g_objects.h; sourceTree = "<group>"; };
 		177169881EFD1212003CD374 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_autorelease.c; path = src/m_autorelease.c; sourceTree = "<group>"; };
 		1794C5D81F055A6400D78A38 /* m_clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_clipboard.h; path = src/m_clipboard.h; sourceTree = "<group>"; };
@@ -1385,6 +1387,7 @@
 				373B40131DF1729F00568C3A /* d_multiply.c */,
 				373B3FF41DF171AC00568C3A /* d_divide.c */,
 				171741431FCEB5240083B19B /* d_greater.c */,
+				176439391FCEEE0800D771E7 /* d_less.c */,
 				373B3FCC1DF170CA00568C3A /* d_max.c */,
 				377C79EC1DF1560E008195B0 /* d_min.c */,
 				378971B91C4F716700263434 /* d_clip.c */,
@@ -2239,6 +2242,7 @@
 				370158391DFFD81B00F3FE0C /* d_delread.c in Sources */,
 				3762D2BD1E051E2700385DB9 /* d_writesf.c in Sources */,
 				3762D2FD1E05308C00385DB9 /* d_readsf.c in Sources */,
+				1764393A1FCEEE0800D771E7 /* d_less.c in Sources */,
 				3762D32E1E0531D900385DB9 /* d_soundfiler.c in Sources */,
 				37C470581E0FC3B300E0F726 /* d_codec.c in Sources */,
 				374FA5391E2120FD00C119CA /* d_subchunk.c in Sources */,

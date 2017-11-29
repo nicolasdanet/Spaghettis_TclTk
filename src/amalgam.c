@@ -299,6 +299,7 @@
 #include "d_multiply.c"
 #include "d_divide.c"
 #include "d_greater.c"
+#include "d_less.c"
 #include "d_max.c"
 #include "d_min.c"
 #include "d_clip.c"
