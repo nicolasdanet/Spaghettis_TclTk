@@ -17,7 +17,7 @@
 #X obj 300 492 wrap~;
 #X obj 192 492 clip~;
 #X obj 252 492 abs~;
-#N canvas 644 79 490 569 more 1;
+#N canvas 644 79 490 569 more 0;
 #X obj 36 144 +~ 5;
 #X floatatom 96 96 5 0 0 1 - - -;
 #X f 5;

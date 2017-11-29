@@ -297,6 +297,76 @@ static t_int *perform_minimumScalar (t_int *w)
     return (w + 5);
 }
 
+/* Aliasing. */
+
+static t_int *perform_greater (t_int *w)
+{
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    t_sample *s3 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n--) {
+    //
+    t_sample f1 = *s1++;
+    t_sample f2 = *s2++;
+    
+    *s3++ = (t_sample)(f1 > f2);
+    //
+    }
+    
+    return (w + 5);
+}
+
+/* No aliasing. */
+
+static t_int *perform_greaterScalar (t_int *w)
+{
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    t_float f = *(t_float *)(w[2]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n--) { *s2 = (t_sample)(*s1 > f); s2++; s1++; }
+    
+    return (w + 5);
+}
+
+/* Aliasing. */
+
+static t_int *perform_less (t_int *w)
+{
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    t_sample *s3 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n--) {
+    //
+    t_sample f1 = *s1++;
+    t_sample f2 = *s2++;
+    
+    *s3++ = (t_sample)(f1 < f2);
+    //
+    }
+    
+    return (w + 5);
+}
+
+/* No aliasing. */
+
+static t_int *perform_lessScalar (t_int *w)
+{
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    t_float f = *(t_float *)(w[2]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n--) { *s2 = (t_sample)(*s1 < f); s2++; s1++; }
+    
+    return (w + 5);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -957,6 +1027,178 @@ static t_int *vPerform_minimumScalar (t_int *w)
     return (w + 5);
 }
 
+/* Aliasing. */
+
+static t_int *vPerform_greater (t_int *w)
+{
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    t_sample *s3 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n) {
+    //
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
+
+    t_sample g0 = s2[0];
+    t_sample g1 = s2[1];
+    t_sample g2 = s2[2];
+    t_sample g3 = s2[3];
+    t_sample g4 = s2[4];
+    t_sample g5 = s2[5];
+    t_sample g6 = s2[6];
+    t_sample g7 = s2[7];
+
+    s3[0] = (t_sample)(f0 > g0);
+    s3[1] = (t_sample)(f1 > g1);
+    s3[2] = (t_sample)(f2 > g2);
+    s3[3] = (t_sample)(f3 > g3);
+    s3[4] = (t_sample)(f4 > g4);
+    s3[5] = (t_sample)(f5 > g5);
+    s3[6] = (t_sample)(f6 > g6);
+    s3[7] = (t_sample)(f7 > g7);
+    
+    n -= 8;
+    s1 += 8;
+    s2 += 8;
+    s3 += 8;
+    //
+    }
+    
+    return (w + 5);
+}
+
+/* No aliasing. */
+
+static t_int *vPerform_greaterScalar (t_int *w)
+{
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    t_float g = *(t_float *)(w[2]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n) {
+    //
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
+
+    s2[0] = (t_sample)(f0 > g);
+    s2[1] = (t_sample)(f1 > g);
+    s2[2] = (t_sample)(f2 > g);
+    s2[3] = (t_sample)(f3 > g);
+    s2[4] = (t_sample)(f4 > g);
+    s2[5] = (t_sample)(f5 > g);
+    s2[6] = (t_sample)(f6 > g);
+    s2[7] = (t_sample)(f7 > g);
+    
+    n -= 8;
+    s1 += 8;
+    s2 += 8;
+    //
+    }
+    
+    return (w + 5);
+}
+
+/* Aliasing. */
+
+static t_int *vPerform_less (t_int *w)
+{
+    t_sample *s1 = (t_sample *)(w[1]);
+    t_sample *s2 = (t_sample *)(w[2]);
+    t_sample *s3 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n) {
+    //
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
+
+    t_sample g0 = s2[0];
+    t_sample g1 = s2[1];
+    t_sample g2 = s2[2];
+    t_sample g3 = s2[3];
+    t_sample g4 = s2[4];
+    t_sample g5 = s2[5];
+    t_sample g6 = s2[6];
+    t_sample g7 = s2[7];
+
+    s3[0] = (t_sample)(f0 < g0);
+    s3[1] = (t_sample)(f1 < g1);
+    s3[2] = (t_sample)(f2 < g2);
+    s3[3] = (t_sample)(f3 < g3);
+    s3[4] = (t_sample)(f4 < g4);
+    s3[5] = (t_sample)(f5 < g5);
+    s3[6] = (t_sample)(f6 < g6);
+    s3[7] = (t_sample)(f7 < g7);
+    
+    n -= 8;
+    s1 += 8;
+    s2 += 8;
+    s3 += 8;
+    //
+    }
+    
+    return (w + 5);
+}
+
+/* No aliasing. */
+
+static t_int *vPerform_lessScalar (t_int *w)
+{
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    t_float g = *(t_float *)(w[2]);
+    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n) {
+    //
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
+
+    s2[0] = (t_sample)(f0 < g);
+    s2[1] = (t_sample)(f1 < g);
+    s2[2] = (t_sample)(f2 < g);
+    s2[3] = (t_sample)(f3 < g);
+    s2[4] = (t_sample)(f4 < g);
+    s2[5] = (t_sample)(f5 < g);
+    s2[6] = (t_sample)(f6 < g);
+    s2[7] = (t_sample)(f7 < g);
+    
+    n -= 8;
+    s1 += 8;
+    s2 += 8;
+    //
+    }
+    
+    return (w + 5);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -1161,6 +1403,56 @@ void dsp_addMinimumScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED d
     if (n & 7) { dsp_add (perform_minimumScalar, 4, src, f, dest, n); }
     else {     
         dsp_add (vPerform_minimumScalar, 4, src, f, dest, n);
+    }
+}
+
+/* Aliasing. */
+
+void dsp_addGreaterPerform (t_sample *src1, t_sample *src2, t_sample *dest, int n)
+{
+    PD_ASSERT (n > 0);
+    
+    if (n & 7) { dsp_add (perform_greater, 4, src1, src2, dest, n); }
+    else {
+        dsp_add (vPerform_greater, 4, src1, src2, dest, n);
+    }
+}
+
+/* No aliasing. */
+
+void dsp_addGreaterScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n)
+{
+    PD_ASSERT (n > 0);
+    PD_ASSERT (src != dest);
+    
+    if (n & 7) { dsp_add (perform_greaterScalar, 4, src, f, dest, n); }
+    else {
+        dsp_add (vPerform_greaterScalar, 4, src, f, dest, n);
+    }
+}
+
+/* Aliasing. */
+
+void dsp_addLessPerform (t_sample *src1, t_sample *src2, t_sample *dest, int n)
+{
+    PD_ASSERT (n > 0);
+    
+    if (n & 7) { dsp_add (perform_less, 4, src1, src2, dest, n); }
+    else {
+        dsp_add (vPerform_less, 4, src1, src2, dest, n);
+    }
+}
+
+/* No aliasing. */
+
+void dsp_addLessScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n)
+{
+    PD_ASSERT (n > 0);
+    PD_ASSERT (src != dest);
+    
+    if (n & 7) { dsp_add (perform_lessScalar, 4, src, f, dest, n); }
+    else {
+        dsp_add (vPerform_lessScalar, 4, src, f, dest, n);
     }
 }
 

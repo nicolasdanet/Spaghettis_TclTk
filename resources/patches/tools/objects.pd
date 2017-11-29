@@ -160,7 +160,7 @@
 #X text 168 180 Read and write soundfiles from and to arrays.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 324 pd array;
-#N canvas 361 126 468 470 math~ 0;
+#N canvas 361 126 469 497 math~ 0;
 #X obj 36 372 clip~;
 #X obj 36 420 wrap~;
 #X obj 36 324 min~;
@@ -193,6 +193,8 @@
 #X text 168 108 Subtraction.;
 #X text 168 132 Multiplication.;
 #X text 168 156 Division.;
+#X obj 36 444 >~;
+#X text 168 444 Greater logical operator.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 468 pd math~;
 #N canvas 98 373 473 379 filters~ 0;

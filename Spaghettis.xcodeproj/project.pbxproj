@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		17073FB61F398EE2004042C0 /* x_textdelete.c in Sources */ = {isa = PBXBuildFile; fileRef = 17073FB51F398EE2004042C0 /* x_textdelete.c */; };
+		171741441FCEB5240083B19B /* d_greater.c in Sources */ = {isa = PBXBuildFile; fileRef = 171741431FCEB5240083B19B /* d_greater.c */; };
 		171F2EA61FCC70DB00E3E53E /* d_mag.c in Sources */ = {isa = PBXBuildFile; fileRef = 171F2EA51FCC70DB00E3E53E /* d_mag.c */; };
 		172EBDFD1F273EC9003C0B66 /* x_prepend.c in Sources */ = {isa = PBXBuildFile; fileRef = 172EBDFC1F273EC9003C0B66 /* x_prepend.c */; };
 		17304EBD1F77DA3E00DCA7EC /* x_dspstatus.c in Sources */ = {isa = PBXBuildFile; fileRef = 17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */; };
@@ -407,6 +408,7 @@
 
 /* Begin PBXFileReference section */
 		17073FB51F398EE2004042C0 /* x_textdelete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textdelete.c; path = src/x_textdelete.c; sourceTree = "<group>"; };
+		171741431FCEB5240083B19B /* d_greater.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_greater.c; path = src/d_greater.c; sourceTree = "<group>"; };
 		171F2EA51FCC70DB00E3E53E /* d_mag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_mag.c; path = src/d_mag.c; sourceTree = "<group>"; };
 		172EBDFC1F273EC9003C0B66 /* x_prepend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_prepend.c; path = src/x_prepend.c; sourceTree = "<group>"; };
 		17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_dspstatus.c; path = src/x_dspstatus.c; sourceTree = "<group>"; };
@@ -1382,6 +1384,7 @@
 				373B403B1DF1736900568C3A /* d_subtract.c */,
 				373B40131DF1729F00568C3A /* d_multiply.c */,
 				373B3FF41DF171AC00568C3A /* d_divide.c */,
+				171741431FCEB5240083B19B /* d_greater.c */,
 				373B3FCC1DF170CA00568C3A /* d_max.c */,
 				377C79EC1DF1560E008195B0 /* d_min.c */,
 				378971B91C4F716700263434 /* d_clip.c */,
@@ -2115,6 +2118,7 @@
 				37D724A01D92788800408D24 /* x_timer.c in Sources */,
 				37D724D41D9279A800408D24 /* x_line.c in Sources */,
 				37D724FC1D927A9A00408D24 /* x_delay.c in Sources */,
+				171741441FCEB5240083B19B /* d_greater.c in Sources */,
 				37D724FE1D927AAE00408D24 /* x_metro.c in Sources */,
 				37FFF5311D979C7000669135 /* x_binop1.c in Sources */,
 				37FFF6441D97BF0600669135 /* x_binop3.c in Sources */,

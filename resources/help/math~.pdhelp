@@ -189,9 +189,10 @@
 #X text 204 108 Functions: log \, exp.;
 #X text 204 156 Functions: min \, max \, clip \, abs \, wrap.;
 #X text 24 24 math~;
-#X obj 204 204 +~;
-#X obj 144 204 ftom~;
-#X obj 96 204 cos~;
+#X obj 132 204 +~;
+#X obj 252 204 ftom~;
+#X obj 204 204 cos~;
 #X text 204 132 Functions: pow \, sqrt \, rsqrt.;
-#X obj 252 204 pow;
+#X obj 96 204 pow;
+#X obj 168 204 >~;
 #X coords 0 0 1 1 250 175 0 0 0;

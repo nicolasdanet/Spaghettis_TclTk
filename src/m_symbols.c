@@ -358,6 +358,7 @@ t_symbol *sym_log;
 t_symbol *sym_log__tilde__;
 t_symbol *sym_logarithmic;
 t_symbol *sym_logical;
+t_symbol *sym_logical__tilde__;
 t_symbol *sym_lop__tilde__;
 t_symbol *sym_lrshift__tilde__;
 t_symbol *sym_mag__tilde__;
@@ -983,6 +984,7 @@ void symbols_initialize (void)
     sym_log__tilde__                            = gensym ("log~");
     sym_logarithmic                             = gensym ("logarithmic");
     sym_logical                                 = gensym ("logical");
+    sym_logical__tilde__                        = gensym ("logical~");
     sym_lop__tilde__                            = gensym ("lop~");
     sym_lrshift__tilde__                        = gensym ("lrshift~");
     sym_mag__tilde__                            = gensym ("mag~");

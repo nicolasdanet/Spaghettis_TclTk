@@ -27,6 +27,8 @@ void dsp_addMultiplyPerform         (t_sample *src1, t_sample *src2, t_sample *d
 void dsp_addDividePerform           (t_sample *src1, t_sample *src2, t_sample *dest, int n);
 void dsp_addMaximumPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
 void dsp_addMinimumPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void dsp_addGreaterPerform          (t_sample *src1, t_sample *src2, t_sample *dest, int n);
+void dsp_addLessPerform             (t_sample *src1, t_sample *src2, t_sample *dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -38,6 +40,8 @@ void dsp_addMultiplyScalarPerform   (PD_RESTRICTED src, t_float *f, PD_RESTRICTE
 void dsp_addDivideScalarPerform     (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
 void dsp_addMaximumScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
 void dsp_addMinimumScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void dsp_addGreaterScalarPerform    (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
+void dsp_addLessScalarPerform       (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
