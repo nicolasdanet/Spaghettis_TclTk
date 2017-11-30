@@ -4,7 +4,7 @@
 #X coords 0 0.5 881 -0.5 200 130 1;
 #X restore 382 119 graph;
 #X text 381 257 ---- 0.02 seconds ----;
-#X obj 46 242 output~;
+#X obj 46 242 output;
 #X obj 140 276 tabwrite~ \$0-sum;
 #X obj 130 107 / 100;
 #X floatatom 130 86 4 0 100 0 - - -, f 4;

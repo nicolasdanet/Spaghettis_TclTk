@@ -1,6 +1,6 @@
 #N canvas 426 42 554 571 12;
 #X obj 108 216 mtof;
-#X obj 36 480 output~;
+#X obj 36 480 output;
 #X obj 36 108 noise~;
 #X floatatom 108 252 5 0 0 0 - - -;
 #X f 5;

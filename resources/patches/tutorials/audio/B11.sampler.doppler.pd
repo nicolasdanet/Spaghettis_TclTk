@@ -36,7 +36,7 @@
 #X obj 36 492 *~;
 #X obj 324 324 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 180 144 * 441;
-#X obj 36 588 output~;
+#X obj 36 588 output;
 #X obj 276 144 * 441;
 #X obj 120 408 +~;
 #X floatatom 276 108 5 0 0 1 - #0-onset -;

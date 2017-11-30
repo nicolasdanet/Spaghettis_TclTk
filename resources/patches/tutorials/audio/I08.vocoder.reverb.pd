@@ -167,7 +167,7 @@
 #X connect 12 1 5 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 288 pd fft;
-#X obj 36 336 output~;
+#X obj 36 336 output;
 #N canvas 814 58 599 655 tables 0;
 #N canvas 0 22 450 300 \$0-last-real 0;
 #X array \$0-last-real 2048 float 0;

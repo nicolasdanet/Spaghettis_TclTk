@@ -22,7 +22,7 @@ is accomplished simply by subtracting two sawtooth waves at a varying
 phase difference. Here their frequencies are set to differ by 1/5 Hz.
 so that the relative phase wanders continuously.;
 #X text 570 457 ---- 0.02 seconds ----;
-#X obj 96 247 output~;
+#X obj 96 247 output;
 #X obj 200 124 tabwrite~ \$0-phasor1;
 #X obj 200 182 tabwrite~ \$0-phasor2;
 #X obj 200 236 tabwrite~ \$0-difference;

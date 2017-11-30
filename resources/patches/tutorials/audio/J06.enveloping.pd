@@ -10,7 +10,7 @@
 #X restore 638 189 graph;
 #X obj 47 52 phasor~;
 #X text 126 2 ENVELOPE GENERATORS FROM LINE SEGMENTS;
-#X obj 19 514 output~;
+#X obj 19 514 output;
 #X obj 46 98 *~;
 #X obj 11 165 -~;
 #X obj 10 214 *~;

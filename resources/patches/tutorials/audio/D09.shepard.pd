@@ -1,7 +1,7 @@
 #N canvas 494 48 481 753 12;
 #X obj 36 156 shepard 0;
 #X f 12;
-#X obj 36 660 output~;
+#X obj 36 660 output;
 #X obj 36 180 shepard 500;
 #X f 12;
 #X obj 36 204 shepard 1000;

@@ -73,7 +73,7 @@
 #X restore 375 275 graph;
 #X floatatom 375 425 5 0 0 0 - - -, f 5;
 #X floatatom 375 471 5 0 0 0 - - -, f 5;
-#X obj 52 443 output~;
+#X obj 52 443 output;
 #X obj 88 353 tabread4~ \$0-transition;
 #X obj 201 186 * 0.4;
 #X msg 201 91 136.766;

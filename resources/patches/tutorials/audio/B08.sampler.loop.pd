@@ -1,6 +1,6 @@
 #N canvas 661 80 663 604 12;
 #X obj 36 300 +~ 1;
-#X obj 36 516 output~;
+#X obj 36 516 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -72 12 freeze;
 #N canvas 667 113 343 488 init 0;

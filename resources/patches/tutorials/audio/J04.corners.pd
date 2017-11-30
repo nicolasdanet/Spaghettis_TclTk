@@ -6,7 +6,7 @@
 #X coords 0 0.25 881 -0.25 200 130 1;
 #X restore 411 70 graph;
 #X text 410 208 ---- 0.02 seconds ----;
-#X obj 33 427 output~;
+#X obj 33 427 output;
 #X obj 127 461 tabwrite~ \$0-sum;
 #X obj 117 110 -~;
 #X obj 139 69 / 100;

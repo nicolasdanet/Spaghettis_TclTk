@@ -39,7 +39,7 @@
 #X text 24 24 loop (onset);
 #X text 12 72 Windowed looper with a variable onset.;
 #X f 38;
-#X obj 36 564 output~;
+#X obj 36 564 output;
 #X obj 216 312 line~;
 #X obj 216 240 * 441;
 #X obj 216 276 pack 0 100;

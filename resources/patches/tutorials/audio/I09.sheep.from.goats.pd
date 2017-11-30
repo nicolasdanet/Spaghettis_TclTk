@@ -167,7 +167,7 @@
 #X restore 49 410 pd fft-analysis;
 #X floatatom 355 287 0 0 100 0 - - -;
 #X text 138 10 PITCHED/UNPITCHED SEPARATION;
-#X obj 48 443 output~;
+#X obj 48 443 output;
 #X floatatom 48 356 0 0 100 0 - - -;
 #X text 105 337 noise;
 #X floatatom 108 356 0 0 100 0 - - -;

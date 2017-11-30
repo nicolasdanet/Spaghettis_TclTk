@@ -2,7 +2,7 @@
 #X obj 36 240 phasor~;
 #X obj 144 360 +~;
 #X obj 36 552 vcf~;
-#X obj 36 600 output~;
+#X obj 36 600 output;
 #X obj 36 204 mtof;
 #X obj 144 168 phasor~;
 #X obj 144 300 *~;

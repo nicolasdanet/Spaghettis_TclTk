@@ -1,5 +1,5 @@
 #N canvas 456 71 421 651 12;
-#X obj 36 552 output~;
+#X obj 36 552 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X floatatom 96 168 5 0 0 1 - #0-chunk -;

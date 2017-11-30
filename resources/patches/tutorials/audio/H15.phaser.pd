@@ -47,7 +47,7 @@
 #X connect 22 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 312 pd chord;
-#X obj 36 612 output~;
+#X obj 36 612 output;
 #X obj 72 384 rpole~;
 #X f 10;
 #X obj 72 360 rzero_rev~;

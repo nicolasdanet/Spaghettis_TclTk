@@ -4,11 +4,11 @@
 #X obj 72 204 osc~ 660;
 #X obj 36 180 +~;
 #X obj 36 240 +~;
-#X obj 36 312 output~;
+#X obj 36 312 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 output;
-#X msg 192 204 \; pd-output~ open;
+#X msg 192 204 \; pd-output open;
 #N canvas 629 80 779 536 more 0;
 #N canvas 0 22 500 350 \$0-clipping 0;
 #X array \$0-clipping 128 float 3;

@@ -63,7 +63,7 @@
 #X msg 36 180 60 100 10000 2 0 0 0;
 #X msg 36 252 60 100 100 1 0 0 0;
 #X msg 36 276 60 100 100 1 0 0 1000;
-#X obj 36 456 output~;
+#X obj 36 456 output;
 #X msg 36 228 60 100 10000 1 0 750 0;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;

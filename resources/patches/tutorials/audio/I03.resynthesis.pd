@@ -1,5 +1,5 @@
 #N canvas 559 88 463 497 12;
-#X obj 36 408 output~;
+#X obj 36 408 output;
 #X obj 36 336 noise~;
 #N canvas 553 239 775 314 hann 0;
 #X obj 36 264 tabwrite \$0-hann;

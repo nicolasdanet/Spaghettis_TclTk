@@ -1,7 +1,7 @@
 #N canvas 632 71 383 575 12;
 #X obj 36 432 *~;
 #X obj 36 324 vline~;
-#X obj 36 480 output~;
+#X obj 36 480 output;
 #X obj 120 324 vline~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -72 12 freeze;

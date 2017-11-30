@@ -1,5 +1,5 @@
 #N canvas 347 90 591 546 12;
-#X obj 36 456 output~;
+#X obj 36 456 output;
 #N canvas 163 357 780 106 more 0;
 #X text 12 12 First you need to estimate the background noise spectrum.;
 #X text 12 60 Then \, apply this mask to clean the background noise out of a signal.;

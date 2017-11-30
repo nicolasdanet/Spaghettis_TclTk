@@ -5,7 +5,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 envelope (portamento);
 #X text 12 72 Portamento sweep in pitch (not frequency).;
-#X obj 36 408 output~;
+#X obj 36 408 output;
 #X obj 36 324 mtof~;
 #X floatatom 36 216 5 0 0 1 - - -;
 #X f 5;

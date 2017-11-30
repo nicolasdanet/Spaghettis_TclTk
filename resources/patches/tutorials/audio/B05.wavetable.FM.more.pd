@@ -1,7 +1,7 @@
 #N canvas 312 67 548 530 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#X obj 36 432 output~;
+#X obj 36 432 output;
 #N canvas 162 41 323 145 init 0;
 #X obj 24 24 inlet;
 #X msg 24 72 \; \$0-table sinesum 512 0.5 0.5;

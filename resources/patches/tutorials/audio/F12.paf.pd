@@ -6,7 +6,7 @@
 #X obj 120 372 -~ 0.25;
 #X obj 120 492 +~ 100;
 #X obj 36 576 *~;
-#X obj 36 672 output~;
+#X obj 36 672 output;
 #X obj 120 336 *~ 0.5;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;

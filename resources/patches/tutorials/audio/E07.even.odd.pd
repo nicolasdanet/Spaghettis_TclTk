@@ -1,6 +1,6 @@
 #N canvas 384 171 429 428 12;
 #X obj 36 288 cos~;
-#X obj 36 336 output~;
+#X obj 36 336 output;
 #N canvas 291 334 797 183 more 0;
 #X text 12 60 An additional offset ("symmetry") controls how the oscillator's waveform is centered.;
 #X f 86;

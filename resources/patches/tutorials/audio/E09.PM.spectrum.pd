@@ -5,7 +5,7 @@
 #X obj 36 348 +~;
 #X obj 240 192 pack 0 50;
 #X obj 36 228 phasor~;
-#X obj 36 540 output~;
+#X obj 36 540 output;
 #X obj 144 228 osc~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;

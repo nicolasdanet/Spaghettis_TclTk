@@ -4,7 +4,7 @@
 #X obj 36 396 *~;
 #X obj 120 300 pack 0 50;
 #X obj 36 456 +~;
-#X obj 36 612 output~;
+#X obj 36 612 output;
 #X obj 264 252 *;
 #X obj 36 300 osc~;
 #X obj 264 300 phasor~;

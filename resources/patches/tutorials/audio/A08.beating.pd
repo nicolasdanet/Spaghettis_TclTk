@@ -1,5 +1,5 @@
 #N canvas 520 88 529 501 12;
-#X obj 36 408 output~;
+#X obj 36 408 output;
 #X obj 36 324 +~;
 #X obj 36 180 +~;
 #X obj 156 180 +~;

@@ -6,7 +6,7 @@
 #X obj 36 552 +~;
 #X obj 144 384 wrap~;
 #X obj 144 348 +~ 0.5;
-#X obj 36 588 output~;
+#X obj 36 588 output;
 #X obj 36 276 phasor~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;

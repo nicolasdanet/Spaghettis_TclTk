@@ -1,7 +1,7 @@
 #N canvas 697 73 443 520 12;
 #X obj 312 216 line~;
 #X obj 312 180 pack 0 50;
-#X obj 36 432 output~;
+#X obj 36 432 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 PAF;

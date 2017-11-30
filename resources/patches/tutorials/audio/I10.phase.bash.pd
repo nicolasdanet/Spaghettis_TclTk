@@ -105,7 +105,7 @@
 #X obj 407 443 s loco;
 #X obj 586 400 s pitch;
 #X obj 407 346 pack 0 100;
-#X obj 588 453 output~;
+#X obj 588 453 output;
 #X text 214 -1 PHASE BASHING;
 #X floatatom 199 389 5 0 0 0 - #0-samp-msec -, f 5;
 #X text 197 403 sample length \, msec;
@@ -281,7 +281,7 @@ and window-msec (analysis window size in seconds and msec).;
 #X text 33 384 ---analyze---;
 #X text 20 399 sample;
 #X obj 94 489 tabwrite~ \$0-nophase;
-#X obj 21 492 output~;
+#X obj 21 492 output;
 #X msg 415 384 0 \, 400 4000;
 #X msg 415 419 0 \, 400 10000;
 #X text 47 18 This patch takes an incoming sound \, does an overlap-2

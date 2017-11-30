@@ -2,7 +2,7 @@
 #X obj 36 144 adsr 1 100 200 50 300;
 #X obj 84 276 osc~ 440;
 #X obj 36 336 *~;
-#X obj 36 384 output~;
+#X obj 36 384 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 12 72 Introducing the ADSR abstraction.;

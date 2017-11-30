@@ -11,7 +11,7 @@
 #X floatatom 204 180 5 0 0 1 - - -;
 #X f 5;
 #X obj 72 492 vu 15 120 empty empty 17 7 0 10 #ffffff #000000 0 0;
-#X obj 36 624 output~;
+#X obj 36 624 output;
 #X obj 204 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #N canvas 455 116 778 300 partials 0;
 #X obj 36 24 inlet;

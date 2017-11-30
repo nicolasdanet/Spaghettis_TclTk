@@ -1,6 +1,6 @@
 #N canvas 431 85 608 569 12;
 #X obj 36 228 +~;
-#X obj 36 480 output~;
+#X obj 36 480 output;
 #X obj 36 360 clip~ -1 1;
 #X obj 36 324 *~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;

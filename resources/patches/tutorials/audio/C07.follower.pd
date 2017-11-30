@@ -94,7 +94,7 @@
 #X restore 312 408 pd init;
 #X obj 36 144 tabplay~ \$0-table;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 36 372 output~;
+#X obj 36 372 output;
 #X obj 72 240 t f f;
 #X text 12 72 Simple envelope follower.;
 #X obj 168 324 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;

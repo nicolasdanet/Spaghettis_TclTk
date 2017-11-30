@@ -3,7 +3,7 @@
 #X obj 36 276 +~;
 #X obj 36 360 osc~;
 #X obj 84 180 osc~;
-#X obj 36 468 output~;
+#X obj 36 468 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 frequency modulation;

@@ -4,7 +4,7 @@
 #X obj 252 264 +~ 69;
 #X obj 36 228 adsr 100 50 200 90 1000;
 #X obj 252 228 adsr 20 200 100 100 1000;
-#X obj 36 492 output~;
+#X obj 36 492 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 envelope (pitch);

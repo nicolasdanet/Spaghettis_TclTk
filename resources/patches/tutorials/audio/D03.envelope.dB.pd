@@ -2,7 +2,7 @@
 #X obj 36 108 osc~ 440;
 #X obj 36 264 *~;
 #X obj 144 144 adsr 100 100 200 70 300;
-#X obj 36 396 output~;
+#X obj 36 396 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 envelope (decibels);

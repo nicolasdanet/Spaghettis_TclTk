@@ -11,7 +11,7 @@
 #X obj 264 384 *~;
 #X obj 336 288 / 6923;
 #X obj 36 384 adsr 0 100 200 100 300;
-#X obj 36 636 output~;
+#X obj 36 636 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 vibrato;

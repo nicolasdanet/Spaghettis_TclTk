@@ -6,7 +6,7 @@
 #X obj 36 300 *~;
 #X obj 36 396 clip~ -0.5 0.5;
 #X obj 168 240 +~ 1;
-#X obj 36 660 output~;
+#X obj 36 660 output;
 #X obj 36 516 +~ 1;
 #X obj 36 552 *~ 0.5;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;

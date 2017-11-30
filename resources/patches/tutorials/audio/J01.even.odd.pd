@@ -15,10 +15,10 @@
 #X coords 0 1.02 882 -1.02 200 130 1;
 #X restore 566 343 graph;
 #X text 570 475 ---- 0.02 seconds ----;
-#X obj 22 335 output~;
+#X obj 22 335 output;
 #X obj 138 78 bng 15 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 29 270 output~;
+#X obj 29 270 output;
 #X text 41 -1 Splitting a sawtooth wave into even and odd harmonics
 ;
 #X obj 24 29 phasor~ 100;
