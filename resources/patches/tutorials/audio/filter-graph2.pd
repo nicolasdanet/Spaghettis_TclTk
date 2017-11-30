@@ -70,9 +70,9 @@
 #N canvas 442 59 512 425 filters 0;
 #X obj 312 96 *~;
 #X obj 372 96 *~;
-#X obj 36 300 butterworth3~ 80 100000 0;
+#X obj 36 300 butterworth3 80 100000 0;
 #X obj 120 60 expr 10000/$f1;
-#X obj 36 264 butterworth3~ 80 100000 0;
+#X obj 36 264 butterworth3 80 100000 0;
 #X obj 36 24 inlet;
 #X obj 120 24 inlet;
 #X obj 276 24 inlet~;
