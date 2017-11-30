@@ -395,7 +395,7 @@ void ugen_graphConnect (t_dspcontext *context, t_object *o1, int m, t_object *o2
     m = object_getIndexAsSignalOfOutlet (o1, m);
     n = object_getIndexAsSignalOfInlet (o2, n);
     
-    if (!u1 || !u2 || n < 0) { PD_BUG; }
+    if (!u1 || !u2 || n < 0) { PD_ASSERT (object_isDummy (o1) || object_isDummy (o2)); }
     else if (m < 0 || m >= u1->u_outSize || n >= u2->u_inSize) { PD_BUG; }
     else {
         ugen_graphConnectUgens (u1, m, u2, n);
