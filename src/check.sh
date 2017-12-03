@@ -35,7 +35,6 @@ VERSION="Version: ${0##*/} v2017.12.03"
 LINK_EXPR="/\* < (ht|f)tp.*[^ ] > \*/|// --"
 HIDE_EXPR="#define|#else|#endif|#if|#elif|#include|#pragma|#import|https?://|ftp://|// --|// MARK"
 EXIT_EXPR="===================================="
-FILE_EXPR=".*\.(h|hpp|c|cpp)"
 PLUS_EXPR=".*\.(hpp|cpp)"
 TEMP_EXPR="template<|template [ ]+<|< >|template <[^ >]|template.+[^ <>]>|template.+>[^ >\(\:]"
 
@@ -251,7 +250,7 @@ done
 if [ "${#files[@]}" -eq 0 ]; then
     while read -r -d $'\0'; do
         files+=("$REPLY")
-    done < <(find -E "$rep" -regex $FILE_EXPR -print0)
+    done < <(find "$rep" -type f \( -name '*.h' -o -name '*.hpp' -o -name '*.c' -o -name '*.cpp' \) -print0)
 else
     [ -f "${files[0]}" ] || { echo >&2 "${0##*/}: ${files[0]}: Invalid file"; exit 1; }
     [[ "${files[0]}" =~ $FILE_EXPR ]] || { echo >&2 "${0##*/}: ${files[0]}: Invalid file"; exit 1; }
