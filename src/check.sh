@@ -7,6 +7,12 @@
 # Lines containing a "// --" comment are not checked, nor files inside "libraries" folders.
 # File starting with "====================================" neither.
 # Without any directory nor filename provided, files are looked up in $PWD.
+#
+# ./check.sh
+# ./check.sh -d ../resources
+# ./check.sh -d ..
+# ./check.sh -f m_pd.h
+# ./check.sh -f ../resources/examples/helloCPP.cpp
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
