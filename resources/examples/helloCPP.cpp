@@ -86,7 +86,7 @@ static void *hello_new (void)
     t_error err = (x->x_error = PD_ERROR_NONE);
     
     try {
-        new (x) t_hello;                    /* Use the placement new operator. */
+        new (x) t_hello;                    /* Use placement new. */
     }
     
     catch (...) {
