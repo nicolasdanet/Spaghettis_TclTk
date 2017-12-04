@@ -13,7 +13,7 @@ export MACOSX_DEPLOYMENT_TARGET = 10.6
 
 VPATH = ../obj
 
-PUREDATA = ../../src
+SPAGHETTIS = ../../src
 EXTERNALS = ./externals
 
 # Warnings
@@ -22,7 +22,7 @@ WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 
 # Flags.
 
-CPPFLAGS = -I$(PUREDATA)
+CPPFLAGS = -I$(SPAGHETTIS)
 CFLAGS   = -Os -fvisibility=hidden $(WARNINGS) $(ARCH)
 CXXFLAGS = $(CFLAGS) -Wno-deprecated
 LDFLAGS  = -bundle -undefined dynamic_lookup -bind_at_load

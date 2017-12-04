@@ -11,7 +11,7 @@ endif
 
 VPATH = ../obj
 
-PUREDATA = ../../src
+SPAGHETTIS = ../../src
 EXTERNALS = ./externals
 
 # Warnings
@@ -20,7 +20,7 @@ WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 
 # Flags.
 
-CPPFLAGS = -I$(PUREDATA)
+CPPFLAGS = -I$(SPAGHETTIS)
 CFLAGS   = -Os -fvisibility=hidden -shared -fpic $(WARNINGS) $(ARCH)
 CXXFLAGS = $(CFLAGS) -Wno-deprecated
 LDFLAGS  = -lm
