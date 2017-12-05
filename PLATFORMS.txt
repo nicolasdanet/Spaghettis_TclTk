@@ -10,7 +10,7 @@ GNU/Linux:
 Apple:
 
     - Mac OS X 10.6.8  / ActiveTcl 8.5.18
-    - Mac OS X 10.12.6 / ActiveTcl 8.6.6
+    - Mac OS X 10.13.1 / ActiveTcl 8.6.6
 
 Windows:
 
