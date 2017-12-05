@@ -67,6 +67,8 @@ void        garray_setDataAtIndex           (t_garray *x, int i, t_float f);
 t_float     garray_getDataAtIndex           (t_garray *x, int i);
 void        garray_setDataFromIndex         (t_garray *x, int i, t_float f);
 t_float     garray_getAmplitude             (t_garray *x);
+t_seed      garray_getTag                   (t_garray *x);
+void        garray_setNextTag               (t_garray *x);
 void        garray_setAsUsedInDSP           (t_garray *x);
 void        garray_setSaveWithParent        (t_garray *x, int savedWithParent);
 void        garray_setHideName              (t_garray *x, int hideName);

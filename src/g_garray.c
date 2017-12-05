@@ -47,6 +47,7 @@ struct _garray {
     t_glist     *x_owner;
     t_symbol    *x_unexpandedName;
     t_symbol    *x_name;
+    t_seed      x_redrawn;
     char        x_isUsedInDSP;
     char        x_saveWithParent;
     char        x_hideName;
@@ -399,7 +400,24 @@ int garray_isNameShown (t_garray *x)
 
 void garray_redraw (t_garray *x)
 {
+    garray_setNextTag (x);
+    
     gui_jobAdd ((void *)x, x->x_owner, garray_drawJob);
+}
+
+void garray_setNextTag (t_garray *x)
+{
+    static t_seed once = 0;
+    static t_seed seed = 0;
+    
+    if (!once) { seed = math_makeRandomSeed(); }
+    
+    PD_RAND48_NEXT (seed); x->x_redrawn = seed;
+}
+
+t_seed garray_getTag (t_garray *x)
+{
+    return x->x_redrawn;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -618,7 +636,7 @@ static int garray_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     t_garray *x = (t_garray *)z;
 
     if (m->m_clicked) { gobj_mouse (cast_gobj (x->x_scalar), glist, m); }
-    
+
     return CURSOR_CLICK;
 }
 
