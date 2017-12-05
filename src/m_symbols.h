@@ -527,6 +527,7 @@ extern t_symbol *sym_tabread;
 extern t_symbol *sym_tabread__tilde__;
 extern t_symbol *sym_tabread4;
 extern t_symbol *sym_tabread4__tilde__;
+extern t_symbol *sym_tabreceive;
 extern t_symbol *sym_tabreceive__tilde__;
 extern t_symbol *sym_tabsend__tilde__;
 extern t_symbol *sym_tabwrite;

@@ -528,6 +528,7 @@ t_symbol *sym_tabread__tilde__;
 t_symbol *sym_tabread4;
 t_symbol *sym_tabread4__tilde__;
 t_symbol *sym_tabsend__tilde__;
+t_symbol *sym_tabreceive;
 t_symbol *sym_tabreceive__tilde__;
 t_symbol *sym_tabwrite;
 t_symbol *sym_tabwrite__tilde__;
@@ -1153,6 +1154,7 @@ void symbols_initialize (void)
     sym_tabread__tilde__                        = gensym ("tabread~");
     sym_tabread4                                = gensym ("tabread4");
     sym_tabread4__tilde__                       = gensym ("tabread4~");
+    sym_tabreceive                              = gensym ("tabreceive");
     sym_tabreceive__tilde__                     = gensym ("tabreceive~");
     sym_tabsend__tilde__                        = gensym ("tabsend~");
     sym_tabwrite                                = gensym ("tabwrite");
