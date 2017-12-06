@@ -501,7 +501,6 @@
 		371D2CEB1DFBF3F2004EAB69 /* d_vline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vline.c; path = src/d_vline.c; sourceTree = "<group>"; };
 		371D2D001DFBF492004EAB69 /* d_line.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_line.c; path = src/d_line.c; sourceTree = "<group>"; };
 		371D2D011DFBF492004EAB69 /* d_sig.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_sig.c; path = src/d_sig.c; sourceTree = "<group>"; };
-		371E068F1DF47599006317FF /* d_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_math.h; path = src/d_math.h; sourceTree = "<group>"; };
 		3720EBB41D239650001675BD /* g_vinlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vinlet.c; path = src/g_vinlet.c; sourceTree = "<group>"; };
 		3720EBB51D239650001675BD /* g_voutlet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_voutlet.c; path = src/g_voutlet.c; sourceTree = "<group>"; };
 		37251FBC1E7FB4BC0067E434 /* g_editor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_editor.c; path = src/g_editor.c; sourceTree = "<group>"; };
@@ -1213,7 +1212,6 @@
 				17A2BD231F0A30480071D330 /* d_macros.h */,
 				17A2BD211F0A135E0071D330 /* d_resample.h */,
 				17A2BD221F0A2D6C0071D330 /* d_perform.h */,
-				371E068F1DF47599006317FF /* d_math.h */,
 				37C000261DE2FBF800F90584 /* Graph */,
 				37ACC43E1E321BB60026E5FA /* Shared */,
 				37B1AA491DC1EDE70017355A /* Objects */,

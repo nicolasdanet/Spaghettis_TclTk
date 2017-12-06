@@ -15,7 +15,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "d_dsp.h"
-#include "d_math.h"
+#include "d_macros.h"
 #include "d_fft.h"
 
 // -----------------------------------------------------------------------------------------------------------
