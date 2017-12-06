@@ -349,21 +349,8 @@
 #define PD_WITH_LEGACY              1           /* Compatibility. */
 #endif
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if ( PD_LINUX || PD_BSD || PD_HURD || PD_CYGWIN || PD_APPLE )
-
 #ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME            1
-#endif
-
-#else
-
-#ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME            0
-#endif
-
+#define PD_WITH_REALTIME            1           /* Require RT policy. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
