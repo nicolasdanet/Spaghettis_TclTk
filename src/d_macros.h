@@ -153,6 +153,8 @@
 
 /* Benchmark required. */
 
+/* < https://mathr.co.uk/blog/2015-04-21_approximating_cosine.html > */
+
 extern t_float *cos_tilde_table;
 
 static inline t_float dsp_getCosineAt (double position)
