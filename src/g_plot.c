@@ -350,6 +350,14 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
                 sym_change,
                 0,
                 NULL);
+            
+        } else {
+        
+            t_garray *a = gpointer_getGraphicArray (&plot_gpointer);
+            
+            PD_ASSERT (a);
+            
+            if (a) { garray_setNextTag (a); }
         }
         
         gpointer_draw (&plot_gpointer);
@@ -832,6 +840,8 @@ static int plot_behaviorMouseArray (t_plot *x, t_plotproperties *p, t_mouse *m)
 
     if (m->m_clicked) {
 
+        t_garray *a = gpointer_getGraphicArray (&plot_gpointer);
+        
         array_setFloatAtIndexByDescriptor (p->p_array, i, &x->x_fieldY, valueY);
         
         glist_setMotion (gpointer_getView (&plot_gpointer), 
@@ -839,7 +849,11 @@ static int plot_behaviorMouseArray (t_plot *x, t_plotproperties *p, t_mouse *m)
             (t_motionfn)plot_motion, 
             m->m_x, 
             m->m_y);
-            
+        
+        PD_ASSERT (a);
+        
+        if (a) { garray_setNextTag (a); }
+        
         gpointer_redraw (&plot_gpointer);
     }
     

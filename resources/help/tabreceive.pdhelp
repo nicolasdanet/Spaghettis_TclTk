@@ -1,4 +1,4 @@
-#N canvas 483 172 569 344 12;
+#N canvas 553 76 564 343 12;
 #N canvas 0 22 450 300 \$0-array 0;
 #X array \$0-array 10 float 1;
 #A 0 0 9 1 8 2 7 3 6 4 5;
@@ -11,13 +11,13 @@
 #X text 12 300 See also:;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#N canvas 721 321 523 247 more 0;
+#N canvas 811 183 523 247 more 0;
 #X obj 36 192 print;
 #X msg 72 60 set \$0-foo;
 #X msg 36 24 set \$0-array;
 #N canvas 0 22 500 350 \$0-foo 0;
 #X array \$0-foo 10 float 1;
-#A 0 0.728262 0.253548 0.969673 0.499511 0.991628 0.43033 0.148234 0.925552 0.481178 0.779852;
+#A 0 0.0463325 0.754586 0.392971 0.320093 0.57983 0.466708 0.75122 0.831602 0.0202742 0.0703661;
 #X coords 0 1 9 0 250 175 1 0 0;
 #X restore 240 36 graph \$0-foo;
 #X obj 36 144 tabreceive \$0-foo;
@@ -26,7 +26,7 @@
 #X connect 4 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 156 252 pd more;
-#X obj 36 144 print;
+#X obj 36 180 print;
 #N canvas 204 74 444 288 init 0;
 #X obj 24 24 inlet;
 #X msg 120 132 \; \$0-array 0 0 9 1 8 2 7 3 6 4 5;
@@ -45,7 +45,9 @@
 #X obj 36 216 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X text 24 24 tabreceive;
 #X text 12 72 Report content of an array.;
-#X obj 36 108 tabreceive \$0-array;
+#X obj 36 144 tabreceive \$0-array;
+#X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X connect 11 0 10 0;
 #X connect 14 0 9 0;
+#X connect 15 0 14 0;
 #X coords 0 0 1 1 250 175 0 0 0;

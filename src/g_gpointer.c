@@ -316,6 +316,15 @@ int gpointer_isValidInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
     return 1;
 }
 
+t_garray *gpointer_getGraphicArray (t_gpointer *gp)
+{
+    t_glist *glist = gpointer_getView (gp);
+    
+    if (glist_isArray (glist)) { return glist_getArray (glist); }
+    
+    return NULL;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

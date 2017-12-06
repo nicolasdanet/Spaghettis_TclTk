@@ -9,6 +9,7 @@
 
 #include "m_pd.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -30,6 +31,31 @@ typedef struct _tabreceive {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void tabreceive_output (t_tabreceive *x, t_garray *garray)
+{
+    t_atom *a = NULL;
+    int i, n = garray_getSize (garray);
+    
+    PD_ATOMS_ALLOCA (a, n);
+    
+    for (i = 0; i < n; i++) { t_float f = garray_getDataAtIndex (garray, i); SET_FLOAT (a + i, f); }
+    
+    outlet_list (x->x_outlet, n, a);
+    
+    PD_ATOMS_FREEA (a, n);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void tabreceive_bang (t_tabreceive *x)
+{
+    t_garray *garray = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    
+    if (garray) { tabreceive_output (x, garray); }
+}
+
 static void tabreceive_set (t_tabreceive *x, t_symbol *s)
 {
     x->x_name = s;
@@ -41,14 +67,10 @@ static void tabreceive_set (t_tabreceive *x, t_symbol *s)
 
 static void tabreceive_polling (t_tabreceive *x)
 {
-    t_garray *a = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    t_garray *garray = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
     
-    if (a && (x->x_tag != garray_getTag (a))) {
-    //
-    post_log ("?");
-    
-    x->x_tag = garray_getTag (a);
-    //
+    if (garray && (x->x_tag != garray_getTag (garray))) {
+        x->x_tag = garray_getTag (garray); tabreceive_output (x, garray);
     }
 }
 
@@ -89,8 +111,10 @@ void tabreceive_setup (void)
             A_DEFSYMBOL,
             A_NULL);
     
-    class_addMethod (c, (t_method)tabreceive_set, sym_set, A_SYMBOL, A_NULL);
+    class_addBang (c, (t_method)tabreceive_bang);
     class_addPolling (c, (t_method)tabreceive_polling);
+    
+    class_addMethod (c, (t_method)tabreceive_set, sym_set, A_SYMBOL, A_NULL);
     
     tabreceive_class = c;
 }
