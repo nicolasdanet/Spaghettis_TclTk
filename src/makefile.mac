@@ -53,27 +53,16 @@ LDFLAGS = -framework CoreAudio \
 
 # Preprocessor and compiler flags.
 
-ifdef WITH_DEBUG
-
-CPPFLAGS = -DPD_WITH_DEBUG \
-    -DPD_BUILDING_APPLICATION \
-    -I$(PM_DIR)/pm_common \
-    -I$(PM_DIR)/pm_mac \
-    -I$(PM_DIR)/porttime
-
-CFLAGS = -ffast-math $(WARNINGS) $(ARCH)
-
-else
-
 CPPFLAGS = -DNDEBUG \
     -DPD_BUILDING_APPLICATION \
     -I$(PM_DIR)/pm_common \
     -I$(PM_DIR)/pm_mac \
-    -I$(PM_DIR)/porttime
+    -I$(PM_DIR)/porttime \
+    -I$(PA_DIR)/include \
+    -I$(PA_DIR)/src/common \
+    -DPA_USE_COREAUDIO
 
 CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
-
-endif
 
 # PortMidi.
 
@@ -106,29 +95,15 @@ PORTAUDIO_SRC = $(PA_DIR)/src/common/pa_allocation.c \
 
 MIDI_SRC = s_midi_pm.c $(PORTMIDI_SRC)
 
-# Audio. 
-
-AUDIO_SRC = 
-
 # Audio with PORTAUDIO.
 
-ifdef WITH_PORTAUDIO
-    CPPFLAGS += -I$(PA_DIR)/include \
-        -I$(PA_DIR)/src/common \
-        -DPA_USE_COREAUDIO
-    AUDIO_SRC += s_logger_pa.c s_audio_pa.c pa_mac_hostapis.c $(PORTAUDIO_SRC)
-endif
+AUDIO_SRC = s_logger_pa.c s_audio_pa.c pa_mac_hostapis.c $(PORTAUDIO_SRC)
 
-# Audio with JACK.
-
-ifdef WITH_JACK
-    LIB += -weak_framework Jackmp
-    AUDIO_SRC += s_logger_jack.c s_audio_jack.c
-endif
-
-# Sources (application amalgamated).
+# Sources amalgamated.
 
 SRC = amalgam.c
+
+# Objects.
 
 OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 
@@ -175,9 +150,7 @@ clean:
 	@-rm -f $(OBJ)
 	@-rm -f "pa_mac_hostapis.o"
 	@-rm -f "s_audio_pa.o"
-	@-rm -f "s_audio_jack.o"
 	@-rm -f "s_logger_pa.o"
-	@-rm -f "s_logger_jack.o"
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pdwatchdog
 	@echo "Remove bin directory ..."

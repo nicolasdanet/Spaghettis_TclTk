@@ -55,7 +55,7 @@ patches="${rep}/resources/patches"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Do not overwrite previous build.
+# Do NOT overwrite previous build.
 
 [ -e "${destination}" ] && { echo >&2 "${0##*/}: ${destination} already exist"; exit 1; }
 [ -e "${app}" ] && { echo >&2 "${0##*/}: ${app} already exist"; exit 1; }
@@ -63,45 +63,17 @@ patches="${rep}/resources/patches"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Default compiler architecture ( https://stackoverflow.com/questions/246007 ).
+# Build the binaries.
 
-foo=$(mktemp build.XXXXXXXXXXXXXXXX)
-echo 'int main() { return 0; }' | cc -x c - -o ${foo}
-test=$(file ${foo})
-rm ${foo}
-
-# Externals suffix.
-
-extension=".pdbundle32"
-
-[[ "${test}" =~ "x86_64" ]] && { echo "Build 64-bit ..."; extension=".pdbundle64"; }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Build the binaries (for now with PortAudio API only).
-
+echo "Build binaries ..."
 cd "${rep}/src"                                                 || exit 1
-
-echo "Build with PORTMIDI ..."
-echo "Build with PORTAUDIO ..."
-make -f makefile.mac "WITH_PORTAUDIO=TRUE"                      || exit 1
-
+make -f makefile.mac                                            || exit 1
 cd "${rep}"                                                     || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Build the hello examples. 
-
-cd "${rep}/resources/examples"                                  || exit 1
-make -f makefile.mac "EXTENSION=${extension}"                   || exit 1
-cd "${rep}"                                                     || exit 1
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Make the bundle.
+# Make the application bundle.
 
 echo "Build package ..."
 mkdir "${destination}"                                          || exit 1
@@ -146,6 +118,7 @@ cd "${rep}"                                                     || exit 1
 
 # Codesign with a pseudo-identity.
 
+echo "Codesign ..."
 codesign -s "-" -f "${app}"                                     || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
