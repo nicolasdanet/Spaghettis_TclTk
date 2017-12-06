@@ -38,39 +38,29 @@ WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 
 # Linker flags.
 
-LIB = -ldl -lpthread -lm
+LIB = -ldl -lpthread -lm -lasound -ljack
 
 LDFLAGS = -rdynamic $(ARCH)
 
 # Preprocessor and compiler flags.
 
-ifdef WITH_DEBUG
-
-CPPFLAGS = -DPD_WITH_DEBUG -DPD_BUILDING_APPLICATION
-
-CFLAGS = -ffast-math $(WARNINGS) $(ARCH)
-
-else
-
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
 
 CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
 
-endif
-
 # MIDI with ALSA.
 
 MIDI_SRC = s_midi_alsa.c
-LIB += -lasound
 
 # Audio with JACK.
 
 AUDIO_SRC = s_logger_jack.c s_audio_jack.c
-LIB += -ljack
 
-# Sources (application amalgamated).
+# Sources amalgamated.
 
 SRC = amalgam.c
+
+# Objects.
 
 OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 

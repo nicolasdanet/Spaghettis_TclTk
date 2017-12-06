@@ -52,38 +52,12 @@ patches="${rep}/resources/patches"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Default compiler architecture ( https://stackoverflow.com/questions/246007 ).
+# Build the binaries.
 
-foo=$(mktemp build.XXXXXXXXXXXXXXXX)
-echo 'int main() { return 0; }' | cc -x c - -o ${foo}
-test=$(file ${foo})
-rm ${foo}
-
-# Externals suffix.
-
-extension=".pdobject32"
-
-[[ "${test}" =~ "64-bit" ]] && { echo "Build 64-bit ..."; extension=".pdobject64"; }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Build the binaries (for now with JACK API only).
-
-cd "${rep}/src"                                                 || exit 1
-echo "Build MIDI with ALSA ... " 
-echo "Build Audio with JACK ... "
-make -f makefile.gnu                                            || exit 1
-cd "${rep}"                                                     || exit 1
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Build the hello examples. 
-
-cd "${rep}/resources/examples"                                  || exit 1
-make -f makefile.gnu "EXTENSION=${extension}"                   || exit 1
-cd "${rep}"                                                     || exit 1
+echo "Build binaries ..."
+cd "${rep}/src"                         || exit 1
+make -f makefile.gnu                    || exit 1
+cd "${rep}"                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -91,10 +65,10 @@ cd "${rep}"                                                     || exit 1
 # Create the directory.
 
 echo "Create directory ..."
-mkdir "${destination}"                                          || exit 1
-cp -R "${bin}" "${destination}"                                 || exit 1
-cp -R "${tcl}" "${destination}"                                 || exit 1
-cp -R "${help}" "${destination}"                                || exit 1
+mkdir "${destination}"                  || exit 1
+cp -R "${bin}" "${destination}"         || exit 1
+cp -R "${tcl}" "${destination}"         || exit 1
+cp -R "${help}" "${destination}"        || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -102,7 +76,7 @@ cp -R "${help}" "${destination}"                                || exit 1
 # Install materials.
 
 echo "Install patches ..."
-cp -R "${patches}" "${destination}"                             || exit 1
+cp -R "${patches}" "${destination}"     || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -110,9 +84,9 @@ cp -R "${patches}" "${destination}"                             || exit 1
 # Clean the build.
 
 echo "Clean ..."
-cd "${rep}/src"                                                 || exit 1
-make -f makefile.gnu clean                                      || exit 1
-cd "${rep}"                                                     || exit 1
+cd "${rep}/src"                         || exit 1
+make -f makefile.gnu clean              || exit 1
+cd "${rep}"                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
