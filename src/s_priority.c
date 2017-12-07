@@ -136,7 +136,7 @@ static t_error priority_setRTNative (void)
     
     char command[PD_STRING] = { 0 };
     
-    err = string_sprintf (command, PD_STRING, "%s/pdwatchdog", main_directoryBin->s_name);
+    err = string_sprintf (command, PD_STRING, "%s/spaghettisdog", main_directoryBin->s_name);
     
     if (!err && !(err = (path_isFileExist (command) == 0))) {
     //

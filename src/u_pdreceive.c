@@ -74,7 +74,7 @@ static int      pdreceive_socketIsBinary;
 
 void pdreceive_usage (void)
 {
-    fprintf (stderr, "usage: pdreceive < portnumber > [ udp | tcp ] [ binary ]\n");     // --
+    fprintf (stderr, "usage: spaghettisrcv < portnumber > [ udp | tcp ] [ binary ]\n");     // --
     fprintf (stderr, "(default is tcp)\n");
 }
 

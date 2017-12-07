@@ -17,7 +17,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>Pd</string>
+	<string>Spaghettis</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDocumentTypes</key>
@@ -64,7 +64,7 @@
 		</dict>
 	</array>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright (c) 1997-2015 Miller Puckette and others.</string>
+	<string>Copyright (c) 1997-2017 Miller Puckette and others.</string>
 	<key>CFBundleIconFile</key>
 	<string>Wish.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>

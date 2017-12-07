@@ -52,7 +52,7 @@
 
 void pdsend_usage (void)
 {
-    fprintf (stderr, "usage: pdsend < portnumber > [ host ] [ udp | tcp ]\n");  // --
+    fprintf (stderr, "usage: spaghettissnd < portnumber > [ host ] [ udp | tcp ]\n");   // --
     fprintf (stderr, "(default is localhost and tcp)\n");
 }
 

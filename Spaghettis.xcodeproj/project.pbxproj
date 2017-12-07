@@ -772,9 +772,9 @@
 		379A42091BA3F51100C1CED0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
 		379A420B1BA3F51C00C1CED0 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		379A420D1BA3F52D00C1CED0 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = /System/Library/Frameworks/CoreMIDI.framework; sourceTree = "<absolute>"; };
-		379A42D61BA427B900C1CED0 /* pdsend */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdsend; sourceTree = BUILT_PRODUCTS_DIR; };
-		379A42F11BA428D000C1CED0 /* pdreceive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdreceive; sourceTree = BUILT_PRODUCTS_DIR; };
-		379A43041BA4291200C1CED0 /* pdwatchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdwatchdog; sourceTree = BUILT_PRODUCTS_DIR; };
+		379A42D61BA427B900C1CED0 /* spaghettissnd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spaghettissnd; sourceTree = BUILT_PRODUCTS_DIR; };
+		379A42F11BA428D000C1CED0 /* spaghettisrcv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spaghettisrcv; sourceTree = BUILT_PRODUCTS_DIR; };
+		379A43041BA4291200C1CED0 /* spaghettisdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spaghettisdog; sourceTree = BUILT_PRODUCTS_DIR; };
 		379C1B3F1D3790C200C4D92C /* g_drawtext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_drawtext.c; path = src/g_drawtext.c; sourceTree = "<group>"; };
 		379C1B711D37934500C4D92C /* g_plot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_plot.c; path = src/g_plot.c; sourceTree = "<group>"; };
 		379C1BAF1D37954000C4D92C /* g_drawpolygon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_drawpolygon.c; path = src/g_drawpolygon.c; sourceTree = "<group>"; };
@@ -874,7 +874,7 @@
 		37FFF5301D979C7000669135 /* x_binop1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_binop1.c; path = src/x_binop1.c; sourceTree = "<group>"; };
 		37FFF6431D97BF0600669135 /* x_binop3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_binop3.c; path = src/x_binop3.c; sourceTree = "<group>"; };
 		37FFF6871D97C17C00669135 /* x_binop2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_binop2.c; path = src/x_binop2.c; sourceTree = "<group>"; };
-		8DD76FB20486AB0100D96B5E /* pd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pd; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DD76FB20486AB0100D96B5E /* spaghettis */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = spaghettis; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -962,10 +962,10 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FB20486AB0100D96B5E /* pd */,
-				379A42D61BA427B900C1CED0 /* pdsend */,
-				379A42F11BA428D000C1CED0 /* pdreceive */,
-				379A43041BA4291200C1CED0 /* pdwatchdog */,
+				8DD76FB20486AB0100D96B5E /* spaghettis */,
+				379A42D61BA427B900C1CED0 /* spaghettissnd */,
+				379A42F11BA428D000C1CED0 /* spaghettisrcv */,
+				379A43041BA4291200C1CED0 /* spaghettisdog */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1790,9 +1790,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		379A426C1BA427B900C1CED0 /* pdsend */ = {
+		379A426C1BA427B900C1CED0 /* spaghettissnd */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 379A42D31BA427B900C1CED0 /* Build configuration list for PBXNativeTarget "pdsend" */;
+			buildConfigurationList = 379A42D31BA427B900C1CED0 /* Build configuration list for PBXNativeTarget "spaghettissnd" */;
 			buildPhases = (
 				379A426D1BA427B900C1CED0 /* Sources */,
 				379A42CC1BA427B900C1CED0 /* Frameworks */,
@@ -1802,15 +1802,15 @@
 			);
 			dependencies = (
 			);
-			name = pdsend;
+			name = spaghettissnd;
 			productInstallPath = "$(HOME)/bin";
 			productName = PureData;
-			productReference = 379A42D61BA427B900C1CED0 /* pdsend */;
+			productReference = 379A42D61BA427B900C1CED0 /* spaghettissnd */;
 			productType = "com.apple.product-type.tool";
 		};
-		379A42E41BA428D000C1CED0 /* pdreceive */ = {
+		379A42E41BA428D000C1CED0 /* spaghettisrcv */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 379A42EE1BA428D000C1CED0 /* Build configuration list for PBXNativeTarget "pdreceive" */;
+			buildConfigurationList = 379A42EE1BA428D000C1CED0 /* Build configuration list for PBXNativeTarget "spaghettisrcv" */;
 			buildPhases = (
 				379A42E51BA428D000C1CED0 /* Sources */,
 				379A42E71BA428D000C1CED0 /* Frameworks */,
@@ -1820,15 +1820,15 @@
 			);
 			dependencies = (
 			);
-			name = pdreceive;
+			name = spaghettisrcv;
 			productInstallPath = "$(HOME)/bin";
 			productName = PureData;
-			productReference = 379A42F11BA428D000C1CED0 /* pdreceive */;
+			productReference = 379A42F11BA428D000C1CED0 /* spaghettisrcv */;
 			productType = "com.apple.product-type.tool";
 		};
-		379A42F71BA4291200C1CED0 /* pdwatchdog */ = {
+		379A42F71BA4291200C1CED0 /* spaghettisdog */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 379A43011BA4291200C1CED0 /* Build configuration list for PBXNativeTarget "pdwatchdog" */;
+			buildConfigurationList = 379A43011BA4291200C1CED0 /* Build configuration list for PBXNativeTarget "spaghettisdog" */;
 			buildPhases = (
 				379A42F81BA4291200C1CED0 /* Sources */,
 				379A42FA1BA4291200C1CED0 /* Frameworks */,
@@ -1838,15 +1838,15 @@
 			);
 			dependencies = (
 			);
-			name = pdwatchdog;
+			name = spaghettisdog;
 			productInstallPath = "$(HOME)/bin";
 			productName = PureData;
-			productReference = 379A43041BA4291200C1CED0 /* pdwatchdog */;
+			productReference = 379A43041BA4291200C1CED0 /* spaghettisdog */;
 			productType = "com.apple.product-type.tool";
 		};
-		8DD76FA90486AB0100D96B5E /* pd */ = {
+		8DD76FA90486AB0100D96B5E /* spaghettis */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "pd" */;
+			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "spaghettis" */;
 			buildPhases = (
 				1754B0051EED3B19000C3886 /* ShellScript */,
 				8DD76FAB0486AB0100D96B5E /* Sources */,
@@ -1857,10 +1857,10 @@
 			);
 			dependencies = (
 			);
-			name = pd;
+			name = spaghettis;
 			productInstallPath = "$(HOME)/bin";
 			productName = PureData;
-			productReference = 8DD76FB20486AB0100D96B5E /* pd */;
+			productReference = 8DD76FB20486AB0100D96B5E /* spaghettis */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -1887,10 +1887,10 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DD76FA90486AB0100D96B5E /* pd */,
-				379A42F71BA4291200C1CED0 /* pdwatchdog */,
-				379A426C1BA427B900C1CED0 /* pdsend */,
-				379A42E41BA428D000C1CED0 /* pdreceive */,
+				8DD76FA90486AB0100D96B5E /* spaghettis */,
+				379A42F71BA4291200C1CED0 /* spaghettisdog */,
+				379A426C1BA427B900C1CED0 /* spaghettissnd */,
+				379A42E41BA428D000C1CED0 /* spaghettisrcv */,
 			);
 		};
 /* End PBXProject section */
@@ -1907,7 +1907,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rep=\"${SOURCE_ROOT}\"\ndestination=\"${rep}/Debug\"\nwish=\"/Library/Frameworks/Tk.framework/Versions/8.6/Resources/Wish.app\"\n\nif [ ! -e \"${wish}\" ]; then\n    wish=\"/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app\"\nfi\n\nrm -rf \"${destination}\"\n\napp=\"${destination}/Spaghettis.app\"\nplist=\"${rep}/resources/Info.plist\"\ntcl=\"${rep}/tcl\"\nhelp=\"${rep}/resources/help\"\npatches=\"${rep}/resources/patches\"\n\nmkdir \"${destination}\"\n\ncp -R \"${wish}\" \"${app}\"\nrm -f \"${app}/Contents/Info.plist\"\nrm -f \"${app}/Contents/PkgInfo\"\nrm -f \"${app}/Contents/version.plist\"\nrm -f \"${app}/Contents/MacOS/Wish Shell\"\nrm -rf \"${app}/Contents/_CodeSignature\"\nrm -f \"${app}/Contents/CodeResources\"\nrm -f \"${app}/Contents/Resources/Wish.sdef\"\ncp -p \"${plist}\" \"${app}/Contents/Info.plist\"\necho \"APPL????\" > \"${app}/Contents/PkgInfo\"\nmv \"${app}/Contents/MacOS/Wish\" \"${app}/Contents/MacOS/Pd\"\ncp -R \"${tcl}\" \"${app}/Contents/Resources/\"\ncp -R \"${help}\" \"${app}/Contents/Resources/\"\ncd \"${app}/Contents/Resources/\"\nln -s \"tcl\" \"Scripts\"\ncd \"${rep}\"\ncp -R \"${patches}\" \"${destination}\"";
+			shellScript = "rep=\"${SOURCE_ROOT}\"\ndestination=\"${rep}/Debug\"\nwish=\"/Library/Frameworks/Tk.framework/Versions/8.6/Resources/Wish.app\"\n\nif [ ! -e \"${wish}\" ]; then\n    wish=\"/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app\"\nfi\n\nrm -rf \"${destination}\"\n\napp=\"${destination}/Spaghettis.app\"\nplist=\"${rep}/resources/Info.plist\"\ntcl=\"${rep}/tcl\"\nhelp=\"${rep}/resources/help\"\npatches=\"${rep}/resources/patches\"\n\nmkdir \"${destination}\"\n\ncp -R \"${wish}\" \"${app}\"\nrm -f \"${app}/Contents/Info.plist\"\nrm -f \"${app}/Contents/PkgInfo\"\nrm -f \"${app}/Contents/version.plist\"\nrm -f \"${app}/Contents/MacOS/Wish Shell\"\nrm -rf \"${app}/Contents/_CodeSignature\"\nrm -f \"${app}/Contents/CodeResources\"\nrm -f \"${app}/Contents/Resources/Wish.sdef\"\ncp -p \"${plist}\" \"${app}/Contents/Info.plist\"\necho \"APPL????\" > \"${app}/Contents/PkgInfo\"\nmv \"${app}/Contents/MacOS/Wish\" \"${app}/Contents/MacOS/Spaghettis\"\ncp -R \"${tcl}\" \"${app}/Contents/Resources/\"\ncp -R \"${help}\" \"${app}/Contents/Resources/\"\ncd \"${app}/Contents/Resources/\"\nln -s \"tcl\" \"Scripts\"\ncd \"${rep}\"\ncp -R \"${patches}\" \"${destination}\"";
 		};
 		175D6C521EED6D27007E1722 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1920,7 +1920,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rep=\"${SOURCE_ROOT}\"\nbin=\"${BUILT_PRODUCTS_DIR}/pd\"\napp=\"${rep}/Debug/Spaghettis.app\"\ndestination=\"${app}/Contents/Resources/bin\"\n\nmkdir \"${destination}\" || exit 1\n\ncp \"${bin}\" \"${destination}/pd\"\n\ncodesign -s \"-\" -f \"${app}\"";
+			shellScript = "rep=\"${SOURCE_ROOT}\"\nbin=\"${BUILT_PRODUCTS_DIR}/spaghettis\"\napp=\"${rep}/Debug/Spaghettis.app\"\ndestination=\"${app}/Contents/Resources/bin\"\n\nmkdir \"${destination}\" || exit 1\n\ncp \"${bin}\" \"${destination}/spaghettis\"\n\ncodesign -s \"-\" -f \"${app}\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2328,7 +2328,7 @@
 					"-ldl",
 					"-lpthread",
 				);
-				PRODUCT_NAME = pd;
+				PRODUCT_NAME = spaghettis;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2361,7 +2361,7 @@
 					"-ldl",
 					"-lpthread",
 				);
-				PRODUCT_NAME = pd;
+				PRODUCT_NAME = spaghettis;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2387,7 +2387,7 @@
 		379A42D41BA427B900C1CED0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = pdsend;
+				PRODUCT_NAME = spaghettissnd;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2401,7 +2401,7 @@
 		379A42D51BA427B900C1CED0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = pdsend;
+				PRODUCT_NAME = spaghettissnd;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2415,7 +2415,7 @@
 		379A42EF1BA428D000C1CED0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = pdreceive;
+				PRODUCT_NAME = spaghettisrcv;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2429,7 +2429,7 @@
 		379A42F01BA428D000C1CED0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = pdreceive;
+				PRODUCT_NAME = spaghettisrcv;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2443,7 +2443,7 @@
 		379A43021BA4291200C1CED0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = pdwatchdog;
+				PRODUCT_NAME = spaghettisdog;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2457,7 +2457,7 @@
 		379A43031BA4291200C1CED0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = pdwatchdog;
+				PRODUCT_NAME = spaghettisdog;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2471,7 +2471,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "pd" */ = {
+		1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "spaghettis" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB928608733DD80010E9CD /* Debug */,
@@ -2489,7 +2489,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		379A42D31BA427B900C1CED0 /* Build configuration list for PBXNativeTarget "pdsend" */ = {
+		379A42D31BA427B900C1CED0 /* Build configuration list for PBXNativeTarget "spaghettissnd" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				379A42D41BA427B900C1CED0 /* Debug */,
@@ -2498,7 +2498,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		379A42EE1BA428D000C1CED0 /* Build configuration list for PBXNativeTarget "pdreceive" */ = {
+		379A42EE1BA428D000C1CED0 /* Build configuration list for PBXNativeTarget "spaghettisrcv" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				379A42EF1BA428D000C1CED0 /* Debug */,
@@ -2507,7 +2507,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		379A43011BA4291200C1CED0 /* Build configuration list for PBXNativeTarget "pdwatchdog" */ = {
+		379A43011BA4291200C1CED0 /* Build configuration list for PBXNativeTarget "spaghettisdog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				379A43021BA4291200C1CED0 /* Debug */,

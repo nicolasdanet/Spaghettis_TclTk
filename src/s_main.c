@@ -111,17 +111,17 @@ static t_error main_parseArguments (int argc, char **argv)
 /* 
     In "simple" installations, the layout is
     
-        .../bin/pd
-        .../bin/pdwatchdog
+        .../bin/spaghettis
+        .../bin/spaghettisdog
         .../tcl/ui_main.tcl
         .../help/
         
     In "complexe" installations, the layout is
     
-        .../bin/pd
-        .../lib/pd/bin/pdwatchdog
-        .../lib/pd/tcl/ui_main.tcl
-        .../lib/pd/help/
+        .../bin/spaghettis
+        .../lib/spaghettis/bin/spaghettisdog
+        .../lib/spaghettis/tcl/ui_main.tcl
+        .../lib/spaghettis/help/
 
 */
 
@@ -213,7 +213,7 @@ static t_error main_getRootDirectory (void)
         main_directoryRoot = gensym (t1);
     #else
         err = string_copy (t2, PD_STRING, t1);
-        err |= string_add (t2, PD_STRING, "/lib/pd");
+        err |= string_add (t2, PD_STRING, "/lib/spaghettis");
         
         if (!err && path_isFileExist (t2)) { main_directoryRoot = gensym (t2); }    /* Complexe. */
         else {

@@ -178,7 +178,7 @@ proc main {argc argv} {
         
     } else {
         ::ui_interface::serverSocket
-        set executable [file join [file dirname [info script]] "../bin/pd"]
+        set executable [file join [file dirname [info script]] "../bin/spaghettis"]
         exec -- $executable -port $::var(tcpPort) &
     }
 }
