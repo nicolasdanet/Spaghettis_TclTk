@@ -1,11 +1,11 @@
-#N canvas 527 105 627 409 12;
+#N canvas 527 105 606 419 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #N canvas 0 22 500 350 \$0-multislider 0;
 #X array \$0-multislider 6 float 3;
 #A 0 0.14285 -0.211444 0.165707 0.439999 0.542859 0.279996;
 #X coords 0 1 6 -1 250 175 1 0 0;
-#X restore 348 108 graph \$0-multislider;
+#X restore 324 108 graph \$0-multislider;
 #X text 24 24 array (more);
 #X obj 36 108 tabreceive \$0-multislider;
 #X obj 36 168 unpack f f f f f f;
