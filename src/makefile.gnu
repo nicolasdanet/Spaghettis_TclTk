@@ -104,8 +104,6 @@ clean:
 	@-rm -f makefile.dependencies
 	@echo "Remove objects ..."
 	@-rm -f $(OBJ)
-	@-rm -f "s_audio_jack.o"
-	@-rm -f "s_logger_jack.o"
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv $(BIN_DIR)/spaghettisdog
 	@echo "Remove bin directory ..."
