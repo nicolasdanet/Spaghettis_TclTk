@@ -1,11 +1,11 @@
-#N canvas 243 225 533 464 12;
+#N canvas 476 225 527 379 12;
 #X obj 36 264 netsend;
 #X msg 36 108 connect localhost 3000;
 #X msg 60 216 send foo \$1;
 #X floatatom 60 180 0 0 0 0 - - -;
 #X msg 36 132 disconnect;
-#X obj 96 420 netreceive;
-#X text 12 420 See also:;
+#X obj 96 336 netreceive;
+#X text 12 336 See also:;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 netsend;
@@ -53,11 +53,6 @@
 #X restore 156 264 pd more;
 #X obj 36 300 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
 #X text 12 72 Send messages over a network (default is TCP in text mode).;
-#X text 12 384 ./pdreceive 3000;
-#X f 17;
-#X text 12 360 Launch it in a terminal with the following command:;
-#X text 12 336 This example requires the pdreceive executable to run.;
-#X f 55;
 #X connect 0 0 11 0;
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
