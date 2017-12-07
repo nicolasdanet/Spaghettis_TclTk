@@ -18,20 +18,20 @@ HELP_DIR = ../resources/help
 
 # Install paths.
 
-# /usr/local/bin/pd
-# /usr/local/bin/pdsend
-# /usr/local/bin/pdreceive
+# /usr/local/bin/spaghettis
+# /usr/local/bin/spaghettissnd
+# /usr/local/bin/spaghettisrcv
 # /usr/local/include/m_pd.h
-# /usr/local/lib/pd/bin/pdwatchdog
-# /usr/local/lib/pd/tcl/*.tcl
-# /usr/local/lib/pd/help/*.pdhelp
+# /usr/local/lib/spaghettis/bin/spaghettisdog
+# /usr/local/lib/spaghettis/tcl/*.tcl
+# /usr/local/lib/spaghettis/help/*.pdhelp
 
 prefix          = /usr/local
 exec_prefix     = $(prefix)
 bindir          = $(exec_prefix)/bin
 includedir      = $(prefix)/include
 libdir          = $(exec_prefix)/lib
-libpddir        = $(libdir)/pd
+libpddir        = $(libdir)/spaghettis
 libpdbindir     = $(libpddir)/bin
 libpdtcldir     = $(libpddir)/tcl
 libpdhelpdir    = $(libpddir)/help
@@ -111,7 +111,7 @@ OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 
 .PHONY: all
 
-all: $(BIN_DIR)/pd $(BIN_DIR)/pdwatchdog $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive
+all: $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettisdog $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv
 
 $(BIN_DIR):
 	@test -d $(BIN_DIR) || mkdir -p $(BIN_DIR)
@@ -120,21 +120,21 @@ $(OBJ): %.o : %.c
 	@echo "Build $@ ..."
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-$(BIN_DIR)/pd: $(OBJ) | $(BIN_DIR)
-	@echo "Build pd ..."
-	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/pd $(OBJ) $(LIB)
+$(BIN_DIR)/spaghettis: $(OBJ) | $(BIN_DIR)
+	@echo "Build spaghettis ..."
+	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ) $(LIB)
 
-$(BIN_DIR)/pdwatchdog: u_watchdog.c | $(BIN_DIR)
-	@echo "Build pdwatchdog ..."
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pdwatchdog u_watchdog.c
+$(BIN_DIR)/spaghettisdog: u_watchdog.c | $(BIN_DIR)
+	@echo "Build spaghettisdog ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/spaghettisdog u_watchdog.c
 
-$(BIN_DIR)/pdsend: u_pdsend.c | $(BIN_DIR)
-	@echo "Build pdsend ..."
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pdsend u_pdsend.c
+$(BIN_DIR)/spaghettissnd: u_pdsend.c | $(BIN_DIR)
+	@echo "Build spaghettissnd ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/spaghettissnd u_pdsend.c
 
-$(BIN_DIR)/pdreceive: u_pdreceive.c | $(BIN_DIR)
-	@echo "Build pdreceive ..."
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pdreceive u_pdreceive.c
+$(BIN_DIR)/spaghettisrcv: u_pdreceive.c | $(BIN_DIR)
+	@echo "Build spaghettisrcv ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/spaghettisrcv u_pdreceive.c
 
 depend: makefile.dependencies
 
@@ -152,41 +152,42 @@ clean:
 	@-rm -f "s_audio_pa.o"
 	@-rm -f "s_logger_pa.o"
 	@echo "Remove binaries ..."
-	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pdwatchdog
+	@-rm -f $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv $(BIN_DIR)/spaghettisdog
 	@echo "Remove bin directory ..."
 	@-rmdir $(BIN_DIR)
 
 install: all
 	@echo "Install binaries ..."
 	install -d $(DESTDIR)$(bindir)
-	install -m755 $(BIN_DIR)/pd $(DESTDIR)$(bindir)/pd
-	install -m755 $(BIN_DIR)/pdsend $(DESTDIR)$(bindir)/pdsend
-	install -m755 $(BIN_DIR)/pdreceive $(DESTDIR)$(bindir)/pdreceive
+	install -m755 $(BIN_DIR)/spaghettis $(DESTDIR)$(bindir)/spaghettis
+	install -m755 $(BIN_DIR)/spaghettissnd $(DESTDIR)$(bindir)/spaghettissnd
+	install -m755 $(BIN_DIR)/spaghettisrcv $(DESTDIR)$(bindir)/spaghettisrcv
 	@echo "Install pdwatchdog ..."
 	install -d $(DESTDIR)$(libpdbindir)
-	install $(BIN_DIR)/pdwatchdog $(DESTDIR)$(libpdbindir)/pdwatchdog
+	install $(BIN_DIR)/spaghettisdog $(DESTDIR)$(libpdbindir)/spaghettisdog
 	@echo "Install scripts ..."
 	install -d $(DESTDIR)$(libpdtcldir)
 	install $(TCL_DIR)/*.tcl $(DESTDIR)$(libpdtcldir)
 	@echo "Install help ..."
 	install -d $(DESTDIR)$(libpdhelpdir)
 	install $(HELP_DIR)/*.pdhelp $(DESTDIR)$(libpdhelpdir)
+	install $(HELP_DIR)/*.pd $(DESTDIR)$(libpdhelpdir)
 	install $(HELP_DIR)/*.txt $(DESTDIR)$(libpdhelpdir)
 	install $(HELP_DIR)/*.aiff $(DESTDIR)$(libpdhelpdir)
+	install $(HELP_DIR)/*.wav $(DESTDIR)$(libpdhelpdir)
 	@echo "Install headers ..."
 	install -d $(DESTDIR)$(includedir)
 	install -m644 m_pd.h $(DESTDIR)$(includedir)/m_pd.h
 
 uninstall:
 	@echo "Uninstall binaries ..."
-	rm -f $(DESTDIR)$(bindir)/pd
-	rm -f $(DESTDIR)$(bindir)/pdsend
-	rm -f $(DESTDIR)$(bindir)/pdreceive
+	rm -f $(DESTDIR)$(bindir)/spaghettis
+	rm -f $(DESTDIR)$(bindir)/spaghettissnd
+	rm -f $(DESTDIR)$(bindir)/spaghettisrcv
 	@echo "Uninstall pdwatchdog ..."
 	@echo "Uninstall scripts ..."
-	rm -f -r $(DESTDIR)$(libpddir)
 	@echo "Uninstall help ..."
-	rm -f -r $(DESTDIR)$(libpdhelpdir)
+	rm -f -r $(DESTDIR)$(libpddir)
 	@echo "Uninstall headers ..."
 	rm -f $(DESTDIR)$(includedir)/m_pd.h
 

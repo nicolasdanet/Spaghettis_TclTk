@@ -66,9 +66,9 @@ patches="${rep}/resources/patches"
 # Build the binaries.
 
 echo "Build binaries ..."
-cd "${rep}/src"                                                 || exit 1
-make -f makefile.mac                                            || exit 1
-cd "${rep}"                                                     || exit 1
+cd "${rep}/src"                                                         || exit 1
+make -f makefile.mac                                                    || exit 1
+cd "${rep}"                                                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -76,24 +76,24 @@ cd "${rep}"                                                     || exit 1
 # Make the application bundle.
 
 echo "Build package ..."
-mkdir "${destination}"                                          || exit 1
-cp -R "${wish}" "${app}"                                        || exit 1
-rm -f "${app}/Contents/Info.plist"                              || exit 1
-rm -f "${app}/Contents/PkgInfo"                                 || exit 1
-rm -f "${app}/Contents/version.plist"                           || exit 1
-rm -f "${app}/Contents/MacOS/Wish Shell"                        || exit 1
-rm -rf "${app}/Contents/_CodeSignature"                         || exit 1
-rm -f "${app}/Contents/CodeResources"                           || exit 1
-rm -f "${app}/Contents/Resources/Wish.sdef"                     || exit 1
-cp -p "${plist}" "${app}/Contents/Info.plist"                   || exit 1
-echo "APPL????" > "${app}/Contents/PkgInfo"                     || exit 1
-mv "${app}/Contents/MacOS/Wish" "${app}/Contents/MacOS/Pd"      || exit 1
-cp -R "${bin}" "${app}/Contents/Resources/"                     || exit 1
-cp -R "${tcl}" "${app}/Contents/Resources/"                     || exit 1
-cp -R "${help}" "${app}/Contents/Resources/"                    || exit 1
-cd "${app}/Contents/Resources/"                                 || exit 1
-ln -s "tcl" "Scripts"                                           || exit 1
-cd "${rep}"                                                     || exit 1
+mkdir "${destination}"                                                  || exit 1
+cp -R "${wish}" "${app}"                                                || exit 1
+rm -f "${app}/Contents/Info.plist"                                      || exit 1
+rm -f "${app}/Contents/PkgInfo"                                         || exit 1
+rm -f "${app}/Contents/version.plist"                                   || exit 1
+rm -f "${app}/Contents/MacOS/Wish Shell"                                || exit 1
+rm -rf "${app}/Contents/_CodeSignature"                                 || exit 1
+rm -f "${app}/Contents/CodeResources"                                   || exit 1
+rm -f "${app}/Contents/Resources/Wish.sdef"                             || exit 1
+cp -p "${plist}" "${app}/Contents/Info.plist"                           || exit 1
+echo "APPL????" > "${app}/Contents/PkgInfo"                             || exit 1
+mv "${app}/Contents/MacOS/Wish" "${app}/Contents/MacOS/Spaghettis"      || exit 1
+cp -R "${bin}" "${app}/Contents/Resources/"                             || exit 1
+cp -R "${tcl}" "${app}/Contents/Resources/"                             || exit 1
+cp -R "${help}" "${app}/Contents/Resources/"                            || exit 1
+cd "${app}/Contents/Resources/"                                         || exit 1
+ln -s "tcl" "Scripts"                                                   || exit 1
+cd "${rep}"                                                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ cd "${rep}"                                                     || exit 1
 # Install materials.
 
 echo "Install patches ..."
-cp -R "${patches}" "${destination}"                             || exit 1
+cp -R "${patches}" "${destination}"                                     || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -109,9 +109,9 @@ cp -R "${patches}" "${destination}"                             || exit 1
 # Clean the build.
 
 echo "Clean ..."
-cd "${rep}/src"                                                 || exit 1
-make -f makefile.mac clean                                      || exit 1
-cd "${rep}"                                                     || exit 1
+cd "${rep}/src"                                                         || exit 1
+make -f makefile.mac clean                                              || exit 1
+cd "${rep}"                                                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ cd "${rep}"                                                     || exit 1
 # Codesign with a pseudo-identity.
 
 echo "Codesign ..."
-codesign -s "-" -f "${app}"                                     || exit 1
+codesign -s "-" -f "${app}"                                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
