@@ -146,11 +146,7 @@ clean:
 	@echo "Remove makefile.dependencies ..."
 	@-rm -f makefile.dependencies
 	@echo "Remove objects ..."
-	@-rm -f $(PORTAUDIO_SRC:.c=.o)
 	@-rm -f $(OBJ)
-	@-rm -f "pa_mac_hostapis.o"
-	@-rm -f "s_audio_pa.o"
-	@-rm -f "s_logger_pa.o"
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv $(BIN_DIR)/spaghettisdog
 	@echo "Remove bin directory ..."
