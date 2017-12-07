@@ -21,7 +21,7 @@ HELP_DIR = ../resources/help
 # /usr/local/bin/spaghettis
 # /usr/local/bin/spaghettissnd
 # /usr/local/bin/spaghettisrcv
-# /usr/local/include/m_pd.h
+# /usr/local/include/m_spaghettis.h
 # /usr/local/lib/spaghettis/bin/spaghettisdog
 # /usr/local/lib/spaghettis/tcl/*.tcl
 # /usr/local/lib/spaghettis/help/*.pdhelp
@@ -173,7 +173,7 @@ install: all
 	install $(HELP_DIR)/*.wav $(DESTDIR)$(libpdhelpdir)
 	@echo "Install headers ..."
 	install -d $(DESTDIR)$(includedir)
-	install -m644 m_pd.h $(DESTDIR)$(includedir)/m_pd.h
+	install -m644 m_spaghettis.h $(DESTDIR)$(includedir)/m_spaghettis.h
 
 uninstall:
 	@echo "Uninstall binaries ..."
@@ -185,6 +185,6 @@ uninstall:
 	@echo "Uninstall help ..."
 	rm -f -r $(DESTDIR)$(libpddir)
 	@echo "Uninstall headers ..."
-	rm -f $(DESTDIR)$(includedir)/m_pd.h
+	rm -f $(DESTDIR)$(includedir)/m_spaghettis.h
 
 include makefile.dependencies

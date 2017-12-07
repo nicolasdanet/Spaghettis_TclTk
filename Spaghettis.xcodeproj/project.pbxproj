@@ -703,7 +703,7 @@
 		378971DF1C4F716700263434 /* m_message.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_message.c; path = src/m_message.c; sourceTree = "<group>"; };
 		378971E01C4F716700263434 /* m_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_object.c; path = src/m_object.c; sourceTree = "<group>"; };
 		378971E11C4F716700263434 /* m_pd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_pd.c; path = src/m_pd.c; sourceTree = "<group>"; };
-		378971E21C4F716700263434 /* m_pd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_pd.h; path = src/m_pd.h; sourceTree = "<group>"; };
+		378971E21C4F716700263434 /* m_spaghettis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_spaghettis.h; path = src/m_spaghettis.h; sourceTree = "<group>"; };
 		378971E31C4F716700263434 /* m_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_core.h; path = src/m_core.h; sourceTree = "<group>"; };
 		378971E41C4F716700263434 /* s_scheduler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_scheduler.c; path = src/s_scheduler.c; sourceTree = "<group>"; };
 		378971E51C4F716700263434 /* m_setup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_setup.c; path = src/m_setup.c; sourceTree = "<group>"; };
@@ -1073,7 +1073,7 @@
 		371655A51BA3469200ABDE22 /* Spaghettis */ = {
 			isa = PBXGroup;
 			children = (
-				378971E21C4F716700263434 /* m_pd.h */,
+				378971E21C4F716700263434 /* m_spaghettis.h */,
 				3722C5331C4F920B00D2BF6F /* Core */,
 				3722C5341C4F921F00D2BF6F /* System */,
 				3722C5351C4F924900D2BF6F /* Graphics */,
