@@ -23,6 +23,7 @@ static t_class *tabreceive_class;       /* Shared. */
 typedef struct _tabreceive {
     t_object    x_obj;                  /* Must be the first. */
     t_seed      x_tag;
+    t_buffer    *x_previous;
     t_symbol    *x_name;
     t_outlet    *x_outlet;
     } t_tabreceive;
@@ -33,16 +34,20 @@ typedef struct _tabreceive {
 
 static void tabreceive_output (t_tabreceive *x, t_garray *garray)
 {
-    t_atom *a = NULL;
-    int i, n = garray_getSize (garray);
+    int n = garray_getSize (garray);
+    int i, k = 0;
     
-    PD_ATOMS_ALLOCA (a, n);
+    if (n != buffer_getSize (x->x_previous)) { k = 1; buffer_resize (x->x_previous, n); }
     
-    for (i = 0; i < n; i++) { t_float f = garray_getDataAtIndex (garray, i); SET_FLOAT (a + i, f); }
+    for (i = 0; i < n; i++) {
+        t_atom *a = buffer_getAtomAtIndex (x->x_previous, i);
+        t_float v = garray_getDataAtIndex (garray, i);
+        t_float f = atom_getFloat (a);
+        if (f != v) { k = 1; }
+        SET_FLOAT (a, v);
+    }
     
-    outlet_list (x->x_outlet, n, a);
-    
-    PD_ATOMS_FREEA (a, n);
+    if (k) { outlet_list (x->x_outlet, n, buffer_getAtoms (x->x_previous)); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -70,7 +75,8 @@ static void tabreceive_polling (t_tabreceive *x)
     t_garray *garray = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
     
     if (garray && (x->x_tag != garray_getTag (garray))) {
-        x->x_tag = garray_getTag (garray); tabreceive_output (x, garray);
+        x->x_tag = garray_getTag (garray);
+        tabreceive_output (x, garray);
     }
 }
 
@@ -82,8 +88,9 @@ static void *tabreceive_new (t_symbol *s)
 {
     t_tabreceive *x = (t_tabreceive *)pd_new (tabreceive_class);
     
-    x->x_name   = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    x->x_name     = s;
+    x->x_previous = buffer_new();
+    x->x_outlet   = outlet_new (cast_object (x), &s_list);
     
     instance_pollingRegister (cast_pd (x));
     
@@ -93,6 +100,8 @@ static void *tabreceive_new (t_symbol *s)
 static void tabreceive_free (t_tabreceive *x)
 {
     instance_pollingUnregister (cast_pd (x));
+    
+    buffer_free (x->x_previous);
 }
 
 // -----------------------------------------------------------------------------------------------------------
