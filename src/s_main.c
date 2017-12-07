@@ -213,7 +213,7 @@ static t_error main_getRootDirectory (void)
         main_directoryRoot = gensym (t1);
     #else
         err = string_copy (t2, PD_STRING, t1);
-        err |= string_add (t2, PD_STRING, "/lib/spaghettis");
+        err |= string_add (t2, PD_STRING, "/lib/"PD_NAME_LOWERCASE);
         
         if (!err && path_isFileExist (t2)) { main_directoryRoot = gensym (t2); }    /* Complexe. */
         else {
