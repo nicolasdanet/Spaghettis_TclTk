@@ -577,9 +577,7 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner)
             " %d"
             " -1 -1 $::var(nil)"                                        // --
             " %s %s"
-            " %s %d %d"
-            " %d"
-            " %d %d %d"
+            " %d %d"
             " %d\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_MINIMUM_HEIGHT,
             x->x_minimum, x->x_isVertical ? "Bottom" : "Left",
@@ -587,9 +585,7 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner)
             x->x_isLogarithmic, 
             x->x_gui.iem_loadbang,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
-            names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-            x->x_gui.iem_fontSize,
-            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel,
+            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground,
             x->x_isSteadyOnClick);
     
     PD_UNUSED (err); PD_ASSERT (!err);

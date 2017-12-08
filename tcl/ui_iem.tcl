@@ -72,9 +72,7 @@ proc create {top type
              loadbang
              extra extraMaximum extraLabel
              send receive
-             name nameDeltaX nameDeltaY 
-             nameFontSize
-             backgroundColor frontColor nameColor
+             backgroundColor frontColor
              steady} {
     
     variable iemType

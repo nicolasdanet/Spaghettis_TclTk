@@ -629,9 +629,7 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner)
             " %d"
             " %d %d {Steps}"                    // --
             " %s %s"
-            " %s %d %d"
-            " %d"
-            " %d %d %d"
+            " %d %d"
             " -1\n",
             x->x_digitsNumber, 1, x->x_gui.iem_height, IEM_MINIMUM_HEIGHT,
             x->x_minimum, x->x_maximum,
@@ -639,9 +637,7 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner)
             x->x_gui.iem_loadbang,
             x->x_steps, IEM_DIAL_MAXIMUM_STEPS,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
-            names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-            x->x_gui.iem_fontSize,
-            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel);
+            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground);
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
