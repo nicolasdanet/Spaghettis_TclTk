@@ -703,7 +703,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     int isLogarithmic   = 0;
     int labelX          = 0;
     int labelY          = 0;
-    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    int labelFontSize   = IEM_DEFAULT_FONT;
     int steps           = IEM_DIAL_DEFAULT_STEPS;
     double minimum      = IEM_DIAL_DEFAULT_MINIMUM;
     double maximum      = IEM_DIAL_DEFAULT_MAXIMUM;
@@ -741,7 +741,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = labelFontSize;
     x->x_hasKnob            = -1;
-    x->x_digitsFontSize     = IEM_DEFAULT_FONTSIZE;
+    x->x_digitsFontSize     = IEM_DEFAULT_FONT;
     
     iemgui_checkSendReceiveLoop (cast_iem (x));
     

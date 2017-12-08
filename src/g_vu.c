@@ -560,7 +560,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     int height          = IEM_VUMETER_STEPS * IEM_VUMETER_THICKNESS;
     int labelX          = 0;
     int labelY          = 0;
-    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    int labelFontSize   = IEM_DEFAULT_FONT;
     int hasScale        = 0;
 
     if (argc < 11) { iemgui_deserializeDefault (cast_iem (x)); }

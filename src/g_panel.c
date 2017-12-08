@@ -310,7 +310,7 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     int panelHeight     = IEM_PANEL_DEFAULT_HEIGHT;
     int labelX          = 0;
     int labelY          = 0;
-    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    int labelFontSize   = IEM_DEFAULT_FONT;
         
     if (argc < 12) { iemgui_deserializeDefault (cast_iem (x)); }
     else {

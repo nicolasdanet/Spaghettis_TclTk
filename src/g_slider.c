@@ -662,7 +662,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     int labelX          = 0;
     int labelY          = 0;
     int isSteady        = 0;
-    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    int labelFontSize   = IEM_DEFAULT_FONT;
     double minimum      = 0.0;
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
     t_float position    = (t_float)0.0;

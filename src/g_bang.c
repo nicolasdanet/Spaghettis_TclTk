@@ -419,7 +419,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     int flashBreak      = IEM_BANG_DEFAULT_BREAK;
     int labelX          = 0;
     int labelY          = 0;
-    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    int labelFontSize   = IEM_DEFAULT_FONT;
     
     if (argc != 14) { iemgui_deserializeDefault (cast_iem (x)); }
     else {

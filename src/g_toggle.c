@@ -411,7 +411,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     int size            = IEM_DEFAULT_SIZE;
     int labelX          = 0;
     int labelY          = 0;
-    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    int labelFontSize   = IEM_DEFAULT_FONT;
     t_float state       = (t_float)0.0;
     t_float nonZero     = (t_float)1.0;
 
