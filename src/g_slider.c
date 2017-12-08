@@ -617,7 +617,7 @@ static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     double minimum    = (double)atom_getFloatAtIndex (2, argc, argv);
     double maximum    = (double)atom_getFloatAtIndex (3, argc, argv);
     int isLogarithmic = (int)atom_getFloatAtIndex (4, argc, argv);
-    int isSteady      = (int)atom_getFloatAtIndex (16, argc, argv);
+    int isSteady      = (int)atom_getFloatAtIndex (11, argc, argv);
 
     isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
     

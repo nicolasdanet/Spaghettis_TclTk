@@ -534,7 +534,6 @@ static void radio_fromDialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
     {
     //
     int size            = (int)atom_getFloatAtIndex (0, argc, argv);
-    int changed         = (int)atom_getFloatAtIndex (4, argc, argv);
     int numberOfButtons = (int)atom_getFloatAtIndex (6, argc, argv);
 
     x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
@@ -544,8 +543,6 @@ static void radio_fromDialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
     
     numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
     
-    x->x_changed = (changed != 0);
-
     if (x->x_numberOfButtons != numberOfButtons) { radio_buttonsNumber (x, (t_float)numberOfButtons); } 
     //
     }

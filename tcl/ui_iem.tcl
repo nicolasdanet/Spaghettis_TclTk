@@ -481,13 +481,8 @@ proc _apply {top} {
             $iemExtra($top) \
             [::sanitized [::dollarToHash [::withNil $iemSend($top)]]] \
             [::sanitized [::dollarToHash [::withNil $iemReceive($top)]]] \
-            [::sanitized [::dollarToHash [::withNil $iemName($top)]]] \
-            $iemNameDeltaX($top) \
-            $iemNameDeltaY($top) \
-            $iemNameFontSize($top) \
             $iemBackgroundColor($top) \
             $iemFrontColor($top) \
-            $iemNameColor($top) \
             $iemSteady($top)"
 }
 

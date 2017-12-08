@@ -74,6 +74,7 @@ static t_color iemgui_colorDecode (t_atom *a)
 
 /* For convenience, for labels only, a float is loaded as integers (mainly in order to enumerate things). */
 /* It is prohibited for send and receive. */
+/* Unused but kept for compatibility. */
 
 static t_symbol *iemgui_fetchName (int i, t_atom *argv, int isNumberAllowed)
 {
@@ -409,39 +410,27 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     int isDirty   = 0;
     
     int t1        = iem->iem_loadbang;
-    int t2        = iem->iem_labelX;
-    int t3        = iem->iem_labelY;
-    t_fontsize t4 = iem->iem_fontSize;
-    t_color t5    = iem->iem_colorForeground;
-    t_color t6    = iem->iem_colorBackground;
-    t_color t7    = iem->iem_colorLabel;
-    t_symbol *t8  = iem->iem_send;
-    t_symbol *t9  = iem->iem_receive;
-    t_symbol *t10 = iem->iem_label;
+    t_color t2    = iem->iem_colorForeground;
+    t_color t3    = iem->iem_colorBackground;
+    t_symbol *t4  = iem->iem_send;
+    t_symbol *t5  = iem->iem_receive;
     
     {
     //
     int loadbang                = (int)atom_getFloatAtIndex (5,  argc, argv);
-    int labelX                  = (int)atom_getFloatAtIndex (10, argc, argv);
-    int labelY                  = (int)atom_getFloatAtIndex (11, argc, argv);
-    int fontSize                = (int)atom_getFloatAtIndex (12, argc, argv);
-    t_color backgroundColor     = (int)atom_getFloatAtIndex (13, argc, argv);
-    t_color foregroundColor     = (int)atom_getFloatAtIndex (14, argc, argv);
-    t_color labelColor          = (int)atom_getFloatAtIndex (15, argc, argv);
+    t_color backgroundColor     = (int)atom_getFloatAtIndex (9,  argc, argv);
+    t_color foregroundColor     = (int)atom_getFloatAtIndex (10, argc, argv);
     int canSend                 = 1;
     int canReceive              = 1;
 
     t_symbol *s1 = symbol_hashToDollar (iemgui_fetchName (7, argv, 0));
     t_symbol *s2 = symbol_hashToDollar (iemgui_fetchName (8, argv, 0));
-    t_symbol *s3 = symbol_hashToDollar (iemgui_fetchName (9, argv, 1));
 
     iem->iem_unexpandedSend     = s1;
     iem->iem_unexpandedReceive  = s2;
-    iem->iem_unexpandedLabel    = s3;
     
     s1 = iemgui_expandDollar (iem->iem_owner, s1);
     s2 = iemgui_expandDollar (iem->iem_owner, s2);
-    s3 = iemgui_expandDollar (iem->iem_owner, s3);
     
     if (symbol_isNil (s1)) { canSend = 0;    }
     if (symbol_isNil (s2)) { canReceive = 0; }
@@ -449,36 +438,25 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     
     if (canReceive) {
-        iem->iem_receive = s2;
-        pd_bind (cast_pd (iem), iem->iem_receive);
+        iem->iem_receive = s2; pd_bind (cast_pd (iem), iem->iem_receive);
     }
 
     iem->iem_canSend            = canSend;
     iem->iem_canReceive         = canReceive;
     iem->iem_loadbang           = (loadbang == 1);
-    iem->iem_labelX             = labelX;
-    iem->iem_labelY             = labelY;
-    iem->iem_fontSize           = fontSize;
     iem->iem_colorForeground    = color_checked (foregroundColor);
     iem->iem_colorBackground    = color_checked (backgroundColor);
-    iem->iem_colorLabel         = color_checked (labelColor);
     iem->iem_send               = s1;
-    iem->iem_label              = s3;
     
     iemgui_checkSendReceiveLoop (iem);
     //
     }
     
     isDirty |= (t1  != iem->iem_loadbang);
-    isDirty |= (t2  != iem->iem_labelX);
-    isDirty |= (t3  != iem->iem_labelY);
-    isDirty |= (t4  != iem->iem_fontSize);
-    isDirty |= (t5  != iem->iem_colorForeground);
-    isDirty |= (t6  != iem->iem_colorBackground);
-    isDirty |= (t7  != iem->iem_colorLabel);
-    isDirty |= (t8  != iem->iem_send);
-    isDirty |= (t9  != iem->iem_receive);
-    isDirty |= (t10 != iem->iem_label);
+    isDirty |= (t2  != iem->iem_colorForeground);
+    isDirty |= (t3  != iem->iem_colorBackground);
+    isDirty |= (t4  != iem->iem_send);
+    isDirty |= (t5  != iem->iem_receive);
     
     return isDirty;
 }
