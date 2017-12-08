@@ -34,18 +34,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define IEM_DEFAULT_LABELX_TOP          0
-#define IEM_DEFAULT_LABELY_TOP         -((IEM_DEFAULT_FONTSIZE / 2) + 2)
-#define IEM_DEFAULT_LABELX_NEXT         (IEM_DEFAULT_SIZE + 2)
-#define IEM_DEFAULT_LABELY_NEXT         ((IEM_DEFAULT_FONTSIZE / 2) + 2)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 #define IEM_MINIMUM_WIDTH               8
 #define IEM_MINIMUM_HEIGHT              8
-#define IEM_MINIMUM_FONTSIZE            4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -77,13 +67,13 @@
 typedef struct _iemcolors {
     t_symbol    *c_symColorBackground;
     t_symbol    *c_symColorForeground;
-    t_symbol    *c_symColorLabel;
+    t_symbol    *c_symColorLabel;               /* Unused but kept for compatibility. */
     } t_iemcolors;
 
 typedef struct _iemnames {
     t_symbol    *n_unexpandedSend;
     t_symbol    *n_unexpandedReceive;
-    t_symbol    *n_unexpandedLabel;
+    t_symbol    *n_unexpandedLabel;             /* Unused but kept for compatibility. */
     } t_iemnames;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -107,19 +97,19 @@ typedef struct _iem {
     int         iem_goThrough;
     int         iem_width;
     int         iem_height;
-    int         iem_labelX;
-    int         iem_labelY;
-    t_fontsize  iem_fontSize;
+    int         iem_labelX;                     /* Unused but kept for compatibility. */
+    int         iem_labelY;                     /* Unused but kept for compatibility. */
+    t_fontsize  iem_fontSize;                   /* Unused but kept for compatibility. */
     t_color     iem_colorBackground;
     t_color     iem_colorForeground;
-    t_color     iem_colorLabel;
+    t_color     iem_colorLabel;                 /* Unused but kept for compatibility. */
     int         iem_cacheIndex;
     t_symbol    *iem_send;
     t_symbol    *iem_receive;
-    t_symbol    *iem_label;
+    t_symbol    *iem_label;                     /* Unused but kept for compatibility. */
     t_symbol    *iem_unexpandedSend;
     t_symbol    *iem_unexpandedReceive;
-    t_symbol    *iem_unexpandedLabel;
+    t_symbol    *iem_unexpandedLabel;           /* Unused but kept for compatibility. */
     } t_iem;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -248,7 +238,6 @@ void    iemgui_setLabelPosition             (void *x, t_symbol *s, int argc, t_a
 void    iemgui_setLabelFont                 (void *x, t_symbol *s, int argc, t_atom *argv);
 void    iemgui_setBackgroundColor           (void *x, t_symbol *s, int argc, t_atom *argv);
 void    iemgui_setForegroundColor           (void *x, t_symbol *s, int argc, t_atom *argv);
-void    iemgui_setLabelColor                (void *x, t_symbol *s, int argc, t_atom *argv);
 void    iemgui_setPosition                  (void *x, t_symbol *s, int argc, t_atom *argv);
 void    iemgui_movePosition                 (void *x, t_symbol *s, int argc, t_atom *argv);
 void    iemgui_boxChanged                   (void *x);

@@ -163,12 +163,6 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
                     b + x->x_gui.iem_height);
                 
     slider_drawUpdate (x, glist);
-    
-    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
-                    glist_getTagAsString (view),
-                    x, 
-                    a + x->x_gui.iem_labelX,
-                    b + x->x_gui.iem_labelY);
 }
 
 static void slider_drawNew (t_slider *x, t_glist *glist)
@@ -212,19 +206,6 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
                     x);
     //
     }
-    
-    gui_vAdd ("%s.c create text %d %d -text {%s}"   // --
-                    " -anchor w"
-                    " -font [::getFont %d]"         // --
-                    " -fill #%06x"
-                    " -tags %lxLABEL\n",
-                    glist_getTagAsString (view),
-                    a + x->x_gui.iem_labelX,
-                    b + x->x_gui.iem_labelY,
-                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name,
-                    font_getHostFontSize (x->x_gui.iem_fontSize),
-                    x->x_gui.iem_colorLabel,
-                    x);
 }
 
 static void slider_drawSelect (t_slider *x, t_glist *glist)
@@ -235,11 +216,6 @@ static void slider_drawSelect (t_slider *x, t_glist *glist)
                     glist_getTagAsString (view), 
                     x, 
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-                
-    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n", 
-                    glist_getTagAsString (view), 
-                    x, 
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void slider_drawErase (t_slider *x, t_glist *glist)
@@ -250,9 +226,6 @@ static void slider_drawErase (t_slider *x, t_glist *glist)
                     glist_getTagAsString (view), 
                     x);
     gui_vAdd ("%s.c delete %lxKNOB\n",
-                    glist_getTagAsString (view),
-                    x);
-    gui_vAdd ("%s.c delete %lxLABEL\n",
                     glist_getTagAsString (view),
                     x);
 }
@@ -269,12 +242,6 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
-    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    glist_getTagAsString (view),
-                    x,
-                    font_getHostFontSize (x->x_gui.iem_fontSize),
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -696,8 +663,8 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     int width           = x->x_isVertical ? IEM_VSLIDER_DEFAULT_WIDTH  : IEM_HSLIDER_DEFAULT_WIDTH;
     int height          = x->x_isVertical ? IEM_VSLIDER_DEFAULT_HEIGHT : IEM_HSLIDER_DEFAULT_HEIGHT;
     int isLogarithmic   = 0;
-    int labelX          = x->x_isVertical ? IEM_DEFAULT_LABELX_NEXT : IEM_DEFAULT_LABELX_TOP;
-    int labelY          = x->x_isVertical ? IEM_DEFAULT_LABELY_NEXT : IEM_DEFAULT_LABELY_TOP;
+    int labelX          = 0;
+    int labelY          = 0;
     int isSteady        = 0;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     double minimum      = 0.0;
@@ -732,7 +699,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_canReceive = symbol_isNil (x->x_gui.iem_receive) ? 0 : 1;
     x->x_gui.iem_labelX     = labelX;
     x->x_gui.iem_labelY     = labelY;
-    x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+    x->x_gui.iem_fontSize   = labelFontSize;
 
     slider_setHeight (x, height);
     slider_setWidth (x, width);
@@ -795,11 +762,8 @@ void slider_setup (void)
     class_addMethod (c, (t_method)slider_size,                  sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_labelfont,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_labelposition,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelColor,         sym_labelcolor,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_range,                 sym_range,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_set,                   sym_set,                A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_steady,                sym_steady,             A_FLOAT, A_NULL);
@@ -807,7 +771,6 @@ void slider_setup (void)
     class_addMethod (c, (t_method)slider_linear,                sym_linear,             A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
@@ -817,6 +780,7 @@ void slider_setup (void)
     class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_label_font,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)slider_logarithmic,           sym_log,                A_NULL);
     class_addMethod (c, (t_method)slider_linear,                sym_lin,                A_NULL);
     

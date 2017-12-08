@@ -241,6 +241,8 @@ void iemgui_setReceive (void *x, t_symbol *s)
     iemgui_checkSendReceiveLoop (iem);
 }
 
+#if PD_WITH_LEGACY
+
 void iemgui_setLabel (void *x, t_symbol *s)
 {
     t_iem *iem  = cast_iem (x);
@@ -248,14 +250,6 @@ void iemgui_setLabel (void *x, t_symbol *s)
     
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
-
-    if (glist_isOnScreen (iem->iem_owner)) {
-    
-        gui_vAdd ("%s.c itemconfigure %lxLABEL -text {%s}\n",    // --
-                        glist_getTagAsString (glist_getView (iem->iem_owner)),
-                        x,
-                        symbol_isNil (iem->iem_label) ? "" : iem->iem_label->s_name);
-    }
 }
 
 void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
@@ -266,15 +260,6 @@ void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
     //
     iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
     iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
-    
-    if (glist_isOnScreen (iem->iem_owner)) {
-    
-        gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
-                        glist_getTagAsString (glist_getView (iem->iem_owner)),
-                        x,
-                        glist_getPixelX (iem->iem_owner, cast_object (x)) + iem->iem_labelX,
-                        glist_getPixelY (iem->iem_owner, cast_object (x)) + iem->iem_labelY);
-    }
     //
     }
 }
@@ -285,20 +270,12 @@ void iemgui_setLabelFont (void *x, t_symbol *s, int argc, t_atom *argv)
     
     if (argc) {
     //
-    int f = (int)atom_getFloatAtIndex (argc > 1 ? 1 : 0, argc, argv);
-    f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
-    iem->iem_fontSize = f;
-    
-    if (glist_isOnScreen (iem->iem_owner)) {
-    
-        gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
-                        glist_getTagAsString (glist_getView (iem->iem_owner)), 
-                        x,
-                        font_getHostFontSize (iem->iem_fontSize));
-    }
+    iem->iem_fontSize = (int)atom_getFloatAtIndex (argc > 1 ? 1 : 0, argc, argv);
     //
     }
 }
+
+#endif // PD_WITH_LEGACY
 
 void iemgui_setBackgroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -314,15 +291,6 @@ void iemgui_setForegroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
     t_iem *iem = cast_iem (x);
     
     iem->iem_colorForeground = color_withRGB (argc, argv);
-    
-    if (glist_isOnScreen (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
-}
-
-void iemgui_setLabelColor (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_iem *iem = cast_iem (x);
-    
-    iem->iem_colorLabel = color_withRGB (argc, argv);
     
     if (glist_isOnScreen (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
@@ -490,7 +458,7 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     iem->iem_loadbang           = (loadbang == 1);
     iem->iem_labelX             = labelX;
     iem->iem_labelY             = labelY;
-    iem->iem_fontSize           = PD_MAX (fontSize, IEM_MINIMUM_FONTSIZE);
+    iem->iem_fontSize           = fontSize;
     iem->iem_colorForeground    = color_checked (foregroundColor);
     iem->iem_colorBackground    = color_checked (backgroundColor);
     iem->iem_colorLabel         = color_checked (labelColor);

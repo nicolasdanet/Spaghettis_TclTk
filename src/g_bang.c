@@ -110,11 +110,6 @@ void bng_drawMove (t_bng *x, t_glist *glist)
                     b + 1,
                     a + x->x_gui.iem_width - 1,
                     b + x->x_gui.iem_height - 1);
-    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
-                    glist_getTagAsString (view),
-                    x,
-                    a + x->x_gui.iem_labelX,
-                    b + x->x_gui.iem_labelY);
 }
 
 void bng_drawNew (t_bng *x, t_glist *glist)
@@ -141,18 +136,6 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     COLOR_NORMAL,
                     x);
-    gui_vAdd ("%s.c create text %d %d -text {%s}"       // --
-                    " -anchor w"                                                 
-                    " -font [::getFont %d]"             // --
-                    " -fill #%06x"
-                    " -tags %lxLABEL\n",
-                    glist_getTagAsString (view), 
-                    a + x->x_gui.iem_labelX,
-                    b + x->x_gui.iem_labelY,
-                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name,
-                    font_getHostFontSize (x->x_gui.iem_fontSize),
-                    x->x_gui.iem_colorLabel,
-                    x);
 }
 
 void bng_drawSelect (t_bng *x, t_glist *glist)
@@ -167,10 +150,6 @@ void bng_drawSelect (t_bng *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
-                    glist_getTagAsString (view),
-                    x, 
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 void bng_drawErase (t_bng *x, t_glist *glist)
@@ -181,9 +160,6 @@ void bng_drawErase (t_bng *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x);
     gui_vAdd ("%s.c delete %lxBUTTON\n",
-                    glist_getTagAsString (view),
-                    x);
-    gui_vAdd ("%s.c delete %lxLABEL\n",
                     glist_getTagAsString (view),
                     x);
 }
@@ -200,12 +176,6 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x,
                     x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    glist_getTagAsString (view),
-                    x,
-                    font_getHostFontSize (x->x_gui.iem_fontSize),
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -451,8 +421,8 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     int size            = IEM_DEFAULT_SIZE;
     int flashHold       = IEM_BANG_DEFAULT_HOLD;
     int flashBreak      = IEM_BANG_DEFAULT_BREAK;
-    int labelX          = IEM_DEFAULT_LABELX_NEXT;
-    int labelY          = IEM_DEFAULT_LABELY_NEXT;
+    int labelX          = 0;
+    int labelY          = 0;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     
     if (argc != 14) { iemgui_deserializeDefault (cast_iem (x)); }
@@ -480,7 +450,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_labelX     = labelX;
     x->x_gui.iem_labelY     = labelY;
-    x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+    x->x_gui.iem_fontSize   = labelFontSize;
     
     iemgui_checkSendReceiveLoop (cast_iem (x));
     
@@ -535,15 +505,11 @@ void bng_setup (void)
     class_addMethod (c, (t_method)bng_flashtime,                sym_flashtime,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_labelfont,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_labelposition,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelColor,         sym_labelcolor,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
-       
+    
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)bng_initialize,               sym_init,               A_FLOAT, A_NULL);
@@ -552,6 +518,7 @@ void bng_setup (void)
     class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_label_font,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
 
     #endif
     

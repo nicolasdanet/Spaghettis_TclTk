@@ -85,12 +85,6 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
                     t + x->x_gui.iem_height - k);
     //
     }
-    
-    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
-                    glist_getTagAsString (view),
-                    x, 
-                    a + x->x_gui.iem_labelX, 
-                    b + x->x_gui.iem_labelY);
 }
 
 void radio_drawNewVertical (t_radio *x, t_glist *glist)
@@ -127,19 +121,6 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
                     i);
     //
     }
-    
-    gui_vAdd ("%s.c create text %d %d -text {%s}"    // --
-                    " -anchor w"
-                    " -font [::getFont %d]"             // --
-                    " -fill #%06x"
-                    " -tags %lxLABEL\n",
-                    glist_getTagAsString (view),
-                    a + x->x_gui.iem_labelX,
-                    b + x->x_gui.iem_labelY,
-                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name,
-                    font_getHostFontSize (x->x_gui.iem_fontSize),
-                    x->x_gui.iem_colorLabel,
-                    x);
 
     x->x_stateDrawn = x->x_state;
 }
@@ -175,12 +156,6 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
                     b + x->x_gui.iem_height - k);
     //
     }
-    
-    gui_vAdd ("%s.c coords %lxLABEL %d %d\n",
-                    glist_getTagAsString (view), 
-                    x, 
-                    a + x->x_gui.iem_labelX,
-                    b + x->x_gui.iem_labelY);
 }
 
 void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
@@ -217,19 +192,6 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
                     i);
     //
     }
-    
-    gui_vAdd ("%s.c create text %d %d -text {%s}"   // --
-                    " -anchor w"
-                    " -font [::getFont %d]"         // --
-                    " -fill #%06x"
-                    " -tags %lxLABEL\n",
-                    glist_getTagAsString (view),
-                    a + x->x_gui.iem_labelX,
-                    b + x->x_gui.iem_labelY,
-                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name,
-                    font_getHostFontSize (x->x_gui.iem_fontSize),
-                    x->x_gui.iem_colorLabel,
-                    x);
     
     x->x_stateDrawn = x->x_state;
 }
@@ -299,11 +261,6 @@ void radio_drawSelect (t_radio *x, t_glist *glist)
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
     //
     }
-
-    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n",
-                    glist_getTagAsString (view),
-                    x, 
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 void radio_drawErase (t_radio *x, t_glist *glist)
@@ -324,10 +281,6 @@ void radio_drawErase (t_radio *x, t_glist *glist)
                     i);
     //
     }
-    
-    gui_vAdd ("%s.c delete %lxLABEL\n",
-                    glist_getTagAsString (view),
-                    x);
 }
 
 void radio_drawConfig (t_radio *x, t_glist *glist)
@@ -351,13 +304,6 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
                     (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
     //
     }
-    
-    gui_vAdd ("%s.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",   // --
-                    glist_getTagAsString (view), 
-                    x, 
-                    font_getHostFontSize (x->x_gui.iem_fontSize),
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                    symbol_isNil (x->x_gui.iem_label) ? "" : x->x_gui.iem_label->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -623,8 +569,8 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     {
     //
     int size            = IEM_DEFAULT_SIZE;
-    int labelX          = x->x_isVertical ? IEM_DEFAULT_LABELX_NEXT : IEM_DEFAULT_LABELX_TOP;
-    int labelY          = x->x_isVertical ? IEM_DEFAULT_LABELY_NEXT : IEM_DEFAULT_LABELY_TOP;
+    int labelX          = 0;
+    int labelY          = 0;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int changed         = 1;
     int numberOfButtons = IEM_RADIO_DEFAULT_BUTTONS;
@@ -656,7 +602,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_labelX     = labelX;
     x->x_gui.iem_labelY     = labelY;
-    x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+    x->x_gui.iem_fontSize   = labelFontSize;
     
     iemgui_checkSendReceiveLoop (cast_iem (x));
     
@@ -714,16 +660,12 @@ void radio_setup (void)
     class_addMethod (c, (t_method)radio_size,                   sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_labelfont,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_labelposition,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelColor,         sym_labelcolor,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)radio_set,                    sym_set,                A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)radio_buttonsNumber,          sym_buttonsnumber,      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
@@ -733,6 +675,7 @@ void radio_setup (void)
     class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_label_font,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)radio_buttonsNumber,          sym_number,             A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)iemgui_dummy,                 sym_single_change,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_dummy,                 sym_double_change,      A_GIMME, A_NULL);
