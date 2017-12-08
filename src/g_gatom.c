@@ -41,16 +41,15 @@ struct _gatom {
     t_atom          a_atom;
     t_float         a_lowRange;
     t_float         a_highRange;
-    t_fontsize      a_fontSize;
-    int             a_position;
+    int             a_position;                         /* Unused but kept for compatibility. */
     int             a_isSelected;
     t_glist         *a_owner;
     t_symbol        *a_send;
     t_symbol        *a_receive;
-    t_symbol        *a_label;
+    t_symbol        *a_label;                           /* Unused but kept for compatibility. */
     t_symbol        *a_unexpandedSend;
     t_symbol        *a_unexpandedReceive;
-    t_symbol        *a_unexpandedLabel;
+    t_symbol        *a_unexpandedLabel;                 /* Unused but kept for compatibility. */
     t_outlet        *a_outlet;
     };
 
@@ -82,14 +81,6 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#define ATOM_LABEL_LEFT         0
-#define ATOM_LABEL_RIGHT        1
-#define ATOM_LABEL_UP           2
-#define ATOM_LABEL_DOWN         3
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 #define ATOM_WIDTH_FLOAT        5
@@ -105,17 +96,6 @@ static void gatom_drawJob (t_gobj *z, t_glist *glist)
     t_gatom *x = (t_gatom *)z;
     
     box_retext (box_fetch (x->a_owner, cast_object (x)));
-    
-    if (object_getWidth (cast_object (z)) == 0) {
-    if (x->a_label != &s_) {
-    if (x->a_position == ATOM_LABEL_RIGHT) {
-    //
-    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
-    gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
-    //
-    }
-    }
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -137,40 +117,6 @@ static void gatom_update (t_gatom *x)
 static int gatom_isFloat (t_gatom *x)
 {
     return IS_FLOAT (&x->a_atom);
-}
-
-static void gatom_getPostion (t_gatom *x, t_glist *glist, int *positionX, int *positionY)
-{
-    double width  = font_getHostFontWidth (x->a_fontSize);
-    double height = font_getHostFontHeight (x->a_fontSize);
-    
-    t_rectangle r;
-    
-    text_behaviorGetRectangle (cast_gobj (x), glist, &r);
-    
-    {
-        int a = rectangle_getTopLeftX (&r);
-        int b = rectangle_getTopLeftY (&r);
-        int c = rectangle_getBottomRightX (&r);
-        int d = rectangle_getBottomRightY (&r);
-        
-        if (x->a_position == ATOM_LABEL_LEFT) {
-            *positionX = a - 3 - (int)(strlen (x->a_label->s_name) * width);
-            *positionY = b + 2;
-            
-        } else if (x->a_position == ATOM_LABEL_RIGHT) {
-            *positionX = c + 3;
-            *positionY = b + 2;
-            
-        } else if (x->a_position == ATOM_LABEL_UP) {
-            *positionX = a;
-            *positionY = b - 3 - (int)height;
-            
-        } else {
-            *positionX = a;
-            *positionY = d + 3;
-        }
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -297,15 +243,7 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
 
 static void gatom_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
-    t_gatom *x = (t_gatom *)z;
-    
     text_behaviorDisplaced (z, glist, deltaX, deltaY);
-    
-    gui_vAdd ("%s.c move %lxLABEL %d %d\n", 
-                    glist_getTagAsString (glist_getView (glist)), 
-                    x,
-                    deltaX,
-                    deltaY);
 }
 
 static void gatom_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
@@ -315,41 +253,11 @@ static void gatom_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     text_behaviorSelected (z, glist, isSelected);
     
     x->a_isSelected = isSelected;
-    
-    gui_vAdd ("%s.c itemconfigure %lxLABEL -fill #%06x\n", 
-                    glist_getTagAsString (glist_getView (glist)), 
-                    x,
-                    (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
 
 static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
-    t_gatom *x = (t_gatom *)z;
-    
     text_behaviorVisibilityChanged (z, glist, isVisible);
-    
-    if (x->a_label != &s_) {
-    //
-    t_glist *view = glist_getView (glist);
-    
-    if (!isVisible) { gui_vAdd ("%s.c delete %lxLABEL\n", glist_getTagAsString (view), x); }
-    else { 
-        int positionX = 0;
-        int positionY = 0;
-        
-        gatom_getPostion (x, glist, &positionX, &positionY);
-        
-        gui_vAdd ("::ui_box::newText %s.c %lxLABEL %d %d {%s} %d #%06x\n",   // --
-                        glist_getTagAsString (view),
-                        x,
-                        positionX,
-                        positionY,
-                        x->a_label->s_name,
-                        font_getHostFontSize (x->a_fontSize),
-                        x->a_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
-    }
-    //
-    }
     
     if (!isVisible) { gui_jobRemove ((void *)z); }
 }
@@ -454,7 +362,7 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 
     x->a_lowRange           = PD_MIN (lowRange, highRange);
     x->a_highRange          = PD_MAX (lowRange, highRange);
-    x->a_position           = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+    x->a_position           = position;
     x->a_unexpandedSend     = symSend;
     x->a_unexpandedReceive  = symReceive;
     x->a_unexpandedLabel    = symLabel;
@@ -491,7 +399,6 @@ static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
     int position = (int)atom_getFloatAtIndex (5, argc, argv);
     
     width        = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
-    position     = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
     
     object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
     object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
@@ -499,7 +406,7 @@ static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
 
     x->a_lowRange           = atom_getFloatAtIndex (3, argc, argv);
     x->a_highRange          = atom_getFloatAtIndex (4, argc, argv);
-    x->a_position           = PD_CLAMP (position, ATOM_LABEL_LEFT, ATOM_LABEL_DOWN);
+    x->a_position           = position;
     x->a_unexpandedLabel    = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
     x->a_unexpandedReceive  = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
     x->a_unexpandedSend     = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
@@ -536,8 +443,7 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     x->a_owner              = glist;
     x->a_lowRange           = 0;
     x->a_highRange          = 0;
-    x->a_fontSize           = glist_getFontSize (x->a_owner);
-    x->a_position           = ATOM_LABEL_RIGHT;
+    x->a_position           = 1;
     x->a_send               = &s_;
     x->a_receive            = &s_;
     x->a_label              = &s_;
