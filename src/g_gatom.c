@@ -294,35 +294,30 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner)
     
     t_symbol *symSend    = symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedSend));
     t_symbol *symReceive = symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedReceive));
-    t_symbol *symLabel   = symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedLabel));
     
     if (gatom_isFloat (x)) {
     
         err = string_sprintf (t, PD_STRING, 
-                "::ui_atom::show %%s %d %g %g %s %g {%s} {%s} {%s} %d\n",       // --
+                "::ui_atom::show %%s %d %g %g %s %g {%s} {%s}\n",               // --
                 object_getWidth (cast_object (x)),
                 x->a_lowRange,
                 x->a_highRange,
                 sym_floatatom->s_name,
                 GET_FLOAT (&x->a_atom),
                 symSend->s_name,
-                symReceive->s_name,
-                symLabel->s_name, 
-                x->a_position);
+                symReceive->s_name);
             
     } else {
     
         err = string_sprintf (t, PD_STRING, 
-                "::ui_atom::show %%s %d %g %g %s {%s} {%s} {%s} {%s} %d\n",     // --
+                "::ui_atom::show %%s %d %g %g %s {%s} {%s} {%s}\n",             // --
                 object_getWidth (cast_object (x)),
                 x->a_lowRange,
                 x->a_highRange,
                 sym_symbolatom->s_name,
                 GET_SYMBOL (&x->a_atom)->s_name,
                 symSend->s_name,
-                symReceive->s_name,
-                symLabel->s_name, 
-                x->a_position);
+                symReceive->s_name);
     }
     
     PD_UNUSED (err); PD_ASSERT (!err);
@@ -336,13 +331,11 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     t_float t1   = x->a_lowRange;
     t_float t2   = x->a_highRange;
-    int t3       = x->a_position;
-    int t4       = object_getWidth (cast_object (x));
-    t_symbol *t5 = x->a_send;
-    t_symbol *t6 = x->a_receive;
-    t_symbol *t7 = x->a_label;
+    int t3       = object_getWidth (cast_object (x));
+    t_symbol *t4 = x->a_send;
+    t_symbol *t5 = x->a_receive;
     
-    PD_ASSERT (argc == 8);
+    PD_ASSERT (argc == 6);
     
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
     
@@ -353,8 +346,6 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     t_float highRange       = atom_getFloatAtIndex (2, argc, argv);
     t_symbol *symSend       = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
     t_symbol *symReceive    = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
-    t_symbol *symLabel      = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
-    int position            = (int)atom_getFloatAtIndex (7, argc, argv);
 
     if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
     
@@ -362,13 +353,10 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 
     x->a_lowRange           = PD_MIN (lowRange, highRange);
     x->a_highRange          = PD_MAX (lowRange, highRange);
-    x->a_position           = position;
     x->a_unexpandedSend     = symSend;
     x->a_unexpandedReceive  = symReceive;
-    x->a_unexpandedLabel    = symLabel;
     x->a_send               = dollar_expandSymbol (x->a_unexpandedSend, x->a_owner);
     x->a_receive            = dollar_expandSymbol (x->a_unexpandedReceive, x->a_owner);
-    x->a_label              = dollar_expandSymbol (x->a_unexpandedLabel, x->a_owner);
     
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
@@ -380,11 +368,9 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     isDirty |= (t1 != x->a_lowRange);
     isDirty |= (t2 != x->a_highRange);
-    isDirty |= (t3 != x->a_position);
-    isDirty |= (t4 != object_getWidth (cast_object (x)));
-    isDirty |= (t5 != x->a_send);
-    isDirty |= (t6 != x->a_receive);
-    isDirty |= (t7 != x->a_label);
+    isDirty |= (t3 != object_getWidth (cast_object (x)));
+    isDirty |= (t4 != x->a_send);
+    isDirty |= (t5 != x->a_receive);
     
     if (isDirty) { glist_setDirty (x->a_owner, 1); }
 }
