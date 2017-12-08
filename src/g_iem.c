@@ -452,11 +452,11 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     //
     }
     
-    isDirty |= (t1  != iem->iem_loadbang);
-    isDirty |= (t2  != iem->iem_colorForeground);
-    isDirty |= (t3  != iem->iem_colorBackground);
-    isDirty |= (t4  != iem->iem_send);
-    isDirty |= (t5  != iem->iem_receive);
+    isDirty |= (t1 != iem->iem_loadbang);
+    isDirty |= (t2 != iem->iem_colorForeground);
+    isDirty |= (t3 != iem->iem_colorBackground);
+    isDirty |= (t4 != iem->iem_send);
+    isDirty |= (t5 != iem->iem_receive);
     
     return isDirty;
 }

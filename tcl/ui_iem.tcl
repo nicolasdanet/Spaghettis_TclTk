@@ -38,13 +38,8 @@ variable  iemExtraMaximum
 variable  iemExtraLabel
 variable  iemSend
 variable  iemReceive
-variable  iemName
-variable  iemNameDeltaX
-variable  iemNameDeltaY
-variable  iemNameFontSize
 variable  iemBackgroundColor
 variable  iemFrontColor
-variable  iemNameColor
 variable  iemSteady
 
 array set iemType               {}
@@ -63,13 +58,8 @@ array set iemExtraMaximum       {}
 array set iemExtraLabel         {}
 array set iemSend               {}
 array set iemReceive            {}
-array set iemName               {}
-array set iemNameDeltaX         {}
-array set iemNameDeltaY         {}
-array set iemNameFontSize       {}
 array set iemBackgroundColor    {}
 array set iemFrontColor         {}
-array set iemNameColor          {}
 array set iemSteady             {}
 
 # ------------------------------------------------------------------------------------------------------------
@@ -103,13 +93,8 @@ proc create {top type
     variable iemExtraLabel
     variable iemSend
     variable iemReceive
-    variable iemName
-    variable iemNameDeltaX
-    variable iemNameDeltaY
-    variable iemNameFontSize
     variable iemBackgroundColor
     variable iemFrontColor
-    variable iemNameColor
     variable iemSteady
 
     set iemType($top)               $type
@@ -128,13 +113,8 @@ proc create {top type
     set iemExtraLabel($top)         $extraLabel
     set iemSend($top)               [::hashToDollar [::parseNil $send]]
     set iemReceive($top)            [::hashToDollar [::parseNil $receive]]
-    set iemName($top)               [::hashToDollar [::parseNil $name]]
-    set iemNameDeltaX($top)         $nameDeltaX
-    set iemNameDeltaY($top)         $nameDeltaY
-    set iemNameFontSize($top)       $nameFontSize
     set iemBackgroundColor($top)    $backgroundColor
     set iemFrontColor($top)         $frontColor
-    set iemNameColor($top)          $nameColor
     set iemSteady($top)             $steady
 
     set iemWidth(${top}.old)        $width
@@ -144,9 +124,6 @@ proc create {top type
     set iemExtra(${top}.old)        $extra
     set iemSend(${top}.old)         [::hashToDollar [::parseNil $send]]
     set iemReceive(${top}.old)      [::hashToDollar [::parseNil $receive]]
-    set iemNameDeltaX(${top}.old)   $nameDeltaX
-    set iemNameDeltaY(${top}.old)   $nameDeltaY
-    set iemNameFontSize(${top}.old) $nameFontSize
 
     toplevel $top -class PdDialog
     wm title $top [_ $type]
@@ -159,12 +136,12 @@ proc create {top type
     ttk::frame      $top.f                              {*}[::styleFrame]
     ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame]  -text [_ "Properties"]
     ttk::labelframe $top.f.colors                       {*}[::styleLabelFrame]  -text [_ "Colors"]
-    ttk::labelframe $top.f.label                        {*}[::styleLabelFrame]  -text [_ "Label"]
+    ttk::labelframe $top.f.binding                      {*}[::styleLabelFrame]  -text [_ "Binding"]
         
     pack $top.f                                         {*}[::packMain]
     pack $top.f.properties                              {*}[::packCategory]
     pack $top.f.colors                                  {*}[::packCategoryNext]
-    pack $top.f.label                                   {*}[::packCategoryNext]
+    pack $top.f.binding                                 {*}[::packCategoryNext]
         
     set row -1
     
@@ -278,12 +255,6 @@ proc create {top type
         grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky ew -columnspan 2
     }
     
-    
-    ttk::label $top.f.colors.nameLabel                  {*}[::styleLabel]   -text [_ "Label"]
-    
-    label $top.f.colors.name                            -background [::integerToColor $nameColor] \
-                                                            -width $::width(small)
-    
     ttk::label $top.f.colors.backgroundLabel            {*}[::styleLabel]   -text [_ "Background"]
     
     label $top.f.colors.background                      -background [::integerToColor $backgroundColor] \
@@ -294,80 +265,41 @@ proc create {top type
     label $top.f.colors.front                           -background [::integerToColor $frontColor] \
                                                             -width $::width(small)
                                                         
-    ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
-                                                            -text [_ "Name"]
-    ttk::entry $top.f.label.name                        {*}[::styleEntry] \
-                                                            -textvariable ::ui_iem::iemName($top) \
-                                                            -width $::width(medium)
-    
-    ttk::label $top.f.label.nameFontSizeLabel           {*}[::styleLabel] \
-                                                            -text [_ "Font Size"]
-    ttk::entry $top.f.label.nameFontSize                {*}[::styleEntryNumber] \
-                                                            -textvariable ::ui_iem::iemNameFontSize($top) \
-                                                            -width $::width(small)
-                                                            
-    ttk::label $top.f.label.nameDeltaXLabel             {*}[::styleLabel] \
-                                                            -text [_ "Position X"]
-    ttk::entry $top.f.label.nameDeltaX                  {*}[::styleEntryNumber] \
-                                                            -textvariable ::ui_iem::iemNameDeltaX($top) \
-                                                            -width $::width(small)
-    
-    ttk::label $top.f.label.nameDeltaYLabel             {*}[::styleLabel] \
-                                                            -text [_ "Position Y"]
-    ttk::entry $top.f.label.nameDeltaY                  {*}[::styleEntryNumber] \
-                                                            -textvariable ::ui_iem::iemNameDeltaY($top) \
-                                                            -width $::width(small)
-
-    ttk::label $top.f.label.sendLabel                   {*}[::styleLabel] \
+    ttk::label $top.f.binding.sendLabel                 {*}[::styleLabel] \
                                                             -text [_ "Send"]
-    ttk::entry $top.f.label.send                        {*}[::styleEntry] \
+    ttk::entry $top.f.binding.send                      {*}[::styleEntry] \
                                                             -textvariable ::ui_iem::iemSend($top) \
                                                             -width $::width(medium)
-    ttk::label $top.f.label.receiveLabel                {*}[::styleLabel] \
+    ttk::label $top.f.binding.receiveLabel              {*}[::styleLabel] \
                                                             -text [_ "Receive"]
-    ttk::entry $top.f.label.receive                     {*}[::styleEntry] \
+    ttk::entry $top.f.binding.receive                   {*}[::styleEntry] \
                                                             -textvariable ::ui_iem::iemReceive($top) \
                                                             -width $::width(medium)
+                                              
+    grid $top.f.colors.backgroundLabel                  -row 0 -column 0 -sticky ew
+    grid $top.f.colors.background                       -row 0 -column 1 -sticky ew -pady 2
+    grid $top.f.colors.frontLabel                       -row 1 -column 0 -sticky ew
+    grid $top.f.colors.front                            -row 1 -column 1 -sticky ew -pady 2
 
-    grid $top.f.colors.nameLabel                        -row 0 -column 0 -sticky ew
-    grid $top.f.colors.name                             -row 0 -column 1 -sticky ew -pady 2                                               
-    grid $top.f.colors.backgroundLabel                  -row 1 -column 0 -sticky ew
-    grid $top.f.colors.background                       -row 1 -column 1 -sticky ew -pady 2
-    grid $top.f.colors.frontLabel                       -row 2 -column 0 -sticky ew
-    grid $top.f.colors.front                            -row 2 -column 1 -sticky ew -pady 2
-
-    grid $top.f.label.nameLabel                         -row 0 -column 0 -sticky ew
-    grid $top.f.label.name                              -row 0 -column 1 -sticky ew -columnspan 2
-    grid $top.f.label.nameFontSizeLabel                 -row 1 -column 0 -sticky ew
-    grid $top.f.label.nameFontSize                      -row 1 -column 2 -sticky ew
-    grid $top.f.label.nameDeltaXLabel                   -row 2 -column 0 -sticky ew
-    grid $top.f.label.nameDeltaX                        -row 2 -column 2 -sticky ew
-    grid $top.f.label.nameDeltaYLabel                   -row 3 -column 0 -sticky ew
-    grid $top.f.label.nameDeltaY                        -row 3 -column 2 -sticky ew
-    grid $top.f.label.sendLabel                         -row 4 -column 0 -sticky ew
-    grid $top.f.label.send                              -row 4 -column 1 -sticky ew -columnspan 2
-    grid $top.f.label.receiveLabel                      -row 5 -column 0 -sticky ew
-    grid $top.f.label.receive                           -row 5 -column 1 -sticky ew -columnspan 2
+    grid $top.f.binding.sendLabel                       -row 0 -column 0 -sticky ew
+    grid $top.f.binding.send                            -row 0 -column 1 -sticky ew -columnspan 2
+    grid $top.f.binding.receiveLabel                    -row 1 -column 0 -sticky ew
+    grid $top.f.binding.receive                         -row 1 -column 1 -sticky ew -columnspan 2
     
-    bind $top.f.colors.name         <Button>            "::ui_iem::_chooseNameColor $top %W"
     bind $top.f.colors.background   <Button>            "::ui_iem::_chooseBackgroundColor $top %W"
     bind $top.f.colors.front        <Button>            "::ui_iem::_chooseFrontColor $top %W"
     
-    bind $top.f.label.name          <Return>            { ::nextEntry %W }
-    bind $top.f.label.nameFontSize  <Return>            { ::nextEntry %W }
-    bind $top.f.label.nameDeltaX    <Return>            { ::nextEntry %W }
-    bind $top.f.label.nameDeltaY    <Return>            { ::nextEntry %W }
-    bind $top.f.label.send          <Return>            { ::nextEntry %W }
-    bind $top.f.label.receive       <Return>            { ::nextEntry %W }
+    bind $top.f.binding.send        <Return>            { ::nextEntry %W }
+    bind $top.f.binding.receive     <Return>            { ::nextEntry %W }
     
     grid columnconfigure $top.f.properties              0 -weight 3
     grid columnconfigure $top.f.properties              1 -weight 1
     grid columnconfigure $top.f.properties              2 -weight 0
     grid columnconfigure $top.f.colors                  0 -weight 1
     grid columnconfigure $top.f.colors                  1 -weight 0
-    grid columnconfigure $top.f.label                   0 -weight 3
-    grid columnconfigure $top.f.label                   1 -weight 1
-    grid columnconfigure $top.f.label                   2 -weight 0
+    grid columnconfigure $top.f.binding                 0 -weight 3
+    grid columnconfigure $top.f.binding                 1 -weight 1
+    grid columnconfigure $top.f.binding                 2 -weight 0
     
     wm protocol $top WM_DELETE_WINDOW   "::ui_iem::closed $top"
 }
@@ -390,13 +322,8 @@ proc closed {top} {
     variable iemExtraLabel
     variable iemSend
     variable iemReceive
-    variable iemName
-    variable iemNameDeltaX
-    variable iemNameDeltaY
-    variable iemNameFontSize
     variable iemBackgroundColor
     variable iemFrontColor
-    variable iemNameColor
     variable iemSteady
     
     ::ui_iem::_apply $top
@@ -417,13 +344,8 @@ proc closed {top} {
     unset iemExtraLabel($top)
     unset iemSend($top)
     unset iemReceive($top)
-    unset iemName($top)
-    unset iemNameDeltaX($top)
-    unset iemNameDeltaY($top)
-    unset iemNameFontSize($top)
     unset iemBackgroundColor($top)
     unset iemFrontColor($top)
-    unset iemNameColor($top)
     unset iemSteady($top)
     
     unset iemWidth(${top}.old)
@@ -433,9 +355,6 @@ proc closed {top} {
     unset iemExtra(${top}.old)
     unset iemSend(${top}.old)
     unset iemReceive(${top}.old)
-    unset iemNameDeltaX(${top}.old)
-    unset iemNameDeltaY(${top}.old)
-    unset iemNameFontSize(${top}.old)
 
     ::cancel $top
 }
@@ -454,21 +373,14 @@ proc _apply {top} {
     variable iemExtra
     variable iemSend
     variable iemReceive
-    variable iemName
-    variable iemNameDeltaX
-    variable iemNameDeltaY
-    variable iemNameFontSize
     variable iemBackgroundColor
     variable iemFrontColor
-    variable iemNameColor
     variable iemSteady
     
     _forceWidth     $top
     _forceHeight    $top
     _forceExtra     $top
     _forceOptions   $top
-    _forceDelta     $top
-    _forceFont      $top
     _forceNames     $top
     
     ::ui_interface::pdsend "$top _iemdialog \
@@ -554,23 +466,6 @@ proc _forceOptions {top} {
     }
 }
 
-proc _forceDelta {top} {
-
-    variable iemNameDeltaX
-    variable iemNameDeltaY
-    
-    set iemNameDeltaX($top) [::ifInteger $iemNameDeltaX($top) $iemNameDeltaX(${top}.old)]
-    set iemNameDeltaY($top) [::ifInteger $iemNameDeltaY($top) $iemNameDeltaY(${top}.old)]
-}
-
-proc _forceFont {top} {
-
-    variable iemNameFontSize
-    
-    set iemNameFontSize($top) [::ifInteger $iemNameFontSize($top) $iemNameFontSize(${top}.old)]
-    set iemNameFontSize($top) [::tcl::mathfunc::max $iemNameFontSize($top) 4]
-}
-
 proc _forceNames {top} {
 
     variable iemSend
@@ -582,13 +477,6 @@ proc _forceNames {top} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-proc _chooseNameColor {top label} {
-    
-    variable iemNameColor
-    
-    set iemNameColor($top) [::chooseColor $label $iemNameColor($top) [_ "Label"]]
-}
 
 proc _chooseBackgroundColor {top label} {
     
