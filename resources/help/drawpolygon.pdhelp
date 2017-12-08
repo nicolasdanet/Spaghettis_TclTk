@@ -35,7 +35,7 @@
 #N canvas 37 192 384 178 \$0-data 0;
 #X coords 0 0 1 1 230 140 1 0 0;
 #X restore 36 108 pd \$0-data;
-#N canvas 682 370 379 189 color 0;
+#N canvas 718 334 291 193 color 0;
 #X obj 36 24 hradio 15 1 1 9 \$0-1 empty empty 0 -7 0 10 #ffffff #000000 #000000 8;
 #X obj 36 48 hradio 15 1 1 9 \$0-2 empty empty 0 -7 0 10 #ffffff #000000 #000000 0;
 #X obj 36 72 hradio 15 1 1 9 \$0-3 empty empty 0 -7 0 10 #ffffff #000000 #000000 8;
@@ -75,13 +75,13 @@
 #X connect 16 0 13 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 144 pd RGB;
-#X floatatom 36 108 5 0 0 1 digits #0-digits -;
+#X floatatom 36 108 5 0 0 1 - #0-digits -;
 #X f 5;
-#X floatatom 252 24 5 0 0 1 red #0-R -;
+#X floatatom 204 24 5 0 0 1 - #0-R -;
 #X f 5;
-#X floatatom 252 48 5 0 0 1 green #0-G -;
+#X floatatom 204 48 5 0 0 1 - #0-G -;
 #X f 5;
-#X floatatom 252 72 5 0 0 1 blue #0-B -;
+#X floatatom 204 72 5 0 0 1 - #0-B -;
 #X f 5;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 300 324 pd color;
