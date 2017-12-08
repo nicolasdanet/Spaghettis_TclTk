@@ -18,7 +18,7 @@
 #X f 5;
 #X obj 36 324 print;
 #X msg 60 240 range 0 0;
-#X floatatom 156 552 0 0 0 1 automatic - -;
+#X floatatom 156 552 0 0 0 1 - - -;
 #X floatatom 36 552 4 0 0 1 - - -;
 #X f 4;
 #X floatatom 84 552 6 0 0 1 - - -;
