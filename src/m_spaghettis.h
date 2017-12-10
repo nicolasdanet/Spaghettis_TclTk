@@ -82,9 +82,7 @@
 
 #if defined ( _ILP32 ) || defined ( __ILP32__ )
     #define     PD_ILP32            1
-#endif
-
-#if defined ( __LP64__ ) || defined ( _LP64 )
+#elif defined ( __LP64__ ) || defined ( _LP64 )
     #define     PD_LP64             1
 #elif defined ( _WIN64 )
     #define     PD_LLP64            1
@@ -100,6 +98,7 @@
 #ifdef PD_LLP64
 #else
 #ifdef PD_ILP32
+#else
     #error "Unsupported data model!"
 #endif
 #endif
