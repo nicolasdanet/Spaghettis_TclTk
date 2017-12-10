@@ -1,14 +1,19 @@
 
+#ifndef __m_spaghettis_h_
+#define __m_spaghettis_h_
+
+#if 0   // Python script.
+
+spaghettis = """ "
+
+#endif  //
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Copyright (c) 1997-2017 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#ifndef __m_spaghettis_h_
-#define __m_spaghettis_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -903,4 +908,85 @@ PD_DLL void     post_log                        (const char *fmt, ...);         
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // __m_spaghettis_h_
+
+// ====================================
+
+#if 0
+
+" """
+
+import sys
+import json
+import os
+import subprocess
+
+assert sys.version_info >= (3, 4)
+
+from pathlib import Path
+
+manifest = { }
+options  = { }
+
+def manifestParse(path):
+    global manifest
+    manifest["source"]       = str(path)
+    manifest["visibility"]   = "-fvisibility=hidden"
+    if path.match('*.cpp'):
+        manifest["compiler"] = "g++"
+    else:
+        manifest["compiler"] = "gcc"
+    if sys.platform.startswith('linux'):
+        manifest["plugin"]   = "-shared -fpic"
+        manifest["product"]  = str(path.with_suffix(".pdobject"))
+    elif sys.platform.startswith('darwin'):
+        manifest["plugin"]   = "-bundle -undefined dynamic_lookup -bind_at_load"
+        manifest["product"]  = str(path.with_suffix(".pdbundle"))
+
+def manifestParseJSON(path):
+    if path.exists():
+        with path.open() as f:
+            global options
+            try:
+                options = json.load(f)
+            except:
+                print("Invalid JSON file: " + str(path))
+
+def buildPlugin():
+    global manifest
+    command = []
+    command.append(manifest["compiler"])
+    command.append("-I" + manifest["spaghettis"])
+    for v in options.values():
+        command.append(v)
+    command.append(manifest["plugin"])
+    command.append(manifest["visibility"])
+    command.append(manifest["source"])
+    command.append("-o")
+    command.append(manifest["product"])
+    os.system(' '.join(command))
+    object = Path(manifest["product"])
+    ret = subprocess.run(["file", str(object)], stdout=subprocess.PIPE)
+    if any(x in str(ret.stdout) for x in ['x86_64', '64-bit']):
+        object.rename(str(object) + '64')
+        print (str(object) + '64')
+    elif any(x in str(ret.stdout) for x in ['i386', '32-bit']):
+        object.rename(str(object) + '32')
+        print (str(object) + '32')
+
+if __name__ == "__main__":
+    header = Path(sys.argv.pop(0))
+    manifest["spaghettis"] = str(header.resolve().parent)
+    for file in sys.argv:
+        options.clear()
+        p = Path(file).resolve()
+        if p.exists():
+            manifestParse(p)
+            o = p.with_suffix('.json')
+            manifestParseJSON(o)
+            buildPlugin()
+        else:
+            print("No such file: " + file)
+
+#endif  // Python script.
+
+#endif  // __m_spaghettis_h_
