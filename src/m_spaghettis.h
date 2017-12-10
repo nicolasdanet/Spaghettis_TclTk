@@ -20,9 +20,9 @@
     #define     PD_WINDOWS          1
 #elif defined ( __CYGWIN__ ) 
     #define     PD_CYGWIN           1
-#elif defined ( ANDROID ) || defined ( __ANDROID__ )
+#elif defined ( __ANDROID__ )
     #define     PD_ANDROID          1
-#elif defined ( LINUX ) || defined ( __linux__ )
+#elif defined ( __linux__ )
     #define     PD_LINUX            1
 #elif defined ( __APPLE__ )
     #define     PD_APPLE            1
@@ -80,7 +80,9 @@
 
 /* < http://en.cppreference.com/w/cpp/language/types > */
 
-#if defined ( _ILP32 ) || defined ( __ILP32__ )
+#if defined ( __linux__ ) && defined ( __i386__ )
+    #define     PD_ILP32            1
+#elif defined ( _ILP32 ) || defined ( __ILP32__ )
     #define     PD_ILP32            1
 #elif defined ( __LP64__ ) || defined ( _LP64 )
     #define     PD_LP64             1
