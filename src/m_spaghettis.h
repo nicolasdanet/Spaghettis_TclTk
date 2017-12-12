@@ -4,7 +4,7 @@
 
 #if 0   // Python script.
 
-spaghettis = """ "
+""" "
 
 #endif  //
 
