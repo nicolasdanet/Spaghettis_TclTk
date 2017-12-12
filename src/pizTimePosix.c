@@ -16,12 +16,12 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "pizTimePosix.h"
+#include "pizTime.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #include "pizUtils.h"
-#include "pizLCG.h"
 #include "pizAtomic.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,14 +97,14 @@ uint64_t pizSeedMakeTimeBase16Bits (void)
 
 uint64_t pizSeedMake (void)
 {
-    uint64_t seed, lo, hi;
+    t_rand48 seed, lo, hi;
 
     seed = pizSeedMakeTimeBase16Bits();
     seed |= (pizSeedMakeTimeBase16Bits() << 16);
     seed |= (pizSeedMakeTimeBase16Bits() << 32);
     
-    lo = PIZ_RAND48_UINT32 (seed);   /* To spread the bits. */
-    hi = PIZ_RAND48_UINT32 (seed);   /* To spread the bits. */
+    lo = PD_RAND48_UINT32 (seed);   /* To spread the bits. */
+    hi = PD_RAND48_UINT32 (seed);   /* To spread the bits. */
     
     return ((hi << 32) | lo);
 }

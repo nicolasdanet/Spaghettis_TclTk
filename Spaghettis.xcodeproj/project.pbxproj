@@ -449,7 +449,6 @@
 		17C9CEC71FCD57740089E9D2 /* d_rmag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rmag.c; path = src/d_rmag.c; sourceTree = "<group>"; };
 		17C9FE1B1FE00B77007066EC /* pizTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizTime.h; path = src/pizTime.h; sourceTree = "<group>"; };
 		17C9FE1C1FE00B78007066EC /* pizAtomicPosix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizAtomicPosix.c; path = src/pizAtomicPosix.c; sourceTree = "<group>"; };
-		17C9FE1E1FE00B78007066EC /* pizLCG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizLCG.h; path = src/pizLCG.h; sourceTree = "<group>"; };
 		17C9FE1F1FE00B78007066EC /* pizAtomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizAtomic.h; path = src/pizAtomic.h; sourceTree = "<group>"; };
 		17C9FE201FE00B78007066EC /* pizMT64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizMT64.h; path = src/pizMT64.h; sourceTree = "<group>"; };
 		17C9FE211FE00B78007066EC /* pizAtomicMac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizAtomicMac.h; path = src/pizAtomicMac.h; sourceTree = "<group>"; };
@@ -995,7 +994,6 @@
 				17C9FE1B1FE00B77007066EC /* pizTime.h */,
 				17C9FE241FE00B79007066EC /* pizTimePosix.h */,
 				17C9FE231FE00B78007066EC /* pizRandom.h */,
-				17C9FE1E1FE00B78007066EC /* pizLCG.h */,
 				17C9FE261FE00B79007066EC /* pizMT32.h */,
 				17C9FE201FE00B78007066EC /* pizMT64.h */,
 				17C9FE2E1FE00B7A007066EC /* pizUtils.c */,
