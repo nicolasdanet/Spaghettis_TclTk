@@ -81,8 +81,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void init_genrand32          (MTState32 *x, PIZUInt32 s); 
-static void init_genrand32ByArray   (MTState32 *x, long argc, PIZUInt32 *argv);
+static void init_genrand32          (MTState32 *x, uint32_t s);
+static void init_genrand32ByArray   (MTState32 *x, long argc, uint32_t *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -93,13 +93,13 @@ MTState32 *genrand32_new (void)
     MTState32 *x = NULL;
     
     if ((x = (MTState32 *)PIZ_MALLOC (sizeof (MTState32)))) {
-        init_genrand32 (x, (PIZUInt32)pizSeedMake());
+        init_genrand32 (x, (uint32_t)pizSeedMake());
     }
         
     return x;
 }
 
-MTState32 *genrand32_newByArray (long argc, PIZUInt32 *argv)
+MTState32 *genrand32_newByArray (long argc, uint32_t *argv)
 {
     MTState32 *x = NULL;
     
@@ -124,8 +124,8 @@ double genrand32_real2 (MTState32 *x)
 
 double genrand32_res53 (MTState32 *x)        /* Version due to Isaku Wada. */
 { 
-    PIZUInt32 a = genrand32_int32 (x) >> 5;
-    PIZUInt32 b = genrand32_int32 (x) >> 6; 
+    uint32_t a = genrand32_int32 (x) >> 5;
+    uint32_t b = genrand32_int32 (x) >> 6;
     
     return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0); 
 } 
@@ -134,7 +134,7 @@ double genrand32_res53 (MTState32 *x)        /* Version due to Isaku Wada. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void init_genrand32 (MTState32 *x, PIZUInt32 s)
+void init_genrand32 (MTState32 *x, uint32_t s)
 {
     x->mt_[0] = s;
     
@@ -143,7 +143,7 @@ void init_genrand32 (MTState32 *x, PIZUInt32 s)
     }
 }
 
-void init_genrand32ByArray (MTState32 *x, long key_length, PIZUInt32 *init_key)
+void init_genrand32ByArray (MTState32 *x, long key_length, uint32_t *init_key)
 {
     int i, j, k;
     
@@ -170,10 +170,10 @@ void init_genrand32ByArray (MTState32 *x, long key_length, PIZUInt32 *init_key)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PIZUInt32 genrand32_int32 (MTState32 *x)
+uint32_t genrand32_int32 (MTState32 *x)
 {
-    PIZUInt32 y;
-    static const PIZUInt32 mag01[2] = { 0x0UL, PIZ_MT32_A };
+    uint32_t y;
+    static const uint32_t mag01[2] = { 0x0UL, PIZ_MT32_A };
 
     if (x->mti_ >= PIZ_MT32_N) {
     //

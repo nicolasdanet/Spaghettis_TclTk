@@ -81,8 +81,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void init_genrand64          (MTState64 *x, PIZUInt64 s); 
-static void init_genrand64ByArray   (MTState64 *x, long argc, PIZUInt64 *argv);
+static void init_genrand64          (MTState64 *x, uint64_t s);
+static void init_genrand64ByArray   (MTState64 *x, long argc, uint64_t *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ MTState64 *genrand64_new (void)
     return x;
 }
 
-MTState64 *genrand64_newByArray (long argc, PIZUInt64 *argv)
+MTState64 *genrand64_newByArray (long argc, uint64_t *argv)
 {
     MTState64 *x = NULL;
     
@@ -126,7 +126,7 @@ double genrand64_real2 (MTState64 *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void init_genrand64 (MTState64 *x, PIZUInt64 s)
+void init_genrand64 (MTState64 *x, uint64_t s)
 {
     x->mt_[0] = s;
     
@@ -137,9 +137,9 @@ void init_genrand64 (MTState64 *x, PIZUInt64 s)
     }
 }
 
-void init_genrand64ByArray (MTState64 *x, long key_length, PIZUInt64 *key)
+void init_genrand64ByArray (MTState64 *x, long key_length, uint64_t *key)
 {
-    PIZUInt64 i, j, k;
+    uint64_t i, j, k;
     
     init_genrand64 (x, 19650218ULL);
     
@@ -151,7 +151,7 @@ void init_genrand64ByArray (MTState64 *x, long key_length, PIZUInt64 *key)
     x->mt_[i] = (x->mt_[i] ^ ((x->mt_[i - 1] ^ (x->mt_[i - 1] >> 62)) * 3935559000370003845ULL)) + key[j] + j;
     i++; j++;
     if (i >= PIZ_MT64_NN) { x->mt_[0] = x->mt_[PIZ_MT64_NN - 1]; i = 1; }
-    if (j >= (PIZUInt64)key_length) { j = 0; }
+    if (j >= (uint64_t)key_length) { j = 0; }
     //
     }
     
@@ -169,10 +169,10 @@ void init_genrand64ByArray (MTState64 *x, long key_length, PIZUInt64 *key)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PIZUInt64 genrand64_int64 (MTState64 *x)
+uint64_t genrand64_int64 (MTState64 *x)
 {
-    PIZUInt64 y;
-    static const PIZUInt64 mag01[2] = { 0ULL, PIZ_MT64_A };
+    uint64_t y;
+    static const uint64_t mag01[2] = { 0ULL, PIZ_MT64_A };
 
     if (x->mti_ >= PIZ_MT64_NN) {
     //

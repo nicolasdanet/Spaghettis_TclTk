@@ -52,20 +52,20 @@ static const long pizUtilsDeBruijn64[] =
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PIZUInt8 pizUInt8Reversed (PIZUInt8 v)
+uint8_t pizUInt8Reversed (uint8_t v)
 {
     return (v * 0x0202020202ULL & 0x010884422010ULL) % 1023;
 }
 
-PIZUInt16 pizUInt16Reversed (PIZUInt16 v)
+uint16_t pizUInt16Reversed (uint16_t v)
 {
-    PIZUInt8 hi = (PIZUInt8)(v >> 8);
-    PIZUInt8 lo = (PIZUInt8)(v & 0xff);
+    uint8_t hi = (uint8_t)(v >> 8);
+    uint8_t lo = (uint8_t)(v & 0xff);
         
-    return (((PIZUInt16)(pizUInt8Reversed (lo))) << 8) | (PIZUInt16)(pizUInt8Reversed (hi));
+    return (((uint16_t)(pizUInt8Reversed (lo))) << 8) | (uint16_t)(pizUInt8Reversed (hi));
 }
 
-PIZUInt32 pizUInt32Reversed (PIZUInt32 v) 
+uint32_t pizUInt32Reversed (uint32_t v)
 {
     v = (((v & 0xaaaaaaaa) >> 1) | ((v & 0x55555555) << 1));
     v = (((v & 0xcccccccc) >> 2) | ((v & 0x33333333) << 2));
@@ -75,24 +75,24 @@ PIZUInt32 pizUInt32Reversed (PIZUInt32 v)
     return ((v >> 16) | (v << 16));
 }
 
-PIZUInt64 pizUInt64Reversed (PIZUInt64 v) 
+uint64_t pizUInt64Reversed (uint64_t v)
 {
-    PIZUInt32 hi = (PIZUInt32)(v >> 32);
-    PIZUInt32 lo = (PIZUInt32)(v & 0xffffffffULL);
+    uint32_t hi = (uint32_t)(v >> 32);
+    uint32_t lo = (uint32_t)(v & 0xffffffffULL);
     
-    return ((((PIZUInt64)pizUInt32Reversed (lo)) << 32) | (PIZUInt64)(pizUInt32Reversed (hi)));
+    return ((((uint64_t)pizUInt32Reversed (lo)) << 32) | (uint64_t)(pizUInt32Reversed (hi)));
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int pizUInt32IsPower2 (PIZUInt32 v)
+int pizUInt32IsPower2 (uint32_t v)
 {
     return !(v & (v - 1));
 }
 
-int pizUInt64IsPower2 (PIZUInt64 v)
+int pizUInt64IsPower2 (uint64_t v)
 {
     return !(v & (v - 1));
 }
@@ -101,7 +101,7 @@ int pizUInt64IsPower2 (PIZUInt64 v)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-long pizUInt32LogBase2Index (PIZUInt32 v)
+long pizUInt32LogBase2Index (uint32_t v)
 {
     if (!v) { return 0; }
     else {
@@ -112,12 +112,12 @@ long pizUInt32LogBase2Index (PIZUInt32 v)
     v |= v >> 8;
     v |= v >> 16;
     
-    return (pizUtilsDeBruijn32[(PIZUInt32)(v * 0x07c4acddU) >> 27]);
+    return (pizUtilsDeBruijn32[(uint32_t)(v * 0x07c4acddU) >> 27]);
     //
     }
 }
 
-long pizUInt32NextPower2Index (PIZUInt32 v)
+long pizUInt32NextPower2Index (uint32_t v)
 {
     if (pizUInt32IsPower2 (v)) {
         return pizUInt32LogBase2Index (v);
@@ -129,7 +129,7 @@ long pizUInt32NextPower2Index (PIZUInt32 v)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-long pizUInt64LogBase2Index (PIZUInt64 v)
+long pizUInt64LogBase2Index (uint64_t v)
 {
     if (!v) { return 0; }
     else {
@@ -141,12 +141,12 @@ long pizUInt64LogBase2Index (PIZUInt64 v)
     v |= v >> 16;
     v |= v >> 32;
     
-    return (pizUtilsDeBruijn64[((PIZUInt64)((v - (v >> 1)) * 0x07edd5e59a4e28c2ULL)) >> 58]);
+    return (pizUtilsDeBruijn64[((uint64_t)((v - (v >> 1)) * 0x07edd5e59a4e28c2ULL)) >> 58]);
     //
     }
 }
 
-long pizUInt64NextPower2Index (PIZUInt64 v)
+long pizUInt64NextPower2Index (uint64_t v)
 {
     if (pizUInt64IsPower2 (v)) {
         return pizUInt64LogBase2Index (v);

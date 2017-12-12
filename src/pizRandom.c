@@ -47,7 +47,7 @@ long pizRandomLong (PIZRandom *x, long v)
     else {
     //
     long r = 0;
-    long k = pizUInt32NextPower2Index ((PIZUInt32)v);
+    long k = pizUInt32NextPower2Index ((uint32_t)v);
     
     do {
         r = (long)(genrand32_int32 (x) >> (32 - k));
@@ -95,7 +95,7 @@ long pizRandomLong (PIZRandom *x, long v)
     else {
     //
     long r = 0;
-    long k = pizUInt64NextPower2Index ((PIZUInt64)v);
+    long k = pizUInt64NextPower2Index ((uint64_t)v);
     
     do {
         r = (long)(genrand64_int64 (x) >> (64 - k));

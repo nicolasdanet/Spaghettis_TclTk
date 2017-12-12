@@ -23,7 +23,7 @@
 // MARK: -
 
 typedef struct _PIZRandom {
-    PIZUInt32   mt_[624];
+    uint32_t    mt_[624];
     int         mti_;
     } MTState32;
 
@@ -32,13 +32,13 @@ typedef struct _PIZRandom {
 // MARK: -
 
 MTState32   *genrand32_new          (void);
-MTState32   *genrand32_newByArray   (long argc, PIZUInt32 *argv);
+MTState32   *genrand32_newByArray   (long argc, uint32_t *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 void        genrand32_free  (MTState32 *x);
-PIZUInt32   genrand32_int32 (MTState32 *x);  // -- Random number on [0, 0xffffffff] interval. 
+uint32_t    genrand32_int32 (MTState32 *x);  // -- Random number on [0, 0xffffffff] interval. 
 double      genrand32_real2 (MTState32 *x);  // -- Random number on [0, 1) interval.
 double      genrand32_res53 (MTState32 *x);  // -- Random number on [0, 1) interval with 53-bit resolution.
 

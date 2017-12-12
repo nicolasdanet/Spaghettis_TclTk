@@ -50,9 +50,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static PIZUInt64 pizSeedMakeTime            (void);
-static PIZUInt64 pizSeedMakeTimeBase16Bits  (void);
-static PIZUInt64 pizSeedMakeConstant        (void);
+static uint64_t pizSeedMakeTime            (void);
+static uint64_t pizSeedMakeTimeBase16Bits  (void);
+static uint64_t pizSeedMakeConstant        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -92,14 +92,14 @@ void pizTimeCtor (void)  { pizTimeInitialize(); }
 
 void pizSeedConstant (int isConstant)
 {
-    PIZ_ATOMIC_INT32_WRITE ((PIZInt32)isConstant, &pizSeedIsConstant);
+    PIZ_ATOMIC_INT32_WRITE ((int32_t)isConstant, &pizSeedIsConstant);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZUInt64 pizSeedMake (void)
+uint64_t pizSeedMake (void)
 {
     if (PIZ_ATOMIC_INT32_READ (&pizSeedIsConstant) == 1) { return pizSeedMakeConstant(); } 
     else {
@@ -107,9 +107,9 @@ PIZUInt64 pizSeedMake (void)
     }
 }
 
-PIZUInt64 pizSeedMakeConstant (void)
+uint64_t pizSeedMakeConstant (void)
 {
-    PIZUInt64 lo, hi, seed;
+    uint64_t lo, hi, seed;
     
     seed = 0xcacafade;
     
@@ -122,9 +122,9 @@ PIZUInt64 pizSeedMakeConstant (void)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PIZUInt64 pizSeedMakeTime (void)
+uint64_t pizSeedMakeTime (void)
 {
-    PIZUInt64 seed, lo, hi;
+    uint64_t seed, lo, hi;
 
     seed = pizSeedMakeTimeBase16Bits();
     seed |= (pizSeedMakeTimeBase16Bits() << 16);
@@ -136,22 +136,22 @@ PIZUInt64 pizSeedMakeTime (void)
     return ((hi << 32) | lo);
 }
 
-PIZUInt64 pizSeedMakeTimeBase16Bits (void)
+uint64_t pizSeedMakeTimeBase16Bits (void)
 {
-    static PIZUInt16 base = 0ULL;
+    static uint16_t base = 0ULL;
     
     PIZTime t1, t2;
-    PIZUInt16 v1, v2;
+    uint16_t v1, v2;
         
     pizTimeSet (&t1);
     PIZ_MEMORY_BARRIER;     /* Avoid out-of-thin-air compiler optimizations. */
     pizTimeSet (&t2);
     
-    v1 = (PIZUInt16)t1;
-    v2 = pizUInt16Reversed ((PIZUInt16)t2);
+    v1 = (uint16_t)t1;
+    v2 = pizUInt16Reversed ((uint16_t)t2);
     base ^= (v1 ^ v2);
     
-    return (PIZUInt64)base;
+    return (uint64_t)base;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ t_error pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
     (*r) = PIZ_ZERO_NANO;
     
     if ((*t1) > (*t0)) {
-        PIZUInt64 elapsed = (*t1) - (*t0); 
+        uint64_t elapsed = (*t1) - (*t0);
         (*r) = elapsed * pizTimeBaseInfo.numer / pizTimeBaseInfo.denom;
         return PD_ERROR_NONE;
     }
@@ -198,8 +198,8 @@ void pizTimeSet (PIZTime *t)
     
     clock_gettime (CLOCK_MONOTONIC, &time);
     
-    PIZUInt64 seconds     = (PIZUInt64)time.tv_sec;
-    PIZUInt64 nanoseconds = (PIZUInt64)time.tv_nsec;
+    uint64_t seconds     = (uint64_t)time.tv_sec;
+    uint64_t nanoseconds = (uint64_t)time.tv_nsec;
     
     (*t) = (seconds * PIZ_NSEC_PER_SEC) + nanoseconds;
 }
@@ -228,12 +228,12 @@ void pizTimeCopy (PIZTime *t, const PIZTime *toCopy)
     (*t) = (*toCopy);
 }
 
-PIZUInt64 pizTimeAsUInt64 (PIZTime *t)
+uint64_t pizTimeAsUInt64 (PIZTime *t)
 {
     return (*t);
 }
 
-void pizTimeWithUInt64 (PIZTime *t, PIZUInt64 n)
+void pizTimeWithUInt64 (PIZTime *t, uint64_t n)
 {
     (*t = n);
 }
@@ -273,7 +273,7 @@ void pizNanoWithDouble (PIZNano *ns, double f)
     (*ns) = (PIZNano)f;
 }
 
-PIZUInt64 pizNanoAsUInt64 (PIZNano *ns)
+uint64_t pizNanoAsUInt64 (PIZNano *ns)
 {
     return (*ns);
 }
@@ -289,12 +289,12 @@ int pizNanoIsLessThan (PIZNano *t1, PIZNano *t2)
 
 void pizStampSet (PIZStamp *stamp)
 {
-    PIZUInt64 s, f;
+    uint64_t s, f;
     struct timeval tv;
     
     gettimeofday (&tv, NULL);
-    s = (PIZUInt64)tv.tv_sec + PIZ_TIME_FROM_1900_TO_1970;
-    f = ((PIZUInt64)tv.tv_usec << 32) / PIZ_USEC_PER_SEC;
+    s = (uint64_t)tv.tv_sec + PIZ_TIME_FROM_1900_TO_1970;
+    f = ((uint64_t)tv.tv_usec << 32) / PIZ_USEC_PER_SEC;
     // f = ((tv.tv_usec << 12) + (tv.tv_usec << 8) - ((tv.tv_usec * 1825) >> 5));
 
     (*stamp) = (s << 32) | f; 
@@ -307,25 +307,25 @@ void pizStampCopy (PIZStamp *stamp, const PIZStamp *toCopy)
 
 void pizStampAddNano (PIZStamp *stamp, const PIZNano *ns)
 {
-    PIZUInt64 hi = ((*stamp) >> 32);
-    PIZUInt64 lo = ((*stamp) & 0xffffffffULL);
-    PIZUInt64 s = hi;
-    PIZUInt64 n = ((lo * PIZ_NSEC_PER_SEC) >> 32) + (*ns);
+    uint64_t hi = ((*stamp) >> 32);
+    uint64_t lo = ((*stamp) & 0xffffffffULL);
+    uint64_t s = hi;
+    uint64_t n = ((lo * PIZ_NSEC_PER_SEC) >> 32) + (*ns);
         
-    s += (PIZUInt64)(n / PIZ_NSEC_PER_SEC);
+    s += (uint64_t)(n / PIZ_NSEC_PER_SEC);
     n %= PIZ_NSEC_PER_SEC;
 
-    (*stamp) = (s << 32) | ((PIZUInt64)((n << 32) / PIZ_NSEC_PER_SEC));
+    (*stamp) = (s << 32) | ((uint64_t)((n << 32) / PIZ_NSEC_PER_SEC));
 }
 
 t_error pizStampElapsedNano (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r)
 {
     t_error err = PD_ERROR_NONE;
 
-    PIZUInt64 s0 = (*t0) >> 32;
-    PIZUInt64 n0 = (((*t0) & 0xffffffffULL) * PIZ_NSEC_PER_SEC) >> 32;
-    PIZUInt64 s1 = (*t1) >> 32;
-    PIZUInt64 n1 = (((*t1) & 0xffffffffULL) * PIZ_NSEC_PER_SEC) >> 32;
+    uint64_t s0 = (*t0) >> 32;
+    uint64_t n0 = (((*t0) & 0xffffffffULL) * PIZ_NSEC_PER_SEC) >> 32;
+    uint64_t s1 = (*t1) >> 32;
+    uint64_t n1 = (((*t1) & 0xffffffffULL) * PIZ_NSEC_PER_SEC) >> 32;
     
     (*r) = PIZ_ZERO_NANO;
     
@@ -340,12 +340,12 @@ t_error pizStampElapsedNano (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r)
     return err;
 }
 
-PIZUInt64 pizStampAsUInt64 (PIZStamp *stamp)
+uint64_t pizStampAsUInt64 (PIZStamp *stamp)
 {
     return (*stamp);
 }
 
-void pizStampWithUInt64 (PIZStamp *stamp, PIZUInt64 n)
+void pizStampWithUInt64 (PIZStamp *stamp, uint64_t n)
 {
     (*stamp = n);
 }
@@ -381,16 +381,16 @@ t_error pizBaseInit (PIZBase *base)
 
 t_error pizBaseTimeToStamp (const PIZBase *base, const PIZTime *t, PIZStamp *stamp)
 {
-    PIZUInt64 f, s;
+    uint64_t f, s;
     PIZNano elapsed, n;
     t_error err = PD_ERROR;
     
     (*stamp) = PIZ_ZERO_STAMP;
     
     if (!(err = pizTimeElapsedNano (&base->time_, t, &elapsed))) {
-        n = elapsed + ((PIZUInt64)base->tv_.tv_usec * PIZ_NSEC_PER_USEC);
-        s = (PIZUInt64)base->tv_.tv_sec + PIZ_TIME_FROM_1900_TO_1970 + (PIZUInt64)(n / PIZ_NSEC_PER_SEC);
-        f = (PIZUInt64)(((n % PIZ_NSEC_PER_SEC) << 32) / PIZ_NSEC_PER_SEC);
+        n = elapsed + ((uint64_t)base->tv_.tv_usec * PIZ_NSEC_PER_USEC);
+        s = (uint64_t)base->tv_.tv_sec + PIZ_TIME_FROM_1900_TO_1970 + (uint64_t)(n / PIZ_NSEC_PER_SEC);
+        f = (uint64_t)(((n % PIZ_NSEC_PER_SEC) << 32) / PIZ_NSEC_PER_SEC);
         
         (*stamp) = (s << 32) | f;
     }
@@ -406,12 +406,12 @@ t_error pizBaseStampToTime (const PIZBase *base, const PIZStamp *stamp, PIZTime 
     
     if ((*stamp) != PIZ_ZERO_STAMP) {
     //
-    PIZUInt64 hi = ((*stamp) >> 32);
-    PIZUInt64 lo = ((*stamp) & 0xffffffffULL);
-    PIZUInt64 s0 = (PIZUInt64)base->tv_.tv_sec + PIZ_TIME_FROM_1900_TO_1970;
-    PIZUInt64 n0 = (PIZUInt64)base->tv_.tv_usec * PIZ_NSEC_PER_USEC;
-    PIZUInt64 s1 = hi;
-    PIZUInt64 n1 = ((lo * PIZ_NSEC_PER_SEC) >> 32);
+    uint64_t hi = ((*stamp) >> 32);
+    uint64_t lo = ((*stamp) & 0xffffffffULL);
+    uint64_t s0 = (uint64_t)base->tv_.tv_sec + PIZ_TIME_FROM_1900_TO_1970;
+    uint64_t n0 = (uint64_t)base->tv_.tv_usec * PIZ_NSEC_PER_USEC;
+    uint64_t s1 = hi;
+    uint64_t n1 = ((lo * PIZ_NSEC_PER_SEC) >> 32);
     
     err = PD_ERROR_NONE;
     err |= (s1 < s0);                               /* < https://en.wikipedia.org/wiki/Year_2038_problem > */

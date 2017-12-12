@@ -35,11 +35,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-// PIZUInt64
+// uint64_t
 
 #define PIZ_RAND48_INIT(s)      ((s) = pizSeedMake() & 0xffffffffffffULL)          
 #define PIZ_RAND48_NEXT(s)      ((s) = (((s) * 0x5deece66dULL + 0xbULL) & 0xffffffffffffULL))
-#define PIZ_RAND48_UINT32(s)    (PIZUInt32)(PIZ_RAND48_NEXT (s) >> 16)
+#define PIZ_RAND48_UINT32(s)    (uint32_t)(PIZ_RAND48_NEXT (s) >> 16)
 #define PIZ_RAND48_DOUBLE(s)    (PIZ_RAND48_UINT32 (s) * (1.0 / 4294967296.0))
 
 // -----------------------------------------------------------------------------------------------------------
@@ -53,9 +53,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-// PIZUInt32
+// uint32_t
 
-#define PIZ_RANDU_INIT(s)       ((s) = ((PIZUInt32)pizSeedMake() | 1) & 0x7fffffff)    /* Odd number. */
+#define PIZ_RANDU_INIT(s)       ((s) = ((uint32_t)pizSeedMake() | 1) & 0x7fffffff)    /* Odd number. */
 #define PIZ_RANDU_UINT32(s)     ((s) = (65539 * (s)) & 0x7fffffff)
 #define PIZ_RANDU_DOUBLE(s)     (PIZ_RANDU_UINT32 (s) * (1.0 / 2147483648.0))
 

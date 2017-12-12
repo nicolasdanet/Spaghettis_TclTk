@@ -29,9 +29,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef PIZUInt64 PIZTime;
-typedef PIZUInt64 PIZNano;
-typedef PIZUInt64 PIZStamp;
+typedef uint64_t PIZTime;
+typedef uint64_t PIZNano;
+typedef uint64_t PIZStamp;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ typedef struct _PIZBase {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZUInt64   pizSeedMake             (void);
+uint64_t    pizSeedMake             (void);
 void        pizSeedConstant         (int isConstant);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,8 +72,8 @@ void        pizTimeSet              (PIZTime *t);
 void        pizTimeCopy             (PIZTime *t, const PIZTime *toCopy);
 void        pizTimeAddNano          (PIZTime *t, const PIZNano *ns); 
 t_error     pizTimeElapsedNano      (const PIZTime *t0, const PIZTime *t1, PIZNano *r);
-PIZUInt64   pizTimeAsUInt64         (PIZTime *t);
-void        pizTimeWithUInt64       (PIZTime *t, PIZUInt64 n);
+uint64_t    pizTimeAsUInt64         (PIZTime *t);
+void        pizTimeWithUInt64       (PIZTime *t, uint64_t n);
 int         pizTimeIsEqual          (PIZTime *t1, PIZTime *t2);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ int         pizTimeIsEqual          (PIZTime *t1, PIZTime *t2);
 
 void        pizNanoSleep            (PIZNano *ns);
 void        pizNanoWithDouble       (PIZNano *ns, double f);
-PIZUInt64   pizNanoAsUInt64         (PIZNano *ns);
+uint64_t    pizNanoAsUInt64         (PIZNano *ns);
 int         pizNanoIsLessThan       (PIZNano *t1, PIZNano *t2);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -98,8 +98,8 @@ void        pizStampSet             (PIZStamp *stamp);
 void        pizStampCopy            (PIZStamp *stamp, const PIZStamp *toCopy);
 void        pizStampAddNano         (PIZStamp *stamp, const PIZNano *ns);
 t_error     pizStampElapsedNano     (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r);
-PIZUInt64   pizStampAsUInt64        (PIZStamp *stamp);
-void        pizStampWithUInt64      (PIZStamp *stamp, PIZUInt64 n);
+uint64_t    pizStampAsUInt64        (PIZStamp *stamp);
+void        pizStampWithUInt64      (PIZStamp *stamp, uint64_t n);
 int         pizStampIsEqual         (PIZStamp *t1, PIZStamp *t2);
 
 // -----------------------------------------------------------------------------------------------------------

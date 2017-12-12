@@ -72,14 +72,14 @@ typedef volatile uint64_t   __attribute__ ((__aligned__ (8)))   PIZUInt64Atomic;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZInt32    pizAtomicInt32Read      (PIZInt32Atomic *q);
-void        pizAtomicInt32Write     (PIZInt32 n, PIZInt32Atomic *q);
+int32_t     pizAtomicInt32Read      (PIZInt32Atomic *q);
+void        pizAtomicInt32Write     (int32_t n, PIZInt32Atomic *q);
 
-PIZUInt32   pizAtomicUInt32Read     (PIZUInt32Atomic *q);
-void        pizAtomicUInt32Write    (PIZUInt32 n, PIZUInt32Atomic *q);
+uint32_t    pizAtomicUInt32Read     (PIZUInt32Atomic *q);
+void        pizAtomicUInt32Write    (uint32_t n, PIZUInt32Atomic *q);
 
-PIZUInt64   pizAtomicUInt64Read     (PIZUInt64Atomic *q);
-void        pizAtomicUInt64Write    (PIZUInt64 n, PIZUInt64Atomic *q);
+uint64_t    pizAtomicUInt64Read     (PIZUInt64Atomic *q);
+void        pizAtomicUInt64Write    (uint64_t n, PIZUInt64Atomic *q);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
