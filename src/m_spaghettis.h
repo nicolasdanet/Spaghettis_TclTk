@@ -425,11 +425,11 @@ typedef double                      t_systime;
 
 #if PD_LP64
     typedef unsigned int            t_keycode;          // uint32_t
-    typedef unsigned long           t_seed;             // uint64_t
+    typedef unsigned long           t_rand48;           // uint64_t
     typedef unsigned long           t_unique;           // uint64_t
 #else
     typedef unsigned long           t_keycode;
-    typedef unsigned long long      t_seed;
+    typedef unsigned long long      t_rand48;
     typedef unsigned long long      t_unique;
 #endif
 

@@ -47,7 +47,7 @@ struct _garray {
     t_glist     *x_owner;
     t_symbol    *x_unexpandedName;
     t_symbol    *x_name;
-    t_seed      x_redrawn;
+    t_rand48    x_redrawn;
     char        x_isUsedInDSP;
     char        x_saveWithParent;
     char        x_hideName;
@@ -407,15 +407,15 @@ void garray_redraw (t_garray *x)
 
 void garray_setNextTag (t_garray *x)
 {
-    static t_seed once = 0;
-    static t_seed seed = 0;
+    static int once = 0;
+    static t_rand48 seed = 0;
     
-    if (!once) { seed = math_makeRandomSeed(); }
+    if (!once) { seed = math_makeRandomSeed(); once = 1; }
     
     PD_RAND48_NEXT (seed); x->x_redrawn = seed;
 }
 
-t_seed garray_getTag (t_garray *x)
+t_rand48 garray_getTag (t_garray *x)
 {
     return x->x_redrawn;
 }

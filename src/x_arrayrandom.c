@@ -22,7 +22,7 @@ static t_class *arrayrandom_class;          /* Shared. */
 
 typedef struct _arrayrandom {
     t_arrayrange    x_arrayrange;           /* Must be the first. */
-    t_seed          x_state;
+    t_rand48        x_state;
     t_outlet        *x_outlet;
     } t_arrayrandom;
 
@@ -46,7 +46,7 @@ static void arrayrandom_float (t_arrayrandom *x, t_float f)
 
 static void arrayrandom_seed (t_arrayrandom *x, t_float f)
 {
-    x->x_state = (t_seed)f;
+    x->x_state = (t_rand48)f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

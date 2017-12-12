@@ -71,10 +71,10 @@ typedef struct _expr {
 
 double expr_functionRandom (void)
 {
-    static t_seed once = 0;
-    static t_seed seed = 0;
+    static int once = 0;
+    static t_rand48 seed = 0;
     
-    if (!once) { seed = math_makeRandomSeed(); }
+    if (!once) { seed = math_makeRandomSeed(); once = 1; }
     
     return PD_RAND48_DOUBLE (seed);
 }

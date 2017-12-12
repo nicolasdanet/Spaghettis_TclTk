@@ -22,7 +22,7 @@ static t_class *random_class;       /* Shared. */
 typedef struct _random {
     t_object    x_obj;              /* Must be the first. */
     t_float     x_range;
-    t_seed      x_state;
+    t_rand48    x_state;
     t_outlet    *x_outlet;
     } t_random;
 
@@ -81,7 +81,7 @@ static void random_float (t_random *x, t_float f)
 
 static void random_seed (t_random *x, t_float f)
 {
-    x->x_state = (t_seed)f;
+    x->x_state = (t_rand48)f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -84,9 +84,9 @@ t_float math_decibelToRootMeanSquare (t_float f)
 
 /* Do NOT fit for cryptography purpose. */
 
-t_seed math_makeRandomSeed (void)
+t_rand48 math_makeRandomSeed (void)
 {
-    static t_seed seed = 0;
+    static t_rand48 seed = 0;
     
     t_rawcast64 z;
     

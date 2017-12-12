@@ -22,7 +22,7 @@ static t_class *tabreceive_class;       /* Shared. */
 
 typedef struct _tabreceive {
     t_object    x_obj;                  /* Must be the first. */
-    t_seed      x_tag;
+    t_rand48    x_tag;
     t_buffer    *x_previous;
     t_symbol    *x_name;
     t_outlet    *x_outlet;
