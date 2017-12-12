@@ -461,7 +461,6 @@
 		17C9FE291FE00B79007066EC /* pizMT32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizMT32.c; path = src/pizMT32.c; sourceTree = "<group>"; };
 		17C9FE2A1FE00B79007066EC /* pizAtomicPosix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizAtomicPosix.h; path = src/pizAtomicPosix.h; sourceTree = "<group>"; };
 		17C9FE2B1FE00B79007066EC /* pizAtomicMac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizAtomicMac.c; path = src/pizAtomicMac.c; sourceTree = "<group>"; };
-		17C9FE2C1FE00B79007066EC /* pizMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizMemory.h; path = src/pizMemory.h; sourceTree = "<group>"; };
 		17C9FE2D1FE00B79007066EC /* pizTimePosix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizTimePosix.c; path = src/pizTimePosix.c; sourceTree = "<group>"; };
 		17C9FE2E1FE00B7A007066EC /* pizUtils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizUtils.c; path = src/pizUtils.c; sourceTree = "<group>"; };
 		17CA45371FB188CF0054245C /* x_title.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_title.c; path = src/x_title.c; sourceTree = "<group>"; };
@@ -986,7 +985,6 @@
 		17C9FE361FE00B80007066EC /* PIZ */ = {
 			isa = PBXGroup;
 			children = (
-				17C9FE2C1FE00B79007066EC /* pizMemory.h */,
 				17C9FE281FE00B79007066EC /* pizUtils.h */,
 				17C9FE1F1FE00B78007066EC /* pizAtomic.h */,
 				17C9FE2A1FE00B79007066EC /* pizAtomicPosix.h */,

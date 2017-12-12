@@ -65,7 +65,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "pizTime.h"
-#include "pizMemory.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -92,7 +91,7 @@ MTState32 *genrand32_new (void)
 {
     MTState32 *x = NULL;
     
-    if ((x = (MTState32 *)PIZ_MALLOC (sizeof (MTState32)))) {
+    if ((x = (MTState32 *)PD_MEMORY_GET (sizeof (MTState32)))) {
         init_genrand32 (x, (uint32_t)pizSeedMake());
     }
         
@@ -103,7 +102,7 @@ MTState32 *genrand32_newByArray (long argc, uint32_t *argv)
 {
     MTState32 *x = NULL;
     
-    if ((x = (MTState32 *)PIZ_MALLOC (sizeof (MTState32)))) {
+    if ((x = (MTState32 *)PD_MEMORY_GET (sizeof (MTState32)))) {
         init_genrand32ByArray (x, argc, argv);
     }
         
@@ -113,7 +112,7 @@ MTState32 *genrand32_newByArray (long argc, uint32_t *argv)
 void genrand32_free (MTState32 *x)
 {
     if (x) {
-        PIZ_FREE (x);
+        PD_MEMORY_FREE (x);
     }
 }
 

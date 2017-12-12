@@ -65,7 +65,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "pizTime.h"
-#include "pizMemory.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -92,7 +91,7 @@ MTState64 *genrand64_new (void)
 {
     MTState64 *x = NULL;
     
-    if ((x = (MTState64 *)PIZ_MALLOC (sizeof (MTState64)))) {
+    if ((x = (MTState64 *)PD_MEMORY_GET (sizeof (MTState64)))) {
         init_genrand64 (x, pizSeedMake());
     }
         
@@ -103,7 +102,7 @@ MTState64 *genrand64_newByArray (long argc, uint64_t *argv)
 {
     MTState64 *x = NULL;
     
-    if ((x = (MTState64 *)PIZ_MALLOC (sizeof (MTState64)))) {
+    if ((x = (MTState64 *)PD_MEMORY_GET (sizeof (MTState64)))) {
         init_genrand64ByArray (x, argc, argv);
     }
         
@@ -113,7 +112,7 @@ MTState64 *genrand64_newByArray (long argc, uint64_t *argv)
 void genrand64_free (MTState64 *x)
 {
     if (x) {
-        PIZ_FREE (x);
+        PD_MEMORY_FREE (x);
     }
 }
 
