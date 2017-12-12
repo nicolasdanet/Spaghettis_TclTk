@@ -71,8 +71,8 @@ typedef struct _expr {
 
 double expr_functionRandom (void)
 {
-    static int once = 0;
-    static t_rand48 seed = 0;
+    static int once = 0;            /* Static. */
+    static t_rand48 seed = 0;       /* Static. */
     
     if (!once) { seed = math_makeRandomSeed(); once = 1; }
     

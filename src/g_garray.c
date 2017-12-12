@@ -407,8 +407,8 @@ void garray_redraw (t_garray *x)
 
 void garray_setNextTag (t_garray *x)
 {
-    static int once = 0;
-    static t_rand48 seed = 0;
+    static int once = 0;            /* Static. */
+    static t_rand48 seed = 0;       /* Static. */
     
     if (!once) { seed = math_makeRandomSeed(); once = 1; }
     
