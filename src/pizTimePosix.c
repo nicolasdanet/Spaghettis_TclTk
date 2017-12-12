@@ -90,7 +90,7 @@ void pizTimeCtor (void)  { pizTimeInitialize(); }
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void pizSeedConstant (PIZBool isConstant)
+void pizSeedConstant (int isConstant)
 {
     PIZ_ATOMIC_INT32_WRITE ((PIZInt32)isConstant, &pizSeedIsConstant);
 }
@@ -172,17 +172,17 @@ void pizTimeAddNano (PIZTime *t, const PIZNano *ns)
     (*t) += (*ns) * pizTimeBaseInfo.denom / pizTimeBaseInfo.numer;
 }
 
-PIZError pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
+t_error pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
 {
     (*r) = PIZ_ZERO_NANO;
     
     if ((*t1) > (*t0)) {
         PIZUInt64 elapsed = (*t1) - (*t0); 
         (*r) = elapsed * pizTimeBaseInfo.numer / pizTimeBaseInfo.denom;
-        return PIZ_GOOD;
+        return PD_ERROR_NONE;
     }
 
-    return PIZ_ERROR;
+    return PD_ERROR;
 }
 
 #endif // PD_APPLE
@@ -209,13 +209,13 @@ void pizTimeAddNano (PIZTime *t, const PIZNano *ns)
     (*t) += (*ns);
 }
 
-PIZError pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
+t_error pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
 {
     (*r) = PIZ_ZERO_NANO;
     
-    if ((*t1) > (*t0)) { (*r) = (*t1) - (*t0); return PIZ_GOOD; }
+    if ((*t1) > (*t0)) { (*r) = (*t1) - (*t0); return PD_ERROR_NONE; }
 
-    return PIZ_ERROR;
+    return PD_ERROR;
 }
 
 #endif // PD_LINUX
@@ -238,7 +238,7 @@ void pizTimeWithUInt64 (PIZTime *t, PIZUInt64 n)
     (*t = n);
 }
 
-PIZBool pizTimeIsEqual (PIZTime *t1, PIZTime *t2)
+int pizTimeIsEqual (PIZTime *t1, PIZTime *t2)
 {
     return ((*t1) == (*t2));
 }
@@ -278,7 +278,7 @@ PIZUInt64 pizNanoAsUInt64 (PIZNano *ns)
     return (*ns);
 }
 
-PIZBool pizNanoIsLessThan (PIZNano *t1, PIZNano *t2)
+int pizNanoIsLessThan (PIZNano *t1, PIZNano *t2)
 {
     return ((*t1) < (*t2));
 }
@@ -318,9 +318,9 @@ void pizStampAddNano (PIZStamp *stamp, const PIZNano *ns)
     (*stamp) = (s << 32) | ((PIZUInt64)((n << 32) / PIZ_NSEC_PER_SEC));
 }
 
-PIZError pizStampElapsedNano (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r)
+t_error pizStampElapsedNano (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r)
 {
-    PIZError err = PIZ_GOOD;
+    t_error err = PD_ERROR_NONE;
 
     PIZUInt64 s0 = (*t0) >> 32;
     PIZUInt64 n0 = (((*t0) & 0xffffffffULL) * PIZ_NSEC_PER_SEC) >> 32;
@@ -350,7 +350,7 @@ void pizStampWithUInt64 (PIZStamp *stamp, PIZUInt64 n)
     (*stamp = n);
 }
 
-PIZBool pizStampIsEqual (PIZStamp *t1, PIZStamp *t2)
+int pizStampIsEqual (PIZStamp *t1, PIZStamp *t2)
 {
     return ((*t1) == (*t2));
 }
@@ -359,11 +359,11 @@ PIZBool pizStampIsEqual (PIZStamp *t1, PIZStamp *t2)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZError pizBaseInit (PIZBase *base)
+t_error pizBaseInit (PIZBase *base)
 {
     PIZTime t;
     PIZNano ns;
-    PIZError err = PIZ_ERROR;
+    t_error err = PD_ERROR;
     
     do {
     
@@ -379,11 +379,11 @@ PIZError pizBaseInit (PIZBase *base)
     return err;
 }
 
-PIZError pizBaseTimeToStamp (const PIZBase *base, const PIZTime *t, PIZStamp *stamp)
+t_error pizBaseTimeToStamp (const PIZBase *base, const PIZTime *t, PIZStamp *stamp)
 {
     PIZUInt64 f, s;
     PIZNano elapsed, n;
-    PIZError err = PIZ_ERROR;
+    t_error err = PD_ERROR;
     
     (*stamp) = PIZ_ZERO_STAMP;
     
@@ -398,9 +398,9 @@ PIZError pizBaseTimeToStamp (const PIZBase *base, const PIZTime *t, PIZStamp *st
     return err;
 }
 
-PIZError pizBaseStampToTime (const PIZBase *base, const PIZStamp *stamp, PIZTime *t)
+t_error pizBaseStampToTime (const PIZBase *base, const PIZStamp *stamp, PIZTime *t)
 {
-    PIZError err = PIZ_ERROR;
+    t_error err = PD_ERROR;
     
     (*t) = PIZ_ZERO_TIME;
     
@@ -413,7 +413,7 @@ PIZError pizBaseStampToTime (const PIZBase *base, const PIZStamp *stamp, PIZTime
     PIZUInt64 s1 = hi;
     PIZUInt64 n1 = ((lo * PIZ_NSEC_PER_SEC) >> 32);
     
-    err = PIZ_GOOD;
+    err = PD_ERROR_NONE;
     err |= (s1 < s0);                               /* < https://en.wikipedia.org/wiki/Year_2038_problem > */
     err |= (s1 == s0) && (n1 <= n0);
     

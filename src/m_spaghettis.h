@@ -465,6 +465,32 @@ typedef double                      t_systime;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#if PD_ILP32
+
+typedef signed long                 PIZInt32;
+
+typedef unsigned char               PIZUInt8;
+typedef unsigned short              PIZUInt16;
+typedef unsigned long               PIZUInt32;
+typedef unsigned long long          PIZUInt64;
+
+#else
+#if PD_LP64
+
+typedef signed int                  PIZInt32;
+
+typedef unsigned char               PIZUInt8;
+typedef unsigned short              PIZUInt16;
+typedef unsigned int                PIZUInt32;
+typedef unsigned long               PIZUInt64;
+
+#endif // PD_LP64
+#endif // PD_ILP32
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 struct _array;
 struct _box;
 struct _class;

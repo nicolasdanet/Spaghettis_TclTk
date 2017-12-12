@@ -87,12 +87,12 @@ PIZUInt64 pizUInt64Reversed (PIZUInt64 v)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZBool pizUInt32IsPower2 (PIZUInt32 v)
+int pizUInt32IsPower2 (PIZUInt32 v)
 {
     return !(v & (v - 1));
 }
 
-PIZBool pizUInt64IsPower2 (PIZUInt64 v)
+int pizUInt64IsPower2 (PIZUInt64 v)
 {
     return !(v & (v - 1));
 }

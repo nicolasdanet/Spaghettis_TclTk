@@ -22,11 +22,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "pizTypes.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #include <time.h>
 #include <sys/time.h>
 
@@ -60,7 +55,7 @@ typedef struct _PIZBase {
 // MARK: -
 
 PIZUInt64   pizSeedMake             (void);
-void        pizSeedConstant         (PIZBool isConstant);
+void        pizSeedConstant         (int isConstant);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -76,10 +71,10 @@ void        pizSeedConstant         (PIZBool isConstant);
 void        pizTimeSet              (PIZTime *t);
 void        pizTimeCopy             (PIZTime *t, const PIZTime *toCopy);
 void        pizTimeAddNano          (PIZTime *t, const PIZNano *ns); 
-PIZError    pizTimeElapsedNano      (const PIZTime *t0, const PIZTime *t1, PIZNano *r);
+t_error     pizTimeElapsedNano      (const PIZTime *t0, const PIZTime *t1, PIZNano *r);
 PIZUInt64   pizTimeAsUInt64         (PIZTime *t);
 void        pizTimeWithUInt64       (PIZTime *t, PIZUInt64 n);
-PIZBool     pizTimeIsEqual          (PIZTime *t1, PIZTime *t2);
+int         pizTimeIsEqual          (PIZTime *t1, PIZTime *t2);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -88,7 +83,7 @@ PIZBool     pizTimeIsEqual          (PIZTime *t1, PIZTime *t2);
 void        pizNanoSleep            (PIZNano *ns);
 void        pizNanoWithDouble       (PIZNano *ns, double f);
 PIZUInt64   pizNanoAsUInt64         (PIZNano *ns);
-PIZBool     pizNanoIsLessThan       (PIZNano *t1, PIZNano *t2);
+int         pizNanoIsLessThan       (PIZNano *t1, PIZNano *t2);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -102,18 +97,18 @@ PIZBool     pizNanoIsLessThan       (PIZNano *t1, PIZNano *t2);
 void        pizStampSet             (PIZStamp *stamp);
 void        pizStampCopy            (PIZStamp *stamp, const PIZStamp *toCopy);
 void        pizStampAddNano         (PIZStamp *stamp, const PIZNano *ns);
-PIZError    pizStampElapsedNano     (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r);
+t_error     pizStampElapsedNano     (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r);
 PIZUInt64   pizStampAsUInt64        (PIZStamp *stamp);
 void        pizStampWithUInt64      (PIZStamp *stamp, PIZUInt64 n);
-PIZBool     pizStampIsEqual         (PIZStamp *t1, PIZStamp *t2);
+int         pizStampIsEqual         (PIZStamp *t1, PIZStamp *t2);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZError    pizBaseInit             (PIZBase *base);
-PIZError    pizBaseTimeToStamp      (const PIZBase *base, const PIZTime *t, PIZStamp *stamp);
-PIZError    pizBaseStampToTime      (const PIZBase *base, const PIZStamp *stamp, PIZTime *t);
+t_error     pizBaseInit             (PIZBase *base);
+t_error     pizBaseTimeToStamp      (const PIZBase *base, const PIZTime *t, PIZStamp *stamp);
+t_error     pizBaseStampToTime      (const PIZBase *base, const PIZStamp *stamp, PIZTime *t);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

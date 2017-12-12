@@ -21,11 +21,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#include "pizTypes.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 PIZUInt8    pizUInt8Reversed                (PIZUInt8 v);
@@ -37,8 +32,8 @@ PIZUInt64   pizUInt64Reversed               (PIZUInt64 v);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZBool     pizUInt32IsPower2               (PIZUInt32 v);  /* Zero return true. */
-PIZBool     pizUInt64IsPower2               (PIZUInt64 v);
+int         pizUInt32IsPower2               (PIZUInt32 v);  /* Zero return true. */
+int         pizUInt64IsPower2               (PIZUInt64 v);
 
 long        pizUInt32LogBase2Index          (PIZUInt32 v);  /* Position of the MSB. */
 long        pizUInt32NextPower2Index        (PIZUInt32 v);  /* Exponent of the smallest next >= power of 2. */
