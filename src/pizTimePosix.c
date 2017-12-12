@@ -77,6 +77,19 @@ void pizTimeCtor (void)  { pizTimeInitialize(); }
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static uint8_t pizUInt8Reversed (uint8_t v)
+{
+    return (v * 0x0202020202ULL & 0x010884422010ULL) % 1023;
+}
+
+static uint16_t pizUInt16Reversed (uint16_t v)
+{
+    uint8_t hi = (uint8_t)(v >> 8);
+    uint8_t lo = (uint8_t)(v & 0xff);
+    
+    return (((uint16_t)(pizUInt8Reversed (lo))) << 8) | (uint16_t)(pizUInt8Reversed (hi));
+}
+
 uint64_t pizSeedMakeTimeBase16Bits (void)
 {
     static uint16_t base = 0ULL;

@@ -23,22 +23,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-uint8_t     pizUInt8Reversed                (uint8_t v);
-uint16_t    pizUInt16Reversed               (uint16_t v);
-uint32_t    pizUInt32Reversed               (uint32_t v);
-uint64_t    pizUInt64Reversed               (uint64_t v);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int         pizUInt32IsPower2               (uint32_t v);  /* Zero return true. */
-int         pizUInt64IsPower2               (uint64_t v);
-
-long        pizUInt32LogBase2Index          (uint32_t v);  /* Position of the MSB. */
-long        pizUInt32NextPower2Index        (uint32_t v);  /* Exponent of the smallest next >= power of 2. */
-long        pizUInt64LogBase2Index          (uint64_t v);
-long        pizUInt64NextPower2Index        (uint64_t v);
+int pizUInt32NextPower2Index (uint32_t v);      /* Exponent of the smallest next >= power of 2. */
+int pizUInt64NextPower2Index (uint64_t v);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
