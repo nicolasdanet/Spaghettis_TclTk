@@ -27,6 +27,13 @@
 		17C15CEA1F8E4EF8000695B7 /* x_arguments.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C15CE91F8E4EF7000695B7 /* x_arguments.c */; };
 		17C5194A1F23195900113504 /* x_uzi.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C519491F23195900113504 /* x_uzi.c */; };
 		17C9CEC81FCD57740089E9D2 /* d_rmag.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9CEC71FCD57740089E9D2 /* d_rmag.c */; };
+		17C9FE2F1FE00B7A007066EC /* pizAtomicPosix.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE1C1FE00B78007066EC /* pizAtomicPosix.c */; };
+		17C9FE301FE00B7A007066EC /* pizMT64.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE221FE00B78007066EC /* pizMT64.c */; };
+		17C9FE311FE00B7A007066EC /* pizRandom.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE271FE00B79007066EC /* pizRandom.c */; };
+		17C9FE321FE00B7A007066EC /* pizMT32.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE291FE00B79007066EC /* pizMT32.c */; };
+		17C9FE331FE00B7A007066EC /* pizAtomicMac.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE2B1FE00B79007066EC /* pizAtomicMac.c */; };
+		17C9FE341FE00B7A007066EC /* pizTimePosix.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE2D1FE00B79007066EC /* pizTimePosix.c */; };
+		17C9FE351FE00B7A007066EC /* pizUtils.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE2E1FE00B7A007066EC /* pizUtils.c */; };
 		17CA45381FB188CF0054245C /* x_title.c in Sources */ = {isa = PBXBuildFile; fileRef = 17CA45371FB188CF0054245C /* x_title.c */; };
 		17F6BD3C1F110686001E602C /* m_snap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F6BD3B1F110686001E602C /* m_snap.c */; };
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
@@ -440,6 +447,26 @@
 		17C15CE91F8E4EF7000695B7 /* x_arguments.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arguments.c; path = src/x_arguments.c; sourceTree = "<group>"; };
 		17C519491F23195900113504 /* x_uzi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_uzi.c; path = src/x_uzi.c; sourceTree = "<group>"; };
 		17C9CEC71FCD57740089E9D2 /* d_rmag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rmag.c; path = src/d_rmag.c; sourceTree = "<group>"; };
+		17C9FE1B1FE00B77007066EC /* pizTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizTime.h; path = src/pizTime.h; sourceTree = "<group>"; };
+		17C9FE1C1FE00B78007066EC /* pizAtomicPosix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizAtomicPosix.c; path = src/pizAtomicPosix.c; sourceTree = "<group>"; };
+		17C9FE1D1FE00B78007066EC /* pizDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizDefine.h; path = src/pizDefine.h; sourceTree = "<group>"; };
+		17C9FE1E1FE00B78007066EC /* pizLCG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizLCG.h; path = src/pizLCG.h; sourceTree = "<group>"; };
+		17C9FE1F1FE00B78007066EC /* pizAtomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizAtomic.h; path = src/pizAtomic.h; sourceTree = "<group>"; };
+		17C9FE201FE00B78007066EC /* pizMT64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizMT64.h; path = src/pizMT64.h; sourceTree = "<group>"; };
+		17C9FE211FE00B78007066EC /* pizAtomicMac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizAtomicMac.h; path = src/pizAtomicMac.h; sourceTree = "<group>"; };
+		17C9FE221FE00B78007066EC /* pizMT64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizMT64.c; path = src/pizMT64.c; sourceTree = "<group>"; };
+		17C9FE231FE00B78007066EC /* pizRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizRandom.h; path = src/pizRandom.h; sourceTree = "<group>"; };
+		17C9FE241FE00B79007066EC /* pizTimePosix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizTimePosix.h; path = src/pizTimePosix.h; sourceTree = "<group>"; };
+		17C9FE251FE00B79007066EC /* pizTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizTypes.h; path = src/pizTypes.h; sourceTree = "<group>"; };
+		17C9FE261FE00B79007066EC /* pizMT32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizMT32.h; path = src/pizMT32.h; sourceTree = "<group>"; };
+		17C9FE271FE00B79007066EC /* pizRandom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizRandom.c; path = src/pizRandom.c; sourceTree = "<group>"; };
+		17C9FE281FE00B79007066EC /* pizUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizUtils.h; path = src/pizUtils.h; sourceTree = "<group>"; };
+		17C9FE291FE00B79007066EC /* pizMT32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizMT32.c; path = src/pizMT32.c; sourceTree = "<group>"; };
+		17C9FE2A1FE00B79007066EC /* pizAtomicPosix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizAtomicPosix.h; path = src/pizAtomicPosix.h; sourceTree = "<group>"; };
+		17C9FE2B1FE00B79007066EC /* pizAtomicMac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizAtomicMac.c; path = src/pizAtomicMac.c; sourceTree = "<group>"; };
+		17C9FE2C1FE00B79007066EC /* pizMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pizMemory.h; path = src/pizMemory.h; sourceTree = "<group>"; };
+		17C9FE2D1FE00B79007066EC /* pizTimePosix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizTimePosix.c; path = src/pizTimePosix.c; sourceTree = "<group>"; };
+		17C9FE2E1FE00B7A007066EC /* pizUtils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pizUtils.c; path = src/pizUtils.c; sourceTree = "<group>"; };
 		17CA45371FB188CF0054245C /* x_title.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_title.c; path = src/x_title.c; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
 		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_outlet.h; path = src/m_outlet.h; sourceTree = "<group>"; };
@@ -959,6 +986,33 @@
 			name = Tab;
 			sourceTree = "<group>";
 		};
+		17C9FE361FE00B80007066EC /* PIZ */ = {
+			isa = PBXGroup;
+			children = (
+				17C9FE1D1FE00B78007066EC /* pizDefine.h */,
+				17C9FE251FE00B79007066EC /* pizTypes.h */,
+				17C9FE2C1FE00B79007066EC /* pizMemory.h */,
+				17C9FE281FE00B79007066EC /* pizUtils.h */,
+				17C9FE1F1FE00B78007066EC /* pizAtomic.h */,
+				17C9FE2A1FE00B79007066EC /* pizAtomicPosix.h */,
+				17C9FE211FE00B78007066EC /* pizAtomicMac.h */,
+				17C9FE1B1FE00B77007066EC /* pizTime.h */,
+				17C9FE241FE00B79007066EC /* pizTimePosix.h */,
+				17C9FE231FE00B78007066EC /* pizRandom.h */,
+				17C9FE1E1FE00B78007066EC /* pizLCG.h */,
+				17C9FE261FE00B79007066EC /* pizMT32.h */,
+				17C9FE201FE00B78007066EC /* pizMT64.h */,
+				17C9FE2E1FE00B7A007066EC /* pizUtils.c */,
+				17C9FE2D1FE00B79007066EC /* pizTimePosix.c */,
+				17C9FE2B1FE00B79007066EC /* pizAtomicMac.c */,
+				17C9FE1C1FE00B78007066EC /* pizAtomicPosix.c */,
+				17C9FE271FE00B79007066EC /* pizRandom.c */,
+				17C9FE291FE00B79007066EC /* pizMT32.c */,
+				17C9FE221FE00B78007066EC /* pizMT64.c */,
+			);
+			name = PIZ;
+			sourceTree = "<group>";
+		};
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1178,6 +1232,7 @@
 				378971FD1C4F716700263434 /* s_post.c */,
 				37F5138B1C9B0EA80076A0C4 /* s_logger.c */,
 				378972011C4F716700263434 /* s_utf8.c */,
+				17C9FE361FE00B80007066EC /* PIZ */,
 				3722C53E1C4F955500D2BF6F /* API */,
 			);
 			name = System;
@@ -1958,6 +2013,7 @@
 				371655531BA3453E00ABDE22 /* pa_cpuload.c in Sources */,
 				371655551BA3455900ABDE22 /* pa_dither.c in Sources */,
 				371655571BA3456300ABDE22 /* pa_front.c in Sources */,
+				17C9FE331FE00B7A007066EC /* pizAtomicMac.c in Sources */,
 				371655671BA3457600ABDE22 /* pa_process.c in Sources */,
 				371655691BA3458300ABDE22 /* pa_stream.c in Sources */,
 				3716556B1BA3458D00ABDE22 /* pa_trace.c in Sources */,
@@ -2104,6 +2160,7 @@
 				375D73211D86ACAC00D079B1 /* x_arraymin.c in Sources */,
 				375148DB1D86D9E5005679B0 /* x_arrayrange.c in Sources */,
 				3751490B1D86DC2D005679B0 /* x_arraymax.c in Sources */,
+				17C9FE321FE00B7A007066EC /* pizMT32.c in Sources */,
 				375149471D86DE53005679B0 /* x_arrayrandom.c in Sources */,
 				3751497C1D86DFCB005679B0 /* x_arrayquantile.c in Sources */,
 				375149B01D86E10E005679B0 /* x_arrayset.c in Sources */,
@@ -2129,6 +2186,7 @@
 				37FFF6881D97C17C00669135 /* x_binop2.c in Sources */,
 				37DB52101D97D03100FEEBE0 /* x_clip.c in Sources */,
 				37DB52961D97FA1700FEEBE0 /* x_atan2.c in Sources */,
+				17C9FE301FE00B7A007066EC /* pizMT64.c in Sources */,
 				374905EB1D9971C900377F1E /* x_value.c in Sources */,
 				374906181D99741000377F1E /* x_change.c in Sources */,
 				3749063E1D99754D00377F1E /* x_swap.c in Sources */,
@@ -2172,6 +2230,7 @@
 				37C523291DBB4CA7008753D1 /* x_bendout.c in Sources */,
 				37C5234C1DBB4D44008753D1 /* x_pgmout.c in Sources */,
 				37C5236B1DBB4DFC008753D1 /* x_ctlout.c in Sources */,
+				17C9FE311FE00B7A007066EC /* pizRandom.c in Sources */,
 				37C523741DBB4EA1008753D1 /* x_noteout.c in Sources */,
 				17CA45381FB188CF0054245C /* x_title.c in Sources */,
 				370793031DBB4F4B00183F74 /* x_midiout.c in Sources */,
@@ -2182,6 +2241,7 @@
 				370793AD1DBB548B00183F74 /* x_pgmin.c in Sources */,
 				370793CD1DBB551300183F74 /* x_ctlin.c in Sources */,
 				370793E61DBB55A700183F74 /* x_midiin.c in Sources */,
+				17C9FE351FE00B7A007066EC /* pizUtils.c in Sources */,
 				370793E71DBB55A700183F74 /* x_notein.c in Sources */,
 				37B6D30B1DBBB16000ECF049 /* x_sysexin.c in Sources */,
 				376963301DBFB4C4001B91B5 /* d_perform.c in Sources */,
@@ -2257,6 +2317,7 @@
 				375252E01E23CB6C00863F79 /* d_rpole.c in Sources */,
 				375252E91E23CC3200863F79 /* d_samphold.c in Sources */,
 				17C5194A1F23195900113504 /* x_uzi.c in Sources */,
+				17C9FE341FE00B7A007066EC /* pizTimePosix.c in Sources */,
 				375252F21E23CCD700863F79 /* d_biquad.c in Sources */,
 				375252FC1E23CD8E00863F79 /* d_bp.c in Sources */,
 				17C9CEC81FCD57740089E9D2 /* d_rmag.c in Sources */,
@@ -2285,6 +2346,7 @@
 				17ACD8191FA46D3B00E4DB71 /* x_counter.c in Sources */,
 				373B8EFD1E505F82001AF811 /* s_audio_pa.c in Sources */,
 				374247541E59E46F009E8DC1 /* m_inlet.c in Sources */,
+				17C9FE2F1FE00B7A007066EC /* pizAtomicPosix.c in Sources */,
 				374247551E59E46F009E8DC1 /* m_outlet.c in Sources */,
 				372A2CE41E5DC57E00546B87 /* g_traverser.c in Sources */,
 				37AB28E11E6185F7004F2F7D /* g_cord.c in Sources */,
