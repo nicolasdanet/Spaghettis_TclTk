@@ -50,19 +50,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static uint64_t pizSeedMakeTime            (void);
-static uint64_t pizSeedMakeTimeBase16Bits  (void);
-static uint64_t pizSeedMakeConstant        (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static PIZInt32Atomic pizSeedIsConstant;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #if PD_APPLE
 
 static mach_timebase_info_data_t pizTimeBaseInfo;
@@ -90,39 +77,25 @@ void pizTimeCtor (void)  { pizTimeInitialize(); }
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void pizSeedConstant (int isConstant)
+uint64_t pizSeedMakeTimeBase16Bits (void)
 {
-    PIZ_ATOMIC_INT32_WRITE ((int32_t)isConstant, &pizSeedIsConstant);
+    static uint16_t base = 0ULL;
+    
+    PIZTime t1, t2;
+    uint16_t v1, v2;
+    
+    pizTimeSet (&t1);
+    PIZ_MEMORY_BARRIER;     /* Avoid out-of-thin-air compiler optimizations. */
+    pizTimeSet (&t2);
+    
+    v1 = (uint16_t)t1;
+    v2 = pizUInt16Reversed ((uint16_t)t2);
+    base ^= (v1 ^ v2);
+    
+    return (uint64_t)base;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 uint64_t pizSeedMake (void)
-{
-    if (PIZ_ATOMIC_INT32_READ (&pizSeedIsConstant) == 1) { return pizSeedMakeConstant(); } 
-    else {
-        return pizSeedMakeTime();
-    }
-}
-
-uint64_t pizSeedMakeConstant (void)
-{
-    uint64_t lo, hi, seed;
-    
-    seed = 0xcacafade;
-    
-    lo = PIZ_RAND48_UINT32 (seed);
-    hi = PIZ_RAND48_UINT32 (seed);
-    
-    return ((hi << 32) | lo);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-uint64_t pizSeedMakeTime (void)
 {
     uint64_t seed, lo, hi;
 
@@ -134,24 +107,6 @@ uint64_t pizSeedMakeTime (void)
     hi = PIZ_RAND48_UINT32 (seed);   /* To spread the bits. */
     
     return ((hi << 32) | lo);
-}
-
-uint64_t pizSeedMakeTimeBase16Bits (void)
-{
-    static uint16_t base = 0ULL;
-    
-    PIZTime t1, t2;
-    uint16_t v1, v2;
-        
-    pizTimeSet (&t1);
-    PIZ_MEMORY_BARRIER;     /* Avoid out-of-thin-air compiler optimizations. */
-    pizTimeSet (&t2);
-    
-    v1 = (uint16_t)t1;
-    v2 = pizUInt16Reversed ((uint16_t)t2);
-    base ^= (v1 ^ v2);
-    
-    return (uint64_t)base;
 }
 
 // -----------------------------------------------------------------------------------------------------------
