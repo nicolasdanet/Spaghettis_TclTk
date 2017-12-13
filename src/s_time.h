@@ -22,14 +22,6 @@ typedef uint64_t t_stamp;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_ZERO_TIME    0ULL
-#define PD_ZERO_NANO    0ULL
-#define PD_ZERO_STAMP   0ULL
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 typedef struct _timebase {
     t_time          time_;
     struct timeval  tv_;
@@ -60,10 +52,15 @@ t_error     time_elapsedNanoseconds     (const t_time *t0, const t_time *t1, t_n
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        pizNanoSleep            (t_nano *ns);
-void        pizNanoWithDouble       (t_nano *ns, double f);
-uint64_t    pizNanoAsUInt64         (t_nano *ns);
-int         pizNanoIsLessThan       (t_nano *t1, t_nano *t2);
+void        nano_sleep                  (t_nano *ns);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static inline void nano_withDouble (t_nano *ns, double f)
+{
+    (*ns) = (t_nano)f;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -74,21 +71,17 @@ int         pizNanoIsLessThan       (t_nano *t1, t_nano *t2);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        pizStampSet             (t_stamp *stamp);
-void        pizStampCopy            (t_stamp *stamp, const t_stamp *toCopy);
-void        pizStampAddNano         (t_stamp *stamp, const t_nano *ns);
-t_error     pizStampElapsedNano     (const t_stamp *t0, const t_stamp *t1, t_nano *r);
-uint64_t    pizStampAsUInt64        (t_stamp *stamp);
-void        pizStampWithUInt64      (t_stamp *stamp, uint64_t n);
-int         pizStampIsEqual         (t_stamp *t1, t_stamp *t2);
+void        stamp_set                   (t_stamp *stamp);
+void        stamp_addNanoseconds        (t_stamp *stamp, const t_nano *ns);
+t_error     stamp_elapsedNanoseconds    (const t_stamp *t0, const t_stamp *t1, t_nano *r);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error     pizBaseInit             (t_timebase *base);
-t_error     pizBaseTimeToStamp      (const t_timebase *base, const t_time *t, t_stamp *stamp);
-t_error     pizBaseStampToTime      (const t_timebase *base, const t_stamp *stamp, t_time *t);
+t_error     timebase_init               (t_timebase *base);
+t_error     timebase_timeToStamp        (const t_timebase *base, const t_time *t, t_stamp *stamp);
+t_error     timebase_stampToTime        (const t_timebase *base, const t_stamp *stamp, t_time *t);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -373,6 +373,10 @@
 #define PD_WITH_LOGGER              0           /* Debug with wait-free logger. */
 #endif
 
+#ifndef PD_WITH_DEADCODE
+#define PD_WITH_DEADCODE            1           /* Unused code. */
+#endif
+
 #ifndef PD_WITH_LEGACY
 #define PD_WITH_LEGACY              1           /* Compatibility. */
 #endif
