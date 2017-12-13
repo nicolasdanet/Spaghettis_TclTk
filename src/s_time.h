@@ -1,66 +1,50 @@
 
-/* 
-    Copyright (c) 2014, Nicolas Danet, < nicolas.danet@free.fr >. 
-*/
+/* Copyright (c) 1997-2017 Miller Puckette and others. */
 
-/* < http://opensource.org/licenses/MIT > */
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef PIZ_TIME_POSIX_H
-#define PIZ_TIME_POSIX_H
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#include "m_spaghettis.h"
-#include "m_core.h"
-#include "s_system.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#include <time.h>
-#include <sys/time.h>
+#ifndef __s_time_h_
+#define __s_time_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef uint64_t PIZTime;
-typedef uint64_t PIZNano;
-typedef uint64_t PIZStamp;
+typedef uint64_t t_time;
+typedef uint64_t t_nano;
+typedef uint64_t t_stamp;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PIZ_ZERO_TIME   0ULL
-#define PIZ_ZERO_NANO   0ULL
-#define PIZ_ZERO_STAMP  0ULL
+#define PD_ZERO_TIME    0ULL
+#define PD_ZERO_NANO    0ULL
+#define PD_ZERO_STAMP   0ULL
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _PIZBase {
-    PIZTime         time_;
+typedef struct _timebase {
+    t_time          time_;
     struct timeval  tv_;
-    } PIZBase; 
+    } t_timebase;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-uint64_t    pizSeedMake             (void);
-void        pizSeedConstant         (int isConstant);
+uint64_t    time_makeRandomSeed         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Do NOT call pizTimeAddNano or pizTimeElapsedNano at initialization time. */
+/* Do NOT call time_addNanoseconds or time_elapsedNanoseconds at initialization time. */
 
 /* < http://www.parashift.com/c++-faq/static-init-order.html > */
 
@@ -68,22 +52,18 @@ void        pizSeedConstant         (int isConstant);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        pizTimeSet              (PIZTime *t);
-void        pizTimeCopy             (PIZTime *t, const PIZTime *toCopy);
-void        pizTimeAddNano          (PIZTime *t, const PIZNano *ns); 
-t_error     pizTimeElapsedNano      (const PIZTime *t0, const PIZTime *t1, PIZNano *r);
-uint64_t    pizTimeAsUInt64         (PIZTime *t);
-void        pizTimeWithUInt64       (PIZTime *t, uint64_t n);
-int         pizTimeIsEqual          (PIZTime *t1, PIZTime *t2);
+void        time_set                    (t_time *t);
+void        time_addNanoseconds         (t_time *t, const t_nano *ns);
+t_error     time_elapsedNanoseconds     (const t_time *t0, const t_time *t1, t_nano *r);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        pizNanoSleep            (PIZNano *ns);
-void        pizNanoWithDouble       (PIZNano *ns, double f);
-uint64_t    pizNanoAsUInt64         (PIZNano *ns);
-int         pizNanoIsLessThan       (PIZNano *t1, PIZNano *t2);
+void        pizNanoSleep            (t_nano *ns);
+void        pizNanoWithDouble       (t_nano *ns, double f);
+uint64_t    pizNanoAsUInt64         (t_nano *ns);
+int         pizNanoIsLessThan       (t_nano *t1, t_nano *t2);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -94,22 +74,23 @@ int         pizNanoIsLessThan       (PIZNano *t1, PIZNano *t2);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        pizStampSet             (PIZStamp *stamp);
-void        pizStampCopy            (PIZStamp *stamp, const PIZStamp *toCopy);
-void        pizStampAddNano         (PIZStamp *stamp, const PIZNano *ns);
-t_error     pizStampElapsedNano     (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r);
-uint64_t    pizStampAsUInt64        (PIZStamp *stamp);
-void        pizStampWithUInt64      (PIZStamp *stamp, uint64_t n);
-int         pizStampIsEqual         (PIZStamp *t1, PIZStamp *t2);
+void        pizStampSet             (t_stamp *stamp);
+void        pizStampCopy            (t_stamp *stamp, const t_stamp *toCopy);
+void        pizStampAddNano         (t_stamp *stamp, const t_nano *ns);
+t_error     pizStampElapsedNano     (const t_stamp *t0, const t_stamp *t1, t_nano *r);
+uint64_t    pizStampAsUInt64        (t_stamp *stamp);
+void        pizStampWithUInt64      (t_stamp *stamp, uint64_t n);
+int         pizStampIsEqual         (t_stamp *t1, t_stamp *t2);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error     pizBaseInit             (PIZBase *base);
-t_error     pizBaseTimeToStamp      (const PIZBase *base, const PIZTime *t, PIZStamp *stamp);
-t_error     pizBaseStampToTime      (const PIZBase *base, const PIZStamp *stamp, PIZTime *t);
+t_error     pizBaseInit             (t_timebase *base);
+t_error     pizBaseTimeToStamp      (const t_timebase *base, const t_time *t, t_stamp *stamp);
+t_error     pizBaseStampToTime      (const t_timebase *base, const t_stamp *stamp, t_time *t);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // PIZ_TIME_POSIX_H
+#endif // __s_time_h_
+

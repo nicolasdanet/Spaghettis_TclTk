@@ -9,6 +9,7 @@
 
 #include "m_spaghettis.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "g_graphics.h"
 #include "x_array.h"
 

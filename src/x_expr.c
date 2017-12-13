@@ -74,7 +74,7 @@ double expr_functionRandom (void)
     static int once = 0;            /* Static. */
     static t_rand48 seed = 0;       /* Static. */
     
-    if (!once) { seed = math_makeRandomSeed(); once = 1; }
+    if (!once) { seed = time_makeRandomSeed(); once = 1; }
     
     return PD_RAND48_DOUBLE (seed);
 }

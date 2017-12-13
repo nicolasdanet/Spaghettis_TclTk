@@ -81,31 +81,3 @@ t_float math_decibelToRootMeanSquare (t_float f)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* Do NOT fit for cryptography purpose. */
-
-t_rand48 math_makeRandomSeed (void)
-{
-    static t_rand48 seed = 0;
-    
-    t_rawcast64 z;
-    
-    z.z_d = clock_getRealTimeInSeconds();
-    
-    seed ^= utils_unique();             PD_RAND48_NEXT (seed);
-    seed ^= z.z_i[PD_RAWCAST64_LSB];    PD_RAND48_NEXT (seed);
-    seed ^= z.z_i[PD_RAWCAST64_MSB];    PD_RAND48_NEXT (seed);
-    
-    #if PD_WINDOWS
-        seed ^= _getpid();
-    #else
-        seed ^= getpid();
-    #endif
-    
-    PD_RAND48_NEXT (seed);
-    
-    return seed;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------

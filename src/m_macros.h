@@ -206,7 +206,7 @@ static inline int PD_IS_BIG_OR_SMALL (t_float f)        /* True if exponent fall
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_RAND48_INIT(s)           ((s) = math_makeRandomSeed() & 0xffffffffffffULL)
+#define PD_RAND48_INIT(s)           ((s) = (t_rand48)time_makeRandomSeed() & 0xffffffffffffULL)
 #define PD_RAND48_NEXT(s)           ((s) = (((s) * 0x5deece66dULL + 0xbULL) & 0xffffffffffffULL))
 #define PD_RAND48_UINT32(s)         (PD_RAND48_NEXT (s) >> 16)
 #define PD_RAND48_DOUBLE(s)         (PD_RAND48_UINT32 (s) * (1.0 / 4294967296.0))
@@ -222,7 +222,7 @@ static inline int PD_IS_BIG_OR_SMALL (t_float f)        /* True if exponent fall
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PIZ_RANDU_INIT(s)           ((s) = ((uint32_t)pizSeedMake() | 1) & 0x7fffffff)      /* Odd number. */
+#define PIZ_RANDU_INIT(s)           ((s) = ((uint32_t)time_makeRandomSeed() | 1) & 0x7fffffff)
 #define PIZ_RANDU_UINT32(s)         ((s) = (65539 * (s)) & 0x7fffffff)
 #define PIZ_RANDU_DOUBLE(s)         (PIZ_RANDU_UINT32 (s) * (1.0 / 2147483648.0))
 

@@ -15,12 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "pizTimePosix.h"
-#include "pizTime.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #include "pizAtomic.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -40,6 +34,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+#define PIZ_NSEC_PER_USEC               1000ULL
+#define PIZ_NSEC_PER_SEC                1000000000ULL
+#define PIZ_USEC_PER_SEC                1000000ULL
 
 #define PIZ_TIME_TRUNCATION_PATCH       1ULL
 #define PIZ_TIME_HAS_BEEN_PREEMPTED     10000ULL
@@ -93,12 +91,12 @@ uint64_t pizSeedMakeTimeBase16Bits (void)
 {
     static uint16_t base = 0ULL;
     
-    PIZTime t1, t2;
+    t_time t1, t2;
     uint16_t v1, v2;
     
-    pizTimeSet (&t1);
+    time_set (&t1);
     PIZ_MEMORY_BARRIER;     /* Avoid out-of-thin-air compiler optimizations. */
-    pizTimeSet (&t2);
+    time_set (&t2);
     
     v1 = (uint16_t)t1;
     v2 = pizUInt16Reversed ((uint16_t)t2);
@@ -121,27 +119,52 @@ uint64_t pizSeedMake (void)
     return ((hi << 32) | lo);
 }
 
+/* Do NOT fit for cryptography purpose. */
+
+uint64_t time_makeRandomSeed (void)
+{
+    static uint64_t seed = 0;
+    
+    t_rawcast64 z;
+    
+    z.z_d = clock_getRealTimeInSeconds();
+    
+    seed ^= utils_unique();             PD_RAND48_NEXT (seed);
+    seed ^= z.z_i[PD_RAWCAST64_LSB];    PD_RAND48_NEXT (seed);
+    seed ^= z.z_i[PD_RAWCAST64_MSB];    PD_RAND48_NEXT (seed);
+    
+    #if PD_WINDOWS
+        seed ^= _getpid();
+    #else
+        seed ^= getpid();
+    #endif
+    
+    PD_RAND48_NEXT (seed);
+    
+    return seed;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 #if PD_APPLE
 
-void pizTimeSet (PIZTime *t)
+void time_set (t_time *t)
 {
     (*t) = mach_absolute_time();
 }
 
 /* < https://developer.apple.com/library/mac/qa/qa1398/_index.html > */ 
 
-void pizTimeAddNano (PIZTime *t, const PIZNano *ns)
+void time_addNanoseconds (t_time *t, const t_nano *ns)
 {
     (*t) += (*ns) * pizTimeBaseInfo.denom / pizTimeBaseInfo.numer;
 }
 
-t_error pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
+t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
 {
-    (*r) = PIZ_ZERO_NANO;
+    (*r) = PD_ZERO_NANO;
     
     if ((*t1) > (*t0)) {
         uint64_t elapsed = (*t1) - (*t0);
@@ -159,7 +182,7 @@ t_error pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
 
 #if PD_LINUX
 
-void pizTimeSet (PIZTime *t)
+void time_set (t_time *t)
 {
     struct timespec time;
     
@@ -171,14 +194,14 @@ void pizTimeSet (PIZTime *t)
     (*t) = (seconds * PIZ_NSEC_PER_SEC) + nanoseconds;
 }
 
-void pizTimeAddNano (PIZTime *t, const PIZNano *ns)
+void time_addNanoseconds (t_time *t, const t_nano *ns)
 {
     (*t) += (*ns);
 }
 
-t_error pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
+t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
 {
-    (*r) = PIZ_ZERO_NANO;
+    (*r) = PD_ZERO_NANO;
     
     if ((*t1) > (*t0)) { (*r) = (*t1) - (*t0); return PD_ERROR_NONE; }
 
@@ -189,34 +212,11 @@ t_error pizTimeElapsedNano (const PIZTime *t0, const PIZTime *t1, PIZNano *r)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void pizTimeCopy (PIZTime *t, const PIZTime *toCopy)
-{
-    (*t) = (*toCopy);
-}
-
-uint64_t pizTimeAsUInt64 (PIZTime *t)
-{
-    return (*t);
-}
-
-void pizTimeWithUInt64 (PIZTime *t, uint64_t n)
-{
-    (*t = n);
-}
-
-int pizTimeIsEqual (PIZTime *t1, PIZTime *t2)
-{
-    return ((*t1) == (*t2));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void pizNanoSleep (PIZNano *ns)
+void pizNanoSleep (t_nano *ns)
 {
-    if ((*ns) != PIZ_ZERO_NANO) {
+    if ((*ns) != PD_ZERO_NANO) {
     //
     struct timespec t0, t1;
     struct timespec *ptrA = &t0;
@@ -235,17 +235,17 @@ void pizNanoSleep (PIZNano *ns)
     }
 }
 
-void pizNanoWithDouble (PIZNano *ns, double f)
+void pizNanoWithDouble (t_nano *ns, double f)
 {
-    (*ns) = (PIZNano)f;
+    (*ns) = (t_nano)f;
 }
 
-uint64_t pizNanoAsUInt64 (PIZNano *ns)
+uint64_t pizNanoAsUInt64 (t_nano *ns)
 {
     return (*ns);
 }
 
-int pizNanoIsLessThan (PIZNano *t1, PIZNano *t2)
+int pizNanoIsLessThan (t_nano *t1, t_nano *t2)
 {
     return ((*t1) < (*t2));
 }
@@ -254,7 +254,7 @@ int pizNanoIsLessThan (PIZNano *t1, PIZNano *t2)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void pizStampSet (PIZStamp *stamp)
+void pizStampSet (t_stamp *stamp)
 {
     uint64_t s, f;
     struct timeval tv;
@@ -267,12 +267,12 @@ void pizStampSet (PIZStamp *stamp)
     (*stamp) = (s << 32) | f; 
 }
 
-void pizStampCopy (PIZStamp *stamp, const PIZStamp *toCopy)
+void pizStampCopy (t_stamp *stamp, const t_stamp *toCopy)
 {
     (*stamp) = (*toCopy);
 }
 
-void pizStampAddNano (PIZStamp *stamp, const PIZNano *ns)
+void pizStampAddNano (t_stamp *stamp, const t_nano *ns)
 {
     uint64_t hi = ((*stamp) >> 32);
     uint64_t lo = ((*stamp) & 0xffffffffULL);
@@ -285,7 +285,7 @@ void pizStampAddNano (PIZStamp *stamp, const PIZNano *ns)
     (*stamp) = (s << 32) | ((uint64_t)((n << 32) / PIZ_NSEC_PER_SEC));
 }
 
-t_error pizStampElapsedNano (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r)
+t_error pizStampElapsedNano (const t_stamp *t0, const t_stamp *t1, t_nano *r)
 {
     t_error err = PD_ERROR_NONE;
 
@@ -294,7 +294,7 @@ t_error pizStampElapsedNano (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r)
     uint64_t s1 = (*t1) >> 32;
     uint64_t n1 = (((*t1) & 0xffffffffULL) * PIZ_NSEC_PER_SEC) >> 32;
     
-    (*r) = PIZ_ZERO_NANO;
+    (*r) = PD_ZERO_NANO;
     
     err |= (s1 < s0);                               /* < https://en.wikipedia.org/wiki/Year_2038_problem > */
     err |= (s1 == s0) && (n1 < n0);
@@ -307,17 +307,17 @@ t_error pizStampElapsedNano (const PIZStamp *t0, const PIZStamp *t1, PIZNano *r)
     return err;
 }
 
-uint64_t pizStampAsUInt64 (PIZStamp *stamp)
+uint64_t pizStampAsUInt64 (t_stamp *stamp)
 {
     return (*stamp);
 }
 
-void pizStampWithUInt64 (PIZStamp *stamp, uint64_t n)
+void pizStampWithUInt64 (t_stamp *stamp, uint64_t n)
 {
     (*stamp = n);
 }
 
-int pizStampIsEqual (PIZStamp *t1, PIZStamp *t2)
+int pizStampIsEqual (t_stamp *t1, t_stamp *t2)
 {
     return ((*t1) == (*t2));
 }
@@ -326,35 +326,35 @@ int pizStampIsEqual (PIZStamp *t1, PIZStamp *t2)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error pizBaseInit (PIZBase *base)
+t_error pizBaseInit (t_timebase *base)
 {
-    PIZTime t;
-    PIZNano ns;
+    t_time t;
+    t_nano ns;
     t_error err = PD_ERROR;
     
     do {
     
-    pizTimeSet (&t);
+    time_set (&t);
     PIZ_MEMORY_BARRIER;                                 /* Avoid out-of-thin-air compiler optimizations. */
     err = (gettimeofday (&base->tv_, NULL) != 0);
     PIZ_MEMORY_BARRIER;
-    pizTimeSet (&base->time_);
-    pizTimeElapsedNano (&t, &base->time_, &ns); 
+    time_set (&base->time_);
+    time_elapsedNanoseconds (&t, &base->time_, &ns);
     
     } while (ns > PIZ_TIME_HAS_BEEN_PREEMPTED);
     
     return err;
 }
 
-t_error pizBaseTimeToStamp (const PIZBase *base, const PIZTime *t, PIZStamp *stamp)
+t_error pizBaseTimeToStamp (const t_timebase *base, const t_time *t, t_stamp *stamp)
 {
     uint64_t f, s;
-    PIZNano elapsed, n;
+    t_nano elapsed, n;
     t_error err = PD_ERROR;
     
-    (*stamp) = PIZ_ZERO_STAMP;
+    (*stamp) = PD_ZERO_STAMP;
     
-    if (!(err = pizTimeElapsedNano (&base->time_, t, &elapsed))) {
+    if (!(err = time_elapsedNanoseconds (&base->time_, t, &elapsed))) {
         n = elapsed + ((uint64_t)base->tv_.tv_usec * PIZ_NSEC_PER_USEC);
         s = (uint64_t)base->tv_.tv_sec + PIZ_TIME_FROM_1900_TO_1970 + (uint64_t)(n / PIZ_NSEC_PER_SEC);
         f = (uint64_t)(((n % PIZ_NSEC_PER_SEC) << 32) / PIZ_NSEC_PER_SEC);
@@ -365,13 +365,13 @@ t_error pizBaseTimeToStamp (const PIZBase *base, const PIZTime *t, PIZStamp *sta
     return err;
 }
 
-t_error pizBaseStampToTime (const PIZBase *base, const PIZStamp *stamp, PIZTime *t)
+t_error pizBaseStampToTime (const t_timebase *base, const t_stamp *stamp, t_time *t)
 {
     t_error err = PD_ERROR;
     
-    (*t) = PIZ_ZERO_TIME;
+    (*t) = PD_ZERO_TIME;
     
-    if ((*stamp) != PIZ_ZERO_STAMP) {
+    if ((*stamp) != PD_ZERO_STAMP) {
     //
     uint64_t hi = ((*stamp) >> 32);
     uint64_t lo = ((*stamp) & 0xffffffffULL);
