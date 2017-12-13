@@ -50,6 +50,9 @@ void time_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* < http://graphics.stanford.edu/~seander/bithacks.html > */
+/* < http://aggregate.org/MAGIC/ > */
+
 static uint8_t time_makeSeed16Reversed8 (uint8_t v)
 {
     return (v * 0x0202020202ULL & 0x010884422010ULL) % 1023;

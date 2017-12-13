@@ -27,13 +27,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static const int pizUtilsDeBruijn32[] =
+static const int randMT_DeBruijn32[] =
     {
         0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
         8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
     };
 
-static int pizUInt32LogBase2Index (uint32_t v)
+static int randMT_uInt32LogBase2Index (uint32_t v)
 {
     if (!v) { return 0; }
     else {
@@ -44,17 +44,17 @@ static int pizUInt32LogBase2Index (uint32_t v)
     v |= v >> 8;
     v |= v >> 16;
     
-    return (pizUtilsDeBruijn32[(uint32_t)(v * 0x07c4acddU) >> 27]);
+    return (randMT_DeBruijn32[(uint32_t)(v * 0x07c4acddU) >> 27]);
     //
     }
 }
 
-static int pizUInt32NextPower2Index (uint32_t v)
+static int randMT_uInt32NextPower2Index (uint32_t v)
 {
     if (PD_IS_POWER_2 (v)) {
-        return pizUInt32LogBase2Index (v);
+        return randMT_uInt32LogBase2Index (v);
     } else {
-        return pizUInt32LogBase2Index (v) + 1;
+        return randMT_uInt32LogBase2Index (v) + 1;
     }
 }
 
@@ -85,7 +85,7 @@ long randMT_getInteger (t_randMT *x, long v)
     else {
     //
     long r = 0;
-    long k = pizUInt32NextPower2Index ((uint32_t)v);
+    long k = randMT_uInt32NextPower2Index ((uint32_t)v);
     
     do {
         r = (long)(genrand32_int32 (x) >> (32 - k));
@@ -110,7 +110,9 @@ long randMT_getInteger (t_randMT *x, long v)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static const int pizUtilsDeBruijn64[] =
+#if PD_WITH_DEADCODE
+
+static const int randMT_DeBruijn64[] =
     {
         63, 0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3,
         61, 51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4,
@@ -118,7 +120,7 @@ static const int pizUtilsDeBruijn64[] =
         56, 45, 25, 31, 35, 16, 9, 12, 44, 24, 15, 8, 23, 7, 6, 5
     };
     
-static int pizUInt64LogBase2Index (uint64_t v)
+static int randMT_uInt64LogBase2Index (uint64_t v)
 {
     if (!v) { return 0; }
     else {
@@ -130,19 +132,21 @@ static int pizUInt64LogBase2Index (uint64_t v)
     v |= v >> 16;
     v |= v >> 32;
     
-    return (pizUtilsDeBruijn64[((uint64_t)((v - (v >> 1)) * 0x07edd5e59a4e28c2ULL)) >> 58]);
+    return (randMT_DeBruijn64[((uint64_t)((v - (v >> 1)) * 0x07edd5e59a4e28c2ULL)) >> 58]);
     //
     }
 }
 
-static int pizUInt64NextPower2Index (uint64_t v)
+static int randMT_uInt64NextPower2Index (uint64_t v)
 {
     if (PD_IS_POWER_2 (v)) {
-        return pizUInt64LogBase2Index (v);
+        return randMT_uInt64LogBase2Index (v);
     } else {
-        return pizUInt64LogBase2Index (v) + 1;
+        return randMT_uInt64LogBase2Index (v) + 1;
     }
 }
+
+#endif // PD_WITH_DEADCODE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -163,6 +167,8 @@ double randMT_getDouble (t_randMT *x)
     return genrand64_real2 (x);
 }
 
+#if PD_WITH_DEADCODE
+
 /* < http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/efaq.html > */
 
 long randMT_getInteger (t_randMT *x, long v)
@@ -171,7 +177,7 @@ long randMT_getInteger (t_randMT *x, long v)
     else {
     //
     long r = 0;
-    long k = pizUInt64NextPower2Index ((uint64_t)v);
+    long k = randMT_uInt64NextPower2Index ((uint64_t)v);
     
     do {
         r = (long)(genrand64_int64 (x) >> (64 - k));
@@ -181,6 +187,8 @@ long randMT_getInteger (t_randMT *x, long v)
     //
     }
 }
+
+#endif // PD_WITH_DEADCODE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
