@@ -1,9 +1,7 @@
 
-/* 
-    Copyright (c) 2014, Nicolas Danet, < nicolas.danet@free.fr >. 
-*/
+/* Copyright (c) 1997-2017 Miller Puckette and others. */
 
-/* < http://opensource.org/licenses/MIT > */
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
