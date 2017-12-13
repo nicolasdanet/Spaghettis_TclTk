@@ -21,34 +21,34 @@
 
 #if PD_LOAD_STORE_32_IS_ATOMIC
 
-int32_t pizAtomicInt32Read (PIZInt32Atomic *q)
+int32_t atomic_int32Read (t_int32Atomic *q)
 {
     return (*q);
 }
 
-void pizAtomicInt32Write (int32_t n, PIZInt32Atomic *q)
+void atomic_int32Write (int32_t n, t_int32Atomic *q)
 {
     (*q) = n;
 }
 
-uint32_t pizAtomicUInt32Read (PIZUInt32Atomic *q)
+uint32_t atomic_uInt32Read (t_uint32Atomic *q)
 {
     return (*q);
 }
 
-void pizAtomicUInt32Write (uint32_t n, PIZUInt32Atomic *q)
+void atomic_uInt32Write (uint32_t n, t_uint32Atomic *q)
 {
     (*q) = n;
 }
 
 #else
 
-int32_t pizAtomicInt32Read (PIZInt32Atomic *q)
+int32_t atomic_int32Read (t_int32Atomic *q)
 {
     return (int32_t)OSAtomicAdd32 (0, (int32_t *)q);
 }
 
-void pizAtomicInt32Write (int32_t n, PIZInt32Atomic *q)
+void atomic_int32Write (int32_t n, t_int32Atomic *q)
 {
     while (1) {
         int32_t old = *q;
@@ -56,12 +56,12 @@ void pizAtomicInt32Write (int32_t n, PIZInt32Atomic *q)
     }
 }
 
-uint32_t pizAtomicUInt32Read (PIZUInt32Atomic *q)
+uint32_t atomic_uInt32Read (t_uint32Atomic *q)
 {
     return (uint32_t)OSAtomicAdd32 (0, (int32_t *)q);
 }
 
-void pizAtomicUInt32Write (uint32_t n, PIZUInt32Atomic *q)
+void atomic_uInt32Write (uint32_t n, t_uint32Atomic *q)
 {
     while (1) {
         uint32_t old = *q;
@@ -77,24 +77,24 @@ void pizAtomicUInt32Write (uint32_t n, PIZUInt32Atomic *q)
 
 #if PD_LOAD_STORE_64_IS_ATOMIC
 
-uint64_t pizAtomicUInt64Read (PIZUInt64Atomic *q)
+uint64_t atomic_uInt64Read (t_uint64Atomic *q)
 {
     return (*q);
 }
 
-void pizAtomicUInt64Write (uint64_t n, PIZUInt64Atomic *q)
+void atomic_uInt64Write (uint64_t n, t_uint64Atomic *q)
 {
     (*q) = n;
 }
 
 #else
 
-uint64_t pizAtomicUInt64Read (PIZUInt64Atomic *q)
+uint64_t atomic_uInt64Read (t_uint64Atomic *q)
 {
     return (uint64_t)OSAtomicAdd64 (0, (int64_t *)q);
 }
 
-void pizAtomicUInt64Write (uint64_t n, PIZUInt64Atomic *q)
+void atomic_uInt64Write (uint64_t n, t_uint64Atomic *q)
 {
     while (1) {
         uint64_t old = *q;
