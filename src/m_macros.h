@@ -222,9 +222,9 @@ static inline int PD_IS_BIG_OR_SMALL (t_float f)        /* True if exponent fall
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PIZ_RANDU_INIT(s)           ((s) = ((uint32_t)time_makeRandomSeed() | 1) & 0x7fffffff)
-#define PIZ_RANDU_UINT32(s)         ((s) = (65539 * (s)) & 0x7fffffff)
-#define PIZ_RANDU_DOUBLE(s)         (PIZ_RANDU_UINT32 (s) * (1.0 / 2147483648.0))
+#define PD_RANDU_INIT(s)            ((s) = ((uint32_t)time_makeRandomSeed() | 1) & 0x7fffffff)
+#define PD_RANDU_UINT32(s)          ((s) = (65539 * (s)) & 0x7fffffff)
+#define PD_RANDU_DOUBLE(s)          (PD_RANDU_UINT32 (s) * (1.0 / 2147483648.0))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
