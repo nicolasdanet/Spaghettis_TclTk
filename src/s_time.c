@@ -19,13 +19,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_NSEC_PER_USEC                1000ULL
-#define PD_NSEC_PER_SEC                 1000000000ULL
-#define PD_USEC_PER_SEC                 1000000ULL
+#define TIME_NSEC_PER_USEC          1000ULL
+#define TIME_NSEC_PER_SEC           1000000000ULL
+#define TIME_USEC_PER_SEC           1000000ULL
 
-#define PD_TIME_TRUNCATION_ERROR        1ULL
-#define PD_TIME_HAS_BEEN_PREEMPTED      10000ULL
-#define PD_TIME_FROM_1900_TO_1970       2208988800ULL
+#define TIME_TRUNCATION_ERROR       1ULL
+#define TIME_HAS_BEEN_PREEMPTED     10000ULL
+#define TIME_FROM_1900_TO_1970      2208988800ULL
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@
 
 #if PD_APPLE
 
-static mach_timebase_info_data_t pizTimeBaseInfo;       /* Static. */
+static mach_timebase_info_data_t time_baseInfo;       /* Static. */
 
 #endif
 
@@ -44,8 +44,8 @@ void time_initialize (void)
 {
     #if PD_APPLE
     
-    if (pizTimeBaseInfo.denom == 0) {
-        mach_timebase_info (&pizTimeBaseInfo);          /* Must be initialized first (not thread-safe). */
+    if (time_baseInfo.denom == 0) {
+        mach_timebase_info (&time_baseInfo);          /* Must be initialized first (not thread-safe). */
     }
     
     #endif // PD_APPLE
@@ -124,8 +124,6 @@ uint64_t time_makeRandomSeed (void)
     
     seed ^= time_makeSeed();
     
-    post_log ("? %ld", seed);
-    
     return seed;
 }
 
@@ -144,7 +142,7 @@ void time_set (t_time *t)
 
 void time_addNanoseconds (t_time *t, t_nano ns)
 {
-    (*t) += ns * pizTimeBaseInfo.denom / pizTimeBaseInfo.numer;
+    (*t) += ns * time_baseInfo.denom / time_baseInfo.numer;
 }
 
 t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
@@ -153,7 +151,7 @@ t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
     
     if ((*t1) > (*t0)) {
         uint64_t elapsed = (*t1) - (*t0);
-        (*r) = elapsed * pizTimeBaseInfo.numer / pizTimeBaseInfo.denom;
+        (*r) = elapsed * time_baseInfo.numer / time_baseInfo.denom;
         return PD_ERROR_NONE;
     }
 
@@ -176,7 +174,7 @@ void time_set (t_time *t)
     uint64_t seconds     = (uint64_t)time.tv_sec;
     uint64_t nanoseconds = (uint64_t)time.tv_nsec;
     
-    (*t) = (seconds * PD_NSEC_PER_SEC) + nanoseconds;
+    (*t) = (seconds * TIME_NSEC_PER_SEC) + nanoseconds;
 }
 
 void time_addNanoseconds (t_time *t, t_nano ns)
@@ -208,8 +206,8 @@ void nano_sleep (t_nano ns)
     struct timespec *ptrB = &t1;
     struct timespec *temp = NULL;
 
-    t0.tv_sec  = (time_t)(ns / PD_NSEC_PER_SEC);
-    t0.tv_nsec = (long)(ns % PD_NSEC_PER_SEC);
+    t0.tv_sec  = (time_t)(ns / TIME_NSEC_PER_SEC);
+    t0.tv_nsec = (long)(ns % TIME_NSEC_PER_SEC);
 
     while ((nanosleep (ptrA, ptrB) == -1) && (errno == EINTR)) {
         temp = ptrA;
@@ -230,8 +228,8 @@ void stamp_set (t_stamp *stamp)
     struct timeval tv;
     
     gettimeofday (&tv, NULL);
-    s = (uint64_t)tv.tv_sec + PD_TIME_FROM_1900_TO_1970;
-    f = ((uint64_t)tv.tv_usec << 32) / PD_USEC_PER_SEC;
+    s = (uint64_t)tv.tv_sec + TIME_FROM_1900_TO_1970;
+    f = ((uint64_t)tv.tv_usec << 32) / TIME_USEC_PER_SEC;
     // f = ((tv.tv_usec << 12) + (tv.tv_usec << 8) - ((tv.tv_usec * 1825) >> 5));
 
     (*stamp) = (s << 32) | f; 
@@ -242,12 +240,12 @@ void stamp_addNanoseconds (t_stamp *stamp, t_nano ns)
     uint64_t hi = ((*stamp) >> 32);
     uint64_t lo = ((*stamp) & 0xffffffffULL);
     uint64_t s = hi;
-    uint64_t n = ((lo * PD_NSEC_PER_SEC) >> 32) + ns;
+    uint64_t n = ((lo * TIME_NSEC_PER_SEC) >> 32) + ns;
         
-    s += (uint64_t)(n / PD_NSEC_PER_SEC);
-    n %= PD_NSEC_PER_SEC;
+    s += (uint64_t)(n / TIME_NSEC_PER_SEC);
+    n %= TIME_NSEC_PER_SEC;
 
-    (*stamp) = (s << 32) | ((uint64_t)((n << 32) / PD_NSEC_PER_SEC));
+    (*stamp) = (s << 32) | ((uint64_t)((n << 32) / TIME_NSEC_PER_SEC));
 }
 
 t_error stamp_elapsedNanoseconds (const t_stamp *t0, const t_stamp *t1, t_nano *r)
@@ -255,9 +253,9 @@ t_error stamp_elapsedNanoseconds (const t_stamp *t0, const t_stamp *t1, t_nano *
     t_error err = PD_ERROR_NONE;
 
     uint64_t s0 = (*t0) >> 32;
-    uint64_t n0 = (((*t0) & 0xffffffffULL) * PD_NSEC_PER_SEC) >> 32;
+    uint64_t n0 = (((*t0) & 0xffffffffULL) * TIME_NSEC_PER_SEC) >> 32;
     uint64_t s1 = (*t1) >> 32;
-    uint64_t n1 = (((*t1) & 0xffffffffULL) * PD_NSEC_PER_SEC) >> 32;
+    uint64_t n1 = (((*t1) & 0xffffffffULL) * TIME_NSEC_PER_SEC) >> 32;
     
     (*r) = 0ULL;
     
@@ -266,7 +264,7 @@ t_error stamp_elapsedNanoseconds (const t_stamp *t0, const t_stamp *t1, t_nano *
     err |= ((*t0) == (*t1));
     
     if (!err) {
-        (*r) = ((s1 * PD_NSEC_PER_SEC) + n1) - ((s0 * PD_NSEC_PER_SEC) + n0);
+        (*r) = ((s1 * TIME_NSEC_PER_SEC) + n1) - ((s0 * TIME_NSEC_PER_SEC) + n0);
     }
     
     return err;
@@ -291,7 +289,7 @@ t_error timebase_init (t_timebase *base)
     time_set (&base->time_);
     time_elapsedNanoseconds (&t, &base->time_, &ns);
     
-    } while (ns > PD_TIME_HAS_BEEN_PREEMPTED);
+    } while (ns > TIME_HAS_BEEN_PREEMPTED);
     
     return err;
 }
@@ -305,9 +303,9 @@ t_error timebase_timeToStamp (const t_timebase *base, const t_time *t, t_stamp *
     (*stamp) = 0ULL;
     
     if (!(err = time_elapsedNanoseconds (&base->time_, t, &elapsed))) {
-        n = elapsed + ((uint64_t)base->tv_.tv_usec * PD_NSEC_PER_USEC);
-        s = (uint64_t)base->tv_.tv_sec + PD_TIME_FROM_1900_TO_1970 + (uint64_t)(n / PD_NSEC_PER_SEC);
-        f = (uint64_t)(((n % PD_NSEC_PER_SEC) << 32) / PD_NSEC_PER_SEC);
+        n = elapsed + ((uint64_t)base->tv_.tv_usec * TIME_NSEC_PER_USEC);
+        s = (uint64_t)base->tv_.tv_sec + TIME_FROM_1900_TO_1970 + (uint64_t)(n / TIME_NSEC_PER_SEC);
+        f = (uint64_t)(((n % TIME_NSEC_PER_SEC) << 32) / TIME_NSEC_PER_SEC);
         
         (*stamp) = (s << 32) | f;
     }
@@ -325,18 +323,18 @@ t_error timebase_stampToTime (const t_timebase *base, const t_stamp *stamp, t_ti
     //
     uint64_t hi = ((*stamp) >> 32);
     uint64_t lo = ((*stamp) & 0xffffffffULL);
-    uint64_t s0 = (uint64_t)base->tv_.tv_sec + PD_TIME_FROM_1900_TO_1970;
-    uint64_t n0 = (uint64_t)base->tv_.tv_usec * PD_NSEC_PER_USEC;
+    uint64_t s0 = (uint64_t)base->tv_.tv_sec + TIME_FROM_1900_TO_1970;
+    uint64_t n0 = (uint64_t)base->tv_.tv_usec * TIME_NSEC_PER_USEC;
     uint64_t s1 = hi;
-    uint64_t n1 = ((lo * PD_NSEC_PER_SEC) >> 32);
+    uint64_t n1 = ((lo * TIME_NSEC_PER_SEC) >> 32);
     
     err = PD_ERROR_NONE;
     err |= (s1 < s0);                               /* < https://en.wikipedia.org/wiki/Year_2038_problem > */
     err |= (s1 == s0) && (n1 <= n0);
     
     if (!err) {
-        (*t) = ((s1 * PD_NSEC_PER_SEC) + n1) - ((s0 * PD_NSEC_PER_SEC) + n0) + base->time_;
-        (*t) += PD_TIME_TRUNCATION_ERROR;
+        (*t) = ((s1 * TIME_NSEC_PER_SEC) + n1) - ((s0 * TIME_NSEC_PER_SEC) + n0) + base->time_;
+        (*t) += TIME_TRUNCATION_ERROR;
     }
     //
     }
