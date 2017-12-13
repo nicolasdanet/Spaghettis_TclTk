@@ -358,6 +358,7 @@
 #if PD_APPLE
 
 #include <mach-o/dyld.h>
+#include <mach/mach_time.h>
 
 #endif // PD_APPLE
 
