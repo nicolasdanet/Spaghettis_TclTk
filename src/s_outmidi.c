@@ -71,7 +71,7 @@ void outmidi_polyPressure (int channel, int pitch, int value)
 
 /* Not used for now. */
 
-#if 0
+#if PD_WITH_DEADCODE
 
 void outmidi_clock (int port)
 {

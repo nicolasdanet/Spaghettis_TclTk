@@ -45,21 +45,21 @@ uint64_t    time_makeRandomSeed         (void);
 // MARK: -
 
 void        time_set                    (t_time *t);
-void        time_addNanoseconds         (t_time *t, const t_nano *ns);
-t_error     time_elapsedNanoseconds     (const t_time *t0, const t_time *t1, t_nano *r);
+void        time_addNanoseconds         (t_time *t, t_nano ns);
+t_error     time_elapsedNanoseconds     (const t_time *t0, const t_time *t1, t_nano *elapsed);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        nano_sleep                  (t_nano *ns);
+void        nano_sleep                  (t_nano ns);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline void nano_withDouble (t_nano *ns, double f)
+static inline t_nano nano_withDouble (double f)
 {
-    (*ns) = (t_nano)f;
+    return (t_nano)f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,8 +72,8 @@ static inline void nano_withDouble (t_nano *ns, double f)
 // MARK: -
 
 void        stamp_set                   (t_stamp *stamp);
-void        stamp_addNanoseconds        (t_stamp *stamp, const t_nano *ns);
-t_error     stamp_elapsedNanoseconds    (const t_stamp *t0, const t_stamp *t1, t_nano *r);
+void        stamp_addNanoseconds        (t_stamp *stamp, t_nano ns);
+t_error     stamp_elapsedNanoseconds    (const t_stamp *t0, const t_stamp *t1, t_nano *elapsed);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

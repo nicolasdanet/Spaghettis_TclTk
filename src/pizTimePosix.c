@@ -161,9 +161,9 @@ void time_set (t_time *t)
 
 /* < https://developer.apple.com/library/mac/qa/qa1398/_index.html > */ 
 
-void time_addNanoseconds (t_time *t, const t_nano *ns)
+void time_addNanoseconds (t_time *t, t_nano ns)
 {
-    (*t) += (*ns) * pizTimeBaseInfo.denom / pizTimeBaseInfo.numer;
+    (*t) += ns * pizTimeBaseInfo.denom / pizTimeBaseInfo.numer;
 }
 
 t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
@@ -198,9 +198,9 @@ void time_set (t_time *t)
     (*t) = (seconds * PIZ_NSEC_PER_SEC) + nanoseconds;
 }
 
-void time_addNanoseconds (t_time *t, const t_nano *ns)
+void time_addNanoseconds (t_time *t, t_nano ns)
 {
-    (*t) += (*ns);
+    (*t) += ns;
 }
 
 t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
@@ -218,17 +218,17 @@ t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void nano_sleep (t_nano *ns)
+void nano_sleep (t_nano ns)
 {
-    if ((*ns) != PD_ZERO_NANO) {
+    if (ns != PD_ZERO_NANO) {
     //
     struct timespec t0, t1;
     struct timespec *ptrA = &t0;
     struct timespec *ptrB = &t1;
     struct timespec *temp = NULL;
 
-    t0.tv_sec  = (time_t)((*ns) / PIZ_NSEC_PER_SEC);
-    t0.tv_nsec = (long)((*ns) % PIZ_NSEC_PER_SEC);
+    t0.tv_sec  = (time_t)(ns / PIZ_NSEC_PER_SEC);
+    t0.tv_nsec = (long)(ns % PIZ_NSEC_PER_SEC);
 
     while ((nanosleep (ptrA, ptrB) == -1) && (errno == EINTR)) {
         temp = ptrA;
@@ -256,12 +256,12 @@ void stamp_set (t_stamp *stamp)
     (*stamp) = (s << 32) | f; 
 }
 
-void stamp_addNanoseconds (t_stamp *stamp, const t_nano *ns)
+void stamp_addNanoseconds (t_stamp *stamp, t_nano ns)
 {
     uint64_t hi = ((*stamp) >> 32);
     uint64_t lo = ((*stamp) & 0xffffffffULL);
     uint64_t s = hi;
-    uint64_t n = ((lo * PIZ_NSEC_PER_SEC) >> 32) + (*ns);
+    uint64_t n = ((lo * PIZ_NSEC_PER_SEC) >> 32) + ns;
         
     s += (uint64_t)(n / PIZ_NSEC_PER_SEC);
     n %= PIZ_NSEC_PER_SEC;
