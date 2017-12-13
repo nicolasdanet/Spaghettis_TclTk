@@ -1,53 +1,51 @@
 
-/* Copyright (c) 1997-2017 Miller Puckette and others. */
+/*
+    Mersenne Twister PRNG. 
 
-/* < https://opensource.org/licenses/BSD-3-Clause > */
+    This is a 64-bit version of Mersenne Twister pseudorandom number generator.
+
+    "Tables of 64-bit Mersenne Twisters", 
+        T. Nishimura, 
+        ACM Transactions on Modeling and Computer Simulation.
+
+    "Mersenne Twister a 623-dimensionally equidistributed uniform pseudorandom number generator",
+        M. Matsumoto and T. Nishimura, 
+        ACM Transactions on Modeling and Computer Simulation.
+
+*/
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt64.html > */
+ 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#ifndef __s_MT64_h_
+#define __s_MT64_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef PIZ_RANDOM_H
-#define PIZ_RANDOM_H
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#include "m_spaghettis.h"
-#include "m_core.h"
-#include "s_system.h"
+typedef struct _MTState64 {
+    uint64_t    mt_[312];
+    int         mti_;
+    } MTState64;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_32BIT
+MTState64   *genrand64_new          (void);
+MTState64   *genrand64_newByArray   (long argc, uint64_t *argv);
 
-    #include "pizMT32.h"
-    typedef MTState32 PIZRandom;
-
-#endif // PD_32BIT
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_64BIT
-
-    #include "pizMT64.h"
-    typedef MTState64 PIZRandom;
-
-#endif // PD_64BIT
+void        genrand64_free  (MTState64 *x);
+uint64_t    genrand64_int64 (MTState64 *x);     // -- Random number on [0, 2 ^ 64 - 1] interval.
+double      genrand64_real2 (MTState64 *x);     // -- Random number on [0, 1) interval.
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-PIZRandom   *pizRandomNew   (void);
-
-void        pizRandomFree   (PIZRandom *x);
-double      pizRandomDouble (PIZRandom *x);             // -- Random float on [0, 1) interval.   
-long        pizRandomLong   (PIZRandom *x, long v);     // -- Random integer on [0, v) interval.
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#endif // PIZ_RANDOM_H
+#endif // __s_MT64_h_

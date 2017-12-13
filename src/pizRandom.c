@@ -14,7 +14,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "pizRandom.h"
+#include "m_spaghettis.h"
+#include "m_core.h"
+#include "s_system.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -60,24 +62,24 @@ static int pizUInt32NextPower2Index (uint32_t v)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZRandom *pizRandomNew (void)
+t_randMT *randMT_new (void)
 {
     return genrand32_new();
 }
 
-void pizRandomFree (PIZRandom *x)
+void randMT_free (t_randMT *x)
 {
     genrand32_free (x);
 }
 
-double pizRandomDouble (PIZRandom *x)
+double randMT_getDouble (t_randMT *x)
 {
     return genrand32_res53 (x);
 }
 
 /* < http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/efaq.html > */
 
-long pizRandomLong (PIZRandom *x, long v)
+long randMT_getInteger (t_randMT *x, long v)
 {
     if (v <= 1) { return 0; }
     else {
@@ -146,24 +148,24 @@ static int pizUInt64NextPower2Index (uint64_t v)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PIZRandom *pizRandomNew (void)
+t_randMT *randMT_new (void)
 {
     return genrand64_new();
 }
 
-void pizRandomFree (PIZRandom *x)
+void randMT_free (t_randMT *x)
 {
     genrand64_free (x);
 }
 
-double pizRandomDouble (PIZRandom *x)
+double randMT_getDouble (t_randMT *x)
 {
     return genrand64_real2 (x);
 }
 
 /* < http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/efaq.html > */
 
-long pizRandomLong (PIZRandom *x, long v)
+long randMT_getInteger (t_randMT *x, long v)
 {
     if (v <= 1) { return 0; }
     else {
