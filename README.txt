@@ -30,8 +30,8 @@ Credits:
 
     Miller Puckette & others < http://msp.ucsd.edu/Software/pd-README.txt >
     Lewis Van Winkle < https://github.com/codeplea/tinyexpr >
-    Takuya OOURA < http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html >
     T. Nishimura & M. Matsumoto < http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html >
+    Takuya Ooura < http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html >
     PortMidi < https://sourceforge.net/p/portmedia >
     PortAudio < http://www.portaudio.com >
     
