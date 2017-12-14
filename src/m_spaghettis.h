@@ -193,13 +193,16 @@
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
     #define PD_ATOMIC_WITH_POSIX    1
+    #define PD_TIME_WITH_POSIX      1
 #else
     #define PD_ATOMIC_WITH_MAC      1
+    #define PD_TIME_WITH_MAC        1
 #endif
 
 #else
 #if PD_LINUX
     #define PD_ATOMIC_WITH_POSIX    1
+    #deifne PD_TIME_WITH_POSIX      1
 #else
     #error "Unsupported platform!"
 #endif // PD_LINUX

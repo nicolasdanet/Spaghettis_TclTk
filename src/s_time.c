@@ -26,24 +26,24 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_APPLE
+#if PD_TIME_WITH_MAC
 
 static mach_timebase_info_data_t time_baseInfo;       /* Static. */
 
-#endif
+#endif // PD_TIME_WITH_MAC
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 void time_initialize (void)
 {
-    #if PD_APPLE
+    #if PD_TIME_WITH_MAC
     
     if (time_baseInfo.denom == 0) {
         mach_timebase_info (&time_baseInfo);          /* Must be initialized first (not thread-safe). */
     }
     
-    #endif // PD_APPLE
+    #endif // PD_TIME_WITH_MAC
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ uint64_t time_makeRandomSeed (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_APPLE
+#if PD_TIME_WITH_MAC
 
 void time_set (t_time *t)
 {
@@ -156,12 +156,12 @@ t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
     return PD_ERROR;
 }
 
-#endif // PD_APPLE
+#endif // PD_TIME_WITH_MAC
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if PD_LINUX
+#if PD_TIME_WITH_POSIX
 
 void time_set (t_time *t)
 {
@@ -189,7 +189,7 @@ t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
     return PD_ERROR;
 }
 
-#endif // PD_LINUX
+#endif // PD_TIME_WITH_POSIX
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
