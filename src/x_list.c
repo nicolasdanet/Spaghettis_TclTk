@@ -23,21 +23,21 @@ static void *list_makeObject (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     
     instance_setNewestObject (NULL);
     
-    if (!argc || !IS_SYMBOL (argv)) { newest = listappend_new (s,       argc, argv); }
+    if (!argc || !IS_SYMBOL (argv)) { newest = (t_pd *)listappend_new (s,       argc, argv); }
     else {
     //
     t_symbol *t = atom_getSymbol (argv);
     
-    if (t == sym_append)            { newest = listappend_new (s,       argc - 1, argv + 1); }
-    else if (t == sym_prepend)      { newest = listprepend_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_split)        { newest = listsplit_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_trim)         { newest = listtrim_new (s,         argc - 1, argv + 1); }
-    else if (t == sym_length)       { newest = listlength_new (s,       argc - 1, argv + 1); }
-    else if (t == sym_store)        { newest = liststore_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_iterate)      { newest = listiterate_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_group)        { newest = listgroup_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_fromsymbol)   { newest = listfromsymbol_new (s,   argc - 1, argv + 1); }
-    else if (t == sym_tosymbol)     { newest = listtosymbol_new (s,     argc - 1, argv + 1); }
+    if (t == sym_append)            { newest = (t_pd *)listappend_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_prepend)      { newest = (t_pd *)listprepend_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_split)        { newest = (t_pd *)listsplit_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_trim)         { newest = (t_pd *)listtrim_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_length)       { newest = (t_pd *)listlength_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_store)        { newest = (t_pd *)liststore_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_iterate)      { newest = (t_pd *)listiterate_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_group)        { newest = (t_pd *)listgroup_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_fromsymbol)   { newest = (t_pd *)listfromsymbol_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_tosymbol)     { newest = (t_pd *)listtosymbol_new (s,     argc - 1, argv + 1); }
     else {
         error_unexpected (&s_list, t);
     }

@@ -200,7 +200,7 @@ static void *block_new (t_symbol *s, int argc, t_atom *argv)
 
 static void *block_newSwitch (t_symbol *s, int argc, t_atom *argv)
 {
-    t_block *x = block_new (s, argc, argv);
+    t_block *x = (t_block *)block_new (s, argc, argv);
     
     x->bk_isSwitchObject    = 1;
     x->bk_isSwitchedOn      = 0;

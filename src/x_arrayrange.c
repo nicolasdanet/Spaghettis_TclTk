@@ -15,9 +15,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void *arrayrange_new (t_class *class, int argc, t_atom *argv, int makeOnsetInlet, int makeSizeInlet)
+void *arrayrange_new (t_class *c, int argc, t_atom *argv, int makeOnsetInlet, int makeSizeInlet)
 {
-    t_arrayrange *x = (t_arrayrange *)pd_new (class);
+    t_arrayrange *x = (t_arrayrange *)pd_new (c);
 
     t_error err = arrayclient_init (&x->ar_arrayclient, &argc, &argv);      /* It may consume arguments. */
     
@@ -45,7 +45,7 @@ void *arrayrange_new (t_class *class, int argc, t_atom *argv, int makeOnsetInlet
         }
     }
     
-    error__options (class_getName (class), argc, argv);
+    error__options (class_getName (c), argc, argv);
     
     if (!err) { 
     
@@ -55,7 +55,7 @@ void *arrayrange_new (t_class *class, int argc, t_atom *argv, int makeOnsetInlet
         if (argc && IS_FLOAT (argv)) { x->ar_first = GET_FLOAT (argv); argc--; argv++; }
         if (argc && IS_FLOAT (argv)) { x->ar_size  = GET_FLOAT (argv); argc--; argv++; }
 
-        if (argc) { warning_unusedArguments (class_getName (class), argc, argv); }
+        if (argc) { warning_unusedArguments (class_getName (c), argc, argv); }
         
         if (ARRAYCLIENT_ASPOINTER (&x->ar_arrayclient)) {
             inlet_newPointer (cast_object (x), ARRAYCLIENT_GETPOINTER (&x->ar_arrayclient));

@@ -21,19 +21,19 @@ static void *array_makeObject (t_symbol *s, int argc, t_atom *argv)
     
     instance_setNewestObject (NULL);
     
-    if (!argc || !IS_SYMBOL (argv)) { newest = arrayget_new (s,         argc, argv); }
+    if (!argc || !IS_SYMBOL (argv)) { newest = (t_pd *)arrayget_new (s,         argc, argv); }
     else {
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (t == sym_size)              { newest = arraysize_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_sum)          { newest = arraysum_new (s,         argc - 1, argv + 1); }
-    else if (t == sym_get)          { newest = arrayget_new (s,         argc - 1, argv + 1); }
-    else if (t == sym_set)          { newest = arrayset_new (s,         argc - 1, argv + 1); }
-    else if (t == sym_quantile)     { newest = arrayquantile_new (s,    argc - 1, argv + 1); }
-    else if (t == sym_random)       { newest = arrayrandom_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_max)          { newest = arraymax_new (s,         argc - 1, argv + 1); }
-    else if (t == sym_min)          { newest = arraymin_new (s,         argc - 1, argv + 1); }
+    if (t == sym_size)              { newest = (t_pd *)arraysize_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_sum)          { newest = (t_pd *)arraysum_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_get)          { newest = (t_pd *)arrayget_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_set)          { newest = (t_pd *)arrayset_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_quantile)     { newest = (t_pd *)arrayquantile_new (s,    argc - 1, argv + 1); }
+    else if (t == sym_random)       { newest = (t_pd *)arrayrandom_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_max)          { newest = (t_pd *)arraymax_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_min)          { newest = (t_pd *)arraymin_new (s,         argc - 1, argv + 1); }
     else {
         error_unexpected (sym_array, t);
     }

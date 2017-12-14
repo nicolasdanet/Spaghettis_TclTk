@@ -26,9 +26,9 @@ static t_class *binopMinimum_class;         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void *binop_new (t_class *class, t_float f)
+void *binop_new (t_class *c, t_float f)
 {
-    t_binop *x = (t_binop *)pd_new (class);
+    t_binop *x = (t_binop *)pd_new (c);
     
     x->bo_f1 = (t_float)0.0;
     x->bo_f2 = f;

@@ -270,7 +270,7 @@ static void readsf_tilde_threadQuit (t_readsf_tilde * x)
 
 static void *readsf_tilde_thread (void *z)
 {
-    t_readsf_tilde *x = z;
+    t_readsf_tilde *x = (t_readsf_tilde *)z;
 
     pthread_mutex_lock (&x->sf_mutex);
     

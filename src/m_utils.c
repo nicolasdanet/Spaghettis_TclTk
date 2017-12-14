@@ -64,7 +64,7 @@ void utils_anythingToList (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_at
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *utils_getUnusedBindName (t_class *class, t_symbol *prefix)
+t_symbol *utils_getUnusedBindName (t_class *c, t_symbol *prefix)
 {
     int i = 1;
     char t[PD_STRING] = { 0 };
@@ -75,7 +75,7 @@ t_symbol *utils_getUnusedBindName (t_class *class, t_symbol *prefix)
         t_error err = string_sprintf (t, PD_STRING, "%s%d", prefix->s_name, i);
         PD_ABORT (err != PD_ERROR_NONE);
         t_symbol *name = gensym (t);
-        if (!pd_getThingByClass (name, class)) { return name; }
+        if (!pd_getThingByClass (name, c)) { return name; }
         i++;
         PD_ABORT (i < 0);
     }

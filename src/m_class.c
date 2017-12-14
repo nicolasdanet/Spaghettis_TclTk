@@ -167,7 +167,7 @@ t_class *class_new (t_symbol *s,
     t_atomtype type1, ...)
 {
     va_list ap;
-    t_atomtype args[PD_ARGUMENTS + 1] = { 0 };
+    t_atomtype args[PD_ARGUMENTS + 1] = { A_NULL };
     t_atomtype *vp = args;
     int count = 0;
     t_class *c = NULL;
@@ -231,7 +231,7 @@ void class_addSignal (t_class *c, t_int offset)
 void class_addCreator (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...)
 {
     va_list ap;
-    t_atomtype args[PD_ARGUMENTS + 1] = { 0 };
+    t_atomtype args[PD_ARGUMENTS + 1] = { A_NULL };
     t_atomtype *vp = args;
     int count = 0;
     *vp = type1;

@@ -45,7 +45,7 @@ static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, 
     
     /* Dashes for badly created boxes. */
     
-    char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";  // --
+    const char *pattern = (pd_class (o) == text_class) ? "{6 4}" : "{}";  // --
     
     int a = rectangle_getTopLeftX (r);
     int b = rectangle_getTopLeftY (r);

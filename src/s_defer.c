@@ -85,7 +85,7 @@ int gui_jobFlush (void)
         
         defer_queue = defer_queue->gq_next;
         if (glist_isOnScreen (first->gq_glist)) {
-            (*first->gq_fn) (first->gq_p, first->gq_glist); 
+            (*first->gq_fn) (cast_gobj (first->gq_p), first->gq_glist); 
         }
         
         PD_MEMORY_FREE (first);

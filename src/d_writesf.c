@@ -261,7 +261,7 @@ static void writesf_tilde_threadClose (t_writesf_tilde *x)
 
 static void *writesf_tilde_thread (void *z)
 {
-    t_writesf_tilde *x = z;
+    t_writesf_tilde *x = (t_writesf_tilde *)z;
 
     pthread_mutex_lock (&x->sf_mutex);
     
