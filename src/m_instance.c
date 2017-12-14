@@ -244,16 +244,16 @@ void instance_clockTick (t_systime t)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void instance_destroyAllScalarsByTemplate (t_template *template)
+void instance_destroyAllScalarsByTemplate (t_template *tmpl)
 {
     t_glist *glist = instance_get()->pd_roots;
     
-    PD_ASSERT (template);
+    PD_ASSERT (tmpl);
     
     while (glist) {
 
-        if (!template_isPrivate (template_getTemplateIdentifier (template))) {
-            glist_objectRemoveAllByTemplate (glist, template); 
+        if (!template_isPrivate (template_getTemplateIdentifier (tmpl))) {
+            glist_objectRemoveAllByTemplate (glist, tmpl); 
         }
     
         glist = glist_getNext (glist);

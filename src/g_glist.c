@@ -657,20 +657,20 @@ void glist_objectRemoveAll (t_glist *glist)
     if (dspSuspended) { dsp_resume (dspState); }
 }
 
-void glist_objectRemoveAllByTemplate (t_glist *glist, t_template *template)
+void glist_objectRemoveAllByTemplate (t_glist *glist, t_template *tmpl)
 {
     t_gobj *y = NULL;
 
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
     if (gobj_isScalar (y)) {
-        if (scalar_containsTemplate (cast_scalar (y), template_getTemplateIdentifier (template))) {
+        if (scalar_containsTemplate (cast_scalar (y), template_getTemplateIdentifier (tmpl))) {
             glist_objectRemove (glist, y);
         }
     }
     
     if (gobj_isCanvas (y)) {
-        glist_objectRemoveAllByTemplate (cast_glist (y), template);
+        glist_objectRemoveAllByTemplate (cast_glist (y), tmpl);
     }
     //
     }

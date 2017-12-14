@@ -40,9 +40,9 @@ typedef struct _append {
 
 static void append_float (t_append *x, t_float f)
 {
-    t_template *template = template_findByIdentifier (x->x_templateIdentifier);
+    t_template *tmpl = template_findByIdentifier (x->x_templateIdentifier);
     
-    if (!template) { error_canNotFind (sym_append, sym_template); }
+    if (!tmpl) { error_canNotFind (sym_append, sym_template); }
     else {
     //
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {

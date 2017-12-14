@@ -280,11 +280,11 @@ t_symbol *gpointer_getTemplateIdentifier (t_gpointer *gp)
 
 t_template *gpointer_getTemplate (t_gpointer *gp)
 {
-    t_template *template = template_findByIdentifier (gpointer_getTemplateIdentifier (gp));
+    t_template *tmpl = template_findByIdentifier (gpointer_getTemplateIdentifier (gp));
     
-    PD_ASSERT (template);
+    PD_ASSERT (tmpl);
     
-    return (template);
+    return (tmpl);
 }
 
 static t_scalar *gpointer_getBase (t_gpointer *gp)

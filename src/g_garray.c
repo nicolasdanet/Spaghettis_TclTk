@@ -108,26 +108,26 @@ void garray_initialize (void)
     
 static void garray_check (t_garray *x)
 {
-    t_array *array = NULL; t_template *template = NULL;
+    t_array *array = NULL; t_template *tmpl = NULL;
     
     // struct float-array array z float
         
-    template = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
+    tmpl = template_findByIdentifier (scalar_getTemplateIdentifier (x->x_scalar));
     
-    PD_ASSERT (template);
-    PD_ASSERT (template_fieldIsArrayAndValid (template, sym_z));
+    PD_ASSERT (tmpl);
+    PD_ASSERT (template_fieldIsArrayAndValid (tmpl, sym_z));
     
     array = scalar_getArray (x->x_scalar, sym_z);
     
     // struct float float y
      
-    template = template_findByIdentifier (array_getTemplateIdentifier (array));
+    tmpl = template_findByIdentifier (array_getTemplateIdentifier (array));
     
-    PD_ASSERT (template);
-    PD_ASSERT (template_fieldIsFloat (template, sym_y));
-    PD_ASSERT (template_getSize (template) == 1);                   /* Just one field. */
-    PD_ASSERT (template_getIndexOfField (template, sym_y) == 0);    /* Just one field. */
-    PD_ASSERT (array_getElementSize (array) == 1);                  /* Just one field. */
+    PD_ASSERT (tmpl);
+    PD_ASSERT (template_fieldIsFloat (tmpl, sym_y));
+    PD_ASSERT (template_getSize (tmpl) == 1);                   /* Just one field. */
+    PD_ASSERT (template_getIndexOfField (tmpl, sym_y) == 0);    /* Just one field. */
+    PD_ASSERT (array_getElementSize (array) == 1);              /* Just one field. */
 }
 
 #endif
@@ -796,13 +796,13 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
 
 t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_float flags)
 {
-    t_template *template = template_findByIdentifier (sym___TEMPLATE__float__dash__array);
+    t_template *tmpl = template_findByIdentifier (sym___TEMPLATE__float__dash__array);
     
     t_garray *x = NULL;
     
-    PD_ASSERT (template);
+    PD_ASSERT (tmpl);
     
-    if (template_fieldIsArrayAndValid (template, sym_z)) {
+    if (template_fieldIsArrayAndValid (tmpl, sym_z)) {
     //
     int save  = (((int)flags & GARRAY_FLAG_SAVE) != 0);
     int hide  = (((int)flags & GARRAY_FLAG_HIDE) != 0);

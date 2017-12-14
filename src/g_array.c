@@ -41,11 +41,11 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
 {
     t_array *x = (t_array *)PD_MEMORY_GET (sizeof (t_array));
     
-    t_template *template = template_findByIdentifier (templateIdentifier);
+    t_template *tmpl = template_findByIdentifier (templateIdentifier);
 
-    PD_ASSERT (template);
+    PD_ASSERT (tmpl);
     
-    x->a_elementSize        = template_getSize (template);
+    x->a_elementSize        = template_getSize (tmpl);
     x->a_size               = 1;
     x->a_elements           = (t_word *)PD_MEMORY_GET (x->a_elementSize * sizeof (t_word));
     x->a_templateIdentifier = templateIdentifier;
@@ -54,24 +54,24 @@ t_array *array_new (t_symbol *templateIdentifier, t_gpointer *parent)
     
     gpointer_setByCopy (&x->a_parent, parent);
 
-    word_init (x->a_elements, template, parent);
+    word_init (x->a_elements, tmpl, parent);
     
     return x;
 }
 
 void array_free (t_array *x)
 {
-    t_template *template = template_findByIdentifier (x->a_templateIdentifier);
+    t_template *tmpl = template_findByIdentifier (x->a_templateIdentifier);
     int i;
         
-    PD_ASSERT (template);
+    PD_ASSERT (tmpl);
     
     gpointer_unset (&x->a_parent);
     gmaster_reset (x->a_holder);
     
     for (i = 0; i < x->a_size; i++) {
         t_word *w = x->a_elements + (x->a_elementSize * i);
-        word_free (w, template);
+        word_free (w, tmpl);
     }
     
     PD_MEMORY_FREE (x->a_elements);
@@ -84,7 +84,7 @@ void array_free (t_array *x)
 
 void array_serialize (t_array *x, t_buffer *b)
 {
-    t_template *template = array_getTemplate (x);
+    t_template *tmpl = array_getTemplate (x);
     int i, j;
             
     for (i = 0; i < array_getSize (x); i++) {
@@ -93,16 +93,16 @@ void array_serialize (t_array *x, t_buffer *b)
     
     for (j = 0; j < x->a_elementSize; j++) {
     //
-    t_symbol *fieldName = template_getFieldAtIndex (template, j);
+    t_symbol *fieldName = template_getFieldAtIndex (tmpl, j);
     
-    if (template_fieldIsFloat (template, fieldName)) {
+    if (template_fieldIsFloat (tmpl, fieldName)) {
         t_atom t;
-        SET_FLOAT (&t, word_getFloat (w, template, fieldName));
+        SET_FLOAT (&t, word_getFloat (w, tmpl, fieldName));
         buffer_appendAtom (b, &t);
         
-    } else if (template_fieldIsSymbol (template, fieldName)) {
+    } else if (template_fieldIsSymbol (tmpl, fieldName)) {
         t_atom t;
-        SET_SYMBOL (&t, word_getSymbol (w, template, fieldName));
+        SET_SYMBOL (&t, word_getSymbol (w, tmpl, fieldName));
         buffer_appendAtom (b, &t);
     
     } else {
@@ -118,7 +118,7 @@ void array_serialize (t_array *x, t_buffer *b)
 
 void array_deserialize (t_array *x, t_iterator *iter)
 {
-    t_template *template = array_getTemplate (x);
+    t_template *tmpl = array_getTemplate (x);
     t_atom *atoms = NULL;
     int count, n = 0;
     
@@ -133,13 +133,13 @@ void array_deserialize (t_array *x, t_iterator *iter)
     
     for (j = 0; j < x->a_elementSize; j++) {
     //
-    t_symbol *fieldName = template_getFieldAtIndex (template, j);
+    t_symbol *fieldName = template_getFieldAtIndex (tmpl, j);
     
-    if (template_fieldIsFloat (template, fieldName)) {
-        if (count) { word_setFloat (w, template, fieldName, atom_getFloat (atoms));     atoms++; count--; }
+    if (template_fieldIsFloat (tmpl, fieldName)) {
+        if (count) { word_setFloat (w, tmpl, fieldName, atom_getFloat (atoms));     atoms++; count--; }
         
-    } else if (template_fieldIsSymbol (template, fieldName)) {
-        if (count) { word_setSymbol (w, template, fieldName, atom_getSymbol (atoms));   atoms++; count--; }
+    } else if (template_fieldIsSymbol (tmpl, fieldName)) {
+        if (count) { word_setSymbol (w, tmpl, fieldName, atom_getSymbol (atoms));   atoms++; count--; }
         
     } else {
         PD_BUG;     /* Not implemented, yet. */
@@ -173,11 +173,11 @@ t_symbol *array_getTemplateIdentifier (t_array *x)
 
 t_template *array_getTemplate (t_array *x)
 {
-    t_template *template = template_findByIdentifier (x->a_templateIdentifier);
+    t_template *tmpl = template_findByIdentifier (x->a_templateIdentifier);
     
-    PD_ASSERT (template);
+    PD_ASSERT (tmpl);
     
-    return template;
+    return tmpl;
 }
 
 int array_getSize (t_array *x)
@@ -231,9 +231,9 @@ t_gpointer *array_getTopParent (t_array *x)
 
 void array_resize (t_array *x, int n)
 {
-    t_template *template = template_findByIdentifier (x->a_templateIdentifier);
+    t_template *tmpl = template_findByIdentifier (x->a_templateIdentifier);
     
-    PD_ASSERT (template);
+    PD_ASSERT (tmpl);
     
     int oldSize = x->a_size;
     int newSize = PD_MAX (1, n);
@@ -245,7 +245,7 @@ void array_resize (t_array *x, int n)
     if (newSize < oldSize) {
         t_word *t = x->a_elements + (x->a_elementSize * newSize);
         int count = oldSize - newSize;
-        for (; count--; t += x->a_elementSize) { word_free (t, template); }
+        for (; count--; t += x->a_elementSize) { word_free (t, tmpl); }
     }
     
     /* Reallocate. */
@@ -258,7 +258,7 @@ void array_resize (t_array *x, int n)
     if (newSize > oldSize) {
         t_word *t = x->a_elements + (x->a_elementSize * oldSize);
         int count = newSize - oldSize;
-        for (; count--; t += x->a_elementSize) { word_init (t, template, &x->a_parent); }
+        for (; count--; t += x->a_elementSize) { word_init (t, tmpl, &x->a_parent); }
     }
     
     /* Invalidate all existent pointers. */

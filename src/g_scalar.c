@@ -120,36 +120,36 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
 
 static void scalar_notifyClicked (t_scalar *x, 
     t_glist *glist,
-    t_template *template,
+    t_template *tmpl,
     t_float positionX,
     t_float positionY)
 {
     t_atom t[2];
     SET_FLOAT (t + 0, positionX);
     SET_FLOAT (t + 1, positionY);
-    template_notify (template, glist, x, sym_click, 2, t);
+    template_notify (tmpl, glist, x, sym_click, 2, t);
 }
     
 static void scalar_notifyDisplaced (t_scalar *x, 
     t_glist *glist,
-    t_template *template,
+    t_template *tmpl,
     t_float deltaX,
     t_float deltaY)
 {
     t_atom t[2];
     SET_FLOAT (t + 0, deltaX);
     SET_FLOAT (t + 1, deltaY);
-    template_notify (template, glist, x, sym_displace, 2, t);
+    template_notify (tmpl, glist, x, sym_displace, 2, t);
 }
 
 static void scalar_notifySelected (t_scalar *x, 
     t_glist *glist,
-    t_template *template,
+    t_template *tmpl,
     int isSelected)
 {
-    if (isSelected) { template_notify (template, glist, x, sym_select, 0, NULL); } 
+    if (isSelected) { template_notify (tmpl, glist, x, sym_select, 0, NULL); }
     else {
-        template_notify (template, glist, x, sym_deselect, 0, NULL);
+        template_notify (tmpl, glist, x, sym_deselect, 0, NULL);
     }
 }
 
@@ -168,21 +168,21 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 
 void scalar_snap (t_scalar *x, t_glist *glist)
 {
-    t_template *template = scalar_getTemplate (x);
+    t_template *tmpl = scalar_getTemplate (x);
     
-    if (!template) { PD_BUG; }
+    if (!tmpl) { PD_BUG; }
     else {
     //
     int deltaX = 0;
     int deltaY = 0;
     
-    if (template_fieldIsFloat (template, sym_x)) {
-        t_float f = word_getFloat (x->sc_element, template, sym_x);
+    if (template_fieldIsFloat (tmpl, sym_x)) {
+        t_float f = word_getFloat (x->sc_element, tmpl, sym_x);
         deltaX = snap_getOffset ((int)(f / glist_getValueForOnePixelX (glist)));
     }
     
-    if (template_fieldIsFloat (template, sym_y)) {
-        t_float f = word_getFloat (x->sc_element, template, sym_y);
+    if (template_fieldIsFloat (tmpl, sym_y)) {
+        t_float f = word_getFloat (x->sc_element, tmpl, sym_y);
         deltaY = snap_getOffset ((int)(f / glist_getValueForOnePixelY (glist)));
     }
     
@@ -200,8 +200,8 @@ void scalar_snap (t_scalar *x, t_glist *glist)
 static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_scalar *x = cast_scalar (z);
-    t_template *template = scalar_getTemplate (x);
-    t_glist *view = template_getInstanceViewIfPainters (template);
+    t_template *tmpl = scalar_getTemplate (x);
+    t_glist *view = template_getInstanceViewIfPainters (tmpl);
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
 
@@ -247,26 +247,26 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = scalar_getTemplate (x);
+    t_template *tmpl = scalar_getTemplate (x);
     
-    if (!template) { PD_BUG; }
+    if (!tmpl) { PD_BUG; }
     else {
     //
-    if (template_fieldIsFloat (template, sym_x)) {
+    if (template_fieldIsFloat (tmpl, sym_x)) {
 
-        t_float f = word_getFloat (x->sc_element, template, sym_x);
+        t_float f = word_getFloat (x->sc_element, tmpl, sym_x);
         f += (deltaX * glist_getValueForOnePixelX (glist));
-        word_setFloat (x->sc_element, template, sym_x, f);
+        word_setFloat (x->sc_element, tmpl, sym_x, f);
     }
     
-    if (template_fieldIsFloat (template, sym_y)) {
+    if (template_fieldIsFloat (tmpl, sym_y)) {
 
-        t_float f = word_getFloat (x->sc_element, template, sym_y);
+        t_float f = word_getFloat (x->sc_element, tmpl, sym_y);
         f += (deltaY * glist_getValueForOnePixelY (glist));
-        word_setFloat (x->sc_element, template, sym_y, f);
+        word_setFloat (x->sc_element, tmpl, sym_y, f);
     }
     
-    scalar_notifyDisplaced (x, glist, template, (t_float)deltaX, (t_float)deltaY);
+    scalar_notifyDisplaced (x, glist, tmpl, (t_float)deltaX, (t_float)deltaY);
     scalar_redraw (x, glist);
     glist_redrawRequired (glist);
     //
@@ -277,11 +277,11 @@ static void scalar_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = scalar_getTemplate (x);
+    t_template *tmpl = scalar_getTemplate (x);
     
-    if (!template) { PD_BUG; }
+    if (!tmpl) { PD_BUG; }
     else {
-        scalar_notifySelected (x, glist, template, isSelected);
+        scalar_notifySelected (x, glist, tmpl, isSelected);
         scalar_drawSelectRectangle (x, glist, isSelected);
     }
 }
@@ -298,8 +298,8 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 {
     t_scalar *x = cast_scalar (z);
     
-    t_template *template = scalar_getTemplate (x);
-    t_glist *owner = template_getInstanceViewIfPainters (template);
+    t_template *tmpl = scalar_getTemplate (x);
+    t_glist *owner = template_getInstanceViewIfPainters (tmpl);
     t_float baseX  = scalar_getFloat (x, sym_x);
     t_float baseY  = scalar_getFloat (x, sym_y);
 
@@ -356,8 +356,8 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_scalar *x = cast_scalar (z);
-    t_template *template = scalar_getTemplate (x);
-    t_glist *view = template_getInstanceViewIfPainters (template);
+    t_template *tmpl = scalar_getTemplate (x);
+    t_glist *view = template_getInstanceViewIfPainters (tmpl);
     
     if (view) {
     //
@@ -365,7 +365,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     t_float baseY = scalar_getFloat (x, sym_y);
     t_gobj *y = NULL;
         
-    if (m->m_clicked) { scalar_notifyClicked (x, glist, template, baseX, baseY); }
+    if (m->m_clicked) { scalar_notifyClicked (x, glist, tmpl, baseX, baseY); }
             
     for (y = view->gl_graphics; y; y = y->g_next) {
     //
@@ -399,39 +399,39 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 
 void scalar_serialize (t_scalar *x, t_buffer *b)
 {
-    t_template *template = scalar_getTemplate (x);
+    t_template *tmpl = scalar_getTemplate (x);
     int i;
         
     buffer_vAppend (b, "s", symbol_stripTemplateIdentifier (x->sc_templateIdentifier));
 
-    for (i = 0; i < template_getSize (template); i++) {
+    for (i = 0; i < template_getSize (tmpl); i++) {
     
-        t_symbol *fieldName = template_getFieldAtIndex (template, i);
+        t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
         
-        if (template_fieldIsFloat (template, fieldName)) {
+        if (template_fieldIsFloat (tmpl, fieldName)) {
             t_atom t;
-            SET_FLOAT (&t, word_getFloat (x->sc_element, template, fieldName));
+            SET_FLOAT (&t, word_getFloat (x->sc_element, tmpl, fieldName));
             buffer_appendAtom (b, &t);
             
-        } else if (template_fieldIsSymbol (template, fieldName)) {
+        } else if (template_fieldIsSymbol (tmpl, fieldName)) {
             t_atom t;
-            SET_SYMBOL (&t, word_getSymbol (x->sc_element, template, fieldName));
+            SET_SYMBOL (&t, word_getSymbol (x->sc_element, tmpl, fieldName));
             buffer_appendAtom (b, &t);
         }
     }
 
     buffer_appendSemicolon (b);
 
-    for (i = 0; i < template_getSize (template); i++) {
+    for (i = 0; i < template_getSize (tmpl); i++) {
     
-        t_symbol *fieldName = template_getFieldAtIndex (template, i);
+        t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
             
-        if (template_fieldIsArray (template, fieldName)) {
-            array_serialize (word_getArray (x->sc_element, template, fieldName), b);
+        if (template_fieldIsArray (tmpl, fieldName)) {
+            array_serialize (word_getArray (x->sc_element, tmpl, fieldName), b);
             buffer_appendSemicolon (b);
             
-        } else if (template_fieldIsText (template, fieldName)) {
-            buffer_serialize (b, word_getText (x->sc_element, template, fieldName));
+        } else if (template_fieldIsText (tmpl, fieldName)) {
+            buffer_serialize (b, word_getText (x->sc_element, tmpl, fieldName));
             buffer_appendSemicolon (b);
         }
     }
@@ -439,9 +439,9 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
 
 void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
 {
-    t_template *template = scalar_getTemplate (x);
+    t_template *tmpl = scalar_getTemplate (x);
     
-    if (!template_isValid (template)) { PD_BUG; }
+    if (!template_isValid (tmpl)) { PD_BUG; }
     else {
     //
     t_iterator *iter = iterator_new (argc, argv);
@@ -449,37 +449,37 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     int count = iterator_next (iter, &atoms);      
     int i;
         
-    for (i = 0; i < template_getSize (template); i++) {
+    for (i = 0; i < template_getSize (tmpl); i++) {
     //
-    t_symbol *fieldName = template_getFieldAtIndex (template, i);
+    t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
     
-    if (template_fieldIsFloat (template, fieldName)) {
+    if (template_fieldIsFloat (tmpl, fieldName)) {
         t_float f = (t_float)0.0;
         if (count) { f = atom_getFloat (atoms); atoms++; count--; }
-        word_setFloat (x->sc_element, template, fieldName, f);
+        word_setFloat (x->sc_element, tmpl, fieldName, f);
         
-    } else if (template_fieldIsSymbol (template, fieldName)) {
+    } else if (template_fieldIsSymbol (tmpl, fieldName)) {
         t_symbol *s = &s_;
         if (count) { s = atom_getSymbol (atoms); atoms++; count--; }
-        word_setSymbol (x->sc_element, template, fieldName, s);
+        word_setSymbol (x->sc_element, tmpl, fieldName, s);
     }
     //
     }
     
     PD_ASSERT (count == 0);
     
-    for (i = 0; i < template_getSize (template); i++) {
+    for (i = 0; i < template_getSize (tmpl); i++) {
     //
-    t_symbol *fieldName = template_getFieldAtIndex (template, i);
+    t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
     
-    if (template_fieldIsArray (template, fieldName)) {
-        array_deserialize (word_getArray (x->sc_element, template, fieldName), iter);
+    if (template_fieldIsArray (tmpl, fieldName)) {
+        array_deserialize (word_getArray (x->sc_element, tmpl, fieldName), iter);
 
-    } else if (template_fieldIsText (template, fieldName)) {
+    } else if (template_fieldIsText (tmpl, fieldName)) {
         t_buffer *t = buffer_new();
         count = iterator_next (iter, &atoms);
         buffer_deserialize (t, count, atoms);
-        word_setText (x->sc_element, template, fieldName, t);
+        word_setText (x->sc_element, tmpl, fieldName, t);
         buffer_free (t);
     }
     //
@@ -519,11 +519,11 @@ t_symbol *scalar_getTemplateIdentifier (t_scalar *x)
 
 t_template *scalar_getTemplate (t_scalar *x)
 {
-    t_template *template = template_findByIdentifier (x->sc_templateIdentifier);
+    t_template *tmpl = template_findByIdentifier (x->sc_templateIdentifier);
     
-    PD_ASSERT (template);
+    PD_ASSERT (tmpl);
     
-    return template;
+    return tmpl;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -585,19 +585,19 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 {
     t_scalar *x = NULL;
     
-    t_template *template = template_findByIdentifier (templateIdentifier);
+    t_template *tmpl = template_findByIdentifier (templateIdentifier);
 
-    if (template_isValid (template)) {
+    if (template_isValid (tmpl)) {
 
         t_gpointer gp; gpointer_init (&gp);
         
         x = (t_scalar *)pd_new (scalar_class);
         
         x->sc_templateIdentifier = templateIdentifier;
-        x->sc_element = (t_word *)PD_MEMORY_GET (template_getSize (template) * sizeof (t_word));
+        x->sc_element = (t_word *)PD_MEMORY_GET (template_getSize (tmpl) * sizeof (t_word));
         
         gpointer_setAsScalar (&gp, owner, x);
-        word_init (x->sc_element, template, &gp);
+        word_init (x->sc_element, tmpl, &gp);
         gpointer_unset (&gp);
     }
     

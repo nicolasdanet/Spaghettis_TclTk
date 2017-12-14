@@ -47,11 +47,11 @@ t_glist *struct_getView (t_struct *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *struct_newInstance (t_template *template)
+static void *struct_newInstance (t_template *tmpl)
 {
     t_struct *x = (t_struct *)pd_new (struct_class);
     
-    x->x_template = template;
+    x->x_template = tmpl;
     x->x_owner    = instance_contextGetCurrent();
     x->x_outlet   = outlet_new (cast_object (x), &s_anything);
     
@@ -82,14 +82,14 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
     
     /* For now forbid multiple instantiation. */
     
-    t_template *template = template_findByIdentifier (templateIdentifier);
+    t_template *tmpl = template_findByIdentifier (templateIdentifier);
     
-    if (template && template_hasInstance (template)) { error_alreadyExists (templateName); return NULL; } 
+    if (tmpl && template_hasInstance (tmpl)) { error_alreadyExists (templateName); return NULL; }
     else {
         if (argc >= 1) { argc--; argv++; }
-        if (!template) { template = template_new (templateIdentifier, argc, argv); }
-        if (template)  {
-            return struct_newInstance (template);
+        if (!tmpl) { tmpl = template_new (templateIdentifier, argc, argv); }
+        if (tmpl)  {
+            return struct_newInstance (tmpl);
         }
         
         return NULL;
