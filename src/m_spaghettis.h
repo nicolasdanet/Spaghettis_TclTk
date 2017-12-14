@@ -375,7 +375,7 @@
 #endif
 
 #ifndef PD_WITH_DEADCODE
-#define PD_WITH_DEADCODE            1           /* Unused code. */
+#define PD_WITH_DEADCODE            0           /* Unused code. */
 #endif
 
 #ifndef PD_WITH_LEGACY
