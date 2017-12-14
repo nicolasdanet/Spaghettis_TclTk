@@ -62,6 +62,23 @@ double clock_getRealTimeInSeconds (void)
 
 double clock_getRealTimeInSeconds (void)
 {
+    static t_time start;                    /* Static. */
+    t_time now;
+    t_nano elapsed = 0ULL;
+    
+    time_set (&now);
+    
+    if (start == 0ULL) { start = now; }
+    else {
+        time_elapsedNanoseconds (&start, &now, &elapsed);
+    }
+    
+    return NANOSECONDS_TO_SECONDS (elapsed);
+}
+
+/*
+double clock_getRealTimeInSeconds (void)
+{
     static struct timeval start;
     struct timeval now;
     
@@ -70,6 +87,7 @@ double clock_getRealTimeInSeconds (void)
     
     return ((now.tv_sec - start.tv_sec) + (1.0 / 1000000.0) * (now.tv_usec - start.tv_usec));
 }
+*/
 
 #endif // PD_WINDOWS
 

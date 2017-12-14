@@ -136,6 +136,8 @@ static inline uint64_t sys_nextPowerOfTwo (uint64_t v)
 #define MICROSECONDS_TO_SECONDS(n)          ((double)(n) * 1e-6)
 #define MILLISECONDS_TO_MICROSECONDS(n)     ((double)(n) * 1000.0)
 #define MICROSECONDS_TO_MILLISECONDS(n)     ((double)(n) * 1e-3)
+#define SECONDS_TO_NANOSECONDS              ((double)(n) * 1000000000.0)
+#define NANOSECONDS_TO_SECONDS(n)           ((double)(n) * 1e-9)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
