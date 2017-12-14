@@ -202,7 +202,7 @@
 #else
 #if PD_LINUX
     #define PD_ATOMIC_WITH_POSIX    1
-    #deifne PD_TIME_WITH_POSIX      1
+    #define PD_TIME_WITH_POSIX      1
 #else
     #error "Unsupported platform!"
 #endif // PD_LINUX
