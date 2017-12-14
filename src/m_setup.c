@@ -16,6 +16,7 @@
 
 void clipboard_initialize       (void);
 void cos_tilde_initialize       (void);
+void expr_initialize            (void);
 void fft_initialize             (void);
 void garray_initialize          (void);
 void gui_initialize             (void);
@@ -34,6 +35,7 @@ void clipboard_release          (void);
 void cos_tilde_release          (void);
 void drawpolygon_release        (void);
 void drawtext_release           (void);
+void expr_release               (void);
 void fft_release                (void);
 void gui_release                (void);
 void interface_release          (void);
@@ -945,6 +947,7 @@ void setup_initialize (void)
     
     clipboard_initialize();
     cos_tilde_initialize();
+    expr_initialize();
     fft_initialize();
     gui_initialize();
     interface_initialize();
@@ -991,6 +994,7 @@ void setup_release (void)
     monitor_release();
     gui_release();
     fft_release();
+    expr_release();
     drawtext_release();
     drawpolygon_release();
     cos_tilde_release();

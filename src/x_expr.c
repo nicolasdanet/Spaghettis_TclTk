@@ -31,7 +31,13 @@ static t_class *vexpr_class;                    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 #define EXPR_VARIABLES  9
-#define EXPR_FUNCTIONS  9
+#define EXPR_FUNCTIONS  10
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_randMT *expr_randMT;                   /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -77,6 +83,11 @@ double expr_functionRandom (void)
     if (!once) { seed = time_makeRandomSeed(); once = 1; }
     
     return PD_RAND48_DOUBLE (seed);
+}
+
+double expr_functionRandomMT (void)
+{
+    return randMT_getDouble (expr_randMT);
 }
 
 double expr_functionMinimum (double a, double b)
@@ -140,15 +151,16 @@ static void expr_initializeFunctions (t_expr *x, int i)
     
     /* Add extended functions. */
     
-    EXPR_TE_FUNCTION (i,        "rand", expr_functionRandom,        TE_FUNCTION0);
-    EXPR_TE_FUNCTION (i + 1,    "min",  expr_functionMinimum,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 2,    "max",  expr_functionMaximum,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 3,    "eq",   expr_functionEqual,         TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 4,    "ne",   expr_functionUnequal,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 5,    "lt",   expr_functionLessThan,      TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 6,    "le",   expr_functionLessEqual,     TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 7,    "gt",   expr_functionGreaterThan,   TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 8,    "ge",   expr_functionGreaterEqual,  TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i,        "rand",     expr_functionRandom,        TE_FUNCTION0);
+    EXPR_TE_FUNCTION (i + 1,    "randmt",   expr_functionRandomMT,      TE_FUNCTION0);
+    EXPR_TE_FUNCTION (i + 2,    "min",      expr_functionMinimum,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 3,    "max",      expr_functionMaximum,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 4,    "eq",       expr_functionEqual,         TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 5,    "ne",       expr_functionUnequal,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 6,    "lt",       expr_functionLessThan,      TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 7,    "le",       expr_functionLessEqual,     TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 8,    "gt",       expr_functionGreaterThan,   TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 9,    "ge",       expr_functionGreaterEqual,  TE_FUNCTION2);
 }
 
 static int expr_getNumberOfVariables (char *expression)
@@ -312,6 +324,19 @@ void expr_destroy (void)
 {
     class_free (expr_class);
     class_free (vexpr_class);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void expr_initialize (void)
+{
+    expr_randMT = randMT_new();
+}
+
+void expr_release (void)
+{
+    randMT_free (expr_randMT);
 }
 
 // -----------------------------------------------------------------------------------------------------------
