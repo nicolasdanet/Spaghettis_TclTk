@@ -214,7 +214,7 @@ static t_error main_getRootDirectory (void)
         main_directoryRoot = gensym (t1);
     #else
         err = string_copy (t2, PD_STRING, t1);
-        err |= string_add (t2, PD_STRING, "/lib/"PD_NAME_LOWERCASE);
+        err |= string_add (t2, PD_STRING, "/lib/" PD_NAME_LOWERCASE);
         
         if (!err && path_isFileExist (t2)) { main_directoryRoot = gensym (t2); }    /* Complexe. */
         else {
@@ -245,7 +245,7 @@ t_error main_setPaths (t_symbol *root)
     //
     #if PD_APPLE
     
-    err |= string_sprintf (t, PD_STRING, "%s/Library/Application Support/"PD_NAME, home);
+    err |= string_sprintf (t, PD_STRING, "%s/Library/Application Support/" PD_NAME, home);
     
     if (!err && !path_isFileExistAsDirectory (t)) {
         err |= path_createDirectory (t);

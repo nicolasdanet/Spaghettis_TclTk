@@ -116,7 +116,7 @@ t_error stub_new (t_pd *owner, void *key, const char *cmd)
     //
     t_error err = PD_ERROR_NONE;
     
-    char *afterFirstSubstitution = strchr (cmd, '%') + 2;
+    const char *afterFirstSubstitution = strchr (cmd, '%') + 2;
 
     if (afterFirstSubstitution == NULL) { PD_BUG; err = PD_ERROR; }
     else {
