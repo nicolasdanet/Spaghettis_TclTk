@@ -34,7 +34,7 @@ HELP_DIR = ../resources/help
 
 # Warnings
 
-WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
+WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-strict-overflow
 
 # Linker flags.
 
