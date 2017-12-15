@@ -14,9 +14,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-char *audio_nameNative (void)
+const char *audio_nameNative (void)
 {
-    static char *name = "Dummy"; return name;
+    static const char *name = "Dummy"; return name;
 }
 
 int audio_getPriorityNative (int min, int max, int isWatchdog)

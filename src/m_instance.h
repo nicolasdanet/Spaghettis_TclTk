@@ -175,7 +175,7 @@ void    instance_patchNew                       (t_symbol *name, t_symbol *direc
 void    instance_patchOpen                      (t_symbol *name, t_symbol *directory);
 
 void    instance_loadAbstraction                (t_symbol *name, int argc, t_atom *argv);
-void    instance_loadInvisible                  (t_symbol *name, char *s);
+void    instance_loadInvisible                  (t_symbol *name, const char *s);
 void    instance_loadSnippet                    (t_glist *glist, t_buffer *b);
 
 void    instance_stackPush                      (t_glist *glist);

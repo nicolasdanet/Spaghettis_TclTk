@@ -43,7 +43,7 @@ t_error scalar_unsetInternalBuffer  (t_scalar *, t_symbol *);
 
 void textdefine_initialize (void)
 {
-    static char *textTemplateFile = 
+    static const char *textTemplateFile = 
         "#N canvas 0 22 450 300 12;\n"
         "#X obj 43 31 struct text float x float y text t;\n";
 

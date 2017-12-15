@@ -44,9 +44,9 @@ static snd_midi_event_t     *midialsa_event;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-char *midi_nameNative (void)
+const char *midi_nameNative (void)
 {
-    static char *name = "ALSA"; return name;
+    static const char *name = "ALSA"; return name;
 }
 
 void midi_initializeNative (void)

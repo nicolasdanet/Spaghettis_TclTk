@@ -144,7 +144,7 @@ static void instance_loadPatchLoadbang (void)
     }
 }
 
-static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, char *s, int visible)
+static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, const char *s, int visible)
 {
     instance_contextStore();
     instance_contextSetCurrent (NULL);          /* The root patch do NOT have parent. */
@@ -172,7 +172,7 @@ static void instance_loadPatch (t_symbol *name, t_symbol *directory)
 
 /* Load invisible patches (mainly used for built-in templates). */
 
-void instance_loadInvisible (t_symbol *name, char *s)
+void instance_loadInvisible (t_symbol *name, const char *s)
 {
     instance_loadPatchProceed (name, sym___dot__, s, 0);
 }

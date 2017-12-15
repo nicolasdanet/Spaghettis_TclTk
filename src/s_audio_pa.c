@@ -156,9 +156,9 @@ static PaError pa_openWithCallback (double sampleRate,
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-char *audio_nameNative (void)
+const char *audio_nameNative (void)
 {
-    static char *name = "PortAudio"; return name;
+    static const char *name = "PortAudio"; return name;
 }
 
 #if 0

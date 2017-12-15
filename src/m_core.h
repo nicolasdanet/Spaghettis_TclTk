@@ -65,7 +65,7 @@ t_error     buffer_fileWrite                        (t_buffer *x, t_symbol *name
 void        eval_buffer                             (t_buffer *x, t_pd *object, int argc, t_atom *argv);
 
 t_error     eval_file                               (t_symbol *name, t_symbol *directory);
-t_error     eval_fileByString                       (t_symbol *name, t_symbol *directory, char *s);
+t_error     eval_fileByString                       (t_symbol *name, t_symbol *directory, const char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

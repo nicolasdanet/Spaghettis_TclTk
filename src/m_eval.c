@@ -150,7 +150,7 @@ void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_error eval_fileProceed (t_symbol *name, t_symbol *directory, char *s)
+static t_error eval_fileProceed (t_symbol *name, t_symbol *directory, const char *s)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -176,7 +176,7 @@ static t_error eval_fileProceed (t_symbol *name, t_symbol *directory, char *s)
     return err;
 }
 
-t_error eval_fileByString (t_symbol *name, t_symbol *directory, char *s)
+t_error eval_fileByString (t_symbol *name, t_symbol *directory, const char *s)
 {
     return eval_fileProceed (name, directory, s);
 }

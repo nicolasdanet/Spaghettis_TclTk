@@ -90,11 +90,11 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 
 void garray_initialize (void)
 {
-    static char *floatTemplate =
+    static const char *floatTemplate =
         "#N canvas 0 22 450 300 12;\n"
         "#X obj 39 26 struct float float y;\n";
 
-    static char *floatArrayTemplate =
+    static const char *floatArrayTemplate =
         "#N canvas 0 22 950 300 12;\n"
         "#X obj 43 31 struct float-array array z float float style float linewidth float color;\n"
         "#X f 74;"

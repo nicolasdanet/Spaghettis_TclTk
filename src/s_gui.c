@@ -86,7 +86,7 @@ static int gui_bufferFlush (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void gui_vAdd (char *format, ...)
+void gui_vAdd (const char *format, ...)
 {
     int bufferWasTooSmall = 1;
     
@@ -114,7 +114,7 @@ void gui_vAdd (char *format, ...)
     } while (bufferWasTooSmall);
 }
 
-void gui_add (char *s)
+void gui_add (const char *s)
 {
     gui_vAdd ("%s", s);
 }

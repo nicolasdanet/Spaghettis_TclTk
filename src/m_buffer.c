@@ -113,13 +113,13 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
 
 /* < http://stackoverflow.com/a/11270603 > */
 
-void buffer_vAppend (t_buffer *x, char *fmt, ...)
+void buffer_vAppend (t_buffer *x, const char *fmt, ...)
 {
     va_list ap;
     t_atom args[BUFFER_MAXIMUM_VARIADIC];
     t_atom *a = args;
     int n = 0;
-    char *p = fmt;
+    const char *p = fmt;
     int k = 1;
     
     va_start (ap, fmt);

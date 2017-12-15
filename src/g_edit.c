@@ -67,7 +67,7 @@ static void glist_updateCursor (t_glist *glist, int type)
 {
     static t_glist *lastGlist = NULL;           /* Static. */
     static int lastType = CURSOR_NOTHING;       /* Static. */
-    static char *cursors[] =                    /* Static. */
+    static const char *cursors[] =              /* Static. */
         {
             "left_ptr",             // CURSOR_NOTHING
             "hand2",                // CURSOR_CLICK

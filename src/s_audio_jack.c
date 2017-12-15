@@ -260,9 +260,9 @@ static void jack_connectAllPortsToFirstClient (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-char *audio_nameNative (void)
+const char *audio_nameNative (void)
 {
-    static char *name = "JACK"; return name;
+    static const char *name = "JACK"; return name;
 }
 
 int audio_getPriorityNative (int min, int max, int isWatchdog)

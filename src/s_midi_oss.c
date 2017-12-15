@@ -100,9 +100,9 @@ static void midioss_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-char *midi_nameNative (void)
+const char *midi_nameNative (void)
 {
-    static char *name = "OSS"; return name;
+    static const char *name = "OSS"; return name;
 }
 
 void midi_initializeNative (void)
