@@ -151,16 +151,16 @@ static void expr_initializeFunctions (t_expr *x, int i)
     
     /* Add extended functions. */
     
-    EXPR_TE_FUNCTION (i,        "rand",     expr_functionRandom,        TE_FUNCTION0);
-    EXPR_TE_FUNCTION (i + 1,    "randmt",   expr_functionRandomMT,      TE_FUNCTION0);
-    EXPR_TE_FUNCTION (i + 2,    "min",      expr_functionMinimum,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 3,    "max",      expr_functionMaximum,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 4,    "eq",       expr_functionEqual,         TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 5,    "ne",       expr_functionUnequal,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 6,    "lt",       expr_functionLessThan,      TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 7,    "le",       expr_functionLessEqual,     TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 8,    "gt",       expr_functionGreaterThan,   TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 9,    "ge",       expr_functionGreaterEqual,  TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i,        "rand",     (const void *)expr_functionRandom,        TE_FUNCTION0);
+    EXPR_TE_FUNCTION (i + 1,    "randmt",   (const void *)expr_functionRandomMT,      TE_FUNCTION0);
+    EXPR_TE_FUNCTION (i + 2,    "min",      (const void *)expr_functionMinimum,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 3,    "max",      (const void *)expr_functionMaximum,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 4,    "eq",       (const void *)expr_functionEqual,         TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 5,    "ne",       (const void *)expr_functionUnequal,       TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 6,    "lt",       (const void *)expr_functionLessThan,      TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 7,    "le",       (const void *)expr_functionLessEqual,     TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 8,    "gt",       (const void *)expr_functionGreaterThan,   TE_FUNCTION2);
+    EXPR_TE_FUNCTION (i + 9,    "ge",       (const void *)expr_functionGreaterEqual,  TE_FUNCTION2);
 }
 
 static int expr_getNumberOfVariables (char *expression)
@@ -252,7 +252,8 @@ static void *expr_new (t_symbol *s, int argc, t_atom *argv)
     int err, size = 0;
     
     {
-        char *t = argc ? atom_atomsToString (argc, argv) : "0";
+        char *z = "0";
+        char *t = argc ? atom_atomsToString (argc, argv) : z;
         
         if (argc) { string_removeCharacter (t, '\\'); }
         
