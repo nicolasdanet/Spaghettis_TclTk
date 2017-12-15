@@ -257,7 +257,7 @@ static void *expr_new (t_symbol *s, int argc, t_atom *argv)
     int err, size = 0;
     
     {
-        char *z = "0";
+        char *z = (char *)"0";
         char *t = argc ? atom_atomsToString (argc, argv) : z;
         
         if (argc) { string_removeCharacter (t, '\\'); }

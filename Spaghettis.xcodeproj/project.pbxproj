@@ -39,7 +39,7 @@
 		370158391DFFD81B00F3FE0C /* d_delread.c in Sources */ = {isa = PBXBuildFile; fileRef = 370158381DFFD81B00F3FE0C /* d_delread.c */; };
 		370241501DAB95AC00AB5440 /* x_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 3702414F1DAB95AC00AB5440 /* x_serial.c */; };
 		3703031E1E3B586D009D8A6D /* readbinaryplist.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655921BA3465100ABDE22 /* readbinaryplist.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		370303231E3B587E009D8A6D /* finddefault.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655901BA3464900ABDE22 /* finddefault.c */; };
+		370303231E3B587E009D8A6D /* finddefault.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655901BA3464900ABDE22 /* finddefault.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		370793031DBB4F4B00183F74 /* x_midiout.c in Sources */ = {isa = PBXBuildFile; fileRef = 370793021DBB4F4B00183F74 /* x_midiout.c */; };
 		3707931F1DBB507700183F74 /* x_midirealtimein.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707931E1DBB507700183F74 /* x_midirealtimein.c */; };
 		3707935C1DBB520A00183F74 /* x_polytouchin.c in Sources */ = {isa = PBXBuildFile; fileRef = 3707935B1DBB520A00183F74 /* x_polytouchin.c */; };
@@ -1990,13 +1990,11 @@
 				371655531BA3453E00ABDE22 /* pa_cpuload.c in Sources */,
 				371655551BA3455900ABDE22 /* pa_dither.c in Sources */,
 				371655571BA3456300ABDE22 /* pa_front.c in Sources */,
-				17C9FE331FE00B7A007066EC /* s_atomicMac.c in Sources */,
 				371655671BA3457600ABDE22 /* pa_process.c in Sources */,
 				371655691BA3458300ABDE22 /* pa_stream.c in Sources */,
 				3716556B1BA3458D00ABDE22 /* pa_trace.c in Sources */,
 				3716556D1BA3459F00ABDE22 /* pa_debugprint.c in Sources */,
 				3716556F1BA345AD00ABDE22 /* pa_ringbuffer.c in Sources */,
-				17304EBD1F77DA3E00DCA7EC /* x_dspstatus.c in Sources */,
 				371655711BA345C100ABDE22 /* pa_unix_util.c in Sources */,
 				371655751BA345E400ABDE22 /* pa_mac_core.c in Sources */,
 				371655771BA345EE00ABDE22 /* pa_mac_core_blocking.c in Sources */,
@@ -2006,10 +2004,16 @@
 				371655951BA3466000ABDE22 /* pmutil.c in Sources */,
 				371655971BA3466600ABDE22 /* portmidi.c in Sources */,
 				371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */,
+				378972191C4F716800263434 /* fftsg.c in Sources */,
+				372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */,
+				3703031E1E3B586D009D8A6D /* readbinaryplist.c in Sources */,
+				370303231E3B587E009D8A6D /* finddefault.c in Sources */,
+				3759441E1E48E04A00CF3FD7 /* tinyexpr.c in Sources */,
+				17C9FE331FE00B7A007066EC /* s_atomicMac.c in Sources */,
+				17304EBD1F77DA3E00DCA7EC /* x_dspstatus.c in Sources */,
 				378972151C4F716800263434 /* d_tabplay.c in Sources */,
 				378972171C4F716800263434 /* d_dac.c in Sources */,
 				378972181C4F716800263434 /* d_delwrite.c in Sources */,
-				378972191C4F716800263434 /* fftsg.c in Sources */,
 				3789721A1C4F716800263434 /* d_fft.c in Sources */,
 				3789721B1C4F716800263434 /* d_hip.c in Sources */,
 				3789721D1C4F716800263434 /* d_clip.c in Sources */,
@@ -2303,9 +2307,6 @@
 				371196D21E2DF3D2007214B2 /* d_rfft.c in Sources */,
 				3711970C1E2DF6FE007214B2 /* d_ifft.c in Sources */,
 				37ACC4191E32190F0026E5FA /* d_fftOOURA.c in Sources */,
-				372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */,
-				3703031E1E3B586D009D8A6D /* readbinaryplist.c in Sources */,
-				370303231E3B587E009D8A6D /* finddefault.c in Sources */,
 				37D4D9AC1E3C7B33002CE930 /* s_leak.c in Sources */,
 				370B1FB01E421D22003D95A0 /* m_environment.c in Sources */,
 				37CC95F21E45AEB800D9BA64 /* s_gui.c in Sources */,
@@ -2313,7 +2314,6 @@
 				177169891EFD1212003CD374 /* m_autorelease.c in Sources */,
 				37329A6B1E4631D5008AA5E4 /* s_monitor.c in Sources */,
 				37ECBA031E488A3000F1CFD1 /* d_lrshift.c in Sources */,
-				3759441E1E48E04A00CF3FD7 /* tinyexpr.c in Sources */,
 				371526B61E49D03E00712D43 /* x_expr.c in Sources */,
 				37E224BF1E4B542B00314AA4 /* s_properties.c in Sources */,
 				37B911AB1E4C78FE001D9136 /* s_devices.c in Sources */,
