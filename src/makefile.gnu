@@ -48,6 +48,10 @@ CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
 
 CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
 
+# Expr with TinyExpr.
+
+EXPR_SRC = tinyexpr.c
+
 # MIDI with ALSA.
 
 MIDI_SRC = s_midi_alsa.c
@@ -62,7 +66,7 @@ SRC = amalgam.c
 
 # Objects.
 
-OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
+OBJ = $(SRC:.c=.o) $(EXPR_SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 
 # Targets.
 
