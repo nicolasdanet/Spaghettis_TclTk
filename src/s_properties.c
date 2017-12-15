@@ -39,7 +39,7 @@ t_error properties_loadBegin (void)
     #if PD_APPLE
     err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directorySupport->s_name);
     #else
-    err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", main_directorySupport->s_name);
+    err = string_sprintf (filepath, PD_STRING, "%s/." PD_NAME_LOWERCASE "rc", main_directorySupport->s_name);
     #endif
 
     if (!err) { err |= !path_isFileExist (filepath); }
@@ -93,7 +93,7 @@ t_error properties_saveBegin (void)
     #if PD_APPLE
     err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directorySupport->s_name);
     #else
-    err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", main_directorySupport->s_name);
+    err = string_sprintf (filepath, PD_STRING, "%s/." PD_NAME_LOWERCASE "rc", main_directorySupport->s_name);
     #endif
     
     if (!err) {
