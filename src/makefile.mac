@@ -97,11 +97,11 @@ EXPR_SRC = tinyexpr.c
 
 # MIDI with PortMidi.
 
-MIDI_SRC = s_midi_pm.c $(PORTMIDI_SRC)
+MIDI_SRC = $(PORTMIDI_SRC)
 
 # Audio with PORTAUDIO.
 
-AUDIO_SRC = s_logger_pa.c s_audio_pa.c pa_mac_hostapis.c $(PORTAUDIO_SRC)
+AUDIO_SRC = $(PORTAUDIO_SRC)
 
 # Sources amalgamated.
 

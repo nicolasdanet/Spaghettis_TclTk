@@ -357,5 +357,18 @@
 
 #include "fftsg.c"
 
+#if PD_APPLE
+    #include "s_midi_pm.c"
+    #include "s_logger_pa.c"
+    #include "s_audio_pa.c"
+    #include "pa_mac_hostapis.c"
+#endif
+
+#if PD_LINUX
+    #include "s_midi_alsa.c"
+    #include "s_logger_jack.c"
+    #include "s_audio_jack.c"
+#endif
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

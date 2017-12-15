@@ -52,21 +52,13 @@ CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
 
 EXPR_SRC = tinyexpr.c
 
-# MIDI with ALSA.
-
-MIDI_SRC = s_midi_alsa.c
-
-# Audio with JACK.
-
-AUDIO_SRC = s_logger_jack.c s_audio_jack.c
-
 # Sources amalgamated.
 
 SRC = amalgam.c
 
 # Objects.
 
-OBJ = $(SRC:.c=.o) $(EXPR_SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
+OBJ = $(SRC:.c=.o) $(EXPR_SRC:.c=.o)
 
 # Targets.
 
