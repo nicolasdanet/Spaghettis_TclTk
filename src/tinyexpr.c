@@ -1,6 +1,8 @@
 
 // ====================================
 
+#ifndef __cplusplus
+
 /*
  * TINYEXPR - Tiny recursive descent parser and evaluation engine in C
  *
@@ -654,3 +656,6 @@ static void pn (const te_expr *n, int depth) {
 void te_print(const te_expr *n) {
     pn(n, 0);
 }
+
+#endif // __cplusplus
+

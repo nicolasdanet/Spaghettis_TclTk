@@ -186,23 +186,24 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 #if PD_APPLE
 
 #include "Availability.h"
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
-    #define PD_ATOMIC_WITH_POSIX    1
-    #define PD_TIME_WITH_POSIX      1
+    #define PD_POSIX_ATOMIC         1
+    #define PD_POSIX_TIME           1
 #else
-    #define PD_ATOMIC_WITH_MAC      1
-    #define PD_TIME_WITH_MAC        1
+    #define PD_MAC_ATOMIC           1
+    #define PD_MAC_TIME             1
 #endif
 
 #else
 #if PD_LINUX
-    #define PD_ATOMIC_WITH_POSIX    1
-    #define PD_TIME_WITH_POSIX      1
+    #define PD_POSIX_ATOMIC         1
+    #define PD_POSIX_TIME           1
 #else
     #error "Unsupported platform!"
 #endif // PD_LINUX
@@ -472,6 +473,24 @@ typedef double                      t_systime;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+typedef int t_atomtype;
+
+#define A_NULL                      0
+#define A_FLOAT                     1
+#define A_SYMBOL                    2
+#define A_POINTER                   3
+#define A_SEMICOLON                 4
+#define A_COMMA                     5
+#define A_DEFFLOAT                  6
+#define A_DEFSYMBOL                 7
+#define A_DOLLAR                    8
+#define A_DOLLARSYMBOL              9
+#define A_GIMME                     10
+#define A_CANT                      11
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 struct _array;
@@ -552,21 +571,6 @@ typedef union word {
     t_array         *w_array;
     struct _buffer  *w_buffer;
     } t_word;
-
-typedef enum {
-    A_NULL          = 0,
-    A_FLOAT         = 1,
-    A_SYMBOL,
-    A_POINTER,
-    A_SEMICOLON,
-    A_COMMA,
-    A_DEFFLOAT,
-    A_DEFSYMBOL,
-    A_DOLLAR, 
-    A_DOLLARSYMBOL,
-    A_GIMME,
-    A_CANT
-    } t_atomtype;
 
 typedef struct _atom {
     t_atomtype      a_type;
