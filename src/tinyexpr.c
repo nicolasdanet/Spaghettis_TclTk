@@ -1,7 +1,9 @@
 
-// ====================================
+#include "m_spaghettis.h"
 
-#ifndef __cplusplus
+#if PD_WITH_TINYEXPR
+
+// ====================================
 
 /*
  * TINYEXPR - Tiny recursive descent parser and evaluation engine in C
@@ -657,5 +659,5 @@ void te_print(const te_expr *n) {
     pn(n, 0);
 }
 
-#endif // __cplusplus
+#endif // PD_WITH_TINYEXPR
 

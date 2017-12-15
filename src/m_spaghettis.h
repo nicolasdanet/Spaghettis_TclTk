@@ -382,6 +382,10 @@
 #define PD_WITH_DEADCODE            0           /* Unused code. */
 #endif
 
+#ifndef PD_WITH_TINYEXPR
+#define PD_WITH_TINYEXPR            1           /* Use TinyExpr library. */
+#endif
+
 #ifndef PD_WITH_LEGACY
 #define PD_WITH_LEGACY              1           /* Compatibility. */
 #endif
