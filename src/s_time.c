@@ -30,21 +30,17 @@
 
 static mach_timebase_info_data_t time_baseInfo;       /* Static. */
 
-#endif // PD_MAC_TIME
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void time_initialize (void)
+static void time_initialize (void)
 {
-    #if PD_MAC_TIME
-    
     if (time_baseInfo.denom == 0) {
         mach_timebase_info (&time_baseInfo);          /* Must be initialized first (not thread-safe). */
     }
-    
-    #endif // PD_MAC_TIME
 }
+
+void time_ctor (void)  __attribute__ ((constructor));
+void time_ctor (void)  { time_initialize(); }
+
+#endif // PD_MAC_TIME
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

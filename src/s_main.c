@@ -36,7 +36,6 @@ void        message_initialize  (void);
 void        message_release     (void);
 void        setup_initialize    (void);
 void        setup_release       (void);
-void        time_initialize     (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -284,7 +283,6 @@ int main_entry (int argc, char **argv)
     
     if (!err && !(err = priority_privilegeDrop())) {
     //
-    time_initialize();
     main_entryNative();
     
     #if PD_WITH_DEBUG
