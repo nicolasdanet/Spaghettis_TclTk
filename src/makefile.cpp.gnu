@@ -80,7 +80,7 @@ $(OBJ_LIB): %.o : %.c
 
 $(BIN_DIR)/spaghettis: $(OBJ_CPP) $(OBJ_LIB) | $(BIN_DIR)
 	@echo "Build spaghettis ..."
-	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ_CPP) $(OBJ_LIB) $(LIB)
+	@$(CXX) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ_CPP) $(OBJ_LIB) $(LIB)
 
 $(BIN_DIR)/spaghettisdog: u_watchdog.c | $(BIN_DIR)
 	@echo "Build spaghettisdog ..."
