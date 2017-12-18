@@ -357,6 +357,13 @@
 
 #include "fftsg.c"
 
+#if PD_WITH_DUMMY
+
+    #include "s_midi_dummy.c"
+    #include "s_audio_dummy.c"
+
+#else
+
 #if PD_APPLE
     #include "s_midi_pm.c"
     #include "s_logger_pa.c"
@@ -369,6 +376,8 @@
     #include "s_logger_jack.c"
     #include "s_audio_jack.c"
 #endif
+
+#endif // PD_WITH_DUMMY
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

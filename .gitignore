@@ -10,3 +10,4 @@ Application/
 *.pbxuser
 xcuserdata/
 xcshareddata/
+tests

@@ -378,6 +378,17 @@
 #define PD_WITH_LOGGER              0           /* Debug with wait-free logger. */
 #endif
 
+#ifndef PD_WITH_LEGACY
+#define PD_WITH_LEGACY              1           /* Compatibility. */
+#endif
+
+#ifndef PD_WITH_REALTIME
+#define PD_WITH_REALTIME            1           /* Require RT policy. */
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #ifndef PD_WITH_DEADCODE
 #define PD_WITH_DEADCODE            0           /* Unused code. */
 #endif
@@ -386,12 +397,8 @@
 #define PD_WITH_TINYEXPR            1           /* Use TinyExpr library. */
 #endif
 
-#ifndef PD_WITH_LEGACY
-#define PD_WITH_LEGACY              1           /* Compatibility. */
-#endif
-
-#ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME            1           /* Require RT policy. */
+#ifndef PD_WITH_MAIN
+#define PD_WITH_MAIN                1           /* Use main entry. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
