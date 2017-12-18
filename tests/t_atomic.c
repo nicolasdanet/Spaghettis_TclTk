@@ -213,18 +213,14 @@ void *test_bitwise (void *x)
         ttt_wasteTime (&w);
     }
     for (j = start; j < end; j++) {
-        if (PD_ATOMIC_UINT32_FALSE (test_uInt32Masks[j], &test_uInt32Shared)) {
-            test_atomicFailed = 1;
-        }
+        if (PD_ATOMIC_UINT32_FALSE (test_uInt32Masks[j], &test_uInt32Shared)) { test_atomicFailed = 1; }
     }
     for (j = start; j < end; j++) {
         PD_ATOMIC_UINT32_UNSET (test_uInt32Masks[j], &test_uInt32Shared);
         ttt_wasteTime (&w);
     }
     for (j = start; j < end; j++) {
-        if (PD_ATOMIC_UINT32_TRUE (test_uInt32Masks[j], &test_uInt32Shared)) {
-            test_atomicFailed = 1;
-        }
+        if (PD_ATOMIC_UINT32_TRUE (test_uInt32Masks[j], &test_uInt32Shared))  { test_atomicFailed = 1; }
     }
     //
     }
