@@ -11,6 +11,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static int test_atomicFailed;
+
 static t_int32Atomic    test_int32Shared;
 static t_uint32Atomic   test_uInt32Shared;
 static t_uint64Atomic   test_uInt64Shared;
@@ -75,8 +77,6 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-static int test_atomicFailed;
 
 static uint32_t test_uInt32Limit = 0xffffff00U;
 static uint64_t test_uInt64Limit = 0xffffff0000000000ULL;
@@ -172,6 +172,95 @@ TTT_BEGIN (AtomicAssignment, 11, "Atomic - Assignment")
     test_uInt64Shared = test_uInt64Values[0];
 
     if (ttt_testThreadsLaunch (test_loadStore) != TTT_GOOD) { TTT_FAIL; }
+    else {
+        TTT_EXPECT (test_atomicFailed == 0);
+    }
+
+TTT_END
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if 0
+}
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static uint32_t test_uInt32Masks[32];
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void *test_bitwise (void *x)
+{
+    int i, j, n = (int)(long)x;
+    
+    TTTWaste w;
+    
+    int start = (n + 0) * (32 / ttt_testThreadsNumber());
+    int end   = (n + 1) * (32 / ttt_testThreadsNumber());
+    
+    ttt_wasteInit (&w, n);
+    
+    for (i = 0; i < (1000000 / 32); i++) {
+    //
+    for (j = start; j < end; j++) {
+        PD_ATOMIC_UINT32_SET (test_uInt32Masks[j], &test_uInt32Shared);
+        // test_uInt32Shared |= test_uInt32Masks[j];
+        ttt_wasteTime (&w);
+    }
+    for (j = start; j < end; j++) {
+        if (PD_ATOMIC_UINT32_FALSE (test_uInt32Masks[j], &test_uInt32Shared)) {
+            test_atomicFailed = 1;
+        }
+    }
+    for (j = start; j < end; j++) {
+        PD_ATOMIC_UINT32_UNSET (test_uInt32Masks[j], &test_uInt32Shared);
+        ttt_wasteTime (&w);
+    }
+    for (j = start; j < end; j++) {
+        if (PD_ATOMIC_UINT32_TRUE (test_uInt32Masks[j], &test_uInt32Shared)) {
+            test_atomicFailed = 1;
+        }
+    }
+    //
+    }
+
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if 0
+void test12__bitwise() {    /* Set / Unset. */
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+TTT_BEGIN (AtomicBitwise, 12, "Atomic - Bitwise")
+
+    int i;
+    t_rand48 seed;
+
+    PD_RAND48_INIT (seed);
+
+    for (i = 0; i < 32; i++) { test_uInt32Masks[i] = (1U << i); }
+
+    /* < https://en.wikipedia.org/wiki/Fisher-Yates_shuffle > */
+    
+    for (i = (32 - 1); i > 0; i--) {
+        int rnd = (int)(PD_RAND48_DOUBLE (seed) * (i + 1));
+        uint32_t t = test_uInt32Masks[rnd];
+        test_uInt32Masks[rnd] = test_uInt32Masks[i];
+        test_uInt32Masks[i]   = t;
+    }
+
+    if (ttt_testThreadsLaunch (test_bitwise) != TTT_GOOD) { TTT_FAIL; }
     else {
         TTT_EXPECT (test_atomicFailed == 0);
     }
