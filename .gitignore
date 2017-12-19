@@ -2,6 +2,7 @@
 bin/
 makefile.dependencies
 build/
+Builds/
 Debug/
 Application/
 *.pdbundle64
@@ -11,3 +12,5 @@ Application/
 xcuserdata/
 xcshareddata/
 tests/tests
+libraries/belle/Belle
+libraries/belle/Resources/MICA/MicaData*.hpp

@@ -1,0 +1,119 @@
+
+/* 
+    Copyright 2007-2013 William Andrew Burnson. All rights reserved.
+
+    File modified by Nicolas Danet.
+    
+*/
+
+/* < http://opensource.org/licenses/BSD-2-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#ifndef PRIM_FILE_HPP
+#define PRIM_FILE_HPP
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+namespace prim {
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+struct File {
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static bool writeFromString (const ascii* filename, const String& data)
+{
+    bool b = false;
+    
+    std::ofstream stream;
+    stream.open (filename, std::ios::out | std::ios::trunc | std::ios::binary);
+    
+    if (stream.is_open()) { 
+    //
+    stream.write (data.toCString(), data.length()); 
+    b = stream.good();
+    stream.close(); 
+    //
+    }
+    
+    return b;
+}
+
+static bool readToString (const ascii* filename, String& data)
+{
+    bool b = false;
+    
+    Array < byte > t;
+    b = readToArray (filename, t);
+    if (b) { t.add (0); data << reinterpret_cast < const ascii* > (&t[0]); }
+    
+    return b;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+template < class T > static bool writeFromArray (const ascii* filename, const Array < T > & data)
+{
+    bool b = false;
+    
+    std::ofstream stream;
+    stream.open (filename, std::ios::out | std::ios::trunc | std::ios::binary);
+    
+    if (stream.is_open()) { 
+    //
+    stream.write (reinterpret_cast < const char* > (&data[0]), data.size() * sizeof (T)); 
+    b = stream.good();
+    stream.close(); 
+    //
+    }
+    
+    return b;
+}
+
+template < class T > static bool readToArray (const ascii* filename, Array < T > & data)
+{
+    bool b = false;
+    
+    std::ifstream stream;
+    stream.open (filename, std::ios::in | std::ios::binary);
+
+    if (stream.is_open()) {
+    //
+    stream.seekg (0, std::ios_base::end);
+    int size = static_cast < int > (stream.tellg());
+    stream.seekg (0, std::ios_base::beg);
+    
+    data.resize (static_cast < int > (size / sizeof (T)));
+    
+    stream.read (reinterpret_cast < char* > (&data[0]), size);
+    b = stream.good();
+    stream.close();
+    //
+    }
+
+    return b; 
+}
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+};
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+} // namespace prim
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#endif // PRIM_FILE_HPP
