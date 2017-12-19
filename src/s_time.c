@@ -14,12 +14,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define TIME_NSEC_PER_USEC          1000ULL
 #define TIME_NSEC_PER_SEC           1000000000ULL
 #define TIME_USEC_PER_SEC           1000000ULL
 
-#define TIME_TRUNCATION_ERROR       1ULL
-#define TIME_HAS_BEEN_PREEMPTED     10000ULL
 #define TIME_FROM_1900_TO_1970      2208988800ULL
 
 // -----------------------------------------------------------------------------------------------------------
@@ -264,78 +261,6 @@ t_error stamp_elapsedNanoseconds (const t_stamp *t0, const t_stamp *t1, t_nano *
     
     if (!err) {
         (*r) = ((s1 * TIME_NSEC_PER_SEC) + n1) - ((s0 * TIME_NSEC_PER_SEC) + n0);
-    }
-    
-    return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error timebase_init (t_timebase *base)
-{
-    t_time t;
-    t_nano ns;
-    t_error err = PD_ERROR;
-    
-    do {
-    
-    time_set (&t);
-    PD_MEMORY_BARRIER;                                 /* Avoid out-of-thin-air compiler optimizations. */
-    err = (gettimeofday (&base->tv_, NULL) != 0);
-    PD_MEMORY_BARRIER;
-    time_set (&base->time_);
-    time_elapsedNanoseconds (&t, &base->time_, &ns);
-    
-    } while (ns > TIME_HAS_BEEN_PREEMPTED);
-    
-    return err;
-}
-
-t_error timebase_timeToStamp (const t_timebase *base, const t_time *t, t_stamp *stamp)
-{
-    uint64_t f, s;
-    t_nano elapsed, n;
-    t_error err = PD_ERROR;
-    
-    (*stamp) = 0ULL;
-    
-    if (!(err = time_elapsedNanoseconds (&base->time_, t, &elapsed))) {
-        n = elapsed + ((uint64_t)base->tv_.tv_usec * TIME_NSEC_PER_USEC);
-        s = (uint64_t)base->tv_.tv_sec + TIME_FROM_1900_TO_1970 + (uint64_t)(n / TIME_NSEC_PER_SEC);
-        f = (uint64_t)(((n % TIME_NSEC_PER_SEC) << 32) / TIME_NSEC_PER_SEC);
-        
-        (*stamp) = (s << 32) | f;
-    }
-    
-    return err;
-}
-
-t_error timebase_stampToTime (const t_timebase *base, const t_stamp *stamp, t_time *t)
-{
-    t_error err = PD_ERROR;
-    
-    (*t) = 0ULL;
-    
-    if ((*stamp) != 0ULL) {
-    //
-    uint64_t hi = ((*stamp) >> 32);
-    uint64_t lo = ((*stamp) & 0xffffffffULL);
-    uint64_t s0 = (uint64_t)base->tv_.tv_sec + TIME_FROM_1900_TO_1970;
-    uint64_t n0 = (uint64_t)base->tv_.tv_usec * TIME_NSEC_PER_USEC;
-    uint64_t s1 = hi;
-    uint64_t n1 = ((lo * TIME_NSEC_PER_SEC) >> 32);
-    
-    err = PD_ERROR_NONE;
-    err |= (s1 < s0);                               /* < https://en.wikipedia.org/wiki/Year_2038_problem > */
-    err |= (s1 == s0) && (n1 <= n0);
-    
-    if (!err) {
-        (*t) = ((s1 * TIME_NSEC_PER_SEC) + n1) - ((s0 * TIME_NSEC_PER_SEC) + n0) + base->time_;
-        (*t) += TIME_TRUNCATION_ERROR;
-    }
-    //
     }
     
     return err;
