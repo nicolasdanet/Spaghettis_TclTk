@@ -1489,7 +1489,7 @@ TTT_BEGIN (PrimString, 107, "Prim - String")
     
     {
     //
-    prim::String t ("- Allons ! encore notre vieux carrick !");
+    prim::String t ("- Allons ! encore notre vieux carrick !"); // --
     
     std::string result (t.toCString());
     
@@ -1501,7 +1501,7 @@ TTT_BEGIN (PrimString, 107, "Prim - String")
     
     TTT_EXPECT (std::string (b.toCString()) == result);
     
-    prim::String c = prim::String ("- Allons ! encore notre vieux carrick !");
+    prim::String c = prim::String ("- Allons ! encore notre vieux carrick !");  // --
     
     TTT_EXPECT (std::string (c.toCString()) == result);
     //

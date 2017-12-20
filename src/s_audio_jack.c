@@ -98,28 +98,29 @@ static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
     jack_framesRequired = PD_MAX (numberOfFrames, INTERNAL_BLOCKSIZE);
     
     if (jack_framesFilled >= numberOfFrames) {
-
-        PD_ASSERT (jack_framesFilled == numberOfFrames);
-        
-        for (i = 0; i < jack_numberOfPortsOut; i++) {
-            if ((out = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsOut[i], numberOfFrames))) {
-                memcpy (out, jack_bufferOut + (i * JACK_BUFFER_SIZE), size);
-            }
+    //
+    PD_ASSERT (jack_framesFilled == numberOfFrames);
+    
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+        if ((out = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsOut[i], numberOfFrames))) {
+            memcpy (out, jack_bufferOut + (i * JACK_BUFFER_SIZE), size);
         }
-        
-        for (i = 0; i < jack_numberOfPortsIn; i++) {
-            if ((in = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsIn[i], numberOfFrames))) {
-                memcpy (jack_bufferIn + (i * JACK_BUFFER_SIZE), in, size);
-            }
+    }
+    
+    for (i = 0; i < jack_numberOfPortsIn; i++) {
+        if ((in = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsIn[i], numberOfFrames))) {
+            memcpy (jack_bufferIn + (i * JACK_BUFFER_SIZE), in, size);
         }
-
+    }
+    //
     } else {    /* Fill with zeros. */
-
-        for (i = 0; i < jack_numberOfPortsOut; i++) {
-            if ((out = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsOut[i], numberOfFrames))) {
-                memset (out, 0, size);
-            }
+    //
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+        if ((out = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsOut[i], numberOfFrames))) {
+            memset (out, 0, size);
         }
+    }
+    //
     }
     
     jack_framesFilled = 0;

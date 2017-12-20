@@ -24,19 +24,17 @@ void test170__corpus() {
 
 TTT_BEGIN (MicaCorpus, 170, "MICA - Corpus")
 
-    /*
     prim::Array < int > numbers (testCorpus, testCorpusSize);
     
-    stopwatch_trigger();
+    // stopwatch_trigger();
     
     prim::Array < mica::Concept > result = (mica::MIR::Spell (mica::CMajor).getSpelling (numbers));
 
-    ttt_stdout (TTT_COLOR_BLUE, "Time / %f", stopwatch_trigger());
+    // ttt_stdout (TTT_COLOR_BLUE, "Time / %f", stopwatch_trigger());
     
     for (int i = 0; i < result.size(); ++i) {
-        ttt_stdout (TTT_COLOR_NONE, "%s", const_cast < char* > (result[i].toString().toCString()));
+        // ttt_stdout (TTT_COLOR_NONE, "%s", const_cast < char* > (result[i].toString().toCString()));
     }
-    */
     
 TTT_END
 
