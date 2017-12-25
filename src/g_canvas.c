@@ -245,7 +245,7 @@ static void canvas_requireArrayDialog (t_glist *glist)
     char t[PD_STRING] = { 0 };
     
     t_error err = string_sprintf (t, PD_STRING, 
-                        "::ui_array::show %%s %s 100 1 -1 1 1 0\n",
+                        "::ui_array::show %%s %s 100 1 -1 0 1 0\n",
                         utils_getUnusedBindName (garray_class, sym_array)->s_name);
     
     PD_UNUSED (err); PD_ASSERT (!err);
