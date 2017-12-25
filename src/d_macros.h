@@ -41,12 +41,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Notice that this approach implies limitation in the range of signals allowed. */
-/* An efficient mechanism to protect to overflow should be implemented. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 /* Double precision floating-point representation (binary and hexadecimal). */
 
 // DSP_UNITBIT
@@ -148,6 +142,8 @@
 // MARK: -
 
 /* Notice that the trick below seems broken for index with a large value. */
+
+/* An efficient mechanism to protect to overflow should be implemented. */
 
 /* Does it worth the cost? */
 
