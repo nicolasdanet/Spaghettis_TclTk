@@ -268,21 +268,6 @@ t_error stamp_elapsedNanoseconds (const t_stamp *t0, const t_stamp *t1, t_nano *
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-double stopwatch_trigger (void)
-{
-    static double time_stopwatch;
-    
-    double now     = clock_getRealTimeInSeconds();
-    double elapsed = now - time_stopwatch;
-    time_stopwatch = now;
-    
-    return SECONDS_TO_MILLISECONDS (elapsed);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 #endif // PD_WITH_DEADCODE
 
