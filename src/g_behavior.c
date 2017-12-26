@@ -46,6 +46,12 @@ t_widgetbehavior glist_widgetbehavior =     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void glist_behaviorVisibilityChangedProceed (t_glist *, t_glist *, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void glist_behaviorGetRectangleProceed (t_glist *x, t_glist *owner, t_rectangle *r)
 {
     glist_getRectangleOnParent (x, r);
@@ -53,12 +59,12 @@ static void glist_behaviorGetRectangleProceed (t_glist *x, t_glist *owner, t_rec
 
 static void glist_behaviorDisplacedProceed (t_glist *x, t_glist *owner, int deltaX, int deltaY)
 {
-    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (cast_gobj (x), owner, 0); }
+    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChangedProceed (x, owner, 0, 1); }
     
     object_setSnappedX (cast_object (x), object_getX (cast_object (x)) + deltaX);
     object_setSnappedY (cast_object (x), object_getY (cast_object (x)) + deltaY);
     
-    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChanged (cast_gobj (x), owner, 1); }
+    if (glist_isParentOnScreen (x)) { glist_behaviorVisibilityChangedProceed (x, owner, 1, 1); }
     
     glist_updateLinesForObject (owner, cast_object (x));
 }
@@ -68,9 +74,9 @@ static void glist_behaviorSelectedProceed (t_glist *x, t_glist *owner, int isSel
     glist_updateRectangleOnParent (x);
 }
 
-static void glist_behaviorVisibilityChangedProceed (t_glist *x, t_glist *owner, int isVisible)
+void glist_behaviorVisibilityChangedProceed (t_glist *x, t_glist *owner, int isVisible, int isMoving)
 {
-    if (isVisible) { glist_drawRectangleOnParent (x); } 
+    if (isVisible) { glist_drawRectangleOnParent (x); }
     else {
         glist_eraseRectangleOnParent (x);
     }
@@ -80,7 +86,8 @@ static void glist_behaviorVisibilityChangedProceed (t_glist *x, t_glist *owner, 
     t_gobj *y = NULL; 
         
     for (y = x->gl_graphics; y; y = y->g_next) { 
-        gobj_visibilityChanged (y, x, isVisible); 
+        if (isVisible && isMoving && (pd_class (y) == garray_class)) { continue; }
+        gobj_visibilityChanged (y, x, isVisible);
     }
     //
     }
@@ -173,7 +180,7 @@ void glist_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 
     if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnVisibilityChanged (z, glist, isVisible); }
     else {
-        glist_behaviorVisibilityChangedProceed (x, glist, isVisible);
+        glist_behaviorVisibilityChangedProceed (x, glist, isVisible, 0);
     }
 }
 

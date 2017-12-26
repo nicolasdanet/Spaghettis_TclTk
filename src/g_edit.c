@@ -21,6 +21,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void glist_behaviorVisibilityChangedProceed (t_glist *, t_glist *, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
 {
     t_gobj *y = NULL;
@@ -189,13 +195,16 @@ static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int 
     int w = rectangle_getWidth (r) + deltaX;
     int h = rectangle_getHeight (r) + deltaY;
     
-    gobj_visibilityChanged (y, glist, 0);
+    PD_ASSERT (glist_isGraphOnParent (cast_glist (y)));
+    
+    glist_behaviorVisibilityChangedProceed (cast_glist (y), glist, 0, 1);
     rectangle_setWidth (r, PD_MAX (EDIT_GRIP_SIZE, w));
     rectangle_setHeight (r, PD_MAX (EDIT_GRIP_SIZE, h));
     glist_updateRectangle (cast_glist (y));
-    gobj_visibilityChanged (y, glist, 1);
+    glist_behaviorVisibilityChangedProceed (cast_glist (y), glist, 1, 1);
     glist_updateLinesForObject (glist, cast_object (y));
     glist_setDirty (glist, 1);
+    glist_redrawRequired (glist);
     //
     }
 }
