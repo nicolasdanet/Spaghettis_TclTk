@@ -80,14 +80,18 @@ void glist_behaviorVisibilityChangedProceed (t_glist *x, t_glist *owner, int isV
     else {
         glist_eraseRectangleOnParent (x);
     }
-        
+    
+    /* For efficiency, no NOT draw garrays while moving or resizing. */
+    
     if (!glist_hasWindow (x)) {
     //
     t_gobj *y = NULL; 
         
-    for (y = x->gl_graphics; y; y = y->g_next) { 
-        if (isVisible && isMoving && (pd_class (y) == garray_class)) { continue; }
-        gobj_visibilityChanged (y, x, isVisible);
+    for (y = x->gl_graphics; y; y = y->g_next) {
+    //
+    if (isVisible && isMoving && (pd_class (y) == garray_class)) { continue; }
+    gobj_visibilityChanged (y, x, isVisible);
+    //
     }
     //
     }
