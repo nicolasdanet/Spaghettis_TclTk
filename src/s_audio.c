@@ -18,15 +18,15 @@ extern t_deviceslist audio_devices;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_sample *audio_soundIn;                            /* Global. */
-t_sample *audio_soundOut;                           /* Global. */
+t_sample *audio_soundIn;                            /* Static. */
+t_sample *audio_soundOut;                           /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      audio_totalOfChannelsIn;            /* Global. */
-static int      audio_totalOfChannelsOut;           /* Global. */
-static t_float  audio_sampleRate;                   /* Global. */
+static int      audio_totalOfChannelsIn;            /* Static. */
+static int      audio_totalOfChannelsOut;           /* Static. */
+static t_float  audio_sampleRate;                   /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

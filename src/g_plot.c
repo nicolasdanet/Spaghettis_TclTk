@@ -71,7 +71,7 @@ static int  plot_behaviorMouse             (t_gobj *, t_gpointer *, t_float, t_f
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_painterbehavior plot_painterBehavior =
+static t_painterbehavior plot_painterBehavior =     /* Shared. */
     {
         plot_behaviorGetRectangle,
         plot_behaviorVisibilityChanged,

@@ -14,18 +14,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *main_directoryRoot;                        /* Global. */
-t_symbol    *main_directoryBin;                         /* Global. */
-t_symbol    *main_directoryTcl;                         /* Global. */
-t_symbol    *main_directoryHelp;                        /* Global. */
-t_symbol    *main_directorySupport;                     /* Global. */
+t_symbol    *main_directoryRoot;                        /* Static. */
+t_symbol    *main_directoryBin;                         /* Static. */
+t_symbol    *main_directoryTcl;                         /* Static. */
+t_symbol    *main_directoryHelp;                        /* Static. */
+t_symbol    *main_directorySupport;                     /* Static. */
 
-int         main_portNumber;                            /* Global. */
+int         main_portNumber;                            /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int  main_version;                               /* Global. */
+static int  main_version;                               /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -33,7 +33,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int vu_colors[41] =
+static int vu_colors[41] =                  /* Static. */
     {
         0x000000,
         0x14e814,   // Green.
@@ -78,7 +78,7 @@ static int vu_colors[41] =
         0x000000
     };
 
-static int vu_decibelToStep[226] =
+static int vu_decibelToStep[226] =          /* Static. */
     {
         0,  1,  1,  1,  1,  1,  1,  1,  1,  1,
         1,  1,  1,  1,  1,  1,  1,  1,  1,  1,

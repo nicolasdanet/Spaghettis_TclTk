@@ -59,7 +59,7 @@ static void ooura_dummy (int n)
 
 void ooura_initialize (int n)
 {
-    static int ooura_maximum = 0;
+    static int ooura_maximum = 0;   /* Static. */
     
     n = ooura_getNextSize (n);
     

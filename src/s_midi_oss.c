@@ -24,15 +24,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int  midioss_numberOfDetectedIn;                                                 /* Global. */
-static int  midioss_numberOfDetectedOut;                                                /* Global. */
-static char midioss_detectedInNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];             /* Global. */
-static char midioss_detectedOutNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];            /* Global. */
+static int  midioss_numberOfDetectedIn;                                                 /* Static. */
+static int  midioss_numberOfDetectedOut;                                                /* Static. */
+static char midioss_detectedInNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];             /* Static. */
+static char midioss_detectedOutNames[MIDIOSS_DEVICES * MIDIOSS_DESCRIPTION];            /* Static. */
 
-static int  midioss_numberOfDevicesIn;
-static int  midioss_numberOfDevicesOut;
-static int  midioss_devicesIn[DEVICES_MAXIMUM_IO];
-static int  midioss_devicesOut[DEVICES_MAXIMUM_IO];
+static int  midioss_numberOfDevicesIn;                                                  /* Static. */
+static int  midioss_numberOfDevicesOut;                                                 /* Static. */
+static int  midioss_devicesIn[DEVICES_MAXIMUM_IO];                                      /* Static. */
+static int  midioss_devicesOut[DEVICES_MAXIMUM_IO];                                     /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ static void midioss_initialize (void)
 
 const char *midi_nameNative (void)
 {
-    static const char *name = "OSS"; return name;
+    static const char *name = "OSS"; return name;       /* Static. */
 }
 
 void midi_initializeNative (void)

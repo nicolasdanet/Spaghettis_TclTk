@@ -29,14 +29,14 @@ extern t_symbol *main_directorySupport;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static char                     *logger_buffer;                 /* Global. */
+static char                     *logger_buffer;                 /* Static. */
 
-static PaUtilRingBuffer         logger_ring;                    /* Global. */
-static int                      logger_file;                    /* Global. */
-static pthread_t                logger_thread;                  /* Global. */
-static pthread_attr_t           logger_attribute;               /* Global. */
-static int                      logger_quit;                    /* Global. */
-static int                      logger_running;                 /* Global. */
+static PaUtilRingBuffer         logger_ring;                    /* Static. */
+static int                      logger_file;                    /* Static. */
+static pthread_t                logger_thread;                  /* Static. */
+static pthread_attr_t           logger_attribute;               /* Static. */
+static int                      logger_quit;                    /* Static. */
+static int                      logger_running;                 /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

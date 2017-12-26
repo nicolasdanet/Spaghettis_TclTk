@@ -49,25 +49,25 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static char                 *jack_clientNames[JACK_MAXIMUM_CLIENTS];            /* Global. */
-static jack_client_t        *jack_client;                                       /* Global. */
+static char                 *jack_clientNames[JACK_MAXIMUM_CLIENTS];            /* Static. */
+static jack_client_t        *jack_client;                                       /* Static. */
 
-static t_sample             *jack_bufferIn;                                     /* Global. */
-static t_sample             *jack_bufferOut;                                    /* Global. */
-static jack_port_t          *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Global. */
-static jack_port_t          *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Global. */
+static t_sample             *jack_bufferIn;                                     /* Static. */
+static t_sample             *jack_bufferOut;                                    /* Static. */
+static jack_port_t          *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Static. */
+static jack_port_t          *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Static. */
 
-static int                  jack_numberOfPortsIn;                               /* Global. */
-static int                  jack_numberOfPortsOut;                              /* Global. */
+static int                  jack_numberOfPortsIn;                               /* Static. */
+static int                  jack_numberOfPortsOut;                              /* Static. */
 
-static jack_nframes_t       jack_framesRequired;                                /* Global. */
-static jack_nframes_t       jack_framesFilled;                                  /* Global. */
+static jack_nframes_t       jack_framesRequired;                                /* Static. */
+static jack_nframes_t       jack_framesFilled;                                  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static pthread_cond_t       jack_cond;                                          /* Global. */
-static pthread_mutex_t      jack_mutex;                                         /* Global. */
+static pthread_cond_t       jack_cond;                                          /* Static. */
+static pthread_mutex_t      jack_mutex;                                         /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -263,7 +263,7 @@ static void jack_connectAllPortsToFirstClient (void)
 
 const char *audio_nameNative (void)
 {
-    static const char *name = "JACK"; return name;
+    static const char *name = "JACK"; return name;      /* Static. */
 }
 
 int audio_getPriorityNative (int min, int max, int isWatchdog)

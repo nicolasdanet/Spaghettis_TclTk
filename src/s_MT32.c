@@ -162,7 +162,7 @@ void init_genrand32ByArray (MTState32 *x, long key_length, uint32_t *init_key)
 uint32_t genrand32_int32 (MTState32 *x)
 {
     uint32_t y;
-    static const uint32_t mag01[2] = { 0x0UL, PIZ_MT32_A };
+    static const uint32_t mag01[2] = { 0x0UL, PIZ_MT32_A };     /* Static. */
 
     if (x->mti_ >= PIZ_MT32_N) {
     //

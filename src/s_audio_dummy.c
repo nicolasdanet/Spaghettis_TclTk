@@ -16,7 +16,7 @@
 
 const char *audio_nameNative (void)
 {
-    static const char *name = "Dummy"; return name;
+    static const char *name = "Dummy"; return name;     /* Static. */
 }
 
 int audio_getPriorityNative (int min, int max, int isWatchdog)

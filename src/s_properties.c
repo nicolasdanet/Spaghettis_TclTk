@@ -24,8 +24,8 @@ extern t_symbol *main_directorySupport;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static char *properties_loadBuffer;     /* Global. */
-static FILE *properties_saveFile;       /* Global. */
+static char *properties_loadBuffer;     /* Static. */
+static FILE *properties_saveFile;       /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

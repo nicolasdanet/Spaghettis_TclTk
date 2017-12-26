@@ -24,13 +24,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int midipm_numberOfDevicesIn;                        /* Global. */
-static int midipm_numberOfDevicesOut;                       /* Global. */
+static int midipm_numberOfDevicesIn;                        /* Static. */
+static int midipm_numberOfDevicesOut;                       /* Static. */
 
-static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];      /* Global. */
-static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];     /* Global. */
+static PmStream *midipm_devicesIn[DEVICES_MAXIMUM_IO];      /* Static. */
+static PmStream *midipm_devicesOut[DEVICES_MAXIMUM_IO];     /* Static. */
 
-static int midipm_sysexFlag;                                /* Global. */
+static int midipm_sysexFlag;                                /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ static void midipm_writeFourBytes (PmStream *stream, int a, int b, int c, int d)
 
 const char *midi_nameNative (void)
 {
-    static const char *name = "PortMidi"; return name;
+    static const char *name = "PortMidi"; return name;  /* Static. */
 }
 
 void midi_initializeNative (void)

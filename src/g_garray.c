@@ -90,11 +90,11 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 
 void garray_initialize (void)
 {
-    static const char *floatTemplate =
+    static const char *floatTemplate =              /* Static. */
         "#N canvas 0 22 450 300 12;\n"
         "#X obj 39 26 struct float float y;\n";
 
-    static const char *floatArrayTemplate =
+    static const char *floatArrayTemplate =         /* Static. */
         "#N canvas 0 22 950 300 12;\n"
         "#X obj 43 31 struct float-array array z float float style float linewidth float color;\n"
         "#X f 74;"
@@ -278,7 +278,7 @@ t_array *garray_getArray (t_garray *x)
 {
     #if PD_WITH_DEBUG
     
-    static int once = 0; if (!once) { garray_check (x); once = 1; }
+    static int once = 0; if (!once) { garray_check (x); once = 1; }     /* Static. */
     
     #endif
     

@@ -61,7 +61,7 @@ static uint16_t time_makeSeed16Reversed (uint16_t v)
 
 static uint64_t time_makeSeed16 (void)
 {
-    static uint16_t base = 0ULL;
+    static uint16_t base = 0ULL;    /* Static. */
     
     t_time t1, t2;
     uint16_t v1, v2;
@@ -99,7 +99,7 @@ static uint64_t time_makeSeed (void)
 
 uint64_t time_makeRandomSeed (void)
 {
-    static uint64_t seed = 0;
+    static uint64_t seed = 0;       /* Static. */
     
     seed ^= utils_unique();
     

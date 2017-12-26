@@ -19,7 +19,7 @@ extern t_pd             global_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_deviceslist    midi_devices;       /* Global. */
+static t_deviceslist    midi_devices;       /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -37,8 +37,8 @@ static t_deviceslist    midi_devices;       /* Global. */
 
 static t_error midi_getLists (t_deviceslist *l)
 {
-    static int cacheLoaded = 0;
-    static t_deviceslist cache;
+    static int cacheLoaded = 0;     /* Static. */
+    static t_deviceslist cache;     /* Static. */
     
     t_error err = PD_ERROR_NONE;
     

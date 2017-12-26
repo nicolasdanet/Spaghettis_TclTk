@@ -161,7 +161,7 @@ void init_genrand64ByArray (MTState64 *x, long key_length, uint64_t *key)
 uint64_t genrand64_int64 (MTState64 *x)
 {
     uint64_t y;
-    static const uint64_t mag01[2] = { 0ULL, PIZ_MT64_A };
+    static const uint64_t mag01[2] = { 0ULL, PIZ_MT64_A };      /* Static. */
 
     if (x->mti_ >= PIZ_MT64_NN) {
     //

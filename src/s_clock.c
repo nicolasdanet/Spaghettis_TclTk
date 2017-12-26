@@ -15,8 +15,8 @@
 
 #if PD_WINDOWS
 
-static LARGE_INTEGER    time_NTTime;
-static double           time_NTFrequency;
+static LARGE_INTEGER    time_NTTime;            /* Static. */
+static double           time_NTFrequency;       /* Static. */
 
 #endif
 

@@ -47,7 +47,7 @@ static int  drawtext_behaviorMouse             (t_gobj *, t_gpointer *, t_float,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_painterbehavior drawtext_painterBehavior =
+static t_painterbehavior drawtext_painterBehavior =     /* Shared. */
     {
         drawtext_behaviorGetRectangle,
         drawtext_behaviorVisibilityChanged,

@@ -29,11 +29,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int              leak_maximum;                           /* Global. */
-static t_int            leak_allocated[LEAK_BUFFER_SIZE];       /* Global. */
-static const char       *leak_function[LEAK_BUFFER_SIZE];       /* Global. */
-static int              leak_line[LEAK_BUFFER_SIZE];            /* Global. */
-static pthread_mutex_t  leak_mutex;                             /* Global. */
+static int              leak_maximum;                           /* Static. */
+static t_int            leak_allocated[LEAK_BUFFER_SIZE];       /* Static. */
+static const char       *leak_function[LEAK_BUFFER_SIZE];       /* Static. */
+static int              leak_line[LEAK_BUFFER_SIZE];            /* Static. */
+static pthread_mutex_t  leak_mutex;                             /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

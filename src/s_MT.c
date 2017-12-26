@@ -27,7 +27,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static const int randMT_DeBruijn32[] =
+static const int randMT_DeBruijn32[] =      /* Static. */
     {
         0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
         8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
@@ -112,7 +112,7 @@ long randMT_getInteger (t_randMT *x, long v)
 
 #if PD_WITH_DEADCODE
 
-static const int randMT_DeBruijn64[] =
+static const int randMT_DeBruijn64[] =      /* Static. */
     {
         63, 0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3,
         61, 51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4,

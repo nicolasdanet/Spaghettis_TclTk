@@ -16,7 +16,7 @@
 
 const char *midi_nameNative (void)
 {
-    static const char *name = "Dummy"; return name;
+    static const char *name = "Dummy"; return name;     /* Static. */
 }
 
 void midi_initializeNative (void)

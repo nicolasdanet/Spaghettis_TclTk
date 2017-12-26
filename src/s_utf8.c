@@ -41,7 +41,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static const uint32_t u8_offsetsFromUTF8[6] = 
+static const uint32_t u8_offsetsFromUTF8[6] =               /* Static. */
     {
         0x00000000UL,
         0x00003080UL,
@@ -51,7 +51,7 @@ static const uint32_t u8_offsetsFromUTF8[6] =
         0x82082080UL
     };
 
-static const char u8_trailingBytesForUTF8[256] = 
+static const char u8_trailingBytesForUTF8[256] =            /* Static. */
     {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

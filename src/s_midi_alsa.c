@@ -29,24 +29,24 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int midialsa_numberOfDevicesIn;                  /* Global. */
-static int midialsa_numberOfDevicesOut;                 /* Global. */
+static int midialsa_numberOfDevicesIn;                  /* Static. */
+static int midialsa_numberOfDevicesOut;                 /* Static. */
 
-static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];      /* Global. */
-static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];     /* Global. */
+static int midialsa_devicesIn[DEVICES_MAXIMUM_IO];      /* Static. */
+static int midialsa_devicesOut[DEVICES_MAXIMUM_IO];     /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static snd_seq_t            *midialsa_handle;
-static snd_midi_event_t     *midialsa_event;
+static snd_seq_t            *midialsa_handle;           /* Static. */
+static snd_midi_event_t     *midialsa_event;            /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 const char *midi_nameNative (void)
 {
-    static const char *name = "ALSA"; return name;
+    static const char *name = "ALSA"; return name;      /* Static. */
 }
 
 void midi_initializeNative (void)

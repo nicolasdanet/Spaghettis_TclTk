@@ -41,15 +41,15 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static PaStream         *pa_stream;                     /* Global. */
-static char             *pa_bufferIn;                   /* Global. */
-static char             *pa_bufferOut;                  /* Global. */
+static PaStream         *pa_stream;                     /* Static. */
+static char             *pa_bufferIn;                   /* Static. */
+static char             *pa_bufferOut;                  /* Static. */
 
-static PaUtilRingBuffer pa_ringIn;                      /* Global. */
-static PaUtilRingBuffer pa_ringOut;                     /* Global. */
+static PaUtilRingBuffer pa_ringIn;                      /* Static. */
+static PaUtilRingBuffer pa_ringOut;                     /* Static. */
 
-static int              pa_channelsIn;                  /* Global. */
-static int              pa_channelsOut;                 /* Global. */
+static int              pa_channelsIn;                  /* Static. */
+static int              pa_channelsOut;                 /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

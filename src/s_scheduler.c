@@ -31,13 +31,13 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static volatile sig_atomic_t scheduler_quit;            /* Global. */
+static volatile sig_atomic_t scheduler_quit;            /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int          scheduler_audioState;               /* Global. */
-static t_systime    scheduler_systime;                  /* Global. */
+static int          scheduler_audioState;               /* Static. */
+static t_systime    scheduler_systime;                  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ static t_systime scheduler_getSystimePerDSPTick (void)
 
 static void scheduler_pollStuck (int init)
 {
-    static double idleTime;
+    static double idleTime;     /* Static. */
     
     if (init) { idleTime = clock_getRealTimeInSeconds(); }
     else {
