@@ -217,7 +217,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void pd_isThingError (t_symbol *s)
+static void pd_hasThingError (t_symbol *s)
 {  
     if (s) {
     if (!string_startWith (s->s_name, PD_GUISTUB)) {    /* Avoid to moan for proxy binds. */
@@ -228,7 +228,7 @@ static void pd_isThingError (t_symbol *s)
     }
 }
 
-static int pd_isThingProceed (t_symbol *s, int withError)
+static int pd_hasThingProceed (t_symbol *s, int withError)
 {
     int k = 0;
     
@@ -241,19 +241,19 @@ static int pd_isThingProceed (t_symbol *s, int withError)
     //
     }
     
-    if (withError && !k) { pd_isThingError (s); }
+    if (withError && !k) { pd_hasThingError (s); }
     
     return k;
 }
 
 int pd_hasThingQuiet (t_symbol *s)
 {
-    return pd_isThingProceed (s, 0);
+    return pd_hasThingProceed (s, 0);
 }
 
 int pd_hasThing (t_symbol *s)
 {
-    return pd_isThingProceed (s, 1);
+    return pd_hasThingProceed (s, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------

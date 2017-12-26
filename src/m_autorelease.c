@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 /* A smartest algorithm should be implemented. */
-/* Autorelease could be never drained if it is called "often an too close". */
+/* Autorelease could be never drained if it is called "often and too close". */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -40,7 +40,6 @@ static void instance_autoreleaseTask (void *dummy)
 
 static void instance_autoreleaseReschedule (void)
 {
-    clock_unset (instance_get()->pd_autorelease); 
     clock_delay (instance_get()->pd_autorelease, AUTORELEASE_PERIOD);
 }
 
