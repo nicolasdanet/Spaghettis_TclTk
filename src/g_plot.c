@@ -63,15 +63,15 @@ typedef struct _plot {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void plot_motion                    (void *, t_float, t_float, t_float);
-static void plot_behaviorGetRectangle      (t_gobj *, t_gpointer *, t_float, t_float, t_rectangle *);
-static void plot_behaviorVisibilityChanged (t_gobj *, t_gpointer *, t_float, t_float, int);
-static int  plot_behaviorMouse             (t_gobj *, t_gpointer *, t_float, t_float, t_mouse *);
+static void plot_motion                     (void *, t_float, t_float, t_float);
+static void plot_behaviorGetRectangle       (t_gobj *, t_gpointer *, t_float, t_float, t_rectangle *);
+static void plot_behaviorVisibilityChanged  (t_gobj *, t_gpointer *, t_float, t_float, int);
+static int  plot_behaviorMouse              (t_gobj *, t_gpointer *, t_float, t_float, t_mouse *);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_painterbehavior plot_painterBehavior =     /* Shared. */
+static t_painterbehavior plot_painterBehavior =         /* Shared. */
     {
         plot_behaviorGetRectangle,
         plot_behaviorVisibilityChanged,
@@ -331,16 +331,17 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
     if (gpointer_hasField (&plot_gpointer, s) && gpointer_fieldIsArrayAndValid (&plot_gpointer, s)) {
 
         t_array *array = gpointer_getArray (&plot_gpointer, s);
+        int isArray = (gpointer_getTemplateIdentifier (&plot_gpointer) == sym___TEMPLATE__float__dash__array);
         
         plot_cumulativeX += deltaX * plot_stepX;
         plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : (t_float)1.0);
         
-        gpointer_erase (&plot_gpointer);
+        if (!isArray) { gpointer_erase (&plot_gpointer); }
         
         if (plot_fieldDescriptorX)      { plot_motionHorizontal (array); }
         else if (plot_fieldDescriptorY) { plot_motionVertical (array); }
         
-        if (gpointer_getTemplateIdentifier (&plot_gpointer) != sym___TEMPLATE__float__dash__array) {
+        if (!isArray) {
 
             PD_ASSERT (gpointer_isScalar (&plot_gpointer));
             
@@ -360,7 +361,7 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
             if (a) { garray_setNextTag (a); }
         }
         
-        gpointer_draw (&plot_gpointer);
+        if (!isArray) { gpointer_draw (&plot_gpointer); } else { gpointer_redraw (&plot_gpointer); }
     }
     //
     }
