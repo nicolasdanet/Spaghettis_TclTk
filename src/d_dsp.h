@@ -51,17 +51,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _signal {
-    t_float         s_sampleRate;
-    int             s_vectorSize;
-    int             s_hasBorrowed;
-    t_sample        *s_vector;
-    t_sample        *s_unused;
-    struct _signal  *s_next;
-    };
-
 struct _vinlet {
-    t_object        vi_obj;                 /* Must be the first. */
+    t_object        vi_obj;             /* Must be the first. */
     t_resample      vi_resample;
     int             vi_hopSize;
     int             vi_bufferSize;
@@ -76,7 +67,7 @@ struct _vinlet {
     };
 
 struct _voutlet {
-    t_object        vo_obj;                 /* Must be the first. */
+    t_object        vo_obj;             /* Must be the first. */
     t_resample      vo_resample;
     int             vo_hopSize;
     int             vo_copyOut;
@@ -94,52 +85,52 @@ struct _voutlet {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void            dsp_setState                (int n);
-int             dsp_getState                (void);
+void        dsp_setState                (int n);
+int         dsp_getState                (void);
 
-void            dsp_update                  (void);
-int             dsp_suspend                 (void);
-void            dsp_resume                  (int oldState);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_signal        *signal_new                 (int blockSize, t_float sampleRate);
-t_signal        *signal_borrow              (t_signal *s, t_signal *toBeBorrowed);
-
-int             signal_isCompatibleWith     (t_signal *s1, t_signal *s2);
+void        dsp_update                  (void);
+int         dsp_suspend                 (void);
+void        dsp_resume                  (int oldState);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_dspcontext    *ugen_graphStart            (int isTopLevel, t_signal **sp, int m, int n);
+t_signal    *signal_new                 (int blockSize, t_float sampleRate);
+t_signal    *signal_borrow              (t_signal *s, t_signal *toBeBorrowed);
 
-void            ugen_graphAdd               (t_dspcontext *context, t_object *o);
-void            ugen_graphConnect           (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n);
-void            ugen_graphClose             (t_dspcontext *context);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void            canvas_dspProceed           (t_glist *glist, int isTopLevel, t_signal **sp);
+int         signal_isCompatibleWith     (t_signal *s1, t_signal *s2);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void            vinlet_dsp                  (t_vinlet *x, t_signal **sp);
-void            vinlet_dspProlog            (t_vinlet *x, t_signal **signals, t_blockproperties *properties);
+t_dspcontext    *ugen_graphStart        (int isTopLevel, t_signal **sp, int m, int n);
+
+void        ugen_graphAdd               (t_dspcontext *context, t_object *o);
+void        ugen_graphConnect           (t_dspcontext *context, t_object *o1, int m, t_object *o2, int n);
+void        ugen_graphClose             (t_dspcontext *context);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void            voutlet_dsp                 (t_voutlet *x, t_signal **sp);
-void            voutlet_dspProlog           (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
-void            voutlet_dspEpilog           (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
+void        canvas_dspProceed           (t_glist *glist, int isTopLevel, t_signal **sp);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void        vinlet_dsp                  (t_vinlet *x, t_signal **sp);
+void        vinlet_dspProlog            (t_vinlet *x, t_signal **signals, t_blockproperties *properties);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void        voutlet_dsp                 (t_voutlet *x, t_signal **sp);
+void        voutlet_dspProlog           (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
+void        voutlet_dspEpilog           (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

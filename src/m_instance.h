@@ -79,12 +79,6 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define dsp_add     instance_dspChainAppend
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 extern t_pdinstance *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -138,7 +132,6 @@ void    instance_rootsFreeAll                   (void);
 void    instance_dspTick                        (void);
 void    instance_dspStart                       (void);
 void    instance_dspStop                        (void);
-void    instance_dspChainAppend                 (t_perform f, int n, ...);
 
 void    instance_signalAdd                      (t_signal *s);
 void    instance_signalFreeAll                  (void);
