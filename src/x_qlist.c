@@ -54,7 +54,7 @@ static int qlist_proceedNext (t_qlist *x,
         if (!IS_SYMBOL (&e)) { return 0; }
         else {
             t_symbol *t = GET_SYMBOL (&e);
-            if (pd_hasThingQuiet (t)) { x->ql_target = pd_getThing (t); }
+            if (symbol_hasThingQuiet (t)) { x->ql_target = symbol_getThing (t); }
             else {
                 return 0;
             }

@@ -729,12 +729,6 @@ PD_DLL void     pd_free                         (t_pd *x);
 PD_DLL void     pd_bind                         (t_pd *x, t_symbol *s);
 PD_DLL void     pd_unbind                       (t_pd *x, t_symbol *s);
 
-PD_DLL t_pd     *pd_getThing                    (t_symbol *s);
-PD_DLL t_pd     *pd_getThingByClass             (t_symbol *s, t_class *c);
-
-PD_DLL int      pd_hasThing                     (t_symbol *s);
-PD_DLL int      pd_hasThingQuiet                (t_symbol *s);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -744,6 +738,18 @@ PD_DLL void     pd_float                        (t_pd *x, t_float f);
 PD_DLL void     pd_symbol                       (t_pd *x, t_symbol *s);
 PD_DLL void     pd_list                         (t_pd *x, int argc, t_atom *argv);
 PD_DLL void     pd_message                      (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+PD_DLL t_pd     *symbol_getThing                (t_symbol *s);
+PD_DLL t_pd     *symbol_getThingByClass         (t_symbol *s, t_class *c);
+
+PD_DLL const char *symbol_getName               (t_symbol *s);
+
+PD_DLL int      symbol_hasThing                 (t_symbol *s);
+PD_DLL int      symbol_hasThingQuiet            (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -43,7 +43,7 @@ void tab_fetchArray (t_symbol *s, int *size, t_word **data, t_symbol *err)
     (*data) = NULL;
     
     {
-        t_garray *a = (t_garray *)pd_getThingByClass (s, garray_class);
+        t_garray *a = (t_garray *)symbol_getThingByClass (s, garray_class);
         
         if (!a) { if (s != &s_) { error_canNotFind (err, s); } }
         else {
@@ -73,7 +73,7 @@ static void tabwrite_tilde_polling (t_tabwrite_tilde *x)
 {
     if (x->x_redraw) {
     //
-    t_garray *a = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    t_garray *a = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
     if (a) { garray_redraw (a); }
 

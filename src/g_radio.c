@@ -330,8 +330,8 @@ static void radio_out (t_radio *x)
 {
     outlet_float (x->x_outlet, x->x_floatValue);
     
-    if (x->x_gui.iem_canSend && pd_hasThing (x->x_gui.iem_send)) {
-        pd_float (pd_getThing (x->x_gui.iem_send), x->x_floatValue);
+    if (x->x_gui.iem_canSend && symbol_hasThing (x->x_gui.iem_send)) {
+        pd_float (symbol_getThing (x->x_gui.iem_send), x->x_floatValue);
     }
 }
 

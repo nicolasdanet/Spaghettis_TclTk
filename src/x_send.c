@@ -29,32 +29,32 @@ typedef struct _send {
 
 static void send_bang (t_send *x)
 {
-    if (pd_hasThingQuiet (x->x_name)) { pd_bang (pd_getThing (x->x_name)); }
+    if (symbol_hasThingQuiet (x->x_name)) { pd_bang (symbol_getThing (x->x_name)); }
 }
 
 static void send_float (t_send *x, t_float f)
 {
-    if (pd_hasThingQuiet (x->x_name)) { pd_float (pd_getThing (x->x_name), f); }
+    if (symbol_hasThingQuiet (x->x_name)) { pd_float (symbol_getThing (x->x_name), f); }
 }
 
 static void send_symbol (t_send *x, t_symbol *s)
 {
-    if (pd_hasThingQuiet (x->x_name)) { pd_symbol (pd_getThing (x->x_name), s); }
+    if (symbol_hasThingQuiet (x->x_name)) { pd_symbol (symbol_getThing (x->x_name), s); }
 }
 
 static void send_pointer (t_send *x, t_gpointer *gp)
 {
-    if (pd_hasThingQuiet (x->x_name)) { pd_pointer (pd_getThing (x->x_name), gp); }
+    if (symbol_hasThingQuiet (x->x_name)) { pd_pointer (symbol_getThing (x->x_name), gp); }
 }
 
 static void send_list (t_send *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (pd_hasThingQuiet (x->x_name)) { pd_list (pd_getThing (x->x_name), argc, argv); }
+    if (symbol_hasThingQuiet (x->x_name)) { pd_list (symbol_getThing (x->x_name), argc, argv); }
 }
 
 static void send_anything (t_send *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (pd_hasThingQuiet (x->x_name)) { pd_message (pd_getThing (x->x_name), s, argc, argv); }
+    if (symbol_hasThingQuiet (x->x_name)) { pd_message (symbol_getThing (x->x_name), s, argc, argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

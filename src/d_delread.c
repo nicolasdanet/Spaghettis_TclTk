@@ -37,7 +37,7 @@ typedef struct _delread_tilde {
 
 static void delread_tilde_setDelayInSamples (t_delread_tilde *x)
 {
-    t_delwrite_tilde *m = (t_delwrite_tilde *)pd_getThingByClass (x->x_name, delwrite_tilde_class);
+    t_delwrite_tilde *m = (t_delwrite_tilde *)symbol_getThingByClass (x->x_name, delwrite_tilde_class);
     
     if (m) {
     //
@@ -93,7 +93,7 @@ static t_int *delread_tilde_perform (t_int *w)
 
 static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
 {
-    t_delwrite_tilde *m = (t_delwrite_tilde *)pd_getThingByClass (x->x_name, delwrite_tilde_class);
+    t_delwrite_tilde *m = (t_delwrite_tilde *)symbol_getThingByClass (x->x_name, delwrite_tilde_class);
     
     x->x_vectorSize = sp[0]->s_vectorSize;
     x->x_samplesPerMilliseconds = (t_float)(sp[0]->s_sampleRate * 0.001);

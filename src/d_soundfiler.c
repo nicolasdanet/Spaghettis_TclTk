@@ -60,7 +60,7 @@ static t_error soundfiler_readFetch (int argc,
     //
     t_symbol *t = atom_getSymbolAtIndex (i, argc, argv);
     
-    a[i] = (t_garray *)pd_getThingByClass (t, garray_class);
+    a[i] = (t_garray *)symbol_getThingByClass (t, garray_class);
     
     if (a[i] == NULL) { error_canNotFind (sym_soundfiler, t); err = PD_ERROR; break; }
     else {
@@ -261,7 +261,7 @@ static t_error soundfiler_writeFetch (int argc,
     //
     t_symbol *t = atom_getSymbolAtIndex (i, argc, argv);
 
-    a[i] = (t_garray *)pd_getThingByClass (t, garray_class);
+    a[i] = (t_garray *)symbol_getThingByClass (t, garray_class);
     
     if (a[i] == NULL) { error_canNotFind (sym_soundfiler, t); err = PD_ERROR; break; }
     else {

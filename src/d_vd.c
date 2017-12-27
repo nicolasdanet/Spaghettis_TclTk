@@ -71,7 +71,7 @@ static t_int *vd_tilde_perform (t_int *w)
 
 static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
 {
-    t_delwrite_tilde *m = (t_delwrite_tilde *)pd_getThingByClass (x->x_name, delwrite_tilde_class);
+    t_delwrite_tilde *m = (t_delwrite_tilde *)symbol_getThingByClass (x->x_name, delwrite_tilde_class);
     
     x->x_samplesPerMilliseconds = (t_float)(sp[0]->s_sampleRate * 0.001);
     

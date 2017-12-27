@@ -299,7 +299,7 @@ t_glist *template_getInstanceViewIfPainters (t_template *x)
 
 t_template *template_findByIdentifier (t_symbol *s)
 {
-    return ((t_template *)pd_getThingByClass (s, template_class));
+    return ((t_template *)symbol_getThingByClass (s, template_class));
 }
 
 #if PD_WITH_LEGACY

@@ -33,7 +33,7 @@ typedef struct _receive_tilde {
 
 static void receive_tilde_set (t_receive_tilde *x, t_symbol *s)
 {
-    t_send_tilde *sender = (t_send_tilde *)pd_getThingByClass ((x->x_name = s), send_tilde_class);
+    t_send_tilde *sender = (t_send_tilde *)symbol_getThingByClass ((x->x_name = s), send_tilde_class);
     
     x->x_vector = NULL;
     

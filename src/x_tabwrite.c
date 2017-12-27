@@ -31,7 +31,7 @@ typedef struct _tabwrite {
 
 static void tabwrite_float (t_tabwrite *x, t_float f)
 {
-    t_garray *a = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    t_garray *a = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
     if (!a) { error_canNotFind (sym_tabwrite, x->x_name); }
     else {

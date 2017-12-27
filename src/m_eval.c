@@ -93,10 +93,10 @@ void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
             break;
         }
         
-        if (s == NULL || !(object = pd_getThing (s))) {
+        if (s == NULL || !(object = symbol_getThing (s))) {
             if (!s) { error_invalid (&s_, sym_expansion); }
             else { 
-                pd_hasThing (s); 
+                symbol_hasThing (s); 
             }
             do { size--; v++; } while (size && !IS_SEMICOLON (v));
             

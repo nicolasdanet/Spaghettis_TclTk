@@ -32,7 +32,7 @@ typedef struct _tabread4 {
 
 static void tabread4_float (t_tabread4 *x, t_float f)
 {
-    t_garray *a = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    t_garray *a = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
     if (!a) { error_canNotFind (sym_tabread4, x->x_name); }
     else {

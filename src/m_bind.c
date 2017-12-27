@@ -217,7 +217,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void pd_hasThingError (t_symbol *s)
+static void symbol_hasThingError (t_symbol *s)
 {  
     if (s) {
     if (!string_startWith (s->s_name, PD_GUISTUB)) {    /* Avoid to moan for proxy binds. */
@@ -228,7 +228,7 @@ static void pd_hasThingError (t_symbol *s)
     }
 }
 
-static int pd_hasThingProceed (t_symbol *s, int withError)
+static int symbol_hasThingProceed (t_symbol *s, int withError)
 {
     int k = 0;
     
@@ -241,26 +241,26 @@ static int pd_hasThingProceed (t_symbol *s, int withError)
     //
     }
     
-    if (withError && !k) { pd_hasThingError (s); }
+    if (withError && !k) { symbol_hasThingError (s); }
     
     return k;
 }
 
-int pd_hasThingQuiet (t_symbol *s)
+int symbol_hasThingQuiet (t_symbol *s)
 {
-    return pd_hasThingProceed (s, 0);
+    return symbol_hasThingProceed (s, 0);
 }
 
-int pd_hasThing (t_symbol *s)
+int symbol_hasThing (t_symbol *s)
 {
-    return pd_hasThingProceed (s, 1);
+    return symbol_hasThingProceed (s, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_pd *pd_getThingByClass (t_symbol *s, t_class *c)
+t_pd *symbol_getThingByClass (t_symbol *s, t_class *c)
 {
     t_pd *x = NULL;
     
@@ -282,12 +282,17 @@ t_pd *pd_getThingByClass (t_symbol *s, t_class *c)
     return x;
 }
 
-t_pd *pd_getThing (t_symbol *s)
+t_pd *symbol_getThing (t_symbol *s)
 {
-    if (pd_hasThingQuiet (s)) { return s->s_thing; }
+    if (symbol_hasThingQuiet (s)) { return s->s_thing; }
     else {
         return NULL;
     }
+}
+
+const char *symbol_getName (t_symbol *s)
+{
+    return s->s_name;
 }
 
 // -----------------------------------------------------------------------------------------------------------

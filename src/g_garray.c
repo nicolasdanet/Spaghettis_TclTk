@@ -779,7 +779,7 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     x->x_saveWithParent = save;
     x->x_hideName       = hide;
     
-    if (pd_getThingByClass (x->x_name, garray_class)) {
+    if (symbol_getThingByClass (x->x_name, garray_class)) {
         error_alreadyExists (x->x_name);
         x->x_name = utils_getUnusedBindName (garray_class, sym_array);
         x->x_unexpandedName = x->x_name;

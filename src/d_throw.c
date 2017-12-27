@@ -33,7 +33,7 @@ typedef struct _throw_tilde {
 
 static void throw_tilde_set (t_throw_tilde *x, t_symbol *s)
 {
-    t_catch_tilde *catcher = (t_catch_tilde *)pd_getThingByClass ((x->x_name = s), catch_tilde_class);
+    t_catch_tilde *catcher = (t_catch_tilde *)symbol_getThingByClass ((x->x_name = s), catch_tilde_class);
     
     x->x_vector = NULL;
     

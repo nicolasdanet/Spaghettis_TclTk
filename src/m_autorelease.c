@@ -27,8 +27,8 @@
 
 static void instance_autoreleaseDrain (void)
 {
-    if (pd_hasThingQuiet (sym__autorelease)) {
-        pd_message (pd_getThing (sym__autorelease), sym__autorelease, 0, NULL);
+    if (symbol_hasThingQuiet (sym__autorelease)) {
+        pd_message (symbol_getThing (sym__autorelease), sym__autorelease, 0, NULL);
     }   
 }
 
@@ -96,8 +96,8 @@ void instance_autoreleaseProceed (t_pd *x)
 
 static void instance_pollingTask (void *dummy)
 {
-    if (pd_hasThingQuiet (sym__polling)) {
-        pd_message (pd_getThing (sym__polling), sym__polling, 0, NULL);
+    if (symbol_hasThingQuiet (sym__polling)) {
+        pd_message (symbol_getThing (sym__polling), sym__polling, 0, NULL);
     }  
     
     clock_delay (instance_get()->pd_polling, POLLING_PERIOD);

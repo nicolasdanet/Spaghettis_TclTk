@@ -38,7 +38,7 @@ typedef struct _value {
 
 t_float *valuecommon_fetch (t_symbol *s)
 {
-    t_valuecommon *x = (t_valuecommon *)pd_getThingByClass (s, valuecommon_class);
+    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (s, valuecommon_class);
     
     if (!x) {
         x = (t_valuecommon *)pd_new (valuecommon_class);
@@ -54,7 +54,7 @@ t_float *valuecommon_fetch (t_symbol *s)
 
 void valuecommon_release (t_symbol *s)
 {
-    t_valuecommon *x = (t_valuecommon *)pd_getThingByClass (s, valuecommon_class);
+    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (s, valuecommon_class);
     
     PD_ASSERT (x != NULL);
     

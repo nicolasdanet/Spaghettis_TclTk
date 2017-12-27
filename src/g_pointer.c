@@ -99,7 +99,7 @@ static void pointer_send (t_pointer *x, t_symbol *s)
 {
     if (!gpointer_isValidOrNull (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
     else {
-        if (pd_hasThing (s)) { pd_pointer (pd_getThing (s), &x->x_gpointer); }
+        if (symbol_hasThing (s)) { pd_pointer (symbol_getThing (s), &x->x_gpointer); }
     }
 }
 
@@ -110,7 +110,7 @@ static void pointer_send (t_pointer *x, t_symbol *s)
 
 static void pointer_traverse (t_pointer *x, t_symbol *s)
 {
-    t_glist *glist = cast_glist (pd_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
+    t_glist *glist = cast_glist (symbol_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
     
     if (glist && !glist_isArray (glist)) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
     else { 

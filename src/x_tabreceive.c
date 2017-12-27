@@ -56,7 +56,7 @@ static void tabreceive_output (t_tabreceive *x, t_garray *garray)
 
 static void tabreceive_bang (t_tabreceive *x)
 {
-    t_garray *garray = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    t_garray *garray = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
     if (garray) { tabreceive_output (x, garray); }
 }
@@ -72,7 +72,7 @@ static void tabreceive_set (t_tabreceive *x, t_symbol *s)
 
 static void tabreceive_polling (t_tabreceive *x)
 {
-    t_garray *garray = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    t_garray *garray = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
     if (garray && (x->x_tag != garray_getTag (garray))) {
         x->x_tag = garray_getTag (garray);

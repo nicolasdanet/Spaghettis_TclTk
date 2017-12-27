@@ -153,14 +153,14 @@ static void textsequence_proceedOutContentGlobal (t_textsequence *x, t_atom *t, 
     
     if (!symSend) { if (IS_SYMBOL (t)) { symSend = GET_SYMBOL (t); } else { PD_BUG; } shitfRight = 1; }
     
-    if (pd_hasThing (symSend)) {
+    if (symbol_hasThing (symSend)) {
     //    
     int n = count - shitfRight;
     t_atom *v = t + shitfRight;
     
-    if (n > 0 && IS_SYMBOL (v)) { pd_message (pd_getThing (symSend), GET_SYMBOL (v), n - 1, v + 1); }
+    if (n > 0 && IS_SYMBOL (v)) { pd_message (symbol_getThing (symSend), GET_SYMBOL (v), n - 1, v + 1); }
     else {
-        pd_list (pd_getThing (symSend), n, v);
+        pd_list (symbol_getThing (symSend), n, v);
     }
     //
     }

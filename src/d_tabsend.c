@@ -38,7 +38,7 @@ static void tabsend_tilde_polling (t_tabsend_tilde *x)
 {
     if (x->x_redraw) {
     //
-    t_garray *a = (t_garray *)pd_getThingByClass (x->x_name, garray_class);
+    t_garray *a = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
     if (a) { garray_redraw (a); }
 

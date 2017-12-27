@@ -75,7 +75,7 @@ t_symbol *utils_getUnusedBindName (t_class *c, t_symbol *prefix)
         t_error err = string_sprintf (t, PD_STRING, "%s%d", prefix->s_name, i);
         PD_ABORT (err != PD_ERROR_NONE);
         t_symbol *name = gensym (t);
-        if (!pd_getThingByClass (name, c)) { return name; }
+        if (!symbol_getThingByClass (name, c)) { return name; }
         i++;
         PD_ABORT (i < 0);
     }
