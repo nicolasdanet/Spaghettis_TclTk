@@ -864,7 +864,16 @@ PD_DLL void     post                            (const char *fmt, ...);
 PD_DLL void     post_warning                    (const char *fmt, ...);
 PD_DLL void     post_error                      (const char *fmt, ...);
 PD_DLL void     post_log                        (const char *fmt, ...);         /* No-op in release build. */
-   
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+PD_DLL t_sample *signal_getVector               (t_signal *s);
+
+PD_DLL t_float  signal_getSampleRate            (t_signal *s);
+PD_DLL int      signal_getVectorSize            (t_signal *s);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
