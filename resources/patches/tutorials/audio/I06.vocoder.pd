@@ -1,4 +1,4 @@
-#N canvas 281 147 500 462 12;
+#N canvas 583 88 486 460 12;
 #X obj 36 372 output;
 #N canvas 349 474 741 139 more 0;
 #X text 12 12 This is a Fourier-based "vocoder" like the one the "Convolution brothers" use.;
