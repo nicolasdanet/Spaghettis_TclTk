@@ -62,7 +62,7 @@ CPPFLAGS = -DNDEBUG \
     -I$(PA_DIR)/src/common \
     -DPA_USE_COREAUDIO
 
-CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
+CFLAGS = -g -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
 
 # PortMidi.
 
@@ -127,6 +127,7 @@ $(OBJ): %.o : %.c
 $(BIN_DIR)/spaghettis: $(OBJ) | $(BIN_DIR)
 	@echo "Build spaghettis ..."
 	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ) $(LIB)
+	@dsymutil $(BIN_DIR)/spaghettis
 
 $(BIN_DIR)/spaghettisdog: u_watchdog.c | $(BIN_DIR)
 	@echo "Build spaghettisdog ..."
@@ -153,6 +154,10 @@ clean:
 	@-rm -f $(OBJ)
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv $(BIN_DIR)/spaghettisdog
+	@-rm -f -r $(BIN_DIR)/spaghettis.dSym
+	@-rm -f -r $(BIN_DIR)/spaghettissnd.dSym
+	@-rm -f -r $(BIN_DIR)/spaghettisrcv.dSym
+	@-rm -f -r $(BIN_DIR)/spaghettisdog.dSym
 	@echo "Remove bin directory ..."
 	@-rmdir $(BIN_DIR)
 
