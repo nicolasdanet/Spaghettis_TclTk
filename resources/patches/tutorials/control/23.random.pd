@@ -6,12 +6,12 @@
 #X text 12 72 Make pseudo-random numbers.;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 180 print;
-#X obj 156 144 random;
-#X obj 156 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 156 180 print;
-#X msg 264 108 10;
-#X obj 264 180 print;
-#X obj 264 144 expr rand()*$f1-$f1/2;
+#X obj 192 144 random;
+#X obj 192 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 192 180 print;
+#X msg 324 108 10;
+#X obj 324 180 print;
+#X obj 324 144 expr rand()*$f1-$f1/2;
 #X obj 36 456 random 100;
 #X obj 36 492 moses 10;
 #X obj 120 528 moses 30;

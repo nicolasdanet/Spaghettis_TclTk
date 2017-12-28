@@ -1,4 +1,4 @@
-#N canvas 600 39 656 758 12;
+#N canvas 594 46 656 758 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 taxonomy;
@@ -82,7 +82,7 @@
 #X f 57;
 #X text 12 144 ...but most of the times it refers only to "something sendable".;
 #X f 64;
-#N canvas 341 68 1022 591 again 0;
+#N canvas 341 68 1012 589 again 0;
 #X obj 228 168 prepend;
 #X obj 228 348 list append;
 #X obj 420 168 list trim;
@@ -106,12 +106,12 @@
 #X obj 36 504 list group 6;
 #X msg 36 444 Holy \, Priceless \, Collection \, Of \, Etruscan \, Snoods;
 #X obj 36 540 print;
-#X obj 672 348 t l;
-#X obj 672 384 print;
-#X msg 672 288 How about Global Thermonuclear War?;
-#X obj 672 168 t a;
-#X msg 672 48 list Shall we play a game?;
-#X obj 672 204 print;
+#X obj 684 348 t l;
+#X obj 684 384 print;
+#X msg 684 288 How about Global Thermonuclear War?;
+#X obj 684 168 t a;
+#X msg 684 48 list Shall we play a game?;
+#X obj 684 204 print;
 #X msg 36 96 un dos tres;
 #X msg 228 48 list un dos tres;
 #X obj 420 348 list store pasito palante;
@@ -143,8 +143,8 @@
 #X text 12 216 Such message is composed of atoms (three in the case below).;
 #X f 62;
 #X text 12 432 The type of a message is defined by its first atom.;
-#X text 12 636 The list selector is implicit with multiple atoms starting with a number.;
-#X f 74;
+#X text 12 636 The list selector is implicit for multiple atoms starting with a number.;
+#X f 73;
 #X connect 8 0 7 0;
 #X connect 10 0 11 0;
 #X connect 13 0 11 0;

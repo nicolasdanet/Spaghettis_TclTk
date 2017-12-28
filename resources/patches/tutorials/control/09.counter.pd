@@ -1,4 +1,4 @@
-#N canvas 611 124 573 462 12;
+#N canvas 611 124 567 441 12;
 #X obj 96 180 + 1;
 #X obj 36 144 metro 500;
 #X obj 36 180 float;

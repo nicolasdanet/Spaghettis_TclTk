@@ -1,4 +1,4 @@
-#N canvas 605 51 518 717 12;
+#N canvas 605 51 519 707 12;
 #X obj 36 396 timer;
 #X obj 96 360 delay 123.45;
 #X obj 300 156 pipe 2000;

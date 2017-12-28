@@ -1,4 +1,4 @@
-#N canvas 292 90 557 525 12;
+#N canvas 473 76 544 525 12;
 #X msg 36 108 bang;
 #X f 4;
 #X obj 36 156 sendnumber 45 cookies;
