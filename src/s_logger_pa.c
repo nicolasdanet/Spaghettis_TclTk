@@ -54,7 +54,7 @@ void *logger_task (void *dummy)
 {
     while (!logger_quit) {
     //
-    usleep ((useconds_t)MILLISECONDS_TO_MICROSECONDS (PA_LOGGER_SLEEP));
+    nano_sleep (MILLISECONDS_TO_NANOSECONDS (PA_LOGGER_SLEEP));
     
     {
         char t[PA_LOGGER_CHUNK + 1] = { 0 };

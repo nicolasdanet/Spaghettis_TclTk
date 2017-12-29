@@ -54,7 +54,7 @@ void *logger_task (void *dummy)
 {
     while (!logger_quit) {
     //
-    usleep ((useconds_t)MILLISECONDS_TO_MICROSECONDS (JACK_LOGGER_SLEEP));
+    nano_sleep (MILLISECONDS_TO_NANOSECONDS (JACK_LOGGER_SLEEP));
     
     {
         char t[JACK_LOGGER_CHUNK + 1] = { 0 };
