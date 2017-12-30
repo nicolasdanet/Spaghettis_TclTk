@@ -34,7 +34,7 @@ typedef struct _netsend {
 static void netsend_socketOptions (t_netsend *x, int fd)
 {
     int v = 1;
-    
+
     if (x->ns_protocol == SOCK_STREAM) {
         if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
     } else {

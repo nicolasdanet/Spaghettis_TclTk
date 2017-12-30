@@ -76,7 +76,7 @@ static t_error interface_fetchGui (struct sockaddr_in *server)
 {
     struct hostent *host = gethostbyname (INTERFACE_LOCALHOST);
     t_error err = ((interface_guiSocket = socket (AF_INET, SOCK_STREAM, 0)) < 0);
-    err |= (fcntl (interface_guiSocket, F_SETFD, FD_CLOEXEC) == -1);
+    err |= (fcntl (interface_guiSocket, F_SETFD, FD_CLOEXEC | O_NONBLOCK) == -1);
     
     PD_ASSERT (!err);
     
@@ -175,7 +175,7 @@ static t_error interface_launchGuiSocket (struct sockaddr_in *server, int *fd)
 {
     int f = -1;
     t_error err = ((f = socket (AF_INET, SOCK_STREAM, 0)) < 0);
-    err |= (fcntl (f, F_SETFD, FD_CLOEXEC) == -1);
+    err |= (fcntl (f, F_SETFD, FD_CLOEXEC | O_NONBLOCK) == -1);
     
     #if PD_WINDOWS
         char arg = 1;

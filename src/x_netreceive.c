@@ -187,6 +187,10 @@ static void netreceive_callbackConnected (t_netreceive *x)
 static void netreceive_socketOptions (t_netreceive *x, int fd)
 {
     int v = 1;
+    int flags = fcntl (fd, F_GETFL, 0);
+    
+    PD_ASSERT (flags > -1);
+    fcntl (fd, F_SETFL, PD_MAX (flags, 0) | O_NONBLOCK);
     
     if (x->nr_protocol == SOCK_STREAM) {
         if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
@@ -196,7 +200,6 @@ static void netreceive_socketOptions (t_netreceive *x, int fd)
         if (setsockopt (fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
     }
 }
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
