@@ -296,7 +296,6 @@ static int pdreceive_poll (void)
     
     if (select (pdreceive_maximumFileDescriptor + 1, &rSet, &wSet, &eSet, 0) < 0) {
         err = 1; pdreceive_socketError ("select");
-        
     }
     
     if (!err) {

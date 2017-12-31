@@ -24,9 +24,18 @@ typedef struct _netsend {
     int         ns_fd;
     int         ns_protocol;
     int         ns_isBinary;
+    int         ns_polling;
+    int         ns_pollingDescriptor;
+    int         ns_pollingCount;
     t_outlet    *ns_outlet;
     } t_netsend;
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define NETSEND_POLL_MAXIMUM    10
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -34,7 +43,11 @@ typedef struct _netsend {
 static void netsend_socketOptions (t_netsend *x, int fd)
 {
     int v = 1;
-
+    int flags = fcntl (fd, F_GETFL, 0);
+    
+    PD_ASSERT (flags > -1);
+    fcntl (fd, F_SETFL, PD_MAX (flags, 0) | O_NONBLOCK);
+    
     if (x->ns_protocol == SOCK_STREAM) {
         if (setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (const void *)&v, sizeof (v)) < 0) { PD_BUG; }
     } else {
@@ -115,9 +128,98 @@ static t_error netsend_sendProceedBinary (t_netsend *x, int fd, t_symbol *s, int
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void netsend_pollingStop (t_netsend *x)
+{
+    if (x->ns_polling) {
+    //
+    instance_pollingUnregister (cast_pd (x));
+    
+    x->ns_polling = 0;
+    
+    if (x->ns_pollingDescriptor != -1) { sys_closeSocket (x->ns_pollingDescriptor); }
+    
+    x->ns_pollingDescriptor = -1;
+    //
+    }
+}
+
+static void netsend_pollingStart (t_netsend *x, int fd)
+{
+    netsend_pollingStop (x);
+    
+    x->ns_pollingCount      = 0;
+    x->ns_pollingDescriptor = fd;
+    x->ns_polling           = 1;
+    
+    instance_pollingRegister (cast_pd (x));
+}
+
+static void netsend_polling (t_netsend *x)
+{
+    fd_set rSet, wSet;
+    struct timeval timeOut;
+    t_error err   = (++x->ns_pollingCount > NETSEND_POLL_MAXIMUM);
+    int connected = 0;
+    
+    int fd = x->ns_pollingDescriptor;
+    
+    FD_ZERO (&rSet);
+    FD_ZERO (&wSet);
+    
+    FD_SET (fd, &rSet);
+    FD_SET (fd, &wSet);
+    
+    timeOut.tv_sec  = 0;
+    timeOut.tv_usec = 0;
+    
+    post ("netsend: ...");
+    
+    if (!err) {
+    //
+    err = (select (fd + 1, &rSet, &wSet, NULL, &timeOut) < 0);
+
+    if (!err) {
+    //
+    if (FD_ISSET (fd, &rSet) || FD_ISSET (fd, &wSet)) {
+        int error;
+        socklen_t t = sizeof (error);
+        if (getsockopt (fd, SOL_SOCKET, SO_ERROR, &error, &t) < 0) {
+            err = PD_ERROR;
+        } else {
+            connected = 1;
+        }
+    }
+    //
+    }
+    //
+    }
+    
+    if (connected) {
+    //
+    x->ns_fd = fd;
+    x->ns_pollingDescriptor = -1;
+    netsend_pollingStop (x);
+    outlet_float (x->ns_outlet, 1);
+    post ("netsend: connected");
+    //
+    }
+    
+    if (err) {
+    //
+    error_failed (sym_netsend);
+    netsend_pollingStop (x);
+    outlet_float (x->ns_outlet, 0);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void netsend_connect (t_netsend *x, t_symbol *hostName, t_float f)
 {
-    int portNumber = f;
+    netsend_pollingStop (x);
     
     if (x->ns_fd >= 0) { error_unexpected (sym_netsend, hostName); }
     else {
@@ -127,28 +229,34 @@ static void netsend_connect (t_netsend *x, t_symbol *hostName, t_float f)
     if (fd < 0) { error_canNotOpen (sym_netsend); }
     else {
     //
+    int portNumber = (int)f;
     struct hostent *h = gethostbyname (hostName->s_name);
     
     netsend_socketOptions (x, fd);
-    
+
+    post ("netsend: connecting to port %d", portNumber);    // --
+
     if (h == NULL) { error_invalid (sym_netsend, hostName); }
     else {
     //
     struct sockaddr_in server;
-    
-    post ("netsend: connecting to port %d", portNumber);    // --
     
     server.sin_family = AF_INET;
     server.sin_port = htons ((u_short)portNumber);
     memcpy ((char *)&server.sin_addr, (char *)h->h_addr, h->h_length);
 
     if (connect (fd, (struct sockaddr *)&server, sizeof (server)) < 0) {
-        error_failed (sym_netsend);
-        netsend_socketClose (x);
-        outlet_float (x->ns_outlet, 0);
-        return;
+        if (errno == EINPROGRESS) { netsend_pollingStart (x, fd); }
+        else {
+            sys_closeSocket (fd);
+            error_failed (sym_netsend);
+            PD_ASSERT (x->ns_fd == -1);
+            outlet_float (x->ns_outlet, 0);
+        }
         
-    } else { x->ns_fd = fd; outlet_float (x->ns_outlet, 1); }
+    } else {
+        x->ns_fd = fd; outlet_float (x->ns_outlet, 1);
+    }
     //
     }
     //
@@ -159,7 +267,7 @@ static void netsend_connect (t_netsend *x, t_symbol *hostName, t_float f)
 
 static void netsend_disconnect (t_netsend *x)
 {
-    netsend_socketClose (x); outlet_float (x->ns_outlet, 0);
+    netsend_pollingStop (x); netsend_socketClose (x); outlet_float (x->ns_outlet, 0);
 }
 
 static void netsend_send (t_netsend *x, t_symbol *s, int argc, t_atom *argv)
@@ -214,6 +322,7 @@ static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
 
 static void netsend_free (t_netsend *x)
 {
+    netsend_pollingStop (x);
     netsend_socketClose (x);
 }
 
@@ -232,7 +341,9 @@ void netsend_setup (void)
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-            
+    
+    class_addPolling (c, (t_method)netsend_polling);
+    
     class_addMethod (c, (t_method)netsend_connect,      sym_connect,    A_SYMBOL, A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)netsend_disconnect,   sym_disconnect, A_NULL);
     class_addMethod (c, (t_method)netsend_send,         sym_send,       A_GIMME, A_NULL);
