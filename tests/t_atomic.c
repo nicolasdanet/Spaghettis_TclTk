@@ -129,7 +129,7 @@ void *test_loadStore (void *x)
         PD_ATOMIC_UINT64_WRITE (test_uInt64Values[k], &test_uInt64Shared);
         // test_uInt64Shared = test_uInt64Values[k];
         
-        PD_MEMORY_BARRIER;     /* Prevent hoisting the store out of the loop. */
+        PD_MEMORY_BARRIER;      /* Prevent hoisting the store out of the loop. */
         //
         }
 
@@ -137,15 +137,15 @@ void *test_loadStore (void *x)
     
         for (i = 0; i < 1000000; i++) {
         //
-        PD_MEMORY_BARRIER;
+        PD_MEMORY_BARRIER;      /* Prevent hoisting the load out of the loop. */
         
-        int32_t  a = PD_ATOMIC_INT32_READ  (&test_int32Shared);
+        uint32_t a = (uint32_t)PD_ATOMIC_INT32_READ (&test_int32Shared);
         uint32_t b = PD_ATOMIC_UINT32_READ (&test_uInt32Shared);
         uint64_t c = PD_ATOMIC_UINT64_READ (&test_uInt64Shared);
         
-        if ((uint32_t)(a * a) < test_uInt32Limit) { test_atomicFailed = 1; }
-        if ((uint32_t)(b * b) < test_uInt32Limit) { test_atomicFailed = 1; }
-        if ((uint64_t)(c * c) < test_uInt64Limit) { test_atomicFailed = 1; }
+        if ((a * a) < test_uInt32Limit) { test_atomicFailed = 1; }
+        if ((b * b) < test_uInt32Limit) { test_atomicFailed = 1; }
+        if ((c * c) < test_uInt64Limit) { test_atomicFailed = 1; }
         //
         }
     }
