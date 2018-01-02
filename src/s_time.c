@@ -67,7 +67,6 @@ static uint64_t time_makeSeed16 (void)
     uint16_t v1, v2;
     
     time_set (&t1);
-    PD_MEMORY_BARRIER;              /* Avoid out-of-thin-air compiler optimizations. */
     time_set (&t2);
     
     v1 = (uint16_t)t1;
