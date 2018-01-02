@@ -61,7 +61,7 @@ static uint16_t time_makeSeed16Reversed (uint16_t v)
 
 static uint64_t time_makeSeed16 (void)
 {
-    static uint16_t base = 0ULL;    /* Static. */
+    static uint16_t base = 0;           /* Static. */
     
     t_time t1, t2;
     uint16_t v1, v2;
@@ -84,8 +84,8 @@ static uint64_t time_makeSeed (void)
     seed |= (time_makeSeed16() << 16);
     seed |= (time_makeSeed16() << 32);
     
-    lo = PD_RAND48_UINT32 (seed);   /* To spread the bits. */
-    hi = PD_RAND48_UINT32 (seed);   /* To spread the bits. */
+    lo = PD_RAND48_UINT32 (seed);       /* To spread the bits. */
+    hi = PD_RAND48_UINT32 (seed);       /* To spread the bits. */
     
     return ((hi << 32) | lo);
 }
@@ -98,7 +98,7 @@ static uint64_t time_makeSeed (void)
 
 uint64_t time_makeRandomSeed (void)
 {
-    static uint64_t seed = 0;       /* Static. */
+    static uint64_t seed = 0;           /* Static. */
     
     seed ^= utils_unique();
     
