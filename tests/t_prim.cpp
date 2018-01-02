@@ -1932,7 +1932,11 @@ TTT_BEGIN (PrimRational, 111, "Prim - Rational")
     
     a = prim::Ratio (0, 0);
     
-    TTT_EXPECT (std::isnan (a.asDouble()) == true);
+    #if ! ( TTT_LINUX )
+    
+    TTT_EXPECT (std::isnan (a.asDouble()) == true);     /* Doesn't pass with ffast-math flag. */
+    
+    #endif
     
     a = prim::Ratio (0, -1234);
 
