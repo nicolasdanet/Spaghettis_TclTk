@@ -79,6 +79,7 @@
 #include "s_leak.c"
 #include "s_font.c"
 #include "s_post.c"
+#include "s_ringbuffer.c"
 #include "s_logger.c"
 #include "s_utf8.c"
 #include "s_MT.c"

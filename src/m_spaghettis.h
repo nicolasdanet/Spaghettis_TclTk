@@ -531,6 +531,7 @@ struct _outlet;
 struct _painterbehavior;
 struct _pdinstance;
 struct _receiver;
+struct _ringbuffer;
 struct _signal;
 struct _struct;
 struct _template;
@@ -558,6 +559,7 @@ struct _widgetbehavior;
 #define t_painterbehavior           struct _painterbehavior
 #define t_pdinstance                struct _pdinstance
 #define t_receiver                  struct _receiver
+#define t_ringbuffer                struct _ringbuffer
 #define t_signal                    struct _signal
 #define t_struct                    struct _struct
 #define t_template                  struct _template

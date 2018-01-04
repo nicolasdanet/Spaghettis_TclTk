@@ -172,7 +172,7 @@ static void netsend_polling (t_netsend *x)
     timeOut.tv_sec  = 0;
     timeOut.tv_usec = 0;
     
-    post ("netsend: ...");
+    post ("netsend: ...");  // --
     
     if (!err) {
     //
@@ -200,7 +200,7 @@ static void netsend_polling (t_netsend *x)
     x->ns_pollingDescriptor = -1;
     netsend_pollingStop (x);
     outlet_float (x->ns_outlet, 1);
-    post ("netsend: connected");
+    post ("netsend: connected");    // --
     //
     }
     

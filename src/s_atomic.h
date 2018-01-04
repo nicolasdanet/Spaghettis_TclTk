@@ -36,14 +36,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that the new value is returned. */
-/* Note that thoses macros correspond only to relaxed atomic operations. */
-
-/* < http://preshing.com/20130618/atomic-vs-non-atomic-operations/ > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 /* Alignment may not work on stack (don't use local atomic variables). */
 
 /* < http://gcc.gnu.org/bugzilla/show_bug.cgi?id=16660 > */
@@ -52,33 +44,33 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-// PD_ATOMIC_INT32_INCREMENT                Relaxed increment and fetch.
-// PD_ATOMIC_INT32_DECREMENT(q)             Relaxed decrement and fetch.
+// -- PD_ATOMIC_INT32_INCREMENT             Relaxed increment and fetch.
+// -- PD_ATOMIC_INT32_DECREMENT(q)          Relaxed decrement and fetch.
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-// PD_ATOMIC_INT32_READ(q)                  Relaxed load.
-// PD_ATOMIC_UINT32_READ(q)
-// PD_ATOMIC_UINT64_READ(q)
+// -- PD_ATOMIC_INT32_READ(q)               Relaxed load.
+// -- PD_ATOMIC_UINT32_READ(q)
+// -- PD_ATOMIC_UINT64_READ(q)
 
-// PD_ATOMIC_INT32_WRITE(value, q)          Relaxed store.
-// PD_ATOMIC_UINT32_WRITE
-// PD_ATOMIC_UINT64_WRITE
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-// PD_ATOMIC_UINT32_SET(mask, q)            Relaxed bitmask set and fetch.
-// PD_ATOMIC_UINT32_UNSET(mask, q)          Relaxed bitmask unset and fetch.
-
-// PD_ATOMIC_UINT32_TRUE(mask, q)           Relaxed bitmask test.
-// PD_ATOMIC_UINT32_FALSE(mask, q)
+// -- PD_ATOMIC_INT32_WRITE(value, q)       Relaxed store.
+// -- PD_ATOMIC_UINT32_WRITE
+// -- PD_ATOMIC_UINT64_WRITE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-// PD_MEMORY_BARRIER                        A full memory barrier.
+// -- PD_ATOMIC_UINT32_SET(mask, q)         Relaxed bitmask set and fetch.
+// -- PD_ATOMIC_UINT32_UNSET(mask, q)       Relaxed bitmask unset and fetch.
+
+// -- PD_ATOMIC_UINT32_TRUE(mask, q)        Relaxed bitmask test.
+// -- PD_ATOMIC_UINT32_FALSE(mask, q)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+// -- PD_MEMORY_BARRIER                     A full memory barrier.
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
