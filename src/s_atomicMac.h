@@ -36,8 +36,8 @@ typedef volatile uint64_t   __attribute__ ((__aligned__ (8)))   t_uint64Atomic;
 #define PD_ATOMIC_INT32_INCREMENT(q)            OSAtomicIncrement32 ((q))
 #define PD_ATOMIC_INT32_DECREMENT(q)            OSAtomicDecrement32 ((q))
 
-#define PD_ATOMIC_INT32_READ(q)                 atomic_int32Read (q)
-#define PD_ATOMIC_INT32_WRITE(value, q)         atomic_int32Write (value, q)
+#define PD_ATOMIC_INT32_READ(q)                 atomic_int32Read ((q))
+#define PD_ATOMIC_INT32_WRITE(value, q)         atomic_int32Write ((value), (q))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,8 +46,8 @@ typedef volatile uint64_t   __attribute__ ((__aligned__ (8)))   t_uint64Atomic;
 #define PD_ATOMIC_UINT32_SET(mask, q)           OSAtomicOr32 ((mask), (q))
 #define PD_ATOMIC_UINT32_UNSET(mask, q)         OSAtomicAnd32 ((~(mask)), (q))
 
-#define PD_ATOMIC_UINT32_READ(q)                atomic_uInt32Read (q)
-#define PD_ATOMIC_UINT32_WRITE(value, q)        atomic_uInt32Write (value, q)
+#define PD_ATOMIC_UINT32_READ(q)                atomic_uInt32Read ((q))
+#define PD_ATOMIC_UINT32_WRITE(value, q)        atomic_uInt32Write ((value), (q))
 
 #define PD_ATOMIC_UINT32_TRUE(mask, q)          ((mask) & PD_ATOMIC_UINT32_READ (q))
 #define PD_ATOMIC_UINT32_FALSE(mask, q)         !((mask) & PD_ATOMIC_UINT32_READ (q))
@@ -56,8 +56,8 @@ typedef volatile uint64_t   __attribute__ ((__aligned__ (8)))   t_uint64Atomic;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_ATOMIC_UINT64_READ(q)                atomic_uInt64Read (q)
-#define PD_ATOMIC_UINT64_WRITE(value, q)        atomic_uInt64Write (value, q)
+#define PD_ATOMIC_UINT64_READ(q)                atomic_uInt64Read ((q))
+#define PD_ATOMIC_UINT64_WRITE(value, q)        atomic_uInt64Write ((value), (q))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -63,14 +63,14 @@ void ringbuffer_free (t_ringbuffer *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int32_t ringbuffer_getAvailableRead (const t_ringbuffer *x)
+int32_t ringbuffer_getAvailableRead (t_ringbuffer *x)
 {
-    /* Get absolute value of the distance (assume two's complement representation). */
+    /* Get absolute value (assume two's complement representation). */
     
-    return ((x->rb_write - x->rb_read) & x->rb_hiMask);
+    return ((PD_ATOMIC_INT32_READ (&x->rb_write) - PD_ATOMIC_INT32_READ (&x->rb_read)) & x->rb_hiMask);
 }
 
-int32_t ringbuffer_getAvailableWrite (const t_ringbuffer *x)
+int32_t ringbuffer_getAvailableWrite (t_ringbuffer *x)
 {
     return (x->rb_size - ringbuffer_getAvailableRead (x));
 }
@@ -85,12 +85,12 @@ static int32_t ringbuffer_getWriteRegions (t_ringbuffer *x, int32_t n,
     void **r2,
     int32_t *size2)
 {
-    int32_t index;
     int32_t available = ringbuffer_getAvailableWrite (x);
+    int32_t index;
     
     n = PD_MIN (available, n);
     
-    index = x->rb_write & x->rb_loMask;
+    index = PD_ATOMIC_INT32_READ (&x->rb_write) & x->rb_loMask;
     
     if ((index + n) > x->rb_size) {
         
@@ -111,13 +111,6 @@ static int32_t ringbuffer_getWriteRegions (t_ringbuffer *x, int32_t n,
     if (available) { PD_MEMORY_BARRIER; }
     
     return n;
-}
-
-static void ringbuffer_advanceWrite (t_ringbuffer *x, int32_t written)
-{
-    PD_MEMORY_BARRIER;
-    
-    x->rb_write = (x->rb_write + written) & x->rb_hiMask;
 }
 
 void ringbuffer_write (t_ringbuffer *x, const void *data, int32_t n)
@@ -137,7 +130,9 @@ void ringbuffer_write (t_ringbuffer *x, const void *data, int32_t n)
         memcpy (r1, data,       size1 * x->rb_bytes);
     }
     
-    ringbuffer_advanceWrite (x, written);
+    PD_MEMORY_BARRIER;
+    
+    PD_ATOMIC_INT32_WRITE ((PD_ATOMIC_INT32_READ (&x->rb_write) + written) & x->rb_hiMask, &x->rb_write);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -151,12 +146,12 @@ static int32_t ringbuffer_getReadRegions (t_ringbuffer *x,
     void **r2,
     int32_t *size2)
 {
-    int32_t index;
     int32_t available = ringbuffer_getAvailableRead (x);
+    int32_t index;
     
     n = PD_MIN (available, n);
     
-    index = x->rb_read & x->rb_loMask;
+    index = PD_ATOMIC_INT32_READ (&x->rb_read) & x->rb_loMask;
     
     if ((index + n) > x->rb_size) {
         int32_t firstHalf = x->rb_size - index;
@@ -177,13 +172,6 @@ static int32_t ringbuffer_getReadRegions (t_ringbuffer *x,
     return n;
 }
 
-static void ringbuffer_advanceRead (t_ringbuffer *x, int32_t n)
-{
-    PD_MEMORY_BARRIER;
-
-    x->rb_read = (x->rb_read + n) & x->rb_hiMask;
-}
-
 void ringbuffer_read (t_ringbuffer *x, void *data, int32_t n)
 {
     int32_t size1;
@@ -201,7 +189,9 @@ void ringbuffer_read (t_ringbuffer *x, void *data, int32_t n)
         memcpy (data, r1,       size1 * x->rb_bytes);
     }
     
-    ringbuffer_advanceRead (x, read);
+    PD_MEMORY_BARRIER;
+
+    PD_ATOMIC_INT32_WRITE ((PD_ATOMIC_INT32_READ (&x->rb_read) + read) & x->rb_hiMask, &x->rb_read);
 }
 
 // -----------------------------------------------------------------------------------------------------------
