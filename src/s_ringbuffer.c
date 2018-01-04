@@ -115,7 +115,7 @@ static int32_t ringbuffer_getWriteRegions (t_ringbuffer *x, int32_t n,
 
 static void ringbuffer_advanceWrite (t_ringbuffer *x, int32_t written)
 {
-    PD_MEMORY_BARRIER;      /* Release. */
+    PD_MEMORY_BARRIER;
     
     x->rb_write = (x->rb_write + written) & x->rb_hiMask;
 }
