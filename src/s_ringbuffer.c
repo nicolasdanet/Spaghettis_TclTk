@@ -35,7 +35,7 @@ struct _ringbuffer {
 
 t_ringbuffer *ringbuffer_new (int32_t sizeOfElementInBytes, int32_t numberOfElements)
 {
-    t_ringbuffer *x = PD_MEMORY_GET (sizeof (t_ringbuffer));
+    t_ringbuffer *x = (t_ringbuffer *)PD_MEMORY_GET (sizeof (t_ringbuffer));
     
     PD_ASSERT (sizeOfElementInBytes > 0);
     PD_ASSERT (numberOfElements > 0);
