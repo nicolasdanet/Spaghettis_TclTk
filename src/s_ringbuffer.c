@@ -108,7 +108,7 @@ static int32_t ringbuffer_getWriteRegions (t_ringbuffer *x, int32_t n,
         *size2  = 0;
     }
 
-    if (available) { PD_MEMORY_BARRIER; }
+    // if (available) { PD_MEMORY_BARRIER; }
     
     return n;
 }
@@ -167,7 +167,7 @@ static int32_t ringbuffer_getReadRegions (t_ringbuffer *x,
         *size2  = 0;
     }
     
-    if (available) { PD_MEMORY_BARRIER; }
+    // if (available) { PD_MEMORY_BARRIER; }
 
     return n;
 }
