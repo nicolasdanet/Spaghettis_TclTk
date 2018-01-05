@@ -84,6 +84,8 @@ t_error logger_initialize (void)
     
     if (!(err = (pthread_create (&logger_thread, &logger_attribute, logger_task, NULL) != 0))) {
         logger_running = 1;
+    } else {
+        ringbuffer_free (logger_ring); close (logger_file);
     }
 
     return err;
@@ -102,8 +104,7 @@ void logger_release (void)
     pthread_attr_destroy (&logger_attribute);
     
     ringbuffer_free (logger_ring);
-    
-    if (logger_file != -1) { close (logger_file); }
+    close (logger_file);
 }
 
 int logger_isRunning (void)
