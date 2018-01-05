@@ -78,7 +78,7 @@ void *test_ring (void *x)
     
     if (n == 0) {
     //
-    for (i = 0; i < 10000000; i++) {
+    for (i = 0; i < 1000000; i++) {
         if (randMT_getInteger (test_random0, RINGBUFFER_CHANCE) == 0) { test_ringWrite(); }
         ttt_wasteTime (&w);
     }
@@ -87,7 +87,7 @@ void *test_ring (void *x)
     
     if (n == 1) {
     //
-    for (i = 0; i < 10000000; i++) {
+    for (i = 0; i < 1000000; i++) {
         if (randMT_getInteger (test_random1, RINGBUFFER_CHANCE) == 0) { test_ringRead(); }
         ttt_wasteTime (&w);
     }
