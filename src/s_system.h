@@ -287,13 +287,13 @@ static inline void sys_closeSocket (int fd)
 #include "s_clock.h"
 #include "s_time.h"
 #include "s_atomic.h"
-#include "s_MT.h"
 #include "s_ringbuffer.h"
+#include "s_logger.h"
+#include "s_MT.h"
 #include "s_devices.h"
 #include "s_apis.h"
 #include "s_midi_apis.h"
 #include "s_audio_apis.h"
-#include "s_logger_apis.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

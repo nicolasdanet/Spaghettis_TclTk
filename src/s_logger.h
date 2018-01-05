@@ -7,8 +7,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef __s_logger_apis_h_
-#define __s_logger_apis_h_
+#ifndef __s_logger_h_
+#define __s_logger_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -22,8 +22,8 @@
 // MARK: -
 
 #if ( PD_WITH_DEBUG && PD_WITH_LOGGER ) 
-    #define PD_LOG(s)               logger_appendStringNative (s)
-    #define PD_LOG_NUMBER(f)        logger_appendFloatNative ((double)(f))
+    #define PD_LOG(s)           logger_appendString (s)
+    #define PD_LOG_NUMBER(f)    logger_appendFloat ((double)(f))
 #else
     #define PD_LOG(s)
     #define PD_LOG_NUMBER(f)
@@ -33,28 +33,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error logger_initializeNative     (void);
-void    logger_releaseNative        (void);
+t_error logger_initialize       (void);
+void    logger_release          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int     logger_isRunningNative      (void);
+int     logger_isRunning        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    logger_appendStringNative   (const char *s);
-void    logger_appendFloatNative    (double f);
+void    logger_appendString     (const char *s);
+void    logger_appendFloat      (double f);
 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define LOGGER_FLOAT_STRING         32          /* Must be big enough to avoid overflow below. */
+#define LOGGER_FLOAT_STRING     32      /* Must be big enough to avoid overflow below. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -100,4 +100,4 @@ static inline char *logger_stringWithFloat (char *dest, double f)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // __s_logger_apis_h_
+#endif // __s_logger_h_
