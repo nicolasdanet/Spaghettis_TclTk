@@ -29,7 +29,6 @@ t_ringbuffer                    *logger_ring;                   /* Static. */
 static int                      logger_file;                    /* Static. */
 static int                      logger_running;                 /* Static. */
 static pthread_t                logger_thread;                  /* Static. */
-static pthread_attr_t           logger_attribute;               /* Static. */
 static t_int32Atomic            logger_quit;                    /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -79,10 +78,7 @@ t_error logger_initialize (void)
     //
     logger_ring = ringbuffer_new (1, LOGGER_BUFFER_SIZE);
     
-    pthread_attr_init (&logger_attribute);
-    pthread_attr_setdetachstate (&logger_attribute, PTHREAD_CREATE_JOINABLE);
-    
-    if (!(err = (pthread_create (&logger_thread, &logger_attribute, logger_task, NULL) != 0))) {
+    if (!(err = (pthread_create (&logger_thread, NULL, logger_task, NULL) != 0))) {
         logger_running = 1;
     } else {
         ringbuffer_free (logger_ring); close (logger_file);
@@ -102,10 +98,8 @@ void logger_release (void)
     PD_ATOMIC_INT32_WRITE (1, &logger_quit);
     
     pthread_join (logger_thread, NULL);
-    pthread_attr_destroy (&logger_attribute);
     
-    ringbuffer_free (logger_ring);
-    close (logger_file);
+    ringbuffer_free (logger_ring); close (logger_file);
 }
 
 int logger_isRunning (void)
