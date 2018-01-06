@@ -27,10 +27,10 @@ extern t_symbol *main_directorySupport;
 t_ringbuffer                    *logger_ring;                   /* Static. */
 
 static int                      logger_file;                    /* Static. */
+static int                      logger_running;                 /* Static. */
 static pthread_t                logger_thread;                  /* Static. */
 static pthread_attr_t           logger_attribute;               /* Static. */
-static int                      logger_quit;                    /* Static. */
-static int                      logger_running;                 /* Static. */
+static t_int32Atomic            logger_quit;                    /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ static int                      logger_running;                 /* Static. */
 
 void *logger_task (void *dummy)
 {
-    while (!logger_quit) {
+    while (PD_ATOMIC_INT32_READ (&logger_quit) == 0) {
     //
     nano_sleep (MILLISECONDS_TO_NANOSECONDS (LOGGER_SLEEP));
     
@@ -97,8 +97,9 @@ t_error logger_initialize (void)
 
 void logger_release (void)
 {
-    logger_quit = 1;
     logger_running = 0;
+    
+    PD_ATOMIC_INT32_WRITE (1, &logger_quit);
     
     pthread_join (logger_thread, NULL);
     pthread_attr_destroy (&logger_attribute);
