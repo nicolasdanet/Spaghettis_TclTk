@@ -13,22 +13,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static uid_t priority_euid;     /* Static. */
+static uid_t priority_euid;         /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if PD_WATCHDOG
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-extern t_symbol *main_directoryBin;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-extern int interface_watchdogPipe; 
+#if PD_LINUX
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -52,13 +42,14 @@ extern int interface_watchdogPipe;
 
 #if PRIORITY_SCHEDULING
 
-static t_error priority_setRealTimeScheduling (int isWatchdog) 
+static t_error priority_setRTLinuxScheduling (void)
 {
     struct sched_param param;
-    int p1 = sched_get_priority_min (SCHED_FIFO);
-    int p2 = sched_get_priority_max (SCHED_FIFO);
+    int min = sched_get_priority_min (SCHED_FIFO);
+    int max = sched_get_priority_max (SCHED_FIFO);
+    int required = min + 5;                             /* Arbitrary. Should be set according to Jack. */
     
-    param.sched_priority = audio_getPriorityNative (p1, p2, isWatchdog);
+    param.sched_priority = PD_CLAMP (required, min, max);
 
     return (sched_setscheduler (0, SCHED_FIFO, &param) == -1);
 }
@@ -67,23 +58,23 @@ static t_error priority_setRealTimeScheduling (int isWatchdog)
 
 #if PRIORITY_MEMLOCK
 
-static t_error priority_setRealTimeMemoryLocking (void) 
+static t_error priority_setRTLinuxMemoryLocking (void)
 {       
     return (mlockall (MCL_CURRENT | MCL_FUTURE) == -1);
 }
 
 #endif // PRIORITY_MEMLOCK
 
-static t_error priority_setRealTime (int isWatchdog) 
+static t_error priority_setRTLinux (void)
 {
-    t_error err = PD_ERROR_NONE;
+    t_error err = PD_ERROR;
     
     #if PRIORITY_SCHEDULING
-        err |= priority_setRealTimeScheduling (isWatchdog);
+        err = PD_ERROR_NONE; err |= priority_setRTLinuxScheduling();
     #endif
 
     #if PRIORITY_MEMLOCK
-        err |= priority_setRealTimeMemoryLocking();
+        priority_setRTLinuxMemoryLocking();
     #endif
     
     return err;
@@ -92,7 +83,7 @@ static t_error priority_setRealTime (int isWatchdog)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#endif // PD_WATCHDOG
+#endif // PD_LINUX
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -126,58 +117,20 @@ static t_error priority_setRTNative (void)
 static t_error priority_setRTNative (void)
 {
     if (!SetPriorityClass (GetCurrentProcess(), HIGH_PRIORITY_CLASS)) { PD_BUG; }
+    
+    return PD_ERROR_NONE;
 }
 
-#elif PD_WATCHDOG
+#elif PD_LINUX
 
 static t_error priority_setRTNative (void)
 {
-    t_error err = PD_ERROR_NONE;
-    
-    char command[PD_STRING] = { 0 };
-    
-    err = string_sprintf (command, PD_STRING, "%s/" PD_NAME_LOWERCASE "dog", main_directoryBin->s_name);
-    
-    if (!err && !(err = (path_isFileExist (command) == 0))) {
-    //
-    int p[2];
-
-    if (!(err = (pipe (p) < 0))) {
-    //
-    int pid = fork();
-    
-    if (pid < 0)   { PD_BUG; err = PD_ERROR; }
-    else if (!pid) {
-    
-        /* We're the child. */
-        
-        priority_setRealTime (1);
-        if (p[1] != 0) { dup2 (p[0], 0); close (p[0]); }        /* Watchdog reads onto the stdin. */
-        close (p[1]);
-        if (!priority_privilegeRelinquish()) {
-            execl ("/bin/sh", "sh", "-c", command, NULL);       /* Child lose setuid privileges. */
-        }
-        _exit (1);
-
-    } else {
-    
-        /* We're the parent. */
-        
-        if (!priority_setRealTime (0)) { fprintf (stdout, "RT Enabled\n"); }
-        else {
-            fprintf (stdout, "RT Disabled\n"); 
-        }
-        
-        close (p[0]);
-        fcntl (p[1], F_SETFD, FD_CLOEXEC);
-        interface_watchdogPipe = p[1];
-    }
-    //
-    }
-    //
+    if (!priority_setRTLinux()) { fprintf (stdout, "RT Enabled\n"); }
+    else {
+        fprintf (stdout, "RT Disabled\n");
     }
 
-    return err;
+    return PD_ERROR_NONE;
 }
 
 #else
@@ -242,15 +195,7 @@ t_error priority_privilegeRelinquish (void)
 
 t_error priority_setPolicy (void)
 {
-    t_error err = priority_setRTNative();
-    
-    #if PD_WATCHDOG
-    
-    if (!err) { gui_add ("::watchdog\n"); }
-    
-    #endif
-
-    return err;
+    return priority_setRTNative();
 }
 
 #else

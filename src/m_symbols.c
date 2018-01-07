@@ -170,7 +170,6 @@ t_symbol *sym__snap;
 t_symbol *sym__sysexin;
 t_symbol *sym__texttemplate;
 t_symbol *sym__touchin;
-t_symbol *sym__watchdog;
 t_symbol *sym__window;
 t_symbol *sym_a;
 t_symbol *sym_abs;
@@ -794,7 +793,6 @@ void symbols_initialize (void)
     sym__sysexin                                = gensym ("_sysexin");
     sym__texttemplate                           = gensym ("_texttemplate");
     sym__touchin                                = gensym ("_touchin");
-    sym__watchdog                               = gensym ("_watchdog");
     sym__window                                 = gensym ("_window");
     sym_a                                       = gensym ("a");
     sym_abs                                     = gensym ("abs");

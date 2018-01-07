@@ -112,14 +112,12 @@ static t_error main_parseArguments (int argc, char **argv)
     In "simple" installations, the layout is
     
         .../bin/spaghettis
-        .../bin/spaghettisdog
         .../tcl/ui_main.tcl
         .../help/
         
     In "complexe" installations, the layout is
     
         .../bin/spaghettis
-        .../lib/spaghettis/bin/spaghettisdog
         .../lib/spaghettis/tcl/ui_main.tcl
         .../lib/spaghettis/help/
 

@@ -170,7 +170,6 @@ extern t_symbol *sym__snap;
 extern t_symbol *sym__sysexin;
 extern t_symbol *sym__texttemplate;
 extern t_symbol *sym__touchin;
-extern t_symbol *sym__watchdog;
 extern t_symbol *sym__window;
 extern t_symbol *sym_a;
 extern t_symbol *sym_abs;

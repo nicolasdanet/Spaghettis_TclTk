@@ -371,48 +371,31 @@
 // MARK: -
 
 #ifndef PD_WITH_DEBUG
-#define PD_WITH_DEBUG               0           /* Debug mode. */
+#define PD_WITH_DEBUG               0                   /* Debug mode. */
 #endif
 
 #ifndef PD_WITH_LOGGER
-#define PD_WITH_LOGGER              0           /* Debug with wait-free logger. */
+#define PD_WITH_LOGGER              0                   /* Debug with wait-free logger. */
 #endif
 
 #ifndef PD_WITH_LEGACY
-#define PD_WITH_LEGACY              1           /* Compatibility. */
+#define PD_WITH_LEGACY              1                   /* Compatibility. */
 #endif
 
 #ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME            1           /* Require RT policy. */
+#define PD_WITH_REALTIME            1                   /* Require RT policy. */
 #endif
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #ifndef PD_WITH_DEADCODE
-#define PD_WITH_DEADCODE            0           /* Unused code. */
+#define PD_WITH_DEADCODE            0                   /* Include unused code. */
 #endif
 
 #ifndef PD_WITH_TINYEXPR
-#define PD_WITH_TINYEXPR            1           /* Use TinyExpr library. */
+#define PD_WITH_TINYEXPR            1                   /* Use TinyExpr library. */
 #endif
 
 #ifndef PD_WITH_MAIN
-#define PD_WITH_MAIN                1           /* Use main entry. */
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#if ( PD_WITH_REALTIME && ( PD_LINUX || PD_BSD || PD_HURD ) )
-
-#define PD_WATCHDOG                 1
-
-#else
-
-#define PD_WATCHDOG                 0
-
+#define PD_WITH_MAIN                1                   /* Use main entry. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

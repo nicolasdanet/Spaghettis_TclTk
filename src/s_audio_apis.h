@@ -20,7 +20,6 @@ const char  *audio_nameNative               (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         audio_getPriorityNative         (int min, int max, int isWatchdog);
 t_error     audio_getListsNative            (t_deviceslist *p);
                                                 
 // -----------------------------------------------------------------------------------------------------------

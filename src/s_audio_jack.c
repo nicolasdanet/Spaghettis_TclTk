@@ -255,11 +255,6 @@ const char *audio_nameNative (void)
     static const char *name = "JACK"; return name;      /* Static. */
 }
 
-int audio_getPriorityNative (int min, int max, int isWatchdog)
-{
-    return (isWatchdog ? min + 7 : min + 5);
-}
-
 t_error audio_initializeNative (void)
 {
     return PD_ERROR_NONE;

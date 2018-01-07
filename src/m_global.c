@@ -18,7 +18,6 @@
 
 void canvas_key                 (t_glist *, t_symbol *, int, t_atom *);
 void interface_quit             (void);
-void interface_pollWatchdog     (void *dummy);
 void font_withHostMeasured      (int, t_atom *);
 void audio_requireDialog        (void);
 void audio_fromDialog           (int, t_atom *);
@@ -156,12 +155,6 @@ void global_setup (void)
     class_addMethod (c, (t_method)global_savePreferences,       sym__savepreferences,   A_NULL);
     class_addMethod (c, (t_method)global_dummy,                 sym__dummy,             A_NULL);
     
-    #if PD_WATCHDOG
-    
-    class_addMethod (c, (t_method)interface_pollWatchdog,       sym__watchdog,          A_NULL);
-        
-    #endif
-
     class_addAnything (c, (t_method)global_default);
     
     global_class = c;

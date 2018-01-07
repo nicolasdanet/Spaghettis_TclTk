@@ -157,14 +157,6 @@ const char *audio_nameNative (void)
     static const char *name = "PortAudio"; return name;
 }
 
-#if 0
-
-int audio_getPriorityNative (int min, int max, int isWatchdog)
-{
-}
-
-#endif
-
 t_error audio_initializeNative (void)
 {
     PaError err = Pa_Initialize();
