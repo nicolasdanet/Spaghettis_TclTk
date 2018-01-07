@@ -18,7 +18,6 @@ HELP_DIR = ../resources/help
 # /usr/local/bin/spaghettissnd
 # /usr/local/bin/spaghettisrcv
 # /usr/local/include/m_spaghettis.h
-# /usr/local/lib/spaghettis/bin/spaghettisdog
 # /usr/local/lib/spaghettis/tcl/*.tcl
 # /usr/local/lib/spaghettis/help/*.pdhelp
 
@@ -28,7 +27,6 @@ HELP_DIR = ../resources/help
 # includedir      = $(prefix)/include
 # libdir          = $(exec_prefix)/lib
 # libpddir        = $(libdir)/spaghettis
-# libpdbindir     = $(libpddir)/bin
 # libpdtcldir     = $(libpddir)/tcl
 # libpdhelpdir    = $(libpddir)/help
 
@@ -64,7 +62,7 @@ OBJ = $(SRC:.c=.o) $(EXPR_SRC:.c=.o)
 
 .PHONY: all
 
-all: $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettisdog $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv
+all: $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv
 
 $(BIN_DIR):
 	@test -d $(BIN_DIR) || mkdir -p $(BIN_DIR)
@@ -76,10 +74,6 @@ $(OBJ): %.o : %.c
 $(BIN_DIR)/spaghettis: $(OBJ) | $(BIN_DIR)
 	@echo "Build spaghettis ..."
 	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ) $(LIB)
-
-$(BIN_DIR)/spaghettisdog: u_watchdog.c | $(BIN_DIR)
-	@echo "Build spaghettisdog ..."
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/spaghettisdog u_watchdog.c
 
 $(BIN_DIR)/spaghettissnd: u_pdsend.c | $(BIN_DIR)
 	@echo "Build spaghettissnd ..."
@@ -101,7 +95,7 @@ clean:
 	@echo "Remove objects ..."
 	@-rm -f $(OBJ)
 	@echo "Remove binaries ..."
-	@-rm -f $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv $(BIN_DIR)/spaghettisdog
+	@-rm -f $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv
 	@echo "Remove bin directory ..."
 	@-rmdir $(BIN_DIR)
 
@@ -111,9 +105,6 @@ clean:
 #	install -m755 $(BIN_DIR)/spaghettis $(DESTDIR)$(bindir)/spaghettis
 #	install -m755 $(BIN_DIR)/spaghettissnd $(DESTDIR)$(bindir)/spaghettissnd
 #	install -m755 $(BIN_DIR)/spaghettisrcv $(DESTDIR)$(bindir)/spaghettisrcv
-#	@echo "Install pdwatchdog ..."
-#	install -d $(DESTDIR)$(libpdbindir)
-#	install $(BIN_DIR)/spaghettisdog $(DESTDIR)$(libpdbindir)/spaghettisdog
 #	@echo "Install scripts ..."
 #	install -d $(DESTDIR)$(libpdtcldir)
 #	install $(TCL_DIR)/*.tcl $(DESTDIR)$(libpdtcldir)
@@ -133,7 +124,6 @@ clean:
 #	rm -f $(DESTDIR)$(bindir)/spaghettis
 #	rm -f $(DESTDIR)$(bindir)/spaghettissnd
 #	rm -f $(DESTDIR)$(bindir)/spaghettisrcv
-#	@echo "Uninstall pdwatchdog ..."
 #	@echo "Uninstall scripts ..."
 #	@echo "Uninstall help ..."
 #	rm -f -r $(DESTDIR)$(libpddir)
