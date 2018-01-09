@@ -20,12 +20,12 @@
 // -----------------------------------------------------------------------------------------------------------
 
 struct _ringbuffer {
-    int32_t         rb_size;
-    size_t          rb_bytes;
     t_int32Atomic   rb_read;
     t_int32Atomic   rb_write;
     uint32_t        rb_hiMask;
     uint32_t        rb_loMask;
+    int32_t         rb_size;
+    size_t          rb_bytes;
     char            *rb_vector;
     };
 
@@ -41,12 +41,12 @@ t_ringbuffer *ringbuffer_new (int32_t sizeOfElementInBytes, int32_t numberOfElem
     PD_ASSERT (numberOfElements > 0);
     PD_ASSERT (PD_IS_POWER_2 (numberOfElements));
     
-    x->rb_size   = numberOfElements;
-    x->rb_bytes  = (size_t)sizeOfElementInBytes;
     x->rb_read   = 0;
     x->rb_write  = 0;
     x->rb_hiMask = (numberOfElements * 2) - 1;
     x->rb_loMask = (numberOfElements) - 1;
+    x->rb_size   = numberOfElements;
+    x->rb_bytes  = (size_t)sizeOfElementInBytes;
     
     x->rb_vector = (char *)PD_MEMORY_GET (x->rb_size * x->rb_bytes);
     
