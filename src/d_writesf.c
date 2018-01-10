@@ -17,6 +17,27 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static inline void soundfile_setPropertiesByCopy (t_audioproperties *args, t_audioproperties *from)
+{
+    args->ap_fileName           = from->ap_fileName;
+    args->ap_fileExtension      = from->ap_fileExtension;
+    args->ap_sampleRate         = from->ap_sampleRate;
+    args->ap_fileType           = from->ap_fileType;
+    args->ap_headerSize         = from->ap_headerSize;
+    args->ap_numberOfChannels   = from->ap_numberOfChannels;
+    args->ap_bytesPerSample     = from->ap_bytesPerSample;
+    args->ap_isBigEndian        = from->ap_isBigEndian;
+    args->ap_needToSwap         = from->ap_needToSwap;
+    args->ap_dataSizeInBytes    = from->ap_dataSizeInBytes;
+    args->ap_onset              = from->ap_onset;
+    args->ap_numberOfFrames     = from->ap_numberOfFrames;
+    args->ap_needToNormalize    = from->ap_needToNormalize;
+    args->ap_needToResize       = from->ap_needToResize;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *writesf_tilde_class;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------

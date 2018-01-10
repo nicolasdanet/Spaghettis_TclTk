@@ -38,23 +38,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void soundfile_initialize (void)
-{
-    PD_ASSERT (SOUNDFILE_HELPER_SIZE > 16);
-    PD_ASSERT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_WAVE);
-    PD_ASSERT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_AIFF);
-    PD_ASSERT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_NEXT);
-    
-    /* A way to test at compile time? */
-    
-    PD_ASSERT (sizeof (t_sample) == sizeof (t_float));      /* Required for encoding and decoding. */
-    PD_ASSERT (sizeof (t_word) >= sizeof (t_sample));       /* Ditto. */
-    PD_ASSERT (sizeof (t_word) % sizeof (t_sample) == 0);   /* Ditto. */
-    
-    PD_ABORT (sizeof (t_sample) != sizeof (t_float));
-    PD_ABORT (sizeof (t_word) < sizeof (t_sample));
-    PD_ABORT (sizeof (t_word) % sizeof (t_sample) != 0);
-}
+t_error soundfile_readFileHeaderWAVE    (int, t_headerhelper *, t_audioproperties *);
+t_error soundfile_readFileHeaderAIFF    (int, t_headerhelper *, t_audioproperties *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

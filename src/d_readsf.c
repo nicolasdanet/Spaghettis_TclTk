@@ -17,6 +17,27 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static inline void soundfile_temp (t_audioproperties *args, t_audioproperties *from)
+{
+    args->ap_fileName           = from->ap_fileName;
+    args->ap_fileExtension      = from->ap_fileExtension;
+    args->ap_sampleRate         = from->ap_sampleRate;
+    args->ap_fileType           = from->ap_fileType;
+    args->ap_headerSize         = from->ap_headerSize;
+    args->ap_numberOfChannels   = from->ap_numberOfChannels;
+    args->ap_bytesPerSample     = from->ap_bytesPerSample;
+    args->ap_isBigEndian        = from->ap_isBigEndian;
+    args->ap_needToSwap         = from->ap_needToSwap;
+    args->ap_dataSizeInBytes    = from->ap_dataSizeInBytes;
+    args->ap_onset              = from->ap_onset;
+    args->ap_numberOfFrames     = from->ap_numberOfFrames;
+    args->ap_needToNormalize    = from->ap_needToNormalize;
+    args->ap_needToResize       = from->ap_needToResize;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *readsf_tilde_class;             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -206,7 +227,7 @@ static void readsf_tilde_threadOpen (t_readsf_tilde * x)
     
     /* Make a local copy to used it unlocked. */
     
-    t_audioproperties copy; soundfile_setPropertiesByCopy (&copy, &x->sf_properties);
+    t_audioproperties copy; soundfile_temp (&copy, &x->sf_properties);
     
     pthread_mutex_unlock (&x->sf_mutex);
     
@@ -216,7 +237,7 @@ static void readsf_tilde_threadOpen (t_readsf_tilde * x)
 
     x->sf_fileDescriptor = f;
     
-    soundfile_setPropertiesByCopy (&x->sf_properties, &copy);
+    soundfile_temp (&x->sf_properties, &copy);
     
     if (x->sf_fileDescriptor < 0) { x->sf_error = PD_ERROR; }
     else if (READSF_NO_REQUEST) {
@@ -338,7 +359,7 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
     //
     pthread_mutex_lock (&x->sf_mutex);
     
-        soundfile_setPropertiesByCopy (&x->sf_properties, &p);
+        soundfile_temp (&x->sf_properties, &p);
         
         x->sf_threadState            = READSF_STATE_START;
         x->sf_threadRequest          = READSF_REQUEST_OPEN;

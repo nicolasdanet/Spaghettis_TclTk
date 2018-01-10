@@ -38,6 +38,7 @@
 #include "t_ringbuffer.c"
 #include "t_time.c"
 #include "t_utf8.c"
+#include "t_soundfile.c"
 // #include "t_prim.cpp"
 // #include "t_MICA.cpp"
 // #include "t_MIR.cpp"

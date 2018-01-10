@@ -27,19 +27,19 @@
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _wave {
-    char        w_fileID[4];
-    uint32_t    w_chunkSize;
-    char        w_waveID[4];
-    char        w_fmtID[4];
-    uint32_t    w_fmtChunkSize;
-    uint16_t    w_audioFormat;
-    uint16_t    w_numberOfChannels;
-    uint32_t    w_samplesPerSecond;
-    uint32_t    w_bytesPerSecond;
-    uint16_t    w_blockAlign;
-    uint16_t    w_bitsPerSample;
-    char        w_dataChunkID[4];
-    uint32_t    w_dataChunkSize;
+    char            w_fileID[4];
+    uint32_t        w_chunkSize;
+    char            w_waveID[4];
+    char            w_fmtID[4];
+    uint32_t        w_fmtChunkSize;
+    uint16_t        w_audioFormat;
+    uint16_t        w_numberOfChannels;
+    uint32_t        w_samplesPerSecond;
+    uint32_t        w_bytesPerSecond;
+    uint16_t        w_blockAlign;
+    uint16_t        w_bitsPerSample;
+    char            w_dataChunkID[4];
+    uint32_t        w_dataChunkSize;
     } t_wave;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -88,13 +88,13 @@ typedef struct _aiff {
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _nextstep {
-    char        ns_magic[4];
-    uint32_t    ns_dataLocation;
-    uint32_t    ns_dataSize;
-    uint32_t    ns_dataFormat;
-    uint32_t    ns_samplingRate;
-    uint32_t    ns_channelCount;
-    char        ns_info[4];
+    char            ns_magic[4];
+    uint32_t        ns_dataLocation;
+    uint32_t        ns_dataSize;
+    uint32_t        ns_dataFormat;
+    uint32_t        ns_samplingRate;
+    uint32_t        ns_channelCount;
+    char            ns_info[4];
     } t_nextstep;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -206,20 +206,20 @@ static inline void soundfile_makeAiff80BitFloat (double sampleRate, char *s)
 // MARK: -
 
 typedef struct _audioproperties {
-    t_symbol    *ap_fileName;
-    t_symbol    *ap_fileExtension;
-    t_float     ap_sampleRate;
-    int         ap_fileType;
-    int         ap_headerSize;
-    int         ap_numberOfChannels;
-    int         ap_bytesPerSample;
-    int         ap_isBigEndian;
-    int         ap_needToSwap;
-    int         ap_dataSizeInBytes;
-    int         ap_onset;
-    int         ap_numberOfFrames;
-    int         ap_needToNormalize;
-    int         ap_needToResize;
+    t_symbol        *ap_fileName;
+    t_symbol        *ap_fileExtension;
+    t_float         ap_sampleRate;
+    int             ap_fileType;
+    int             ap_headerSize;
+    int             ap_numberOfChannels;
+    int             ap_bytesPerSample;
+    int             ap_isBigEndian;
+    int             ap_needToSwap;
+    int             ap_dataSizeInBytes;
+    int             ap_onset;
+    int             ap_numberOfFrames;
+    int             ap_needToNormalize;
+    int             ap_needToResize;
     } t_audioproperties;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -228,56 +228,38 @@ typedef struct _audioproperties {
 
 static inline void soundfile_initProperties (t_audioproperties *args)
 {
-    args->ap_fileName           = &s_;
-    args->ap_fileExtension      = &s_;
-    args->ap_sampleRate         = SOUNDFILE_UNDEFINED;
-    args->ap_fileType           = SOUNDFILE_UNDEFINED;
-    args->ap_headerSize         = SOUNDFILE_UNDEFINED;
-    args->ap_numberOfChannels   = SOUNDFILE_UNDEFINED;
-    args->ap_bytesPerSample     = SOUNDFILE_UNDEFINED;
-    args->ap_isBigEndian        = SOUNDFILE_UNDEFINED;
-    args->ap_needToSwap         = SOUNDFILE_UNDEFINED;
-    args->ap_dataSizeInBytes    = SOUNDFILE_UNDEFINED;
-    args->ap_onset              = SOUNDFILE_UNDEFINED;
-    args->ap_numberOfFrames     = SOUNDFILE_UNKNOWN;
-    args->ap_needToNormalize    = SOUNDFILE_UNDEFINED;
-    args->ap_needToResize       = SOUNDFILE_UNDEFINED;
-}
-
-static inline void soundfile_setPropertiesByCopy (t_audioproperties *args, t_audioproperties *from)
-{
-    args->ap_fileName           = from->ap_fileName;
-    args->ap_fileExtension      = from->ap_fileExtension;
-    args->ap_sampleRate         = from->ap_sampleRate;
-    args->ap_fileType           = from->ap_fileType;
-    args->ap_headerSize         = from->ap_headerSize;
-    args->ap_numberOfChannels   = from->ap_numberOfChannels;
-    args->ap_bytesPerSample     = from->ap_bytesPerSample;
-    args->ap_isBigEndian        = from->ap_isBigEndian;
-    args->ap_needToSwap         = from->ap_needToSwap;
-    args->ap_dataSizeInBytes    = from->ap_dataSizeInBytes;
-    args->ap_onset              = from->ap_onset;
-    args->ap_numberOfFrames     = from->ap_numberOfFrames;
-    args->ap_needToNormalize    = from->ap_needToNormalize;
-    args->ap_needToResize       = from->ap_needToResize;
+    args->ap_fileName               = &s_;
+    args->ap_fileExtension          = &s_;
+    args->ap_sampleRate             = SOUNDFILE_UNDEFINED;
+    args->ap_fileType               = SOUNDFILE_UNDEFINED;
+    args->ap_headerSize             = SOUNDFILE_UNDEFINED;
+    args->ap_numberOfChannels       = SOUNDFILE_UNDEFINED;
+    args->ap_bytesPerSample         = SOUNDFILE_UNDEFINED;
+    args->ap_isBigEndian            = SOUNDFILE_UNDEFINED;
+    args->ap_needToSwap             = SOUNDFILE_UNDEFINED;
+    args->ap_dataSizeInBytes        = SOUNDFILE_UNDEFINED;
+    args->ap_onset                  = SOUNDFILE_UNDEFINED;
+    args->ap_numberOfFrames         = SOUNDFILE_UNKNOWN;
+    args->ap_needToNormalize        = SOUNDFILE_UNDEFINED;
+    args->ap_needToResize           = SOUNDFILE_UNDEFINED;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define SOUNDFILE_HELPER_SIZE           PD_STRING
+#define SOUNDFILE_HELPER_SIZE       PD_STRING
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define SOUNDFILE_HELPER_INIT(x)        {                           \
-                                            *((x)->h_c)      = 0;   \
-                                            (x)->h_bytesSet  = 0;   \
-                                            (x)->h_onset     = 0;   \
-                                            *((x)->h_ID)     = 0;   \
-                                            (x)->h_chunkSize = 0;   \
-                                        }
+#define SOUNDFILE_HELPER_INIT(x)    {                           \
+                                        *((x)->h_c)      = 0;   \
+                                        (x)->h_bytesSet  = 0;   \
+                                        (x)->h_onset     = 0;   \
+                                        *((x)->h_ID)     = 0;   \
+                                        (x)->h_chunkSize = 0;   \
+                                    }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -308,13 +290,6 @@ static inline t_error soundfile_helperRead (int f, t_headerhelper *t, off_t offs
     
     return err;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error soundfile_readFileHeaderWAVE    (int f, t_headerhelper *t, t_audioproperties *args);
-t_error soundfile_readFileHeaderAIFF    (int f, t_headerhelper *t, t_audioproperties *args);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
