@@ -38,8 +38,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error soundfile_readFileHeaderWAVE    (int, t_headerhelper *, t_audioproperties *);
-t_error soundfile_readFileHeaderAIFF    (int, t_headerhelper *, t_audioproperties *);
+t_error subchunk_readFileHeaderWAVE (int, t_headerhelper *, t_audioproperties *);
+t_error subchunk_readFileHeaderAIFF (int, t_headerhelper *, t_audioproperties *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -274,13 +274,13 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
         
         if (format == SOUNDFILE_WAVE) {
             if ((err = soundfile_readFileHeaderCanonicalWAVE (f, &t, args))) {
-                err = soundfile_readFileHeaderWAVE (f, &t, args);
+                err = subchunk_readFileHeaderWAVE (f, &t, args);
             }
         }
         
         if (format == SOUNDFILE_AIFF) {
             if ((err = soundfile_readFileHeaderCanonicalAIFF (f, &t, args))) {
-                err = soundfile_readFileHeaderAIFF (f, &t, args);
+                err = subchunk_readFileHeaderAIFF (f, &t, args);
             }
         }
             

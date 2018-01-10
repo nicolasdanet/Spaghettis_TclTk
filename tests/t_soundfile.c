@@ -11,7 +11,7 @@ void test40__soundfile() {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (AtomicSoundfile, 40, "Soundfile - Format")
+TTT_BEGIN (AtomicSoundfile, 40, "Soundfile - Define")
 
     TTT_EXPECT (SOUNDFILE_HELPER_SIZE > 16);
     TTT_EXPECT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_WAVE);

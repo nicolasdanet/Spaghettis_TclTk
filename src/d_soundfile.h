@@ -327,7 +327,7 @@ void    soundfile_decode                (int numberOfChannels,
                                             int onset,
                                             int bytesPerSamples,
                                             int isBigEndian,
-                                            int spread, 
+                                            int spread,
                                             int n);
 
 // -----------------------------------------------------------------------------------------------------------
