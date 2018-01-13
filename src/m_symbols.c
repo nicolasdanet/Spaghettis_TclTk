@@ -487,6 +487,7 @@ t_symbol *sym_send__tilde__;
 t_symbol *sym_serial;
 t_symbol *sym_set;
 t_symbol *sym_setsize;
+t_symbol *sym_sfthread;
 t_symbol *sym_sig__tilde__;
 t_symbol *sym_sin;
 t_symbol *sym_sinesum;
@@ -1110,6 +1111,7 @@ void symbols_initialize (void)
     sym_serial                                  = gensym ("serial");
     sym_set                                     = gensym ("set");
     sym_setsize                                 = gensym ("setsize");
+    sym_sfthread                                = gensym ("sfthread");
     sym_sig__tilde__                            = gensym ("sig~");
     sym_sin                                     = gensym ("sin");
     sym_sinesum                                 = gensym ("sinesum");

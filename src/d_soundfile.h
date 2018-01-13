@@ -226,7 +226,7 @@ typedef struct _audioproperties {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline void soundfile_initProperties (t_audioproperties *args)
+static inline void soundfile_propertiesInit (t_audioproperties *args)
 {
     args->ap_fileName               = &s_;
     args->ap_fileExtension          = &s_;
@@ -242,6 +242,24 @@ static inline void soundfile_initProperties (t_audioproperties *args)
     args->ap_numberOfFrames         = SOUNDFILE_UNKNOWN;
     args->ap_needToNormalize        = SOUNDFILE_UNDEFINED;
     args->ap_needToResize           = SOUNDFILE_UNDEFINED;
+}
+
+static inline void soundfile_propertiesCopy (t_audioproperties *args, t_audioproperties *from)
+{
+    args->ap_fileName               = from->ap_fileName;
+    args->ap_fileExtension          = from->ap_fileExtension;
+    args->ap_sampleRate             = from->ap_sampleRate;
+    args->ap_fileType               = from->ap_fileType;
+    args->ap_headerSize             = from->ap_headerSize;
+    args->ap_numberOfChannels       = from->ap_numberOfChannels;
+    args->ap_bytesPerSample         = from->ap_bytesPerSample;
+    args->ap_isBigEndian            = from->ap_isBigEndian;
+    args->ap_needToSwap             = from->ap_needToSwap;
+    args->ap_dataSizeInBytes        = from->ap_dataSizeInBytes;
+    args->ap_onset                  = from->ap_onset;
+    args->ap_numberOfFrames         = from->ap_numberOfFrames;
+    args->ap_needToNormalize        = from->ap_needToNormalize;
+    args->ap_needToResize           = from->ap_needToResize;
 }
 
 // -----------------------------------------------------------------------------------------------------------

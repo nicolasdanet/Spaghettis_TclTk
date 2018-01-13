@@ -82,6 +82,8 @@ static void post_syslog (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Note that it is NOT thread-safe. */
+
 #if PD_WITH_DEBUG
 
 void post_log (const char *fmt, ...)

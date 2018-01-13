@@ -113,7 +113,7 @@ static int32_t ringbuffer_getWriteRegions (t_ringbuffer *x, int32_t n,
     return n;
 }
 
-void ringbuffer_write (t_ringbuffer *x, const void *data, int32_t n)
+int32_t ringbuffer_write (t_ringbuffer *x, const void *data, int32_t n)
 {
     int32_t size1;
     int32_t size2;
@@ -133,6 +133,8 @@ void ringbuffer_write (t_ringbuffer *x, const void *data, int32_t n)
     PD_MEMORY_BARRIER;
     
     PD_ATOMIC_INT32_WRITE ((PD_ATOMIC_INT32_READ (&x->rb_write) + written) & x->rb_hiMask, &x->rb_write);
+    
+    return written;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -172,14 +174,14 @@ static int32_t ringbuffer_getReadRegions (t_ringbuffer *x,
     return n;
 }
 
-void ringbuffer_read (t_ringbuffer *x, void *data, int32_t n)
+int32_t ringbuffer_read (t_ringbuffer *x, void *data, int32_t n)
 {
     int32_t size1;
     int32_t size2;
     void *r1 = NULL;
     void *r2 = NULL;
     
-    int32_t read = ringbuffer_getReadRegions (x, n, &r1, &size1, &r2, &size2);
+    int32_t loaded = ringbuffer_getReadRegions (x, n, &r1, &size1, &r2, &size2);
     
     if (size2 > 0) {
         memcpy (data, r1,       size1 * x->rb_bytes);
@@ -191,7 +193,9 @@ void ringbuffer_read (t_ringbuffer *x, void *data, int32_t n)
     
     PD_MEMORY_BARRIER;
 
-    PD_ATOMIC_INT32_WRITE ((PD_ATOMIC_INT32_READ (&x->rb_read) + read) & x->rb_hiMask, &x->rb_read);
+    PD_ATOMIC_INT32_WRITE ((PD_ATOMIC_INT32_READ (&x->rb_read) + loaded) & x->rb_hiMask, &x->rb_read);
+    
+    return loaded;
 }
 
 // -----------------------------------------------------------------------------------------------------------

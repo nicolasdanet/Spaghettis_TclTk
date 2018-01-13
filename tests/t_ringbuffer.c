@@ -127,8 +127,8 @@ TTT_BEGIN (AtomicRing, 13, "Atomic - Ring")
     
     if (ttt_testThreadsLaunch (test_ring) != TTT_GOOD) { TTT_FAIL; }
     else {
-        // ttt_stdout (TTT_COLOR_BLUE, "W: %d", test_counter0);
-        // ttt_stdout (TTT_COLOR_BLUE, "R: %d", test_counter1);
+        // -- ttt_stdout (TTT_COLOR_BLUE, "W: %d", test_counter0);
+        // -- ttt_stdout (TTT_COLOR_BLUE, "R: %d", test_counter1);
         TTT_EXPECT (test_ringFailed == 0);
     }
     

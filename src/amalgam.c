@@ -330,6 +330,7 @@
 #include "d_subchunk.c"
 #include "d_codec.c"
 #include "d_soundfiler.c"
+#include "d_sfthread.c"
 #include "d_readsf.c"
 #include "d_writesf.c"
 #include "d_vcf.c"

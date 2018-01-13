@@ -17,27 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline void soundfile_setPropertiesByCopy (t_audioproperties *args, t_audioproperties *from)
-{
-    args->ap_fileName           = from->ap_fileName;
-    args->ap_fileExtension      = from->ap_fileExtension;
-    args->ap_sampleRate         = from->ap_sampleRate;
-    args->ap_fileType           = from->ap_fileType;
-    args->ap_headerSize         = from->ap_headerSize;
-    args->ap_numberOfChannels   = from->ap_numberOfChannels;
-    args->ap_bytesPerSample     = from->ap_bytesPerSample;
-    args->ap_isBigEndian        = from->ap_isBigEndian;
-    args->ap_needToSwap         = from->ap_needToSwap;
-    args->ap_dataSizeInBytes    = from->ap_dataSizeInBytes;
-    args->ap_onset              = from->ap_onset;
-    args->ap_numberOfFrames     = from->ap_numberOfFrames;
-    args->ap_needToNormalize    = from->ap_needToNormalize;
-    args->ap_needToResize       = from->ap_needToResize;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_class *writesf_tilde_class;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -112,7 +91,7 @@ static void writesf_tilde_threadCloseFile (t_writesf_tilde *x)
     int f = x->sf_fileDescriptor;
     int itemsWritten = x->sf_itemsWritten;
     
-    t_audioproperties properties; soundfile_setPropertiesByCopy (&properties, &x->sf_properties);
+    t_audioproperties properties; soundfile_propertiesCopy (&properties, &x->sf_properties);
     
     properties.ap_numberOfFrames = SOUNDFILE_UNKNOWN;
     
@@ -238,7 +217,7 @@ static void writesf_tilde_threadOpen (t_writesf_tilde *x)
         
     /* Make a local copy to used it unlocked. */
     
-    t_audioproperties copy; soundfile_setPropertiesByCopy (&copy, &x->sf_properties);
+    t_audioproperties copy; soundfile_propertiesCopy (&copy, &x->sf_properties);
     
     pthread_mutex_unlock (&x->sf_mutex);
     
@@ -321,7 +300,7 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
 {
     t_error err = PD_ERROR_NONE;
     
-    t_audioproperties properties; soundfile_initProperties (&properties);
+    t_audioproperties properties; soundfile_propertiesInit (&properties);
     
     if (x->sf_threadState != WRITESF_STATE_IDLE) { writesf_tilde_stop (x); }
     
@@ -338,7 +317,7 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
             pthread_cond_wait (&x->sf_condAnswer, &x->sf_mutex);
         }
         
-        soundfile_setPropertiesByCopy (&x->sf_properties, &properties);
+        soundfile_propertiesCopy (&x->sf_properties, &properties);
         
         x->sf_properties.ap_numberOfChannels = x->sf_numberOfChannels;
         
@@ -460,7 +439,7 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
 
     t_writesf_tilde *x = (t_writesf_tilde *)pd_new (writesf_tilde_class);
     
-    soundfile_initProperties (&x->sf_properties);
+    soundfile_propertiesInit (&x->sf_properties);
     
     x->sf_vectorSize        = AUDIO_DEFAULT_BLOCKSIZE;
     x->sf_threadState       = WRITESF_STATE_IDLE;

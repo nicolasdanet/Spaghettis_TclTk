@@ -156,7 +156,6 @@ void        audio_setSampleRate                     (t_float f);
 void        audio_setBlockSize                      (int n);
 
 t_float     audio_getSampleRate                     (void);
-int         audio_getBlockSize                      (void);
 int         audio_getTotalOfChannelsIn              (void);
 int         audio_getTotalOfChannelsOut             (void);
 
