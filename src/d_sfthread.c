@@ -86,16 +86,30 @@ static void *sfthread_writerThread (void *z)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_sfthread *sfthread_new (int type, int bufferSize, int fd, int dataSize)
+t_sfthread *sfthread_new (int type, int bufferSize, int fd, t_audioproperties *p)
 {
     t_sfthread *x = (t_sfthread *)pd_new (sfthread_class);
     
     bufferSize = PD_MAX (SFTHREAD_CHUNK * 2, bufferSize);
     
+    soundfile_propertiesCopy (&x->sft_properties, p);
+    
+    {
+    //
+    int dataSize = x->sft_properties.ap_dataSizeInBytes;
+    int frames   = x->sft_properties.ap_numberOfFrames;
+
+    if (frames  != SOUNDFILE_UNKNOWN) {
+        int size = x->sft_properties.ap_numberOfChannels * x->sft_properties.ap_bytesPerSample;
+        dataSize = PD_MIN (dataSize, frames * size);
+    }
+
     x->sft_type           = type;
     x->sft_fileDescriptor = fd;
     x->sft_data           = PD_MAX (0, dataSize);
     x->sft_buffer         = ringbuffer_new (1, bufferSize);
+    //
+    }
     
     x->sft_error = (pthread_create (&x->sft_thread,
         NULL,

@@ -77,11 +77,7 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
     int f = soundfile_readFileHeader (x->sf_owner, &x->sf_properties);
     err = (f < 0);
     if (!err) {
-        int k = p->ap_dataSizeInBytes;
-        if (p->ap_numberOfFrames != SOUNDFILE_UNKNOWN) {
-            k = PD_MIN (k, p->ap_numberOfFrames * p->ap_numberOfChannels * p->ap_bytesPerSample);
-        }
-        x->sf_thread = sfthread_new (SFTHREAD_READER, x->sf_bufferSize, f, k);
+        x->sf_thread = sfthread_new (SFTHREAD_READER, x->sf_bufferSize, f, &x->sf_properties);
         PD_ASSERT (x->sf_thread);
     }
     //

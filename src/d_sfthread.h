@@ -16,6 +16,7 @@
 
 typedef struct _sfthread {
     t_object            sft_obj;                /* Must be the first. */
+    t_audioproperties   sft_properties;
     int                 sft_type;
     int                 sft_fileDescriptor;
     int                 sft_data;
@@ -38,7 +39,9 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_sfthread  *sfthread_new   (int type, int bufferSize, int fd, int dataSize);   /* Takes file ownership. */
+/* Takes file ownership. */
+
+t_sfthread  *sfthread_new   (int type, int bufferSize, int fd, t_audioproperties *p);
 
 void    sfthread_release    (t_sfthread *x);
 
