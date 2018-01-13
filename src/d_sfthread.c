@@ -94,7 +94,7 @@ t_sfthread *sfthread_new (int type, int bufferSize, int fd, int dataSize)
     
     x->sft_type           = type;
     x->sft_fileDescriptor = fd;
-    x->sft_data           = (x->sft_type == SFTHREAD_WRITER) ? 0 : PD_MAX (0, dataSize);
+    x->sft_data           = PD_MAX (0, dataSize);
     x->sft_buffer         = ringbuffer_new (1, bufferSize);
     
     x->sft_error = (pthread_create (&x->sft_thread,
