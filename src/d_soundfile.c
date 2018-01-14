@@ -742,8 +742,6 @@ t_error soundfile_writeFileClose (int f, int items, t_audioproperties *args)
     else {
         err = PD_ERROR;
     }
-    
-    PD_ASSERT (!err);
     //
     }
     

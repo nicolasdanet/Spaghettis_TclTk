@@ -41,7 +41,7 @@ typedef struct _readsf_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define READSF_BUFFER_SIZE  65536                                   /* Power of two. */
+#define READSF_BUFFER_SIZE      65536                               /* Power of two. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
     //
     }
     
-    if (err) { error_canNotFind (sym_readsf__tilde__, p->ap_fileName); }
+    if (err) { error_canNotOpen (p->ap_fileName); }
     //
     }
 }

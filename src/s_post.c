@@ -64,15 +64,18 @@ void post_error (const char *fmt, ...)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* On Mac OS X the syslog call seems to affect the JACK server. */
-/* Consequently it should be reserved for exceptional situations. */
-
 #if PD_WITH_DEBUG
     
 static void post_syslog (const char *s)
 {
-    openlog (PD_NAME, LOG_CONS | LOG_PID | LOG_PERROR, LOG_USER);
+    #if PD_APPLE
+        openlog (PD_NAME, LOG_CONS | LOG_PID, LOG_USER);
+    #else
+        openlog (PD_NAME, LOG_CONS | LOG_PID | LOG_PERROR, LOG_USER);
+    #endif
+    
     syslog (LOG_ERR, "%s", s);
+    
     closelog();
 }
 

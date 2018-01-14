@@ -19,7 +19,9 @@ typedef struct _sfthread {
     t_audioproperties   sft_properties;
     int                 sft_type;
     int                 sft_fileDescriptor;
-    int                 sft_data;
+    int                 sft_remainsToRead;
+    int                 sft_alreadyWritten;
+    int                 sft_maximumToWrite;
     t_error             sft_error;
     pthread_t           sft_thread;
     t_int32Atomic       sft_flag;

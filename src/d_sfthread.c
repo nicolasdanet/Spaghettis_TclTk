@@ -43,11 +43,11 @@ static void *sfthread_readerThread (void *z)
     while (ringbuffer_getAvailableWrite (x->sft_buffer) > SFTHREAD_CHUNK) {
         if (!PD_ATOMIC_INT32_READ (&x->sft_flag)) {
             char t[SFTHREAD_CHUNK] = { 0 };
-            size_t required = PD_MIN (SFTHREAD_CHUNK, x->sft_data);
+            size_t required = PD_MIN (SFTHREAD_CHUNK, x->sft_remainsToRead);
             int bytes = (int)read (x->sft_fileDescriptor, t, required);
             if (bytes > 0) {
                 ringbuffer_write (x->sft_buffer, t, bytes);
-                x->sft_data -= bytes;
+                x->sft_remainsToRead -= bytes;
             } else {
                 PD_ATOMIC_INT32_WRITE (SFTHREAD_QUIT, &x->sft_flag);
             }
@@ -71,9 +71,42 @@ static void *sfthread_writerThread (void *z)
 {
     t_sfthread *x = (t_sfthread *)z;
     
-    while (!PD_ATOMIC_INT32_READ (&x->sft_flag)) {
+    while (1) {
     //
-    nano_sleep (SFTHREAD_SLEEP);
+    while (ringbuffer_getAvailableRead (x->sft_buffer) > 0) {
+        char t[SFTHREAD_CHUNK] = { 0 };
+        int required = PD_MIN (SFTHREAD_CHUNK, x->sft_maximumToWrite - x->sft_alreadyWritten);
+        int loaded   = ringbuffer_read (x->sft_buffer, t, required);
+        int written  = (int)write (x->sft_fileDescriptor, t, (size_t)loaded);
+        
+        x->sft_alreadyWritten += written;
+        
+        if (required == 0) { PD_ATOMIC_INT32_WRITE (SFTHREAD_QUIT, &x->sft_flag); break; }
+        if (written != loaded) {
+        
+            /* File corrupted; what to do? */
+            
+            PD_ATOMIC_INT32_WRITE (SFTHREAD_QUIT, &x->sft_flag); break; 
+        }
+    }
+    
+    if (!PD_ATOMIC_INT32_READ (&x->sft_flag)) {
+        nano_sleep (SFTHREAD_SLEEP);
+    } else {
+        break;
+    }
+    //
+    }
+    
+    {
+    //
+    int size = x->sft_properties.ap_numberOfChannels * x->sft_properties.ap_bytesPerSample;
+    int framesWritten = x->sft_alreadyWritten / size;
+    
+    if (soundfile_writeFileClose (x->sft_fileDescriptor, framesWritten, &x->sft_properties)) {
+        /* File corrupted; what to do? */
+        /* Occurs also if stopped before demanded frames. */
+    }
     //
     }
     
@@ -94,7 +127,11 @@ t_sfthread *sfthread_new (int type, int bufferSize, int fd, t_audioproperties *p
     
     soundfile_propertiesCopy (&x->sft_properties, p);
     
-    {
+    x->sft_type           = type;
+    x->sft_fileDescriptor = fd;
+    x->sft_buffer         = ringbuffer_new (1, bufferSize);
+    
+    if (x->sft_type == SFTHREAD_READER) {
     //
     int dataSize = x->sft_properties.ap_dataSizeInBytes;
     int frames   = x->sft_properties.ap_numberOfFrames;
@@ -103,18 +140,24 @@ t_sfthread *sfthread_new (int type, int bufferSize, int fd, t_audioproperties *p
         int size = x->sft_properties.ap_numberOfChannels * x->sft_properties.ap_bytesPerSample;
         dataSize = PD_MIN (dataSize, frames * size);
     }
-
-    x->sft_type           = type;
-    x->sft_fileDescriptor = fd;
-    x->sft_data           = PD_MAX (0, dataSize);
-    x->sft_buffer         = ringbuffer_new (1, bufferSize);
+        
+    x->sft_remainsToRead = PD_MAX (0, dataSize);
+    x->sft_error = (pthread_create (&x->sft_thread, NULL, sfthread_readerThread, (void *)x) != 0);
     //
+    } else {
+    //
+    int dataSize = PD_INT_MAX;
+    int frames   = x->sft_properties.ap_numberOfFrames;
+
+    if (frames  != SOUNDFILE_UNKNOWN) {
+        int size = x->sft_properties.ap_numberOfChannels * x->sft_properties.ap_bytesPerSample;
+        dataSize = PD_MIN (dataSize, frames * size);
     }
     
-    x->sft_error = (pthread_create (&x->sft_thread,
-        NULL,
-        (x->sft_type == SFTHREAD_WRITER) ? sfthread_writerThread : sfthread_readerThread,
-        (void *)x) != 0);
+    x->sft_maximumToWrite = PD_MAX (0, dataSize);
+    x->sft_error = (pthread_create (&x->sft_thread, NULL, sfthread_writerThread, (void *)x) != 0);
+    //
+    }
     
     if (x->sft_error) { pd_free (cast_pd (x)); x = NULL; PD_BUG; }
     
