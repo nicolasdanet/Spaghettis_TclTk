@@ -689,6 +689,7 @@ t_error soundfile_writeFileCloseAIFF (int f, t_audioproperties *args)
 {
     t_error err  = PD_ERROR;
     int dataSize = args->ap_numberOfFrames * args->ap_bytesPerSample * args->ap_numberOfChannels;
+    int frames   = args->ap_numberOfFrames;
     int swap     = args->ap_needToSwap;
     uint32_t t;
     
@@ -697,9 +698,14 @@ t_error soundfile_writeFileCloseAIFF (int f, t_audioproperties *args)
     if (lseek (f, 4, SEEK_SET) == 4)  { 
         t = soundfile_swap4Integer ((uint32_t)(SOUNDFILE_HEADER_AIFF - 8 + dataSize), swap);
         if (write (f, (char *)(&t), 4) == 4) {
-            if (lseek (f, 42, SEEK_SET) == 42) {
-                t = soundfile_swap4Integer ((uint32_t)(dataSize + 8), swap);
-                if (write (f, (char *)(&t), 4) == 4) { err = PD_ERROR_NONE; }
+            if (lseek (f, 22, SEEK_SET) == 22) {
+                t = soundfile_swap4Integer ((uint32_t)frames, swap);
+                if (write (f, (char *)(&t), 4) == 4) {
+                    if (lseek (f, 42, SEEK_SET) == 42) {
+                        t = soundfile_swap4Integer ((uint32_t)(dataSize + 8), swap);
+                        if (write (f, (char *)(&t), 4) == 4) { err = PD_ERROR_NONE; }
+                    }
+                }
             }
         }
     }
