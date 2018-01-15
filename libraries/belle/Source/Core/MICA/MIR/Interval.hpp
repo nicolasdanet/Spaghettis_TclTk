@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2017 Nicolas Danet. */
+/* Copyright (c) 2017-2018 Nicolas Danet. */
 
 /* < http://opensource.org/licenses/BSD-2-Clause > */
 
