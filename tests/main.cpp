@@ -3,6 +3,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 #define PD_BUILDING_APPLICATION     1
 #define PD_WITH_DEADCODE            1
@@ -39,6 +40,7 @@
 #include "t_time.c"
 #include "t_utf8.c"
 #include "t_soundfile.c"
+#include "t_memory.c"
 // #include "t_prim.cpp"
 // #include "t_MICA.cpp"
 // #include "t_MIR.cpp"

@@ -27,9 +27,9 @@ static int test_ringFailed;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define RINGBUFFER_CHANCE       11
-#define RINGBUFFER_CHUNK        17
-#define RINGBUFFER_MAXIMUM      21
+#define TEST_RINGBUFFER_CHANCE      11
+#define TEST_RINGBUFFER_CHUNK       17
+#define TEST_RINGBUFFER_MAXIMUM     21
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -37,13 +37,13 @@ static int test_ringFailed;
 
 static void test_ringWrite()
 {
-    if (ringbuffer_getAvailableWrite (test_ringbuffer) >= RINGBUFFER_CHUNK) {
+    if (ringbuffer_getAvailableWrite (test_ringbuffer) >= TEST_RINGBUFFER_CHUNK) {
     //
-    int i; uint64_t data[RINGBUFFER_CHUNK] = { 0 };
+    int i; uint64_t data[TEST_RINGBUFFER_CHUNK] = { 0 };
     
-    for (i = 0; i < RINGBUFFER_CHUNK; i++) { data[i] = PD_RAND48_NEXT (test_value0); }
+    for (i = 0; i < TEST_RINGBUFFER_CHUNK; i++) { data[i] = PD_RAND48_NEXT (test_value0); }
     
-    ringbuffer_write (test_ringbuffer, (const void *)data, RINGBUFFER_CHUNK);
+    ringbuffer_write (test_ringbuffer, (const void *)data, TEST_RINGBUFFER_CHUNK);
     
     test_counter0++;
     //
@@ -52,13 +52,15 @@ static void test_ringWrite()
 
 static void test_ringRead()
 {
-    if (ringbuffer_getAvailableRead (test_ringbuffer) >= RINGBUFFER_CHUNK) {
+    if (ringbuffer_getAvailableRead (test_ringbuffer) >= TEST_RINGBUFFER_CHUNK) {
     //
-    int i; uint64_t data[RINGBUFFER_CHUNK] = { 0 };
+    int i; uint64_t data[TEST_RINGBUFFER_CHUNK] = { 0 };
     
-    ringbuffer_read (test_ringbuffer, (void *)data, RINGBUFFER_CHUNK);
+    ringbuffer_read (test_ringbuffer, (void *)data, TEST_RINGBUFFER_CHUNK);
     
-    for (i = 0; i < RINGBUFFER_CHUNK; i++) { test_ringFailed += (data[i] != PD_RAND48_NEXT (test_value1)); }
+    for (i = 0; i < TEST_RINGBUFFER_CHUNK; i++) {
+        test_ringFailed += (data[i] != PD_RAND48_NEXT (test_value1));
+    }
     
     test_counter1++;
     //
@@ -79,7 +81,7 @@ void *test_ring (void *x)
     if (n == 0) {
     //
     for (i = 0; i < 1000000; i++) {
-        if (randMT_getInteger (test_random0, RINGBUFFER_CHANCE) == 0) { test_ringWrite(); }
+        if (randMT_getInteger (test_random0, TEST_RINGBUFFER_CHANCE) == 0) { test_ringWrite(); }
         ttt_wasteTime (&w);
     }
     //
@@ -88,7 +90,7 @@ void *test_ring (void *x)
     if (n == 1) {
     //
     for (i = 0; i < 1000000; i++) {
-        if (randMT_getInteger (test_random1, RINGBUFFER_CHANCE) == 0) { test_ringRead(); }
+        if (randMT_getInteger (test_random1, TEST_RINGBUFFER_CHANCE) == 0) { test_ringRead(); }
         ttt_wasteTime (&w);
     }
     //
@@ -116,7 +118,7 @@ TTT_BEGIN (AtomicRing, 13, "Atomic - Ring")
     //
     int i;
     
-    for (i = 0; i < RINGBUFFER_MAXIMUM; i++) {
+    for (i = 0; i < TEST_RINGBUFFER_MAXIMUM; i++) {
     //
     test_ringbuffer = ringbuffer_new (sizeof (uint64_t), (1 << i));
     
