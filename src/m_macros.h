@@ -47,14 +47,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if ( PD_GCC || PD_CLANG )
+/* < https://locklessinc.com/articles/vectorize/ >. */
 
+#if PD_MALLOC_ALIGNED
     #define PD_RESTRICTED   t_sample* __restrict__
-
+    #define PD_ALIGNED(x)   __builtin_assume_aligned((x), 16)
 #else
-
     #define PD_RESTRICTED   t_sample*
-
+    #define PD_ALIGNED(x)   (x)
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -120,6 +120,7 @@
 #define PD_IS_POWER_2(v)                    (!((v) & ((v) - 1)))
 #define PD_NEXT_POWER_2(v)                  sys_nextPowerOfTwo ((uint64_t)(v))
 #define PD_TO_RADIANS(degrees)              ((PD_PI * (degrees)) / 180.0)
+#define PD_IS_ALIGNED_16(p)                 (((unsigned long)(p) & 0xfUL) == 0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

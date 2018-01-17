@@ -366,7 +366,7 @@ static t_int *perform_lessScalar (t_int *w)
 
 static t_int *vPerform_zero (t_int *w)
 {
-    t_sample *s = (t_sample *)(w[1]);
+    PD_RESTRICTED s = (t_sample *)(w[1]);
     int n = (int)(w[2]);
     
     while (n) {
@@ -390,7 +390,7 @@ static t_int *vPerform_zero (t_int *w)
 static t_int *vPerform_scalar (t_int *w)
 {
     t_float f = *(t_float *)(w[1]);
-    t_sample *s = (t_sample *)(w[2]);
+    PD_RESTRICTED s = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
     while (n) {
