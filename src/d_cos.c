@@ -39,24 +39,6 @@ void cos_tilde_initialize (void)
 {
     if (!cos_tilde_table) {
     //
-    /* Test raw cast byte alignment at startup. */
-    
-    t_rawcast64 z;
-    
-    z.z_d = DSP_UNITBIT + 0.5;
-    PD_ASSERT ((z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
-    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT_MSB)); 
-    PD_ABORT (!(z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
-    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT_MSB));
-    
-    z.z_d = COSINE_UNITBIT;
-    PD_ASSERT ((z.z_i[PD_RAWCAST64_MSB] == COSINE_UNITBIT_MSB));
-    PD_ABORT (!(z.z_i[PD_RAWCAST64_MSB] == COSINE_UNITBIT_MSB));
-    //
-    }
-    
-    if (!cos_tilde_table) {
-    //
     double phase = 0.0;
     double phaseIncrement = PD_TWO_PI / COSINE_TABLE_SIZE;
     int i;
