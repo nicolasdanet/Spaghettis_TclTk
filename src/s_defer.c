@@ -105,7 +105,9 @@ int gui_jobFlush (void)
 void gui_jobClear (void)
 {
     while (defer_queue) {
-        t_guiqueue *first = defer_queue; defer_queue = defer_queue->gq_next; PD_MEMORY_FREE (first);
+    //
+    t_guiqueue *first = defer_queue; defer_queue = defer_queue->gq_next; PD_MEMORY_FREE (first);
+    //
     }
 }
 
