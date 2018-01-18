@@ -166,8 +166,8 @@ static t_error interface_launchGuiSocket (struct sockaddr_in *server, int *fd)
     if (err) { PD_BUG; }
     else {
     //
-    main_portNumber = INTERFACE_PORT;
     int n = 0;
+    main_portNumber = INTERFACE_PORT;
     
     server->sin_family = AF_INET;
     server->sin_addr.s_addr = INADDR_ANY;
@@ -220,10 +220,10 @@ static t_error interface_startGui (void)
     int f = -1;
     int launch = (main_portNumber == 0);
     
-    if (!launch) { err = interface_fetchGui (&server); }    /* Wish first. */
+    if (!launch) { err = interface_fetchGui (&server); }    /* Wish first (macOS). */
     else {
     //
-    if (!(err = interface_launchGui (&server, &f))) {       /* Executable first. */
+    if (!(err = interface_launchGui (&server, &f))) {       /* Executable first (GNU/Linux). */
         if (!(err = (listen (f, 5) < 0))) {
             socklen_t s = sizeof (struct sockaddr_in);
             err = ((interface_guiSocket = accept (f, (struct sockaddr *)&server, (socklen_t *)&s)) < 0);
