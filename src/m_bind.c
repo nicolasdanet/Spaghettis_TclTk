@@ -43,11 +43,6 @@ typedef struct _bindlist {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int bindlist_isEmpty (t_bindlist *x)
-{
-    return (x->b_list == NULL);
-}
-
 static t_bindelement *bindlist_traverseStart (t_bindlist *x)
 {
     x->b_cached = NULL;
@@ -64,6 +59,21 @@ static t_bindelement *bindlist_traverseNext (t_bindlist *x)
     if (e) { x->b_cached = e->e_next; }
     
     return e;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static int bindlist_isEmpty (t_bindlist *x)
+{
+    return (x->b_list == NULL);
+}
+
+static int bindlist_getSize (t_bindlist *x)
+{
+    t_bindelement *e = bindlist_traverseStart (x);
+    int k = 0; while (e) { k++; e = bindlist_traverseNext (x); } return k;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -259,6 +269,18 @@ int symbol_hasThing (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+int symbol_getNumberOfThings (t_symbol *s)
+{
+    if (symbol_hasThingQuiet (s)) {
+        if (pd_class (s->s_thing) != bindlist_class) { return 1; }
+        else {
+            return bindlist_getSize ((t_bindlist *)s->s_thing);
+        }
+    }
+    
+    return 0;
+}
 
 t_pd *symbol_getThingByClass (t_symbol *s, t_class *c)
 {

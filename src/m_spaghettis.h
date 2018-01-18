@@ -746,6 +746,7 @@ PD_DLL t_pd     *symbol_getThingByClass         (t_symbol *s, t_class *c);
 
 PD_DLL const char *symbol_getName               (t_symbol *s);
 
+PD_DLL int      symbol_getNumberOfThings        (t_symbol *s);
 PD_DLL int      symbol_hasThing                 (t_symbol *s);
 PD_DLL int      symbol_hasThingQuiet            (t_symbol *s);
 

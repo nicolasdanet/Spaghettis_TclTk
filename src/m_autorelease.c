@@ -11,15 +11,10 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* A smartest algorithm should be implemented. */
-/* Autorelease could be never drained if it is called "often and too close". */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define AUTORELEASE_PERIOD  SECONDS_TO_MILLISECONDS (7.0)
+#define AUTORELEASE_PERIOD      SECONDS_TO_MILLISECONDS (7.0)
+#define AUTORELEASE_THRESHOLD   64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -38,9 +33,13 @@ static void instance_autoreleaseTask (void *dummy)
     clock_delay (instance_get()->pd_autorelease, AUTORELEASE_PERIOD);
 }
 
+/* To avoid congestion rescheduling time is progressively diminished. */
+
 static void instance_autoreleaseReschedule (void)
 {
-    clock_delay (instance_get()->pd_autorelease, AUTORELEASE_PERIOD);
+    int t = symbol_getNumberOfThings (sym__autorelease);
+    double d = (AUTORELEASE_THRESHOLD - (double)t) / AUTORELEASE_THRESHOLD;
+    clock_delay (instance_get()->pd_autorelease, d * AUTORELEASE_PERIOD);
 }
 
 // -----------------------------------------------------------------------------------------------------------
