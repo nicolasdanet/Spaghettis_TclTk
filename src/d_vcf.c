@@ -93,8 +93,8 @@ static t_int *vcf_tilde_perform (t_int *w)
     r = PD_MAX (0.0, r);
     g = correction * (1.0 - r);
     
-    pReal      = r * dsp_getCosineAt (centerFrequency * (COSINE_TABLE_SIZE / PD_TWO_PI));
-    pImaginary = r * dsp_getSineAt   (centerFrequency * (COSINE_TABLE_SIZE / PD_TWO_PI));
+    pReal      = r * dsp_getCosineAtLUT (centerFrequency * (COSINE_TABLE_SIZE / PD_TWO_PI));
+    pImaginary = r * dsp_getSineAtLUT   (centerFrequency * (COSINE_TABLE_SIZE / PD_TWO_PI));
     
     {
         double s = (*in1++);

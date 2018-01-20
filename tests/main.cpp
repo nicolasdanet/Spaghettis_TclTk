@@ -41,6 +41,7 @@
 #include "t_utf8.c"
 #include "t_soundfile.c"
 #include "t_memory.c"
+#include "t_benchmark.c"
 // #include "t_prim.cpp"
 // #include "t_MICA.cpp"
 // #include "t_MIR.cpp"

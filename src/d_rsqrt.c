@@ -74,7 +74,7 @@ static t_int *rsqrt_tilde_perform (t_int *w)
     PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    while (n--) { *out++ = (t_sample)rsqrt_fast ((t_float)(*in++)); }
+    while (n--) { *out++ = (t_sample)rsqrt_fastLUT ((t_float)(*in++)); }
     
     return (w + 4);
 }

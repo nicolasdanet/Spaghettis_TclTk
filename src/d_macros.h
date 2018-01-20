@@ -151,9 +151,12 @@
 
 /* < https://mathr.co.uk/blog/2015-04-21_approximating_cosine.html > */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_float *cos_tilde_table;
 
-static inline t_float dsp_getCosineAt (double position)
+static inline t_float dsp_getCosineAtLUT (double position)
 {
     t_float f1, f2, f;
     t_rawcast64 z;
@@ -179,7 +182,7 @@ static inline t_float dsp_getCosineAt (double position)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define dsp_getSineAt(index)    dsp_getCosineAt ((double)(index) - (COSINE_TABLE_SIZE / 4.0))
+#define dsp_getSineAtLUT(index) dsp_getCosineAtLUT ((double)(index) - (COSINE_TABLE_SIZE / 4.0))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -241,7 +244,7 @@ extern t_float rsqrt_tableExponential[];
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline t_float rsqrt_fast (t_float f)
+static inline t_float rsqrt_fastLUT (t_float f)
 {
     t_rawcast32 z;
 
@@ -259,9 +262,13 @@ static inline t_float rsqrt_fast (t_float f)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static inline t_float sqrt_fast (t_float f)
 {
-    return f * rsqrt_fast (f);
+    return f * rsqrt_fastLUT (f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
