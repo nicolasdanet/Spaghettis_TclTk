@@ -66,8 +66,9 @@ static int gui_bufferFlush (void)
     char *p = gui_buffer + gui_bufferTail;
     int done = (int)send (interface_guiSocket, (void *)p, need, 0);
 
-    if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
-    else {
+    if (done < 0) {
+        if (errno != EWOULDBLOCK && errno != EAGAIN) { PD_BUG; scheduler_needToExitWithError(); }
+    } else {
         if (done == 0) { return 0; }    
         else if (done == need) { gui_bufferHead = gui_bufferTail = 0; }
         else {
