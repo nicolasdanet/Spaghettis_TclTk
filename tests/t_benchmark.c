@@ -5,6 +5,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Note that only non-vectorial forms are tested. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #define TEST_BENCHMARK_LOOP     1000000
 
 // -----------------------------------------------------------------------------------------------------------
@@ -18,7 +23,7 @@ void test60__cosine() {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static volatile float benchmark_dummy;
+static volatile double benchmark_dummy;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -91,16 +96,109 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define TEST_BENCHMARK_SQRT     (1 << 16)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 #if 0
-void test61__sqrt() {
+void test61__rsqrt() {
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (BenchmarkSqrt, 61, "Benchmark - Sqrt")
+/* < http://assemblyrequired.crashworks.org/timing-square-root/ > */
 
-rsqrt_tilde_initialize();
+TTT_BEGIN (BenchmarkRsqrt, 61, "Benchmark - rsqrt")
+
+    int i;
+    
+    t_rand48 seed; PD_RAND48_INIT (seed);
+
+    rsqrt_tilde_initialize();
+    
+    /* LUT. */
+    
+    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
+    
+        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
+        //
+        benchmark_dummy += rsqrt_fastLUT ((float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT));
+        //
+        }
+    
+    double t1 = ttt_timeTrigger();
+    
+    /* Standard function. */
+    
+    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
+    
+        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
+        //
+        benchmark_dummy += rsqrt_fastSTD ((float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT));
+        //
+        }
+    
+    double t2 = ttt_timeTrigger();
+    
+    ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", t1);
+    ttt_stdout (TTT_COLOR_BLUE, "STD: %f", t2);
+
+TTT_END
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if 0
+}
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if 0
+void test62__sqrt() {
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+TTT_BEGIN (BenchmarkSqrt, 62, "Benchmark - sqrt")
+
+    int i;
+    
+    t_rand48 seed; PD_RAND48_INIT (seed);
+
+    rsqrt_tilde_initialize();
+    
+    /* LUT. */
+    
+    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
+    
+        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
+        //
+        benchmark_dummy += sqrt_fastLUT ((float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT));
+        //
+        }
+    
+    double t1 = ttt_timeTrigger();
+    
+    /* Standard function. */
+    
+    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
+    
+        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
+        //
+        benchmark_dummy += sqrt_fastSTD ((float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT));
+        //
+        }
+    
+    double t2 = ttt_timeTrigger();
+    
+    ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", t1);
+    ttt_stdout (TTT_COLOR_BLUE, "STD: %f", t2);
 
 TTT_END
 

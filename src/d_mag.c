@@ -46,7 +46,7 @@ t_int *mag_tilde_perform (t_int *w)
     t_sample f = *in1++;
     t_sample g = *in2++;
 
-    *out++ = (t_sample)sqrt_fast ((t_float)(f * f + g * g));
+    *out++ = (t_sample)sqrt_fastLUT ((t_float)(f * f + g * g));
     //
     }
     
