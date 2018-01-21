@@ -67,9 +67,9 @@ TTT_BEGIN_ALLOW (BenchmarkCosine, 60, "Benchmark - Cosine")
     
     double t3 = ttt_timeTrigger();
     
-    ttt_stdout (TTT_COLOR_BLUE, "COS: %f", t1);
-    ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", t2);
-    ttt_stdout (TTT_COLOR_BLUE, "STD: %f", t3);
+    //ttt_stdout (TTT_COLOR_BLUE, "COS: %f", t1);
+    //ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", t2);
+    //ttt_stdout (TTT_COLOR_BLUE, "STD: %f", t3);
     
     /* Pure Data's LUT is the best? */
     
