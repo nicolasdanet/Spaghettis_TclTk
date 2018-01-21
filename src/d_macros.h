@@ -141,15 +141,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Notice that the trick below seems broken for index with a large value. */
+/* Notice that the trick above seems broken for index with a large value. */
 
-/* An efficient mechanism to protect to overflow should be implemented. */
-
-/* Does it worth the cost? */
-
-/* Benchmark required. */
-
-/* < https://mathr.co.uk/blog/2015-04-21_approximating_cosine.html > */
+/* Thus an efficient mechanism to protect to overflow should be implemented. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

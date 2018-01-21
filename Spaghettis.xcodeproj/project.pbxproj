@@ -435,6 +435,7 @@
 		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
 		17C15CE91F8E4EF7000695B7 /* x_arguments.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arguments.c; path = src/x_arguments.c; sourceTree = "<group>"; };
 		17C519491F23195900113504 /* x_uzi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_uzi.c; path = src/x_uzi.c; sourceTree = "<group>"; };
+		17C7712220148CF400584EE6 /* d_cosf9.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_cosf9.h; path = src/d_cosf9.h; sourceTree = "<group>"; };
 		17C9CEC71FCD57740089E9D2 /* d_rmag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rmag.c; path = src/d_rmag.c; sourceTree = "<group>"; };
 		17C9FE1B1FE00B77007066EC /* s_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_time.h; path = src/s_time.h; sourceTree = "<group>"; };
 		17C9FE1C1FE00B78007066EC /* s_atomicPosix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_atomicPosix.c; path = src/s_atomicPosix.c; sourceTree = "<group>"; };
@@ -1602,6 +1603,7 @@
 				37998F781E2F688200632A45 /* d_fftOOURA.h */,
 				37ACC4181E32190F0026E5FA /* d_fftOOURA.c */,
 				378971B51C4F716700263434 /* fftsg.c */,
+				17C7712220148CF400584EE6 /* d_cosf9.h */,
 			);
 			name = Shared;
 			sourceTree = "<group>";

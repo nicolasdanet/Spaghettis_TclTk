@@ -6,7 +6,6 @@
 // MARK: -
 
 #define TEST_BENCHMARK_LOOP     1000000
-#define TEST_BENCHMARK_SIZE     1000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -24,24 +23,37 @@ static volatile double benchmark_dummy;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static double test_values1[TEST_BENCHMARK_SIZE];
-static double test_values2[TEST_BENCHMARK_SIZE];
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 TTT_BEGIN (BenchmarkCosine, 60, "Benchmark - Cosine")
 
     int i;
+    
     t_rand48 seed; PD_RAND48_INIT (seed);
 
-    for (i = 0; i < TEST_BENCHMARK_SIZE; i++) {
-        test_values1[i] = test_values2[i] = PD_RAND48_DOUBLE (seed);
-        test_values1[i] *= COSINE_TABLE_SIZE;
-        test_values2[i] *= PD_TWO_PI;
-    }
-    
     cos_tilde_initialize();
+    
+    /* Claude Heiland-Allen's polynomial approximation. */
+    
+    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
+    
+        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
+        //
+        benchmark_dummy += cosf9 (PD_RAND48_DOUBLE (seed) * PD_TWO_PI);
+        //
+        }
+    
+    ttt_stdout (TTT_COLOR_BLUE, "COS: %f", ttt_timeTrigger());
+    
+    /* Miller Puckette's LUT. */
+    
+    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
+    
+        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
+        //
+        benchmark_dummy += dsp_getCosineAtLUT (PD_RAND48_DOUBLE (seed) * COSINE_TABLE_SIZE);
+        //
+        }
+    
+    ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", ttt_timeTrigger());
     
     /* Standard function. */
     
@@ -49,23 +61,11 @@ TTT_BEGIN (BenchmarkCosine, 60, "Benchmark - Cosine")
     
         for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
         //
-        benchmark_dummy += cos (test_values2[i % TEST_BENCHMARK_SIZE]);
+        benchmark_dummy += cos (PD_RAND48_DOUBLE (seed) * PD_TWO_PI);
         //
         }
     
-    ttt_stdout (TTT_COLOR_BLUE, "COS: %f", ttt_timeTrigger());
-    
-    /* Puckette's LUT. */
-    
-    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
-    
-        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
-        //
-        benchmark_dummy += dsp_getCosineAtLUT (test_values1[i % TEST_BENCHMARK_SIZE]);
-        //
-        }
-    
-    ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", ttt_timeTrigger());
+    ttt_stdout (TTT_COLOR_BLUE, "STD: %f", ttt_timeTrigger());
     
     cos_tilde_release();
 
