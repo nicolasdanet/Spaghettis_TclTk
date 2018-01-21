@@ -18,7 +18,7 @@ void test60__cosine() {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static volatile double benchmark_dummy;
+static volatile float benchmark_dummy;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ TTT_BEGIN (BenchmarkCosine, 60, "Benchmark - Cosine")
     
         for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
         //
-        benchmark_dummy += cosf9 (PD_RAND48_DOUBLE (seed));
+        benchmark_dummy += cosf9 ((float)(PD_RAND48_DOUBLE (seed)));
         //
         }
     
@@ -61,7 +61,7 @@ TTT_BEGIN (BenchmarkCosine, 60, "Benchmark - Cosine")
     
         for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
         //
-        benchmark_dummy += cos (PD_RAND48_DOUBLE (seed) * PD_TWO_PI);
+        benchmark_dummy += cosf ((float)(PD_RAND48_DOUBLE (seed) * PD_TWO_PI));
         //
         }
     
