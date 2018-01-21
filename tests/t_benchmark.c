@@ -23,7 +23,7 @@ static volatile float benchmark_dummy;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (BenchmarkCosine, 60, "Benchmark - Cosine")
+TTT_BEGIN_ALLOW (BenchmarkCosine, 60, "Benchmark - Cosine")
 
     int i;
     
@@ -41,7 +41,7 @@ TTT_BEGIN (BenchmarkCosine, 60, "Benchmark - Cosine")
         //
         }
     
-    ttt_stdout (TTT_COLOR_BLUE, "COS: %f", ttt_timeTrigger());
+    double t1 = ttt_timeTrigger();
     
     /* Miller Puckette's LUT. */
     
@@ -49,11 +49,11 @@ TTT_BEGIN (BenchmarkCosine, 60, "Benchmark - Cosine")
     
         for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
         //
-        benchmark_dummy += dsp_getCosineAtLUT (PD_RAND48_DOUBLE (seed) * COSINE_TABLE_SIZE);
+        benchmark_dummy += dsp_getCosineAtLUT ((double)(PD_RAND48_DOUBLE (seed) * COSINE_TABLE_SIZE));
         //
         }
     
-    ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", ttt_timeTrigger());
+    double t2 = ttt_timeTrigger();
     
     /* Standard function. */
     
@@ -65,7 +65,16 @@ TTT_BEGIN (BenchmarkCosine, 60, "Benchmark - Cosine")
         //
         }
     
-    ttt_stdout (TTT_COLOR_BLUE, "STD: %f", ttt_timeTrigger());
+    double t3 = ttt_timeTrigger();
+    
+    ttt_stdout (TTT_COLOR_BLUE, "COS: %f", t1);
+    ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", t2);
+    ttt_stdout (TTT_COLOR_BLUE, "STD: %f", t3);
+    
+    /* Pure Data's LUT is the best? */
+    
+    PD_ASSERT (t2 < t3);
+    PD_ASSERT (t2 < t1);
     
     cos_tilde_release();
 
