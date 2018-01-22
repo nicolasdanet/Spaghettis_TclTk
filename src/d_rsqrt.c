@@ -30,14 +30,20 @@ typedef struct _rsqrt_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#if PD_WITH_DEADCODE
+
 t_float rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];           /* Static. */
 t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Static. */
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 void rsqrt_tilde_initialize (void)
 {
+    #if PD_WITH_DEADCODE
+    
     int i;
     
     for (i = 0; i < RSQRT_EXPONENTIAL_SIZE; i++) {
@@ -60,6 +66,8 @@ void rsqrt_tilde_initialize (void)
         
         rsqrt_tableMantissa[i] = (t_float)(1.0 / sqrt (f));      
     }
+    
+    #endif // PD_WITH_DEADCODE
 }
 
 // -----------------------------------------------------------------------------------------------------------
