@@ -383,5 +383,26 @@ t_int *perform_lessScalar (t_int *w)
     return (w + 5);
 }
 
+/* No aliasing. */
+
+t_int *perform_magnitude (t_int *w)
+{
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s3 = (t_sample *)(w[3]);
+    int n = (int)(w[4]);
+    
+    while (n--) {
+    //
+    t_sample f1 = *s1++;
+    t_sample f2 = *s2++;
+    
+    *s3++ = (t_sample)sqrt_fast ((t_float)(f1 * f1 + f2 * f2));
+    //
+    }
+    
+    return (w + 5);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -36,6 +36,7 @@ t_int *perform_greaterAliased       (t_int *);
 t_int *perform_greaterScalar        (t_int *);
 t_int *perform_lessAliased          (t_int *);
 t_int *perform_lessScalar           (t_int *);
+t_int *perform_magnitude            (t_int *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -63,6 +64,7 @@ t_int *vPerform_greaterAliased      (t_int *);
 t_int *vPerform_greaterScalar       (t_int *);
 t_int *vPerform_lessAliased         (t_int *);
 t_int *vPerform_lessScalar          (t_int *);
+t_int *vPerform_magnitude           (t_int *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -297,6 +299,18 @@ void dsp_addLessScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest
     if (n & 7) { dsp_add (perform_lessScalar, 4, src, f, dest, n); }
     else {
         dsp_add (vPerform_lessScalar, 4, src, f, dest, n);
+    }
+}
+
+void dsp_addMagnitudePerform (PD_RESTRICTED src1, PD_RESTRICTED src2, PD_RESTRICTED dest, int n)
+{
+    PD_ASSERT (n > 0);
+    PD_ASSERT (src1 != dest);
+    PD_ASSERT (src2 != dest);
+    
+    if (n & 7) { dsp_add (perform_magnitude, 4, src1, src2, dest, n); }
+    else {
+        dsp_add (vPerform_magnitude, 4, src1, src2, dest, n);
     }
 }
 

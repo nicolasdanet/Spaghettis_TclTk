@@ -54,4 +54,11 @@ void dsp_addLessScalarPerform               (PD_RESTRICTED src, t_float *f, PD_R
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void dsp_addMagnitudePerform        (PD_RESTRICTED src1, PD_RESTRICTED src2, PD_RESTRICTED dest, int n);
+void dsp_addInverseMagnitudePerform (PD_RESTRICTED src1, PD_RESTRICTED src2, PD_RESTRICTED dest, int n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #endif // __d_perform_h_
