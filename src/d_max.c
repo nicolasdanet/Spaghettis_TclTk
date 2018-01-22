@@ -39,7 +39,7 @@ typedef struct _maxscalar_tilde {
 
 static void max_tilde_dsp (t_max_tilde *x, t_signal **sp)
 {
-    dsp_addMaximumPerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_addMaximumPerformAliased (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void maxScalar_tilde_dsp (t_maxscalar_tilde *x, t_signal **sp)

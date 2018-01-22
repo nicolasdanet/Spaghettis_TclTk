@@ -39,7 +39,7 @@ typedef struct _lessscalar_tilde {
 
 static void less_tilde_dsp (t_less_tilde *x, t_signal **sp)
 {
-    dsp_addLessPerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_addLessPerformAliased (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void lessScalar_tilde_dsp (t_lessscalar_tilde *x, t_signal **sp)

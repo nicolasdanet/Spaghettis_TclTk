@@ -67,7 +67,7 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
     //
     t_sample *out = audio_soundOut + (AUDIO_DEFAULT_BLOCKSIZE * channel);
     
-    dsp_addPlusPerform (out, t->s_vector, out, AUDIO_DEFAULT_BLOCKSIZE);
+    dsp_addPlusPerformAliased (out, t->s_vector, out, AUDIO_DEFAULT_BLOCKSIZE);
     //
     }
         

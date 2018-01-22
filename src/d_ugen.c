@@ -199,7 +199,7 @@ static void ugen_graphMainRecursiveChild (t_dspcontext *context, t_ugenbox *u)
     
     /* Accumulate content of in signals. */
     
-    dsp_addPlusPerform (parentSignal->s_vector,
+    dsp_addPlusPerformAliased (parentSignal->s_vector,
         childSignal->s_vector,
         s->s_vector,
         parentSignal->s_vectorSize);

@@ -39,7 +39,7 @@ typedef struct _subtractscalar_tilde {
 
 static void subtract_tilde_dsp (t_subtract_tilde *x, t_signal **sp)
 {
-    dsp_addSubtractPerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_addSubtractPerformAliased (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void subtractScalar_tilde_dsp (t_subtractscalar_tilde *x, t_signal **sp)

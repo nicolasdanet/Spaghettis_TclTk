@@ -39,7 +39,7 @@ typedef struct _addscalar_tilde {
 
 static void add_tilde_dsp (t_add_tilde *x, t_signal **sp)
 {
-    dsp_addPlusPerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_addPlusPerformAliased (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void addScalar_tilde_dsp (t_addscalar_tilde *x, t_signal **sp)

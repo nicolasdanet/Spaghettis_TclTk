@@ -39,7 +39,7 @@ typedef struct _dividescalar_tilde {
 
 static void divide_tilde_dsp (t_divide_tilde *x, t_signal **sp)
 {
-    dsp_addDividePerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_addDividePerformAliased (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void divideScalar_tilde_dsp (t_dividescalar_tilde *x, t_signal **sp)

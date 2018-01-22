@@ -74,24 +74,9 @@ void rsqrt_tilde_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* No aliasing. */
-
-static t_int *rsqrt_tilde_perform (t_int *w)
-{
-    PD_RESTRICTED in  = (t_sample *)(w[1]);
-    PD_RESTRICTED out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    
-    while (n--) { *out++ = (t_sample)rsqrt_fast ((t_float)(*in++)); }
-    
-    return (w + 4);
-}
-
 static void rsqrt_tilde_dsp (t_rsqrt_tilde *x, t_signal **sp)
 {
-    PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
-    
-    dsp_add (rsqrt_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_addInverseSquareRootPerform (sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

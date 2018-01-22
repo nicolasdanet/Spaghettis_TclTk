@@ -39,7 +39,7 @@ typedef struct _minscalar_tilde {
 
 static void min_tilde_dsp (t_min_tilde *x, t_signal **sp)
 {
-    dsp_addMinimumPerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_addMinimumPerformAliased (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void minScalar_tilde_dsp (t_minscalar_tilde *x, t_signal **sp)
