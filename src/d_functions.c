@@ -18,6 +18,7 @@ t_int *perform_zero                 (t_int *);
 t_int *perform_scalar               (t_int *);
 t_int *perform_copy                 (t_int *);
 t_int *perform_copyZero             (t_int *);
+t_int *perform_squareRoot           (t_int *);
 t_int *perform_inverseSquareRoot    (t_int *);
 t_int *perform_plusAliased          (t_int *);
 t_int *perform_plusScalar           (t_int *);
@@ -44,6 +45,7 @@ t_int *vPerform_zero                (t_int *);
 t_int *vPerform_scalar              (t_int *);
 t_int *vPerform_copy                (t_int *);
 t_int *vPerform_copyZero            (t_int *);
+t_int *vPerform_squareRoot          (t_int *);
 t_int *vPerform_inverseSquareRoot   (t_int *);
 t_int *vPerform_plusAliased         (t_int *);
 t_int *vPerform_plusScalar          (t_int *);
@@ -105,6 +107,17 @@ void dsp_addCopyZeroPerform (PD_RESTRICTED src, PD_RESTRICTED dest, int n)
     if (n & 7) { dsp_add (perform_copyZero, 3, src, dest, n); }
     else {        
         dsp_add (vPerform_copyZero, 3, src, dest, n);
+    }
+}
+
+void dsp_addSquareRootPerform (PD_RESTRICTED src, PD_RESTRICTED dest, int n)
+{
+    PD_ASSERT (n > 0);
+    PD_ASSERT (src != dest);
+    
+    if (n & 7) { dsp_add (perform_squareRoot, 3, src, dest, n); }
+    else {
+        dsp_add (vPerform_squareRoot, 3, src, dest, n);
     }
 }
 

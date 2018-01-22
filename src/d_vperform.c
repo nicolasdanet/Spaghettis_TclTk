@@ -151,6 +151,43 @@ t_int *vPerform_copyZero (t_int *w)
 
 /* No aliasing. */
 
+t_int *vPerform_squareRoot (t_int *w)
+{
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    while (n) {
+    //
+    t_sample f0 = s1[0];
+    t_sample f1 = s1[1];
+    t_sample f2 = s1[2];
+    t_sample f3 = s1[3];
+    t_sample f4 = s1[4];
+    t_sample f5 = s1[5];
+    t_sample f6 = s1[6];
+    t_sample f7 = s1[7];
+    
+    s2[0] = sqrt_fast (f0);
+    s2[1] = sqrt_fast (f1);
+    s2[2] = sqrt_fast (f2);
+    s2[3] = sqrt_fast (f3);
+    s2[4] = sqrt_fast (f4);
+    s2[5] = sqrt_fast (f5);
+    s2[6] = sqrt_fast (f6);
+    s2[7] = sqrt_fast (f7);
+
+    n -= 8;
+    s1 += 8;
+    s2 += 8;
+    //
+    }
+    
+    return (w + 4);
+}
+
+/* No aliasing. */
+
 t_int *vPerform_inverseSquareRoot (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)(w[1]);

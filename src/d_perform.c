@@ -67,6 +67,19 @@ t_int *perform_copyZero (t_int *w)
 
 /* No aliasing. */
 
+t_int *perform_squareRoot (t_int *w)
+{
+    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s2 = (t_sample *)(w[2]);
+    int n = (int)(w[3]);
+    
+    while (n--) { *s2 = sqrt_fast (*s1); s2++; s1++; }
+    
+    return (w + 4);
+}
+
+/* No aliasing. */
+
 t_int *perform_inverseSquareRoot (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)(w[1]);

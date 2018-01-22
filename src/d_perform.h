@@ -23,6 +23,7 @@ void dsp_addScalarPerform                   (t_float *f, PD_RESTRICTED dest, int
 
 void dsp_addCopyPerform                     (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 void dsp_addCopyZeroPerform                 (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
+void dsp_addSquareRootPerform               (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 void dsp_addInverseSquareRootPerform        (PD_RESTRICTED src, PD_RESTRICTED dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
