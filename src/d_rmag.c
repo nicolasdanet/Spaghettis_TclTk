@@ -30,36 +30,12 @@ typedef struct _rmag_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* No aliasing. */
 /* Notice that the two signals incoming could be theoretically just one. */
 /* But as only loads are done, it is assumed safe to use restricted pointers. */
 
-t_int *rmag_tilde_perform (t_int *w)
-{
-    PD_RESTRICTED in1 = (t_sample *)(w[1]);
-    PD_RESTRICTED in2 = (t_sample *)(w[2]);
-    PD_RESTRICTED out = (t_sample *)(w[3]);
-    int n = (int)(w[4]);
-    
-    while (n--) {
-    //
-    t_sample f = *in1++;
-    t_sample g = *in2++;
-
-    *out++ = (t_sample)rsqrt_fast ((t_float)(f * f + g * g));
-    //
-    }
-    
-    return (w + 5);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void rmag_tilde_dsp (t_rmag_tilde *x, t_signal **sp)
 {
-    dsp_add (rmag_tilde_perform, 4, sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
+    dsp_addInverseMagnitudePerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
