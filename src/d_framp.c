@@ -98,7 +98,7 @@ static t_int *framp_tilde_perform (t_int *w)
         }
         
         *out1++ = (t_sample)(f);
-        *out2++ = (t_sample)sqrt_fastLUT ((t_float)(k * power));
+        *out2++ = (t_sample)sqrt_fast ((t_float)(k * power));
         frequency += 1.0;
     }
     //
