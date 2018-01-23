@@ -269,12 +269,12 @@ static inline t_float sqrt_fastLUT (t_float f)
 
 static inline t_float rsqrt_fastSTD (t_float f)
 {
-    return ((float)1.0 / sqrtf (f));
+    return (f <= 0.0f ? 0.0f : (1.0f / sqrtf (f)));
 }
 
 static inline t_float sqrt_fastSTD (t_float f)
 {
-    return sqrtf (f);
+    return (f <= 0.0f ? 0.0f : sqrtf (f));
 }
 
 // -----------------------------------------------------------------------------------------------------------
