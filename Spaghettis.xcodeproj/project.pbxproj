@@ -431,7 +431,7 @@
 		179FBA991F3ED1E7002D86A2 /* x_listiterate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listiterate.c; path = src/x_listiterate.c; sourceTree = "<group>"; };
 		17A01DC01F70E74600BE34E2 /* x_listgroup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_listgroup.c; path = src/x_listgroup.c; sourceTree = "<group>"; };
 		17A2BD211F0A135E0071D330 /* d_resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_resample.h; path = src/d_resample.h; sourceTree = "<group>"; };
-		17A2BD221F0A2D6C0071D330 /* d_perform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_perform.h; path = src/d_perform.h; sourceTree = "<group>"; };
+		17A2BD221F0A2D6C0071D330 /* d_functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_functions.h; path = src/d_functions.h; sourceTree = "<group>"; };
 		17A2BD231F0A30480071D330 /* d_macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_macros.h; path = src/d_macros.h; sourceTree = "<group>"; };
 		17ACD8181FA46D3B00E4DB71 /* x_counter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_counter.c; path = src/x_counter.c; sourceTree = "<group>"; };
 		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
@@ -1230,7 +1230,7 @@
 				376962D01DBFAF50001B91B5 /* d_dsp.h */,
 				17A2BD231F0A30480071D330 /* d_macros.h */,
 				17A2BD211F0A135E0071D330 /* d_resample.h */,
-				17A2BD221F0A2D6C0071D330 /* d_perform.h */,
+				17A2BD221F0A2D6C0071D330 /* d_functions.h */,
 				37C000261DE2FBF800F90584 /* Graph */,
 				37ACC43E1E321BB60026E5FA /* Shared */,
 				37B1AA491DC1EDE70017355A /* Objects */,

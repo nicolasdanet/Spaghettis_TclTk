@@ -44,7 +44,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "d_resample.h"
-#include "d_perform.h"
+#include "d_functions.h"
 #include "d_macros.h"
 #include "d_cosf9.h"
 
