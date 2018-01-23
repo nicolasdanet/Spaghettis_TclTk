@@ -190,6 +190,8 @@
 
 #if PD_64BIT
     #define PD_MALLOC_ALIGNED       1           /* Assume malloc aligned to 16-bytes. */
+#else
+    #define PD_MALLOC_ALIGNED       0
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

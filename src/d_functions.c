@@ -78,7 +78,10 @@ void dsp_addZeroPerform (PD_RESTRICTED dest, int n)
     
     if (n & 7) { dsp_add (perform_zero, 2, dest, n); }
     else {
-        dsp_add (vPerform_zero, 2, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_zero, 2, dest, n);
+    //
     }
 }
 
@@ -87,8 +90,11 @@ void dsp_addScalarPerform (t_float *f, PD_RESTRICTED dest, int n)
     PD_ASSERT (n > 0);
     
     if (n & 7) { dsp_add (perform_scalar, 3, f, dest, n); }
-    else {       
-        dsp_add (vPerform_scalar, 3, f, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_scalar, 3, f, dest, n);
+    //
     }
 }
 
@@ -98,8 +104,12 @@ void dsp_addCopyPerform (PD_RESTRICTED src, PD_RESTRICTED dest, int n)
     PD_ASSERT (src != dest);
     
     if (n & 7) { dsp_add (perform_copy, 3, src, dest, n); }
-    else {        
-        dsp_add (vPerform_copy, 3, src, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_copy, 3, src, dest, n);
+    //
     }
 }
 
@@ -109,8 +119,12 @@ void dsp_addCopyZeroPerform (PD_RESTRICTED src, PD_RESTRICTED dest, int n)
     PD_ASSERT (src != dest);
     
     if (n & 7) { dsp_add (perform_copyZero, 3, src, dest, n); }
-    else {        
-        dsp_add (vPerform_copyZero, 3, src, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_copyZero, 3, src, dest, n);
+    //
     }
 }
 
@@ -121,7 +135,11 @@ void dsp_addSquareRootPerform (PD_RESTRICTED src, PD_RESTRICTED dest, int n)
     
     if (n & 7) { dsp_add (perform_squareRoot, 3, src, dest, n); }
     else {
-        dsp_add (vPerform_squareRoot, 3, src, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_squareRoot, 3, src, dest, n);
+    //
     }
 }
 
@@ -132,7 +150,11 @@ void dsp_addInverseSquareRootPerform (PD_RESTRICTED src, PD_RESTRICTED dest, int
     
     if (n & 7) { dsp_add (perform_inverseSquareRoot, 3, src, dest, n); }
     else {
-        dsp_add (vPerform_inverseSquareRoot, 3, src, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_inverseSquareRoot, 3, src, dest, n);
+    //
     }
 }
 
@@ -141,8 +163,13 @@ void dsp_addPlusPerformAliased (t_sample *src1, t_sample *src2, t_sample *dest, 
     PD_ASSERT (n > 0);
     
     if (n & 7) { dsp_add (perform_plusAliased, 4, src1, src2, dest, n); }
-    else {      
-        dsp_add (vPerform_plusAliased, 4, src1, src2, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_plusAliased, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -152,8 +179,12 @@ void dsp_addPlusScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest
     PD_ASSERT (src != dest);
     
     if (n & 7) { dsp_add (perform_plusScalar, 4, src, f, dest, n); }
-    else {     
-        dsp_add (vPerform_plusScalar, 4, src, f, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_plusScalar, 4, src, f, dest, n);
+    //
     }
 }
 
@@ -162,8 +193,13 @@ void dsp_addSubtractPerformAliased (t_sample *src1, t_sample *src2, t_sample *de
     PD_ASSERT (n > 0);
     
     if (n & 7) { dsp_add (perform_subtractAliased, 4, src1, src2, dest, n); }
-    else {      
-        dsp_add (vPerform_subtractAliased, 4, src1, src2, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_subtractAliased, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -173,8 +209,12 @@ void dsp_addSubtractScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED 
     PD_ASSERT (src != dest);
     
     if (n & 7) { dsp_add (perform_subtractScalar, 4, src, f, dest, n); }
-    else {     
-        dsp_add (vPerform_subtractScalar, 4, src, f, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_subtractScalar, 4, src, f, dest, n);
+    //
     }
 }
 
@@ -183,8 +223,13 @@ void dsp_addMultiplyPerformAliased (t_sample *src1, t_sample *src2, t_sample *de
     PD_ASSERT (n > 0);
     
     if (n & 7) { dsp_add (perform_multiplyAliased, 4, src1, src2, dest, n); }
-    else {      
-        dsp_add (vPerform_multiplyAliased, 4, src1, src2, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_multiplyAliased, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -194,8 +239,12 @@ void dsp_addMultiplyScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED 
     PD_ASSERT (src != dest);
     
     if (n & 7) { dsp_add (perform_multiplyScalar, 4, src, f, dest, n); }
-    else {     
-        dsp_add (vPerform_multiplyScalar, 4, src, f, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_multiplyScalar, 4, src, f, dest, n);
+    //
     }
 }
 
@@ -204,8 +253,13 @@ void dsp_addDividePerformAliased (t_sample *src1, t_sample *src2, t_sample *dest
     PD_ASSERT (n > 0);
     
     if (n & 7) { dsp_add (perform_divideAliased, 4, src1, src2, dest, n); }
-    else {      
-        dsp_add (vPerform_divideAliased, 4, src1, src2, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_divideAliased, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -215,8 +269,12 @@ void dsp_addDivideScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED de
     PD_ASSERT (src != dest);
     
     if (n & 7) { dsp_add (perform_divideScalar, 4, src, f, dest, n); }
-    else {     
-        dsp_add (vPerform_divideScalar, 4, src, f, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_divideScalar, 4, src, f, dest, n);
+    //
     }
 }
 
@@ -225,8 +283,13 @@ void dsp_addMaximumPerformAliased (t_sample *src1, t_sample *src2, t_sample *des
     PD_ASSERT (n > 0);
     
     if (n & 7) { dsp_add (perform_maximumAliased, 4, src1, src2, dest, n); }
-    else {      
-        dsp_add (vPerform_maximumAliased, 4, src1, src2, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_maximumAliased, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -236,8 +299,12 @@ void dsp_addMaximumScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED d
     PD_ASSERT (src != dest);
     
     if (n & 7) { dsp_add (perform_maximumScalar, 4, src, f, dest, n); }
-    else {     
-        dsp_add (vPerform_maximumScalar, 4, src, f, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_maximumScalar, 4, src, f, dest, n);
+    //
     }
 }
 
@@ -246,8 +313,13 @@ void dsp_addMinimumPerformAliased (t_sample *src1, t_sample *src2, t_sample *des
     PD_ASSERT (n > 0);
     
     if (n & 7) { dsp_add (perform_minimumAliased, 4, src1, src2, dest, n); }
-    else {      
-        dsp_add (vPerform_minimumAliased, 4, src1, src2, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_minimumAliased, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -257,8 +329,12 @@ void dsp_addMinimumScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED d
     PD_ASSERT (src != dest);
     
     if (n & 7) { dsp_add (perform_minimumScalar, 4, src, f, dest, n); }
-    else {     
-        dsp_add (vPerform_minimumScalar, 4, src, f, dest, n);
+    else {
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_minimumScalar, 4, src, f, dest, n);
+    //
     }
 }
 
@@ -268,7 +344,12 @@ void dsp_addGreaterPerformAliased (t_sample *src1, t_sample *src2, t_sample *des
     
     if (n & 7) { dsp_add (perform_greaterAliased, 4, src1, src2, dest, n); }
     else {
-        dsp_add (vPerform_greaterAliased, 4, src1, src2, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_greaterAliased, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -279,7 +360,11 @@ void dsp_addGreaterScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED d
     
     if (n & 7) { dsp_add (perform_greaterScalar, 4, src, f, dest, n); }
     else {
-        dsp_add (vPerform_greaterScalar, 4, src, f, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_greaterScalar, 4, src, f, dest, n);
+    //
     }
 }
 
@@ -289,7 +374,12 @@ void dsp_addLessPerformAliased (t_sample *src1, t_sample *src2, t_sample *dest, 
     
     if (n & 7) { dsp_add (perform_lessAliased, 4, src1, src2, dest, n); }
     else {
-        dsp_add (vPerform_lessAliased, 4, src1, src2, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_lessAliased, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -300,7 +390,11 @@ void dsp_addLessScalarPerform (PD_RESTRICTED src, t_float *f, PD_RESTRICTED dest
     
     if (n & 7) { dsp_add (perform_lessScalar, 4, src, f, dest, n); }
     else {
-        dsp_add (vPerform_lessScalar, 4, src, f, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_lessScalar, 4, src, f, dest, n);
+    //
     }
 }
 
@@ -312,7 +406,12 @@ void dsp_addMagnitudePerform (PD_RESTRICTED src1, PD_RESTRICTED src2, PD_RESTRIC
     
     if (n & 7) { dsp_add (perform_magnitude, 4, src1, src2, dest, n); }
     else {
-        dsp_add (vPerform_magnitude, 4, src1, src2, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_magnitude, 4, src1, src2, dest, n);
+    //
     }
 }
 
@@ -324,7 +423,12 @@ void dsp_addInverseMagnitudePerform (PD_RESTRICTED src1, PD_RESTRICTED src2, PD_
     
     if (n & 7) { dsp_add (perform_inverseMagnitude, 4, src1, src2, dest, n); }
     else {
-        dsp_add (vPerform_inverseMagnitude, 4, src1, src2, dest, n);
+    //
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src1));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (src2));
+    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
+    dsp_add (vPerform_inverseMagnitude, 4, src1, src2, dest, n);
+    //
     }
 }
 

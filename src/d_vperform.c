@@ -18,7 +18,7 @@
 
 t_int *vPerform_zero (t_int *w)
 {
-    PD_RESTRICTED s = (t_sample *)(w[1]);
+    PD_RESTRICTED s = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     int n = (int)(w[2]);
     
     while (n) {
@@ -44,7 +44,7 @@ t_int *vPerform_zero (t_int *w)
 t_int *vPerform_scalar (t_int *w)
 {
     t_float f = *(t_float *)(w[1]);
-    PD_RESTRICTED s = (t_sample *)(w[2]);
+    PD_RESTRICTED s = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
     int n = (int)(w[3]);
     
     while (n) {
@@ -70,8 +70,8 @@ t_int *vPerform_scalar (t_int *w)
 
 t_int *vPerform_copy (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
-    PD_RESTRICTED s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
     int n = (int)(w[3]);
     
     while (n) {
@@ -107,8 +107,8 @@ t_int *vPerform_copy (t_int *w)
 
 t_int *vPerform_copyZero (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
-    PD_RESTRICTED s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
     int n = (int)(w[3]);
     
     while (n) {
@@ -153,8 +153,8 @@ t_int *vPerform_copyZero (t_int *w)
 
 t_int *vPerform_squareRoot (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
-    PD_RESTRICTED s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
     int n = (int)(w[3]);
     
     while (n) {
@@ -190,8 +190,8 @@ t_int *vPerform_squareRoot (t_int *w)
 
 t_int *vPerform_inverseSquareRoot (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
-    PD_RESTRICTED s2 = (t_sample *)(w[2]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
     int n = (int)(w[3]);
     
     while (n) {
@@ -227,9 +227,9 @@ t_int *vPerform_inverseSquareRoot (t_int *w)
 
 t_int *vPerform_plusAliased (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
-    t_sample *s3 = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    t_sample *s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    t_sample *s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -275,9 +275,9 @@ t_int *vPerform_plusAliased (t_int *w)
 
 t_int *vPerform_plusScalar (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     t_float g = *(t_float *)(w[2]);
-    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -313,9 +313,9 @@ t_int *vPerform_plusScalar (t_int *w)
 
 t_int *vPerform_subtractAliased (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
-    t_sample *s3 = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    t_sample *s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    t_sample *s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -361,9 +361,9 @@ t_int *vPerform_subtractAliased (t_int *w)
 
 t_int *vPerform_subtractScalar (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     t_float g = *(t_float *)(w[2]);
-    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -399,9 +399,9 @@ t_int *vPerform_subtractScalar (t_int *w)
 
 t_int *vPerform_multiplyAliased (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
-    t_sample *s3 = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    t_sample *s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    t_sample *s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -447,9 +447,9 @@ t_int *vPerform_multiplyAliased (t_int *w)
 
 t_int *vPerform_multiplyScalar (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     t_float g = *(t_float *)(w[2]);
-    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -485,9 +485,9 @@ t_int *vPerform_multiplyScalar (t_int *w)
 
 t_int *vPerform_divideAliased (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
-    t_sample *s3 = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    t_sample *s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    t_sample *s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -533,9 +533,9 @@ t_int *vPerform_divideAliased (t_int *w)
 
 t_int *vPerform_divideScalar (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     t_float g = *(t_float *)(w[2]);
-    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     if (g) { g = (t_float)(1.0 / g); }
@@ -573,9 +573,9 @@ t_int *vPerform_divideScalar (t_int *w)
 
 t_int *vPerform_maximumAliased (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
-    t_sample *s3 = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    t_sample *s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    t_sample *s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -621,9 +621,9 @@ t_int *vPerform_maximumAliased (t_int *w)
 
 t_int *vPerform_maximumScalar (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     t_float g = *(t_float *)(w[2]);
-    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -659,9 +659,9 @@ t_int *vPerform_maximumScalar (t_int *w)
 
 t_int *vPerform_minimumAliased (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
-    t_sample *s3 = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    t_sample *s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    t_sample *s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -707,9 +707,9 @@ t_int *vPerform_minimumAliased (t_int *w)
 
 t_int *vPerform_minimumScalar (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     t_float g = *(t_float *)(w[2]);
-    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -745,9 +745,9 @@ t_int *vPerform_minimumScalar (t_int *w)
 
 t_int *vPerform_greaterAliased (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
-    t_sample *s3 = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    t_sample *s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    t_sample *s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -793,9 +793,9 @@ t_int *vPerform_greaterAliased (t_int *w)
 
 t_int *vPerform_greaterScalar (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     t_float g = *(t_float *)(w[2]);
-    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -831,9 +831,9 @@ t_int *vPerform_greaterScalar (t_int *w)
 
 t_int *vPerform_lessAliased (t_int *w)
 {
-    t_sample *s1 = (t_sample *)(w[1]);
-    t_sample *s2 = (t_sample *)(w[2]);
-    t_sample *s3 = (t_sample *)(w[3]);
+    t_sample *s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    t_sample *s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    t_sample *s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -879,9 +879,9 @@ t_int *vPerform_lessAliased (t_int *w)
 
 t_int *vPerform_lessScalar (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
     t_float g = *(t_float *)(w[2]);
-    PD_RESTRICTED s2 = (t_sample *)(w[3]);
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -917,9 +917,9 @@ t_int *vPerform_lessScalar (t_int *w)
 
 t_int *vPerform_magnitude (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
-    PD_RESTRICTED s2 = (t_sample *)(w[2]);
-    PD_RESTRICTED s3 = (t_sample *)(w[3]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    PD_RESTRICTED s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
@@ -965,9 +965,9 @@ t_int *vPerform_magnitude (t_int *w)
 
 t_int *vPerform_inverseMagnitude (t_int *w)
 {
-    PD_RESTRICTED s1 = (t_sample *)(w[1]);
-    PD_RESTRICTED s2 = (t_sample *)(w[2]);
-    PD_RESTRICTED s3 = (t_sample *)(w[3]);
+    PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
+    PD_RESTRICTED s3 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
     while (n) {
