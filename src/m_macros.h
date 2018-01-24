@@ -38,7 +38,7 @@
 
 /* < https://locklessinc.com/articles/vectorize/ >. */
 
-#if PD_MALLOC_ALIGNED
+#if PD_ASSUME_ALIGNED
     #define PD_RESTRICTED   t_sample* __restrict__
     #define PD_ALIGNED(x)   __builtin_assume_aligned((x), 16)
 #else
