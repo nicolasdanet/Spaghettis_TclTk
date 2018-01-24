@@ -207,9 +207,13 @@
 // MARK: -
 
 #if PD_MALLOC_ALIGNED
-#if PD_GCC && PD_GCC_VERSION >= 40700
-    #define PD_ASSUME_ALIGNED       1
-#elif PD_CLANG && __has_builtin(__builtin_assume_aligned)
+#if PD_CLANG
+    #if __has_builtin(__builtin_assume_aligned)
+        #define PD_ASSUME_ALIGNED   1
+    #else
+        #define PD_ASSUME_ALIGNED   0
+    #endif
+#elif PD_GCC && PD_GCC_VERSION >= 40700
     #define PD_ASSUME_ALIGNED       1
 #else
     #define PD_ASSUME_ALIGNED       0
