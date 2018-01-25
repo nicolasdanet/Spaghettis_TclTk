@@ -5,11 +5,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Note that only non-vectorial forms are tested. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #define TEST_BENCHMARK_LOOP     1000000
 
 // -----------------------------------------------------------------------------------------------------------
@@ -125,7 +120,17 @@ TTT_BEGIN (BenchmarkRsqrt, 61, "Benchmark - rsqrt")
     
         for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
         //
-        benchmark_dummy += rsqrt_fastLUT ((float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT));
+        float f[4];
+        
+        f[0] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[1] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[2] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[3] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        
+        benchmark_dummy += rsqrt_fastLUT (f[0]);
+        benchmark_dummy += rsqrt_fastLUT (f[1]);
+        benchmark_dummy += rsqrt_fastLUT (f[2]);
+        benchmark_dummy += rsqrt_fastLUT (f[3]);
         //
         }
     
@@ -137,7 +142,17 @@ TTT_BEGIN (BenchmarkRsqrt, 61, "Benchmark - rsqrt")
     
         for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
         //
-        benchmark_dummy += rsqrt_fastSTD ((float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT));
+        float f[4];
+        
+        f[0] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[1] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[2] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[3] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        
+        benchmark_dummy += rsqrt_fastSTD (f[0]);
+        benchmark_dummy += rsqrt_fastSTD (f[1]);
+        benchmark_dummy += rsqrt_fastSTD (f[2]);
+        benchmark_dummy += rsqrt_fastSTD (f[3]);
         //
         }
     
@@ -179,7 +194,17 @@ TTT_BEGIN (BenchmarkSqrt, 62, "Benchmark - sqrt")
     
         for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
         //
-        benchmark_dummy += sqrt_fastLUT ((float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT));
+        float f[4];
+        
+        f[0] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[1] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[2] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[3] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        
+        benchmark_dummy += sqrt_fastLUT (f[0]);
+        benchmark_dummy += sqrt_fastLUT (f[1]);
+        benchmark_dummy += sqrt_fastLUT (f[2]);
+        benchmark_dummy += sqrt_fastLUT (f[3]);
         //
         }
     
@@ -191,7 +216,17 @@ TTT_BEGIN (BenchmarkSqrt, 62, "Benchmark - sqrt")
     
         for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
         //
-        benchmark_dummy += sqrt_fastSTD ((float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT));
+        float f[4];
+        
+        f[0] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[1] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[2] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        f[3] = (float)(PD_RAND48_DOUBLE (seed) * TEST_BENCHMARK_SQRT);
+        
+        benchmark_dummy += sqrt_fastSTD (f[0]);
+        benchmark_dummy += sqrt_fastSTD (f[1]);
+        benchmark_dummy += sqrt_fastSTD (f[2]);
+        benchmark_dummy += sqrt_fastSTD (f[3]);
         //
         }
     

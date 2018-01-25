@@ -265,7 +265,8 @@ static inline t_float sqrt_fastLUT (t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* On new machines with recent compiler it seems faster. */
+/* On new machines with recent compiler it is faster. */
+/* With ffast-math SSE instructions are used. */
 
 static inline t_float rsqrt_fastSTD (t_float f)
 {
