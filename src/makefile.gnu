@@ -44,7 +44,7 @@ LDFLAGS = -rdynamic $(ARCH)
 
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
 
-CFLAGS = -O3 -ffast-math -fvisibility=hidden $(WARNINGS) $(ARCH)
+CFLAGS = -O3 -ffast-math -march=native -fvisibility=hidden $(WARNINGS) $(ARCH)
 
 # Expr with TinyExpr.
 

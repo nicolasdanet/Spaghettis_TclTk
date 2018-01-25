@@ -2317,7 +2317,10 @@
 					libraries/portmidi/porttime,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				OTHER_CFLAGS = "-ffast-math";
+				OTHER_CFLAGS = (
+					"-ffast-math",
+					"-march=native",
+				);
 				OTHER_LDFLAGS = (
 					"-ldl",
 					"-lpthread",
@@ -2350,7 +2353,10 @@
 					libraries/portmidi/porttime,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				OTHER_CFLAGS = "-ffast-math";
+				OTHER_CFLAGS = (
+					"-ffast-math",
+					"-march=native",
+				);
 				OTHER_LDFLAGS = (
 					"-ldl",
 					"-lpthread",
