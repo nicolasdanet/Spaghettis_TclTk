@@ -38,13 +38,13 @@ WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 
 LIB = -ldl -lpthread -lm -lasound -ljack
 
-LDFLAGS = -rdynamic $(ARCH)
+LDFLAGS = -rdynamic
 
 # Preprocessor and compiler flags.
 
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
 
-CFLAGS = -O3 -ffast-math -march=native -fvisibility=hidden $(WARNINGS) $(ARCH)
+CFLAGS = -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
 
 # Expr with TinyExpr.
 

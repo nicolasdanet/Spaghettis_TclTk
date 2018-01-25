@@ -46,8 +46,7 @@ LDFLAGS = -framework CoreAudio \
     -framework CoreMIDI \
     -framework AudioUnit \
     -framework AudioToolbox \
-    -framework Carbon \
-    $(ARCH)
+    -framework Carbon
 
 # Preprocessor and compiler flags.
 
@@ -60,7 +59,7 @@ CPPFLAGS = -DNDEBUG \
     -I$(PA_DIR)/src/common \
     -DPA_USE_COREAUDIO
 
-CFLAGS = -g -O3 -ffast-math -march=native -fvisibility=hidden $(WARNINGS) $(ARCH)
+CFLAGS = -g -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
 
 # PortMidi.
 

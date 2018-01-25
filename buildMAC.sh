@@ -67,7 +67,7 @@ patches="${rep}/resources/patches"
 
 echo "Build binaries ..."
 cd "${rep}/src"                                                         || exit 1
-make -f makefile.mac                                                    || exit 1
+make -f makefile.mac MARCH="-march=native"                              || exit 1
 cd "${rep}"                                                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
