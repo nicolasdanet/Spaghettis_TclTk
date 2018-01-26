@@ -103,6 +103,60 @@ void devices_setSampleRate (t_devicesproperties *p, int n)
     p->d_sampleRate = n;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int devices_getBlockSize (t_devicesproperties *p)
+{
+    return p->d_blockSize;
+}
+
+int devices_getSampleRate (t_devicesproperties *p)
+{
+    return p->d_sampleRate;
+}
+
+int devices_getInSize (t_devicesproperties *p)
+{
+    return p->d_inSize;
+}
+
+int devices_getOutSize (t_devicesproperties *p)
+{
+    return p->d_outSize;
+}
+
+int devices_getInAtIndex (t_devicesproperties *p, int i)
+{
+    return (i < p->d_inSize) ? p->d_in[i] : -1;
+}
+
+int devices_getOutAtIndex (t_devicesproperties *p, int i)
+{
+    return (i < p->d_outSize) ? p->d_out[i] : -1;
+}
+
+int devices_getInChannelsAtIndex (t_devicesproperties *p, int i)
+{
+    PD_ASSERT (!p->d_isMidi);
+    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
+    
+    return p->d_inChannels[i];
+}
+
+int devices_getOutChannelsAtIndex (t_devicesproperties *p, int i)
+{
+    PD_ASSERT (!p->d_isMidi);
+    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
+    
+    return p->d_outChannels[i];
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void devices_checkDisabled (t_devicesproperties *p)
 {
     int i;

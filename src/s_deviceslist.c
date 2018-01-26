@@ -44,6 +44,58 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void deviceslist_setBlockSize (t_deviceslist *p, int n)
+{
+    p->d_blockSize = n;         /* Expect store to be thread-safe. */
+}
+
+void deviceslist_setSampleRate (t_deviceslist *p, int n)
+{
+    p->d_sampleRate = n;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int deviceslist_getBlockSize (t_deviceslist *p)
+{
+    return p->d_blockSize;
+}
+
+int deviceslist_getSampleRate (t_deviceslist *p)
+{
+    return p->d_sampleRate;
+}
+
+int deviceslist_getInSize (t_deviceslist *p)
+{
+    return p->d_inSize;
+}
+
+int deviceslist_getOutSize (t_deviceslist *p)
+{
+    return p->d_outSize;
+}
+
+int deviceslist_getInChannelsAtIndex (t_deviceslist *p, int i)
+{
+    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
+    
+    return p->d_inChannels[i];
+}
+
+int deviceslist_getOutChannelsAtIndex (t_deviceslist *p, int i)
+{
+    PD_ASSERT (i < DEVICES_MAXIMUM_IO);
+    
+    return p->d_outChannels[i];
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_error deviceslist_appendMidiIn (t_deviceslist *p, const char *device)
 {
     if (p->d_inSize < DEVICES_MAXIMUM_IO) {
