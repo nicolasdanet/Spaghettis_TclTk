@@ -34,7 +34,7 @@ TTT_BEGIN (MemoryAligned, 50, "Memory - Aligned")
     }
     
     for (i = 0; i < TEST_MEMORY_LOOP; i++) {
-        k += PD_IS_ALIGNED_16(t[i]);            /* Aligned 16-bytes. */
+        k += PD_IS_ALIGNED_16 (t[i]);           /* Aligned 16-bytes. */
         PD_MEMORY_FREE (t[i]);
     }
     

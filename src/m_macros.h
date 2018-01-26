@@ -36,7 +36,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* < https://locklessinc.com/articles/vectorize/ >. */
+/* < https://locklessinc.com/articles/vectorize/ > */
 
 #if PD_ASSUME_ALIGNED
     #define PD_RESTRICTED   t_sample* __restrict__
