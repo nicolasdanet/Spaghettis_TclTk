@@ -64,10 +64,16 @@ patches="${rep}/resources/patches"
 # ------------------------------------------------------------------------------------------------------------
 
 # Build the binaries.
+# Workaround for annoying GCC 4.2.1 bug ( https://gcc.gnu.org/bugzilla/show_bug.cgi?id=33144 ).
+# Avoid march=native flag on Mac OS X 10.6 system.
 
 echo "Build binaries ..."
 cd "${rep}/src"                                                         || exit 1
-make -f makefile.mac MARCH="-march=native"                              || exit 1
+if [ "$OSTYPE" != "darwin10.0" ]; then
+    make -f makefile.mac MARCH="-march=native"                          || exit 1
+else
+    make -f makefile.mac                                                || exit 1
+fi
 cd "${rep}"                                                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
