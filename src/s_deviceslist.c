@@ -262,7 +262,7 @@ char *deviceslist_getOutAtIndexAsString (t_deviceslist *p, int i)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
+void deviceslist_set (t_deviceslist *l, t_devicesproperties *p)
 {
     int i;
     
@@ -297,7 +297,7 @@ void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
     }
 }
 
-void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
+void deviceslist_get (t_deviceslist *l, t_devicesproperties *p)
 {
     int i;
     

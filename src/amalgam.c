@@ -85,7 +85,7 @@
 #include "s_MT.c"
 #include "s_MT32.c"
 #include "s_MT64.c"
-#include "s_devices.c"
+#include "s_devicesproperties.c"
 #include "s_deviceslist.c"
 #include "s_midiAPI.c"
 #include "s_audioAPI.c"

@@ -289,7 +289,7 @@ static inline void sys_closeSocket (int fd)
 #include "s_ringbuffer.h"
 #include "s_logger.h"
 #include "s_MT.h"
-#include "s_devices.h"
+#include "s_devicesproperties.h"
 #include "s_deviceslist.h"
 #include "s_apis.h"
 #include "s_midi_apis.h"

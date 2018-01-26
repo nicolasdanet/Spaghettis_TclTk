@@ -132,14 +132,14 @@ int audio_isOpened (void)
 
 void audio_getDevices (t_devicesproperties *p)
 {
-    deviceslist_getDevices (&audio_devices, p);
+    deviceslist_get (&audio_devices, p);
 }
 
 void audio_setDevices (t_devicesproperties *p)
 {
     int m, n;
     
-    deviceslist_setDevices (&audio_devices, p);
+    deviceslist_set (&audio_devices, p);
     
     m = deviceslist_getTotalOfChannelsIn (&audio_devices);
     n = deviceslist_getTotalOfChannelsOut (&audio_devices);

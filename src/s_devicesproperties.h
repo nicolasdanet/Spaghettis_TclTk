@@ -7,8 +7,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef __s_devices_h_
-#define __s_devices_h_
+#ifndef __s_devicesproperties_h_
+#define __s_devicesproperties_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -27,10 +27,10 @@ typedef struct _devicesproperties {
     int d_sampleRate;
     int d_inSize;
     int d_outSize;
-    int d_in          [DEVICES_MAXIMUM_IO];     // --
-    int d_out         [DEVICES_MAXIMUM_IO];     // --
-    int d_inChannels  [DEVICES_MAXIMUM_IO];     // --
-    int d_outChannels [DEVICES_MAXIMUM_IO];     // --
+    int d_in          [DEVICES_MAXIMUM_IO]; // --
+    int d_out         [DEVICES_MAXIMUM_IO]; // --
+    int d_inChannels  [DEVICES_MAXIMUM_IO]; // --
+    int d_outChannels [DEVICES_MAXIMUM_IO]; // --
     int d_isMidi;
     } t_devicesproperties;
 
@@ -90,4 +90,4 @@ t_error devices_appendAudioOutWithNumber    (t_devicesproperties *p, int n, int 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // __s_devices_h_
+#endif // __s_devicesproperties_h_
