@@ -89,12 +89,12 @@ void midi_close (void)
 
 void midi_getDevices (t_devicesproperties *p)
 {
-    deviceslist_get (&midi_devices, p);
+    deviceslist_getDevices (&midi_devices, p);
 }
 
 void midi_setDevices (t_devicesproperties *p)
 {
-    deviceslist_set (&midi_devices, p);
+    deviceslist_setDevices (&midi_devices, p);
 }
 
 // -----------------------------------------------------------------------------------------------------------

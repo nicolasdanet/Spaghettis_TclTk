@@ -42,8 +42,8 @@ void    deviceslist_copy                        (t_deviceslist *dest, t_devicesl
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    deviceslist_set                         (t_deviceslist *l, t_devicesproperties *p);
-void    deviceslist_get                         (t_deviceslist *l, t_devicesproperties *p);
+void    deviceslist_setDevices                  (t_deviceslist *l, t_devicesproperties *p);
+void    deviceslist_getDevices                  (t_deviceslist *l, t_devicesproperties *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

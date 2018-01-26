@@ -1164,8 +1164,6 @@
 				17C9FE231FE00B78007066EC /* s_MT.h */,
 				17C9FE261FE00B79007066EC /* s_MT32.h */,
 				17C9FE201FE00B78007066EC /* s_MT64.h */,
-				37B911AA1E4C78FE001D9136 /* s_devicesproperties.h */,
-				174A6B8E201B78060055EA4D /* s_deviceslist.h */,
 				378971F21C4F716700263434 /* s_entry.c */,
 				378971F61C4F716700263434 /* s_main.c */,
 				378971E41C4F716700263434 /* s_scheduler.c */,
@@ -1200,8 +1198,6 @@
 				17C9FE271FE00B79007066EC /* s_MT.c */,
 				17C9FE291FE00B79007066EC /* s_MT32.c */,
 				17C9FE221FE00B78007066EC /* s_MT64.c */,
-				37B911A91E4C78FE001D9136 /* s_devicesproperties.c */,
-				376209A51E4F0FC300D97CF4 /* s_deviceslist.c */,
 				3722C53E1C4F955500D2BF6F /* API */,
 			);
 			name = System;
@@ -1247,8 +1243,12 @@
 			isa = PBXGroup;
 			children = (
 				376CF0681E4CBB0400B17967 /* s_apis.h */,
+				37B911AA1E4C78FE001D9136 /* s_devicesproperties.h */,
+				174A6B8E201B78060055EA4D /* s_deviceslist.h */,
 				37A402671C77524D00001FD3 /* s_midiAPI.c */,
 				373F78241C7E097A0083D316 /* s_audioAPI.c */,
+				37B911A91E4C78FE001D9136 /* s_devicesproperties.c */,
+				376209A51E4F0FC300D97CF4 /* s_deviceslist.c */,
 				37A59CDB1C538B3200FBD0AD /* MIDI */,
 				37A59CDC1C538B4800FBD0AD /* Audio */,
 			);
