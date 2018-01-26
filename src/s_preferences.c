@@ -66,7 +66,7 @@ void preferences_load (void)
             if (sscanf (v, "%d", &channels) == 1) {    
                 string_sprintf (k, PD_STRING, "AudioInDeviceName%d", i + 1);
                 if (properties_getKey (k, v, PD_STRING)) {
-                    devices_appendAudioIn (&audio, v, channels);
+                    devices_appendAudioInWithString (&audio, v, channels);
                 }
             }
         }
@@ -81,7 +81,7 @@ void preferences_load (void)
             if (sscanf (v, "%d", &channels) == 1) {    
                 string_sprintf (k, PD_STRING, "AudioOutDeviceName%d", i + 1);
                 if (properties_getKey (k, v, PD_STRING)) {
-                    devices_appendAudioOut (&audio, v, channels);
+                    devices_appendAudioOutWithString (&audio, v, channels);
                 }
             }
         }
@@ -94,7 +94,7 @@ void preferences_load (void)
         string_sprintf (k, PD_STRING, "MidiInDeviceName%d", i + 1);
         if (!properties_getKey (k, v, PD_STRING)) { break; }
         else {
-            devices_appendMidiIn (&midi, v);
+            devices_appendMidiInWithString (&midi, v);
         }
     }
 
@@ -103,7 +103,7 @@ void preferences_load (void)
         string_sprintf (k, PD_STRING, "MidiOutDeviceName%d", i + 1);
         if (!properties_getKey (k, v, PD_STRING)) { break; }
         else { 
-            devices_appendMidiOut (&midi, v);
+            devices_appendMidiOutWithString (&midi, v);
         }
     }
     //

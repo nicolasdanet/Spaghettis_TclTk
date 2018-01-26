@@ -62,8 +62,8 @@ t_error audio_getListsNative (t_deviceslist *p)
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= deviceslist_appendAudioIn (p,  "Dummy", 0);
-    err |= deviceslist_appendAudioOut (p, "Dummy", 0);
+    err |= deviceslist_appendAudioInWithString (p,  "Dummy", 0);
+    err |= deviceslist_appendAudioOutWithString (p, "Dummy", 0);
   
     return err;
 }

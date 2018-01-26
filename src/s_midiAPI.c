@@ -106,9 +106,9 @@ int midi_deviceAsNumberWithString (int isOutput, char *name)
     t_deviceslist l;
     
     if (!midi_getLists (&l)) {
-        if (isOutput) { return deviceslist_containsOut (&l, name); }
+        if (isOutput) { return deviceslist_containsOutWithString (&l, name); }
         else { 
-            return deviceslist_containsIn (&l, name);
+            return deviceslist_containsInWithString (&l, name);
         }
     }
     
@@ -190,11 +190,11 @@ void midi_requireDialog (void)
         int j;
         
         for (j = 0; j < 8; j++) {
-            int k = devices_getInAtIndex (&midi, j);  i[j] = (k >= 0) ? k + MIDI_SOMETHING : 0;
+            int k = devices_getInAtIndexAsNumber (&midi, j);  i[j] = (k >= 0) ? k + MIDI_SOMETHING : 0;
         } 
         
         for (j = 0; j < 8; j++) {
-            int k = devices_getOutAtIndex (&midi, j); o[j] = (k >= 0) ? k + MIDI_SOMETHING : 0;
+            int k = devices_getOutAtIndexAsNumber (&midi, j); o[j] = (k >= 0) ? k + MIDI_SOMETHING : 0;
         } 
 
         err = string_sprintf (t, PD_STRING,
@@ -242,8 +242,8 @@ void midi_fromDialog (int argc, t_atom *argv)
     int i = (int)atom_getFloatAtIndex (j, argc, argv);
     int o = (int)atom_getFloatAtIndex (j + t, argc, argv);
     
-    if (i > 0) { devices_appendMidiInAsNumber (&midi,  i - MIDI_SOMETHING); }
-    if (o > 0) { devices_appendMidiOutAsNumber (&midi, o - MIDI_SOMETHING); }
+    if (i > 0) { devices_appendMidiInWithNumber (&midi,  i - MIDI_SOMETHING); }
+    if (o > 0) { devices_appendMidiOutWithNumber (&midi, o - MIDI_SOMETHING); }
     //
     }
 

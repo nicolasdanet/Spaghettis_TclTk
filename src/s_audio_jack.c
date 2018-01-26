@@ -450,8 +450,8 @@ t_error audio_getListsNative (t_deviceslist *p)
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= deviceslist_appendAudioIn (p,  "JACK ports", 0);
-    err |= deviceslist_appendAudioOut (p, "JACK ports", 0);
+    err |= deviceslist_appendAudioInWithString (p,  "JACK ports", 0);
+    err |= deviceslist_appendAudioOutWithString (p, "JACK ports", 0);
 
     return err;
 }

@@ -411,6 +411,7 @@
 		17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_dspstatus.c; path = src/x_dspstatus.c; sourceTree = "<group>"; };
 		1739F7431FFCE902004656C4 /* s_ringbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_ringbuffer.c; path = src/s_ringbuffer.c; sourceTree = "<group>"; };
 		1739F7441FFCE902004656C4 /* s_ringbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_ringbuffer.h; path = src/s_ringbuffer.h; sourceTree = "<group>"; };
+		174A6B8E201B78060055EA4D /* s_deviceslist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_deviceslist.h; path = src/s_deviceslist.h; sourceTree = "<group>"; };
 		174D8A081F0BBA0200C94065 /* x_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_text.h; path = src/x_text.h; sourceTree = "<group>"; };
 		174D8A091F0BBBBE00C94065 /* x_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_array.h; path = src/x_array.h; sourceTree = "<group>"; };
 		174D8A0A1F0BBCD000C94065 /* x_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_list.h; path = src/x_list.h; sourceTree = "<group>"; };
@@ -1163,6 +1164,8 @@
 				17C9FE231FE00B78007066EC /* s_MT.h */,
 				17C9FE261FE00B79007066EC /* s_MT32.h */,
 				17C9FE201FE00B78007066EC /* s_MT64.h */,
+				37B911AA1E4C78FE001D9136 /* s_devices.h */,
+				174A6B8E201B78060055EA4D /* s_deviceslist.h */,
 				378971F21C4F716700263434 /* s_entry.c */,
 				378971F61C4F716700263434 /* s_main.c */,
 				378971E41C4F716700263434 /* s_scheduler.c */,
@@ -1197,6 +1200,8 @@
 				17C9FE271FE00B79007066EC /* s_MT.c */,
 				17C9FE291FE00B79007066EC /* s_MT32.c */,
 				17C9FE221FE00B78007066EC /* s_MT64.c */,
+				37B911A91E4C78FE001D9136 /* s_devices.c */,
+				376209A51E4F0FC300D97CF4 /* s_deviceslist.c */,
 				3722C53E1C4F955500D2BF6F /* API */,
 			);
 			name = System;
@@ -1242,11 +1247,8 @@
 			isa = PBXGroup;
 			children = (
 				376CF0681E4CBB0400B17967 /* s_apis.h */,
-				37B911AA1E4C78FE001D9136 /* s_devices.h */,
 				37A402671C77524D00001FD3 /* s_midiAPI.c */,
 				373F78241C7E097A0083D316 /* s_audioAPI.c */,
-				37B911A91E4C78FE001D9136 /* s_devices.c */,
-				376209A51E4F0FC300D97CF4 /* s_deviceslist.c */,
 				37A59CDB1C538B3200FBD0AD /* MIDI */,
 				37A59CDC1C538B4800FBD0AD /* Audio */,
 			);

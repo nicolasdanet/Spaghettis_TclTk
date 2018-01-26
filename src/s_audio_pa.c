@@ -178,8 +178,8 @@ void audio_releaseNative (void)
 
 t_error audio_openNative (t_devicesproperties *p)
 {
-    int deviceIn            = devices_getInSize (p)  ? devices_getInAtIndex (p, 0)          : 0;
-    int deviceOut           = devices_getOutSize (p) ? devices_getOutAtIndex (p, 0)         : 0;
+    int deviceIn            = devices_getInSize (p)  ? devices_getInAtIndexAsNumber (p, 0)  : 0;
+    int deviceOut           = devices_getOutSize (p) ? devices_getOutAtIndexAsNumber (p, 0) : 0;
     int numberOfChannelsIn  = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
     int numberOfChannelsOut = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
     int blockSize           = devices_getBlockSize (p);
@@ -365,11 +365,11 @@ t_error audio_getListsNative (t_deviceslist *p)
         const PaDeviceInfo *info = Pa_GetDeviceInfo (i);
             
         if (info->maxInputChannels > 0) {
-            err |= deviceslist_appendAudioIn (p, info->name, info->maxInputChannels);
+            err |= deviceslist_appendAudioInWithString (p, info->name, info->maxInputChannels);
         }
         
         if (info->maxOutputChannels > 0) {
-            err |= deviceslist_appendAudioOut (p, info->name, info->maxOutputChannels);
+            err |= deviceslist_appendAudioOutWithString (p, info->name, info->maxOutputChannels);
         }
     }
     

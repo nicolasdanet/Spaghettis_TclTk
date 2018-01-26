@@ -78,14 +78,14 @@ int deviceslist_getOutSize (t_deviceslist *p)
     return p->d_outSize;
 }
 
-int deviceslist_getInChannelsAtIndex (t_deviceslist *p, int i)
+static int deviceslist_getInChannelsAtIndex (t_deviceslist *p, int i)
 {
     PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     return p->d_inChannels[i];
 }
 
-int deviceslist_getOutChannelsAtIndex (t_deviceslist *p, int i)
+static int deviceslist_getOutChannelsAtIndex (t_deviceslist *p, int i)
 {
     PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
@@ -96,7 +96,7 @@ int deviceslist_getOutChannelsAtIndex (t_deviceslist *p, int i)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error deviceslist_appendMidiIn (t_deviceslist *p, const char *device)
+t_error deviceslist_appendMidiInWithString (t_deviceslist *p, const char *device)
 {
     if (p->d_inSize < DEVICES_MAXIMUM_IO) {
         char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
@@ -111,7 +111,7 @@ t_error deviceslist_appendMidiIn (t_deviceslist *p, const char *device)
     return PD_ERROR;
 }
 
-t_error deviceslist_appendMidiOut (t_deviceslist *p, const char *device)
+t_error deviceslist_appendMidiOutWithString (t_deviceslist *p, const char *device)
 {
     if (p->d_outSize < DEVICES_MAXIMUM_IO) {
         char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
@@ -126,7 +126,7 @@ t_error deviceslist_appendMidiOut (t_deviceslist *p, const char *device)
     return PD_ERROR;
 }
 
-t_error deviceslist_appendAudioIn (t_deviceslist *p, const char *device, int channels)
+t_error deviceslist_appendAudioInWithString (t_deviceslist *p, const char *device, int channels)
 {
     if (p->d_inSize < DEVICES_MAXIMUM_IO) {
         char *s = p->d_inNames + (p->d_inSize * DEVICES_DESCRIPTION);
@@ -142,7 +142,7 @@ t_error deviceslist_appendAudioIn (t_deviceslist *p, const char *device, int cha
     return PD_ERROR;
 }
 
-t_error deviceslist_appendAudioOut (t_deviceslist *p, const char *device, int channels)
+t_error deviceslist_appendAudioOutWithString (t_deviceslist *p, const char *device, int channels)
 {
     if (p->d_outSize < DEVICES_MAXIMUM_IO) {
         char *s = p->d_outNames + (p->d_outSize * DEVICES_DESCRIPTION);
@@ -271,11 +271,11 @@ void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
     if (p->d_isMidi) {
     
         for (i = 0; i < devices_getInSize (p); i++) {
-            deviceslist_appendMidiInAsNumber (l, devices_getInAtIndex (p, i));
+            deviceslist_appendMidiInAsNumber (l, devices_getInAtIndexAsNumber (p, i));
         }
         
         for (i = 0; i < devices_getOutSize (p); i++) {
-            deviceslist_appendMidiOutAsNumber (l, devices_getOutAtIndex (p, i));
+            deviceslist_appendMidiOutAsNumber (l, devices_getInAtIndexAsNumber (p, i));
         }
     
     } else {
@@ -285,13 +285,13 @@ void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
         
         for (i = 0; i < devices_getInSize (p); i++) {
             deviceslist_appendAudioInAsNumber (l,
-                devices_getInAtIndex (p, i),
+                devices_getInAtIndexAsNumber (p, i),
                 devices_getInChannelsAtIndex (p, i));
         }
 
         for (i = 0; i < devices_getOutSize (p); i++) {
             deviceslist_appendAudioOutAsNumber (l,
-                devices_getOutAtIndex (p, i),
+                devices_getOutAtIndexAsNumber (p, i),
                 devices_getOutChannelsAtIndex (p, i));
         }
     }
@@ -304,11 +304,11 @@ void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
     if (p->d_isMidi) {
         
         for (i = 0; i < deviceslist_getInSize (l); i++) {
-            devices_appendMidiIn (p, deviceslist_getInAtIndexAsString (l, i));
+            devices_appendMidiInWithString (p, deviceslist_getInAtIndexAsString (l, i));
         }
             
         for (i = 0; i < deviceslist_getOutSize (l); i++) {
-            devices_appendMidiOut (p, deviceslist_getOutAtIndexAsString (l, i));
+            devices_appendMidiOutWithString (p, deviceslist_getOutAtIndexAsString (l, i));
         }
     
     } else {
@@ -317,13 +317,13 @@ void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
         devices_setSampleRate (p, deviceslist_getSampleRate (l));
         
         for (i = 0; i < deviceslist_getInSize (l); i++) {
-            devices_appendAudioIn (p,
+            devices_appendAudioInWithString (p,
                 deviceslist_getInAtIndexAsString (l, i),
                 deviceslist_getInChannelsAtIndex (l, i));
         }
         
         for (i = 0; i < deviceslist_getOutSize (l); i++) {
-            devices_appendAudioOut (p,
+            devices_appendAudioOutWithString (p,
                 deviceslist_getOutAtIndexAsString (l, i),
                 deviceslist_getOutChannelsAtIndex (l, i));
         }
@@ -334,7 +334,7 @@ void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int deviceslist_containsIn (t_deviceslist *p, char *device)
+int deviceslist_containsInWithString (t_deviceslist *p, char *device)
 {
     int i;
     
@@ -345,7 +345,7 @@ int deviceslist_containsIn (t_deviceslist *p, char *device)
     return -1;
 }
 
-int deviceslist_containsOut (t_deviceslist *p, char *device)
+int deviceslist_containsOutWithString (t_deviceslist *p, char *device)
 {
     int i;
     

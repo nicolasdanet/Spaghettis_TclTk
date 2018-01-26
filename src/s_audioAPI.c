@@ -156,9 +156,9 @@ int audio_deviceAsNumberWithString (int isOutput, char *name)
     t_deviceslist l;
     
     if (!audio_getLists (&l)) {
-        if (isOutput) { return deviceslist_containsOut (&l, name); }
+        if (isOutput) { return deviceslist_containsOutWithString (&l, name); }
         else { 
-            return deviceslist_containsIn (&l, name);
+            return deviceslist_containsInWithString (&l, name);
         }
     }
     
@@ -243,13 +243,13 @@ void audio_requireDialog (void)
         int k;
         
         for (j = 0; j < 4; j++) {
-            k = devices_getInAtIndex (&audio, j); 
+            k = devices_getInAtIndexAsNumber (&audio, j); 
             i[j] = (k >= 0) ? k : 0;
             m[j] = (k >= 0) ? devices_getInChannelsAtIndex (&audio, j) : 0;
         } 
         
         for (j = 0; j < 4; j++) {
-            k = devices_getOutAtIndex (&audio, j);
+            k = devices_getOutAtIndexAsNumber (&audio, j);
             o[j] = (k >= 0) ? k : 0;
             n[j] = (k >= 0) ? devices_getOutChannelsAtIndex (&audio, j) : 0;
         } 
@@ -299,14 +299,14 @@ void audio_fromDialog (int argc, t_atom *argv)
     for (i = 0; i < 4; i++) {
         int t = (int)atom_getFloatAtIndex (i + 4,  argc, argv);
         if (t != 0) {
-            devices_appendAudioInAsNumber (&audio, (int)atom_getFloatAtIndex (i + 0,  argc, argv), t);
+            devices_appendAudioInWithNumber (&audio, (int)atom_getFloatAtIndex (i + 0,  argc, argv), t);
         }
     }
     
     for (i = 0; i < 4; i++) {
         int t = (int)atom_getFloatAtIndex (i + 12, argc, argv);
         if (t != 0) {
-            devices_appendAudioOutAsNumber (&audio, (int)atom_getFloatAtIndex (i + 8,  argc, argv), t);
+            devices_appendAudioOutWithNumber (&audio, (int)atom_getFloatAtIndex (i + 8,  argc, argv), t);
         }
     }
     

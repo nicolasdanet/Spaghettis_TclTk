@@ -98,7 +98,7 @@ void midi_openNative (t_devicesproperties *p)
     const PmDeviceInfo *info = Pm_GetDeviceInfo (j);
     
     if (info->input) {
-        if (devices_getInAtIndex (p, i) == n) {
+        if (devices_getInAtIndexAsNumber (p, i) == n) {
             PmStream **t = &midipm_devicesIn[midipm_numberOfDevicesIn];
             PmError err = Pm_OpenInput (t, j, NULL, 100, NULL, NULL);
             if (err) { error__error1 (Pm_GetErrorText (err)); }
@@ -120,7 +120,7 @@ void midi_openNative (t_devicesproperties *p)
     const PmDeviceInfo *info = Pm_GetDeviceInfo (j);
     
     if (info->output) {
-        if (devices_getOutAtIndex (p, i) == n) {
+        if (devices_getOutAtIndexAsNumber (p, i) == n) {
             PmStream **t = &midipm_devicesOut[midipm_numberOfDevicesOut];
             PmError err = Pm_OpenOutput (t, j, NULL, 0, NULL, NULL, 0);
             if (err) { error__error1 (Pm_GetErrorText (err)); }
@@ -312,8 +312,8 @@ t_error midi_getListsNative (t_deviceslist *p)
 
         const PmDeviceInfo *info = Pm_GetDeviceInfo (i);
 
-        if (info->input)  { err |= deviceslist_appendMidiIn (p, info->name);  }
-        if (info->output) { err |= deviceslist_appendMidiOut (p, info->name); }
+        if (info->input)  { err |= deviceslist_appendMidiInWithString (p, info->name);  }
+        if (info->output) { err |= deviceslist_appendMidiOutWithString (p, info->name); }
     }
     
     return err;
