@@ -51,7 +51,7 @@ void deviceslist_setBlockSize (t_deviceslist *p, int n)
 
 void deviceslist_setSampleRate (t_deviceslist *p, int n)
 {
-    p->d_sampleRate = n;
+    p->d_sampleRate = n;        /* Expect store to be thread-safe. */
 }
 
 // -----------------------------------------------------------------------------------------------------------

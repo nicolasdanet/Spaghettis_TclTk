@@ -122,15 +122,11 @@ static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
 
 static int jack_blockSizeCallback (jack_nframes_t blockSize, void *dummy)
 {
-    audio_setBlockSize (blockSize);
-    
     return 0;
 }
 
 static int jack_sampleRateCallback (jack_nframes_t sampleRate, void *dummy)
 {
-    audio_setSampleRate (sampleRate);
-    
     return 0;
 }
 
@@ -319,8 +315,8 @@ t_error audio_openNative (t_devicesproperties *p)
     jack_set_sample_rate_callback (jack_client, jack_sampleRateCallback, NULL);
     jack_on_shutdown (jack_client, jack_shutdownCallback, NULL);
 
-    audio_setSampleRate (jack_get_sample_rate (jack_client));
-
+    // jack_get_sample_rate (jack_client);
+    
     for (i = 0; i < numberOfChannelsIn; i++) {
     //
     char t[PD_STRING] = { 0 };

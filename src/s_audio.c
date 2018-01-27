@@ -56,26 +56,6 @@ int audio_poll (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Called by JACK (expect following stores to be atomic). */
-
-void audio_setSampleRate (t_float sampleRate)
-{
-    #if PD_32BIT
-        PD_ASSERT (sizeof (t_float) == 4);
-    #endif 
-    
-    audio_sampleRate = sampleRate;      
-}
-
-void audio_setBlockSize (int blockSize)
-{
-    deviceslist_setBlockSize (&audio_devices, blockSize);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_float audio_getSampleRate (void)
 {
     return audio_sampleRate;
@@ -112,7 +92,7 @@ void audio_vectorInitialize (t_float sampleRate, int totalOfChannelsIn, int tota
     audio_totalOfChannelsIn  = totalOfChannelsIn;
     audio_totalOfChannelsOut = totalOfChannelsOut;
     
-    audio_setSampleRate (sampleRate);
+    audio_sampleRate = sampleRate;
 }
 
 void audio_vectorShrinkIn (int totalOfChannelsIn)

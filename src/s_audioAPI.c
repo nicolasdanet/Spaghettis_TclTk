@@ -94,7 +94,7 @@ t_error audio_open (void)
         int m = audio_getTotalOfChannelsIn();
         int n = audio_getTotalOfChannelsOut();
         audio_vectorInitialize (devices_getSampleRate (&audio), m, n);
-        err = audio_openNative (&audio); 
+        err = audio_openNative (&audio);
     }
     
     if (err) {
