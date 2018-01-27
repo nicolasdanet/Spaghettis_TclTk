@@ -120,13 +120,10 @@ static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
     return 0;
 }
 
-static int jack_blockSizeCallback (jack_nframes_t blockSize, void *dummy)
-{
-    return 0;
-}
-
 static int jack_sampleRateCallback (jack_nframes_t sampleRate, void *dummy)
 {
+    // return (sampleRate != (jack_nframes_t)audio_getSampleRate());
+    
     return 0;
 }
 
@@ -268,6 +265,7 @@ t_error audio_openNative (t_devicesproperties *p)
 {
     int numberOfChannelsIn  = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
     int numberOfChannelsOut = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
+    // int sampleRate          = devices_getSampleRate (p);
     
     #if PD_APPLE    /* Jackmp linked as a weak framework. */
         
@@ -290,7 +288,18 @@ t_error audio_openNative (t_devicesproperties *p)
     PD_ASSERT (!jack_client);
 
     jack_client = jack_client_open (PD_NAME_LOWERCASE, JackNoStartServer, &status, NULL);
-
+    
+    /*
+    if (jack_client) {
+    //
+    if (jack_get_sample_rate (jack_client) != (jack_nframes_t)sampleRate) {
+        jack_client_close (jack_client);
+        jack_client = NULL;
+    }
+    //
+    }
+    */
+    
     if (jack_client) {
     //
     int i;
@@ -311,12 +320,9 @@ t_error audio_openNative (t_devicesproperties *p)
     }
 
     jack_set_process_callback (jack_client, jack_pollCallback, NULL);
-    jack_set_buffer_size_callback (jack_client, jack_blockSizeCallback, NULL);
     jack_set_sample_rate_callback (jack_client, jack_sampleRateCallback, NULL);
     jack_on_shutdown (jack_client, jack_shutdownCallback, NULL);
 
-    // jack_get_sample_rate (jack_client);
-    
     for (i = 0; i < numberOfChannelsIn; i++) {
     //
     char t[PD_STRING] = { 0 };
