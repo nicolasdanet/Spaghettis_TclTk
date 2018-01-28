@@ -32,7 +32,6 @@ variable  audioInEnabled
 variable  audioOutEnabled
 variable  audioSampleRate
 variable  audioSampleRateOld 
-variable  audioBlockSize
 
 array set audioInDevice    {}
 array set audioOutDevice   {}
@@ -47,8 +46,7 @@ array set audioOutEnabled  {}
 proc show {top \
            i1 i2 i3 i4 iChannels1 iChannels2 iChannels3 iChannels4 \
            o1 o2 o3 o4 oChannels1 oChannels2 oChannels3 oChannels4 \
-           sampleRate \
-           blockSize} {
+           sampleRate} {
     
     variable audioIn
     variable audioOut
@@ -60,7 +58,6 @@ proc show {top \
     variable audioOutEnabled
     variable audioSampleRate 
     variable audioSampleRateOld
-    variable audioBlockSize
 
     ::ui_menu::disableAudio
         
@@ -87,9 +84,7 @@ proc show {top \
 
     set audioSampleRate     $sampleRate
     set audioSampleRateOld  $sampleRate
-    set audioBlockSize      $blockSize
 
-    set blockSizeValues  {64 128 256 512 1024 2048}
     set sampleRateValues {32000 44100 48000 88200 96000}
         
     toplevel $top -class PdDialog
@@ -101,7 +96,7 @@ proc show {top \
     wm geometry  $top [::rightNextTo .console]
     
     ttk::frame      $top.f                              {*}[::styleFrame]
-    ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame]  -text [_ "Settings"]
+    ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame]  -text [_ "Properties"]
     ttk::labelframe $top.f.inputs                       {*}[::styleLabelFrame]  -text [_ "Inputs"]
     ttk::labelframe $top.f.outputs                      {*}[::styleLabelFrame]  -text [_ "Outputs"]
     
@@ -116,15 +111,8 @@ proc show {top \
     ::createMenuByValue $top.f.properties.sampleRate    $sampleRateValues ::ui_audio::audioSampleRate \
                                                             -width [::measure $sampleRateValues]   
 
-    ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
-                                                            -text [_ "Block Size"]
-    ::createMenuByValue $top.f.properties.blockSize     $blockSizeValues ::ui_audio::audioBlockSize \
-                                                            -width [::measure $blockSizeValues]
-                                                            
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky ew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky ew
-    grid $top.f.properties.blockSizeLabel               -row 1 -column 0 -sticky ew
-    grid $top.f.properties.blockSize                    -row 1 -column 2 -sticky ew
     
     if {![llength [winfo children $top.f.inputs]]}  { ::ui_audio::_makeIn  $top.f.inputs  1 }
     if {![llength [winfo children $top.f.outputs]]} { ::ui_audio::_makeOut $top.f.outputs 1 }
@@ -219,7 +207,6 @@ proc _apply {top} {
     variable audioInEnabled
     variable audioOutEnabled
     variable audioSampleRate 
-    variable audioBlockSize
     
     _forceValues
     
@@ -240,8 +227,7 @@ proc _apply {top} {
             [expr {$audioOutChannels(2) * ($audioOutEnabled(2) ? 1 : -1)}] \
             [expr {$audioOutChannels(3) * ($audioOutEnabled(3) ? 1 : -1)}] \
             [expr {$audioOutChannels(4) * ($audioOutEnabled(4) ? 1 : -1)}] \
-            $audioSampleRate \
-            $audioBlockSize"
+            $audioSampleRate"
     
     ::ui_interface::pdsend "pd _savepreferences"
 }

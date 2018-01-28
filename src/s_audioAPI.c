@@ -255,7 +255,7 @@ void audio_requireDialog (void)
         } 
         
         err |= string_sprintf (t, PD_STRING,
-            "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+            "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             i[0],
             i[1],
             i[2],
@@ -272,8 +272,7 @@ void audio_requireDialog (void)
             n[1],
             n[2],
             n[3], 
-            devices_getSampleRate (&audio),
-            INTERNAL_BLOCKSIZE);
+            devices_getSampleRate (&audio));
             
         if (!err) {
             stub_new (&global_class, (void *)audio_requireDialog, t);
@@ -293,7 +292,7 @@ void audio_fromDialog (int argc, t_atom *argv)
     
     int i;
     
-    PD_ASSERT (argc == 18);
+    PD_ASSERT (argc == 17);
     PD_ASSERT (DEVICES_MAXIMUM_IO >= 4);
     
     for (i = 0; i < 4; i++) {
