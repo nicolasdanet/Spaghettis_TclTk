@@ -127,8 +127,8 @@ static PaError pa_openWithCallback (double sampleRate,
     err = Pa_OpenStream (&pa_stream, 
             p1, 
             p2, 
-            sampleRate, 
-            blockSize,
+            sampleRate,
+            INTERNAL_BLOCKSIZE,     /* Use paFramesPerBufferUnspecified instead? */
             paNoFlag,
             callback,
             NULL);
