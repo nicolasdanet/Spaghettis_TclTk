@@ -9,8 +9,6 @@
 
 #include "m_spaghettis.h"
 #include "m_core.h"
-#include "s_system.h"
-#include "g_graphics.h"
 #include "d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -31,45 +29,9 @@ typedef struct _samplerate {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_block *samplerate_getBlockIfContainsAny (t_glist **p)
-{
-    t_block *block = NULL;
-    t_glist *glist = *p;
-    
-    t_gobj *y = NULL;
-    
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == block_class) {
-            if (block) { error_unexpected (sym_samplerate, sym_block__tilde__); }
-            else {
-                block = (t_block *)y;
-            }
-        }
-    }
-    
-    *p = glist_getParent (glist);
-    
-    return block;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void samplerate_bang (t_samplerate *x)
 {
-    t_float sampleRate = audio_getSampleRate();
-    
-    t_glist *glist = x->x_owner;
-    
-    while (glist) {
-        t_block *b = samplerate_getBlockIfContainsAny (&glist);
-        if (b) { 
-            sampleRate *= block_getRatio (b);
-        }
-    }
-    
-    outlet_float (x->x_outlet, sampleRate);
+    outlet_float (x->x_outlet, canvas_getSamplerate (x->x_owner));
 }
 
 // -----------------------------------------------------------------------------------------------------------
