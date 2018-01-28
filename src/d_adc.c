@@ -50,6 +50,7 @@ static void adc_tilde_set (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
 
 static void adc_tilde_dsp (t_adc_tilde *x, t_signal **sp)
 {
+    t_error err  = PD_ERROR_NONE;
     t_signal **s = sp;
     int i;
         
@@ -58,10 +59,11 @@ static void adc_tilde_dsp (t_adc_tilde *x, t_signal **sp)
     int channel = x->x_vector[i] - 1;
     int k = audio_getTotalOfChannelsIn();
     t_signal *t = (*s);
+    int n = t->s_vectorSize;
     
-    PD_ASSERT (t->s_vectorSize == INTERNAL_BLOCKSIZE);
-    PD_ABORT  (t->s_vectorSize != INTERNAL_BLOCKSIZE);
-    
+    if (n != INTERNAL_BLOCKSIZE) { err = PD_ERROR; dsp_addZeroPerform (t->s_vector, n); }
+    else {
+    //
     if (channel < 0 || channel >= k) { dsp_addZeroPerform (t->s_vector, INTERNAL_BLOCKSIZE); }
     else {
     //
@@ -70,10 +72,14 @@ static void adc_tilde_dsp (t_adc_tilde *x, t_signal **sp)
     dsp_addCopyPerform (in, t->s_vector, INTERNAL_BLOCKSIZE);
     //
     }
+    //
+    }
         
     s++;
     //
-    }    
+    }
+    
+    if (err) { error_invalid (sym_adc__tilde__, sym_signal); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

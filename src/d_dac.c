@@ -51,6 +51,7 @@ static void dac_tilde_set (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
 
 static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
 {
+    t_error err  = PD_ERROR_NONE;
     t_signal **s = sp;
     int i;
         
@@ -59,10 +60,11 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
     int channel = x->x_vector[i] - 1;
     int k = audio_getTotalOfChannelsOut();
     t_signal *t = (*s);
+    int n = t->s_vectorSize;
     
-    PD_ASSERT (t->s_vectorSize == INTERNAL_BLOCKSIZE);
-    PD_ABORT  (t->s_vectorSize != INTERNAL_BLOCKSIZE);
-    
+    if (n != INTERNAL_BLOCKSIZE) { err = PD_ERROR; }
+    else {
+    //
     if (channel >= 0 && channel < k) {
     //
     t_sample *out = audio_soundOut + (INTERNAL_BLOCKSIZE * channel);
@@ -70,10 +72,14 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
     dsp_addPlusPerformAliased (out, t->s_vector, out, INTERNAL_BLOCKSIZE);
     //
     }
+    //
+    }
         
     s++;
     //
-    }    
+    }
+    
+    if (err) { error_invalid (sym_dac__tilde__, sym_signal); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

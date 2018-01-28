@@ -489,6 +489,7 @@ extern t_symbol *sym_set;
 extern t_symbol *sym_setsize;
 extern t_symbol *sym_sfthread;
 extern t_symbol *sym_sig__tilde__;
+extern t_symbol *sym_signal;
 extern t_symbol *sym_sin;
 extern t_symbol *sym_sinesum;
 extern t_symbol *sym_size;
