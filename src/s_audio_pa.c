@@ -94,7 +94,6 @@ static int pa_ringCallback (const void *input,
 static PaError pa_openWithCallback (double sampleRate, 
     int numberOfChannelsIn,
     int numberOfChannelsOut,
-    int blockSize,
     int deviceIn,
     int deviceOut,
     PaStreamCallback *callback)
@@ -182,7 +181,6 @@ t_error audio_openNative (t_devicesproperties *p)
     int deviceOut           = devices_getOutSize (p) ? devices_getOutAtIndexAsNumber (p, 0) : 0;
     int numberOfChannelsIn  = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
     int numberOfChannelsOut = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
-    int blockSize           = devices_getBlockSize (p);
     int sampleRate          = devices_getSampleRate (p);
     
     int t;
@@ -236,10 +234,9 @@ t_error audio_openNative (t_devicesproperties *p)
     if (pa_channelsIn || pa_channelsOut) {
     //
     PaError err = paNoError;
-    int size = PD_MAX (PORTAUDIO_BUFFER_SIZE, blockSize);
     
     {
-        size_t k = PD_MAX (size, INTERNAL_BLOCKSIZE) * pa_channelsIn;
+        size_t k = PD_MAX (PORTAUDIO_BUFFER_SIZE, INTERNAL_BLOCKSIZE) * pa_channelsIn;
         k = (size_t)PD_NEXT_POWER_2 (k + 1);
         pa_bufferIn = (char *)PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
@@ -251,7 +248,7 @@ t_error audio_openNative (t_devicesproperties *p)
         }
     }
     {
-        size_t k = PD_MAX (size, INTERNAL_BLOCKSIZE) * pa_channelsOut;
+        size_t k = PD_MAX (PORTAUDIO_BUFFER_SIZE, INTERNAL_BLOCKSIZE) * pa_channelsOut;
         k = (size_t)PD_NEXT_POWER_2 (k + 1);
         pa_bufferOut = (char *)PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
@@ -266,7 +263,6 @@ t_error audio_openNative (t_devicesproperties *p)
     err = pa_openWithCallback (sampleRate,
             numberOfChannelsIn, 
             numberOfChannelsOut,
-            blockSize, 
             i,
             o,
             pa_ringCallback);

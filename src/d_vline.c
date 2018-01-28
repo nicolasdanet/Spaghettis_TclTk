@@ -196,7 +196,7 @@ static t_int *vline_tilde_perform (t_int *w)
     if (timeNow != x->x_timePrevious) {
     //
     x->x_timePrevious = timeNow;
-    x->x_timeBlock    = timeNow - (PD_MAX (AUDIO_DEFAULT_BLOCKSIZE, n) * millisecondsPerSample);
+    x->x_timeBlock    = timeNow - (PD_MAX (INTERNAL_BLOCKSIZE, n) * millisecondsPerSample);
     //
     }
     

@@ -59,15 +59,15 @@ static void adc_tilde_dsp (t_adc_tilde *x, t_signal **sp)
     int k = audio_getTotalOfChannelsIn();
     t_signal *t = (*s);
     
-    PD_ASSERT (t->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);
-    PD_ABORT  (t->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE);
+    PD_ASSERT (t->s_vectorSize == INTERNAL_BLOCKSIZE);
+    PD_ABORT  (t->s_vectorSize != INTERNAL_BLOCKSIZE);
     
-    if (channel < 0 || channel >= k) { dsp_addZeroPerform (t->s_vector, AUDIO_DEFAULT_BLOCKSIZE); }
+    if (channel < 0 || channel >= k) { dsp_addZeroPerform (t->s_vector, INTERNAL_BLOCKSIZE); }
     else {
     //
-    t_sample *in = audio_soundIn + (AUDIO_DEFAULT_BLOCKSIZE * channel);
+    t_sample *in = audio_soundIn + (INTERNAL_BLOCKSIZE * channel);
     
-    dsp_addCopyPerform (in, t->s_vector, AUDIO_DEFAULT_BLOCKSIZE);
+    dsp_addCopyPerform (in, t->s_vector, INTERNAL_BLOCKSIZE);
     //
     }
         

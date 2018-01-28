@@ -411,7 +411,7 @@ void ugen_graphClose (t_dspcontext *context)
 {
     t_dspcontext *parentContext = context->dc_parentContext;
     t_float parentSampleRate    = parentContext ? parentContext->dc_sampleRate : audio_getSampleRate();
-    int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : AUDIO_DEFAULT_BLOCKSIZE;
+    int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : INTERNAL_BLOCKSIZE;
     int chainBegin;
     int chainEnd;
     int chainEpilog; 

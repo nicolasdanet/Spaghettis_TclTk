@@ -34,9 +34,6 @@ void preferences_load (void)
     if (properties_getKey ("SampleRate", v, PD_STRING)) { 
         if (sscanf (v, "%d", &t) == 1) { devices_setSampleRate (&audio, t); }
     }
-    if (properties_getKey ("BlockSize",  v, PD_STRING)) {
-        if (sscanf (v, "%d", &t) == 1) { devices_setBlockSize (&audio, t); }
-    }
     
     /* GUI settings. */
     
@@ -145,9 +142,6 @@ void preferences_save (void)
     
     string_sprintf (v, PD_STRING, "%d", devices_getSampleRate (&audio));
     properties_setKey ("SampleRate", v);
-    
-    string_sprintf (v, PD_STRING, "%d", devices_getBlockSize (&audio));
-    properties_setKey ("BlockSize",  v);
     
     /* GUI settings. */
     

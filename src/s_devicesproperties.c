@@ -16,7 +16,6 @@
 
 static void devices_init (t_devicesproperties *p)
 {
-    p->d_blockSize  = AUDIO_DEFAULT_BLOCKSIZE;
     p->d_sampleRate = AUDIO_DEFAULT_SAMPLERATE;
     p->d_inSize     = 0;
     p->d_outSize    = 0;
@@ -85,15 +84,6 @@ void devices_setDefaults (t_devicesproperties *p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void devices_setBlockSize (t_devicesproperties *p, int n)
-{
-    PD_ASSERT (!p->d_isMidi);
-    
-    if (!PD_IS_POWER_2 (n)) { n = AUDIO_DEFAULT_BLOCKSIZE; }
-    
-    p->d_blockSize = PD_CLAMP (n, INTERNAL_BLOCKSIZE, DEVICES_MAXIMUM_BLOCKSIZE);
-}
-
 void devices_setSampleRate (t_devicesproperties *p, int n)
 {
     PD_ASSERT (!p->d_isMidi);
@@ -101,15 +91,6 @@ void devices_setSampleRate (t_devicesproperties *p, int n)
     if (n < 1) { n = AUDIO_DEFAULT_SAMPLERATE; }
     
     p->d_sampleRate = n;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int devices_getBlockSize (t_devicesproperties *p)
-{
-    return p->d_blockSize;
 }
 
 int devices_getSampleRate (t_devicesproperties *p)

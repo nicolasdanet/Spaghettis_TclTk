@@ -273,7 +273,7 @@ void audio_requireDialog (void)
             n[2],
             n[3], 
             devices_getSampleRate (&audio),
-            devices_getBlockSize (&audio));
+            INTERNAL_BLOCKSIZE);
             
         if (!err) {
             stub_new (&global_class, (void *)audio_requireDialog, t);
@@ -311,7 +311,6 @@ void audio_fromDialog (int argc, t_atom *argv)
     }
     
     devices_setSampleRate (&audio, (int)atom_getFloatAtIndex (16, argc, argv));
-    devices_setBlockSize (&audio,  (int)atom_getFloatAtIndex (17, argc, argv));
     
     audio_close();
     audio_setDevices (&audio);

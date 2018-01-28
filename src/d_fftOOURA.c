@@ -114,7 +114,7 @@ void fft_stateInitialize (t_FFTState *x, int n)
 
 void fft_initialize (void)
 {
-    ooura_initialize (AUDIO_DEFAULT_BLOCKSIZE);
+    ooura_initialize (INTERNAL_BLOCKSIZE);
 }
 
 void fft_release (void)

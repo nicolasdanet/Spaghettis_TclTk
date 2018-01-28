@@ -60,14 +60,14 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
     int k = audio_getTotalOfChannelsOut();
     t_signal *t = (*s);
     
-    PD_ASSERT (t->s_vectorSize == AUDIO_DEFAULT_BLOCKSIZE);
-    PD_ABORT  (t->s_vectorSize != AUDIO_DEFAULT_BLOCKSIZE);
+    PD_ASSERT (t->s_vectorSize == INTERNAL_BLOCKSIZE);
+    PD_ABORT  (t->s_vectorSize != INTERNAL_BLOCKSIZE);
     
     if (channel >= 0 && channel < k) {
     //
-    t_sample *out = audio_soundOut + (AUDIO_DEFAULT_BLOCKSIZE * channel);
+    t_sample *out = audio_soundOut + (INTERNAL_BLOCKSIZE * channel);
     
-    dsp_addPlusPerformAliased (out, t->s_vector, out, AUDIO_DEFAULT_BLOCKSIZE);
+    dsp_addPlusPerformAliased (out, t->s_vector, out, INTERNAL_BLOCKSIZE);
     //
     }
         

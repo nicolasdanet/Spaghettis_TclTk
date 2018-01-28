@@ -16,7 +16,6 @@
 
 void deviceslist_init (t_deviceslist *p)
 {
-    p->d_blockSize  = AUDIO_DEFAULT_BLOCKSIZE;
     p->d_sampleRate = AUDIO_DEFAULT_SAMPLERATE;
     p->d_inSize     = 0;
     p->d_outSize    = 0;
@@ -29,7 +28,6 @@ void deviceslist_init (t_deviceslist *p)
 
 void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 {
-    dest->d_blockSize  = src->d_blockSize;
     dest->d_sampleRate = src->d_sampleRate;
     dest->d_inSize     = src->d_inSize;
     dest->d_outSize    = src->d_outSize;
@@ -44,23 +42,9 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void deviceslist_setBlockSize (t_deviceslist *p, int n)
-{
-    p->d_blockSize = n;         /* Expect store to be thread-safe. */
-}
-
 void deviceslist_setSampleRate (t_deviceslist *p, int n)
 {
-    p->d_sampleRate = n;        /* Expect store to be thread-safe. */
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int deviceslist_getBlockSize (t_deviceslist *p)
-{
-    return p->d_blockSize;
+    p->d_sampleRate = n;
 }
 
 int deviceslist_getSampleRate (t_deviceslist *p)
@@ -280,7 +264,6 @@ void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
     
     } else {
         
-        deviceslist_setBlockSize (l, devices_getBlockSize (p));
         deviceslist_setSampleRate (l, devices_getSampleRate (p));
         
         for (i = 0; i < devices_getInSize (p); i++) {
@@ -313,7 +296,6 @@ void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
     
     } else {
     
-        devices_setBlockSize (p, deviceslist_getBlockSize (l));
         devices_setSampleRate (p, deviceslist_getSampleRate (l));
         
         for (i = 0; i < deviceslist_getInSize (l); i++) {

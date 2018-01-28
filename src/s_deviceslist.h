@@ -21,7 +21,6 @@
 // MARK: -
 
 typedef struct _deviceslist {
-    int     d_blockSize;
     int     d_sampleRate;
     int     d_inSize;
     int     d_outSize;
@@ -49,14 +48,7 @@ void    deviceslist_getDevices                  (t_deviceslist *l, t_devicesprop
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    deviceslist_setBlockSize                (t_deviceslist *p, int n);
 void    deviceslist_setSampleRate               (t_deviceslist *p, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int     deviceslist_getBlockSize                (t_deviceslist *p);
 int     deviceslist_getSampleRate               (t_deviceslist *p);
 int     deviceslist_getInSize                   (t_deviceslist *p);
 int     deviceslist_getOutSize                  (t_deviceslist *p);
