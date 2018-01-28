@@ -313,40 +313,40 @@ static inline t_error soundfile_helperRead (int f, t_headerhelper *t, off_t offs
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error soundfile_readFileParse         (t_symbol *s, int *argc, t_atom **argv, t_audioproperties *args);
-int     soundfile_readFileHeader        (t_glist *glist, t_audioproperties *args);
+t_error soundfile_readFileParse     (t_glist *x, t_symbol *s, int *argc, t_atom **argv, t_audioproperties *p);
+int     soundfile_readFileHeader    (t_glist *x, t_audioproperties *args);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error soundfile_writeFileParse        (t_symbol *s, int *argc, t_atom **argv, t_audioproperties *args);
-int     soundfile_writeFileHeader       (t_glist *glist, t_audioproperties *args);
-t_error soundfile_writeFileClose        (int f, int itemsWritten, t_audioproperties *args);
+t_error soundfile_writeFileParse    (t_glist *x, t_symbol *s, int *argc, t_atom **argv, t_audioproperties *p);
+int     soundfile_writeFileHeader   (t_glist *x, t_audioproperties *args);
+t_error soundfile_writeFileClose    (int f, int itemsWritten, t_audioproperties *args);
                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    soundfile_encode                (int numberOfChannels,
-                                            t_sample **v,
-                                            unsigned char *t,
-                                            int numberOfFrames,
-                                            int onset,
-                                            int bytesPerSamples,
-                                            int isBigEndian,
-                                            int spread, 
-                                            t_sample normalFactor);
+void    soundfile_encode            (int numberOfChannels,
+                                        t_sample **v,
+                                        unsigned char *t,
+                                        int numberOfFrames,
+                                        int onset,
+                                        int bytesPerSamples,
+                                        int isBigEndian,
+                                        int spread,
+                                        t_sample normalFactor);
                                             
-void    soundfile_decode                (int numberOfChannels,
-                                            t_sample **v,
-                                            unsigned char *t,
-                                            int numberOfFrames,
-                                            int onset,
-                                            int bytesPerSamples,
-                                            int isBigEndian,
-                                            int spread,
-                                            int n);
+void    soundfile_decode            (int numberOfChannels,
+                                        t_sample **v,
+                                        unsigned char *t,
+                                        int numberOfFrames,
+                                        int onset,
+                                        int bytesPerSamples,
+                                        int isBigEndian,
+                                        int spread,
+                                        int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

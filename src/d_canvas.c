@@ -79,7 +79,7 @@ static t_block *canvas_getBlockIfContainsAny (t_glist **p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_float canvas_getSamplerate (t_glist *glist)
+t_float canvas_getSampleRate (t_glist *glist)
 {
     t_float sampleRate = audio_getSampleRate();
     

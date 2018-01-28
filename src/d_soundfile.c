@@ -45,7 +45,7 @@ t_error subchunk_readFileHeaderAIFF (int, t_headerhelper *, t_audioproperties *)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error soundfile_readFileParse (t_symbol *s, int *ac, t_atom **av, t_audioproperties *args)
+t_error soundfile_readFileParse (t_glist *dummy, t_symbol *s, int *ac, t_atom **av, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -56,6 +56,8 @@ t_error soundfile_readFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprope
     int needToResize        = 0;
     int onset               = 0;
     int numberOfFrames      = SOUNDFILE_UNKNOWN;
+    
+    (void)dummy;
     
     while (argc > 0) {
     //
@@ -349,7 +351,7 @@ int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioproperties *args)
+t_error soundfile_writeFileParse (t_glist *glist, t_symbol *s, int *ac, t_atom **av, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -357,7 +359,7 @@ t_error soundfile_writeFileParse (t_symbol *s, int *ac, t_atom **av, t_audioprop
     t_atom *argv            = *av;
     t_symbol *fileName      = &s_;
     t_symbol *fileExtension = &s_;
-    t_float sampleRate      = audio_getSampleRate();
+    t_float sampleRate      = glist ? canvas_getSampleRate (glist) : audio_getSampleRate();
     int fileType            = SOUNDFILE_UNDEFINED;
     int bytesPerSample      = 2;
     int isBigEndian         = 0;

@@ -62,7 +62,7 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
     //
     t_audioproperties *p = &x->sf_properties;
     
-    t_error err = soundfile_writeFileParse (sym_writesf__tilde__, &argc, &argv, p);
+    t_error err = soundfile_writeFileParse (x->sf_owner, sym_writesf__tilde__, &argc, &argv, p);
     
     p->ap_numberOfChannels = x->sf_numberOfChannels;
     

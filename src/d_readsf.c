@@ -64,7 +64,7 @@ static void readsf_tilde_open (t_readsf_tilde *x, t_symbol *s, int argc, t_atom 
     //
     t_audioproperties *p = &x->sf_properties;
     
-    t_error err = soundfile_readFileParse (sym_readsf__tilde__, &argc, &argv, p);
+    t_error err = soundfile_readFileParse (x->sf_owner, sym_readsf__tilde__, &argc, &argv, p);
     
     if (!err) {
     //

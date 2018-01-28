@@ -174,7 +174,7 @@ static int soundfiler_readProceed (t_glist *glist, int argc, t_atom *argv)
 {
     t_audioproperties properties; soundfile_propertiesInit (&properties);
     
-    t_error err = soundfile_readFileParse (sym_soundfiler, &argc, &argv, &properties);
+    t_error err = soundfile_readFileParse (NULL, sym_soundfiler, &argc, &argv, &properties);
     
     if (!err) {
     //
@@ -365,7 +365,7 @@ static int soundfiler_writeProceed (t_glist *glist, int argc, t_atom *argv)
     
     t_audioproperties properties; soundfile_propertiesInit (&properties);
     
-    err = soundfile_writeFileParse (sym_soundfiler, &argc, &argv, &properties);
+    err = soundfile_writeFileParse (NULL, sym_soundfiler, &argc, &argv, &properties);
 
     if (!err) {
     //

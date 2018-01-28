@@ -31,7 +31,7 @@ typedef struct _samplerate {
 
 static void samplerate_bang (t_samplerate *x)
 {
-    outlet_float (x->x_outlet, canvas_getSamplerate (x->x_owner));
+    outlet_float (x->x_outlet, canvas_getSampleRate (x->x_owner));
 }
 
 // -----------------------------------------------------------------------------------------------------------
