@@ -121,13 +121,15 @@ static PaError pa_openWithCallback (double sampleRate,
 
     err = Pa_IsFormatSupported (p1, p2, sampleRate);
 
+    /* Use paFramesPerBufferUnspecified instead of INTERNAL_BLOCKSIZE? */
+    
     if (err == paFormatIsSupported) {
     //
     err = Pa_OpenStream (&pa_stream, 
             p1, 
             p2, 
             sampleRate,
-            INTERNAL_BLOCKSIZE,     /* Use paFramesPerBufferUnspecified instead? */
+            INTERNAL_BLOCKSIZE,
             paNoFlag,
             callback,
             NULL);
