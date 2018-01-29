@@ -90,7 +90,9 @@ void voutlet_dspProlog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
     else {
     //
     if (p->bp_switchable) { x->vo_copyOut = 1; }
+    
     PD_ASSERT (signals);
+    
     x->vo_directSignal = signals[outlet_getIndexAsSignal (x->vo_outlet)];
     //
     }
