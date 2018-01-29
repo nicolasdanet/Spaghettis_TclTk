@@ -151,6 +151,18 @@ static void resample_addResampling (t_resample *x,
     PD_ASSERT (inSize != outSize);
     PD_ASSERT (in != out);
     
+    #if PD_WITH_DEBUG
+    
+    {
+        t_float f0 = (t_float)x->r_upsample / (t_float)x->r_downsample;
+        t_float f1 = (t_float)inSize / (t_float)outSize;
+        t_float f2 = (t_float)outSize / (t_float)inSize;
+    
+        PD_ASSERT (f0 == f1 || f0 == f2);
+    }
+    
+    #endif
+    
     if (inSize > outSize) {
     //
     PD_ASSERT (!(inSize % outSize));
