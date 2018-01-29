@@ -99,8 +99,8 @@ void        dsp_resume                  (int oldState);
 // MARK: -
 
 t_signal    *signal_new                 (int blockSize, t_float sampleRate);
-t_signal    *signal_borrow              (t_signal *s, t_signal *toBeBorrowed);
 
+void        signal_borrow               (t_signal *s,  t_signal *toBeBorrowed);
 int         signal_isCompatibleWith     (t_signal *s1, t_signal *s2);
 
 // -----------------------------------------------------------------------------------------------------------

@@ -41,16 +41,15 @@ int signal_isCompatibleWith (t_signal *s1, t_signal *s2)
     return (s1->s_vectorSize == s2->s_vectorSize && s1->s_sampleRate == s2->s_sampleRate);
 }
 
-t_signal *signal_borrow (t_signal *s, t_signal *toBeBorrowed)
+void signal_borrow (t_signal *s, t_signal *toBeBorrowed)
 {
     PD_ASSERT (s->s_hasBorrowed == 0);
+    PD_ASSERT (signal_isCompatibleWith (s, toBeBorrowed));
     
     s->s_hasBorrowed    = 1;
     s->s_unused         = s->s_vector;
     s->s_vectorSize     = toBeBorrowed->s_vectorSize;
     s->s_vector         = toBeBorrowed->s_vector;
-    
-    return s;
 }
 
 // -----------------------------------------------------------------------------------------------------------
