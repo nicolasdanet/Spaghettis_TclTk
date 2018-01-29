@@ -75,7 +75,7 @@ typedef void (*t_dsp)       (void *x, void *signals);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define UGEN_DSP(x, s, a)   ((*(t_dsp)class_getMethod (pd_class (x), (s)))((x), (a)))
+#define UGEN_DSP(x, a)      ((*(t_dsp)class_getMethod (pd_class (x), sym_dsp))((x), (a)))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -264,7 +264,7 @@ static void ugen_graphMainRecursive (t_dspcontext *context, t_ugenbox *u)
     
     /* Call the ugen dsp method. */
     
-    UGEN_DSP (u->u_owner, sym_dsp, signals);
+    UGEN_DSP (u->u_owner, signals);
 
     u->u_done = 1; PD_MEMORY_FREE (signals);
     
