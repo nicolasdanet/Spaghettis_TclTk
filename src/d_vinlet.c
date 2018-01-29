@@ -110,7 +110,7 @@ void vinlet_dspProlog (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     
     if (!resample_isRequired (&x->vi_resample)) { t = s->s_vector; }    /* Original signal. */
     else {
-        t = resample_fromDsp (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize);  /* Resampled. */
+        t = resample_setBuffer (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize);  /* Resampled. */
     }
 
     dsp_add (vinlet_performProlog, 3, x, t, vectorSize);

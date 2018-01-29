@@ -223,7 +223,7 @@ int resample_isRequired (t_resample *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_sample *resample_fromDsp (t_resample *x, t_sample *s, int size, int resampledSize)
+t_sample *resample_setBuffer (t_resample *x, t_sample *s, int size, int resampledSize)
 {
     if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
         resample_addResampling (x,
@@ -237,7 +237,7 @@ t_sample *resample_fromDsp (t_resample *x, t_sample *s, int size, int resampledS
     return x->r_vector;
 }
 
-void resample_toDsp (t_resample *x, t_sample *s, int size, int resampledSize)
+void resample_getBuffer (t_resample *x, t_sample *s, int size, int resampledSize)
 {
     if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
         resample_addResampling (x,

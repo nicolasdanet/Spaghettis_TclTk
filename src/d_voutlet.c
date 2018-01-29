@@ -159,7 +159,7 @@ void voutlet_dspEpilog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
     }
         
     if (resample_isRequired (&x->vo_resample)) { 
-        resample_toDsp (&x->vo_resample, s->s_vector, parentVectorSize, vectorSize);
+        resample_getBuffer (&x->vo_resample, s->s_vector, parentVectorSize, vectorSize);
     }
     //
     }
