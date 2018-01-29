@@ -86,7 +86,7 @@ t_float canvas_getSampleRate (t_glist *glist)
     while (glist) {
         t_block *b = canvas_getBlockIfContainsAny (&glist);
         if (b) {
-            sampleRate *= block_getRatio (b);
+            sampleRate *= block_getResamplingRatio (b);
         }
     }
     

@@ -28,7 +28,7 @@ t_class *block_class;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_float block_getRatio (t_block *x)
+t_float block_getResamplingRatio (t_block *x)
 {
     return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
 }
