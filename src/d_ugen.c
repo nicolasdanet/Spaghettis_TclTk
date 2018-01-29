@@ -33,7 +33,7 @@ typedef struct _sigoutlet {
     
 typedef struct _siginlet {
     int                     i_numberOfConnections;
-    int                     i_numberConnected;
+    int                     i_numberAlreadyConnected;
     t_signal                *i_signal;
     } t_siginlet;
 
@@ -42,7 +42,6 @@ typedef struct _siginlet {
 
 typedef struct _ugenbox {
     int                     u_done;
-    int                     u_phase;
     int                     u_inSize;
     int                     u_outSize;
     t_siginlet              *u_in;
@@ -135,7 +134,7 @@ static int ugen_graphIsUgenReady (t_ugenbox *u)
     else {
         int i;
         for (i = 0; i < u->u_inSize; i++) {
-            if (u->u_in[i].i_numberConnected < u->u_in[i].i_numberOfConnections) {
+            if (u->u_in[i].i_numberAlreadyConnected < u->u_in[i].i_numberOfConnections) {
                 return 0;
             }
         }
@@ -208,7 +207,7 @@ static void ugen_graphMainRecursiveChild (t_dspcontext *context, t_ugenbox *u)
     //
     }
 
-    childInlet->i_numberConnected++;
+    childInlet->i_numberAlreadyConnected++;
     
     if (ugen_graphIsUgenReady (child)) { 
         ugen_graphMainRecursive (context, child); 
