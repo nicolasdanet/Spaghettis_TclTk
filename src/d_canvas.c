@@ -83,8 +83,10 @@ t_float canvas_getSampleRate (t_glist *glist)
 {
     t_float sampleRate = audio_getSampleRate();
     
-    while (glist) {
-        t_block *b = canvas_getBlockIfContainsAny (&glist);
+    t_glist *p = glist;
+    
+    while (p) {
+        t_block *b = canvas_getBlockIfContainsAny (&p);
         if (b) {
             sampleRate *= block_getResamplingRatio (b);
         }
