@@ -33,6 +33,15 @@ t_float block_getResamplingRatio (t_block *x)
     return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
 }
 
+int block_getBlockSize (t_block *x)
+{
+    return x->bk_blockSize;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void block_getProperties (t_block *x, t_blockproperties *p)
 {
     int parentBlockSize         = p->bp_blockSize;
@@ -40,7 +49,7 @@ void block_getProperties (t_block *x, t_blockproperties *p)
     
     t_phase phase       = instance_getDspPhase();
     int reblocked       = p->bp_reblocked;
-    int blockSize       = (x->bk_blockSize > 0) ? x->bk_blockSize : p->bp_blockSize;
+    int blockSize       = (x->bk_blockSize > 0) ? x->bk_blockSize : parentBlockSize;
     int overlap         = PD_MIN (x->bk_overlap, blockSize);
     int downsample      = PD_MIN (x->bk_downsample, parentBlockSize);
     int upsample        = x->bk_upsample;

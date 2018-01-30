@@ -7,65 +7,71 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef __d_block_h_
-#define __d_block_h_
+#include "m_spaghettis.h"
+#include "m_core.h"
+#include "d_dsp.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *blocksize_class;            /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _blocksize {
+    t_object    x_obj;                      /* Must be the first. */
+    t_glist     *x_owner;
+    t_outlet    *x_outlet;
+    } t_blocksize;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _blockproperties {
-    int         bp_switchable;
-    int         bp_reblocked;
-    int         bp_blockSize;
-    t_float     bp_sampleRate;
-    int         bp_period;
-    int         bp_frequency;
-    int         bp_downsample;
-    int         bp_upsample;
-    } t_blockproperties;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _block {
-    t_object    bk_obj;                 /* Must be the first. */
-    int         bk_blockSize;
-    int         bk_overlap;
-    int         bk_phase;
-    int         bk_period;
-    int         bk_frequency;
-    int         bk_downsample;
-    int         bk_upsample;
-    int         bk_isSwitchObject;
-    int         bk_isSwitchedOn;
-    int         bk_isReblocked;
-    int         bk_allContextLength;
-    int         bk_outletEpilogLength;
-    int         bk_count;
-    } t_block;
+static void blocksize_bang (t_blocksize *x)
+{
+    outlet_float (x->x_outlet, canvas_getBlockSize (x->x_owner));
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_int       *block_performProlog        (t_int *w);
-t_int       *block_performEpilog        (t_int *w);
+static void *blocksize_new (void)
+{
+    t_blocksize *x = (t_blocksize *)pd_new (blocksize_class);
+    
+    x->x_owner  = instance_contextGetCurrent();
+    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    
+    return x;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_float     block_getResamplingRatio    (t_block *x);
-int         block_getBlockSize          (t_block *x);
-void        block_getProperties         (t_block *x, t_blockproperties *properties);
+void blocksize_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_blocksize,
+            (t_newmethod)blocksize_new,
+            NULL,
+            sizeof (t_blocksize),
+            CLASS_DEFAULT,
+            A_NULL);
+
+    class_addBang (c, (t_method)blocksize_bang);
+    
+    blocksize_class = c;
+}
+
+void blocksize_destroy (void)
+{
+    class_free (blocksize_class);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void        block_setPerformsLength     (t_block *x, int allContextLength, int epilogLength);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#endif // __d_block_h_

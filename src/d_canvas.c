@@ -95,5 +95,25 @@ t_float canvas_getSampleRate (t_glist *glist)
     return sampleRate;
 }
 
+t_float canvas_getBlockSize (t_glist *glist)
+{
+    t_float blockSize = INTERNAL_BLOCKSIZE;
+    
+    t_glist *p = glist;
+    
+    while (p) {
+        t_block *b = canvas_getBlockIfContainsAny (&p);
+        if (b) {
+            int n = block_getBlockSize (b);
+            if (n > 0) {
+                blockSize = (t_float)n;
+                break;
+            }
+        }
+    }
+    
+    return blockSize;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

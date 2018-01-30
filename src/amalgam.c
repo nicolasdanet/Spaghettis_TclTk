@@ -231,6 +231,7 @@
 #include "x_makefilename.c"
 #include "x_loadbang.c"
 #include "x_samplerate.c"
+#include "x_blocksize.c"
 #include "x_dspstatus.c"
 #include "x_arguments.c"
 #include "x_title.c"

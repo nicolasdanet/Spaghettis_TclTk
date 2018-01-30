@@ -119,6 +119,7 @@ void        ugen_graphClose             (t_dspcontext *context);
 
 void        canvas_dspProceed           (t_glist *glist, int isTopLevel, t_signal **sp);
 t_float     canvas_getSampleRate        (t_glist *glist);
+t_float     canvas_getBlockSize         (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

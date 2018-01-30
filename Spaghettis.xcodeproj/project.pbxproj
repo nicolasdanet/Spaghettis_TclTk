@@ -29,6 +29,7 @@
 		17C02C062015EDD100C7EDEE /* d_functions.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C02C052015EDD100C7EDEE /* d_functions.c */; };
 		17C02C082015EDDC00C7EDEE /* d_vperform.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C02C072015EDDC00C7EDEE /* d_vperform.c */; };
 		17C15CEA1F8E4EF8000695B7 /* x_arguments.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C15CE91F8E4EF7000695B7 /* x_arguments.c */; };
+		17C3797C202062F6009B00A6 /* x_blocksize.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C3797B202062F6009B00A6 /* x_blocksize.c */; };
 		17C5194A1F23195900113504 /* x_uzi.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C519491F23195900113504 /* x_uzi.c */; };
 		17C9CEC81FCD57740089E9D2 /* d_rmag.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9CEC71FCD57740089E9D2 /* d_rmag.c */; };
 		17C9FE2F1FE00B7A007066EC /* s_atomicPosix.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE1C1FE00B78007066EC /* s_atomicPosix.c */; };
@@ -440,6 +441,7 @@
 		17C02C052015EDD100C7EDEE /* d_functions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_functions.c; path = src/d_functions.c; sourceTree = "<group>"; };
 		17C02C072015EDDC00C7EDEE /* d_vperform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vperform.c; path = src/d_vperform.c; sourceTree = "<group>"; };
 		17C15CE91F8E4EF7000695B7 /* x_arguments.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arguments.c; path = src/x_arguments.c; sourceTree = "<group>"; };
+		17C3797B202062F6009B00A6 /* x_blocksize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_blocksize.c; path = src/x_blocksize.c; sourceTree = "<group>"; };
 		17C519491F23195900113504 /* x_uzi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_uzi.c; path = src/x_uzi.c; sourceTree = "<group>"; };
 		17C7712220148CF400584EE6 /* d_cosf9.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_cosf9.h; path = src/d_cosf9.h; sourceTree = "<group>"; };
 		17C9CEC71FCD57740089E9D2 /* d_rmag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_rmag.c; path = src/d_rmag.c; sourceTree = "<group>"; };
@@ -1306,6 +1308,7 @@
 				374906651D9977C700377F1E /* x_makefilename.c */,
 				377CEF451DAA831E00E60461 /* x_loadbang.c */,
 				37B1AA561DC1EE3E0017355A /* x_samplerate.c */,
+				17C3797B202062F6009B00A6 /* x_blocksize.c */,
 				17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */,
 				17C15CE91F8E4EF7000695B7 /* x_arguments.c */,
 				17CA45371FB188CF0054245C /* x_title.c */,
@@ -1989,6 +1992,7 @@
 				3789722D1C4F716800263434 /* g_panel.c in Sources */,
 				3789722E1C4F716800263434 /* g_dial.c in Sources */,
 				3789722F1C4F716800263434 /* g_file.c in Sources */,
+				17C3797C202062F6009B00A6 /* x_blocksize.c in Sources */,
 				179873E31F01095100BB1B94 /* m_file.c in Sources */,
 				378972301C4F716800263434 /* g_box.c in Sources */,
 				378972311C4F716800263434 /* g_scalar.c in Sources */,
