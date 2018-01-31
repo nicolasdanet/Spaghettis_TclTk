@@ -23,7 +23,9 @@ static int dsp_status;      /* Static. */
 static void dsp_report (void)
 {
     if (symbol_hasThingQuiet (sym__dspstatus)) {
-        pd_float (symbol_getThing (sym__dspstatus), (t_float)dsp_status);
+    //
+    pd_float (symbol_getThing (sym__dspstatus), (t_float)dsp_status);
+    //
     }
 }
 
