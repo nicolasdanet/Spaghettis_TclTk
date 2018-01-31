@@ -41,8 +41,8 @@ typedef struct _block {
     int         bk_isSwitchObject;          /* Is it a block~ or a switch~ object. */
     int         bk_isSwitchedOn;            /* Zero if all context IS by-passed. */
     int         bk_isReblocked;             /* Zero if NO reblocking is required. */
-    int         bk_allContextLength;
-    int         bk_outletEpilogLength;
+    int         bk_contextLength;           /* Size of the DSP chain for all the context. */
+    int         bk_epilogueLength;          /* Size of the DSP chain for the epilogue. */
     int         bk_phase;
     int         bk_period;
     int         bk_frequency;

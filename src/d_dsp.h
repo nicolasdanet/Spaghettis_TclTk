@@ -30,11 +30,11 @@
     
     The overall order of scheduling is,
 
-        - inlet and outlet prologue (1)
+        - inlets and outlets prologue (1)
         - block prologue (2)
         - the ugens in the graph, including inlets and outlets
         - block epilogue (2)
-        - outlet epilogue code (2)
+        - outlets epilogue (2)
 
     where (1) means, "if reblocked" and (2) means, "if reblocked or switched".
 

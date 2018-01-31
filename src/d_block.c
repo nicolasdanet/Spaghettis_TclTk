@@ -84,8 +84,8 @@ void block_getProperties (t_block *x, t_blockproperties *p)
 
 void block_setPerformsLengthInDspChain (t_block *x, int context, int epilogue)
 {
-    x->bk_allContextLength   = context;
-    x->bk_outletEpilogLength = epilogue;
+    x->bk_contextLength  = context;
+    x->bk_epilogueLength = epilogue;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -170,7 +170,7 @@ t_int *block_performPrologue (t_int *w)
     //
     }
     
-    return (w + x->bk_allContextLength);    /* Go to the outlet epilogue (to zero the signal out). */
+    return (w + x->bk_contextLength);    /* Go to the outlet epilogue (to zero the signal out). */
 }
 
 /* Perform the context several time according to the frequency. */
@@ -182,14 +182,14 @@ t_int *block_performEpilogue (t_int *w)
     if (x->bk_isReblocked) {
     //
     if (x->bk_count - 1) {
-        x->bk_count--; return (w - (x->bk_allContextLength - (BLOCK_PROLOGUE + BLOCK_EPILOGUE)));
+        x->bk_count--; return (w - (x->bk_contextLength - (BLOCK_PROLOGUE + BLOCK_EPILOGUE)));
     } else {
         return (w + BLOCK_EPILOGUE);
     }
     //
     }
     
-    return (w + BLOCK_EPILOGUE + x->bk_outletEpilogLength);   /* By-pass the outlet epilogue. */
+    return (w + BLOCK_EPILOGUE + x->bk_epilogueLength);   /* By-pass the outlets epilogue. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
