@@ -43,8 +43,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "d_resample.h"
 #include "d_block.h"
+#include "d_resample.h"
 #include "d_functions.h"
 #include "d_macros.h"
 #include "d_cosf9.h"
@@ -126,7 +126,7 @@ t_float     canvas_getBlockSize         (t_glist *glist);
 // MARK: -
 
 void        vinlet_dsp                  (t_vinlet *x, t_signal **sp);
-void        vinlet_dspProlog            (t_vinlet *x, t_signal **signals, t_blockproperties *properties);
+void        vinlet_dspProlog            (t_vinlet *x, t_signal **signals,  t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

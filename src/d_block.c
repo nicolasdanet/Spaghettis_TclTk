@@ -82,7 +82,7 @@ void block_getProperties (t_block *x, t_blockproperties *p)
     p->bp_upsample      = upsample;
 }
 
-void block_setPerformsLength (t_block *x, int context, int epilog)
+void block_setPerformsLengthInDspChain (t_block *x, int context, int epilog)
 {
     x->bk_allContextLength   = context;
     x->bk_outletEpilogLength = epilog;

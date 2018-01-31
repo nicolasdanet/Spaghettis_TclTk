@@ -1232,8 +1232,8 @@
 			isa = PBXGroup;
 			children = (
 				376962D01DBFAF50001B91B5 /* d_dsp.h */,
-				17A2BD211F0A135E0071D330 /* d_resample.h */,
 				178CB8A1201F566300F9B8E1 /* d_block.h */,
+				17A2BD211F0A135E0071D330 /* d_resample.h */,
 				17A2BD221F0A2D6C0071D330 /* d_functions.h */,
 				17A2BD231F0A30480071D330 /* d_macros.h */,
 				37C000261DE2FBF800F90584 /* Graph */,

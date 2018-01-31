@@ -16,6 +16,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void block_setPerformsLengthInDspChain (t_block *, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 typedef struct _sigoutconnect {
     int                     oc_index;
     struct _ugenbox         *oc_to;
@@ -449,7 +455,7 @@ void ugen_graphClose (t_dspcontext *context)
 
     chainEpilog = instance_getDspChainSize();
     
-    if (block) { block_setPerformsLength (block, chainEnd - chainBegin, chainEpilog - chainEnd); }
+    if (block) { block_setPerformsLengthInDspChain (block, chainEnd - chainBegin, chainEpilog - chainEnd); }
 
     ugen_graphDelete (context);
 }
