@@ -34,18 +34,18 @@ typedef struct _blockproperties {
 
 typedef struct _block {
     t_object    bk_obj;                     /* Must be the first. */
-    int         bk_blockSize;
-    int         bk_overlap;
+    int         bk_blockSize;               /* Blocksize (power of two). */
+    int         bk_overlap;                 /* Number of overlap (power of two). */
+    int         bk_downsample;              /* Downsampling factor (power of two). */
+    int         bk_upsample;                /* Upsampling factor (power of two). */
+    int         bk_isSwitchObject;          /* Is it a block~ or a switch~ object. */
+    int         bk_isSwitchedOn;            /* Zero if all context IS by-passed. */
+    int         bk_isReblocked;             /* Zero if NO reblocking is required. */
+    int         bk_allContextLength;
+    int         bk_outletEpilogLength;
     int         bk_phase;
     int         bk_period;
     int         bk_frequency;
-    int         bk_downsample;              /* Downsampling factor. */
-    int         bk_upsample;                /* Upsampling factor. */
-    int         bk_isSwitchObject;
-    int         bk_isSwitchedOn;
-    int         bk_isReblocked;
-    int         bk_allContextLength;
-    int         bk_outletEpilogLength;
     int         bk_count;
     } t_block;
 

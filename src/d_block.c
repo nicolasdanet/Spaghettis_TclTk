@@ -125,6 +125,10 @@ static void block_setProceed (t_block *x, t_symbol *s, int argc, t_atom *argv)
     x->bk_upsample   = upsample;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
 {
     int oldState = dsp_suspend();
@@ -133,9 +137,6 @@ static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
     
     dsp_resume (oldState);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 static void block_float (t_block *x, t_float f)
 {
