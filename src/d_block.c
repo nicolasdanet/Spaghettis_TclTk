@@ -92,15 +92,7 @@ void block_setPerformsLength (t_block *x, int context, int epilog)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void block_float (t_block *x, t_float f)
-{
-    if (x->bk_isSwitchObject) { x->bk_isSwitchedOn = (f != 0.0); }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
+static void block_setProceed (t_block *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_float f1      = atom_getFloatAtIndex (0, argc, argv);
     t_float f2      = atom_getFloatAtIndex (1, argc, argv);
@@ -109,7 +101,6 @@ static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
     int overlap     = (int)PD_MAX (1.0, f2);
     int upsample    = 1;
     int downsample  = 1;
-    int oldState    = dsp_suspend();
     
     if (blockSize && !PD_IS_POWER_2 (blockSize)) { blockSize = (int)PD_NEXT_POWER_2 (blockSize); }
     if (!PD_IS_POWER_2 (overlap)) { overlap = (int)PD_NEXT_POWER_2 (overlap); }
@@ -132,12 +123,24 @@ static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
     x->bk_overlap    = overlap;
     x->bk_downsample = downsample;
     x->bk_upsample   = upsample;
+}
+
+static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
+{
+    int oldState = dsp_suspend();
+    
+    block_setProceed (x, s, argc, argv);
     
     dsp_resume (oldState);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static void block_float (t_block *x, t_float f)
+{
+    if (x->bk_isSwitchObject) { x->bk_isSwitchedOn = (f != 0.0); }
+}
 
 static void block_dsp (t_block *x, t_signal **sp)
 {
@@ -202,7 +205,7 @@ static void *block_new (t_symbol *s, int argc, t_atom *argv)
     x->bk_isSwitchObject    = 0;
     x->bk_isSwitchedOn      = 1;
     
-    block_set (x, s, argc, argv);
+    block_setProceed (x, s, argc, argv);
     
     return x;
 }
