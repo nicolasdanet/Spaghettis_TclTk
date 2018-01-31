@@ -55,7 +55,7 @@
 
 struct _vinlet {
     t_object        vi_obj;             /* Must be the first. */
-    t_resample      vi_resample;
+    t_resample      vi_resample;        /* Buffer if resampling is required. */
     int             vi_hopSize;
     int             vi_bufferSize;
     t_sample        *vi_buffer;
@@ -70,7 +70,7 @@ struct _vinlet {
 
 struct _voutlet {
     t_object        vo_obj;             /* Must be the first. */
-    t_resample      vo_resample;
+    t_resample      vo_resample;        /* Buffer if resampling is required. */
     int             vo_hopSize;
     int             vo_copyOut;
     int             vo_bufferSize;

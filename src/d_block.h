@@ -21,22 +21,26 @@ typedef struct _blockproperties {
     t_float     bp_sampleRate;
     int         bp_period;
     int         bp_frequency;
-    int         bp_downsample;
-    int         bp_upsample;
+    int         bp_downsample;              /* Downsampling factor. */
+    int         bp_upsample;                /* Upsampling factor. */
     } t_blockproperties;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Note that at most one value between downsample or upsample can be set. */
+/* It is the resampling factor (respectively down or up). */
+/* Thus the other is set to 1. */
+
 typedef struct _block {
-    t_object    bk_obj;                 /* Must be the first. */
+    t_object    bk_obj;                     /* Must be the first. */
     int         bk_blockSize;
     int         bk_overlap;
     int         bk_phase;
     int         bk_period;
     int         bk_frequency;
-    int         bk_downsample;
-    int         bk_upsample;
+    int         bk_downsample;              /* Downsampling factor. */
+    int         bk_upsample;                /* Upsampling factor. */
     int         bk_isSwitchObject;
     int         bk_isSwitchedOn;
     int         bk_isReblocked;
@@ -49,16 +53,16 @@ typedef struct _block {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_int       *block_performPrologue      (t_int *w);
-t_int       *block_performEpilogue      (t_int *w);
+t_int       *block_performPrologue          (t_int *w);
+t_int       *block_performEpilogue          (t_int *w);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_float     block_getResamplingRatio    (t_block *x);
-int         block_getBlockSize          (t_block *x);
-void        block_getProperties         (t_block *x, t_blockproperties *properties);
+t_float     block_getResamplingRatio        (t_block *x);
+int         block_getBlockSize              (t_block *x);
+void        block_getProperties             (t_block *x, t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
