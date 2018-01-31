@@ -20,6 +20,17 @@ static int dsp_status;      /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void dsp_report (void)
+{
+    if (symbol_hasThingQuiet (sym__dspstatus)) {
+        pd_float (symbol_getThing (sym__dspstatus), (t_float)dsp_status);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void dsp_setState (int n)
 {
     n = (n != 0);
@@ -31,9 +42,7 @@ void dsp_setState (int n)
         instance_dspStop(); dsp_status = 0; audio_stop();
     }
     
-    if (symbol_hasThingQuiet (sym__dspstatus)) {
-        pd_float (symbol_getThing (sym__dspstatus), (t_float)dsp_status);
-    }
+    dsp_report();
 
     gui_vAdd ("set ::var(isDsp) %d\n", dsp_status);     // --
     
@@ -63,7 +72,7 @@ int dsp_suspend (void)
 
 void dsp_resume (int n)
 {
-    if (n) { instance_dspStart(); dsp_status = 1; }
+    if (n) { instance_dspStart(); dsp_status = 1; dsp_report(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

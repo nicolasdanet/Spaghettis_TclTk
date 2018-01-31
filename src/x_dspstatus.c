@@ -54,6 +54,7 @@ static void *dspstatus_new (void)
 {
     t_dspstatus *x = (t_dspstatus *)pd_new (dspstatus_class);
     
+    x->x_status = (t_float)(dsp_getState() != 0);
     x->x_outlet = outlet_new (cast_object (x), &s_float);
     
     pd_bind (cast_pd (x), sym__dspstatus);
