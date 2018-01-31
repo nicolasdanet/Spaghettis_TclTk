@@ -21,8 +21,8 @@ t_class *block_class;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BLOCK_PROLOG    2
-#define BLOCK_EPILOG    2
+#define BLOCK_PROLOGUE  2
+#define BLOCK_EPILOGUE  2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -82,10 +82,10 @@ void block_getProperties (t_block *x, t_blockproperties *p)
     p->bp_upsample      = upsample;
 }
 
-void block_setPerformsLengthInDspChain (t_block *x, int context, int epilog)
+void block_setPerformsLengthInDspChain (t_block *x, int context, int epilogue)
 {
     x->bk_allContextLength   = context;
-    x->bk_outletEpilogLength = epilog;
+    x->bk_outletEpilogLength = epilogue;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ static void block_dsp (t_block *x, t_signal **sp)
 /* Perform the context only one time (the first) over the period. */
 /* By-pass it the rest of the times (or either all the time if it is switched). */
 
-t_int *block_performProlog (t_int *w)
+t_int *block_performPrologue (t_int *w)
 {
     t_block *x = (t_block *)w[1];
     
@@ -164,31 +164,31 @@ t_int *block_performProlog (t_int *w)
         x->bk_count = x->bk_frequency;
         x->bk_phase = x->bk_period > 1 ? 1 : 0;
 
-        return (w + BLOCK_PROLOG);
+        return (w + BLOCK_PROLOGUE);
     }
     //
     }
     
-    return (w + x->bk_allContextLength);    /* Go to the outlet epilog (to zero the signal out). */
+    return (w + x->bk_allContextLength);    /* Go to the outlet epilogue (to zero the signal out). */
 }
 
 /* Perform the context several time according to the frequency. */
 
-t_int *block_performEpilog (t_int *w)
+t_int *block_performEpilogue (t_int *w)
 {
     t_block *x = (t_block *)w[1];
     
     if (x->bk_isReblocked) {
     //
     if (x->bk_count - 1) {
-        x->bk_count--; return (w - (x->bk_allContextLength - (BLOCK_PROLOG + BLOCK_EPILOG)));
+        x->bk_count--; return (w - (x->bk_allContextLength - (BLOCK_PROLOGUE + BLOCK_EPILOGUE)));
     } else {
-        return (w + BLOCK_EPILOG);
+        return (w + BLOCK_EPILOGUE);
     }
     //
     }
     
-    return (w + BLOCK_EPILOG + x->bk_outletEpilogLength);   /* By-pass the outlet epilog. */
+    return (w + BLOCK_EPILOGUE + x->bk_outletEpilogLength);   /* By-pass the outlet epilogue. */
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -32,8 +32,8 @@ enum {
     };
 
 enum {
-    CURSOR_NOTHING      = 0,    /* Must NOT be changed. */
-    CURSOR_CLICK        = 1,    /* Must NOT be changed. */
+    CURSOR_NOTHING      = 0,        /* Must NOT be changed. */
+    CURSOR_CLICK        = 1,        /* Must NOT be changed. */
     CURSOR_OVER         = 2,
     CURSOR_THICKEN      = 3,
     CURSOR_CONNECT      = 4,
@@ -43,7 +43,7 @@ enum {
 enum {
     MODIFIER_NONE       = 0,
     MODIFIER_SHIFT      = 1,
-    MODIFIER_CTRL       = 2,    /* Command key on Mac OS X. */
+    MODIFIER_CTRL       = 2,        /* Command key on Mac OS X. */
     MODIFIER_ALT        = 4,
     MODIFIER_RIGHT      = 8,
     MODIFIER_DOUBLE     = 16,
@@ -68,23 +68,23 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define WINDOW_WIDTH            500
-#define WINDOW_HEIGHT           350
+#define WINDOW_WIDTH                500
+#define WINDOW_HEIGHT               350
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_APPLE
-    #define WINDOW_HEADER       22
+    #define WINDOW_HEADER           22
 #else
-    #define WINDOW_HEADER       50
+    #define WINDOW_HEADER           50
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define BOX_TAG_SIZE            50
+#define BOX_TAG_SIZE                50
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

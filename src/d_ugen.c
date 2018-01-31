@@ -151,7 +151,7 @@ static int ugen_graphIsUgenReady (t_ugenbox *u)
     return 1;
 }
 
-static void ugen_graphProlog (t_dspcontext *context, t_blockproperties *p)
+static void ugen_graphPrologue (t_dspcontext *context, t_blockproperties *p)
 {
     t_signal **i = context->dc_signals;
     t_signal **o = i ? i + context->dc_numberOfInlets : NULL;
@@ -159,12 +159,12 @@ static void ugen_graphProlog (t_dspcontext *context, t_blockproperties *p)
     
     for (u = context->dc_ugens; u; u = u->u_next) {
         t_object *object = u->u_owner;
-        if (pd_class (object) == vinlet_class)  { vinlet_dspProlog ((t_vinlet *)object, i, p);   }
-        if (pd_class (object) == voutlet_class) { voutlet_dspProlog ((t_voutlet *)object, o, p); }
+        if (pd_class (object) == vinlet_class)  { vinlet_dspPrologue ((t_vinlet *)object, i, p);   }
+        if (pd_class (object) == voutlet_class) { voutlet_dspPrologue ((t_voutlet *)object, o, p); }
     }
 }
 
-static void ugen_graphEpilog (t_dspcontext *context, t_blockproperties *p)
+static void ugen_graphEpilogue (t_dspcontext *context, t_blockproperties *p)
 {
     t_signal **i = context->dc_signals;
     t_signal **o = i ? i + context->dc_numberOfInlets : NULL;
@@ -172,7 +172,7 @@ static void ugen_graphEpilog (t_dspcontext *context, t_blockproperties *p)
         
     for (u = context->dc_ugens; u; u = u->u_next) {
         t_object *object = u->u_owner;
-        if (pd_class (object) == voutlet_class) { voutlet_dspEpilog ((t_voutlet *)object, o, p); }
+        if (pd_class (object) == voutlet_class) { voutlet_dspEpilogue ((t_voutlet *)object, o, p); }
     }
 }
 
@@ -419,7 +419,7 @@ void ugen_graphClose (t_dspcontext *context)
     int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : INTERNAL_BLOCKSIZE;
     int chainBegin;
     int chainEnd;
-    int chainEpilog; 
+    int chainEpilogue;
     
     t_block *block = ugen_graphGetBlockIfContainsAny (context);
     
@@ -439,23 +439,23 @@ void ugen_graphClose (t_dspcontext *context)
     context->dc_sampleRate = p.bp_sampleRate;
     context->dc_blockSize  = p.bp_blockSize;
     
-    ugen_graphProlog (context, &p);
+    ugen_graphPrologue (context, &p);
     
     chainBegin = instance_getDspChainSize();
     
-    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performProlog, 1, block); }   
+    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performPrologue, 1, block); }   
 
     ugen_graphMain (context);
 
-    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performEpilog, 1, block); }
+    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performEpilogue, 1, block); }
     
     chainEnd = instance_getDspChainSize();
 
-    ugen_graphEpilog (context, &p);
+    ugen_graphEpilogue (context, &p);
 
-    chainEpilog = instance_getDspChainSize();
+    chainEpilogue = instance_getDspChainSize();
     
-    if (block) { block_setPerformsLengthInDspChain (block, chainEnd - chainBegin, chainEpilog - chainEnd); }
+    if (block) { block_setPerformsLengthInDspChain (block, chainEnd - chainBegin, chainEpilogue - chainEnd); }
 
     ugen_graphDelete (context);
 }

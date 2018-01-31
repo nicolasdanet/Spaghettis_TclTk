@@ -38,7 +38,7 @@ static t_int *voutlet_perform (t_int *w)
 /* Read from buffer. */
 /* Notice that samples are zeroed (same reason as above). */
 
-static t_int *voutlet_performEpilog (t_int *w)
+static t_int *voutlet_performEpilogue (t_int *w)
 {
     t_voutlet *x = (t_voutlet *)(w[1]);
     PD_RESTRICTED out = (t_sample *)(w[2]);
@@ -82,7 +82,7 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     }
 }
 
-void voutlet_dspProlog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
+void voutlet_dspPrologue (t_voutlet *x, t_signal **signals, t_blockproperties *p)
 {
     if (voutlet_isSignal (x)) {
     //
@@ -100,7 +100,7 @@ void voutlet_dspProlog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
     }
 }
 
-void voutlet_dspEpilog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
+void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p)
 {
     if (voutlet_isSignal (x)) {
     //
@@ -153,9 +153,9 @@ void voutlet_dspEpilog (t_voutlet *x, t_signal **signals, t_blockproperties *p)
     
     if (signals) {
     //
-    if (resample_isRequired (&x->vo_resample)) { dsp_add (voutlet_performEpilog, 3, x, NULL, vectorSize); } 
+    if (resample_isRequired (&x->vo_resample)) { dsp_add (voutlet_performEpilogue, 3, x, NULL, vectorSize); }
     else {
-        dsp_add (voutlet_performEpilog, 3, x, s->s_vector, vectorSize);
+        dsp_add (voutlet_performEpilogue, 3, x, s->s_vector, vectorSize);
     }
         
     if (resample_isRequired (&x->vo_resample)) { 

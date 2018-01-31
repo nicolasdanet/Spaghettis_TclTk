@@ -15,12 +15,12 @@
 // MARK: -
 
 typedef struct _resample {
-    int         r_type;
-    int         r_downsample;
-    int         r_upsample;
-    t_sample    r_buffer;
-    int         r_allocatedSize;
-    t_sample    *r_vector;
+    int         r_type;             /* Type of upsampling method. */
+    int         r_downsample;       /* Downsampling factor. */
+    int         r_upsample;         /* Upsampling factor. */
+    t_sample    r_buffer;           /* Temporary for interpolation method. */
+    int         r_vectorSize;       /* Size of resampled vector signal. */
+    t_sample    *r_vector;          /* Resampled vector signal. */
     } t_resample;
 
 // -----------------------------------------------------------------------------------------------------------

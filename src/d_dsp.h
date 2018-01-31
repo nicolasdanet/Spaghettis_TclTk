@@ -30,7 +30,7 @@
     
     The overall order of scheduling is,
 
-        - inlet and outlet prologue code (1)
+        - inlet and outlet prologue (1)
         - block prologue (2)
         - the ugens in the graph, including inlets and outlets
         - block epilogue (2)
@@ -126,15 +126,15 @@ t_float     canvas_getBlockSize         (t_glist *glist);
 // MARK: -
 
 void        vinlet_dsp                  (t_vinlet *x, t_signal **sp);
-void        vinlet_dspProlog            (t_vinlet *x, t_signal **signals,  t_blockproperties *properties);
+void        vinlet_dspPrologue          (t_vinlet *x, t_signal **signals,  t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void        voutlet_dsp                 (t_voutlet *x, t_signal **sp);
-void        voutlet_dspProlog           (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
-void        voutlet_dspEpilog           (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
+void        voutlet_dspPrologue         (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
+void        voutlet_dspEpilogue         (t_voutlet *x, t_signal **signals, t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

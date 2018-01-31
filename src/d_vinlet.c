@@ -18,7 +18,7 @@
 
 /* Write to buffer. */
 
-static t_int *vinlet_performProlog (t_int *w)
+static t_int *vinlet_performPrologue (t_int *w)
 {
     t_vinlet *x = (t_vinlet *)(w[1]);
     PD_RESTRICTED in = (t_sample *)(w[2]);
@@ -63,7 +63,7 @@ static t_int *vinlet_perform (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void vinlet_dspProlog (t_vinlet *x, t_signal **signals, t_blockproperties *p)
+void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
 {
     if (vinlet_isSignal (x)) {
     //
@@ -113,7 +113,7 @@ void vinlet_dspProlog (t_vinlet *x, t_signal **signals, t_blockproperties *p)
         t = resample_setBuffer (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize);  /* Resampled. */
     }
 
-    dsp_add (vinlet_performProlog, 3, x, t, vectorSize);
+    dsp_add (vinlet_performPrologue, 3, x, t, vectorSize);
     //
     }
     //
