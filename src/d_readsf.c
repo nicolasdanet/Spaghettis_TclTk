@@ -29,6 +29,7 @@ typedef struct _readsf_tilde {
     int                 sf_numberOfAudioOutlets;
     int                 sf_bufferSize;
     int                 sf_run;
+    unsigned char       *sf_cached;
     t_sfthread          *sf_thread;
     t_glist             *sf_owner;
     t_clock             *sf_clock;
@@ -132,12 +133,7 @@ static t_int *readsf_tilde_perform (t_int *w)
     int bytesPerFrame    = numberOfChannels * x->sf_properties.ap_bytesPerSample;
     int32_t required     = bytesPerFrame * n;
     
-    /* Buffer on the stack in order to cache samples read. */
-    /* Could be a problem in edge cases. */
-    
-    unsigned char *t = (unsigned char *)alloca (required);
-    
-    int32_t loaded = ringbuffer_read (sfthread_getBuffer (x->sf_thread), t, required);
+    int32_t loaded = ringbuffer_read (sfthread_getBuffer (x->sf_thread), x->sf_cached, required);
     
     if (loaded == 0 && sfthread_isEnd (x->sf_thread)) { x->sf_run = 0; clock_delay (x->sf_clock, 0.0); }
     else {
@@ -146,7 +142,7 @@ static t_int *readsf_tilde_perform (t_int *w)
         
         soundfile_decode (numberOfChannels,
             x->sf_vectorsOut,
-            t,
+            x->sf_cached,
             numberOfFramesRead,
             0,
             x->sf_properties.ap_bytesPerSample,
@@ -206,6 +202,7 @@ static void *readsf_tilde_new (t_float f1, t_float f2)
     
     x->sf_numberOfAudioOutlets  = n;
     x->sf_bufferSize            = size;
+    x->sf_cached                = (unsigned char *)PD_MEMORY_GET (x->sf_bufferSize);
     x->sf_clock                 = clock_new ((void *)x, (t_method)readsf_tilde_task);
     x->sf_owner                 = instance_contextGetCurrent();
     
@@ -221,6 +218,8 @@ static void readsf_tilde_free (t_readsf_tilde *x)
     readsf_tilde_close (x);
     
     clock_free (x->sf_clock);
+    
+    PD_MEMORY_FREE (x->sf_cached);
 }
 
 // -----------------------------------------------------------------------------------------------------------
