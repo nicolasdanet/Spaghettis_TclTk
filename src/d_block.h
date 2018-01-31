@@ -29,8 +29,8 @@ typedef struct _blockproperties {
 // -----------------------------------------------------------------------------------------------------------
 
 /* Note that at most one value between downsample or upsample can be set. */
-/* It is the resampling factor (respectively down or up). */
-/* Thus the other is set to 1. */
+/* It is the resampling factor (i.e. 1, 2, 4 respectively below or above). */
+/* Whereas the other is set to 1. */
 
 typedef struct _block {
     t_object    bk_obj;                     /* Must be the first. */
