@@ -30,6 +30,7 @@ typedef struct _writesf_tilde {
     int                 sf_numberOfChannels;
     int                 sf_bufferSize;
     int                 sf_run;
+    unsigned char       *sf_cached;
     t_sfthread          *sf_thread;
     t_glist             *sf_owner;
     t_sample            *(sf_vectorsIn[SOUNDFILE_CHANNELS]);
@@ -115,14 +116,11 @@ static t_int *writesf_tilde_perform (t_int *w)
     int bytesPerFrame    = numberOfChannels * x->sf_properties.ap_bytesPerSample;
     int32_t required     = bytesPerFrame * n;
     
-    /* Buffer on the stack in order to cache samples read. */
-    /* Could be a problem in edge cases. */
-    
-    unsigned char *t = (unsigned char *)alloca (required);
-    
+    if (required < x->sf_bufferSize) {
+    //
     soundfile_encode (numberOfChannels,
         x->sf_vectorsIn,
-        t,
+        x->sf_cached,
         n,
         0,
         x->sf_properties.ap_bytesPerSample,
@@ -131,10 +129,12 @@ static t_int *writesf_tilde_perform (t_int *w)
         (t_sample)1.0);
     
     {
-        int32_t written = ringbuffer_write (sfthread_getBuffer (x->sf_thread), t, required);
+        int32_t written = ringbuffer_write (sfthread_getBuffer (x->sf_thread), x->sf_cached, required);
         if (written != required) {
             /* File corrupted; what to do? */
         }
+    }
+    //
     }
     //
     }
@@ -168,6 +168,7 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
     
     x->sf_numberOfChannels  = n;
     x->sf_bufferSize        = size;
+    x->sf_cached            = (unsigned char *)PD_MEMORY_GET (x->sf_bufferSize);
     x->sf_owner             = instance_contextGetCurrent();
     
     for (i = 1; i < x->sf_numberOfChannels; i++) { inlet_newSignal (cast_object (x)); }
@@ -178,6 +179,8 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
 static void writesf_tilde_free (t_writesf_tilde *x)
 {
     writesf_tilde_close (x);
+    
+    PD_MEMORY_FREE (x->sf_cached);
 }
 
 // -----------------------------------------------------------------------------------------------------------
