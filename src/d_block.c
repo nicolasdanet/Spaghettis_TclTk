@@ -172,7 +172,7 @@ t_int *block_performPrologue (t_int *w)
     //
     }
     
-    /* Go to the outlet epilogue (to output a chunk or zero the signal out). */
+    /* Go to the outlet epilogue (to zero the signal out). */
     
     return (w + x->bk_contextLength);
 }

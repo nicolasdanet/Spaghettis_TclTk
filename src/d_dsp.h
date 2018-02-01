@@ -28,17 +28,15 @@
     It triggers associated ugens at a supermultiple or submultiple of the upstream.
     Note that it can also be invoked just as a switch.
     
-    The overall order of scheduling is,
+    The overall order of scheduling is:
 
-        - inlets prologue (1)
-        - block prologue (2)
+        - inlets prologue
+        - block prologue
         - the ugens in the graph, including inlets and outlets
-        - block epilogue (2)
-        - outlets epilogue (2)
+        - block epilogue
+        - outlets epilogue
 
-    where (1) means, "if reblocked" and (2) means, "if reblocked or switched".
-
-    The related functions called are,
+    The related functions called are:
  
         - vinlet_performPrologue
         - block_performPrologue
@@ -46,6 +44,9 @@
         - voutlet_perform
         - block_performEpilogue
         - voutlet_performEpilogue
+ 
+    Note that jumps can occurs to bypass or redo a sequence.
+ 
 */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -64,8 +65,8 @@
 struct _vinlet {
     t_object        vi_obj;             /* Must be the first. */
     t_resample      vi_resample;        /* Extended buffer if resampling is required. */
-    int             vi_hopSize;
-    int             vi_bufferSize;
+    int             vi_hopSize;         /* Size of the hop if overlapped. */
+    int             vi_bufferSize;      /* Handle vector size conversion in a buffer. */
     t_sample        *vi_buffer;
     t_sample        *vi_bufferEnd;
     t_sample        *vi_bufferWrite;
@@ -79,9 +80,9 @@ struct _vinlet {
 struct _voutlet {
     t_object        vo_obj;             /* Must be the first. */
     t_resample      vo_resample;        /* Extended buffer if resampling is required. */
-    int             vo_hopSize;
-    int             vo_copyOut;
-    int             vo_bufferSize;
+    int             vo_hopSize;         /* Size of the hop if overlapped. */
+    int             vo_copyOut;         /* Make a bypassable copy perform (switch~ object). */
+    int             vo_bufferSize;      /* Handle vector size conversion in a buffer. */
     t_sample        *vo_buffer;
     t_sample        *vo_bufferEnd;
     t_sample        *vo_bufferRead;
