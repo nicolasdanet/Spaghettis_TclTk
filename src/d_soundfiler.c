@@ -351,7 +351,7 @@ static int soundfiler_writeEncode (int f,
     }
     
     if (soundfile_writeFileClose (f, framesAlreadyWritten, args) == PD_ERROR) {
-        PD_BUG;     /* File corrupted; what to do? */
+        PD_BUG;     /* FIXME: File corrupted; what to do? */
     }
     
     close (f);

@@ -50,7 +50,7 @@ void instance_stackPush (t_glist *x)
 {
     t_stackelement *e = instance_get()->pd_stack.s_stack + (instance_get()->pd_stack.s_stackIndex++);
     
-    PD_ABORT (instance_get()->pd_stack.s_stackIndex >= INSTANCE_STACK);    /* Resize? */
+    PD_ABORT (instance_get()->pd_stack.s_stackIndex >= INSTANCE_STACK);    /* FIXME: Resize? */
     
     e->s_context = instance_contextGetCurrent();
     e->s_loadedAbstraction = instance_get()->pd_loadingAbstraction;

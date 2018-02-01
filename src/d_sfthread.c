@@ -84,7 +84,7 @@ static void *sfthread_writerThread (void *z)
         if (required == 0) { PD_ATOMIC_INT32_WRITE (SFTHREAD_QUIT, &x->sft_flag); break; }
         if (written != loaded) {
         
-            /* File corrupted; what to do? */
+            /* FIXME: File corrupted; what to do? */
             
             PD_ATOMIC_INT32_WRITE (SFTHREAD_QUIT, &x->sft_flag); break; 
         }
@@ -104,7 +104,7 @@ static void *sfthread_writerThread (void *z)
     int framesWritten = x->sft_alreadyWritten / size;
     
     if (soundfile_writeFileClose (x->sft_fileDescriptor, framesWritten, &x->sft_properties)) {
-        /* File corrupted; what to do? */
+        /* FIXME: File corrupted; what to do? */
         /* Occurs also if stopped before demanded frames. */
     }
     //

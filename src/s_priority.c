@@ -101,7 +101,7 @@ static t_error priority_setRTNative (void)
     memset (&param, 0, sizeof (struct sched_param));
     
     /* The POSIX thread API is able to set thread priority only within the lowest priority band (0–63). */
-    /* Use thread_policy_set instead? */
+    /* TODO: Use thread_policy_set instead? */
     /* < https://developer.apple.com/library/ios/technotes/tn2169/_index.html > */
     
     param.sched_priority = 63; 

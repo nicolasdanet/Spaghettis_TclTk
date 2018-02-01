@@ -72,7 +72,7 @@ static t_error netsend_sendProceedRaw (t_netsend *x, int fd, char *t, int length
     char *p = t;
 
     while (alreadySent < length) {
-        ssize_t n = send (fd, p, length - alreadySent, 0);      /* Manage EWOULDBLOCK in the future? */
+        ssize_t n = send (fd, p, length - alreadySent, 0);      /* TODO: Manage EWOULDBLOCK in the future? */
         if (n <= 0) {
             error_failsToWrite (sym_netsend);
             err = PD_ERROR;

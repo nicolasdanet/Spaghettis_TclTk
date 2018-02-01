@@ -30,7 +30,7 @@ t_class *block_class;                       /* Shared. */
 
 t_float block_getResamplingRatio (t_block *x)
 {
-    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);   /* Consider overlap? */
+    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);   /* FIXME: Consider overlap? */
 }
 
 int block_getBlockSize (t_block *x)
