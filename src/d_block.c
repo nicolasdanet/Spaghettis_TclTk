@@ -45,11 +45,11 @@ int block_getBlockSize (t_block *x)
 void block_setProperties (t_block *x, t_blockproperties *p)
 {
     int parentBlockSize         = p->bp_blockSize;
-    int hasParentContext        = p->bp_reblocked;
+    int isTopPatch              = p->bp_reblocked;
     t_float parentSampleRate    = p->bp_sampleRate;
     
     t_phase phase        = instance_getDspPhase();
-    int reblocked        = hasParentContext;
+    int reblocked        = isTopPatch;
     int blockSize        = (x->bk_blockSize > 0) ? x->bk_blockSize : parentBlockSize;
     int overlap          = PD_MIN (x->bk_overlap, blockSize);
     int downsample       = PD_MIN (x->bk_downsample, parentBlockSize);
@@ -178,7 +178,7 @@ t_int *block_performPrologue (t_int *w)
 }
 
 /* Perform the context several time (according to the frequency set above). */
-/* It is required if the block size of a context is smaller than its parent's one. */
+/* It is required for instance if the block size of a context is smaller than its parent's one. */
 
 t_int *block_performEpilogue (t_int *w)
 {

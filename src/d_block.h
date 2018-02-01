@@ -31,6 +31,8 @@ typedef struct _blockproperties {
 /* Note that at most one value between downsample or upsample can be set. */
 /* It is the resampling factor (e.g. 1, 2, 4 respectively below or above). */
 /* Whereas the other is set to 1. */
+/* It is the same with the period and the frequency. */
+/* It can be a supermultiple OR a submultiple. */
 
 typedef struct _block {
     t_object    bk_obj;                     /* Must be the first. */
@@ -45,7 +47,7 @@ typedef struct _block {
     int         bk_epilogueLength;          /* Size of the DSP chain for the epilogue. */
     int         bk_phase;                   /* Index for supermultiple block size. */
     int         bk_period;                  /* Supermultiple factor. */
-    int         bk_count;                   /* Index for submultiple block size. */
+    int         bk_count;                   /* Counter for submultiple block size. */
     int         bk_frequency;               /* Submultiple factor. */
     } t_block;
 
