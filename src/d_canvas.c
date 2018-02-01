@@ -67,7 +67,12 @@ static t_block *canvas_getBlockIfContainsAny (t_glist **p)
     t_gobj *y = NULL;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (pd_class (y) == block_class) { block = (t_block *)y; break; }
+        if (pd_class (y) == block_class) {
+            if (block) { error_ignored (sym_block__tilde__); }
+            else {
+                block = (t_block *)y;
+            }
+        }
     }
     
     *p = glist_getParent (glist);
