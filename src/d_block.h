@@ -15,14 +15,14 @@
 // MARK: -
 
 typedef struct _blockproperties {
-    int         bp_switchable;
-    int         bp_reblocked;
-    int         bp_blockSize;
-    t_float     bp_sampleRate;
-    int         bp_period;
-    int         bp_frequency;
+    int         bp_blockSize;               /* Blocksize (power of two). */
     int         bp_downsample;              /* Downsampling factor. */
     int         bp_upsample;                /* Upsampling factor. */
+    int         bp_switchable;              /* Is it a block~ or a switch~ object. */
+    int         bp_reblocked;               /* True if reblocking is required. */
+    t_float     bp_sampleRate;              /* Sample rate of the context. */
+    int         bp_period;                  /* Supermultiple factor. */
+    int         bp_frequency;               /* Submultiple factor. */
     } t_blockproperties;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -38,9 +38,9 @@ typedef struct _block {
     int         bk_overlap;                 /* Number of overlap (power of two). */
     int         bk_downsample;              /* Downsampling factor (power of two). */
     int         bk_upsample;                /* Upsampling factor (power of two). */
-    int         bk_isSwitchObject;          /* Is it a block~ or a switch~ object. */
-    int         bk_isSwitchedOn;            /* Zero if all context IS by-passed. */
-    int         bk_isReblocked;             /* Zero if NO reblocking is required. */
+    int         bk_switchable;              /* Is it a block~ or a switch~ object. */
+    int         bk_switchedOn;              /* False if all context IS by-passed. */
+    int         bk_reblocked;               /* True if reblocking is required. */
     int         bk_contextLength;           /* Size of the DSP chain for all the context. */
     int         bk_epilogueLength;          /* Size of the DSP chain for the epilogue. */
     int         bk_phase;                   /* Index for supermultiple block size. */
@@ -62,7 +62,6 @@ t_int       *block_performEpilogue          (t_int *w);
 
 t_float     block_getResamplingRatio        (t_block *x);
 int         block_getBlockSize              (t_block *x);
-void        block_getProperties             (t_block *x, t_blockproperties *properties);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

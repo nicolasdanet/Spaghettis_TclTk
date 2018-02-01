@@ -30,7 +30,7 @@ t_class *block_class;                       /* Shared. */
 
 t_float block_getResamplingRatio (t_block *x)
 {
-    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
+    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);   /* Consider overlap? */
 }
 
 int block_getBlockSize (t_block *x)
@@ -42,21 +42,22 @@ int block_getBlockSize (t_block *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void block_getProperties (t_block *x, t_blockproperties *p)
+void block_setProperties (t_block *x, t_blockproperties *p)
 {
     int parentBlockSize         = p->bp_blockSize;
+    int hasParentContext        = p->bp_reblocked;
     t_float parentSampleRate    = p->bp_sampleRate;
     
-    t_phase phase       = instance_getDspPhase();
-    int reblocked       = p->bp_reblocked;
-    int blockSize       = (x->bk_blockSize > 0) ? x->bk_blockSize : parentBlockSize;
-    int overlap         = PD_MIN (x->bk_overlap, blockSize);
-    int downsample      = PD_MIN (x->bk_downsample, parentBlockSize);
-    int upsample        = x->bk_upsample;
-    int period          = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
-    int frequency       = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
-    t_float sampleRate  = parentSampleRate * overlap * (upsample / downsample);
-    int switchable      = x->bk_isSwitchObject;
+    t_phase phase        = instance_getDspPhase();
+    int reblocked        = hasParentContext;
+    int blockSize        = (x->bk_blockSize > 0) ? x->bk_blockSize : parentBlockSize;
+    int overlap          = PD_MIN (x->bk_overlap, blockSize);
+    int downsample       = PD_MIN (x->bk_downsample, parentBlockSize);
+    int upsample         = x->bk_upsample;
+    int period           = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
+    int frequency        = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
+    t_float sampleRate   = parentSampleRate * overlap * (upsample / downsample);
+    int switchable       = x->bk_switchable;
     
     PD_ASSERT (PD_IS_POWER_2 (period));
     PD_ASSERT (PD_IS_POWER_2 (frequency));
@@ -67,19 +68,19 @@ void block_getProperties (t_block *x, t_blockproperties *p)
     reblocked |= (downsample != 1);
     reblocked |= (upsample   != 1);
     
-    x->bk_phase         = (int)(phase & (t_phase)(period - 1));
-    x->bk_period        = period;
-    x->bk_frequency     = frequency;
-    x->bk_isReblocked   = reblocked;
+    x->bk_phase          = (int)(phase & (t_phase)(period - 1));
+    x->bk_period         = period;
+    x->bk_frequency      = frequency;
+    x->bk_reblocked      = reblocked;
 
-    p->bp_switchable    = switchable;
-    p->bp_reblocked     = reblocked;
-    p->bp_blockSize     = blockSize;
-    p->bp_sampleRate    = sampleRate;
-    p->bp_period        = period;
-    p->bp_frequency     = frequency;
-    p->bp_downsample    = downsample;
-    p->bp_upsample      = upsample;
+    p->bp_blockSize      = blockSize;
+    p->bp_downsample     = downsample;
+    p->bp_upsample       = upsample;
+    p->bp_switchable     = switchable;
+    p->bp_reblocked      = reblocked;
+    p->bp_sampleRate     = sampleRate;
+    p->bp_period         = period;
+    p->bp_frequency      = frequency;
 }
 
 void block_setPerformsLengthInDspChain (t_block *x, int context, int epilogue)
@@ -140,7 +141,7 @@ static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
 
 static void block_float (t_block *x, t_float f)
 {
-    if (x->bk_isSwitchObject) { x->bk_isSwitchedOn = (f != 0.0); }
+    if (x->bk_switchable) { x->bk_switchedOn = (f != 0.0); }
 }
 
 static void block_dsp (t_block *x, t_signal **sp)
@@ -159,7 +160,7 @@ t_int *block_performPrologue (t_int *w)
 {
     t_block *x = (t_block *)w[1];
     
-    if (x->bk_isSwitchedOn) {
+    if (x->bk_switchedOn) {
     //
     if (x->bk_phase) { x->bk_phase++; if (x->bk_phase == x->bk_period) { x->bk_phase = 0; } }
     else {
@@ -183,7 +184,7 @@ t_int *block_performEpilogue (t_int *w)
 {
     t_block *x = (t_block *)w[1];
     
-    if (x->bk_isReblocked) {
+    if (x->bk_reblocked) {
     //
     if (x->bk_count - 1) {
         x->bk_count--; return (w - (x->bk_contextLength - (BLOCK_PROLOGUE + BLOCK_EPILOGUE)));
@@ -204,11 +205,11 @@ static void *block_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_block *x = (t_block *)pd_new (block_class);
     
-    x->bk_phase             = 0;
-    x->bk_period            = 1;
-    x->bk_frequency         = 1;
-    x->bk_isSwitchObject    = 0;
-    x->bk_isSwitchedOn      = 1;
+    x->bk_phase      = 0;
+    x->bk_period     = 1;
+    x->bk_frequency  = 1;
+    x->bk_switchable = 0;
+    x->bk_switchedOn = 1;
     
     block_setProceed (x, s, argc, argv);
     
@@ -219,8 +220,8 @@ static void *block_newSwitch (t_symbol *s, int argc, t_atom *argv)
 {
     t_block *x = (t_block *)block_new (s, argc, argv);
     
-    x->bk_isSwitchObject    = 1;
-    x->bk_isSwitchedOn      = 0;
+    x->bk_switchable = 1;
+    x->bk_switchedOn = 0;
     
     return x;
 }

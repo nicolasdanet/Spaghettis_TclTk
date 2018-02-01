@@ -16,7 +16,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void block_setPerformsLengthInDspChain (t_block *, int, int);
+void block_setProperties                (t_block *, t_blockproperties *);
+void block_setPerformsLengthInDspChain  (t_block *, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -434,7 +435,7 @@ void ugen_graphClose (t_dspcontext *context)
     p.bp_downsample = 1;
     p.bp_upsample   = 1;
     
-    if (block) { block_getProperties (block, &p); }
+    if (block) { block_setProperties (block, &p); }
 
     context->dc_sampleRate = p.bp_sampleRate;
     context->dc_blockSize  = p.bp_blockSize;
