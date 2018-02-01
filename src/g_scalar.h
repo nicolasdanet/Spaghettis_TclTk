@@ -28,7 +28,7 @@
     For now an array can NOT contain another array.
     
     A scalar is an object that wrap an element.
-    A scalar is rendering by painter objects (i.e. plot).
+    A scalar is rendering by painter objects (e.g. plot).
     To be considered painters must be disposed in the instance's window.
     
     A gpointer can maintain a pointer onto a scalar.

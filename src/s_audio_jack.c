@@ -169,7 +169,7 @@ static void jack_fetchClientNames (void)
     regmatch_t info;
     char t[PD_STRING] = { 0 };
     
-    // -- Parse "clientname:portname" syntax (i.e. "system:playback_1" to "system").
+    // -- Parse "clientname:portname" syntax (e.g. "system:playback_1" to "system").
     
     regexec (&e, ports[i], 1, &info, 0);
     size = PD_MIN (info.rm_eo - info.rm_so, PD_STRING - 1);

@@ -30,7 +30,7 @@
     
     The overall order of scheduling is,
 
-        - inlets and outlets prologue (1)
+        - inlets prologue (1)
         - block prologue (2)
         - the ugens in the graph, including inlets and outlets
         - block epilogue (2)
@@ -38,6 +38,14 @@
 
     where (1) means, "if reblocked" and (2) means, "if reblocked or switched".
 
+    The related functions called are,
+ 
+        - vinlet_performPrologue
+        - block_performPrologue
+        - vinlet_perform
+        - voutlet_perform
+        - block_performEpilogue
+        - voutlet_performEpilogue
 */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -55,7 +63,7 @@
 
 struct _vinlet {
     t_object        vi_obj;             /* Must be the first. */
-    t_resample      vi_resample;        /* Buffer if resampling is required. */
+    t_resample      vi_resample;        /* Extended buffer if resampling is required. */
     int             vi_hopSize;
     int             vi_bufferSize;
     t_sample        *vi_buffer;
@@ -70,7 +78,7 @@ struct _vinlet {
 
 struct _voutlet {
     t_object        vo_obj;             /* Must be the first. */
-    t_resample      vo_resample;        /* Buffer if resampling is required. */
+    t_resample      vo_resample;        /* Extended buffer if resampling is required. */
     int             vo_hopSize;
     int             vo_copyOut;
     int             vo_bufferSize;

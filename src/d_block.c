@@ -153,6 +153,7 @@ static void block_dsp (t_block *x, t_signal **sp)
 
 /* Perform the context only one time (the first) over the period. */
 /* By-pass it the rest of the times (or either all the time if it is switched). */
+/* Notice that with a period of 1 (i.e NOT or smaller reblocked) it is triggered each time. */
 
 t_int *block_performPrologue (t_int *w)
 {
@@ -170,10 +171,13 @@ t_int *block_performPrologue (t_int *w)
     //
     }
     
-    return (w + x->bk_contextLength);    /* Go to the outlet epilogue (to zero the signal out). */
+    /* Go to the outlet epilogue (to output a chunk or zero the signal out). */
+    
+    return (w + x->bk_contextLength);
 }
 
-/* Perform the context several time according to the frequency. */
+/* Perform the context several time (according to the frequency set above). */
+/* It is required if the block size of a context is smaller than its parent's one. */
 
 t_int *block_performEpilogue (t_int *w)
 {
