@@ -77,6 +77,10 @@ void signal_borrow (t_signal *s, t_signal *toBeBorrowed)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* < https://lists.puredata.info/pipermail/pd-dev/2016-11/020878.html > */
+/* < https://lists.puredata.info/pipermail/pd-list/2005-07/029490.html > */
+/* < https://www.mail-archive.com/pd-list@iem.at/msg60031.html > */
+
 t_float signal_getSampleRate (t_signal *s)
 {
     return s->s_sampleRate;

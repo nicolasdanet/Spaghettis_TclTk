@@ -28,9 +28,13 @@ t_class *block_class;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* < https://lists.puredata.info/pipermail/pd-dev/2016-11/020878.html > */
+/* < https://lists.puredata.info/pipermail/pd-list/2005-07/029490.html > */
+/* < https://www.mail-archive.com/pd-list@iem.at/msg60031.html > */
+
 t_float block_getResamplingRatio (t_block *x)
 {
-    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);   /* FIXME: Consider overlap? */
+    return ((t_float)x->bk_upsample / (t_float)x->bk_downsample);
 }
 
 int block_getBlockSize (t_block *x)
