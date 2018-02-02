@@ -41,7 +41,7 @@ typedef struct _block {
     int         bk_downsample;              /* Downsampling factor (power of two). */
     int         bk_upsample;                /* Upsampling factor (power of two). */
     int         bk_switchable;              /* Is it a block~ or a switch~ object. */
-    int         bk_switchedOn;              /* False if all context IS by-passed. */
+    int         bk_switchedOn;              /* False if all context IS bypassed. */
     int         bk_reblocked;               /* True if reblocking is required. */
     int         bk_contextLength;           /* Size of the DSP chain for all the context. */
     int         bk_epilogueLength;          /* Size of the DSP chain for the epilogue. */

@@ -45,7 +45,7 @@
         - block_performEpilogue
         - voutlet_performEpilogue
  
-    Note that jumps can occurs to bypass or redo a sequence.
+    Note that jumps can occurs to by-pass or redo a sequence.
  
 */
 

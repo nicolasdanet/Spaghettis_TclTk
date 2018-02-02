@@ -38,7 +38,7 @@ static void *freeze_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_freeze *x = (t_freeze *)pd_new (freeze_class);
     
-    /* To bypass the mechanism manually append a dummy argument in the patch file with a text editor. */
+    /* To by-pass the mechanism manually append a dummy argument in the patch file with a text editor. */
     
     if (!argc) {
     
