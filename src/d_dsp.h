@@ -63,35 +63,88 @@
 // MARK: -
 
 struct _vinlet {
-    t_object        vi_obj;             /* Must be the first. */
-    t_resample      vi_resample;        /* Extended buffer if resampling is required. */
-    int             vi_hopSize;         /* Size of the hop if overlapped. */
-    int             vi_bufferSize;      /* Handle vector size conversion in a buffer. */
-    t_sample        *vi_buffer;
-    t_sample        *vi_bufferEnd;
-    t_sample        *vi_bufferWrite;
-    t_sample        *vi_bufferRead;
-    t_glist         *vi_owner;
-    t_outlet        *vi_outlet;
-    t_inlet         *vi_inlet;
-    t_signal        *vi_directSignal;   /* Used to efficiently by-pass the inlet. */
+    t_object                vi_obj;             /* Must be the first. */
+    t_resample              vi_resample;        /* Extended buffer if resampling is required. */
+    int                     vi_hopSize;         /* Size of the hop if overlapped. */
+    int                     vi_bufferSize;      /* Handle vector size conversion in a buffer. */
+    t_sample                *vi_buffer;
+    t_sample                *vi_bufferEnd;
+    t_sample                *vi_bufferWrite;
+    t_sample                *vi_bufferRead;
+    t_glist                 *vi_owner;
+    t_outlet                *vi_outlet;
+    t_inlet                 *vi_inlet;
+    t_signal                *vi_directSignal;   /* Used to efficiently by-pass the inlet. */
     };
 
 struct _voutlet {
-    t_object        vo_obj;             /* Must be the first. */
-    t_resample      vo_resample;        /* Extended buffer if resampling is required. */
-    int             vo_hopSize;         /* Size of the hop if overlapped. */
-    int             vo_copyOut;         /* Behavior is to perform a copy (switch~ object). */
-    int             vo_bufferSize;      /* Handle vector size conversion in a buffer. */
-    t_sample        *vo_buffer;
-    t_sample        *vo_bufferEnd;
-    t_sample        *vo_bufferRead;
-    t_sample        *vo_bufferWrite;
-    t_glist         *vo_owner;
-    t_outlet        *vo_outlet;
-    t_signal        *vo_directSignal;   /* Used to efficiently by-pass the outlet. */
+    t_object                vo_obj;             /* Must be the first. */
+    t_resample              vo_resample;        /* Extended buffer if resampling is required. */
+    int                     vo_hopSize;         /* Size of the hop if overlapped. */
+    int                     vo_copyOut;         /* Behavior is to perform a copy (switch~ object). */
+    int                     vo_bufferSize;      /* Handle vector size conversion in a buffer. */
+    t_sample                *vo_buffer;
+    t_sample                *vo_bufferEnd;
+    t_sample                *vo_bufferRead;
+    t_sample                *vo_bufferWrite;
+    t_glist                 *vo_owner;
+    t_outlet                *vo_outlet;
+    t_signal                *vo_directSignal;   /* Used to efficiently by-pass the outlet. */
     };
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+typedef struct _sigoutconnect {
+    int                     oc_index;
+    struct _ugenbox         *oc_to;
+    struct _sigoutconnect   *oc_next;
+    } t_sigoutconnect;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _sigoutlet {
+    int                     o_numberOfConnections;
+    t_sigoutconnect         *o_connections;
+    t_signal                *o_signal;
+    } t_sigoutlet;
+
+typedef struct _siginlet {
+    int                     i_numberOfConnections;
+    int                     i_numberAlreadyConnected;
+    t_signal                *i_signal;
+    } t_siginlet;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _ugenbox {
+    int                     u_done;
+    int                     u_inSize;
+    int                     u_outSize;
+    t_siginlet              *u_in;
+    t_sigoutlet             *u_out;
+    t_object                *u_owner;
+    struct _ugenbox         *u_next;
+    } t_ugenbox;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+struct _dspcontext {
+    int                     dc_numberOfInlets;
+    int                     dc_numberOfOutlets;
+    t_float                 dc_sampleRate;
+    int                     dc_blockSize;
+    int                     dc_overlap;
+    t_ugenbox               *dc_ugens;
+    struct _dspcontext      *dc_parentContext;
+    t_signal                **dc_signals;
+    };
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -107,7 +160,8 @@ void        dsp_resume                  (int oldState);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_signal    *signal_new                 (int blockSize, t_float sampleRate);
+t_signal    *signal_newWithSignal       (t_signal *s);
+t_signal    *signal_newWithContext      (t_dspcontext *context);
 
 void        signal_borrow               (t_signal *s,  t_signal *toBeBorrowed);
 int         signal_isCompatibleWith     (t_signal *s1, t_signal *s2);

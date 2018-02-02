@@ -74,6 +74,7 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     x->bk_reblocked      = reblocked;
 
     p->bp_blockSize      = blockSize;
+    p->bp_overlap        = overlap;
     p->bp_downsample     = downsample;
     p->bp_upsample       = upsample;
     p->bp_switchable     = switchable;

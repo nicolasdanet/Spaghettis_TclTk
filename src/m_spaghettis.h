@@ -696,6 +696,7 @@ typedef t_int   *(*t_perform)   (t_int *);
 struct _signal {
     t_float         s_sampleRate;
     int             s_vectorSize;
+    int             s_overlap;
     int             s_hasBorrowed;
     t_sample        *s_vector;
     t_sample        *s_unused;
@@ -902,6 +903,7 @@ PD_DLL t_sample *signal_getVector               (t_signal *s);
 
 PD_DLL t_float  signal_getSampleRate            (t_signal *s);
 PD_DLL int      signal_getVectorSize            (t_signal *s);
+PD_DLL int      signal_getOverlap               (t_signal *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -16,6 +16,7 @@
 
 typedef struct _blockproperties {
     int         bp_blockSize;               /* Blocksize (power of two). */
+    int         bp_overlap;                 /* Number of overlap (power of two). */
     int         bp_downsample;              /* Downsampling factor. */
     int         bp_upsample;                /* Upsampling factor. */
     int         bp_switchable;              /* Is it a block~ or a switch~ object. */

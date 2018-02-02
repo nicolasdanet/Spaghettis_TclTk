@@ -23,65 +23,13 @@ void block_setLengthInDspChain  (t_block *, int, int);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _sigoutconnect {
-    int                     oc_index;
-    struct _ugenbox         *oc_to;
-    struct _sigoutconnect   *oc_next;
-    } t_sigoutconnect;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _sigoutlet {
-    int                     o_numberOfConnections;
-    t_sigoutconnect         *o_connections;
-    t_signal                *o_signal;
-    } t_sigoutlet;
-    
-typedef struct _siginlet {
-    int                     i_numberOfConnections;
-    int                     i_numberAlreadyConnected;
-    t_signal                *i_signal;
-    } t_siginlet;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _ugenbox {
-    int                     u_done;
-    int                     u_inSize;
-    int                     u_outSize;
-    t_siginlet              *u_in;
-    t_sigoutlet             *u_out;
-    t_object                *u_owner;
-    struct _ugenbox         *u_next;
-    } t_ugenbox;
+typedef void (*t_dsp)   (void *x, void *signals);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _dspcontext {
-    int                     dc_numberOfInlets;
-    int                     dc_numberOfOutlets;
-    t_float                 dc_sampleRate;
-    int                     dc_blockSize;
-    t_ugenbox               *dc_ugens;
-    struct _dspcontext      *dc_parentContext;
-    t_signal                **dc_signals;
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-typedef void (*t_dsp)       (void *x, void *signals);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define UGEN_DSP(x, a)      ((*(t_dsp)class_getMethod (pd_class (x), sym_dsp))((x), (a)))
+#define UGEN_DSP(x, a)  ((*(t_dsp)class_getMethod (pd_class (x), sym_dsp))((x), (a)))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -198,7 +146,7 @@ static void ugen_graphMainRecursiveChild (t_dspcontext *context, t_ugenbox *u)
     if (childSignal == NULL) { childInlet->i_signal = parentSignal; }
     else {
     //
-    t_signal *s = signal_new (parentSignal->s_vectorSize, parentSignal->s_sampleRate);   
+    t_signal *s = signal_newWithSignal (parentSignal);
          
     PD_ASSERT (signal_isCompatibleWith (parentSignal, childSignal));
     PD_ABORT (!signal_isCompatibleWith (parentSignal, childSignal));
@@ -233,7 +181,7 @@ static void ugen_graphMainRecursiveEmptyInlets (t_dspcontext *context, t_ugenbox
     //
     if (u->u_in[i].i_numberOfConnections == 0) {
     //
-    t_signal *s = signal_new (context->dc_blockSize, context->dc_sampleRate);
+    t_signal *s = signal_newWithContext (context);
     t_float *f  = object_getSignalAtIndex (u->u_owner, i);
     
     if (f) { dsp_addScalarPerform (f, s->s_vector, s->s_vectorSize); }
@@ -264,9 +212,7 @@ static void ugen_graphMainRecursive (t_dspcontext *context, t_ugenbox *u)
     
     /* Create all signals for outlets. */
     
-    for (i = 0; i < u->u_outSize; i++) {
-        *p++ = u->u_out[i].o_signal = signal_new (context->dc_blockSize, context->dc_sampleRate);
-    }
+    for (i = 0; i < u->u_outSize; i++) { *p++ = u->u_out[i].o_signal = signal_newWithContext (context); }
     
     /* Call the ugen dsp method. */
     
@@ -369,6 +315,7 @@ t_dspcontext *ugen_graphStart (int isTopLevel, t_signal **sp, int m, int n)
         t_signal *s = *(sp + i);
         PD_ASSERT (s->s_vectorSize == context->dc_parentContext->dc_blockSize);
         PD_ASSERT (s->s_sampleRate == context->dc_parentContext->dc_sampleRate);
+        PD_ASSERT (s->s_overlap    == context->dc_parentContext->dc_overlap);
         //
         }
         //
@@ -418,6 +365,7 @@ void ugen_graphClose (t_dspcontext *context)
     t_dspcontext *parentContext = context->dc_parentContext;
     t_float parentSampleRate    = parentContext ? parentContext->dc_sampleRate : audio_getSampleRate();
     int parentBlockSize         = parentContext ? parentContext->dc_blockSize  : INTERNAL_BLOCKSIZE;
+    int parentOverlap           = parentContext ? parentContext->dc_overlap    : 1;
     int chainBegin;
     int chainEnd;
     int chainEpilogue;
@@ -426,19 +374,21 @@ void ugen_graphClose (t_dspcontext *context)
     
     t_blockproperties p;
     
+    p.bp_blockSize  = parentBlockSize;
+    p.bp_overlap    = parentOverlap;
+    p.bp_downsample = 1;
+    p.bp_upsample   = 1;
     p.bp_switchable = 0;
     p.bp_reblocked  = parentContext ? 0 : 1;
-    p.bp_blockSize  = parentBlockSize;
     p.bp_sampleRate = parentSampleRate;
     p.bp_period     = 1;
     p.bp_frequency  = 1;
-    p.bp_downsample = 1;
-    p.bp_upsample   = 1;
-    
+
     if (block) { block_setProperties (block, &p); }
 
     context->dc_sampleRate = p.bp_sampleRate;
     context->dc_blockSize  = p.bp_blockSize;
+    context->dc_overlap    = p.bp_overlap;
     
     ugen_graphPrologue (context, &p);
     
