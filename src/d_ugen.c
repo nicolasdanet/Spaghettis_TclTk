@@ -16,8 +16,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void block_setProperties                (t_block *, t_blockproperties *);
-void block_setPerformsLengthInDspChain  (t_block *, int, int);
+void block_setProperties        (t_block *, t_blockproperties *);
+void block_setLengthInDspChain  (t_block *, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -456,7 +456,7 @@ void ugen_graphClose (t_dspcontext *context)
 
     chainEpilogue = instance_getDspChainSize();
     
-    if (block) { block_setPerformsLengthInDspChain (block, chainEnd - chainBegin, chainEpilogue - chainEnd); }
+    if (block) { block_setLengthInDspChain (block, chainEnd - chainBegin, chainEpilogue - chainEnd); }
 
     ugen_graphDelete (context);
 }

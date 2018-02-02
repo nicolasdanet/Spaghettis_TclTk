@@ -83,7 +83,7 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     p->bp_frequency      = frequency;
 }
 
-void block_setPerformsLengthInDspChain (t_block *x, int context, int epilogue)
+void block_setLengthInDspChain (t_block *x, int context, int epilogue)
 {
     x->bk_contextLength  = context;
     x->bk_epilogueLength = epilogue;

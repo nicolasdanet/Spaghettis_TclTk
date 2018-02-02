@@ -74,14 +74,14 @@ struct _vinlet {
     t_glist         *vi_owner;
     t_outlet        *vi_outlet;
     t_inlet         *vi_inlet;
-    t_signal        *vi_directSignal;
+    t_signal        *vi_directSignal;   /* Used to efficiently by-pass all the inlet. */
     };
 
 struct _voutlet {
     t_object        vo_obj;             /* Must be the first. */
     t_resample      vo_resample;        /* Extended buffer if resampling is required. */
     int             vo_hopSize;         /* Size of the hop if overlapped. */
-    int             vo_copyOut;         /* Make a bypassable copy perform (switch~ object). */
+    int             vo_copyOut;         /* Behavior is to perform a copy (switch~ object). */
     int             vo_bufferSize;      /* Handle vector size conversion in a buffer. */
     t_sample        *vo_buffer;
     t_sample        *vo_bufferEnd;
@@ -89,7 +89,7 @@ struct _voutlet {
     t_sample        *vo_bufferWrite;
     t_glist         *vo_owner;
     t_outlet        *vo_outlet;
-    t_signal        *vo_directSignal;
+    t_signal        *vo_directSignal;   /* Used to efficiently by-pass all the outlet. */
     };
 
 // -----------------------------------------------------------------------------------------------------------
