@@ -53,7 +53,6 @@ typedef struct _hip_tilde {
 static void hip_tilde_frequency (t_hip_tilde *x, t_float f)
 {
     x->x_frequency           = (t_float)PD_MAX (0.0, f);
-    x->x_sampleRate          = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
     x->x_space.c_coefficient = (t_sample)(1.0 - x->x_frequency * PD_TWO_PI / x->x_sampleRate);
     x->x_space.c_coefficient = (t_sample)PD_CLAMP (x->x_space.c_coefficient, 0.0, 1.0);
 }

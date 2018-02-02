@@ -22,7 +22,8 @@ static t_signal *signal_new (t_float sampleRate, int vectorSize, int overlap)
     
     t_signal *s = (t_signal *)PD_MEMORY_GET (sizeof (t_signal));
     
-    PD_ASSERT (overlap > 0);
+    PD_ASSERT (sampleRate > 0);
+    PD_ASSERT (overlap    > 0);
     
     s->s_sampleRate = sampleRate;
     s->s_vectorSize = vectorSize;

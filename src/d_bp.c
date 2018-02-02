@@ -64,7 +64,6 @@ static void bp_tilde_coefficientsProceed (t_bp_tilde *x, t_float f, t_float q)
 {
     x->x_frequency  = (f < 0.001) ? (t_float)10.0 : f;
     x->x_q          = (t_float)PD_MAX (0.0, q);
-    x->x_sampleRate = (x->x_sampleRate <= 0) ? AUDIO_DEFAULT_SAMPLERATE : x->x_sampleRate;
     
     {
         double omega      = x->x_frequency * PD_TWO_PI / x->x_sampleRate;
