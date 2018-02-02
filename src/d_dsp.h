@@ -74,7 +74,7 @@ struct _vinlet {
     t_glist         *vi_owner;
     t_outlet        *vi_outlet;
     t_inlet         *vi_inlet;
-    t_signal        *vi_directSignal;   /* Used to efficiently by-pass all the inlet. */
+    t_signal        *vi_directSignal;   /* Used to efficiently by-pass the inlet. */
     };
 
 struct _voutlet {
@@ -89,7 +89,7 @@ struct _voutlet {
     t_sample        *vo_bufferWrite;
     t_glist         *vo_owner;
     t_outlet        *vo_outlet;
-    t_signal        *vo_directSignal;   /* Used to efficiently by-pass all the outlet. */
+    t_signal        *vo_directSignal;   /* Used to efficiently by-pass the outlet. */
     };
 
 // -----------------------------------------------------------------------------------------------------------

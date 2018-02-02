@@ -60,6 +60,24 @@ static t_int *voutlet_performEpilogue (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void voutlet_dspPrologue (t_voutlet *x, t_signal **signals, t_blockproperties *p)
+{
+    if (voutlet_isSignal (x)) {
+    //
+    if (p->bp_reblocked)  { x->vo_directSignal = NULL; }
+    else {
+    //
+    if (p->bp_switchable) { x->vo_copyOut = 1; }
+    
+    PD_ASSERT (signals);
+    
+    x->vo_directSignal = signals[outlet_getIndexAsSignal (x->vo_outlet)];
+    //
+    }
+    //
+    }
+}
+
 void voutlet_dsp (t_voutlet *x, t_signal **sp)
 {
     if (voutlet_isSignal (x)) {
@@ -77,24 +95,6 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
         else {
             dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_vectorSize);    /* Reblocked. */
         }
-    }
-    //
-    }
-}
-
-void voutlet_dspPrologue (t_voutlet *x, t_signal **signals, t_blockproperties *p)
-{
-    if (voutlet_isSignal (x)) {
-    //
-    if (p->bp_reblocked)  { x->vo_directSignal = NULL; }
-    else {
-    //
-    if (p->bp_switchable) { x->vo_copyOut = 1; }
-    
-    PD_ASSERT (signals);
-    
-    x->vo_directSignal = signals[outlet_getIndexAsSignal (x->vo_outlet)];
-    //
     }
     //
     }
