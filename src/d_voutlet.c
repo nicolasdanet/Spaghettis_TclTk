@@ -157,7 +157,10 @@ void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p
     else {
         dsp_add (voutlet_performEpilogue, 3, x, s->s_vector, vectorSize);
     }
-        
+    
+    /* Note that the resampled vector can be reallocated in function below. */
+    /* Thus it can NOT be used above. */
+
     if (resample_isRequired (&x->vo_resample)) { 
         resample_getBuffer (&x->vo_resample, s->s_vector, parentVectorSize, vectorSize);
     }
