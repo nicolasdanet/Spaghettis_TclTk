@@ -276,7 +276,7 @@
 #X text 168 564 Count bangs received.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 156 pd flow;
-#N canvas 307 214 527 370 subpatch 0;
+#N canvas 648 215 529 428 subpatch 0;
 #N canvas 0 50 450 300 Patch 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 84 pd;
@@ -303,6 +303,10 @@
 #X obj 36 252 blocksize;
 #X text 168 252 Get the audio vector size.;
 #X text 168 108 Attach a patch to a name.;
+#X obj 36 348 block~;
+#X obj 36 372 switch~;
+#X text 168 348 Modify the block size in a subpatch.;
+#X text 168 372 Switch DSP computation on and off.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 132 pd subpatch;
 #N canvas 552 24 454 498 operators 0;
@@ -466,7 +470,7 @@
 #X text 180 132 Noise generator.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 420 pd generators~;
-#N canvas 207 181 579 567 miscellaneous~ 0;
+#N canvas 303 176 571 523 miscellaneous~ 0;
 #X obj 36 84 dac~;
 #X obj 36 108 adc~;
 #X obj 36 132 sig~;
@@ -478,10 +482,8 @@
 #X obj 36 372 receive~;
 #X obj 36 396 throw~;
 #X obj 36 420 catch~;
-#X obj 36 444 block~;
-#X obj 36 468 switch~;
-#X obj 36 492 readsf~;
-#X obj 36 516 writesf~;
+#X obj 36 444 readsf~;
+#X obj 36 468 writesf~;
 #X obj 36 204 threshold~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 168 84 Audio output.;
@@ -493,10 +495,8 @@
 #X text 168 372 Fetch the signal sent.;
 #X text 168 396 Many-to-one summing bus.;
 #X text 168 420 Read a summing bus.;
-#X text 168 444 Modify the block size in a subpatch.;
-#X text 168 468 Switch DSP computation on and off.;
-#X text 168 492 Read a soundfile.;
-#X text 168 516 Write streaming audio to disk.;
+#X text 168 444 Read a soundfile.;
+#X text 168 468 Write streaming audio to disk.;
 #X obj 36 252 env~;
 #X text 168 252 Envelope follower.;
 #X obj 36 276 samphold~;
