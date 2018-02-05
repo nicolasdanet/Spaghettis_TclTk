@@ -72,10 +72,10 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     reblocked |= (downsample != 1);
     reblocked |= (upsample   != 1);
     
+    x->bk_reblocked      = reblocked;
     x->bk_phase          = (int)(phase & (t_phase)(period - 1));
     x->bk_period         = period;
     x->bk_frequency      = frequency;
-    x->bk_reblocked      = reblocked;
 
     p->bp_blockSize      = blockSize;
     p->bp_overlap        = overlap;

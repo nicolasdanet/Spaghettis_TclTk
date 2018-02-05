@@ -298,15 +298,19 @@ static inline t_pd *instance_getNewestObject (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline void instance_setDspPhaseIncrement (void)
+static inline void instance_incrementDspPhase (void)
 {
     instance_get()->pd_dspPhase++;
 }
 
-static inline void instance_setDspChainIdentifierIncrement (void)
+static inline void instance_incrementDspChainIdentifier (void)
 {
     instance_get()->pd_dspChainIdentifier++;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static inline void instance_setNewestObject (t_pd *x)
 {

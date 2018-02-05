@@ -99,7 +99,7 @@ static void instance_dspInitialize (void)
     instance_get()->pd_dspChain     = (t_int *)PD_MEMORY_GET (sizeof (t_int));
     instance_get()->pd_dspChain[0]  = (t_int)instance_dspDone;
     
-    instance_setDspChainIdentifierIncrement();
+    instance_incrementDspChainIdentifier();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ void instance_dspTick (void)
 {
     t_int *t = instance_getDspChain();
     
-    if (t) { while (t) { t = (*(t_perform)(*t))(t); } instance_setDspPhaseIncrement(); }
+    if (t) { while (t) { t = (*(t_perform)(*t))(t); } instance_incrementDspPhase(); }
 }
 
 void instance_dspStart (void)
