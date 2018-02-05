@@ -52,7 +52,6 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     int isTopPatch              = p->bp_reblocked;
     t_float parentSampleRate    = p->bp_sampleRate;
     
-    t_phase phase        = instance_getDspPhase();
     int reblocked        = isTopPatch;
     int blockSize        = (x->bk_blockSize > 0) ? x->bk_blockSize : parentBlockSize;
     int overlap          = PD_MIN (x->bk_overlap, blockSize);
@@ -73,7 +72,7 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     reblocked |= (upsample   != 1);
     
     x->bk_reblocked      = reblocked;
-    x->bk_phase          = (int)(phase & (t_phase)(period - 1));
+    x->bk_phase          = (int)(instance_getDspPhase() & (t_phase)(period - 1));
     x->bk_period         = period;
     x->bk_frequency      = frequency;
 
