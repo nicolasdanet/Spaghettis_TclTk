@@ -276,6 +276,7 @@
 #include "d_dac.c"
 #include "d_resample.c"
 #include "d_block.c"
+#include "d_blockinfo.c"
 #include "d_vperform.c"
 #include "d_perform.c"
 #include "d_functions.c"

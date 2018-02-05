@@ -184,6 +184,8 @@ void        canvas_dspProceed           (t_glist *glist, int isTopLevel, t_signa
 t_float     canvas_getSampleRate        (t_glist *glist);
 t_float     canvas_getBlockSize         (t_glist *glist);
 
+t_block     *canvas_getBlock            (t_glist *glist);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

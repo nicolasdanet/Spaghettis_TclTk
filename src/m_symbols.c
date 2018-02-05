@@ -212,6 +212,7 @@ t_symbol *sym_bindlist;
 t_symbol *sym_biquad__tilde__;
 t_symbol *sym_bitwise;
 t_symbol *sym_block__tilde__;
+t_symbol *sym_blockinfo__tilde__;
 t_symbol *sym_blocksize;
 t_symbol *sym_bng;
 t_symbol *sym_bp__tilde__;
@@ -838,6 +839,7 @@ void symbols_initialize (void)
     sym_biquad__tilde__                         = gensym ("biquad~");
     sym_bitwise                                 = gensym ("bitwise");
     sym_block__tilde__                          = gensym ("block~");
+    sym_blockinfo__tilde__                      = gensym ("blockinfo~");
     sym_blocksize                               = gensym ("blocksize");
     sym_bng                                     = gensym ("bng");
     sym_bp__tilde__                             = gensym ("bp~");

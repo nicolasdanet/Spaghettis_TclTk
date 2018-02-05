@@ -42,6 +42,16 @@ int block_getBlockSize (t_block *x)
     return x->bk_blockSize;
 }
 
+/* Get the current step number in submultiple iteration. */
+
+int block_getCount (t_block *x)
+{
+    if (x->bk_frequency > 1) { return (x->bk_frequency - x->bk_count); }
+    else {
+        return 0;
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

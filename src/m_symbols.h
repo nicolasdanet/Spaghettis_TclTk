@@ -212,6 +212,7 @@ extern t_symbol *sym_bindlist;
 extern t_symbol *sym_biquad__tilde__;
 extern t_symbol *sym_bitwise;
 extern t_symbol *sym_block__tilde__;
+extern t_symbol *sym_blockinfo__tilde__;
 extern t_symbol *sym_blocksize;
 extern t_symbol *sym_bng;
 extern t_symbol *sym_bp__tilde__;
