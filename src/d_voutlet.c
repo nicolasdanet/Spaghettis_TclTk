@@ -46,7 +46,7 @@ static t_int *voutlet_performEpilogue (t_int *w)
     
     t_sample *in = x->vo_bufferRead;
     
-    if (out == NULL) { out = resample_vector (&x->vo_resample); }
+    if (out == NULL) { out = resample_vector (&x->vo_resample); }   /* Can NOT be fetch before (see below). */
 
     while (n--) { *out = *in; *in = (t_sample)0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
