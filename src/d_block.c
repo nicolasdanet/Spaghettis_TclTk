@@ -69,7 +69,7 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     int upsample         = x->bk_upsample;
     int period           = PD_MAX (1, ((blockSize * downsample) / (parentBlockSize * overlap * upsample)));
     int frequency        = PD_MAX (1, ((parentBlockSize * overlap * upsample) / (blockSize * downsample)));
-    t_float sampleRate   = parentSampleRate * overlap * (upsample / downsample);
+    t_float sampleRate   = parentSampleRate * overlap * ((t_float)upsample / (t_float)downsample);
     int switchable       = x->bk_switchable;
     
     PD_ASSERT (PD_IS_POWER_2 (period));
