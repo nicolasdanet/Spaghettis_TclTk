@@ -498,7 +498,7 @@
 #X text 168 228 Compute inverse magnitude of a complexe signal.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 540 pd fft~;
-#N canvas 674 214 510 191 subpatch~ 0;
+#N canvas 674 214 520 214 subpatch~ 0;
 #X obj 36 84 bang~;
 #X obj 36 108 block~;
 #X obj 36 132 switch~;
@@ -507,6 +507,8 @@
 #X text 168 108 Modify the block size in a subpatch.;
 #X text 168 132 Switch DSP computation on and off.;
 #X text 24 24 subpatch~;
+#X obj 36 156 blockinfo~;
+#X text 168 156 Get "under-the-hood" block~ mechanism.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 420 pd subpatch~;
 #N canvas 360 279 537 259 flow~ 0;

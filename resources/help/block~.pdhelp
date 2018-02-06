@@ -73,4 +73,5 @@
 #X text 12 12 Following are limited by the size of the array.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 204 pd limited;
+#X obj 180 288 blockinfo~;
 #X coords 0 0 1 1 250 175 0 0 0;

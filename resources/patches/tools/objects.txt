@@ -150,6 +150,7 @@ append
 block~
 switch~
 bang~
+blockinfo~
 
 dac~
 adc~
