@@ -24,6 +24,7 @@ static t_class *tabwrite_tilde_class;           /* Shared. */
 typedef struct _tabwrite_tilde {
     t_object    x_obj;                          /* Must be the first. */
     t_float     x_f;
+    int         x_count;
     int         x_redraw;
     int         x_phase;
     int         x_size;
@@ -57,6 +58,11 @@ void tab_fetchArray (t_symbol *s, int *size, t_word **data, t_symbol *err)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void tabwrite_tilde_counter (t_tabwrite_tilde *x)
+{
+    x->x_count = x->x_size >> 4;
+}
+
 static void tabwrite_tilde_bang (t_tabwrite_tilde *x)
 {
     x->x_phase = 0;
@@ -89,6 +95,8 @@ static void tabwrite_tilde_polling (t_tabwrite_tilde *x)
 static void tabwrite_tilde_set (t_tabwrite_tilde *x, t_symbol *s)
 {
     tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector, sym_tabwrite__tilde__);
+    
+    tabwrite_tilde_counter (x);
 }
 
 static void tabwrite_tilde_start (t_tabwrite_tilde *x, t_float f)
@@ -126,6 +134,8 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     phase += size; if (phase >= end) { x->x_redraw = 1; phase = PD_INT_MAX; }
     
     x->x_phase = phase;
+    
+    x->x_count -= n; if (x->x_count <= 0) { x->x_redraw = 1; tabwrite_tilde_counter (x); }
     
     while (size--) {
     //
