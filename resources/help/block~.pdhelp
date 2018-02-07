@@ -66,7 +66,7 @@
 #X text 12 12 Following objects must NOT be used reblocked.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 180 pd unsupported;
-#N canvas 720 336 423 154 limited 0;
+#N canvas 720 336 437 152 limited 0;
 #X obj 36 48 tabsend~;
 #X obj 36 72 tabreceive~;
 #X text 12 108 Exceeding is clamped \, missing is zeroed.;
