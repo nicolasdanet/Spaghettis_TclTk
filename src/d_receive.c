@@ -9,6 +9,7 @@
 
 #include "m_spaghettis.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "d_dsp.h"
 #include "d_global.h"
 
@@ -55,9 +56,9 @@ static t_int *receive_tilde_perform (t_int *w)
     PD_RESTRICTED out  = (t_sample *)(w[2]);
     PD_RESTRICTED in   = x->x_vector;
     
-    if (in) { memcpy (out, in, DSP_SEND_SIZE * sizeof (t_sample)); }
+    if (in) { memcpy (out, in, INTERNAL_BLOCKSIZE * sizeof (t_sample)); }
     else {
-        memset (out, 0, DSP_SEND_SIZE * sizeof (t_sample));
+        memset (out, 0, INTERNAL_BLOCKSIZE * sizeof (t_sample));
     }
     
     return (w + 3);
@@ -65,10 +66,11 @@ static t_int *receive_tilde_perform (t_int *w)
 
 static void receive_tilde_dsp (t_receive_tilde *x, t_signal **sp)
 {
-    if (sp[0]->s_vectorSize != DSP_SEND_SIZE) { error_mismatch (sym_receive__tilde__, sym_size); }
+    if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_receive__tilde__, sym_size); }
     else {
         receive_tilde_set (x, x->x_name);
-        PD_ASSERT (x->x_vector != sp[0]->s_vector); dsp_add (receive_tilde_perform, 2, x, sp[0]->s_vector);
+        PD_ASSERT (x->x_vector != sp[0]->s_vector);
+        dsp_add (receive_tilde_perform, 2, x, sp[0]->s_vector);
     }
 }
 

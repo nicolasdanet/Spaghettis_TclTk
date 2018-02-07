@@ -9,6 +9,7 @@
 
 #include "m_spaghettis.h"
 #include "m_core.h"
+#include "s_system.h"
 #include "d_dsp.h"
 #include "d_global.h"
 
@@ -52,14 +53,14 @@ static t_int *throw_tilde_perform (t_int *w)
     PD_RESTRICTED in  = (t_sample *)(w[2]);
     PD_RESTRICTED out = x->x_vector;
     
-    if (out) { int i; for (i = 0; i < DSP_SEND_SIZE; i++) { *out += *in; out++; in++; } }
+    if (out) { int i; for (i = 0; i < INTERNAL_BLOCKSIZE; i++) { *out += *in; out++; in++; } }
     
     return (w + 3);
 }
 
 static void throw_tilde_dsp (t_throw_tilde *x, t_signal **sp)
 {
-    if (sp[0]->s_vectorSize != DSP_SEND_SIZE) { error_mismatch (sym_throw__tilde__, sym_size); }
+    if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_throw__tilde__, sym_size); }
     else {
         throw_tilde_set (x, x->x_name);
         if (!x->x_vector && x->x_name != &s_) { error_canNotFind (sym_throw__tilde__, x->x_name); }

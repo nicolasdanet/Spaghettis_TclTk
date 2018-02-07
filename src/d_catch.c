@@ -23,9 +23,9 @@ t_class *catch_tilde_class;         /* Shared. */
 
 static void catch_tilde_dsp (t_catch_tilde *x, t_signal **sp)
 {
-    if (sp[0]->s_vectorSize != DSP_SEND_SIZE) { error_mismatch (sym_catch__tilde__, sym_size); }
+    if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_catch__tilde__, sym_size); }
     else {
-        dsp_addCopyZeroPerform (x->x_vector, sp[0]->s_vector, DSP_SEND_SIZE);
+        dsp_addCopyZeroPerform (x->x_vector, sp[0]->s_vector, INTERNAL_BLOCKSIZE);
     }
 }
 
@@ -37,7 +37,7 @@ static void *catch_tilde_new (t_symbol *s)
 {
     t_catch_tilde *x = (t_catch_tilde *)pd_new (catch_tilde_class);
     
-    x->x_vector = (t_sample *)PD_MEMORY_GET (DSP_SEND_SIZE * sizeof (t_sample));
+    x->x_vector = (t_sample *)PD_MEMORY_GET (INTERNAL_BLOCKSIZE * sizeof (t_sample));
     x->x_name   = s;
     x->x_outlet = outlet_new (cast_object (x), &s_signal);
     

@@ -23,9 +23,9 @@ t_class *send_tilde_class;              /* Shared. */
 
 static void send_tilde_dsp (t_send_tilde *x, t_signal **sp)
 {
-    if (sp[0]->s_vectorSize != DSP_SEND_SIZE) { error_mismatch (sym_send__tilde__, sym_size); }
+    if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_send__tilde__, sym_size); }
     else {
-        dsp_addCopyPerform (sp[0]->s_vector, x->x_vector, DSP_SEND_SIZE);
+        dsp_addCopyPerform (sp[0]->s_vector, x->x_vector, INTERNAL_BLOCKSIZE);
     }
 }
 
@@ -38,7 +38,7 @@ static void *send_tilde_new (t_symbol *s)
     t_send_tilde *x = (t_send_tilde *)pd_new (send_tilde_class);
 
     x->x_f      = (t_float)0.0;
-    x->x_vector = (t_sample *)PD_MEMORY_GET (DSP_SEND_SIZE * sizeof (t_sample));
+    x->x_vector = (t_sample *)PD_MEMORY_GET (INTERNAL_BLOCKSIZE * sizeof (t_sample));
     x->x_name   = s;
     
     if (x->x_name != &s_) { pd_bind (cast_pd (x), s); }
