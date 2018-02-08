@@ -243,7 +243,7 @@ t_sample *resample_setBuffer (t_resample *x, t_sample *s, int size, int resample
             size,
             x->r_vector,
             x->r_vectorSize,
-            (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_ZERO);
+            (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_HOLD);
     }
     
     return x->r_vector;

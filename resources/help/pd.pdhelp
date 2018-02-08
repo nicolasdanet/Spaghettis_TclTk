@@ -49,7 +49,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 708 456 pd init;
 #X obj 708 432 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#N canvas 673 293 652 182 upsampled 0;
+#N canvas 673 293 657 182 upsampled 0;
 #X obj 504 132 block~ 128 1 2;
 #X obj 36 48 inlet~ hold;
 #X obj 180 132 print~;
@@ -60,7 +60,7 @@
 #X obj 60 96 bng 15 250 50 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000;
 #X obj 204 96 bng 15 250 50 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000;
 #X obj 348 96 bng 15 250 50 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000;
-#X text 12 12 The default is (zero) pad.;
+#X text 12 12 The default (sample and) hold.;
 #X connect 1 0 3 0;
 #X connect 5 0 2 0;
 #X connect 6 0 4 0;
@@ -70,7 +70,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 288 pd upsampled;
 #X obj 36 48 tabreceive~ \$0-tab;
-#N canvas 344 102 661 196 downsampled 0;
+#N canvas 344 102 652 196 downsampled 0;
 #X obj 492 144 block~ 32 1 0.5;
 #X obj 36 48 tabreceive~ \$0-tab;
 #X obj 180 144 outlet~ pad;
