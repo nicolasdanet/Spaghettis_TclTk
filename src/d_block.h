@@ -66,6 +66,8 @@ t_int       *block_performEpilogue          (t_int *w);
 t_float     block_getResamplingRatio        (t_block *x);
 int         block_getBlockSize              (t_block *x);
 int         block_getCount                  (t_block *x);
+int         block_getFrequency              (t_block *x);
+int         block_getPeriod                 (t_block *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
