@@ -109,13 +109,23 @@ void instance_dspTick (void)
 {
     t_int *t = instance_getDspChain();
     
-    if (t) { while (t) { t = (*(t_perform)(*t))(t); } instance_incrementDspPhase(); }
+    if (t) {
+    //
+    while (t) { t = (*(t_perform)(*t))(t); } instance_incrementDspPhase();
+        
+    //PD_LOG ("#");
+    //PD_LOG_NUMBER (instance_getDspPhase());
+    //PD_LOG ("#");
+    //
+    }
 }
 
 void instance_dspStart (void)
 {
     t_glist *glist;
 
+    //PD_LOG ("START");
+    
     instance_dspInitialize();
     
     for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) { 
@@ -125,6 +135,8 @@ void instance_dspStart (void)
 
 void instance_dspStop (void)
 {
+    //PD_LOG ("STOP");
+    
     instance_dspRelease();
 }
 

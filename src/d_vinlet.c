@@ -31,9 +31,18 @@ static t_int *vinlet_performPrologue (t_int *w)
         t_sample *f2 = x->vi_buffer + x->vi_hopSize;
         int shift    = x->vi_bufferSize - x->vi_hopSize;
         out -= x->vi_hopSize;
+        //PD_LOG ("SHIFT");
+        //PD_LOG_NUMBER (x->vi_hopSize);
+        //PD_LOG ("/");
+        //PD_LOG_NUMBER (shift);
         while (shift--) { *f1++ = *f2++; }
     }
-
+    
+    //PD_LOG ("P");
+    //PD_LOG_NUMBER (out - x->vi_buffer);
+    //PD_LOG ("/");
+    //PD_LOG_NUMBER (n);
+    
     while (n--) { *out++ = *in++; }
     
     x->vi_bufferWrite = out;
@@ -51,6 +60,11 @@ static t_int *vinlet_perform (t_int *w)
     
     t_sample *in = x->vi_bufferRead;
 
+    //PD_LOG ("R");
+    //PD_LOG_NUMBER (in - x->vi_buffer);
+    //PD_LOG ("/");
+    //PD_LOG_NUMBER (n);
+    
     while (n--) { *out++ = *in++; }
     if (in == x->vi_bufferEnd) { in = x->vi_buffer; }
     
@@ -106,6 +120,13 @@ void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     x->vi_hopSize     = p->bp_period * vectorSize;
     x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (phase * vectorSize));
 
+    //PD_LOG ("INLET BUFFER");
+    //PD_LOG_NUMBER (bufferSize);
+    //PD_LOG ("INLET PHASE");
+    //PD_LOG_NUMBER (phase);
+    //PD_LOG ("INLET HOP");
+    //PD_LOG_NUMBER (x->vi_hopSize);
+    
     PD_ASSERT (x->vi_hopSize <= x->vi_bufferSize);
     
     if (!resample_isRequired (&x->vi_resample)) { t = s->s_vector; }    /* Original signal. */

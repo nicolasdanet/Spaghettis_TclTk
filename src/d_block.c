@@ -96,6 +96,15 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     x->bk_period         = period;
     x->bk_frequency      = frequency;
 
+    //PD_LOG ("PHASE");
+    //PD_LOG_NUMBER (instance_getDspPhase());
+    //PD_LOG ("BLOCK FREQUENCY");
+    //PD_LOG_NUMBER (x->bk_frequency);
+    //PD_LOG ("BLOCK PERIOD");
+    //PD_LOG_NUMBER (x->bk_period);
+    //PD_LOG ("BLOCK PHASE");
+    //PD_LOG_NUMBER (x->bk_phase);
+    
     p->bp_blockSize      = blockSize;
     p->bp_overlap        = overlap;
     p->bp_downsample     = downsample;
