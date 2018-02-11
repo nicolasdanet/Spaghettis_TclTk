@@ -31,18 +31,6 @@ TTT_BEGIN_ALLOW (BenchmarkCosine, 60, "Benchmark - Cosine")
 
     cos_tilde_initialize();
     
-    /* Standard function. */
-    
-    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
-    
-        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
-        //
-        benchmark_dummy += cosf ((float)(PD_RAND48_DOUBLE (seed) * PD_TWO_PI));
-        //
-        }
-    
-    double t1 = ttt_timeTrigger();
-    
     /* Claude Heiland-Allen's polynomial approximation. */
     
     PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
@@ -53,7 +41,7 @@ TTT_BEGIN_ALLOW (BenchmarkCosine, 60, "Benchmark - Cosine")
         //
         }
     
-    double t2 = ttt_timeTrigger();
+    double t1 = ttt_timeTrigger();
     
     /* JUCE's Padé approximant. */
     
@@ -65,7 +53,7 @@ TTT_BEGIN_ALLOW (BenchmarkCosine, 60, "Benchmark - Cosine")
         //
         }
     
-    double t3 = ttt_timeTrigger();
+    double t2 = ttt_timeTrigger();
     
     /* Miller Puckette's LUT. */
     
@@ -77,18 +65,30 @@ TTT_BEGIN_ALLOW (BenchmarkCosine, 60, "Benchmark - Cosine")
         //
         }
     
+    double t3 = ttt_timeTrigger();
+    
+    /* Standard function. */
+    
+    PD_MEMORY_BARRIER; benchmark_dummy = 0; ttt_timeTrigger();
+    
+        for (i = 0; i < TEST_BENCHMARK_LOOP; i++) {
+        //
+        benchmark_dummy += cosf ((float)(PD_RAND48_DOUBLE (seed) * PD_TWO_PI));
+        //
+        }
+    
     double t4 = ttt_timeTrigger();
     
-    // -- ttt_stdout (TTT_COLOR_BLUE, "STD: %f", t1);
-    // -- ttt_stdout (TTT_COLOR_BLUE, "COS: %f", t2);
-    // -- ttt_stdout (TTT_COLOR_BLUE, "PAD: %f", t3);
-    // -- ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", t4);
+    // -- ttt_stdout (TTT_COLOR_BLUE, "COS: %f", t1);
+    // -- ttt_stdout (TTT_COLOR_BLUE, "PAD: %f", t2);
+    // -- ttt_stdout (TTT_COLOR_BLUE, "LUT: %f", t3);
+    // -- ttt_stdout (TTT_COLOR_BLUE, "STD: %f", t4);
     
     /* Pure Data's LUT is the best? */
     
-    PD_ASSERT (t4 < t1);
-    PD_ASSERT (t4 < t2);
-    PD_ASSERT (t4 < t3);
+    TTT_EXPECT (t3 < t1);
+    TTT_EXPECT (t3 < t2);
+    TTT_EXPECT (t3 < t4);
     
     cos_tilde_release();
 
