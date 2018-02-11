@@ -31,7 +31,10 @@ void delwrite_tilde_setMasterVectorSize (t_delwrite_tilde *x, int vectorSize)
     }
 }
 
-void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate)
 {
     int n = (int)(MILLISECONDS_TO_SECONDS (x->dw_delayLineInMilliseconds) * sampleRate);
     
@@ -129,7 +132,6 @@ static void *delwrite_tilde_new (t_symbol *s, t_float milliseconds)
     
     return x;
 }
-
 
 static void delwrite_tilde_free (t_delwrite_tilde *x)
 {

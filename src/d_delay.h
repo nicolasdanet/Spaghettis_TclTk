@@ -43,7 +43,6 @@ typedef struct _delwrite_tilde {
 // MARK: -
 
 void delwrite_tilde_setMasterVectorSize (t_delwrite_tilde *x, int vectorSize);
-void delwrite_tilde_updateDelayLine     (t_delwrite_tilde *x, t_float sampleRate);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
