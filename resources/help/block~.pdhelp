@@ -1,4 +1,4 @@
-#N canvas 680 313 519 339 12;
+#N canvas 644 308 519 339 12;
 #X obj 132 288 fft~;
 #N canvas 0 22 500 350 Patch 0;
 #X coords 0 0 1 1 250 175 0 0 0;
@@ -44,12 +44,13 @@
 #X connect 10 0 9 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 156 pd arguments;
-#N canvas 270 368 533 177 warning 0;
+#N canvas 581 476 596 177 warning 0;
 #X obj 36 48 delwrite~;
 #X obj 36 72 delread~;
 #X obj 36 96 vd~;
-#X text 12 12 For now communication without cords is NOT fully supported.;
-#X text 12 132 Thus objects above must be used with extra care.;
+#X text 12 12 Following object are supported.;
+#X text 12 132 Note that the delay line size is based on the reader's sample rate.;
+#X f 67;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 228 pd warning;
 #X text 12 72 Modify the block size of DSP in a subpatch.;
@@ -63,7 +64,7 @@
 #X obj 36 120 receive~;
 #X text 12 12 Following objects must be default blocked.;
 #X f 43;
-#X text 12 204 That is (for now) a block size of '64'.;
+#X text 12 204 That is (for now) a vector size of '64'.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 180 pd unsupported;
 #N canvas 448 633 401 150 limited 0;

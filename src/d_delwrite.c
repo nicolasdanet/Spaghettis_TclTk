@@ -33,11 +33,11 @@ void delwrite_tilde_setMasterVectorSize (t_delwrite_tilde *x, int vectorSize)
 
 void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate)
 {
-    int n = (int)(MILLISECONDS_TO_SECONDS (x->dw_delayInMilliseconds) * sampleRate);
+    int n = (int)(MILLISECONDS_TO_SECONDS (x->dw_delayLineInMilliseconds) * sampleRate);
     
     n = PD_MAX (1, n);
     n += ((- n) & (DELAY_ROUND_SAMPLES - 1));   /* Snap to the next multiple of DELAY_ROUND_SAMPLES. */
-    n += DELAY_BLOCK_SIZE;
+    n += INTERNAL_BLOCKSIZE;
     
     if (x->dw_space.c_size != n) {
     //
@@ -120,10 +120,10 @@ static void *delwrite_tilde_new (t_symbol *s, t_float milliseconds)
 {
     t_delwrite_tilde *x = (t_delwrite_tilde *)pd_new (delwrite_tilde_class);
 
-    x->dw_delayInMilliseconds   = milliseconds;
-    x->dw_space.c_size          = 0;
-    x->dw_space.c_vector        = (t_sample *)PD_MEMORY_GET ((0 + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
-    x->dw_name                  = (s == &s_) ? sym_delwrite__tilde__ : s;
+    x->dw_delayLineInMilliseconds = milliseconds;
+    x->dw_space.c_size            = 0;
+    x->dw_space.c_vector          = (t_sample *)PD_MEMORY_GET ((0 + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
+    x->dw_name                    = (s == &s_) ? sym_delwrite__tilde__ : s;
     
     pd_bind (cast_pd (x), x->dw_name);
     

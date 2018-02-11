@@ -81,6 +81,7 @@ static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
     int buildIdentifier = instance_getDspChainIdentifier();
     
     delwrite_tilde_setMasterVectorSize (m, sp[0]->s_vectorSize);
+    delwrite_tilde_updateDelayLine (m, sp[0]->s_sampleRate);
     
     /* Set master vector size as zero in non-recirculating cases. */
     

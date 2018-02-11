@@ -1,9 +1,8 @@
-#N canvas 797 151 369 235 12;
+#N canvas 634 112 369 235 12;
 #X text 12 192 See also:;
 #X obj -60 12 freeze;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 blockinfo~;
-#X text 12 72 Get "under-the-hood" block~ mechanism.;
 #X obj 96 192 block~;
 #N canvas 374 231 620 267 chunk 0;
 #X msg 216 48 set 64;
@@ -27,7 +26,7 @@
 #X connect 9 0 6 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 108 pd chunk;
-#N canvas 300 262 397 400 more 0;
+#N canvas 346 261 397 400 more 0;
 #X obj 36 48 block~ 128 1 4;
 #X obj 36 84 blockinfo~;
 #X f 11;
@@ -59,4 +58,5 @@
 #X connect 10 0 11 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 132 pd more;
+#X text 12 72 Get "under-the-hood" block~ machinery.;
 #X coords 0 0 1 1 250 175 0 0 0;

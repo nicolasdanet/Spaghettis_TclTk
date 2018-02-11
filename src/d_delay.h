@@ -23,7 +23,7 @@ typedef struct delwrite_tilde_control {
 typedef struct _delwrite_tilde {
     t_object                    dw_obj;                     /* Must be the first. */
     t_float                     dw_f;
-    t_float                     dw_delayInMilliseconds;
+    t_float                     dw_delayLineInMilliseconds;
     int                         dw_buildIdentifier;
     int                         dw_buildIdentifierForMasterVectorSize;
     int                         dw_masterVectorSize;
@@ -35,9 +35,8 @@ typedef struct _delwrite_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define DELAY_EXTRA_SAMPLES     4
+#define DELAY_EXTRA_SAMPLES     4       /* Required for 4-points interpolation. */
 #define DELAY_ROUND_SAMPLES     4
-#define DELAY_BLOCK_SIZE        64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

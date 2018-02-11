@@ -60,7 +60,7 @@
 #X connect 8 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 144 300 pd reader;
-#N canvas 412 96 374 389 writer 0;
+#N canvas 412 96 279 268 writer 0;
 #X obj 120 96 line~;
 #X obj 120 60 pack 0 100;
 #X obj 36 144 *~;
