@@ -168,7 +168,7 @@ void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p
         x->vo_hopSize = p->bp_period * vectorSize;
     }
     
-    //PD_LOG ("OUT HOP");
+    //PD_LOG ("OUTLET HOP");
     //PD_LOG_NUMBER (x->vo_hopSize);
     
     if (signals) {
