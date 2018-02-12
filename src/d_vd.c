@@ -24,7 +24,9 @@ typedef struct _vd_tilde {
     t_object    x_obj;                      /* Must be the first. */
     t_float     x_f;
     t_float     x_samplesPerMilliseconds;
-    int         x_masterVectorSize;
+    t_float     x_sampleRate;
+    int         x_vectorSize;
+    int         x_offsetSize;
     t_symbol    *x_name;
     t_outlet    *x_outlet;
     } t_vd_tilde;
@@ -43,6 +45,11 @@ static t_int *vd_tilde_perform (t_int *w)
     PD_RESTRICTED out = (t_sample *)(w[4]);
     int n = (int)(w[5]);
 
+    int mismatch = (x->x_vectorSize != c->c_vectorSize) || (x->x_sampleRate != c->c_sampleRate);
+    
+    if (mismatch) { while (n--) { *out++ = (t_sample)0.0; } }
+    else {
+    //
     t_float limit = c->c_size - n;
     
     while (n--) {
@@ -51,7 +58,9 @@ static t_int *vd_tilde_perform (t_int *w)
     
     if (PD_IS_NAN (f)) { f = (t_float)0.0; }
     
-    delayInSamples = (x->x_samplesPerMilliseconds * f) - x->x_masterVectorSize;
+    /* Note that the offset size is reported as zero in non-recirculating cases. */
+    
+    delayInSamples = (x->x_samplesPerMilliseconds * f) - x->x_offsetSize;
     delayInSamples = (t_float)(PD_CLAMP (delayInSamples, 1.0, limit) + n);
     
     {
@@ -65,6 +74,8 @@ static t_int *vd_tilde_perform (t_int *w)
     }
     //
     }
+    //
+    }
     
     return (w + 6);
 }
@@ -74,17 +85,17 @@ static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
     t_delwrite_tilde *m = (t_delwrite_tilde *)symbol_getThingByClass (x->x_name, delwrite_tilde_class);
     
     x->x_samplesPerMilliseconds = (t_float)(sp[0]->s_sampleRate * 0.001);
+    x->x_sampleRate = sp[0]->s_sampleRate;
+    x->x_vectorSize = sp[0]->s_vectorSize;
     
     if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_vd__tilde__, x->x_name); } }
     else {
     //
     int buildIdentifier = instance_getDspChainIdentifier();
     
-    delwrite_tilde_setMasterVectorSize (m, sp[0]->s_vectorSize);
+    /* Set the offset size as zero in non-recirculating cases. */
     
-    /* Set master vector size as zero in non-recirculating cases. */
-    
-    x->x_masterVectorSize = (m->dw_buildIdentifier == buildIdentifier ? 0 : m->dw_masterVectorSize);
+    x->x_offsetSize = (m->dw_buildIdentifier == buildIdentifier ? 0 : sp[0]->s_vectorSize);
     
     dsp_add (vd_tilde_perform, 5, x, &m->dw_space, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
     //

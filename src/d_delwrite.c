@@ -21,26 +21,16 @@ t_class *delwrite_tilde_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void delwrite_tilde_setMasterVectorSize (t_delwrite_tilde *x, int vectorSize)
-{
-    int buildIdentifier = instance_getDspChainIdentifier();
-    
-    if (x->dw_buildIdentifierForMasterVectorSize != buildIdentifier) {
-        x->dw_masterVectorSize = vectorSize;
-        x->dw_buildIdentifierForMasterVectorSize = buildIdentifier;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate)
+static void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate, int blockSize)
 {
     int n = (int)(MILLISECONDS_TO_SECONDS (x->dw_delayLineInMilliseconds) * sampleRate);
     
     n = PD_MAX (1, n);
-    n += ((- n) & (DELAY_ROUND_SAMPLES - 1));   /* Snap to the next multiple of DELAY_ROUND_SAMPLES. */
+    n += ((- n) & (DELAY_ROUND_SAMPLES - 1));       /* Snap to the next multiple of DELAY_ROUND_SAMPLES. */
     n += INTERNAL_BLOCKSIZE;
+    
+    x->dw_space.c_sampleRate = sampleRate;
+    x->dw_space.c_vectorSize = blockSize;
     
     if (x->dw_space.c_size != n) {
     //
@@ -80,6 +70,9 @@ static t_int *delwrite_tilde_perform (t_int *w)
     
     *p++ = f;
     
+    /* Make a copy of the last four ending points at start. */
+    /* Required for 4-points interpolation. */
+    
     if (p == c->c_vector + (c->c_size + DELAY_EXTRA_SAMPLES)) {
     //
     t_sample f1 = *(p - 4);
@@ -109,8 +102,7 @@ static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
 {
     x->dw_buildIdentifier = instance_getDspChainIdentifier();
     
-    delwrite_tilde_setMasterVectorSize (x, sp[0]->s_vectorSize);
-    delwrite_tilde_updateDelayLine (x, sp[0]->s_sampleRate);
+    delwrite_tilde_updateDelayLine (x, sp[0]->s_sampleRate, sp[0]->s_vectorSize);
     
     dsp_add (delwrite_tilde_perform, 3, &x->dw_space, sp[0]->s_vector, sp[0]->s_vectorSize);
 }

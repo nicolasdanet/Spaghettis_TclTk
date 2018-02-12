@@ -1,4 +1,4 @@
-#N canvas 194 51 541 622 12;
+#N canvas 523 60 541 622 12;
 #X obj 36 480 +~;
 #X obj 84 324 / 44.1;
 #X obj 84 360 pack 0 30;
@@ -6,10 +6,10 @@
 #X obj 36 300 outlet~;
 #N canvas 0 22 500 350 \$0-impulse 0;
 #X array \$0-impulse 64 float 1;
-#A 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
+#A 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
 #X coords 0 1 63 0 250 175 1 0 0;
 #X restore 264 36 graph \$0-impulse;
-#X obj 264 240 nbx 5 40 0 8 0 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 8;
+#X obj 264 240 nbx 5 40 0 8 0 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 5 8;
 #N canvas 438 393 260 248 impulse 0;
 #X obj 24 24 inlet;
 #X obj 24 192 s \$0-impulse;
@@ -40,7 +40,7 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 delay (order);
-#N canvas 646 109 718 189 more 0;
+#N canvas 606 235 688 170 more 0;
 #X text 12 36 Otherwise you'll never get less than a block's delay.;
 #X text 12 12 In non recirculating case you have to get the write "sorted" before the read.;
 #X f 78;
@@ -55,7 +55,7 @@
 #X restore 252 324 pd more;
 #X obj 84 168 delwrite~ \$0-delay 1000;
 #X obj 84 432 vd~ \$0-delay;
-#X obj 108 240 nbx 5 40 0 127 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 18 127;
+#X obj 108 240 nbx 5 40 0 127 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 127;
 #N canvas 0 22 500 350 \$0-out 0;
 #X array \$0-out 128 float 0;
 #X coords 0 1 127 0 250 175 1 0 0;
