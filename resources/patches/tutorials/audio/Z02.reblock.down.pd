@@ -51,7 +51,7 @@
 #X f 3;
 #X obj 132 24 sig~ 1;
 #X obj 132 108 -~;
-#X obj 204 24 blockinfo~;
+#X obj 228 24 blockinfo~;
 #X obj 84 192 tabwrite~ \$0-64-A 125;
 #X obj 36 228 tabwrite~ \$0-64-B 125;
 #X connect 0 0 1 0;
