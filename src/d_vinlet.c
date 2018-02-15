@@ -118,8 +118,8 @@ void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     int phase = (int)((instance_getDspPhase() - 1) & (t_phase)(p->bp_period - 1));
     
     x->vi_hopSize     = p->bp_period * vectorSize;
-    x->vi_bufferWrite = x->vi_bufferEnd - (x->vi_hopSize - (phase * vectorSize));
-
+    x->vi_bufferWrite = phase ? x->vi_bufferEnd - (x->vi_hopSize - (phase * vectorSize)) : x->vi_bufferEnd;
+    
     //PD_LOG ("INLET BUFFER");
     //PD_LOG_NUMBER (bufferSize);
     //PD_LOG ("INLET PHASE");
