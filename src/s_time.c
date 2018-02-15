@@ -96,7 +96,7 @@ static uint64_t time_makeSeed (void)
 
 /* Do NOT fit for cryptography purpose. */
 
-uint64_t time_makeRandomSeed (void)
+t_seed time_makeRandomSeed (void)
 {
     static uint64_t seed = 0;           /* Static. */
     
@@ -114,7 +114,7 @@ uint64_t time_makeRandomSeed (void)
     
     seed ^= time_makeSeed();
     
-    return seed;
+    return (t_seed)seed;
 }
 
 // -----------------------------------------------------------------------------------------------------------

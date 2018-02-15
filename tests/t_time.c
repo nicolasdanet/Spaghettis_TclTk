@@ -14,7 +14,7 @@ void test20__seed() {   /* PRNG seeding with time. */
 
 TTT_BEGIN (TimeSeed, 20, "Time - Seed")
 
-    uint64_t seed1, seed2;
+    t_seed seed1, seed2;
     
     int i;
     int failed = 0;

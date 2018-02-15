@@ -489,10 +489,12 @@ typedef double                      t_systime;
 #if PD_LP64
     typedef unsigned int            t_keycode;          // uint32_t
     typedef unsigned long           t_rand48;           // uint64_t
+    typedef unsigned long           t_seed;             // uint64_t
     typedef unsigned long           t_unique;           // uint64_t
 #else
     typedef unsigned long           t_keycode;
     typedef unsigned long long      t_rand48;
+    typedef unsigned long long      t_seed;
     typedef unsigned long long      t_unique;
 #endif
 
@@ -890,6 +892,12 @@ PD_DLL void     clock_delay                     (t_clock *x, double delay);     
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+PD_DLL t_seed   time_makeRandomSeed             (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 PD_DLL void     post                            (const char *fmt, ...);
 PD_DLL void     post_warning                    (const char *fmt, ...);
 PD_DLL void     post_error                      (const char *fmt, ...);
@@ -943,6 +951,17 @@ PD_DLL void     instance_dspChainAppend         (t_perform f, int n, ...);
 #define PD_PI                       3.1415926535897932384626433832795
 #define PD_TWO_PI                   6.283185307179586476925286766559
 #define PD_LOG_TEN                  2.3025850929940456840179914546844
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* < http://en.wikipedia.org/wiki/Linear_congruential_generator > */
+
+#define PD_RAND48_INIT(s)           ((s) = (t_rand48)time_makeRandomSeed() & 0xffffffffffffULL)
+#define PD_RAND48_NEXT(s)           ((s) = (((s) * 0x5deece66dULL + 0xbULL) & 0xffffffffffffULL))
+#define PD_RAND48_UINT32(s)         (PD_RAND48_NEXT (s) >> 16)
+#define PD_RAND48_DOUBLE(s)         (PD_RAND48_UINT32 (s) * (1.0 / 4294967296.0))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

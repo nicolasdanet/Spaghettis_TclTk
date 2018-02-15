@@ -82,7 +82,7 @@ MTState64 *genrand64_new (void)
     MTState64 *x = NULL;
     
     if ((x = (MTState64 *)PD_MEMORY_GET (sizeof (MTState64)))) {
-        init_genrand64 (x, time_makeRandomSeed());
+        init_genrand64 (x, (uint64_t)time_makeRandomSeed());
     }
         
     return x;
