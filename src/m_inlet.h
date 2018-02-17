@@ -36,6 +36,10 @@ struct _inlet {
 
 t_inlet *inlet_new              (t_object *owner, t_pd *receiver, t_symbol *t, t_symbol *m);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void    inlet_free              (t_inlet *x);
 void    inlet_setHot            (t_inlet *x);
 void    inlet_moveFirst         (t_inlet *x);

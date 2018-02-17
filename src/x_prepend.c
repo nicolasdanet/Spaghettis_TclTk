@@ -138,7 +138,7 @@ static void *prepend_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_outlet = outlet_new (cast_object (x), &s_anything);
     
-    inlet_new2 (x, sym_set);
+    inlet_new2 (x, sym_set);    /* TODO: Is that trick a good thing? */
     
     return x;
 }
