@@ -184,11 +184,11 @@ static void *pointer_new (t_symbol *s, int argc, t_atom *argv)
     
     for (i = 0; i < n; i++) {
         x->x_outletTyped[i].to_type   = template_makeIdentifierWithWildcard (atom_getSymbol (argv + i));
-        x->x_outletTyped[i].to_outlet = outlet_new (cast_object (x), &s_pointer);
+        x->x_outletTyped[i].to_outlet = outlet_newPointer (cast_object (x));
     }
     
-    x->x_outletBeforeRight  = outlet_new (cast_object (x), &s_pointer);
-    x->x_outletRight        = outlet_new (cast_object (x), &s_bang);
+    x->x_outletBeforeRight  = outlet_newPointer (cast_object (x));
+    x->x_outletRight        = outlet_newBang (cast_object (x));
     
     inlet_newPointer (cast_object (x), &x->x_gpointer);
     

@@ -55,7 +55,7 @@ static void *powtodb_tilde_new (void)
 {
     t_powtodb_tilde *x = (t_powtodb_tilde *)pd_new (powtodb_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
 
     return x;
 }

@@ -59,7 +59,7 @@ static void *getsize_new (t_symbol *templateName, t_symbol *fieldName)
     
     x->x_templateIdentifier = template_makeIdentifierWithWildcard (templateName);
     x->x_fieldName          = fieldName;
-    x->x_outlet             = outlet_new (cast_object (x), &s_float);
+    x->x_outlet             = outlet_newFloat (cast_object (x));
     
     return x;
 }

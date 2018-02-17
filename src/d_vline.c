@@ -262,7 +262,7 @@ static void *vline_tilde_new (void)
     x->x_timeTarget     = VLINE_TIME_NONE;
     x->x_timePrevious   = scheduler_getMillisecondsSince (x->x_systime);
     x->x_timeBlock      = x->x_timePrevious;
-    x->x_outlet         = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet         = outlet_newSignal (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_timeRamp);
     inlet_newFloat (cast_object (x), &x->x_delay);

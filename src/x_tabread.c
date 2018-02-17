@@ -53,7 +53,7 @@ static void *tabread_new (t_symbol *s)
     t_tabread *x = (t_tabread *)pd_new (tabread_class);
     
     x->x_name   = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }

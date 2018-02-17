@@ -51,8 +51,8 @@ static void *swap_new (t_float f)
     
     x->x_f1 = 0;
     x->x_f2 = f;
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
-    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft  = outlet_newFloat (cast_object (x));
+    x->x_outletRight = outlet_newFloat (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_f2);
     

@@ -103,7 +103,7 @@ static void *samphold_tilde_new (void)
 {
     t_samphold_tilde *x = (t_samphold_tilde *)pd_new (samphold_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
         
     inlet_newSignal (cast_object (x));
     

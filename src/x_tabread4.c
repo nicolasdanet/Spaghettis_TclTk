@@ -67,7 +67,7 @@ static void *tabread4_new (t_symbol *s)
     t_tabread4 *x = (t_tabread4 *)pd_new (tabread4_class);
     
     x->x_name   = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }

@@ -105,7 +105,7 @@ static void *append_new (t_symbol *s, int argc, t_atom *argv)
     x->x_templateIdentifier = template_makeIdentifierWithWildcard (atom_getSymbolAtIndex (0, argc, argv));
     x->x_fieldsSize         = n;
     x->x_fields             = (t_appendvariable *)PD_MEMORY_GET (n * sizeof (t_appendvariable));
-    x->x_outlet             = outlet_new (cast_object (x), &s_pointer);
+    x->x_outlet             = outlet_newPointer (cast_object (x));
     
     for (i = 0; i < x->x_fieldsSize; i++) {
         x->x_fields[i].gv_fieldName = atom_getSymbolAtIndex (i + 1, argc, argv);

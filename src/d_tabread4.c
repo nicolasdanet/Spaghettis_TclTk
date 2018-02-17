@@ -94,7 +94,7 @@ static void *tabread4_tilde_new (t_symbol *s)
     t_tabread4_tilde *x = (t_tabread4_tilde *)pd_new (tabread4_tilde_class);
     
     x->x_name   = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_onset);
 

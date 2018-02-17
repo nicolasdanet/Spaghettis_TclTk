@@ -150,7 +150,7 @@ static void *bp_tilde_new (t_float f, t_float q)
 {
     t_bp_tilde *x = (t_bp_tilde *)pd_new (bp_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_new2 (x, &s_float);
     inlet_new3 (x, &s_float);

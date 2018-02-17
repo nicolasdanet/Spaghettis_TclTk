@@ -89,7 +89,7 @@ static void *phasor_tilde_new (t_float f)
     t_phasor_tilde *x = (t_phasor_tilde *)pd_new (phasor_tilde_class);
     
     x->x_f = f;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_new2 (x, &s_float);
         

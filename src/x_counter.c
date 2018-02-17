@@ -75,10 +75,10 @@ static void *counter_new (t_symbol *s, int argc, t_atom *argv)
     t_counter *x = (t_counter *)pd_new (counter_class);
     
     x->x_maximum     = PD_INT_MAX;
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft  = outlet_newFloat (cast_object (x));
     
     if (argc) {
-        x->x_outletRight = outlet_new (cast_object (x), &s_bang);
+        x->x_outletRight = outlet_newBang (cast_object (x));
         x->x_maximum     = atom_getFloat (argv);
     }
     

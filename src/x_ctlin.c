@@ -56,10 +56,10 @@ static void *ctlin_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_control    = argc > 0 ? atom_getFloatAtIndex (0, argc, argv) : (t_float)-1.0;
     x->x_channel    = argc > 1 ? atom_getFloatAtIndex (1, argc, argv) : (t_float)0.0;
-    x->x_outletLeft = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft = outlet_newFloat (cast_object (x));
     
-    if (x->x_control < 0.0)  { x->x_outletMiddle = outlet_new (cast_object (x), &s_float); }
-    if (x->x_channel <= 0.0) { x->x_outletRight  = outlet_new (cast_object (x), &s_float); }
+    if (x->x_control < 0.0)  { x->x_outletMiddle = outlet_newFloat (cast_object (x)); }
+    if (x->x_channel <= 0.0) { x->x_outletRight  = outlet_newFloat (cast_object (x)); }
     
     pd_bind (cast_pd (x), sym__ctlin);
     

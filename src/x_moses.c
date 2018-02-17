@@ -46,8 +46,8 @@ static void *moses_new (t_float f)
     t_moses *x = (t_moses *)pd_new (moses_class);
     
     x->x_f = f;
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
-    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft  = outlet_newFloat (cast_object (x));
+    x->x_outletRight = outlet_newFloat (cast_object (x));
 
     inlet_newFloat (cast_object (x), &x->x_f);
     

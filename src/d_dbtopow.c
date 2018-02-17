@@ -55,7 +55,7 @@ static void *dbtopow_tilde_new (void)
 {
     t_dbtopow_tilde *x = (t_dbtopow_tilde *)pd_new (dbtopow_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
 
     return x;
 }

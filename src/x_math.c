@@ -46,7 +46,7 @@ static void *sin_new (void)
 {
     t_math *x = (t_math *)pd_new (sin_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -69,7 +69,7 @@ static void *cos_new (void)
 {
     t_math *x = (t_math *)pd_new (cos_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -92,7 +92,7 @@ static void *tan_new (void)
 {
     t_math *x = (t_math *)pd_new (tan_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -118,7 +118,7 @@ static void *log_new (void)
 {
     t_math *x = (t_math *)pd_new (log_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -141,7 +141,7 @@ static void *exp_new (void)
 {
     t_math *x = (t_math *)pd_new (exp_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -164,7 +164,7 @@ static void *abs_new (void)
 {
     t_math *x = (t_math *)pd_new (abs_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -187,7 +187,7 @@ static void *sqrt_new (void)
 {
     t_math *x = (t_math *)pd_new (sqrt_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -210,7 +210,7 @@ static void *wrap_new (void)
 {
     t_math *x = (t_math *)pd_new (wrap_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -233,7 +233,7 @@ static void *atan_new (void)
 {
     t_math *x = (t_math *)pd_new (atan_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }

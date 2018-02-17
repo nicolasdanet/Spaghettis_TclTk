@@ -53,7 +53,7 @@ static void *sig_tilde_new (t_float f)
     t_sig_tilde *x = (t_sig_tilde *)pd_new (sig_tilde_class);
     
     x->x_f      = f;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     return x;
 }

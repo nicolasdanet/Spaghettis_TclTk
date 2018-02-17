@@ -89,7 +89,7 @@ static void *tabread_tilde_new (t_symbol *s)
     t_tabread_tilde *x = (t_tabread_tilde *)pd_new (tabread_tilde_class);
     
     x->x_name   = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
 
     return x;
 }

@@ -67,9 +67,9 @@ void *listiterate_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listiterate *x = (t_listiterate *)pd_new (listiterate_class);
     
-    x->x_outletLeft   = outlet_new (cast_object (x), &s_anything);
-    x->x_outletMiddle = outlet_new (cast_object (x), &s_bang);
-    x->x_outletRight  = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft   = outlet_newAnything (cast_object (x));
+    x->x_outletMiddle = outlet_newBang (cast_object (x));
+    x->x_outletRight  = outlet_newFloat (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     

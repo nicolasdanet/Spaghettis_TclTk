@@ -87,7 +87,7 @@ static void *rsqrt_tilde_new (void)
 {
     t_rsqrt_tilde *x = (t_rsqrt_tilde *)pd_new (rsqrt_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
 
     return x;
 }

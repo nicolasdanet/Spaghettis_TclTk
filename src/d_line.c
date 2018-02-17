@@ -120,7 +120,7 @@ static void *line_tilde_new (void)
 {
     t_line_tilde *x = (t_line_tilde *)pd_new (line_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_timeRamp);
     

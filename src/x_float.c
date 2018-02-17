@@ -55,7 +55,7 @@ static void *float_newByTyped (t_pd *dummy, t_float f)
     t_floatobject *x = (t_floatobject *)pd_new (float_class);
     
     x->x_f = f;
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_f);
     

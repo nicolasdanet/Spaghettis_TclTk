@@ -123,8 +123,8 @@ static void *tabplay_tilde_new (t_symbol *s)
     x->x_phase       = PD_INT_MAX;
     x->x_name        = s;
     x->x_clock       = clock_new ((void *)x, (t_method)tabplay_tilde_task);
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
-    x->x_outletRight = outlet_new (cast_object (x), &s_bang);
+    x->x_outletLeft  = outlet_newSignal (cast_object (x));
+    x->x_outletRight = outlet_newBang (cast_object (x));
     
     return x;
 }

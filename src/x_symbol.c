@@ -54,7 +54,7 @@ static void *symbol_new (t_pd *dummy, t_symbol *s)
     t_symbolobject *x = (t_symbolobject *)pd_new (symbol_class);
     
     x->x_s = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
+    x->x_outlet = outlet_newSymbol (cast_object (x));
     
     inlet_newSymbol (cast_object (x), &x->x_s);
     

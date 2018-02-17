@@ -105,7 +105,7 @@ static void *pack_newProceed (t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    x->x_outlet = outlet_newList (cast_object (x));
     
     return x;
 }

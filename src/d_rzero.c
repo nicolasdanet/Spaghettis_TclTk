@@ -100,7 +100,7 @@ static void *rzero_tilde_new (t_float f)
 {
     t_rzero_tilde *x = (t_rzero_tilde *)pd_new (rzero_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     pd_float ((t_pd *)inlet_newSignal (cast_object (x)), f);
 

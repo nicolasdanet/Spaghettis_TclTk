@@ -58,9 +58,9 @@ void *listsplit_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_f = atom_getFloatAtIndex (0, argc, argv);
     
-    x->x_outletLeft   = outlet_new (cast_object (x), &s_list);
-    x->x_outletMiddle = outlet_new (cast_object (x), &s_list);
-    x->x_outletRight  = outlet_new (cast_object (x), &s_list);
+    x->x_outletLeft   = outlet_newList (cast_object (x));
+    x->x_outletMiddle = outlet_newList (cast_object (x));
+    x->x_outletRight  = outlet_newList (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_f);
     

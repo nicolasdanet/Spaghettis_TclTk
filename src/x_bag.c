@@ -129,7 +129,7 @@ static void *bag_new (t_float f)
     
     x->x_velocity = f;
     x->x_elements = NULL;
-    x->x_outlet   = outlet_new (cast_object (x), &s_float);
+    x->x_outlet   = outlet_newFloat (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_velocity);
     

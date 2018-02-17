@@ -43,7 +43,7 @@ static void *blocksize_new (void)
     t_blocksize *x = (t_blocksize *)pd_new (blocksize_class);
     
     x->x_owner  = instance_contextGetCurrent();
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }

@@ -93,8 +93,8 @@ void *textget_new (t_symbol *s, int argc, t_atom *argv)
     
         x->x_fieldStart  = -1;
         x->x_fieldCount  = 1;
-        x->x_outletLeft  = outlet_new (cast_object (x), &s_list);
-        x->x_outletRight = outlet_new (cast_object (x), &s_float);
+        x->x_outletLeft  = outlet_newList (cast_object (x));
+        x->x_outletRight = outlet_newFloat (cast_object (x));
         
         inlet_newFloat (cast_object (x), &x->x_fieldStart);
         inlet_newFloat (cast_object (x), &x->x_fieldCount);

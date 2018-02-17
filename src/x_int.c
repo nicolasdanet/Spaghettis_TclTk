@@ -52,7 +52,7 @@ static void *int_new (t_float f)
     t_intobject *x = (t_intobject *)pd_new (int_class);
     
     x->x_f = f;
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_f);
     

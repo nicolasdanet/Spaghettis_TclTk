@@ -78,8 +78,8 @@ static void *ifft_tilde_new (void)
 {
     t_ifft_tilde *x = (t_ifft_tilde *)pd_new (ifft_tilde_class);
     
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
-    x->x_outletRight = outlet_new (cast_object (x), &s_signal);
+    x->x_outletLeft  = outlet_newSignal (cast_object (x));
+    x->x_outletRight = outlet_newSignal (cast_object (x));
     
     inlet_newSignal (cast_object (x));
     

@@ -100,7 +100,7 @@ static void *lrshift_tilde_new (t_float f)
     t_lrshift_tilde *x = (t_lrshift_tilde *)pd_new (lrshift_tilde_class);
     
     x->x_n = (int)f;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     return x;
 }

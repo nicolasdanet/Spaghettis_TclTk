@@ -42,8 +42,8 @@ static void *keyname_new (void)
 {
     t_keyname *x = (t_keyname *)pd_new (keyname_class);
     
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
-    x->x_outletRight = outlet_new (cast_object (x), &s_symbol);
+    x->x_outletLeft  = outlet_newFloat (cast_object (x));
+    x->x_outletRight = outlet_newSymbol (cast_object (x));
     
     pd_bind (cast_pd (x), sym__keyname);
     

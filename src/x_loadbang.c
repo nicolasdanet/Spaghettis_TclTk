@@ -40,7 +40,7 @@ static void *loadbang_new (void)
 {
     t_loadbang *x = (t_loadbang *)pd_new (loadbang_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_bang);
+    x->x_outlet = outlet_newBang (cast_object (x));
     
     return x;
 }

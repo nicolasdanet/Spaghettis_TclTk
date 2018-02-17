@@ -417,7 +417,7 @@ static t_oscparse *oscparse_new (void)
 {
     t_oscparse *x = (t_oscparse *)pd_new (oscparse_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    x->x_outlet = outlet_newList (cast_object (x));
     
     return x;
 }

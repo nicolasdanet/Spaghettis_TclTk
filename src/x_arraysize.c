@@ -78,7 +78,7 @@ void *arraysize_new (t_symbol *s, int argc, t_atom *argv)
             inlet_newSymbol (cast_object (x),  ARRAYCLIENT_GETNAME    (&x->x_arrayclient));
         }
      
-        x->x_outlet = outlet_new (cast_object (x), &s_float);
+        x->x_outlet = outlet_newFloat (cast_object (x));
         
     } else {
     

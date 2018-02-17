@@ -58,7 +58,7 @@ static void *savepanel_new (void)
     t_savepanel *x = (t_savepanel *)pd_new (savepanel_class);
     
     x->x_proxy  = proxy_new (cast_pd (x));
-    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
+    x->x_outlet = outlet_newSymbol (cast_object (x));
     
     return x;
 }

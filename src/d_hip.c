@@ -116,7 +116,7 @@ static void *hip_tilde_new (t_float f)
 {
     t_hip_tilde *x = (t_hip_tilde *)pd_new (hip_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_new2 (x, &s_float);
     

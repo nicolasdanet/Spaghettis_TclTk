@@ -45,7 +45,7 @@ static void *mag_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_mag_tilde *x = (t_mag_tilde *)pd_new (mag_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_newSignal (cast_object (x));
 

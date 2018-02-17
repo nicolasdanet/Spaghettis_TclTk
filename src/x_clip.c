@@ -53,7 +53,7 @@ static void *clip_new (t_float f2, t_float f3)
     
     x->x_f2     = f2;
     x->x_f3     = f3;
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_f2);
     inlet_newFloat (cast_object (x), &x->x_f3);

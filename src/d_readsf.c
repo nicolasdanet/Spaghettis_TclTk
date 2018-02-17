@@ -206,9 +206,9 @@ static void *readsf_tilde_new (t_float f1, t_float f2)
     x->sf_clock                 = clock_new ((void *)x, (t_method)readsf_tilde_task);
     x->sf_owner                 = instance_contextGetCurrent();
     
-    for (i = 0; i < n; i++) { x->sf_audioOutlets[i] = outlet_new (cast_object (x), &s_signal); }
+    for (i = 0; i < n; i++) { x->sf_audioOutlets[i] = outlet_newSignal (cast_object (x)); }
     
-    x->sf_outletTopRight = outlet_new (cast_object (x), &s_bang);
+    x->sf_outletTopRight = outlet_newBang (cast_object (x));
     
     return x;
 }

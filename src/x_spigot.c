@@ -68,7 +68,7 @@ static void *spigot_new (t_float f)
     t_spigot *x = (t_spigot *)pd_new (spigot_class);
     
     x->x_state  = f;
-    x->x_outlet = outlet_new (cast_object (x), &s_anything);
+    x->x_outlet = outlet_newAnything (cast_object (x));
         
     inlet_newFloat (cast_object (x), &x->x_state);
 

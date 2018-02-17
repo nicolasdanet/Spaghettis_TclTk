@@ -42,7 +42,7 @@ void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
     
     if (!err) {
     
-        x->x_outlet = outlet_new (cast_object (x), &s_list);
+        x->x_outlet = outlet_newList (cast_object (x));
         
         if (argc) { warning_unusedArguments (sym_text__space__tolist, argc, argv); }
         

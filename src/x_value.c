@@ -100,7 +100,7 @@ static void *value_new (t_symbol *s)
     t_value *x = (t_value *)pd_new (value_class);
     
     x->x_name   = &s_;
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     value_set (x, s);
     

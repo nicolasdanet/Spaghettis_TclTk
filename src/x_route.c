@@ -229,7 +229,7 @@ static void *route_newProceed (int argc, t_atom *argv)
         }
     }
     
-    x->x_outlet = outlet_new (cast_object (x), &s_anything);
+    x->x_outlet = outlet_newAnything (cast_object (x));
     
     return x;
 }

@@ -49,7 +49,7 @@ static void *realtime_new (void)
 {
     t_realtime *x = (t_realtime *)pd_new (realtime_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
 
     inlet_new2 (x, &s_bang);
 

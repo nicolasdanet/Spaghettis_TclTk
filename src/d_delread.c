@@ -136,7 +136,7 @@ static void *delread_tilde_new (t_symbol *s, t_float f)
     
     x->x_delayInMilliseconds = f;
     x->x_name                = s;
-    x->x_outlet              = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet              = outlet_newSignal (cast_object (x));
         
     return x;
 }

@@ -163,9 +163,9 @@ static void *poly_new (t_float voices, t_float steal)
     x->x_serial       = 0;
     x->x_size         = PD_MAX (1, (int)voices);
     x->x_vector       = (t_voice *)PD_MEMORY_GET (x->x_size * sizeof (t_voice));
-    x->x_outletLeft   = outlet_new (cast_object (x), &s_float);
-    x->x_outletMiddle = outlet_new (cast_object (x), &s_float);
-    x->x_outletRight  = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft   = outlet_newFloat (cast_object (x));
+    x->x_outletMiddle = outlet_newFloat (cast_object (x));
+    x->x_outletRight  = outlet_newFloat (cast_object (x));
 
     inlet_newFloat (cast_object (x), &x->x_velocity);
     

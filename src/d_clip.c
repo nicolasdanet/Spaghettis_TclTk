@@ -71,7 +71,7 @@ static void *clip_tilde_new (t_float low, t_float high)
     
     x->x_low    = low;
     x->x_high   = high;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_low);
     inlet_newFloat (cast_object (x), &x->x_high);

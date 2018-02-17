@@ -716,7 +716,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
         
     x->x_floatValue = slider_getValue (x);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     //
     }
     

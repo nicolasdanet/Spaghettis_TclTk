@@ -53,7 +53,7 @@ static void *struct_newInstance (t_template *tmpl)
     
     x->x_template = tmpl;
     x->x_owner    = instance_contextGetCurrent();
-    x->x_outlet   = outlet_new (cast_object (x), &s_anything);
+    x->x_outlet   = outlet_newAnything (cast_object (x));
     
     template_registerInstance (x->x_template, x);
 
@@ -66,7 +66,7 @@ static void *struct_newEmpty (void)
     
     x->x_template = NULL;
     x->x_owner    = instance_contextGetCurrent();
-    x->x_outlet   = outlet_new (cast_object (x), &s_anything);
+    x->x_outlet   = outlet_newAnything (cast_object (x));
     
     return x;
 }

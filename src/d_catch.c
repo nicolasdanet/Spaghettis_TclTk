@@ -39,7 +39,7 @@ static void *catch_tilde_new (t_symbol *s)
     
     x->x_vector = (t_sample *)PD_MEMORY_GET (INTERNAL_BLOCKSIZE * sizeof (t_sample));
     x->x_name   = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     if (x->x_name != &s_) { pd_bind (cast_pd (x), x->x_name); }
     

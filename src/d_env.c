@@ -136,7 +136,7 @@ static void *env_tilde_new (t_float f1, t_float f2)
     x->x_window = window;
     x->x_vector = (t_sample *)PD_MEMORY_GET (x->x_window * sizeof (t_sample));
     x->x_clock  = clock_new ((void *)x, (t_method)env_tilde_task);
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
 
     if ((int)f1 && x->x_window != (int)f1) { warning_invalid (sym_env__tilde__, sym_window); k = 1; }
     if ((int)f2 && x->x_period != (int)f2) { warning_invalid (sym_env__tilde__, sym_period); k = 1; }

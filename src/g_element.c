@@ -65,7 +65,7 @@ static void *element_new (t_symbol *templateName, t_symbol *fieldName)
     
     x->x_templateIdentifier = template_makeIdentifierWithWildcard (templateName);
     x->x_fieldName          = fieldName;
-    x->x_outlet             = outlet_new (cast_object (x), &s_pointer);
+    x->x_outlet             = outlet_newPointer (cast_object (x));
     
     inlet_newPointer (cast_object (x), &x->x_gpointer);
     

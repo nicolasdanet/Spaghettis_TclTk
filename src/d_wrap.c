@@ -61,7 +61,7 @@ static void *wrap_tilde_new (void)
 {
     t_wrap_tilde *x = (t_wrap_tilde *)pd_new (wrap_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
 
     return x;
 }

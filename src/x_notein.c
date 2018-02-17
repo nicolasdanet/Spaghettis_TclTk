@@ -59,10 +59,10 @@ static void *notein_new (t_float f)
     t_notein *x = (t_notein *)pd_new (notein_class);
     
     x->x_channel      = PD_ABS (f);
-    x->x_outletLeft   = outlet_new (cast_object (x), &s_float);
-    x->x_outletMiddle = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft   = outlet_newFloat (cast_object (x));
+    x->x_outletMiddle = outlet_newFloat (cast_object (x));
     
-    if (x->x_channel == 0.0) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    if (x->x_channel == 0.0) { x->x_outletRight = outlet_newFloat (cast_object (x)); }
     
     pd_bind (cast_pd (x), sym__notein);
     

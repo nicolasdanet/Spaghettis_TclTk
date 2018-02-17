@@ -90,7 +90,7 @@ static void *cos_tilde_new (void)
 {
     t_cos_tilde *x = (t_cos_tilde *)pd_new (cos_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
 
     return x;
 }

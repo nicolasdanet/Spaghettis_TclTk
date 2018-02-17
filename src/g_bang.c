@@ -455,7 +455,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     x->x_flashTimeBreak     = flashBreak;
     x->x_flashTime          = PD_MAX (flashHold, IEM_BANG_MINIMUM_HOLD);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_bang);
+    x->x_outlet = outlet_newBang (cast_object (x));
     x->x_clock  = clock_new ((void *)x, (t_method)bng_taskFlash);
     
     return x;

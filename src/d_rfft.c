@@ -95,8 +95,8 @@ static void *rfft_tilde_new (void)
 {
     t_rfft_tilde *x = (t_rfft_tilde *)pd_new (rfft_tilde_class);
     
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
-    x->x_outletRight = outlet_new (cast_object (x), &s_signal);
+    x->x_outletLeft  = outlet_newSignal (cast_object (x));
+    x->x_outletRight = outlet_newSignal (cast_object (x));
 
     return x;
 }

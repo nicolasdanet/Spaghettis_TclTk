@@ -159,7 +159,7 @@ static void *makefilename_new (t_symbol *dummy, int argc, t_atom *argv)
     x->x_typeRequired           = A_NULL;
     x->x_isIntegerCastRequired  = 0;
     x->x_format                 = t;
-    x->x_outlet                 = outlet_new (cast_object (x), &s_symbol);
+    x->x_outlet                 = outlet_newSymbol (cast_object (x));
     
     if (makefilename_scanFormat (x)) { error_invalid (sym_makefilename, sym_format); }
     

@@ -141,7 +141,7 @@ static void *line_new (t_float f, t_float grain)
     x->x_valueTarget    = f;
     x->x_valueStart     = f;
     x->x_hasRamp        = 0;
-    x->x_outlet         = outlet_new (cast_object (x), &s_float);
+    x->x_outlet         = outlet_newFloat (cast_object (x));
     x->x_clock          = clock_new ((void *)x, (t_method)line_task);
     
     line_floatGrain (x, grain);

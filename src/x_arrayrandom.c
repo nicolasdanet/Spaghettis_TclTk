@@ -60,7 +60,7 @@ void *arrayrandom_new (t_symbol *s, int argc, t_atom *argv)
     
     if (ARRAYRANGE_GOOD (x)) {
         PD_RAND48_INIT (x->x_state);
-        x->x_outlet = outlet_new (cast_object (x), &s_float);
+        x->x_outlet = outlet_newFloat (cast_object (x));
         
     } else {
         error_invalidArguments (sym_array__space__random, argc, argv);

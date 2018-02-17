@@ -388,10 +388,10 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
         x->x_clock  = clock_new ((void *)x, (t_method)textsequence_task);
         
         if (useGlobal)  { x->x_waitNumberOfLeading = PD_INT_MAX; }
-        if (!useGlobal) { x->x_outletMain = outlet_new (cast_object (x), &s_list); }
-        if (hasWait)    { x->x_outletWait = outlet_new (cast_object (x), &s_list); }
+        if (!useGlobal) { x->x_outletMain = outlet_newList (cast_object (x)); }
+        if (hasWait)    { x->x_outletWait = outlet_newList (cast_object (x)); }
         
-        x->x_outletEnd = outlet_new (cast_object (x), &s_bang);
+        x->x_outletEnd = outlet_newBang (cast_object (x));
         
         if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
             inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));

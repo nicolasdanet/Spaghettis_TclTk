@@ -51,7 +51,7 @@ void *listtosymbol_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listtosymbol *x = (t_listtosymbol *)pd_new (listtosymbol_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
+    x->x_outlet = outlet_newSymbol (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     

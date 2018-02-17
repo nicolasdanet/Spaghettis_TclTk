@@ -78,8 +78,8 @@ static void *fft_tilde_new (void)
 {
     t_fft_tilde *x = (t_fft_tilde *)pd_new (fft_tilde_class);
     
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
-    x->x_outletRight = outlet_new (cast_object (x), &s_signal);
+    x->x_outletLeft  = outlet_newSignal (cast_object (x));
+    x->x_outletRight = outlet_newSignal (cast_object (x));
     
     inlet_newSignal (cast_object (x));
 

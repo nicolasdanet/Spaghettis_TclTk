@@ -136,7 +136,7 @@ static void *prepend_new (t_symbol *s, int argc, t_atom *argv)
 
     prepend_set (x, s, argc, argv);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_anything);
+    x->x_outlet = outlet_newAnything (cast_object (x));
     
     inlet_new2 (x, sym_set);    /* TODO: Is that trick a good thing? */
     

@@ -74,7 +74,7 @@ void *listappend_new (t_symbol *s, int argc, t_atom *argv)
     listinlet_init (&x->x_listinlet);
     listinlet_listSet (&x->x_listinlet, argc, argv);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    x->x_outlet = outlet_newList (cast_object (x));
     
     inlet_new (cast_object (x), cast_pd (&x->x_listinlet), NULL, NULL);
     

@@ -81,7 +81,7 @@ static void *tabreceive_tilde_new (t_symbol *s)
     t_tabreceive_tilde *x = (t_tabreceive_tilde *)pd_new (tabreceive_tilde_class);
     
     x->x_name   = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     return x;
 }

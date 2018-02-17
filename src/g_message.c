@@ -320,7 +320,7 @@ void message_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     t_message *x = (t_message *)pd_new (message_class);
     
     x->m_responder.mr_pd     = messageresponder_class;
-    x->m_responder.mr_outlet = outlet_new (cast_object (x), &s_anything);
+    x->m_responder.mr_outlet = outlet_newAnything (cast_object (x));
     x->m_eval                = buffer_new();
     x->m_owner               = glist;
     x->m_clock               = clock_new ((void *)x, (t_method)message_taskTick);

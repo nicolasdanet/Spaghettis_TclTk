@@ -57,7 +57,7 @@ static void *abs_tilde_new (void)
 {
     t_abs_tilde *x = (t_abs_tilde *)pd_new (abs_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     return x;
 }

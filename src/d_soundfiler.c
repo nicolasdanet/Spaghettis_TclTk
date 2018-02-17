@@ -412,7 +412,7 @@ static t_soundfiler *soundfiler_new (void)
     t_soundfiler *x = (t_soundfiler *)pd_new (soundfiler_class);
     
     x->x_owner  = instance_contextGetCurrent();
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }

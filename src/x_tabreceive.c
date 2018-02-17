@@ -90,7 +90,7 @@ static void *tabreceive_new (t_symbol *s)
     
     x->x_name     = s;
     x->x_previous = buffer_new();
-    x->x_outlet   = outlet_new (cast_object (x), &s_list);
+    x->x_outlet   = outlet_newList (cast_object (x));
     
     instance_pollingRegister (cast_pd (x));
     

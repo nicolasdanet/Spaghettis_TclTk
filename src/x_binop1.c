@@ -32,7 +32,7 @@ void *binop_new (t_class *c, t_float f)
     
     x->bo_f1 = (t_float)0.0;
     x->bo_f2 = f;
-    x->bo_outlet = outlet_new (cast_object (x), &s_float);
+    x->bo_outlet = outlet_newFloat (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->bo_f2);
 

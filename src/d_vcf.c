@@ -152,8 +152,8 @@ static void *vcf_tilde_new (t_float f)
 
     vcf_tilde_qFactor (x, f);
     
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
-    x->x_outletRight = outlet_new (cast_object (x), &s_signal);
+    x->x_outletLeft  = outlet_newSignal (cast_object (x));
+    x->x_outletRight = outlet_newSignal (cast_object (x));
 
     inlet_newSignal (cast_object (x));
     inlet_new2 (x, &s_float);

@@ -313,7 +313,7 @@ static void *oscformat_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_path   = (char *)PD_MEMORY_GET (PD_STRING);
     x->x_format = &s_;
-    x->x_outlet = outlet_new (cast_object (x), &s_list);
+    x->x_outlet = outlet_newList (cast_object (x));
     
     while (argc > 0) {
     //

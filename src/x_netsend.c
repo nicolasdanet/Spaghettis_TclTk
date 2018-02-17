@@ -297,7 +297,7 @@ static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
     x->ns_fd        = -1;
     x->ns_isBinary  = 0;
     x->ns_protocol  = SOCK_STREAM;
-    x->ns_outlet    = outlet_new (cast_object (x), &s_float);
+    x->ns_outlet    = outlet_newFloat (cast_object (x));
     
     while (argc > 0) {
     //

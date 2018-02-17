@@ -45,7 +45,7 @@ void *listlength_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listlength *x = (t_listlength *)pd_new (listlength_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     

@@ -62,7 +62,7 @@ static void *until_new (void)
     t_until *x = (t_until *)pd_new (until_class);
     
     x->x_run    = 0;
-    x->x_outlet = outlet_new (cast_object (x), &s_bang);
+    x->x_outlet = outlet_newBang (cast_object (x));
     
     inlet_new2 (x, &s_bang);
 

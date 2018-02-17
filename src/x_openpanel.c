@@ -78,7 +78,7 @@ static void *openpanel_new (void)
     t_openpanel *x = (t_openpanel *)pd_new (openpanel_class);
 
     x->x_proxy  = proxy_new (cast_pd (x));
-    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
+    x->x_outlet = outlet_newSymbol (cast_object (x));
         
     return x;
 }

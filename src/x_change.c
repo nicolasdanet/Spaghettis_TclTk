@@ -52,7 +52,7 @@ static void *change_new (t_float f)
     t_change *x = (t_change *)pd_new (change_class);
     
     x->x_f = f;
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }

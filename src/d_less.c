@@ -58,7 +58,7 @@ static void *less_tilde_newWithScalar (t_symbol *s, int argc, t_atom *argv)
     t_lessscalar_tilde *x = (t_lessscalar_tilde *)pd_new (lessScalar_tilde_class);
     
     x->x_scalar = atom_getFloatAtIndex (0, argc, argv);
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
 
     inlet_newFloat (cast_object (x), &x->x_scalar);
     
@@ -69,7 +69,7 @@ static void *less_tilde_newWithSignal (t_symbol *s, int argc, t_atom *argv)
 {
     t_less_tilde *x = (t_less_tilde *)pd_new (less_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_newSignal (cast_object (x));
 

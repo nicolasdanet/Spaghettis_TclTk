@@ -61,7 +61,7 @@ static void *title_new (void)
     
     x->x_owner  = instance_contextGetCurrent();
     x->x_name   = glist_getName (x->x_owner);
-    x->x_outlet = outlet_new (cast_object (x), &s_symbol);
+    x->x_outlet = outlet_newSymbol (cast_object (x));
     
     instance_pollingRegister (cast_pd (x));
     

@@ -33,7 +33,7 @@ static void *atan2_new (void)
 {
     t_atan2 *x = (t_atan2 *)pd_new (atan2_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
         
     inlet_newFloat (cast_object (x), &x->x_f2);
 

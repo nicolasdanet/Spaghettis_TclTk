@@ -223,3 +223,42 @@ void outlet_free (t_outlet *x)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_outlet *outlet_newBang (t_object *owner)
+{
+    return outlet_new (owner, &s_bang);
+}
+
+t_outlet *outlet_newPointer (t_object *owner)
+{
+    return outlet_new (owner, &s_pointer);
+}
+
+t_outlet *outlet_newFloat (t_object *owner)
+{
+    return outlet_new (owner, &s_float);
+}
+
+t_outlet *outlet_newSymbol (t_object *owner)
+{
+    return outlet_new (owner, &s_symbol);
+}
+
+t_outlet *outlet_newList (t_object *owner)
+{
+    return outlet_new (owner, &s_list);
+}
+
+t_outlet *outlet_newAnything (t_object *owner)
+{
+    return outlet_new (owner, &s_anything);
+}
+
+t_outlet *outlet_newSignal (t_object *owner)
+{
+    return outlet_new (owner, &s_signal);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

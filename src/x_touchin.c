@@ -53,9 +53,9 @@ static void *touchin_new (t_float f)
     t_touchin *x = (t_touchin *)pd_new (touchin_class);
     
     x->x_channel    = f;
-    x->x_outletLeft = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft = outlet_newFloat (cast_object (x));
     
-    if (!x->x_channel) { x->x_outletRight = outlet_new (cast_object (x), &s_float); }
+    if (!x->x_channel) { x->x_outletRight = outlet_newFloat (cast_object (x)); }
     
     pd_bind (cast_pd (x), sym__touchin);
     

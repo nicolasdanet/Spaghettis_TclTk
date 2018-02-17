@@ -129,8 +129,8 @@ void *liststore_new (t_symbol *s, int argc, t_atom *argv)
     listinlet_init (&x->x_listinlet);
     listinlet_listSet (&x->x_listinlet, argc, argv);
     
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_list);
-    x->x_outletRight = outlet_new (cast_object (x), &s_bang);
+    x->x_outletLeft  = outlet_newList (cast_object (x));
+    x->x_outletRight = outlet_newBang (cast_object (x));
     
     inlet_new (cast_object (x), cast_pd (&x->x_listinlet), NULL, NULL);
     

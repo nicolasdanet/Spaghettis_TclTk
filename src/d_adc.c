@@ -100,7 +100,7 @@ static void *adc_tilde_new (t_symbol *s, int argc, t_atom *argv)
     }
     
     for (i = 0; i < x->x_size; i++) {
-        outlet_new (cast_object (x), &s_signal);
+        outlet_newSignal (cast_object (x));
     }
     
     return x;

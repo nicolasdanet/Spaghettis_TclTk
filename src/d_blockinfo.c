@@ -78,12 +78,12 @@ static void *blockinfo_tilde_new (void)
     t_blockinfo_tilde *x = (t_blockinfo_tilde *)pd_new (blockinfo_tilde_class);
     
     x->x_owner     = instance_contextGetCurrent();
-    x->x_outlet[0] = outlet_new (cast_object (x), &s_signal);
-    x->x_outlet[1] = outlet_new (cast_object (x), &s_signal);
-    x->x_outlet[2] = outlet_new (cast_object (x), &s_signal);
-    x->x_outlet[3] = outlet_new (cast_object (x), &s_signal);
-    x->x_outlet[4] = outlet_new (cast_object (x), &s_signal);
-    x->x_outlet[5] = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet[0] = outlet_newSignal (cast_object (x));
+    x->x_outlet[1] = outlet_newSignal (cast_object (x));
+    x->x_outlet[2] = outlet_newSignal (cast_object (x));
+    x->x_outlet[3] = outlet_newSignal (cast_object (x));
+    x->x_outlet[4] = outlet_newSignal (cast_object (x));
+    x->x_outlet[5] = outlet_newSignal (cast_object (x));
     
     return x;
 }

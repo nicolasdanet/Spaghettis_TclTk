@@ -129,8 +129,8 @@ static void *threshold_tilde_new (t_symbol *s, int argc, t_atom *argv)
     t_threshold_tilde *x = (t_threshold_tilde *)pd_new (threshold_tilde_class);
     
     x->x_clock       = clock_new ((void *)x, (t_method)threshold_tilde_tick);
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_bang);
-    x->x_outletRight = outlet_new (cast_object (x), &s_bang);
+    x->x_outletLeft  = outlet_newBang (cast_object (x));
+    x->x_outletRight = outlet_newBang (cast_object (x));
     
     inlet_new2 (x, &s_float);
 

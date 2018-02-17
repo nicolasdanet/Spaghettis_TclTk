@@ -133,8 +133,8 @@ static void *makenote_new (t_float velocity, t_float duration)
     x->x_velocity    = velocity;
     x->x_duration    = duration;
     x->x_hangs       = NULL;
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_float);
-    x->x_outletRight = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft  = outlet_newFloat (cast_object (x));
+    x->x_outletRight = outlet_newFloat (cast_object (x));
     
     inlet_newFloat (cast_object (x), &x->x_velocity);
     inlet_newFloat (cast_object (x), &x->x_duration);

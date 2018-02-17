@@ -125,8 +125,8 @@ static void *czero_tilde_new (t_float real, t_float imaginary)
 {
     t_czero_tilde *x = (t_czero_tilde *)pd_new (czero_tilde_class);
     
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_signal);
-    x->x_outletRight = outlet_new (cast_object (x), &s_signal);
+    x->x_outletLeft  = outlet_newSignal (cast_object (x));
+    x->x_outletRight = outlet_newSignal (cast_object (x));
     
     inlet_newSignal (cast_object (x));
     

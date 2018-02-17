@@ -77,9 +77,9 @@ static void *uzi_new (t_float f)
     t_uzi *x = (t_uzi *)pd_new (uzi_class);
     
     x->x_count        = f;
-    x->x_outletLeft   = outlet_new (cast_object (x), &s_bang);
-    x->x_outletMiddle = outlet_new (cast_object (x), &s_bang);
-    x->x_outletRight  = outlet_new (cast_object (x), &s_float);
+    x->x_outletLeft   = outlet_newBang (cast_object (x));
+    x->x_outletMiddle = outlet_newBang (cast_object (x));
+    x->x_outletRight  = outlet_newFloat (cast_object (x));
     
     return x;
 }

@@ -57,7 +57,7 @@ static void *ftom_tilde_new (void)
 {
     t_ftom_tilde *x = (t_ftom_tilde *)pd_new (ftom_tilde_class);
 
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     return x;
 }

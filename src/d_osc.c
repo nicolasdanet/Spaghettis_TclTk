@@ -82,7 +82,7 @@ static void *osc_tilde_new (t_float f)
     t_osc_tilde *x = (t_osc_tilde *)pd_new (osc_tilde_class);
     
     x->x_f = f;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_new2 (x, &s_float);
 

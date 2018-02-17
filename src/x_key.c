@@ -40,7 +40,7 @@ static void *key_new (void)
 {
     t_key *x = (t_key *)pd_new (key_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     pd_bind (cast_pd (x), sym__key);
     

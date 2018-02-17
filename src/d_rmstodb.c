@@ -57,7 +57,7 @@ static void *rmstodb_tilde_new (void)
 {
     t_rmstodb_tilde *x = (t_rmstodb_tilde *)pd_new (rmstodb_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
 
     return x;
 }

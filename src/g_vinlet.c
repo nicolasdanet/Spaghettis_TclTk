@@ -79,7 +79,7 @@ static void *vinlet_newSignal (t_symbol *s)
     x->vi_buffer       = (t_sample *)PD_MEMORY_GET (0);
     x->vi_bufferEnd    = x->vi_buffer;
     x->vi_owner        = instance_contextGetCurrent();
-    x->vi_outlet       = outlet_new (cast_object (x), &s_signal);
+    x->vi_outlet       = outlet_newSignal (cast_object (x));
     x->vi_inlet        = glist_inletAdd (x->vi_owner, cast_pd (x), 1);
     x->vi_directSignal = NULL;
     
@@ -91,7 +91,7 @@ static void *vinlet_new (t_symbol *s)
     t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
     
     x->vi_owner  = instance_contextGetCurrent();
-    x->vi_outlet = outlet_new (cast_object (x), &s_anything);
+    x->vi_outlet = outlet_newAnything (cast_object (x));
     x->vi_inlet  = glist_inletAdd (x->vi_owner, cast_pd (x), 0);
     
     return x;

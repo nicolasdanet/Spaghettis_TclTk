@@ -41,7 +41,7 @@ static void *bang_newBySlot (t_pd *dummy)
 {
     t_bang *x = (t_bang *)pd_new (bang_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_bang);
+    x->x_outlet = outlet_newBang (cast_object (x));
     
     instance_setNewestObject (cast_pd (x));
     

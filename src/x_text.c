@@ -149,8 +149,8 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
         PD_UNUSED (err); PD_ASSERT (!err);
     }
 
-    x->x_outletLeft  = outlet_new (cast_object (x), &s_pointer);
-    x->x_outletRight = outlet_new (cast_object (x), &s_symbol);
+    x->x_outletLeft  = outlet_newPointer (cast_object (x));
+    x->x_outletRight = outlet_newSymbol (cast_object (x));
     
     instance_setBoundA (cast_pd (x));
     

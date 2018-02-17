@@ -129,7 +129,7 @@ static void *tabosc4_tilde_new (t_symbol *s)
     t_tabosc4_tilde *x = (t_tabosc4_tilde *)pd_new (tabosc4_tilde_class);
     
     x->x_name   = s;
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_new2 (x, &s_float);
     

@@ -37,7 +37,7 @@ static void *mtof_new (void)
 {
     t_acoustic *x = (t_acoustic *)pd_new (mtof_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -60,7 +60,7 @@ static void *ftom_new (void)
 {
     t_acoustic *x = (t_acoustic *)pd_new (ftom_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -83,7 +83,7 @@ static void *powtodb_new (void)
 {
     t_acoustic *x = (t_acoustic *)pd_new (powtodb_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -106,7 +106,7 @@ static void *dbtopow_new (void)
 {
     t_acoustic *x = (t_acoustic *)pd_new (dbtopow_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -129,7 +129,7 @@ static void *rmstodb_new (void)
 {
     t_acoustic *x = (t_acoustic *)pd_new (rmstodb_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
@@ -152,7 +152,7 @@ static void *dbtorms_new (void)
 {
     t_acoustic *x = (t_acoustic *)pd_new (dbtorms_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }

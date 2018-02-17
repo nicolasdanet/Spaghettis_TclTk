@@ -74,7 +74,7 @@ static void *timer_new (t_symbol *unitName, t_float unit)
     
     timer_bang (x);
         
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     inlet_new2 (x, &s_bang);
     

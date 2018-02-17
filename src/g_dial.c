@@ -758,7 +758,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
         dial_set (x, (t_float)0.0);
     }
 
-    x->x_outlet = outlet_new (cast_object (x), &s_float);
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }

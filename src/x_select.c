@@ -146,11 +146,11 @@ static void *select1_new (int argc, t_atom *argv)
     t_select1 *x = (t_select1 *)pd_new (select1_class);
     
     x->x_atom = *argv;
-    x->x_outletLeft = outlet_new (cast_object (x), &s_bang);
+    x->x_outletLeft = outlet_newBang (cast_object (x));
     
-    if (IS_FLOAT (argv)) { x->x_outletRight = outlet_new (cast_object (x), &s_anything); }
+    if (IS_FLOAT (argv)) { x->x_outletRight = outlet_newAnything (cast_object (x)); }
     else {
-        x->x_outletRight = outlet_new (cast_object (x), &s_anything);
+        x->x_outletRight = outlet_newAnything (cast_object (x));
     }
     
     if (IS_FLOAT (argv)) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_atom)); } 
@@ -173,7 +173,7 @@ static void *select2_new (int argc, t_atom *argv)
         atomoutlet_make (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, &s_bang, argv + i);
     }
     
-    x->x_outlet = outlet_new (cast_object (x), &s_anything);
+    x->x_outlet = outlet_newAnything (cast_object (x));
 
     return x;
 }

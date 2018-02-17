@@ -128,7 +128,7 @@ static void *biquad_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_biquad_tilde *x = (t_biquad_tilde *)pd_new (biquad_tilde_class);
     
-    x->x_outlet = outlet_new (cast_object (x), &s_signal);
+    x->x_outlet = outlet_newSignal (cast_object (x));
     
     biquad_tilde_list (x, s, argc, argv);
 
