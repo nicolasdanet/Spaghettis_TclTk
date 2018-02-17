@@ -684,19 +684,29 @@ typedef t_int   *(*t_perform)   (t_int *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if ( PD_WITH_DEBUG && PD_BUILDING_APPLICATION )
+#if PD_BUILDING_APPLICATION
 
-#define PD_MEMORY_GET(n)                leak_getMemoryChecked (n, __FUNCTION__, __LINE__)
+#if PD_WITH_DEBUG
+
+#define PD_MEMORY_GET(n)                leak_getMemoryChecked ((n), __FUNCTION__, __LINE__)
 #define PD_MEMORY_RESIZE(ptr, m, n)     leak_getMemoryResizeChecked ((ptr), (m), (n), __FUNCTION__, __LINE__)
-#define PD_MEMORY_FREE(ptr)             leak_freeMemoryChecked (ptr, __FUNCTION__, __LINE__);
+#define PD_MEMORY_FREE(ptr)             leak_freeMemoryChecked ((ptr), __FUNCTION__, __LINE__);
 
 #else
 
-#define PD_MEMORY_GET(n)                memory_get (n)
+#define PD_MEMORY_GET(n)                memory_get ((n))
 #define PD_MEMORY_RESIZE(ptr, m, n)     memory_getResize ((ptr), (m), (n))
-#define PD_MEMORY_FREE(ptr)             memory_free (ptr)
+#define PD_MEMORY_FREE(ptr)             memory_free ((ptr))
 
-#endif
+#endif // PD_WITH_DEBUG
+
+#else
+
+#define PD_MEMORY_GET(n)                memory_getForExternal ((n))
+#define PD_MEMORY_RESIZE(ptr, m, n)     memory_getResizeForExternal ((ptr), (m), (n))
+#define PD_MEMORY_FREE(ptr)             memory_freeForExternal ((ptr))
+
+#endif // PD_BUILDING_APPLICATION
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -748,10 +758,10 @@ PD_DLL t_symbol *gensym                         (const char *s);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PD_DLL void     *memory_get                     (size_t n);
-PD_DLL void     *memory_getResize               (void *ptr, size_t oldSize, size_t newSize);
+PD_DLL void     *memory_getForExternal          (size_t n);
+PD_DLL void     *memory_getResizeForExternal    (void *ptr, size_t oldSize, size_t newSize);
 
-PD_DLL void     memory_free                     (void *ptr);
+PD_DLL void     memory_freeForExternal          (void *ptr);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

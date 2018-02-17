@@ -8,6 +8,7 @@
 
 #include "m_spaghettis.h"
 #include "m_core.h"
+#include "s_system.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -44,6 +45,48 @@ void memory_free (void *ptr)
 {
     free (ptr);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* In debug build memory leaks for externals are globally tracked. */
+
+#if PD_WITH_DEBUG
+
+void *memory_getForExternal (size_t n)
+{
+    return leak_getMemoryChecked (n, __FUNCTION__, __LINE__);
+}
+
+void *memory_getResizeForExternal (void *ptr, size_t oldSize, size_t newSize)
+{
+    return leak_getMemoryResizeChecked (ptr, oldSize, newSize, __FUNCTION__, __LINE__);
+}
+
+void memory_freeForExternal (void *ptr)
+{
+    leak_freeMemoryChecked (ptr, __FUNCTION__, __LINE__);
+}
+
+#else
+
+void *memory_getForExternal (size_t n)
+{
+    return memory_get (n);
+}
+
+void *memory_getResizeForExternal (void *ptr, size_t oldSize, size_t newSize)
+{
+    return memory_getResize (ptr, oldSize, newSize);
+}
+
+void memory_freeForExternal (void *ptr)
+{
+    memory_free (ptr);
+}
+
+#endif // PD_WITH_DEBUG
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

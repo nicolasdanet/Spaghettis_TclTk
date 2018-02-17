@@ -225,6 +225,15 @@ void        preferences_load                        (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void        *memory_get                             (size_t n);
+void        *memory_getResize                       (void *ptr, size_t oldSize, size_t newSize);
+
+void        memory_free                             (void *ptr);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void        *leak_getMemoryChecked                  (size_t n, const char *f, int line);
 void        *leak_getMemoryResizeChecked            (void *ptr,
                                                         size_t oldSize,
