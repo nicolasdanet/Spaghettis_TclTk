@@ -270,18 +270,13 @@ t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_inlet *inlet_newSignalWithDefault (t_object *owner, t_float f)
+t_inlet *inlet_newSignal (t_object *owner)
 {
     t_inlet *x = inlet_new (owner, NULL, &s_signal, NULL);
     
-    x->i_un.i_signal = f;
+    x->i_un.i_signal = (t_float)0.0;
     
     return x;
-}
-
-t_inlet *inlet_newSignal (t_object *owner)
-{
-    return inlet_newSignalWithDefault (owner, (t_float)0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

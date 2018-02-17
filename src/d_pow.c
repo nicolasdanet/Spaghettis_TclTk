@@ -73,7 +73,7 @@ static void *pow_tilde_new (t_float f)
     
     x->x_outlet = outlet_new (cast_object (x), &s_signal);
     
-    inlet_newSignalWithDefault (cast_object (x), f);
+    pd_float ((t_pd *)inlet_newSignal (cast_object (x)), f);
     
     return x;
 }
