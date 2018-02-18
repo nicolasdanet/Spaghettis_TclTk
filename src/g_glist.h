@@ -29,6 +29,7 @@ struct _glist {
     t_rectangle         gl_geometryGraph;
     t_rectangle         gl_geometryWindow;
     t_fontsize          gl_fontSize;
+    int                 gl_hasBeenCloseBanged;
     int                 gl_hasWindow;
     int                 gl_isMapped;
     int                 gl_isDirty;

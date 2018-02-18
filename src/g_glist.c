@@ -410,10 +410,53 @@ void glist_loadbang (t_glist *glist)
     glist_loadbangSubpatches (glist);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void glist_closebangAbstractions (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (gobj_isCanvas (y)) {
+            if (glist_isAbstraction (cast_glist (y))) { glist_closebang (cast_glist (y)); }
+            else {
+                glist_closebangAbstractions (cast_glist (y));
+            }
+        }
+    }
+}
+
+static void glist_closebangSubpatches (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (gobj_isCanvas (y)) {
+            if (!glist_isAbstraction (cast_glist (y))) { glist_closebangSubpatches (cast_glist (y)); }
+        }
+    }
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (!gobj_isCanvas (y) && class_hasMethod (pd_class (y), sym_closebang)) {
+            pd_message (cast_pd (y), sym_closebang, 0, NULL);
+        }
+    }
+    
+    glist->gl_hasBeenCloseBanged = 1;
+}
 
 void glist_closebang (t_glist *glist)
 {
-    post_log ("CLOSEBANG: %s", glist_getName (glist)->s_name);
+    if (!glist->gl_hasBeenCloseBanged) {
+    //
+    glist_closebangAbstractions (glist);
+    glist_closebangSubpatches (glist);
+    
+    glist->gl_hasBeenCloseBanged = 1;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
