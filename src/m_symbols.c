@@ -229,6 +229,7 @@ t_symbol *sym_click;
 t_symbol *sym_clip;
 t_symbol *sym_clip__tilde__;
 t_symbol *sym_close;
+t_symbol *sym_closebang;
 t_symbol *sym_cnv;
 t_symbol *sym_color;
 t_symbol *sym_comment;
@@ -856,6 +857,7 @@ void symbols_initialize (void)
     sym_clip                                    = gensym ("clip");
     sym_clip__tilde__                           = gensym ("clip~");
     sym_close                                   = gensym ("close");
+    sym_closebang                               = gensym ("closebang");
     sym_cnv                                     = gensym ("cnv");
     sym_color                                   = gensym ("color");
     sym_comment                                 = gensym ("comment");

@@ -229,6 +229,7 @@ extern t_symbol *sym_click;
 extern t_symbol *sym_clip;
 extern t_symbol *sym_clip__tilde__;
 extern t_symbol *sym_close;
+extern t_symbol *sym_closebang;
 extern t_symbol *sym_cnv;
 extern t_symbol *sym_color;
 extern t_symbol *sym_comment;
