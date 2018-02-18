@@ -100,11 +100,6 @@ static void canvas_loadbang (t_glist *glist)
     glist_loadbang (glist);
 }
 
-static void canvas_closebang (t_glist *glist)
-{
-    glist_closebang (glist);
-}
-
 void canvas_clear (t_glist *glist)
 {
     glist_objectRemoveAllScalars (glist);
@@ -478,7 +473,6 @@ void canvas_setup (void)
     
     class_addMethod (c, (t_method)canvas_open,                  sym_open,               A_NULL);
     class_addMethod (c, (t_method)canvas_loadbang,              sym_loadbang,           A_NULL);
-    class_addMethod (c, (t_method)canvas_closebang,             sym_closebang,          A_NULL);
     class_addMethod (c, (t_method)canvas_clear,                 sym_clear,              A_NULL);
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,           A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,              A_FLOAT, A_NULL);
