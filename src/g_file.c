@@ -162,7 +162,7 @@ void canvas_closeSubpatchOrAbstraction (t_glist *glist)
 
 void canvas_closeDestroyAlreadyChecked (t_glist *glist, int destroy)
 {
-    pd_free (cast_pd (glist)); if (destroy == CONTINUE) { canvas_quit(); } 
+    glist_closebang (glist); pd_free (cast_pd (glist)); if (destroy == CONTINUE) { canvas_quit(); }
 }
 
 void canvas_closeDestroyOrCheckIfNecessary (t_glist *glist)
@@ -178,7 +178,7 @@ void canvas_closeDestroyOrCheckIfNecessary (t_glist *glist)
                         DESTROY);
 
     } else {
-        pd_free (cast_pd (glist));
+        glist_closebang (glist); pd_free (cast_pd (glist));
     }
 }
 

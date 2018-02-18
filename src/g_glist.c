@@ -410,6 +410,12 @@ void glist_loadbang (t_glist *glist)
     glist_loadbangSubpatches (glist);
 }
 
+
+void glist_closebang (t_glist *glist)
+{
+    post_log ("CLOSEBANG: %s", glist_getName (glist)->s_name);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -614,6 +620,7 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
     if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
     if (needToRepaint) { paint_erase(); }
     if (glist_isOnScreen (glist)) { gobj_visibilityChanged (y, glist, 0); }
+    if (gobj_isCanvas (y)) { glist_closebang (cast_glist (y)); }
     
     {
         t_box *box = NULL;
