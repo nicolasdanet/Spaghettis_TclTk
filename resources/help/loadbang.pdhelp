@@ -1,14 +1,13 @@
-#N canvas 427 392 331 287 12;
+#N canvas 883 288 370 297 12;
 #X obj 36 108 loadbang;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#X text 12 72 Send a "bang" message on load.;
 #X text 24 24 loadbang;
 #X msg 36 144 Hello!;
 #X obj 36 204 print;
 #X text 12 252 See also:;
-#X obj 96 252 trigger;
-#X obj 168 252 select;
+#X obj 180 252 trigger;
+#X obj 252 252 select;
 #N canvas 477 288 509 208 more 0;
 #X obj 36 48 bng 15 250 50 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 72 48 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
@@ -22,6 +21,8 @@
 #X connect 3 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 240 204 pd more;
-#X connect 0 0 5 0;
-#X connect 5 0 6 0;
+#X obj 96 252 closebang;
+#X text 12 72 Send a "bang" message at load.;
+#X connect 0 0 4 0;
+#X connect 4 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;

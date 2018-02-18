@@ -230,6 +230,7 @@
 #include "x_savepanel.c"
 #include "x_makefilename.c"
 #include "x_loadbang.c"
+#include "x_closebang.c"
 #include "x_samplerate.c"
 #include "x_blocksize.c"
 #include "x_dspstatus.c"

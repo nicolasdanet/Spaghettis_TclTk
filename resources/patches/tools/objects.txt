@@ -122,6 +122,7 @@ text
 
 print
 loadbang
+closebang
 dspstatus
 netsend
 netreceive
