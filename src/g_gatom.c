@@ -23,8 +23,6 @@
 static void gatom_float                     (t_gatom *, t_float);
 static void gatom_set                       (t_gatom *, t_symbol *, int, t_atom *);
 static void gatom_motion                    (void *, t_float, t_float, t_float);
-static void gatom_behaviorDisplaced         (t_gobj *, t_glist *, int, int);
-static void gatom_behaviorSelected          (t_gobj *, t_glist *, int);
 static void gatom_behaviorVisibilityChanged (t_gobj *, t_glist *, int);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -42,7 +40,6 @@ struct _gatom {
     t_float         a_lowRange;
     t_float         a_highRange;
     int             a_position;                         /* Unused but kept for compatibility. */
-    int             a_isSelected;
     t_glist         *a_owner;
     t_symbol        *a_send;
     t_symbol        *a_receive;
@@ -71,8 +68,8 @@ int  text_behaviorMouse             (t_gobj *, t_glist *, t_mouse *);
 static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
     {
         text_behaviorGetRectangle,
-        gatom_behaviorDisplaced,
-        gatom_behaviorSelected,
+        text_behaviorDisplaced,
+        text_behaviorSelected,
         NULL,
         text_behaviorDeleted,
         gatom_behaviorVisibilityChanged,
@@ -242,20 +239,6 @@ static void gatom_motion (void *z, t_float deltaX, t_float deltaY, t_float modif
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-static void gatom_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
-{
-    text_behaviorDisplaced (z, glist, deltaX, deltaY);
-}
-
-static void gatom_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
-{
-    t_gatom *x = (t_gatom *)z;
-    
-    text_behaviorSelected (z, glist, isSelected);
-    
-    x->a_isSelected = isSelected;
-}
 
 static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
