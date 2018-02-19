@@ -100,8 +100,20 @@ int gobj_mouse (t_gobj *x, t_glist *owner, t_mouse *m)
 
 void gobj_save (t_gobj *x, t_buffer *buffer)
 {
-    if (class_hasSaveFunction (pd_class (x))) {
-        (*(class_getSaveFunction (pd_class (x)))) (x, buffer);
+    if (class_hasSaveFunction (pd_class (x))) { (*(class_getSaveFunction (pd_class (x)))) (x, buffer); }
+    if (class_hasDataFunction (pd_class (x))) {
+    //
+    t_buffer *t = buffer_new();
+    t_error err = (*(class_getDataFunction (pd_class (x)))) (x, t);
+
+    if (!err) {
+        buffer_appendSymbol (buffer, sym___hash__A);
+        buffer_appendBuffer (buffer, t);
+        buffer_appendSemicolon (buffer);
+    }
+    
+    buffer_free (t);
+    //
     }
 }
 

@@ -650,7 +650,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     int style = scalar_getFloat (x->x_scalar, sym_style);    
     int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
     t_array *array = garray_getArray (x);
-    int i, n = array_getSize (array);
+    int n = array_getSize (array);
     
     buffer_vAppend (b, "sssisi;",
         sym___hash__X,
@@ -659,13 +659,24 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
         n,
         &s_float,
         flags);
-        
+}
+
+static t_error garray_functionData (t_gobj *z, t_buffer *b)
+{
+    t_garray *x = (t_garray *)z;
+
     if (x->x_saveWithParent) {
+    //
+    t_array *array = garray_getArray (x);
+    int i, n = array_getSize (array);
     
-        buffer_vAppend (b, "si", sym___hash__A, 0);
-        for (i = 0; i < n; i++) { buffer_vAppend (b, "f", GARRAY_AT (i)); }
-        buffer_appendSemicolon (b);
+    buffer_appendFloat (b, 0);
+    for (i = 0; i < n; i++) { buffer_appendFloat (b, GARRAY_AT (i)); }
+    return PD_ERROR_NONE;
+    //
     }
+    
+    return PD_ERROR;
 }
 
 void garray_functionProperties (t_garray *x)
@@ -876,6 +887,7 @@ void garray_setup (void)
     
     class_setWidgetBehavior (c, &garray_widgetBehavior);
     class_setSaveFunction (c, garray_functionSave);
+    class_setDataFunction (c, garray_functionData);
     
     garray_class = c;
 }

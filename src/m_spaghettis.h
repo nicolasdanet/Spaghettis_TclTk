@@ -679,6 +679,7 @@ typedef struct _object {
 typedef void    (*t_method)     (void *);
 typedef void    *(*t_newmethod) (void);
 typedef t_int   *(*t_perform)   (t_int *);
+typedef t_error (*t_datafn)     (t_gobj *, t_buffer *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

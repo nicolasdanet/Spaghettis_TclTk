@@ -99,6 +99,7 @@ struct _class {
     t_widgetbehavior            *c_behaviorWidget;
     t_painterbehavior           *c_behaviorPainter;
     t_savefn                    c_fnSave;
+    t_datafn                    c_fnData;
     t_propertiesfn              c_fnProperties;
     t_int                       c_signalOffset;
     int                         c_hasFirstInlet;
@@ -259,6 +260,11 @@ static inline int class_hasSaveFunction (t_class *c)
     return (c->c_fnSave != NULL);
 }
 
+static inline int class_hasDataFunction (t_class *c)
+{
+    return (c->c_fnData != NULL);
+}
+
 static inline int class_hasPropertiesFunction (t_class *c)
 {
     return (c->c_fnProperties != NULL);
@@ -283,6 +289,11 @@ static inline t_savefn class_getSaveFunction (t_class *c)
     return c->c_fnSave;
 }
 
+static inline t_datafn class_getDataFunction (t_class *c)
+{
+    return c->c_fnData;
+}
+
 static inline t_propertiesfn class_getPropertiesFunction (t_class *c)
 {
     return c->c_fnProperties;
@@ -305,6 +316,11 @@ static inline void class_setPainterBehavior (t_class *c, t_painterbehavior *pw)
 static inline void class_setSaveFunction (t_class *c, t_savefn f)
 {
     c->c_fnSave = f;
+}
+
+static inline void class_setDataFunction (t_class *c, t_datafn f)
+{
+    c->c_fnData = f;
 }
 
 static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)

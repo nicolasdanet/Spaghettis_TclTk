@@ -208,6 +208,7 @@ t_class *class_new (t_symbol *s,
     c->c_behaviorWidget     = (type == CLASS_BOX ? &text_widgetBehavior : NULL);
     c->c_behaviorPainter    = NULL;
     c->c_fnSave             = (type == CLASS_BOX ? class_defaultSave : NULL);
+    c->c_fnData             = NULL;
     c->c_fnProperties       = NULL;
     c->c_signalOffset       = 0;
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
