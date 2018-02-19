@@ -98,12 +98,21 @@ static void textdefine_functionSave (t_gobj *z, t_buffer *b)
     buffer_serialize (b, object_getBuffer (cast_object (x)));
     buffer_appendSemicolon (b);
     object_serializeWidth (cast_object (x), b);
-        
+}
+
+static t_error textdefine_functionData (t_gobj *z, t_buffer *b)
+{
+    t_textdefine *x = (t_textdefine *)z;
+    
     if (x->x_keep) {
-        buffer_vAppend (b, "ss", sym___hash__A, sym_set);
-        buffer_serialize (b, textbuffer_getBuffer (&x->x_textbuffer));
-        buffer_appendSemicolon (b);
+    //
+    buffer_appendSymbol (b, sym_set);
+    buffer_serialize (b, textbuffer_getBuffer (&x->x_textbuffer));
+    return PD_ERROR_NONE;
+    //
     }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -236,6 +245,7 @@ void textdefine_setup (void)
     class_addMethod (c, (t_method)textdefine_modified,  sym__modified,  A_NULL);
     
     class_setSaveFunction (c, textdefine_functionSave);
+    class_setDataFunction (c, textdefine_functionData);
     class_setHelpName (c, sym_text);
 
     textdefine_class = c;
