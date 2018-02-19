@@ -792,8 +792,8 @@ void dial_setup (void)
     class_addFloat (c, (t_method)dial_float);
     class_addList (c, (t_method)dial_list);
     class_addClick (c, (t_method)dial_click);
-
-    class_addMethod (c, (t_method)dial_loadbang,                sym_loadbang,           A_NULL);
+    class_addLoadbang (c, (t_method)dial_loadbang);
+    
     class_addMethod (c, (t_method)dial_initialize,              sym_initialize,         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)dial_fromDialog,              sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)dial_size,                    sym_size,               A_GIMME, A_NULL);

@@ -466,13 +466,13 @@ void canvas_setup (void)
     
     class_addDSP (c, (t_method)canvas_dsp);
     class_addClick (c, (t_method)canvas_click);
+    class_addLoadbang (c, (t_method)canvas_loadbang);
     
     class_addMethod (c, (t_method)canvas_save,                  sym_save,               A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveAs,                sym_saveas,             A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,                 sym_close,              A_DEFFLOAT, A_NULL);
     
     class_addMethod (c, (t_method)canvas_open,                  sym_open,               A_NULL);
-    class_addMethod (c, (t_method)canvas_loadbang,              sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)canvas_clear,                 sym_clear,              A_NULL);
     class_addMethod (c, (t_method)canvas_editmode,              sym_editmode,           A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_dirty,                 sym_dirty,              A_FLOAT, A_NULL);

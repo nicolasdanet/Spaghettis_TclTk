@@ -59,8 +59,8 @@ void loadbang_setup (void)
             sizeof (t_loadbang),
             CLASS_NOINLET,
             A_NULL);
-            
-    class_addMethod (c, (t_method)loadbang_loadbang, sym_loadbang, A_NULL);
+    
+    class_addLoadbang (c, (t_method)loadbang_loadbang);
     
     loadbang_class = c;
 }

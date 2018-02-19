@@ -484,8 +484,8 @@ void toggle_setup (void)
     class_addBang (c, (t_method)toggle_bang);
     class_addFloat (c, (t_method)toggle_float);
     class_addClick (c, (t_method)toggle_click);
+    class_addLoadbang (c, (t_method)toggle_loadbang);
     
-    class_addMethod (c, (t_method)toggle_loadbang,              sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)toggle_initialize,            sym_initialize,         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_size,                  sym_size,               A_GIMME, A_NULL);

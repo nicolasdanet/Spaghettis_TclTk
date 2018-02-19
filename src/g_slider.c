@@ -751,8 +751,8 @@ void slider_setup (void)
     class_addBang (c, (t_method)slider_bang);
     class_addFloat (c, (t_method)slider_float);
     class_addClick (c, (t_method)slider_click);
+    class_addLoadbang (c, (t_method)slider_loadbang);
     
-    class_addMethod (c, (t_method)slider_loadbang,              sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)slider_initialize,            sym_initialize,         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_size,                  sym_size,               A_GIMME, A_NULL);

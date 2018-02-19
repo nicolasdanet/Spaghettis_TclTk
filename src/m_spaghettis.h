@@ -1013,6 +1013,8 @@ PD_DLL void     instance_dspChainAppend         (t_perform f, int n, ...);
 
 #define class_addDSP(c, m)          class_addMethod ((c), (t_method)(m), sym_dsp, A_CANT, A_NULL)
 #define class_addClick(c, m)        class_addMethod ((c), (t_method)(m), sym_click, A_GIMME, A_NULL)
+#define class_addLoadbang(c, m)     class_addMethod ((c), (t_method)(m), sym_loadbang, A_NULL)
+#define class_addClosebang(c, m)    class_addMethod ((c), (t_method)(m), sym_closebang, A_NULL)
 #define class_addPolling(c, m)      class_addMethod ((c), (t_method)(m), sym__polling, A_NULL)
 #define class_addAutorelease(c, m)  class_addMethod ((c), (t_method)(m), sym__autorelease, A_NULL)
 
@@ -1020,6 +1022,8 @@ PD_DLL void     instance_dspChainAppend         (t_perform f, int n, ...);
 
 #define class_addDSP(c, m)          class_addMethod ((c), (t_method)(m), gensym ("dsp"), A_CANT, A_NULL)
 #define class_addClick(c, m)        class_addMethod ((c), (t_method)(m), gensym ("click"), A_GIMME, A_NULL)
+#define class_addLoadbang(c, m)     class_addMethod ((c), (t_method)(m), gensym ("loadbang"), A_NULL)
+#define class_addClosebang(c, m)    class_addMethod ((c), (t_method)(m), gensym ("closebang"), A_NULL)
 
 #endif
 

@@ -646,8 +646,8 @@ void radio_setup (void)
     class_addBang (c, (t_method)radio_bang);
     class_addFloat (c, (t_method)radio_float);
     class_addClick (c, (t_method)radio_click);
+    class_addLoadbang (c, (t_method)radio_loadbang);
     
-    class_addMethod (c, (t_method)radio_loadbang,               sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)radio_initialize,             sym_initialize,         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)radio_fromDialog,             sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)radio_size,                   sym_size,               A_GIMME, A_NULL);

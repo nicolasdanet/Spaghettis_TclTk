@@ -60,7 +60,7 @@ void closebang_setup (void)
             CLASS_NOINLET,
             A_NULL);
             
-    class_addMethod (c, (t_method)closebang_closebang, sym_closebang, A_NULL);
+    class_addClosebang (c, (t_method)closebang_closebang);
     
     closebang_class = c;
 }

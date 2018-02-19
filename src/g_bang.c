@@ -493,8 +493,8 @@ void bng_setup (void)
     class_addList (c, (t_method)bng_list);
     class_addAnything (c, (t_method)bng_anything);
     class_addClick (c, (t_method)bng_click);
+    class_addLoadbang (c, (t_method)bng_loadbang);
     
-    class_addMethod (c, (t_method)bng_loadbang,                 sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)bng_initialize,               sym_initialize,         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)bng_fromDialog,               sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_size,                     sym_size,               A_GIMME, A_NULL);
