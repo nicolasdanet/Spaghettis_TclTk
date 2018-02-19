@@ -15,10 +15,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_widgetbehavior text_widgetBehavior;
+void text_behaviorGetRectangle              (t_gobj *, t_glist *, t_rectangle *);
+void text_behaviorDisplaced                 (t_gobj *, t_glist *, int, int);
+void text_behaviorSelected                  (t_gobj *, t_glist *, int);
+void text_behaviorActivated                 (t_gobj *, t_glist *, int);
+void text_behaviorDeleted                   (t_gobj *, t_glist *);
+void text_behaviorVisibilityChanged         (t_gobj *, t_glist *, int);
+int  text_behaviorMouse                     (t_gobj *, t_glist *, t_mouse *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void glist_behaviorGetRectangle             (t_gobj *, t_glist *, t_rectangle *);
 void glist_behaviorDisplaced                (t_gobj *, t_glist *, int, int);
@@ -133,7 +140,7 @@ void glist_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_glist *x = cast_glist (z);
     
-    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnGetRectangle (z, glist, r); }
+    if (!glist_isGraphOnParent (x)) { text_behaviorGetRectangle (z, glist, r); }
     else {
         glist_behaviorGetRectangleProceed (x, glist, r);
     }
@@ -143,7 +150,7 @@ void glist_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_glist *x = cast_glist (z);
     
-    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnDisplaced (z, glist, deltaX, deltaY); }
+    if (!glist_isGraphOnParent (x)) { text_behaviorDisplaced (z, glist, deltaX, deltaY); }
     else {
         glist_behaviorDisplacedProceed (x, glist, deltaX, deltaY);
         glist_redrawRequired (glist);
@@ -156,7 +163,7 @@ void glist_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     glist_setSelected (x, (isSelected != 0));
     
-    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnSelected (z, glist, isSelected); }
+    if (!glist_isGraphOnParent (x)) { text_behaviorSelected (z, glist, isSelected); }
     else {
         glist_behaviorSelectedProceed (x, glist, isSelected);
     }
@@ -166,7 +173,7 @@ void glist_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
 {
     t_glist *x = cast_glist (z);
     
-    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnActivated (z, glist, isActivated); }
+    if (!glist_isGraphOnParent (x)) { text_behaviorActivated (z, glist, isActivated); }
 }
 
 void glist_behaviorDeleted (t_gobj *z, t_glist *glist)
@@ -175,14 +182,14 @@ void glist_behaviorDeleted (t_gobj *z, t_glist *glist)
 
     glist_objectRemoveAll (x);
     
-    text_widgetBehavior.w_fnDeleted (z, glist);
+    text_behaviorDeleted (z, glist);
 }
 
 void glist_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_glist *x = cast_glist (z);
 
-    if (!glist_isGraphOnParent (x)) { text_widgetBehavior.w_fnVisibilityChanged (z, glist, isVisible); }
+    if (!glist_isGraphOnParent (x)) { text_behaviorVisibilityChanged (z, glist, isVisible); }
     else {
         glist_behaviorVisibilityChangedProceed (x, glist, isVisible, 0);
     }
@@ -192,7 +199,7 @@ int glist_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_glist *x = cast_glist (z);
 
-    if (!glist_isGraphOnParent (x)) { return text_widgetBehavior.w_fnMouse (z, glist, m); }
+    if (!glist_isGraphOnParent (x)) { return text_behaviorMouse (z, glist, m); }
     else {
         return glist_behaviorMouseProceed (x, glist, m);
     }
