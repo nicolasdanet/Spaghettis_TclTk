@@ -490,6 +490,9 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     }
 }
 
+/* Note that scalars are NOT saved with patcher. */
+/* This function is required for copy and paste behavior. */
+
 static void scalar_functionSave (t_gobj *z, t_buffer *b)
 {
     t_scalar *x = cast_scalar (z);
