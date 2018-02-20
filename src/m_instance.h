@@ -98,7 +98,7 @@ static inline t_pdinstance *instance_get (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* The #N symbol is bound to the patcher factory. */
+/* The #N symbol is bound to the patch factory. */
 /* The #X symbol is bound to the context currently active. */
 /* The #A symbol can be used to serialize things. */
 

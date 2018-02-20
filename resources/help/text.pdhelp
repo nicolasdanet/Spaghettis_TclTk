@@ -426,7 +426,6 @@
 #X connect 5 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 480 pd add;
-#X text 12 372 Below optional -keep flag to save contents with patcher.;
 #X obj 288 648 array;
 #X text 216 132 Read a message.;
 #X text 216 156 Replace or add a message.;
@@ -434,6 +433,7 @@
 #X text 216 204 Delete a message.;
 #X text 216 228 Get the number of messages.;
 #X obj 348 648 metro;
+#X text 12 372 Below optional -keep flag to save contents with patch.;
 #X connect 25 0 28 0;
 #X connect 26 0 28 0;
 #X connect 27 0 28 0;
