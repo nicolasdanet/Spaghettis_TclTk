@@ -161,8 +161,6 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     x->x_outletLeft  = outlet_newPointer (cast_object (x));
     x->x_outletRight = outlet_newSymbol (cast_object (x));
     
-    instance_setBoundA (cast_pd (x));
-    
     return x;
 }
 
@@ -201,8 +199,6 @@ static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
 static void textdefine_free (t_textdefine *x)
 {
     if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
-    
-    instance_setBoundA (NULL);
     
     {
         t_error err = scalar_unsetInternalBuffer (x->x_scalar, sym_t);

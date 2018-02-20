@@ -846,7 +846,6 @@ static void garray_free (t_garray *x)
 {
     gui_jobRemove ((void *)x);
     stub_destroyWithKey ((void *)x);
-    instance_setBoundA (NULL);
     pd_unbind (cast_pd (x), x->x_name);
     pd_free (cast_pd (x->x_scalar));
 }

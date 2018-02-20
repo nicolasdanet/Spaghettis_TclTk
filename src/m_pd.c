@@ -37,6 +37,10 @@ void pd_free (t_pd *x)
     PD_ASSERT (!class_isAbstract (c));
     PD_ASSERT (class_getInstanceSize (c) > 0);
     
+    if (class_hasDataFunction (c)) {
+        instance_setBoundA (NULL);      /* In case it is still bind. */
+    }
+    
     if (class_hasFreeMethod (c)) { (*(class_getFreeMethod (c))) (x); }
 
     if (class_isBox (c)) {

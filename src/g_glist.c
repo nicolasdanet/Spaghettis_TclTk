@@ -544,6 +544,8 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
     if (pd_class (x) == vinlet_class)  { glist_inletSort (glist_getView (glist));  }
     if (pd_class (x) == voutlet_class) { glist_outletSort (glist_getView (glist)); }
     if (pd_class (x) == block_class)   { dsp_update(); }
+    
+    if (class_hasDataFunction (pd_class (x))) { instance_setBoundA (cast_pd (x)); }
     //
     }
     
