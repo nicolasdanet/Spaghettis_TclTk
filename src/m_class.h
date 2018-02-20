@@ -318,11 +318,6 @@ static inline void class_setSaveFunction (t_class *c, t_savefn f)
     c->c_fnSave = f;
 }
 
-static inline void class_setDataFunction (t_class *c, t_datafn f)
-{
-    c->c_fnData = f;
-}
-
 static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
 {
     c->c_fnProperties = f;
