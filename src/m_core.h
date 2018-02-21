@@ -44,6 +44,10 @@ t_error     atom_toString                           (t_atom *a, char *dest, int 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void        buffer_vAppend                          (t_buffer *x, const char *fmt, ...);
+t_error     buffer_resizeBetween                    (t_buffer *x, int start, int end, int n);
+t_error     buffer_copyAtomAtIndex                  (t_buffer *x, int n, t_atom *a);
+
 void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed               (t_buffer *x, const char *s, int size);
 
