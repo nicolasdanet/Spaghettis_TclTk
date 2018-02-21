@@ -278,11 +278,15 @@ void glist_setDirty (t_glist *glist, int n)
         
     t_glist *y = glist_getTop (glist);
     
+    if (!glist_isAbstraction (y)) {
+    //
     if (y->gl_isDirty != isDirty) {
     //
     y->gl_isDirty = isDirty; 
     
     glist_updateTitle (y);
+    //
+    }
     //
     }
 }
