@@ -133,18 +133,17 @@ static void class_defaultSave (t_gobj *z, t_buffer *b)
 {
     t_object *x = cast_object (z);
     
-    if (object_isComment (x)) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_text, object_getX (x), object_getY (x));
-        
-    } else if (object_isObject (x)) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_obj,  object_getX (x), object_getY (x));
-        
-    } else if (object_isMessage (x)) {
-        buffer_vAppend (b, "ssii", sym___hash__X, sym_msg,  object_getX (x), object_getY (x));
-        
-    } else { 
+    buffer_appendSymbol (b, sym___hash__X);
+    
+    if (object_isComment (x))       { buffer_appendSymbol (b, sym_text); }
+    else if (object_isObject (x))   { buffer_appendSymbol (b, sym_obj);  }
+    else if (object_isMessage (x))  { buffer_appendSymbol (b, sym_msg);  }
+    else {
         PD_BUG;
     }
+    
+    buffer_appendFloat (b, object_getX (x));
+    buffer_appendFloat (b, object_getY (x));
     
     buffer_serialize (b, object_getBuffer (x));
     buffer_appendSemicolon (b);
