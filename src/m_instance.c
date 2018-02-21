@@ -33,6 +33,15 @@ void scheduler_setLogicalTime (t_systime);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_glist *instance_contextGetCurrent (void)
+{
+    return cast_glist (instance_getBoundX());
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void instance_rootsAdd (t_glist *glist)
 {
     glist_setNext (glist, instance_get()->pd_roots); instance_get()->pd_roots = glist;

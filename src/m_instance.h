@@ -208,11 +208,6 @@ static inline void instance_contextSetCurrent (t_glist *glist)
     return instance_setBoundX (cast_pd (glist));
 }
 
-static inline t_glist *instance_contextGetCurrent (void)
-{
-    return cast_glist (instance_getBoundX());
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
