@@ -541,8 +541,8 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSymbol (b, x->x_isVertical ? sym_vslider : sym_hslider);
     buffer_appendFloat (b,  x->x_gui.iem_width);
     buffer_appendFloat (b,  x->x_gui.iem_height);
-    buffer_appendFloat (b,  (t_float)x->x_minimum);
-    buffer_appendFloat (b,  (t_float)x->x_maximum);
+    buffer_appendFloat (b,  x->x_minimum);
+    buffer_appendFloat (b,  x->x_maximum);
     buffer_appendFloat (b,  x->x_isLogarithmic);
     buffer_appendFloat (b,  iemgui_serializeLoadbang (cast_iem (z)));
     buffer_appendSymbol (b, names.n_unexpandedSend);
