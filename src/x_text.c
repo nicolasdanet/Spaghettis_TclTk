@@ -89,13 +89,11 @@ static void textdefine_functionSave (t_gobj *z, t_buffer *b)
 {
     t_textdefine *x = (t_textdefine *)z;
     
-    buffer_vAppend (b, "ssii", 
-        sym___hash__X,
-        sym_obj,
-        object_getX (cast_object (x)),
-        object_getY (cast_object (x)));
-        
-    buffer_serialize (b, object_getBuffer (cast_object (x)));
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_obj);
+    buffer_appendFloat (b,  object_getX (cast_object (x)));
+    buffer_appendFloat (b,  object_getY (cast_object (x)));
+    buffer_serialize (b,    object_getBuffer (cast_object (x)));
     buffer_appendSemicolon (b);
     object_serializeWidth (cast_object (x), b);
 }
