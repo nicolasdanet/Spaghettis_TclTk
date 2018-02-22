@@ -465,27 +465,27 @@ static void radio_functionSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (cast_iem (z), &names, &colors);
     
-    buffer_vAppend (b, "ssiisiiiisssiiiisssf;", 
-        sym___hash__X,
-        sym_obj,
-        object_getX (cast_object (z)),
-        object_getY (cast_object (z)),
-        x->x_isVertical ? sym_vradio : sym_hradio,
-        x->x_gui.iem_width,
-        x->x_changed,
-        iemgui_serializeLoadbang (cast_iem (z)),
-        x->x_numberOfButtons,
-        names.n_unexpandedSend,
-        names.n_unexpandedReceive,
-        names.n_unexpandedLabel,
-        x->x_gui.iem_labelX,
-        x->x_gui.iem_labelY,
-        iemgui_serializeFontStyle (cast_iem (z)),
-        x->x_gui.iem_fontSize,
-        colors.c_symColorBackground,
-        colors.c_symColorForeground,
-        colors.c_symColorLabel,
-        x->x_floatValue);
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_obj);
+    buffer_appendFloat (b,  object_getX (cast_object (z)));
+    buffer_appendFloat (b,  object_getY (cast_object (z)));
+    buffer_appendSymbol (b, x->x_isVertical ? sym_vradio : sym_hradio);
+    buffer_appendFloat (b,  x->x_gui.iem_width);
+    buffer_appendFloat (b,  x->x_changed);
+    buffer_appendFloat (b,  iemgui_serializeLoadbang (cast_iem (z)));
+    buffer_appendFloat (b,  x->x_numberOfButtons);
+    buffer_appendSymbol (b, names.n_unexpandedSend);
+    buffer_appendSymbol (b, names.n_unexpandedReceive);
+    buffer_appendSymbol (b, names.n_unexpandedLabel);
+    buffer_appendFloat (b,  x->x_gui.iem_labelX);
+    buffer_appendFloat (b,  x->x_gui.iem_labelY);
+    buffer_appendFloat (b,  iemgui_serializeFontStyle (cast_iem (z)));
+    buffer_appendFloat (b,  x->x_gui.iem_fontSize);
+    buffer_appendSymbol (b, colors.c_symColorBackground);
+    buffer_appendSymbol (b, colors.c_symColorForeground);
+    buffer_appendSymbol (b, colors.c_symColorLabel);
+    buffer_appendFloat (b,  x->x_floatValue);
+    buffer_appendSemicolon (b);
 }
 
 static void radio_functionProperties (t_gobj *z, t_glist *owner)
