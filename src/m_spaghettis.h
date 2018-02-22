@@ -893,6 +893,11 @@ PD_DLL int      buffer_getSize                  (t_buffer *x);
 PD_DLL void     buffer_free                     (t_buffer *x);
 PD_DLL void     buffer_clear                    (t_buffer *x);
 
+PD_DLL void     buffer_resize                   (t_buffer *x, int n);
+PD_DLL t_error  buffer_expand                   (t_buffer *x, int start, int end, int n);
+PD_DLL t_error  buffer_setAtIndex               (t_buffer *x, int n, t_atom *a);
+PD_DLL t_error  buffer_getAtIndex               (t_buffer *x, int n, t_atom *a);
+
 PD_DLL void     buffer_append                   (t_buffer *x, int argc, t_atom *argv);
 PD_DLL void     buffer_appendAtom               (t_buffer *x, t_atom *a);
 PD_DLL void     buffer_appendBuffer             (t_buffer *x, t_buffer *y);

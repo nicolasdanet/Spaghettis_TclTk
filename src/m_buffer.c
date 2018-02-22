@@ -89,10 +89,6 @@ void buffer_resize (t_buffer *x, int n)
     x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_error buffer_expand (t_buffer *x, int start, int end, int n)
 {
     PD_ASSERT (n >= 0); n = PD_MAX (n, 0);
