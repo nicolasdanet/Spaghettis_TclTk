@@ -63,14 +63,15 @@ static void glist_serializeLines (t_glist *glist, t_buffer *b)
     traverser_start (&t, glist);
     
     while ((connection = traverser_next (&t))) {
-    
-        buffer_vAppend (b, "ssiiii;", 
-            sym___hash__X,
-            sym_connect,
-            glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (&t))), 
-            traverser_getIndexOfOutlet (&t), 
-            glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t))), 
-            traverser_getIndexOfInlet (&t));
+    //
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_connect);
+    buffer_appendFloat (b,  glist_objectGetIndexOf (glist, cast_gobj (traverser_getSource (&t))));
+    buffer_appendFloat (b,  traverser_getIndexOfOutlet (&t));
+    buffer_appendFloat (b,  glist_objectGetIndexOf (glist, cast_gobj (traverser_getDestination (&t))));
+    buffer_appendFloat (b,  traverser_getIndexOfInlet (&t));
+    buffer_appendSemicolon (b);
+    //
     }
 }
 
@@ -78,38 +79,38 @@ static void glist_serializeLines (t_glist *glist, t_buffer *b)
 
 static void glist_serializeGraph (t_glist *glist, t_buffer *b)
 {
-    buffer_vAppend (b, "ssfffffffff;", 
-            sym___hash__X, 
-            sym_coords,
-            bounds_getLeft (glist_getBounds (glist)),
-            bounds_getTop (glist_getBounds (glist)),
-            bounds_getRight (glist_getBounds (glist)),
-            bounds_getBottom (glist_getBounds (glist)),
-            (double)(rectangle_getWidth (glist_getGraphGeometry (glist))), 
-            (double)(rectangle_getHeight (glist_getGraphGeometry (glist))),
-            (double)(glist_isGraphOnParent (glist) ? 1 : 0),
-            (double)(rectangle_getTopLeftX (glist_getGraphGeometry (glist))),
-            (double)(rectangle_getTopLeftY (glist_getGraphGeometry (glist))));
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_coords);
+    buffer_appendFloat (b,  bounds_getLeft (glist_getBounds (glist)));
+    buffer_appendFloat (b,  bounds_getTop (glist_getBounds (glist)));
+    buffer_appendFloat (b,  bounds_getRight (glist_getBounds (glist)));
+    buffer_appendFloat (b,  bounds_getBottom (glist_getBounds (glist)));
+    buffer_appendFloat (b,  rectangle_getWidth (glist_getGraphGeometry (glist)));
+    buffer_appendFloat (b,  rectangle_getHeight (glist_getGraphGeometry (glist)));
+    buffer_appendFloat (b,  glist_isGraphOnParent (glist) ? 1 : 0);
+    buffer_appendFloat (b,  rectangle_getTopLeftX (glist_getGraphGeometry (glist)));
+    buffer_appendFloat (b,  rectangle_getTopLeftY (glist_getGraphGeometry (glist)));
+    buffer_appendSemicolon (b);
 }
 
 static void glist_serializeFooter (t_glist *glist, t_buffer *b)
 {
     if (glist_isSubpatch (glist)) {
+    //
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_restore);
+    buffer_appendFloat (b, object_getX (cast_object (glist)));
+    buffer_appendFloat (b, object_getY (cast_object (glist)));
     
-        buffer_vAppend (b, "ssii",
-            sym___hash__X,
-            sym_restore,
-            object_getX (cast_object (glist)),
-            object_getY (cast_object (glist)));
-        
-        if (!glist_isArray (glist)) { buffer_serialize (b, object_getBuffer (cast_object (glist))); }
-        else {
-            buffer_appendSymbol (b, sym_graph);
-            buffer_appendSymbol (b, garray_getUnexpandedName (glist_getArray (glist)));
-        }
-        
-        buffer_appendSemicolon (b);
-        object_serializeWidth (cast_object (glist), b);
+    if (!glist_isArray (glist)) { buffer_serialize (b, object_getBuffer (cast_object (glist))); }
+    else {
+        buffer_appendSymbol (b, sym_graph);
+        buffer_appendSymbol (b, garray_getUnexpandedName (glist_getArray (glist)));
+    }
+    
+    buffer_appendSemicolon (b);
+    object_serializeWidth (cast_object (glist), b);
+    //
     }
 }
 
