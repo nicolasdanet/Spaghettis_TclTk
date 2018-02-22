@@ -45,17 +45,21 @@ void clipboard_copy (t_glist *glist)
     
     while ((connection = traverser_next (&t))) {
     //
-    int m = glist_objectIsSelected (glist, cast_gobj (traverser_getSource (&t)));
-    int n = glist_objectIsSelected (glist, cast_gobj (traverser_getDestination (&t)));
+    t_gobj *o = cast_gobj (traverser_getSource (&t));
+    t_gobj *d = cast_gobj (traverser_getDestination (&t));
+    int m = glist_objectIsSelected (glist, o);
+    int n = glist_objectIsSelected (glist, d);
     
     if (m && n) {
-        buffer_vAppend (b, "ssiiii;", 
-            sym___hash__X, 
-            sym_connect,
-            glist_objectGetIndexAmongSelected (glist, cast_gobj (traverser_getSource (&t))),
-            traverser_getIndexOfOutlet (&t),
-            glist_objectGetIndexAmongSelected (glist, cast_gobj (traverser_getDestination (&t))),
-            traverser_getIndexOfInlet (&t));
+    //
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_connect);
+    buffer_appendFloat (b, glist_objectGetIndexAmongSelected (glist, o));
+    buffer_appendFloat (b, traverser_getIndexOfOutlet (&t));
+    buffer_appendFloat (b, glist_objectGetIndexAmongSelected (glist, d));
+    buffer_appendFloat (b, traverser_getIndexOfInlet (&t));
+    buffer_appendSemicolon (b);
+    //
     }
     //
     }

@@ -340,7 +340,14 @@ int object_isSignalOutlet (t_object *x, int m)
 
 void object_serializeWidth (t_object *x, t_buffer *b)
 {
-    if (x->te_width) { buffer_vAppend (b, "ssi;", sym___hash__X, sym_f, x->te_width); }
+    if (x->te_width) {
+    //
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_f);
+    buffer_appendFloat (b, x->te_width);
+    buffer_appendSemicolon (b);
+    //
+    }
 }
 
 t_float *object_getSignalAtIndex (t_object *x, int m)
