@@ -355,12 +355,10 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
     
     if (saveContents) { glist_serialize (cast_glist (x), b); }
     else {
-        buffer_vAppend (b, "ssii",
-            sym___hash__X,
-            sym_obj,
-            object_getX (cast_object (x)),
-            object_getY (cast_object (x)));
-        
+        buffer_appendSymbol (b, sym___hash__X);
+        buffer_appendSymbol (b, sym_obj);
+        buffer_appendFloat (b, object_getX (cast_object (x)));
+        buffer_appendFloat (b, object_getY (cast_object (x)));
         buffer_serialize (b, object_getBuffer (cast_object (x)));
         buffer_appendSemicolon (b);
         object_serializeWidth (cast_object (x), b);
