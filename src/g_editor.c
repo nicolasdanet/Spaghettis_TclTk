@@ -137,18 +137,20 @@ void editor_selectionCacheLines (t_editor *x)
     
     while ((connection = traverser_next (&t))) {
     //
-    int s1 = glist_objectIsSelected (x->e_owner, cast_gobj (traverser_getSource (&t)));
-    int s2 = glist_objectIsSelected (x->e_owner, cast_gobj (traverser_getDestination (&t)));
+    t_gobj *o = cast_gobj (traverser_getSource (&t));
+    t_gobj *d = cast_gobj (traverser_getDestination (&t));
+    int s1 = glist_objectIsSelected (x->e_owner, o);
+    int s2 = glist_objectIsSelected (x->e_owner, d);
     
     if (s1 != s2) {
     //
-    buffer_vAppend (x->e_cachedLines, "ssiiii;",
-        sym___hash__X, 
-        sym_connect,
-        glist_objectGetIndexOf (x->e_owner, cast_gobj (traverser_getSource (&t))),
-        traverser_getIndexOfOutlet (&t),
-        glist_objectGetIndexOf (x->e_owner, cast_gobj (traverser_getDestination (&t))),
-        traverser_getIndexOfInlet (&t));
+    buffer_appendSymbol (x->e_cachedLines, sym___hash__X);
+    buffer_appendSymbol (x->e_cachedLines, sym_connect);
+    buffer_appendFloat (x->e_cachedLines,  glist_objectGetIndexOf (x->e_owner, o));
+    buffer_appendFloat (x->e_cachedLines,  traverser_getIndexOfOutlet (&t));
+    buffer_appendFloat (x->e_cachedLines,  glist_objectGetIndexOf (x->e_owner, d));
+    buffer_appendFloat (x->e_cachedLines,  traverser_getIndexOfInlet (&t));
+    buffer_appendSemicolon (x->e_cachedLines);
     //
     }
     //

@@ -54,10 +54,10 @@ void clipboard_copy (t_glist *glist)
     //
     buffer_appendSymbol (b, sym___hash__X);
     buffer_appendSymbol (b, sym_connect);
-    buffer_appendFloat (b, glist_objectGetIndexAmongSelected (glist, o));
-    buffer_appendFloat (b, traverser_getIndexOfOutlet (&t));
-    buffer_appendFloat (b, glist_objectGetIndexAmongSelected (glist, d));
-    buffer_appendFloat (b, traverser_getIndexOfInlet (&t));
+    buffer_appendFloat (b,  glist_objectGetIndexAmongSelected (glist, o));
+    buffer_appendFloat (b,  traverser_getIndexOfOutlet (&t));
+    buffer_appendFloat (b,  glist_objectGetIndexAmongSelected (glist, d));
+    buffer_appendFloat (b,  traverser_getIndexOfInlet (&t));
     buffer_appendSemicolon (b);
     //
     }
