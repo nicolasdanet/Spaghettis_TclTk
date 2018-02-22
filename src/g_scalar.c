@@ -402,7 +402,7 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
     t_template *tmpl = scalar_getTemplate (x);
     int i;
         
-    buffer_vAppend (b, "s", symbol_stripTemplateIdentifier (x->sc_templateIdentifier));
+    buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->sc_templateIdentifier));
 
     for (i = 0; i < template_getSize (tmpl); i++) {
     
@@ -499,7 +499,8 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
     t_buffer *t = buffer_new();
    
     scalar_serialize (x, t);
-    buffer_vAppend (b, "ss", sym___hash__X, sym_scalar);
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_scalar);
     buffer_serialize (b, t);
     buffer_appendSemicolon (b);
     
