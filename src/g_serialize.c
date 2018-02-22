@@ -17,42 +17,35 @@
 
 static void glist_serializeHeader (t_glist *glist, t_buffer *b)
 {
-    if (glist_isSubpatch (glist)) {
+    buffer_appendSymbol (b, sym___hash__N);
+    buffer_appendSymbol (b, sym_canvas);
+    buffer_appendFloat (b,  rectangle_getTopLeftX (glist_getWindowGeometry (glist)));
+    buffer_appendFloat (b,  rectangle_getTopLeftY (glist_getWindowGeometry (glist)));
+    buffer_appendFloat (b,  rectangle_getWidth (glist_getWindowGeometry (glist)));
+    buffer_appendFloat (b,  rectangle_getHeight (glist_getWindowGeometry (glist)));
     
-        t_symbol *s = &s_;
-        
-        /* Note that the name of a subpatch or an array could be expanded. */
-        /* It is required to fetch the unexpanded form. */
-        
-        if (glist_isArray (glist)) { s = garray_getUnexpandedName (glist_getArray (glist)); }
-        else {
-            t_buffer *z = buffer_new();
-            buffer_serialize (z, object_getBuffer (cast_object (glist)));
-            s = atom_getSymbolAtIndex (1, buffer_getSize (z), buffer_getAtoms (z));
-            buffer_free (z);
-        }
-        
-        buffer_vAppend (b, "ssiiiisi;", 
-            sym___hash__N, 
-            sym_canvas,
-            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
-            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
-            rectangle_getWidth (glist_getWindowGeometry (glist)),
-            rectangle_getHeight (glist_getWindowGeometry (glist)),
-            (s != &s_ ? s : sym_Patch),
-            glist_getMapped (glist));
-            
-    } else {
+    if (!glist_isSubpatch (glist)) { buffer_appendFloat (b,  glist_getFontSize (glist)); }
+    else {
+    //
+    t_symbol *s = &s_;
     
-        buffer_vAppend (b, "ssiiiii;",
-            sym___hash__N,
-            sym_canvas,
-            rectangle_getTopLeftX (glist_getWindowGeometry (glist)),
-            rectangle_getTopLeftY (glist_getWindowGeometry (glist)),
-            rectangle_getWidth (glist_getWindowGeometry (glist)),
-            rectangle_getHeight (glist_getWindowGeometry (glist)),
-            (int)glist_getFontSize (glist));
+    /* Note that the name of a subpatch or an array could be expanded. */
+    /* Code below is required to fetch the unexpanded form. */
+    
+    if (glist_isArray (glist)) { s = garray_getUnexpandedName (glist_getArray (glist)); }
+    else {
+        t_buffer *z = buffer_new();
+        buffer_serialize (z, object_getBuffer (cast_object (glist)));
+        s = atom_getSymbolAtIndex (1, buffer_getSize (z), buffer_getAtoms (z));
+        buffer_free (z);
     }
+    
+    buffer_appendSymbol (b, (s != &s_ ? s : sym_Patch));
+    buffer_appendFloat (b,  glist_getMapped (glist));
+    //
+    }
+    
+    buffer_appendSemicolon (b);
 }
 
 static void glist_serializeObjects (t_glist *glist, t_buffer *b)
