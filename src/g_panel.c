@@ -223,24 +223,24 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (cast_iem (z), &names, &colors);
     
-    buffer_vAppend (b, "ssiisiiisssiiiiss;",
-        sym___hash__X,
-        sym_obj,
-        object_getX (cast_object (z)),
-        object_getY (cast_object (z)),
-        sym_cnv,
-        x->x_gui.iem_width,
-        x->x_panelWidth,
-        x->x_panelHeight,
-        names.n_unexpandedSend,
-        names.n_unexpandedReceive,
-        names.n_unexpandedLabel,
-        x->x_gui.iem_labelX,
-        x->x_gui.iem_labelY,
-        iemgui_serializeFontStyle (cast_iem (z)),
-        x->x_gui.iem_fontSize,
-        colors.c_symColorBackground,
-        colors.c_symColorLabel);
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_obj);
+    buffer_appendFloat (b,  object_getX (cast_object (z)));
+    buffer_appendFloat (b,  object_getY (cast_object (z)));
+    buffer_appendSymbol (b, sym_cnv);
+    buffer_appendFloat (b,  x->x_gui.iem_width);
+    buffer_appendFloat (b,  x->x_panelWidth);
+    buffer_appendFloat (b,  x->x_panelHeight);
+    buffer_appendSymbol (b, names.n_unexpandedSend);
+    buffer_appendSymbol (b, names.n_unexpandedReceive);
+    buffer_appendSymbol (b, names.n_unexpandedLabel);
+    buffer_appendFloat (b,  x->x_gui.iem_labelX);
+    buffer_appendFloat (b,  x->x_gui.iem_labelY);
+    buffer_appendFloat (b,  iemgui_serializeFontStyle (cast_iem (z)));
+    buffer_appendFloat (b,  x->x_gui.iem_fontSize);
+    buffer_appendSymbol (b, colors.c_symColorBackground);
+    buffer_appendSymbol (b, colors.c_symColorLabel);
+    buffer_appendSemicolon (b);
 }
 
 static void panel_functionProperties (t_gobj *z, t_glist *owner)
