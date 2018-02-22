@@ -54,6 +54,28 @@ t_atom *buffer_getAtomAtIndexChecked (t_buffer *x, int n)
     return NULL;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error buffer_setAtIndex (t_buffer *x, int n, t_atom *a)
+{
+    t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
+    
+    return PD_ERROR;
+}
+
+t_error buffer_getAtIndex (t_buffer *x, int n, t_atom *a)
+{
+    t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t && a) { *a = *t; return PD_ERROR_NONE; }
+    
+    return PD_ERROR;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void buffer_clear (t_buffer *x)
 {
     buffer_resize (x, 0);
@@ -71,7 +93,7 @@ void buffer_resize (t_buffer *x, int n)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error buffer_resizeBetween (t_buffer *x, int start, int end, int n)
+t_error buffer_expand (t_buffer *x, int start, int end, int n)
 {
     PD_ASSERT (n >= 0); n = PD_MAX (n, 0);
     
@@ -109,10 +131,6 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void buffer_appendAtom (t_buffer *x, t_atom *a)
 {
     buffer_append (x, 1, a);
@@ -142,24 +160,6 @@ void buffer_appendSemicolon (t_buffer *x)
     t_atom a;
     SET_SEMICOLON (&a);
     buffer_append (x, 1, &a);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error buffer_setAtomAtIndex (t_buffer *x, int n, t_atom *a)
-{
-    t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
-    
-    return PD_ERROR;
-}
-
-t_error buffer_copyAtomAtIndex (t_buffer *x, int n, t_atom *a)
-{
-    t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t) { *a = *t; return PD_ERROR_NONE; }
-    
-    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -43,8 +43,8 @@ static void textinsert_list (t_textinsert *x, t_symbol *s, int argc, t_atom *arg
     
     if (buffer_getMessageAt (b, line, &start, &end) == PD_ERROR_NONE) {
     
-        buffer_resizeBetween (b, start, start, count + 1);
-        buffer_setAtomAtIndex (b, start + count, &a);
+        buffer_expand (b, start, start, count + 1);
+        buffer_setAtIndex (b, start + count, &a);
         
     } else {
     
@@ -53,14 +53,14 @@ static void textinsert_list (t_textinsert *x, t_symbol *s, int argc, t_atom *arg
         int newSize = oldSize + addSemi + count + 1;
         
         buffer_resize (b, newSize);
-        buffer_setAtomAtIndex (b, newSize - 1, &a);
+        buffer_setAtIndex (b, newSize - 1, &a);
             
         start = oldSize;
             
-        if (addSemi) { buffer_setAtomAtIndex (b, oldSize, &a); start++; }
+        if (addSemi) { buffer_setAtIndex (b, oldSize, &a); start++; }
     }
     
-    for (i = 0; i < count; i++) { buffer_setAtomAtIndex (b, start + i, atom_substituteIfPointer (argv + i)); }
+    for (i = 0; i < count; i++) { buffer_setAtIndex (b, start + i, atom_substituteIfPointer (argv + i)); }
     
     textclient_update (&x->x_textclient);
     //

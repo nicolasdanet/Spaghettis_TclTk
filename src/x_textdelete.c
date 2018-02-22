@@ -39,7 +39,7 @@ static void textdelete_float (t_textdelete *x, t_float f)
     
     if (buffer_getMessageAtWithTypeOfEnd (b, (int)f, &start, &end, &type) == PD_ERROR_NONE) {
         if (type == A_COMMA || type == A_SEMICOLON) { end++; }
-        buffer_resizeBetween (b, start, end , 0);
+        buffer_expand (b, start, end , 0);
     }
         
     textclient_update (&x->x_textclient);

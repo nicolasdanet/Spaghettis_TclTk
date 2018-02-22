@@ -49,7 +49,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
         int size = end - start;
         
         if (field < 0) {
-            if (size != count) { buffer_resizeBetween (b, start, end, count); }
+            if (size != count) { buffer_expand (b, start, end, count); }
             
         } else {
             if (field >= size) { return; }
@@ -69,18 +69,18 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
             t_atom a; SET_SEMICOLON (&a);
             
             buffer_resize (b, newSize);
-            buffer_setAtomAtIndex (b, newSize - 1, &a);
+            buffer_setAtIndex (b, newSize - 1, &a);
             
             start = oldSize;
             
-            if (addSemi) { buffer_setAtomAtIndex (b, oldSize, &a); start++; }
+            if (addSemi) { buffer_setAtIndex (b, oldSize, &a); start++; }
             
         } else {
             return;
         }
     }
     
-    for (i = 0; i < count; i++) { buffer_setAtomAtIndex (b, start + i, atom_substituteIfPointer (argv + i)); }
+    for (i = 0; i < count; i++) { buffer_setAtIndex (b, start + i, atom_substituteIfPointer (argv + i)); }
     
     textclient_update (&x->x_textclient);
     //
