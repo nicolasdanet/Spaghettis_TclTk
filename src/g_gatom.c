@@ -255,19 +255,19 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
 {
     t_gatom *x = (t_gatom *)z;
     
-    buffer_vAppend (b, "ssiiifffsss;",
-        sym___hash__X,
-        (gatom_isFloat (x) ? sym_floatatom : sym_symbolatom),
-        object_getX (cast_object (x)),
-        object_getY (cast_object (x)),
-        object_getWidth (cast_object (x)),
-        (double)x->a_lowRange,
-        (double)x->a_highRange,
-        (double)x->a_position,
-        symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedLabel)),
-        symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedReceive)),
-        symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedSend)));
-
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, gatom_isFloat (x) ? sym_floatatom : sym_symbolatom);
+    buffer_appendFloat (b,  object_getX (cast_object (x)));
+    buffer_appendFloat (b,  object_getY (cast_object (x)));
+    buffer_appendFloat (b,  object_getWidth (cast_object (x)));
+    buffer_appendFloat (b,  x->a_lowRange);
+    buffer_appendFloat (b,  x->a_highRange);
+    buffer_appendFloat (b,  x->a_position);
+    buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedLabel)));
+    buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedReceive)));
+    buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedSend)));
+    buffer_appendSemicolon (b);
+    
     object_serializeWidth (cast_object (x), b);
 }
 

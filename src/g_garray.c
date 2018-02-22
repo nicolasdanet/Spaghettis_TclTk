@@ -652,13 +652,13 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     t_array *array = garray_getArray (x);
     int n = array_getSize (array);
     
-    buffer_vAppend (b, "sssisi;",
-        sym___hash__X,
-        sym_array,
-        x->x_unexpandedName,
-        n,
-        &s_float,
-        flags);
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_array);
+    buffer_appendSymbol (b, x->x_unexpandedName);
+    buffer_appendFloat (b,  n);
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b,  flags);
+    buffer_appendSemicolon (b);
 }
 
 static t_error garray_functionData (t_gobj *z, t_buffer *b)
