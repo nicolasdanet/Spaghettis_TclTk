@@ -15,12 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define BUFFER_PREALLOCATED_ATOMS       64
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 enum {
     FLOAT_STATE_ERROR                   = -1,
     FLOAT_STATE_START                   = 0,
@@ -207,18 +201,18 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     char *buffer = (char *)PD_MEMORY_GET (0);
     int i, length = 0;
 
-    for (i = 0; i < x->b_size; i++) {
+    for (i = 0; i < buffer_getSize (x); i++) {
     //
     int n;
     t_error err;
     char t[PD_STRING] = { 0 };
-    t_atom *a = x->b_vector + i;
+    t_atom *a = buffer_getAtomAtIndex (x, i);
     
     /* Remove whitespace before a semicolon or a comma for cosmetic purpose. */
     
     if (IS_SEMICOLON_OR_COMMA (a)) {
     //
-    if (length && buffer[length - 1] == ' ') { 
+    if (length && buffer[length - 1] == ' ') {
         buffer = (char *)PD_MEMORY_RESIZE (buffer, length, length - 1); length--;
     }
     //
@@ -236,7 +230,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     }
     
     if (IS_SEMICOLON (a)) { buffer[length - 1] = '\n'; }
-    else { 
+    else {
         buffer[length - 1] = ' ';
     }
     //
@@ -244,7 +238,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     
     /* Remove ending whitespace. */
     
-    if (length && buffer[length - 1] == ' ') { 
+    if (length && buffer[length - 1] == ' ') {
         buffer = (char *)PD_MEMORY_RESIZE (buffer, length, length - 1); length--;
     }
     
@@ -271,7 +265,9 @@ char *buffer_toString (t_buffer *x)
 
 int buffer_isLastMessageProperlyEnded (t_buffer *x)
 {
-    if (x->b_size) { return IS_SEMICOLON_OR_COMMA (&x->b_vector[x->b_size - 1]); }
+    int size = buffer_getSize (x);
+    
+    if (size) { t_atom *a = buffer_getAtomAtIndex (x, size - 1); return IS_SEMICOLON_OR_COMMA (a); }
     else {
         return 1;
     }
@@ -281,12 +277,12 @@ int buffer_getNumberOfMessages (t_buffer *x)
 {
     int i, count = 0;
 
-    for (i = 0; i < x->b_size; i++) {
-        if (IS_SEMICOLON_OR_COMMA (&x->b_vector[i])) { count++; }
+    for (i = 0; i < buffer_getSize (x); i++) {
+        t_atom *a = buffer_getAtomAtIndex (x, i); if (IS_SEMICOLON_OR_COMMA (a)) { count++; }
     }
     
     if (!buffer_isLastMessageProperlyEnded (x)) { count++; }
-        
+    
     return count;
 }
 
@@ -298,12 +294,14 @@ t_error buffer_getMessageAt (t_buffer *x, int n, int *start, int *end)
     //
     int i, k = 0;
     
-    for (i = 0; i < x->b_size; i++) {
+    for (i = 0; i < buffer_getSize (x); i++) {
     //
-    if (k != n) { if (IS_SEMICOLON_OR_COMMA (&x->b_vector[i])) { k++; } }
-    else {
+    if (k != n) {
+        if (IS_SEMICOLON_OR_COMMA (buffer_getAtomAtIndex (x, i))) { k++; }
+        
+    } else {
         int j = i;
-        while (j < x->b_size && !IS_SEMICOLON_OR_COMMA (&x->b_vector[j])) { j++; }
+        while (j < x->b_size && !IS_SEMICOLON_OR_COMMA (buffer_getAtomAtIndex (x, j))) { j++; }
         *start = i;
         *end   = j;
         return PD_ERROR_NONE;
@@ -343,9 +341,9 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
 
     buffer_appendBuffer (copy, y);
     
-    for (i = 0; i < copy->b_size; i++) {
+    for (i = 0; i < buffer_getSize (copy); i++) {
     //
-    t_atom *a = copy->b_vector + i;
+    t_atom *a = buffer_getAtomAtIndex (copy, i);
     
     PD_ASSERT (!IS_POINTER (a));
     
@@ -364,26 +362,20 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
 
 void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
 {
-    int i, n = x->b_size + argc;
-
-    PD_ASSERT (argc >= 0);
-    
-    x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
+    int i;
     
     for (i = 0; i < argc; i++) {
     //
-    t_atom *a = x->b_vector + x->b_size + i;
-    
-    if (!IS_SYMBOL (argv + i)) { *a = *(argv + i); }
+    if (!IS_SYMBOL (argv + i)) { buffer_appendAtom (x, argv + i); }
     else {
+        t_atom a;
         const char *s = GET_SYMBOL (argv + i)->s_name;
-        t_error err = atom_withStringUnzeroed (a, s, (int)strlen (s));
+        t_error err = atom_withStringUnzeroed (&a, s, (int)strlen (s));
         PD_UNUSED (err); PD_ASSERT (!err);
+        buffer_appendAtom (x, &a);
     }
     //
     }
-    
-    x->b_size = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
