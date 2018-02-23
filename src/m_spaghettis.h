@@ -903,7 +903,10 @@ PD_DLL void     buffer_appendAtom               (t_buffer *x, t_atom *a);
 PD_DLL void     buffer_appendBuffer             (t_buffer *x, t_buffer *y);
 PD_DLL void     buffer_appendFloat              (t_buffer *x, t_float f);
 PD_DLL void     buffer_appendSymbol             (t_buffer *x, t_symbol *s);
+PD_DLL void     buffer_appendDollar             (t_buffer *x, int n);
+PD_DLL void     buffer_appendDollarSymbol       (t_buffer *x, t_symbol *s);
 PD_DLL void     buffer_appendSemicolon          (t_buffer *x);
+PD_DLL void     buffer_appendComma              (t_buffer *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

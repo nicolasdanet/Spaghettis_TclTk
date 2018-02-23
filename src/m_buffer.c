@@ -151,10 +151,31 @@ void buffer_appendSymbol (t_buffer *x, t_symbol *s)
     buffer_append (x, 1, &a);
 }
 
+void buffer_appendDollar (t_buffer *x, int n)
+{
+    t_atom a;
+    SET_DOLLAR (&a, n);
+    buffer_append (x, 1, &a);
+}
+
+void buffer_appendDollarSymbol (t_buffer *x, t_symbol *s)
+{
+    t_atom a;
+    SET_DOLLARSYMBOL (&a, s);
+    buffer_append (x, 1, &a);
+}
+
 void buffer_appendSemicolon (t_buffer *x)
 {
     t_atom a;
     SET_SEMICOLON (&a);
+    buffer_append (x, 1, &a);
+}
+
+void buffer_appendComma (t_buffer *x)
+{
+    t_atom a;
+    SET_COMMA (&a);
     buffer_append (x, 1, &a);
 }
 

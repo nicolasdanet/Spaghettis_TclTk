@@ -137,28 +137,26 @@ static int buffer_parseNextFloatState (int floatState, char c)
     return k;
 }
 
-static void buffer_parseStringUnzeroed (t_buffer *x, const char *s, int size, int preallocated)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void buffer_withStringUnzeroed (t_buffer *x, const char *s, int size)
 {
-    int length = 0;
-    t_atom *a = NULL;
-    
     const char *text = s;
     const char *tBound = s + size;
 
-    if (buffer_parseIsMalformed (s, size)) { PD_BUG; return; }
+    buffer_clear (x);
     
-    PD_MEMORY_FREE (x->b_vector);
-    x->b_vector = (t_atom *)PD_MEMORY_GET (preallocated * sizeof (t_atom));
-    a = x->b_vector;
-    x->b_size = length;     /* Inconsistency corrected later. */
+    if (buffer_parseIsMalformed (s, size)) { PD_BUG; return; }
     
     while (1) {
     //
     while (char_isWhitespace (*text) && (text != tBound)) { text++; }         /* Skip whitespaces. */
     
     if (text == tBound)    { break; }
-    else if (*text == ';') { SET_SEMICOLON (a); text++; }
-    else if (*text == ',') { SET_COMMA (a);     text++; }
+    else if (*text == ';') { buffer_appendSemicolon (x); text++; }
+    else if (*text == ',') { buffer_appendComma (x);     text++; }
     else {
         
         char buffer[PD_STRING + 1] = { 0 };
@@ -187,48 +185,21 @@ static void buffer_parseStringUnzeroed (t_buffer *x, const char *s, int size, in
         *p = 0;
 
         if (buffer_parseIsValidState (floatState)) {
-            SET_FLOAT (a, (t_float)atof (buffer));
+            buffer_appendFloat (x, (t_float)atof (buffer));
                         
         } else if (dollar) {
-            if (string_containsOneDollarFollowingByNumbers (buffer)) { SET_DOLLAR (a, atoi (buffer + 1)); }
-            else { 
-                SET_DOLLARSYMBOL (a, gensym (buffer));
+            if (string_containsOneDollarFollowingByNumbers (buffer)) {
+                buffer_appendDollar (x, atoi (buffer + 1));
+            } else {
+                buffer_appendDollarSymbol (x, gensym (buffer));
             }
             
         } else {
-            SET_SYMBOL (a, gensym (buffer));
+            buffer_appendSymbol (x, gensym (buffer));
         }
-    }
-
-    a++;
-    length++;
-    
-    if (length == preallocated) {
-        size_t oldSize = preallocated * sizeof (t_atom);
-        x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, oldSize, oldSize * 2);
-        preallocated = preallocated * 2;
-        a = x->b_vector + length;
     }
     //
     }
-    
-    /* Crop to truly used memory. */
-    
-    {
-        int oldSize = preallocated * sizeof (t_atom);
-        int newSize = length * sizeof (t_atom);
-        x->b_size   = length;
-        x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, oldSize, newSize);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void buffer_withStringUnzeroed (t_buffer *x, const char *s, int size)
-{
-    buffer_parseStringUnzeroed (x, s, size, BUFFER_PREALLOCATED_ATOMS);
 }
 
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller acquires string ownership. */
