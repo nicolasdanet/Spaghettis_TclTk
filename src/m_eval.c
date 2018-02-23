@@ -69,8 +69,8 @@ static int eval_bufferGetMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *
 
 void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 {
-    int size = x->b_size;
-    t_atom *v = x->b_vector;
+    int size  = buffer_getSize (x);
+    t_atom *v = buffer_getAtoms (x);
     t_atom *message = NULL;
     t_atom *m = NULL;
     t_pd *next = NULL;
@@ -78,7 +78,7 @@ void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     
     instance_setBoundA (NULL);
     
-    PD_ATOMS_ALLOCA (message, x->b_size);
+    PD_ATOMS_ALLOCA (message, buffer_getSize (x));
     
     while (1) {
     //
@@ -143,7 +143,7 @@ void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     //
     }
     
-    PD_ATOMS_FREEA (message, x->b_size);
+    PD_ATOMS_FREEA (message, buffer_getSize (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
