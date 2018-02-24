@@ -227,7 +227,7 @@ t_error atom_toString (t_atom *a, char *dest, int size)
         case A_POINTER      :
             err = string_copy (dest, (size_t)size, gpointer_representation (GET_POINTER (a))->s_name);
             break;
-        default             : PD_BUG;
+        default             : err = string_copy (dest,  (size_t)size, "?"); PD_BUG;
     }
     
     return err;

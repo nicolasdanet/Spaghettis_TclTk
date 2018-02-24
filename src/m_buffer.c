@@ -15,10 +15,21 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define BUFFER_GROWTH           8
+#define BUFFER_PREALLOCATED     8
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_buffer *buffer_new (void)
 {
     t_buffer *x = (t_buffer *)PD_MEMORY_GET (sizeof (t_buffer));
-    x->b_vector = (t_atom *)PD_MEMORY_GET (0);
+    
+    x->b_allocated = 0;
+    x->b_size      = 0;
+    x->b_vector    = (t_atom *)PD_MEMORY_GET (0);
+    
     return x;
 }
 
@@ -58,6 +69,13 @@ t_atom *buffer_getAtomAtIndexChecked (t_buffer *x, int n)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_error buffer_getAtIndex (t_buffer *x, int n, t_atom *a)
+{
+    t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t && a) { *a = *t; return PD_ERROR_NONE; }
+    
+    return PD_ERROR;
+}
+
 t_error buffer_setAtIndex (t_buffer *x, int n, t_atom *a)
 {
     t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t) { *t = *a; return PD_ERROR_NONE; }
@@ -65,11 +83,33 @@ t_error buffer_setAtIndex (t_buffer *x, int n, t_atom *a)
     return PD_ERROR;
 }
 
-t_error buffer_getAtIndex (t_buffer *x, int n, t_atom *a)
+t_error buffer_setFloatAtIndex (t_buffer *x, int n, t_float f)
 {
-    t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t && a) { *a = *t; return PD_ERROR_NONE; }
+    t_atom a; SET_FLOAT (&a, f); return buffer_setAtIndex (x, n, &a);
+}
+
+t_error buffer_setSymbolAtIndex (t_buffer *x, int n, t_symbol *s)
+{
+    t_atom a; SET_SYMBOL (&a, s); return buffer_setAtIndex (x, n, &a);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void buffer_allocate (t_buffer *x, int n)
+{
+    size_t oldSize = sizeof (t_atom) * x->b_allocated;
+    size_t newSize = sizeof (t_atom) * n;
     
-    return PD_ERROR;
+    PD_ASSERT (n >= 0);
+    
+    if (oldSize != newSize) {
+    //
+    x->b_allocated = n;
+    x->b_vector    = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, oldSize, newSize);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -78,15 +118,17 @@ t_error buffer_getAtIndex (t_buffer *x, int n, t_atom *a)
 
 void buffer_clear (t_buffer *x)
 {
-    buffer_resize (x, 0);
+    x->b_size = 0;
+}
+
+void buffer_reserve (t_buffer *x, int n)
+{
+    if (n > x->b_allocated) { buffer_allocate (x, n); }
 }
 
 void buffer_resize (t_buffer *x, int n)
 {
-    PD_ASSERT (n >= 0); n = PD_MAX (n, 0);
-    
-    x->b_size   = n;
-    x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
+    PD_ASSERT (n >= 0); n = PD_MAX (n, 0); buffer_allocate (x, n); x->b_size = n;
 }
 
 t_error buffer_expand (t_buffer *x, int start, int end, int n)
@@ -96,13 +138,15 @@ t_error buffer_expand (t_buffer *x, int start, int end, int n)
     if ((start < 0) || (end > x->b_size) || (start > end)) { return PD_ERROR; }
     else {
     //
-    size_t oldSize  = (size_t)x->b_size;
-    size_t newSize  = oldSize + (size_t)(n - (end - start));
-    size_t tailSize = oldSize - (size_t)(end);
+    int count    = n - (end - start);
+    int oldSize  = x->b_size;
+    int newSize  = oldSize + count;
+    int tailSize = oldSize - end;
     
-    if (newSize > oldSize) { buffer_resize (x, (int)newSize); }
+    if (newSize > oldSize) { buffer_resize (x, newSize); }
     memmove ((void *)(x->b_vector + start + n), (void *)(x->b_vector + end), sizeof (t_atom) * tailSize);
-    if (newSize < oldSize) { buffer_resize (x, (int)newSize); }
+    if (count > 0) { memset ((void *)(x->b_vector + end), 0, sizeof (t_atom) * count); }
+    if (newSize < oldSize) { buffer_resize (x, newSize); }
     //
     }
     
@@ -117,12 +161,23 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
 {
     if (argc > 0) {
     //
+    int required = x->b_size + argc;
+
+    while (required > x->b_allocated) {
+    //
+    int n = x->b_allocated * BUFFER_GROWTH; buffer_reserve (x, PD_MAX (BUFFER_PREALLOCATED, n));
+    //
+    }
+    
+    {
+    //
     t_atom *a = NULL;
-    int n = x->b_size + argc;
 
-    x->b_vector = (t_atom *)PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
-
-    for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); } x->b_size = n;
+    for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); }
+    
+    x->b_size = required;
+    //
+    }
     //
     }
 }

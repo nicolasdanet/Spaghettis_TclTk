@@ -630,6 +630,7 @@ typedef struct _atom {
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _buffer {
+    int             b_allocated;
     int             b_size;
     t_atom          *b_vector;
     } t_buffer;
@@ -893,10 +894,14 @@ PD_DLL int      buffer_getSize                  (t_buffer *x);
 PD_DLL void     buffer_free                     (t_buffer *x);
 PD_DLL void     buffer_clear                    (t_buffer *x);
 
+PD_DLL void     buffer_reserve                  (t_buffer *x, int n);
 PD_DLL void     buffer_resize                   (t_buffer *x, int n);
 PD_DLL t_error  buffer_expand                   (t_buffer *x, int start, int end, int n);
-PD_DLL t_error  buffer_setAtIndex               (t_buffer *x, int n, t_atom *a);
 PD_DLL t_error  buffer_getAtIndex               (t_buffer *x, int n, t_atom *a);
+PD_DLL t_error  buffer_setAtIndex               (t_buffer *x, int n, t_atom *a);
+
+PD_DLL t_error  buffer_setFloatAtIndex          (t_buffer *x, int n, t_float f);
+PD_DLL t_error  buffer_setSymbolAtIndex         (t_buffer *x, int n, t_symbol *s);
 
 PD_DLL void     buffer_append                   (t_buffer *x, int argc, t_atom *argv);
 PD_DLL void     buffer_appendAtom               (t_buffer *x, t_atom *a);
