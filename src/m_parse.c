@@ -198,52 +198,32 @@ void buffer_withStringUnzeroed (t_buffer *x, const char *s, int size)
 
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller acquires string ownership. */
 {
-    char *buffer = (char *)PD_MEMORY_GET (0);
-    int i, length = 0;
+    t_heapstring *h = heapstring_new (0);
+    
+    int i;
 
     for (i = 0; i < buffer_getSize (x); i++) {
     //
-    int n;
-    t_error err;
-    char t[PD_STRING] = { 0 };
     t_atom *a = buffer_getAtomAtIndex (x, i);
     
-    /* Remove whitespace before a semicolon or a comma for cosmetic purpose. */
+    char t[PD_STRING] = { 0 }; t_error err = atom_toString (a, t, PD_STRING);
     
-    if (IS_SEMICOLON_OR_COMMA (a)) {
-    //
-    if (length && buffer[length - 1] == ' ') {
-        buffer = (char *)PD_MEMORY_RESIZE (buffer, length, length - 1); length--;
-    }
-    //
-    }
+    PD_UNUSED (err); PD_ASSERT (!err);
     
-    err = atom_toString (a, t, PD_STRING); PD_UNUSED (err); PD_ASSERT (!err);
+    if (IS_SEMICOLON_OR_COMMA (a)) { heapstring_removeIfContainsAtEnd (h, ' '); }
     
-    n = (int)(strlen (t) + 1);
+    heapstring_add (h, t);
     
-    if (length > (PD_INT_MAX - n)) { PD_BUG; }
+    if (IS_SEMICOLON (a)) { heapstring_add (h, "\n"); }
     else {
-        buffer = (char *)PD_MEMORY_RESIZE (buffer, length, length + n);
-        strcpy (buffer + length, t);
-        length += n;
-    }
-    
-    if (IS_SEMICOLON (a)) { buffer[length - 1] = '\n'; }
-    else {
-        buffer[length - 1] = ' ';
+        heapstring_add (h, " ");
     }
     //
     }
     
-    /* Remove ending whitespace. */
+    heapstring_removeIfContainsAtEnd (h, ' ');
     
-    if (length && buffer[length - 1] == ' ') {
-        buffer = (char *)PD_MEMORY_RESIZE (buffer, length, length - 1); length--;
-    }
-    
-    *s = buffer;
-    *size = length;
+    *size = heapstring_getSize (h); *s = heapstring_freeBorrowUnzeroed (h);
 }
 
 char *buffer_toString (t_buffer *x)
@@ -257,6 +237,54 @@ char *buffer_toString (t_buffer *x)
     s[n - 1] = 0;
     
     return s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void buffer_serialize (t_buffer *x, t_buffer *y)
+{
+    t_buffer *copy = buffer_new();
+    int i;
+
+    buffer_appendBuffer (copy, y);
+    
+    for (i = 0; i < buffer_getSize (copy); i++) {
+    //
+    t_atom *a = buffer_getAtomAtIndex (copy, i);
+    
+    PD_ASSERT (!IS_POINTER (a));
+    
+    if (!IS_FLOAT (a)) {
+        char t[PD_STRING] = { 0 };
+        t_error err = atom_toString (a, t, PD_STRING);
+        PD_UNUSED (err); PD_ASSERT (!err);
+        SET_SYMBOL (a, gensym (t));
+    }
+    //
+    }
+    
+    buffer_appendBuffer (x, copy);
+    buffer_free (copy);
+}
+
+void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
+{
+    int i;
+    
+    for (i = 0; i < argc; i++) {
+    //
+    if (!IS_SYMBOL (argv + i)) { buffer_appendAtom (x, argv + i); }
+    else {
+        t_atom a;
+        const char *s = GET_SYMBOL (argv + i)->s_name;
+        t_error err = atom_withStringUnzeroed (&a, s, (int)strlen (s));
+        PD_UNUSED (err); PD_ASSERT (!err);
+        buffer_appendAtom (x, &a);
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -328,54 +356,6 @@ t_error buffer_getMessageAtWithTypeOfEnd (t_buffer *x, int n, int *start, int *e
     }
     
     return err;
-}
-                                                            
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void buffer_serialize (t_buffer *x, t_buffer *y)
-{
-    t_buffer *copy = buffer_new();
-    int i;
-
-    buffer_appendBuffer (copy, y);
-    
-    for (i = 0; i < buffer_getSize (copy); i++) {
-    //
-    t_atom *a = buffer_getAtomAtIndex (copy, i);
-    
-    PD_ASSERT (!IS_POINTER (a));
-    
-    if (!IS_FLOAT (a)) {
-        char t[PD_STRING] = { 0 };
-        t_error err = atom_toString (a, t, PD_STRING);
-        PD_UNUSED (err); PD_ASSERT (!err);
-        SET_SYMBOL (a, gensym (t));
-    }
-    //
-    }
-    
-    buffer_appendBuffer (x, copy);
-    buffer_free (copy);
-}
-
-void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
-{
-    int i;
-    
-    for (i = 0; i < argc; i++) {
-    //
-    if (!IS_SYMBOL (argv + i)) { buffer_appendAtom (x, argv + i); }
-    else {
-        t_atom a;
-        const char *s = GET_SYMBOL (argv + i)->s_name;
-        t_error err = atom_withStringUnzeroed (&a, s, (int)strlen (s));
-        PD_UNUSED (err); PD_ASSERT (!err);
-        buffer_appendAtom (x, &a);
-    }
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

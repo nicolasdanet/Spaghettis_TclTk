@@ -369,7 +369,7 @@ typedef struct _pathlist {
     } t_pathlist;
 
 typedef struct _heapstring {
-    size_t              hs_used;
+    size_t              hs_allocated;
     size_t              hs_size;
     char                *hs_raw;
     } t_heapstring;
@@ -378,33 +378,39 @@ typedef struct _heapstring {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_iterator  *iterator_new               (int argc, t_atom *argv);
+t_iterator  *iterator_new                       (int argc, t_atom *argv);
 
-void        iterator_free               (t_iterator *x);
-int         iterator_next               (t_iterator *x, t_atom **a);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_pathlist  *pathlist_newAppend         (t_pathlist *x, const char *s);
-t_pathlist  *pathlist_newAppendEncoded  (t_pathlist *x, t_symbol *s);
-char        *pathlist_getPath           (t_pathlist *x);
-t_pathlist  *pathlist_getNext           (t_pathlist *x);
-
-void        pathlist_free               (t_pathlist *x);
+void        iterator_free                       (t_iterator *x);
+int         iterator_next                       (t_iterator *x, t_atom **a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_heapstring    *heapstring_new         (int size);
-char            *heapstring_getRaw      (t_heapstring *x);
+t_pathlist  *pathlist_newAppend                 (t_pathlist *x, const char *s);
+t_pathlist  *pathlist_newAppendEncoded          (t_pathlist *x, t_symbol *s);
+char        *pathlist_getPath                   (t_pathlist *x);
+t_pathlist  *pathlist_getNext                   (t_pathlist *x);
 
-void        heapstring_free             (t_heapstring *x);
-t_error     heapstring_add              (t_heapstring *x, const char *src);
-t_error     heapstring_append           (t_heapstring *x, const char *src, int n);
-t_error     heapstring_addSprintf       (t_heapstring *x, const char *format, ...);
+void        pathlist_free                       (t_pathlist *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_heapstring    *heapstring_new                 (int size);
+char            *heapstring_getRaw              (t_heapstring *x);
+
+char        *heapstring_freeBorrowUnzeroed      (t_heapstring *x);  /* Caller acquires string ownership. */
+
+void        heapstring_free                     (t_heapstring *x);
+int         heapstring_getSize                  (t_heapstring *x);
+
+t_error     heapstring_add                      (t_heapstring *x, const char *src);
+t_error     heapstring_append                   (t_heapstring *x, const char *src, int n);
+t_error     heapstring_addSprintf               (t_heapstring *x, const char *format, ...);
+
+void        heapstring_removeIfContainsAtEnd    (t_heapstring *x, char c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
