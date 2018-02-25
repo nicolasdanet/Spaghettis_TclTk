@@ -157,12 +157,12 @@ int atom_copyAtomsExpandedWithArguments (t_atom *src,
     
     if (IS_DOLLARSYMBOL (a)) {
         t_symbol *s = dollar_expandSymbolWithArguments (GET_SYMBOL (a), glist, argc, argv);
-        if (s) { SET_SYMBOL (b, s); expanded = 1; }
+        if (s) { SET_SYMBOL (b, s); expanded++; }
         else {
             SET_DOLLARSYMBOL (b, GET_SYMBOL (a));
         }
     } else if (IS_DOLLAR (a)) {
-        expanded |= dollar_expandWithArguments (a, b, glist, argc, argv);
+        expanded += dollar_expandWithArguments (a, b, glist, argc, argv);
     } else {
         *b = *a;
     }
