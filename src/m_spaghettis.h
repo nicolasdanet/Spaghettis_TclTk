@@ -760,6 +760,8 @@ PD_DLL t_symbol *gensym                         (const char *s);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Use the macros instead. */
+
 PD_DLL void     *memory_getForExternal          (size_t n);
 PD_DLL void     *memory_getResizeForExternal    (void *ptr, size_t oldSize, size_t newSize);
 
