@@ -131,7 +131,7 @@ static t_int *writesf_tilde_perform (t_int *w)
     {
         int32_t written = ringbuffer_write (sfthread_getBuffer (x->sf_thread), x->sf_cached, required);
         if (written != required) {
-            /* FIXME: File corrupted; what to do? */
+            // -- FIXME: File corrupted; what to do?
         }
     }
     //

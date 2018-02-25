@@ -122,9 +122,9 @@ void instance_dspTick (void)
     //
     while (t) { t = (*(t_perform)(*t))(t); } instance_incrementDspPhase();
         
-    //PD_LOG ("#");
-    //PD_LOG_NUMBER (instance_getDspPhase());
-    //PD_LOG ("#");
+    // PD_LOG ("#");
+    // PD_LOG_NUMBER (instance_getDspPhase());
+    // PD_LOG ("#");
     //
     }
 }
@@ -133,7 +133,7 @@ void instance_dspStart (void)
 {
     t_glist *glist;
 
-    //PD_LOG ("START");
+    // PD_LOG ("START");
     
     instance_dspInitialize();
     
@@ -144,7 +144,7 @@ void instance_dspStart (void)
 
 void instance_dspStop (void)
 {
-    //PD_LOG ("STOP");
+    // PD_LOG ("STOP");
     
     instance_dspRelease();
 }
@@ -158,7 +158,7 @@ void instance_dspChainAppend (t_perform f, int n, ...)
     size_t newSize = sizeof (t_int) * size;
     size_t oldSize = sizeof (t_int) * instance_get()->pd_dspChainSize;
     
-    /* TODO: Is that resizing with big chunks worth the cost? */
+    // -- TODO: Is that resizing with big chunks worth the cost?
     
     instance_get()->pd_dspChain = (t_int *)PD_MEMORY_RESIZE (instance_get()->pd_dspChain, oldSize, newSize);
     

@@ -187,7 +187,7 @@ static void scheduler_mainLoop (void)
     if (!scheduler_quit && (monitor_nonBlocking() || gui_flush())) { didSomething = 1; }
     if (!scheduler_quit && !didSomething) {
         if (timeForward != DACS_SLEPT) {
-            monitor_blocking (SCHEDULER_BLOCKING_LAPSE);    /* FIXME: Consider sample rate? */
+            monitor_blocking (SCHEDULER_BLOCKING_LAPSE);    // -- FIXME: Consider sample rate?
         }
     }
     //

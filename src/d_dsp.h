@@ -81,7 +81,7 @@ struct _voutlet {
     t_object                vo_obj;             /* Must be the first. */
     t_resample              vo_resample;        /* Extended buffer if resampling is required. */
     int                     vo_hopSize;         /* Size of the hop if overlapped. */
-    int                     vo_copyOut;         /* Behavior is to perform a copy (switch~ object). */
+    int                     vo_copyOut;         /* Behavior is to perform a copy ("switch~" object). */
     int                     vo_bufferSize;      /* Handle vector size conversion in a buffer. */
     t_sample                *vo_buffer;
     t_sample                *vo_bufferEnd;

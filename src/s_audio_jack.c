@@ -289,7 +289,8 @@ t_error audio_openNative (t_devicesproperties *p)
 
     jack_client = jack_client_open (PD_NAME_LOWERCASE, JackNoStartServer, &status, NULL);
     
-    /*
+    #if 0
+    
     if (jack_client) {
     //
     if (jack_get_sample_rate (jack_client) != (jack_nframes_t)sampleRate) {
@@ -298,7 +299,8 @@ t_error audio_openNative (t_devicesproperties *p)
     }
     //
     }
-    */
+    
+    #endif
     
     if (jack_client) {
     //

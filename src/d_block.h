@@ -19,7 +19,7 @@ typedef struct _blockproperties {
     int         bp_overlap;                 /* Number of overlap (power of two). */
     int         bp_downsample;              /* Downsampling factor. */
     int         bp_upsample;                /* Upsampling factor. */
-    int         bp_switchable;              /* Is it a block~ or a switch~ object. */
+    int         bp_switchable;              /* Is it a "block~" or a "switch~" object. */
     int         bp_reblocked;               /* True if reblocking is required. */
     t_float     bp_sampleRate;              /* Sample rate of the context. */
     int         bp_period;                  /* Supermultiple factor. */
@@ -41,7 +41,7 @@ typedef struct _block {
     int         bk_overlap;                 /* Number of overlap (power of two). */
     int         bk_downsample;              /* Downsampling factor (power of two). */
     int         bk_upsample;                /* Upsampling factor (power of two). */
-    int         bk_switchable;              /* Is it a block~ or a switch~ object. */
+    int         bk_switchable;              /* Is it a "block~" or a "switch~" object. */
     int         bk_switchedOn;              /* False if all context IS bypassed. */
     int         bk_reblocked;               /* True if reblocking is required. */
     int         bk_contextLength;           /* Size of the DSP chain for all the context. */

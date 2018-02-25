@@ -28,10 +28,10 @@ static t_int *voutlet_perform (t_int *w)
     t_sample *out  = x->vo_bufferWrite;
     t_sample *next = out + x->vo_hopSize;
     
-    //PD_LOG ("W");
-    //PD_LOG_NUMBER (out - x->vo_buffer);
-    //PD_LOG ("/");
-    //PD_LOG_NUMBER (n);
+    // PD_LOG ("W");
+    // PD_LOG_NUMBER (out - x->vo_buffer);
+    // PD_LOG ("/");
+    // PD_LOG_NUMBER (n);
     
     while (n--) { *out += *in; out++; in++; if (out == x->vo_bufferEnd) { out = x->vo_buffer; } }
     
@@ -53,10 +53,10 @@ static t_int *voutlet_performEpilogue (t_int *w)
     
     if (out == NULL) { out = resample_vector (&x->vo_resample); }   /* Can NOT be fetch before (see below). */
     
-    //PD_LOG ("E");
-    //PD_LOG_NUMBER (in - x->vo_buffer);
-    //PD_LOG ("/");
-    //PD_LOG_NUMBER (n);
+    // PD_LOG ("E");
+    // PD_LOG_NUMBER (in - x->vo_buffer);
+    // PD_LOG ("/");
+    // PD_LOG_NUMBER (n);
     
     while (n--) { *out = *in; *in = (t_sample)0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
@@ -146,12 +146,12 @@ void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p
     int phaseRead   = (int)((phase) & (t_phase)(bigPeriod - 1));
     int phaseWrite  = (int)((phase + period - 1) & (t_phase)(- period) & (t_phase)(bigPeriod - 1));
     
-    //PD_LOG ("OUTLET BUFFER");
-    //PD_LOG_NUMBER (bufferSize);
-    //PD_LOG ("OUTLET PHASE READ");
-    //PD_LOG_NUMBER (phaseRead);
-    //PD_LOG ("OUTLET PHASE WRITE");
-    //PD_LOG_NUMBER (phaseWrite);
+    // PD_LOG ("OUTLET BUFFER");
+    // PD_LOG_NUMBER (bufferSize);
+    // PD_LOG ("OUTLET PHASE READ");
+    // PD_LOG_NUMBER (phaseRead);
+    // PD_LOG ("OUTLET PHASE WRITE");
+    // PD_LOG_NUMBER (phaseWrite);
     
     /* Variable above is next multiple of the hop size (modulo the window period). */
     /* < http://stackoverflow.com/a/1766566 > */
@@ -168,8 +168,8 @@ void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p
         x->vo_hopSize = p->bp_period * vectorSize;
     }
     
-    //PD_LOG ("OUTLET HOP");
-    //PD_LOG_NUMBER (x->vo_hopSize);
+    // PD_LOG ("OUTLET HOP");
+    // PD_LOG_NUMBER (x->vo_hopSize);
     
     if (signals) {
     //
