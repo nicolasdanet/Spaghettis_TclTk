@@ -100,7 +100,7 @@ t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
     }
 }
 
-t_symbol *atom_getDollarSymbol (t_atom *a)
+t_symbol *atom_getSymbolOrDollarSymbol (t_atom *a)
 {
     if ((IS_SYMBOL (a) || IS_DOLLARSYMBOL (a))) { return GET_SYMBOL (a); }
     else { 
@@ -108,9 +108,9 @@ t_symbol *atom_getDollarSymbol (t_atom *a)
     }
 }
 
-t_symbol *atom_getDollarSymbolAtIndex (int n, int argc, t_atom *argv)
+t_symbol *atom_getSymbolOrDollarSymbolAtIndex (int n, int argc, t_atom *argv)
 {
-    if (n >= 0 && n < argc) { return atom_getDollarSymbol (argv + n); }
+    if (n >= 0 && n < argc) { return atom_getSymbolOrDollarSymbol (argv + n); }
     else {
         return (&s_);
     }

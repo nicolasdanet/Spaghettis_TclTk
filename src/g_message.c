@@ -83,7 +83,7 @@ static t_buffer *message_getBuffer (t_message *x)
         int i, size = buffer_getSize (x->m_eval);
     
         for (i = 0; i < size; i++) {
-            t_symbol *s = atom_getDollarSymbol (a + i);
+            t_symbol *s = atom_getSymbolOrDollarSymbol (a + i);
             if (s != &s_ && string_contains (s->s_name, "$$")) {
                 SET_SYMBOL (a + i, symbol_replaceDoubleDollar (s));
             }

@@ -32,7 +32,7 @@ void snippet_renameArrays (t_buffer *x, t_glist *glist)
         
         while ((count = iterator_next (iter, &atoms))) {
             if ((count > 2) && atom_getSymbolAtIndex (1, count, atoms) == sym_array) {
-                s  = atom_getDollarSymbolAtIndex (2, count, atoms);
+                s  = atom_getSymbolOrDollarSymbolAtIndex (2, count, atoms);
                 t2 = atoms + 2;
             }
             if ((count > 5) && atom_getSymbolAtIndex (1, count, atoms) == sym_restore) {
