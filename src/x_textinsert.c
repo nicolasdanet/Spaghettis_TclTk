@@ -43,7 +43,7 @@ static void textinsert_list (t_textinsert *x, t_symbol *s, int argc, t_atom *arg
     
     if (buffer_getMessageAt (b, line, &start, &end) == PD_ERROR_NONE) {
     
-        buffer_expand (b, start, start, count + 1);
+        buffer_extend (b, start, start, count + 1);
         buffer_setAtIndex (b, start + count, &a);
         
     } else {

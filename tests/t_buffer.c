@@ -56,12 +56,12 @@ t_buffer *t = buffer_new();
     s = buffer_toString (b);
     TTT_EXPECT (!strcmp (s, "Monsieur Jack, vous dactylographiez bien mieux que votre ami Wolf, 1 2 3 4"));
 
-    buffer_expand (b, 11, 16, 0);
+    buffer_extend (b, 11, 16, 0);
 
     PD_MEMORY_FREE (s); s = buffer_toString (b);
     TTT_EXPECT (!strcmp (s, "Monsieur Jack, vous dactylographiez bien mieux que votre ami Wolf"));
     
-    buffer_expand (b, 3, 5, 4);
+    buffer_extend (b, 3, 5, 4);
     
     TTT_EXPECT (IS_NULL (buffer_getAtomAtIndex (b, 5)));
     TTT_EXPECT (IS_NULL (buffer_getAtomAtIndex (b, 6)));
@@ -72,13 +72,13 @@ t_buffer *t = buffer_new();
     PD_MEMORY_FREE (s); s = buffer_toString (b);
     TTT_EXPECT (!strcmp (s, "Monsieur Jack, vous dactylographiez et patchez bien mieux que votre ami Wolf"));
     
-    buffer_expand (b, 4, 6, 0);
-    buffer_expand (b, 1, 2, 0);
+    buffer_extend (b, 4, 6, 0);
+    buffer_extend (b, 1, 2, 0);
     
     PD_MEMORY_FREE (s); s = buffer_toString (b);
     TTT_EXPECT (!strcmp (s, "Monsieur, vous patchez bien mieux que votre ami Wolf"));
     
-    buffer_expand (b, 1, 1, 2);
+    buffer_extend (b, 1, 1, 2);
     
     buffer_setSymbolAtIndex (b, 1, gensym ("Miller"));
     buffer_setSymbolAtIndex (b, 2, gensym ("Puckette"));
@@ -86,7 +86,7 @@ t_buffer *t = buffer_new();
     PD_MEMORY_FREE (s); s = buffer_toString (b);
     TTT_EXPECT (!strcmp (s, "Monsieur Miller Puckette, vous patchez bien mieux que votre ami Wolf"));
     
-    buffer_expand (b, 0, 7, 6);
+    buffer_extend (b, 0, 7, 6);
     
     PD_MEMORY_FREE (s); s = buffer_toString (b);
     TTT_EXPECT (!strcmp (s, "Monsieur Miller Puckette, vous patchez mieux que votre ami Wolf"));

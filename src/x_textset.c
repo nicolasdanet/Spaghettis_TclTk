@@ -49,7 +49,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
         int size = end - start;
         
         if (field < 0) {
-            if (size != count) { buffer_expand (b, start, end, count); }
+            if (size != count) { buffer_extend (b, start, end, count); }
             
         } else {
             if (field >= size) { return; }

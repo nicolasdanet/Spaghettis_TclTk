@@ -131,7 +131,7 @@ void buffer_resize (t_buffer *x, int n)
     PD_ASSERT (n >= 0); n = PD_MAX (n, 0); buffer_allocate (x, n); x->b_size = n;
 }
 
-t_error buffer_expand (t_buffer *x, int start, int end, int n)
+t_error buffer_extend (t_buffer *x, int start, int end, int n)
 {
     PD_ASSERT (n >= 0); n = PD_MAX (n, 0);
     
