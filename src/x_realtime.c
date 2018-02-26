@@ -38,7 +38,7 @@ static void realtime_elapsed (t_realtime *x)
 {
     double elapsed = clock_getRealTimeInSeconds() - x->x_time;
     
-    outlet_float (x->x_outlet, (t_float)(SECONDS_TO_MILLISECONDS (elapsed)));
+    outlet_float (x->x_outlet, (t_float)(PD_SECONDS_TO_MILLISECONDS (elapsed)));
 }
 
 // -----------------------------------------------------------------------------------------------------------

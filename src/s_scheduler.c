@@ -168,7 +168,7 @@ static void scheduler_mainLoop (void)
         }
         
     } else {
-        double realLapse = SECONDS_TO_MILLISECONDS (clock_getRealTimeInSeconds() - realTimeAtStart);
+        double realLapse = PD_SECONDS_TO_MILLISECONDS (clock_getRealTimeInSeconds() - realTimeAtStart);
         double logicalLapse = scheduler_getMillisecondsSince (logicalTimeAtStart);
 
         if (realLapse > logicalLapse) { timeForward = DACS_YES; }

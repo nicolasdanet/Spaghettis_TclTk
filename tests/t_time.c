@@ -75,8 +75,8 @@ TTT_BEGIN (Time, 21, "Time - Time")
 
     TTT_EXPECT (time_elapsedNanoseconds (&time1, &time2, &elapsed) == PD_ERROR_NONE);
     
-    TTT_EXPECT (NANOSECONDS_TO_SECONDS (elapsed) > 0.99);
-    TTT_EXPECT (NANOSECONDS_TO_SECONDS (elapsed) < 1.01);
+    TTT_EXPECT (PD_NANOSECONDS_TO_SECONDS (elapsed) > 0.99);
+    TTT_EXPECT (PD_NANOSECONDS_TO_SECONDS (elapsed) < 1.01);
 
 TTT_END
 
@@ -124,8 +124,8 @@ TTT_BEGIN (TimeStamps, 22, "Time - NTP")
 
     TTT_EXPECT (stamp_elapsedNanoseconds (&stamp1, &stamp2, &elapsed) == PD_ERROR_NONE);
     
-    TTT_EXPECT (NANOSECONDS_TO_SECONDS (elapsed) > 0.99);
-    TTT_EXPECT (NANOSECONDS_TO_SECONDS (elapsed) < 1.01);
+    TTT_EXPECT (PD_NANOSECONDS_TO_SECONDS (elapsed) > 0.99);
+    TTT_EXPECT (PD_NANOSECONDS_TO_SECONDS (elapsed) < 1.01);
 
 TTT_END
 

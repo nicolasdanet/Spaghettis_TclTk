@@ -23,7 +23,7 @@ t_class *delwrite_tilde_class;      /* Shared. */
 
 static void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate, int blockSize)
 {
-    int n = (int)(MILLISECONDS_TO_SECONDS (x->dw_delayLineInMilliseconds) * sampleRate);
+    int n = (int)(PD_MILLISECONDS_TO_SECONDS (x->dw_delayLineInMilliseconds) * sampleRate);
     
     n = PD_MAX (1, n);
     n += ((- n) & (DELAY_ROUND_SAMPLES - 1));       /* Snap to the next multiple of DELAY_ROUND_SAMPLES. */

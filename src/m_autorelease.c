@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define AUTORELEASE_PERIOD      SECONDS_TO_MILLISECONDS (7.0)
+#define AUTORELEASE_PERIOD      PD_SECONDS_TO_MILLISECONDS (7.0)
 #define AUTORELEASE_THRESHOLD   64
 
 // -----------------------------------------------------------------------------------------------------------

@@ -73,7 +73,7 @@ double clock_getRealTimeInSeconds (void)
         time_elapsedNanoseconds (&start, &now, &elapsed);
     }
     
-    return NANOSECONDS_TO_SECONDS (elapsed);
+    return PD_NANOSECONDS_TO_SECONDS (elapsed);
 }
 
 /*

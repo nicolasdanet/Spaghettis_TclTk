@@ -976,6 +976,21 @@ PD_DLL void     instance_dspChainAppend         (t_perform f, int n, ...);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define PD_SECONDS_TO_MILLISECONDS(n)           ((double)(n) * 1000.0)
+#define PD_MILLISECONDS_TO_SECONDS(n)           ((double)(n) * 1e-3)
+#define PD_SECONDS_TO_MICROSECONDS(n)           ((double)(n) * 1000000.0)
+#define PD_MICROSECONDS_TO_SECONDS(n)           ((double)(n) * 1e-6)
+#define PD_MILLISECONDS_TO_MICROSECONDS(n)      ((double)(n) * 1000.0)
+#define PD_MICROSECONDS_TO_MILLISECONDS(n)      ((double)(n) * 1e-3)
+#define PD_SECONDS_TO_NANOSECONDS(n)            ((double)(n) * 1000000000.0)
+#define PD_NANOSECONDS_TO_SECONDS(n)            ((double)(n) * 1e-9)
+#define PD_MILLISECONDS_TO_NANOSECONDS(n)       ((double)(n) * 1000000.0)
+#define PD_NANOSECONDS_TO_MILLISECONDS(n)       ((double)(n) * 1e-6)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 #define PD_MAX(a,b)                 ((a)>(b)?(a):(b))
 #define PD_MIN(a,b)                 ((a)<(b)?(a):(b))
 
