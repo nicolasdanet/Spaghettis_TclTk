@@ -141,7 +141,7 @@ static void ugen_graphMainRecursiveChild (t_dspcontext *context, t_ugenbox *u)
     t_siginlet *childInlet  = &child->u_in[c->oc_index];
     t_signal   *childSignal = childInlet->i_signal;
     
-    /* Use out signal in place of in signal. */
+    /* Use parent's out signal in place of in signal. */
     
     if (childSignal == NULL) { childInlet->i_signal = parentSignal; }
     else {
