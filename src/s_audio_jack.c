@@ -439,7 +439,7 @@ int audio_pollNative (void)
     
     pthread_mutex_unlock (&jack_mutex);
 
-    if (clock_getRealTimeInSeconds() - now > MILLISECONDS_TO_SECONDS (2)) { status = DACS_SLEPT; }
+    if (clock_getRealTimeInSeconds() - now > PD_MILLISECONDS_TO_SECONDS (2)) { status = DACS_SLEPT; }
     //
     }
     
