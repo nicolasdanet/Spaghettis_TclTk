@@ -11,6 +11,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Belle. */
+
+#include "belle.cpp"
+
 /* Core. */
 
 #include "m_symbols.c"
@@ -358,10 +362,9 @@
 #include "d_rmag.c"
 #include "d_fftOOURA.c"
 
-/* Libraries. */
+/* FFT library. */
 
 #include "fftsg.c"
-#include "belle.cpp"
 
 /* Audio / MIDI backends. */
 
