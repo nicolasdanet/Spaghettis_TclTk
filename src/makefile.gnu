@@ -32,7 +32,7 @@ HELP_DIR = ../resources/help
 
 # Warnings
 
-WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
+WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-strict-overflow
 
 # Linker flags.
 
@@ -52,11 +52,12 @@ EXPR_SRC = tinyexpr.c
 
 # Sources amalgamated.
 
-SRC = amalgam.c
+SRC = amalgam.cpp
 
 # Objects.
 
-OBJ = $(SRC:.c=.o) $(EXPR_SRC:.c=.o)
+OBJ_CPP = $(SRC:.cpp=.o)
+OBJ_LIB = $(EXPR_SRC:.c=.o)
 
 # Targets.
 
@@ -67,13 +68,17 @@ all: $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv
 $(BIN_DIR):
 	@test -d $(BIN_DIR) || mkdir -p $(BIN_DIR)
 
-$(OBJ): %.o : %.c
+$(OBJ_CPP): %.o : %.cpp
+	@echo "Build CPP $@ ..."
+	@$(CXX) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(OBJ_LIB): %.o : %.c
 	@echo "Build $@ ..."
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-$(BIN_DIR)/spaghettis: $(OBJ) | $(BIN_DIR)
+$(BIN_DIR)/spaghettis: $(OBJ_CPP) $(OBJ_LIB) | $(BIN_DIR)
 	@echo "Build spaghettis ..."
-	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ) $(LIB)
+	@$(CXX) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ_CPP) $(OBJ_LIB) $(LIB)
 
 $(BIN_DIR)/spaghettissnd: u_pdsend.c | $(BIN_DIR)
 	@echo "Build spaghettissnd ..."
@@ -93,7 +98,8 @@ clean:
 	@echo "Remove makefile.dependencies ..."
 	@-rm -f makefile.dependencies
 	@echo "Remove objects ..."
-	@-rm -f $(OBJ)
+	@-rm -f $(OBJ_CPP)
+	@-rm -f $(OBJ_LIB)
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv
 	@echo "Remove bin directory ..."
