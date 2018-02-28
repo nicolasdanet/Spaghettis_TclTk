@@ -11,6 +11,7 @@ VPATH = ../obj
 
 PM_DIR = ../libraries/portmidi
 PA_DIR = ../libraries/portaudio
+BELLE_DIR = ../libraries/belle
 
 BIN_DIR  = ../bin
 TCL_DIR  = ../tcl
@@ -53,6 +54,7 @@ LDFLAGS = -framework CoreAudio \
 
 CPPFLAGS = -DNDEBUG \
     -DPD_BUILDING_APPLICATION \
+    -I$(BELLE_DIR)/Source \
     -I$(PM_DIR)/pm_common \
     -I$(PM_DIR)/pm_mac \
     -I$(PM_DIR)/porttime \

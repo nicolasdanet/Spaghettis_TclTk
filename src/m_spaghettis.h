@@ -439,6 +439,10 @@
 #define PD_WITH_TINYEXPR            1                   /* Use TinyExpr library. */
 #endif
 
+#ifndef PD_WITH_BELLE
+#define PD_WITH_BELLE               1                   /* Use Belle library. */
+#endif
+
 #ifndef PD_WITH_MAIN
 #define PD_WITH_MAIN                1                   /* Use main entry. */
 #endif

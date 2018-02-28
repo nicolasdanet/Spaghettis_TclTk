@@ -7,6 +7,8 @@ SHELL = /bin/sh
 
 VPATH = ../obj
 
+BELLE_DIR = ../libraries/belle
+
 BIN_DIR = ../bin
 TCL_DIR = ../tcl
 
@@ -42,7 +44,7 @@ LDFLAGS = -rdynamic
 
 # Preprocessor and compiler flags.
 
-CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
+CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION -I$(BELLE_DIR)/Source
 
 CFLAGS = -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
 

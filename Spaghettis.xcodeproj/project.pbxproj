@@ -40,6 +40,7 @@
 		17C9FE331FE00B7A007066EC /* s_atomicMac.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE2B1FE00B79007066EC /* s_atomicMac.c */; };
 		17C9FE341FE00B7A007066EC /* s_time.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE2D1FE00B79007066EC /* s_time.c */; };
 		17CA45381FB188CF0054245C /* x_title.c in Sources */ = {isa = PBXBuildFile; fileRef = 17CA45371FB188CF0054245C /* x_title.c */; };
+		17D35C0B2046FBCB00B1763C /* belle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D35C0A2046FBCB00B1763C /* belle.cpp */; };
 		17F6BD3C1F110686001E602C /* m_snap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F6BD3B1F110686001E602C /* m_snap.c */; };
 		17FB394520286650000BBED2 /* d_blockinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 17FB394420286650000BBED2 /* d_blockinfo.c */; };
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
@@ -462,6 +463,7 @@
 		17C9FE2B1FE00B79007066EC /* s_atomicMac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_atomicMac.c; path = src/s_atomicMac.c; sourceTree = "<group>"; };
 		17C9FE2D1FE00B79007066EC /* s_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_time.c; path = src/s_time.c; sourceTree = "<group>"; };
 		17CA45371FB188CF0054245C /* x_title.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_title.c; path = src/x_title.c; sourceTree = "<group>"; };
+		17D35C0A2046FBCB00B1763C /* belle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = belle.cpp; path = src/belle.cpp; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
 		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_outlet.h; path = src/m_outlet.h; sourceTree = "<group>"; };
 		17F6BD3B1F110686001E602C /* m_snap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_snap.c; path = src/m_snap.c; sourceTree = "<group>"; };
@@ -962,6 +964,14 @@
 				17241D921FD6D9BD009C91D2 /* x_tabreceive.c */,
 			);
 			name = Tab;
+			sourceTree = "<group>";
+		};
+		17D35C0C2047008600B1763C /* Belle */ = {
+			isa = PBXGroup;
+			children = (
+				17D35C0A2046FBCB00B1763C /* belle.cpp */,
+			);
+			name = Belle;
 			sourceTree = "<group>";
 		};
 		17DE84301FE965670055AB80 /* Helpers */ = {
@@ -1505,8 +1515,9 @@
 			isa = PBXGroup;
 			children = (
 				372F9C6C1E3B461100A0BEF8 /* pa_mac_hostapis.c */,
-				371655871BA3461600ABDE22 /* PortMidi */,
 				371655471BA3451000ABDE22 /* PortAudio */,
+				371655871BA3461600ABDE22 /* PortMidi */,
+				17D35C0C2047008600B1763C /* Belle */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -2148,6 +2159,7 @@
 				3749073C1D9A40A600377F1E /* x_unpack.c in Sources */,
 				374907671D9A419200377F1E /* x_pack.c in Sources */,
 				374907871D9A428600377F1E /* x_route.c in Sources */,
+				17D35C0B2046FBCB00B1763C /* belle.cpp in Sources */,
 				374907A41D9A433A00377F1E /* x_select.c in Sources */,
 				37CD71031D9A99E500A61BD3 /* x_receive.c in Sources */,
 				37CD71191D9A9AAB00A61BD3 /* x_send.c in Sources */,
@@ -2333,6 +2345,7 @@
 					libraries/portmidi/pm_common,
 					libraries/portmidi/pm_mac,
 					libraries/portmidi/porttime,
+					libraries/belle/Source/,
 				);
 				OTHER_CFLAGS = (
 					"-ffast-math",
@@ -2370,6 +2383,7 @@
 					libraries/portmidi/pm_common,
 					libraries/portmidi/pm_mac,
 					libraries/portmidi/porttime,
+					libraries/belle/Source/,
 				);
 				OTHER_CFLAGS = (
 					"-ffast-math",

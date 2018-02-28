@@ -361,6 +361,9 @@
 /* Libraries. */
 
 #include "fftsg.c"
+#include "belle.cpp"
+
+/* Audio / MIDI backends. */
 
 #if PD_WITH_DUMMY
 
