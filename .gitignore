@@ -15,3 +15,4 @@ tests/tests
 libraries/belle/Belle
 libraries/belle/Resources/MICA/MicaData*.hpp
 libraries/t/foo
+*.pdf
