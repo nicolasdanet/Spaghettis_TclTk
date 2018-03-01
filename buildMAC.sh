@@ -66,6 +66,7 @@ patches="${rep}/resources/patches"
 # Build the binaries.
 # Workaround for annoying GCC 4.2.1 bug ( https://gcc.gnu.org/bugzilla/show_bug.cgi?id=33144 ).
 # Avoid march=native flag on Mac OS X 10.6 system.
+# Assume C++11 supported on a later OS.
 
 echo "Build binaries ..."
 cd "${rep}/src"                                                         || exit 1

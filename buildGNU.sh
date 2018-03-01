@@ -55,9 +55,9 @@ patches="${rep}/resources/patches"
 # Build the binaries.
 
 echo "Build binaries ..."
-cd "${rep}/src"                                 || exit 1
-make -f makefile.gnu MARCH="-march=native"      || exit 1
-cd "${rep}"                                     || exit 1
+cd "${rep}/src"                                                     || exit 1
+make -f makefile.gnu MARCH="-march=native" CXXSTD="-std=c++11"      || exit 1
+cd "${rep}"                                                         || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -65,10 +65,10 @@ cd "${rep}"                                     || exit 1
 # Create the directory.
 
 echo "Create directory ..."
-mkdir "${destination}"                          || exit 1
-cp -R "${bin}" "${destination}"                 || exit 1
-cp -R "${tcl}" "${destination}"                 || exit 1
-cp -R "${help}" "${destination}"                || exit 1
+mkdir "${destination}"                                              || exit 1
+cp -R "${bin}" "${destination}"                                     || exit 1
+cp -R "${tcl}" "${destination}"                                     || exit 1
+cp -R "${help}" "${destination}"                                    || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ cp -R "${help}" "${destination}"                || exit 1
 # Install materials.
 
 echo "Install patches ..."
-cp -R "${patches}" "${destination}"             || exit 1
+cp -R "${patches}" "${destination}"                                 || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -84,9 +84,9 @@ cp -R "${patches}" "${destination}"             || exit 1
 # Clean the build.
 
 echo "Clean ..."
-cd "${rep}/src"                                 || exit 1
-make -f makefile.gnu clean                      || exit 1
-cd "${rep}"                                     || exit 1
+cd "${rep}/src"                                                     || exit 1
+make -f makefile.gnu clean                                          || exit 1
+cd "${rep}"                                                         || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

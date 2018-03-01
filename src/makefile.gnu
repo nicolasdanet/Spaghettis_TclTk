@@ -46,7 +46,8 @@ LDFLAGS = -rdynamic
 
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION -I$(BELLE_DIR)/Source
 
-CFLAGS = -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
+CFLAGS   = -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
+CXXFLAGS = $(CXXSTD) $(CFLAGS)
 
 # Expr with TinyExpr.
 
@@ -72,7 +73,7 @@ $(BIN_DIR):
 
 $(OBJ_CPP): %.o : %.cpp
 	@echo "Build CPP $@ ..."
-	@$(CXX) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_LIB): %.o : %.c
 	@echo "Build $@ ..."
