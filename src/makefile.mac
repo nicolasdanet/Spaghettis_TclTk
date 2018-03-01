@@ -60,7 +60,8 @@ CPPFLAGS = -DNDEBUG \
     -I$(PA_DIR)/src/common \
     -DPA_USE_COREAUDIO
 
-CFLAGS = -g -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
+CFLAGS   = -g -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
+CXXFLAGS = $(CXXSTD) $(CFLAGS)
 
 # PortMidi.
 
@@ -121,7 +122,7 @@ $(BIN_DIR):
 
 $(OBJ_CPP): %.o : %.cpp
 	@echo "Build CPP $@ ..."
-	@$(CXX) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_LIB): %.o : %.c
 	@echo "Build $@ ..."

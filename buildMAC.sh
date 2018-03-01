@@ -70,7 +70,7 @@ patches="${rep}/resources/patches"
 echo "Build binaries ..."
 cd "${rep}/src"                                                         || exit 1
 if [ "$OSTYPE" != "darwin10.0" ]; then
-    make -f makefile.mac MARCH="-march=native"                          || exit 1
+    make -f makefile.mac MARCH="-march=native" CXXSTD="-std=c++11"      || exit 1
 else
     make -f makefile.mac                                                || exit 1
 fi
