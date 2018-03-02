@@ -1,8 +1,7 @@
 
 /* 
-    Copyright 2007-2013 William Andrew Burnson. All rights reserved.
-
-    File modified by Nicolas Danet.
+    Copyright (c) 2007-2013 William Andrew Burnson.
+    Copyright (c) 2013-2018 Nicolas Danet.
     
 */
 
