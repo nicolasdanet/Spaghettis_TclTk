@@ -28,7 +28,7 @@
 // MARK: -
 
 #ifndef PRIM_WITH_TEST
-#define PRIM_WITH_TEST     0        /* Enable memory leaks detector and assertions. */
+#define PRIM_WITH_TEST     0    /* Enable memory leaks detector and assertions. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
