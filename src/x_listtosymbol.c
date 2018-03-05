@@ -31,7 +31,7 @@ typedef struct _listtosymbol {
 
 static void listtosymbol_list (t_listtosymbol *x, t_symbol *s, int argc, t_atom *argv)
 {
-    char *t = (char *)PD_MEMORY_GET ((argc + 1) * sizeof (char));
+    char *t = (char *)PD_MEMORY_GET (argc + 1);
     
     int i;
     for (i = 0; i < argc; i++) { t[i] = (char)atom_getFloatAtIndex (i, argc, argv); }

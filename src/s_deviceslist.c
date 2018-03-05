@@ -22,8 +22,8 @@ void deviceslist_init (t_deviceslist *p)
 
     memset (p->d_inChannels,  0, DEVICES_MAXIMUM_IO * sizeof (int));
     memset (p->d_outChannels, 0, DEVICES_MAXIMUM_IO * sizeof (int));
-    memset (p->d_inNames,     0, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION * sizeof (char));
-    memset (p->d_outNames,    0, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION * sizeof (char));
+    memset (p->d_inNames,     0, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION);
+    memset (p->d_outNames,    0, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION);
 }
 
 void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
@@ -34,8 +34,8 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
     
     memcpy (dest->d_inChannels,  src->d_inChannels,  DEVICES_MAXIMUM_IO * sizeof (int));
     memcpy (dest->d_outChannels, src->d_outChannels, DEVICES_MAXIMUM_IO * sizeof (int));
-    memcpy (dest->d_inNames,     src->d_inNames,  DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION * sizeof (char));
-    memcpy (dest->d_outNames,    src->d_outNames, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION * sizeof (char));
+    memcpy (dest->d_inNames,     src->d_inNames,  DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION);
+    memcpy (dest->d_outNames,    src->d_outNames, DEVICES_MAXIMUM_IO * DEVICES_DESCRIPTION);
 }
 
 // -----------------------------------------------------------------------------------------------------------

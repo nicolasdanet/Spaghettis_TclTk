@@ -145,7 +145,7 @@ t_heapstring *heapstring_new (int size)
  
     x->hs_allocated = (size <= 0) ? HEAPSTRING_DEFAULT_SIZE : size;
     x->hs_size      = 0;
-    x->hs_raw       = (char *)PD_MEMORY_GET (x->hs_allocated * sizeof (char));
+    x->hs_raw       = (char *)PD_MEMORY_GET (x->hs_allocated);
     
     return x;
 }

@@ -105,7 +105,7 @@ t_error string_addAtom (char *dest, size_t size, t_atom *a)
 {
     t_error err = PD_ERROR_NONE;
     
-    char *t = (char *)PD_MEMORY_GET (size * sizeof (char));
+    char *t = (char *)PD_MEMORY_GET (size);
     
     err |= atom_toString (a, t, (int)size);
     err |= string_add (dest, size, t);
@@ -128,7 +128,7 @@ static t_error string_escapeCharacter (char *dest, size_t size, char c)
 {
     t_error err = PD_ERROR_NONE;
     
-    char *t = (char *)PD_MEMORY_GET (size * 2 * sizeof (char));
+    char *t = (char *)PD_MEMORY_GET (size * 2);
     char *r = dest;
     char *w = t;
     
