@@ -35,7 +35,7 @@ class Graphic {
 // MARK: -
 
 public:
-    Graphic() : color_ (Colors::black)
+    Graphic() : color_ (Colors::black())
     {
     }
     

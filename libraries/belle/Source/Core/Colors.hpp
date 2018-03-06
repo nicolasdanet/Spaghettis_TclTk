@@ -118,328 +118,157 @@ class Colors {
 // MARK: -
 
 public:
-    static const Color empty()
-    {
-        return Color (0.0f, 0.0f, 0.0f, 0.0f);
-    }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
+    static const Color empty()                  { return Color (0.0f, 0.0f, 0.0f, 0.0f); }
 
 public:
-    static const Color aliceblue;
-    static const Color antiquewhite;
-    static const Color aqua;
-    static const Color aquamarine;
-    static const Color azure;
-    static const Color beige;
-    static const Color bisque;
-    static const Color black;
-    static const Color blanchedalmond;
-    static const Color blue;
-    static const Color blueviolet;
-    static const Color brown;
-    static const Color burlywood;
-    static const Color cadetblue;
-    static const Color chartreuse;
-    static const Color chocolate;
-    static const Color coral;
-    static const Color cornflowerblue;
-    static const Color cornsilk;
-    static const Color crimson;
-    static const Color cyan;
-    static const Color darkblue;
-    static const Color darkcyan;
-    static const Color darkgoldenrod;
-    static const Color darkgray;
-    static const Color darkgreen;
-    static const Color darkgrey;
-    static const Color darkkhaki;
-    static const Color darkmagenta;
-    static const Color darkolivegreen;
-    static const Color darkorange;
-    static const Color darkorchid;
-    static const Color darkred;
-    static const Color darksalmon;
-    static const Color darkseagreen;
-    static const Color darkslateblue;
-    static const Color darkslategray;
-    static const Color darkslategrey;
-    static const Color darkturquoise;
-    static const Color darkviolet;
-    static const Color deeppink;
-    static const Color deepskyblue;
-    static const Color dimgray;
-    static const Color dimgrey;
-    static const Color dodgerblue;
-    static const Color firebrick;
-    static const Color floralwhite;
-    static const Color forestgreen;
-    static const Color fuchsia;
-    static const Color gainsboro;
-    static const Color ghostwhite;
-    static const Color gold;
-    static const Color goldenrod;
-    static const Color gray;
-    static const Color grey;
-    static const Color green;
-    static const Color greenyellow;
-    static const Color honeydew;
-    static const Color hotpink;
-    static const Color indianred;
-    static const Color indigo;
-    static const Color ivory;
-    static const Color khaki;
-    static const Color lavender;
-    static const Color lavenderblush;
-    static const Color lawngreen;
-    static const Color lemonchiffon;
-    static const Color lightblue;
-    static const Color lightcoral;
-    static const Color lightcyan;
-    static const Color lightgoldenrodyellow;
-    static const Color lightgray;
-    static const Color lightgreen;
-    static const Color lightgrey;
-    static const Color lightpink;
-    static const Color lightsalmon;
-    static const Color lightseagreen;
-    static const Color lightskyblue;
-    static const Color lightslategray;
-    static const Color lightslategrey;
-    static const Color lightsteelblue;
-    static const Color lightyellow;
-    static const Color lime;
-    static const Color limegreen;
-    static const Color linen;
-    static const Color magenta;
-    static const Color maroon;
-    static const Color mediumaquamarine;
-    static const Color mediumblue;
-    static const Color mediumorchid;
-    static const Color mediumpurple;
-    static const Color mediumseagreen;
-    static const Color mediumslateblue;
-    static const Color mediumspringgreen;
-    static const Color mediumturquoise;
-    static const Color mediumvioletred;
-    static const Color midnightblue;
-    static const Color mintcream;
-    static const Color mistyrose;
-    static const Color moccasin;
-    static const Color navajowhite;
-    static const Color navy;
-    static const Color oldlace;
-    static const Color olive;
-    static const Color olivedrab;
-    static const Color orange;
-    static const Color orangered;
-    static const Color orchid;
-    static const Color palegoldenrod;
-    static const Color palegreen;
-    static const Color paleturquoise;
-    static const Color palevioletred;
-    static const Color papayawhip;
-    static const Color peachpuff;
-    static const Color peru;
-    static const Color pink;
-    static const Color plum;
-    static const Color powderblue;
-    static const Color purple;
-    static const Color red;
-    static const Color rosybrown;
-    static const Color royalblue;
-    static const Color saddlebrown;
-    static const Color salmon;
-    static const Color sandybrown;
-    static const Color seagreen;
-    static const Color seashell;
-    static const Color sienna;
-    static const Color silver;
-    static const Color skyblue;
-    static const Color slateblue;
-    static const Color slategray;
-    static const Color slategrey;
-    static const Color snow;
-    static const Color springgreen;
-    static const Color steelblue;
-    static const Color tan;
-    static const Color teal;
-    static const Color thistle;
-    static const Color tomato;
-    static const Color turquoise;
-    static const Color violet;
-    static const Color wheat;
-    static const Color white;
-    static const Color whitesmoke;
-    static const Color yellow;
-    static const Color yellowgreen;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
+    static const Color aliceblue()              { return Color (240, 248, 255); }
+    static const Color antiquewhite()           { return Color (250, 235, 215); }
+    static const Color aqua()                   { return Color (0,   255, 255); }
+    static const Color aquamarine()             { return Color (127, 255, 212); }
+    static const Color azure()                  { return Color (240, 255, 255); }
+    static const Color beige()                  { return Color (245, 245, 220); }
+    static const Color bisque()                 { return Color (255, 228, 196); }
+    static const Color black()                  { return Color (0,   0,   0);   }
+    static const Color blanchedalmond()         { return Color (255, 235, 205); }
+    static const Color blue()                   { return Color (0,   0,   255); }
+    static const Color blueviolet()             { return Color (138, 43,  226); }
+    static const Color brown()                  { return Color (165, 42,  42);  }
+    static const Color burlywood()              { return Color (222, 184, 135); }
+    static const Color cadetblue()              { return Color (95,  158, 160); }
+    static const Color chartreuse()             { return Color (127, 255, 0);   }
+    static const Color chocolate()              { return Color (210, 105, 30);  }
+    static const Color coral()                  { return Color (255, 127, 80);  }
+    static const Color cornflowerblue()         { return Color (100, 149, 237); }
+    static const Color cornsilk()               { return Color (255, 248, 220); }
+    static const Color crimson()                { return Color (220, 20,  60);  }
+    static const Color cyan()                   { return Color (0,   255, 255); }
+    static const Color darkblue()               { return Color (0,   0,   139); }
+    static const Color darkcyan()               { return Color (0,   139, 139); }
+    static const Color darkgoldenrod()          { return Color (184, 134, 11);  }
+    static const Color darkgray()               { return Color (169, 169, 169); }
+    static const Color darkgreen()              { return Color (0,   100, 0);   }
+    static const Color darkgrey()               { return Color (169, 169, 169); }
+    static const Color darkkhaki()              { return Color (189, 183, 107); }
+    static const Color darkmagenta()            { return Color (139, 0,   139); }
+    static const Color darkolivegreen()         { return Color (85,  107, 47);  }
+    static const Color darkorange()             { return Color (255, 140, 0);   }
+    static const Color darkorchid()             { return Color (153, 50,  204); }
+    static const Color darkred()                { return Color (139, 0,   0);   }
+    static const Color darksalmon()             { return Color (233, 150, 122); }
+    static const Color darkseagreen()           { return Color (143, 188, 143); }
+    static const Color darkslateblue()          { return Color (72,  61,  139); }
+    static const Color darkslategray()          { return Color (47,  79,  79);  }
+    static const Color darkslategrey()          { return Color (47,  79,  79);  }
+    static const Color darkturquoise()          { return Color (0,   206, 209); }
+    static const Color darkviolet()             { return Color (148, 0,   211); }
+    static const Color deeppink()               { return Color (255, 20,  147); }
+    static const Color deepskyblue()            { return Color (0,   191, 255); }
+    static const Color dimgray()                { return Color (105, 105, 105); }
+    static const Color dimgrey()                { return Color (105, 105, 105); }
+    static const Color dodgerblue()             { return Color (30,  144, 255); }
+    static const Color firebrick()              { return Color (178, 34,  34);  }
+    static const Color floralwhite()            { return Color (255, 250, 240); }
+    static const Color forestgreen()            { return Color (34,  139, 34);  }
+    static const Color fuchsia()                { return Color (255, 0,   255); }
+    static const Color gainsboro()              { return Color (220, 220, 220); }
+    static const Color ghostwhite()             { return Color (248, 248, 255); }
+    static const Color gold()                   { return Color (255, 215, 0);   }
+    static const Color goldenrod()              { return Color (218, 165, 32);  }
+    static const Color gray()                   { return Color (128, 128, 128); }
+    static const Color grey()                   { return Color (128, 128, 128); }
+    static const Color green()                  { return Color (0,   128, 0);   }
+    static const Color greenyellow()            { return Color (173, 255, 47);  }
+    static const Color honeydew()               { return Color (240, 255, 240); }
+    static const Color hotpink()                { return Color (255, 105, 180); }
+    static const Color indianred()              { return Color (205, 92,  92);  }
+    static const Color indigo()                 { return Color (75,  0,   130); }
+    static const Color ivory()                  { return Color (255, 255, 240); }
+    static const Color khaki()                  { return Color (240, 230, 140); }
+    static const Color lavender()               { return Color (230, 230, 250); }
+    static const Color lavenderblush()          { return Color (255, 240, 245); }
+    static const Color lawngreen()              { return Color (124, 252, 0);   }
+    static const Color lemonchiffon()           { return Color (255, 250, 205); }
+    static const Color lightblue()              { return Color (173, 216, 230); }
+    static const Color lightcoral()             { return Color (240, 128, 128); }
+    static const Color lightcyan()              { return Color (224, 255, 255); }
+    static const Color lightgoldenrodyellow()   { return Color (250, 250, 210); }
+    static const Color lightgray()              { return Color (211, 211, 211); }
+    static const Color lightgreen()             { return Color (144, 238, 144); }
+    static const Color lightgrey()              { return Color (211, 211, 211); }
+    static const Color lightpink()              { return Color (255, 182, 193); }
+    static const Color lightsalmon()            { return Color (255, 160, 122); }
+    static const Color lightseagreen()          { return Color (32,  178, 170); }
+    static const Color lightskyblue()           { return Color (135, 206, 250); }
+    static const Color lightslategray()         { return Color (119, 136, 153); }
+    static const Color lightslategrey()         { return Color (119, 136, 153); }
+    static const Color lightsteelblue()         { return Color (176, 196, 222); }
+    static const Color lightyellow()            { return Color (255, 255, 224); }
+    static const Color lime()                   { return Color (0,   255, 0);   }
+    static const Color limegreen()              { return Color (50,  205, 50);  }
+    static const Color linen()                  { return Color (250, 240, 230); }
+    static const Color magenta()                { return Color (255, 0,   255); }
+    static const Color maroon()                 { return Color (128, 0,   0);   }
+    static const Color mediumaquamarine()       { return Color (102, 205, 170); }
+    static const Color mediumblue()             { return Color (0,   0,   205); }
+    static const Color mediumorchid()           { return Color (186, 85,  211); }
+    static const Color mediumpurple()           { return Color (147, 112, 219); }
+    static const Color mediumseagreen()         { return Color (60,  179, 113); }
+    static const Color mediumslateblue()        { return Color (123, 104, 238); }
+    static const Color mediumspringgreen()      { return Color (0,   250, 154); }
+    static const Color mediumturquoise()        { return Color (72,  209, 204); }
+    static const Color mediumvioletred()        { return Color (199, 21,  133); }
+    static const Color midnightblue()           { return Color (25,  25,  112); }
+    static const Color mintcream()              { return Color (245, 255, 250); }
+    static const Color mistyrose()              { return Color (255, 228, 225); }
+    static const Color moccasin()               { return Color (255, 228, 181); }
+    static const Color navajowhite()            { return Color (255, 222, 173); }
+    static const Color navy()                   { return Color (0,   0,   128); }
+    static const Color oldlace()                { return Color (253, 245, 230); }
+    static const Color olive()                  { return Color (128, 128, 0);   }
+    static const Color olivedrab()              { return Color (107, 142, 35);  }
+    static const Color orange()                 { return Color (255, 165, 0);   }
+    static const Color orangered()              { return Color (255, 69,  0);   }
+    static const Color orchid()                 { return Color (218, 112, 214); }
+    static const Color palegoldenrod()          { return Color (238, 232, 170); }
+    static const Color palegreen()              { return Color (152, 251, 152); }
+    static const Color paleturquoise()          { return Color (175, 238, 238); }
+    static const Color palevioletred()          { return Color (219, 112, 147); }
+    static const Color papayawhip()             { return Color (255, 239, 213); }
+    static const Color peachpuff()              { return Color (255, 218, 185); }
+    static const Color peru()                   { return Color (205, 133, 63);  }
+    static const Color pink()                   { return Color (255, 192, 203); }
+    static const Color plum()                   { return Color (221, 160, 221); }
+    static const Color powderblue()             { return Color (176, 224, 230); }
+    static const Color purple()                 { return Color (128, 0,   128); }
+    static const Color red()                    { return Color (255, 0,   0);   }
+    static const Color rosybrown()              { return Color (188, 143, 143); }
+    static const Color royalblue()              { return Color (65,  105, 225); }
+    static const Color saddlebrown()            { return Color (139, 69,  19);  }
+    static const Color salmon()                 { return Color (250, 128, 114); }
+    static const Color sandybrown()             { return Color (244, 164, 96);  }
+    static const Color seagreen()               { return Color (46,  139, 87);  }
+    static const Color seashell()               { return Color (255, 245, 238); }
+    static const Color sienna()                 { return Color (160, 82,  45);  }
+    static const Color silver()                 { return Color (192, 192, 192); }
+    static const Color skyblue()                { return Color (135, 206, 235); }
+    static const Color slateblue()              { return Color (106, 90,  205); }
+    static const Color slategray()              { return Color (112, 128, 144); }
+    static const Color slategrey()              { return Color (112, 128, 144); }
+    static const Color snow()                   { return Color (255, 250, 250); }
+    static const Color springgreen()            { return Color (0,   255, 127); }
+    static const Color steelblue()              { return Color (70,  130, 180); }
+    static const Color tan()                    { return Color (210, 180, 140); }
+    static const Color teal()                   { return Color (0,   128, 128); }
+    static const Color thistle()                { return Color (216, 191, 216); }
+    static const Color tomato()                 { return Color (255, 99,  71);  }
+    static const Color turquoise()              { return Color (64,  224, 208); }
+    static const Color violet()                 { return Color (238, 130, 238); }
+    static const Color wheat()                  { return Color (245, 222, 179); }
+    static const Color white()                  { return Color (255, 255, 255); }
+    static const Color whitesmoke()             { return Color (245, 245, 245); }
+    static const Color yellow()                 { return Color (255, 255, 0);   }
+    static const Color yellowgreen()            { return Color (154, 205, 50);  }
 };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#ifdef BELLE_COMPILE_INLINE
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-const Color Colors::aliceblue               (240, 248, 255);
-const Color Colors::antiquewhite            (250, 235, 215);
-const Color Colors::aqua                    (0,   255, 255);
-const Color Colors::aquamarine              (127, 255, 212);
-const Color Colors::azure                   (240, 255, 255);
-const Color Colors::beige                   (245, 245, 220);
-const Color Colors::bisque                  (255, 228, 196);
-const Color Colors::black                   (0,   0,   0);
-const Color Colors::blanchedalmond          (255, 235, 205);
-const Color Colors::blue                    (0,   0,   255);
-const Color Colors::blueviolet              (138, 43,  226);
-const Color Colors::brown                   (165, 42,  42);
-const Color Colors::burlywood               (222, 184, 135);
-const Color Colors::cadetblue               (95,  158, 160);
-const Color Colors::chartreuse              (127, 255, 0);
-const Color Colors::chocolate               (210, 105, 30);
-const Color Colors::coral                   (255, 127, 80);
-const Color Colors::cornflowerblue          (100, 149, 237);
-const Color Colors::cornsilk                (255, 248, 220);
-const Color Colors::crimson                 (220, 20,  60);
-const Color Colors::cyan                    (0,   255, 255);
-const Color Colors::darkblue                (0,   0,   139);
-const Color Colors::darkcyan                (0,   139, 139);
-const Color Colors::darkgoldenrod           (184, 134, 11);
-const Color Colors::darkgray                (169, 169, 169);
-const Color Colors::darkgreen               (0,   100, 0);
-const Color Colors::darkgrey                (169, 169, 169);
-const Color Colors::darkkhaki               (189, 183, 107);
-const Color Colors::darkmagenta             (139, 0,   139);
-const Color Colors::darkolivegreen          (85,  107, 47);
-const Color Colors::darkorange              (255, 140, 0);
-const Color Colors::darkorchid              (153, 50,  204);
-const Color Colors::darkred                 (139, 0,   0);
-const Color Colors::darksalmon              (233, 150, 122);
-const Color Colors::darkseagreen            (143, 188, 143);
-const Color Colors::darkslateblue           (72,  61,  139);
-const Color Colors::darkslategray           (47,  79,  79);
-const Color Colors::darkslategrey           (47,  79,  79);
-const Color Colors::darkturquoise           (0,   206, 209);
-const Color Colors::darkviolet              (148, 0,   211);
-const Color Colors::deeppink                (255, 20,  147);
-const Color Colors::deepskyblue             (0,   191, 255);
-const Color Colors::dimgray                 (105, 105, 105);
-const Color Colors::dimgrey                 (105, 105, 105);
-const Color Colors::dodgerblue              (30,  144, 255);
-const Color Colors::firebrick               (178, 34,  34);
-const Color Colors::floralwhite             (255, 250, 240);
-const Color Colors::forestgreen             (34,  139, 34);
-const Color Colors::fuchsia                 (255, 0,   255);
-const Color Colors::gainsboro               (220, 220, 220);
-const Color Colors::ghostwhite              (248, 248, 255);
-const Color Colors::gold                    (255, 215, 0);
-const Color Colors::goldenrod               (218, 165, 32);
-const Color Colors::gray                    (128, 128, 128);
-const Color Colors::grey                    (128, 128, 128);
-const Color Colors::green                   (0,   128, 0);
-const Color Colors::greenyellow             (173, 255, 47);
-const Color Colors::honeydew                (240, 255, 240);
-const Color Colors::hotpink                 (255, 105, 180);
-const Color Colors::indianred               (205, 92,  92);
-const Color Colors::indigo                  (75,  0,   130);
-const Color Colors::ivory                   (255, 255, 240);
-const Color Colors::khaki                   (240, 230, 140);
-const Color Colors::lavender                (230, 230, 250);
-const Color Colors::lavenderblush           (255, 240, 245);
-const Color Colors::lawngreen               (124, 252, 0);
-const Color Colors::lemonchiffon            (255, 250, 205);
-const Color Colors::lightblue               (173, 216, 230);
-const Color Colors::lightcoral              (240, 128, 128);
-const Color Colors::lightcyan               (224, 255, 255);
-const Color Colors::lightgoldenrodyellow    (250, 250, 210);
-const Color Colors::lightgray               (211, 211, 211);
-const Color Colors::lightgreen              (144, 238, 144);
-const Color Colors::lightgrey               (211, 211, 211);
-const Color Colors::lightpink               (255, 182, 193);
-const Color Colors::lightsalmon             (255, 160, 122);
-const Color Colors::lightseagreen           (32,  178, 170);
-const Color Colors::lightskyblue            (135, 206, 250);
-const Color Colors::lightslategray          (119, 136, 153);
-const Color Colors::lightslategrey          (119, 136, 153);
-const Color Colors::lightsteelblue          (176, 196, 222);
-const Color Colors::lightyellow             (255, 255, 224);
-const Color Colors::lime                    (0,   255, 0);
-const Color Colors::limegreen               (50,  205, 50);
-const Color Colors::linen                   (250, 240, 230);
-const Color Colors::magenta                 (255, 0,   255);
-const Color Colors::maroon                  (128, 0,   0);
-const Color Colors::mediumaquamarine        (102, 205, 170);
-const Color Colors::mediumblue              (0,   0,   205);
-const Color Colors::mediumorchid            (186, 85,  211);
-const Color Colors::mediumpurple            (147, 112, 219);
-const Color Colors::mediumseagreen          (60,  179, 113);
-const Color Colors::mediumslateblue         (123, 104, 238);
-const Color Colors::mediumspringgreen       (0,   250, 154);
-const Color Colors::mediumturquoise         (72,  209, 204);
-const Color Colors::mediumvioletred         (199, 21,  133);
-const Color Colors::midnightblue            (25,  25,  112);
-const Color Colors::mintcream               (245, 255, 250);
-const Color Colors::mistyrose               (255, 228, 225);
-const Color Colors::moccasin                (255, 228, 181);
-const Color Colors::navajowhite             (255, 222, 173);
-const Color Colors::navy                    (0,   0,   128);
-const Color Colors::oldlace                 (253, 245, 230);
-const Color Colors::olive                   (128, 128, 0);
-const Color Colors::olivedrab               (107, 142, 35);
-const Color Colors::orange                  (255, 165, 0);
-const Color Colors::orangered               (255, 69,  0);
-const Color Colors::orchid                  (218, 112, 214);
-const Color Colors::palegoldenrod           (238, 232, 170);
-const Color Colors::palegreen               (152, 251, 152);
-const Color Colors::paleturquoise           (175, 238, 238);
-const Color Colors::palevioletred           (219, 112, 147);
-const Color Colors::papayawhip              (255, 239, 213);
-const Color Colors::peachpuff               (255, 218, 185);
-const Color Colors::peru                    (205, 133, 63);
-const Color Colors::pink                    (255, 192, 203);
-const Color Colors::plum                    (221, 160, 221);
-const Color Colors::powderblue              (176, 224, 230);
-const Color Colors::purple                  (128, 0,   128);
-const Color Colors::red                     (255, 0,   0);
-const Color Colors::rosybrown               (188, 143, 143);
-const Color Colors::royalblue               (65,  105, 225);
-const Color Colors::saddlebrown             (139, 69,  19);
-const Color Colors::salmon                  (250, 128, 114);
-const Color Colors::sandybrown              (244, 164, 96);
-const Color Colors::seagreen                (46,  139, 87);
-const Color Colors::seashell                (255, 245, 238);
-const Color Colors::sienna                  (160, 82,  45);
-const Color Colors::silver                  (192, 192, 192);
-const Color Colors::skyblue                 (135, 206, 235);
-const Color Colors::slateblue               (106, 90,  205);
-const Color Colors::slategray               (112, 128, 144);
-const Color Colors::slategrey               (112, 128, 144);
-const Color Colors::snow                    (255, 250, 250);
-const Color Colors::springgreen             (0,   255, 127);
-const Color Colors::steelblue               (70,  130, 180);
-const Color Colors::tan                     (210, 180, 140);
-const Color Colors::teal                    (0,   128, 128);
-const Color Colors::thistle                 (216, 191, 216);
-const Color Colors::tomato                  (255, 99,  71);
-const Color Colors::turquoise               (64,  224, 208);
-const Color Colors::violet                  (238, 130, 238);
-const Color Colors::wheat                   (245, 222, 179);
-const Color Colors::white                   (255, 255, 255);
-const Color Colors::whitesmoke              (245, 245, 245);
-const Color Colors::yellow                  (255, 255, 0);
-const Color Colors::yellowgreen             (154, 205, 50);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#endif // BELLE_COMPILE_INLINE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

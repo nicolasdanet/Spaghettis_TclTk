@@ -213,7 +213,7 @@ private:
 
 #ifdef BELLE_COMPILE_INLINE
 
-const double Music::kDefaultScale = 5.0;
+const double Music::kDefaultScale   = 5.0;
 const double Music::kDefaultOriginX = 0.5;
 const double Music::kDefaultOriginY = 1.5;
 

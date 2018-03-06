@@ -241,8 +241,8 @@ const int    House::kRhythmicDotMaximum             = 4;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-const Color  House::kColorDefault                   = Colors::black;
-const Color  House::kColorSelected                  = Colors::orange;
+const Color  House::kColorDefault                   = Colors::black();
+const Color  House::kColorSelected                  = Colors::orange();
 const Ratio  House::kSpacingBarline                 = Ratio (1, 16);
 const Ratio  House::kSpacingTimeSignature           = Ratio (1, 4);
 const Affine House::kAffineGentium                  = Affine::scale (Vector (2.0, 2.0));
