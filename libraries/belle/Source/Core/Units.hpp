@@ -43,25 +43,25 @@ class Units {
 /* < https://en.wikipedia.org/wiki/Point_%28typography%29 > */
 
 public:
-    static const Unit Meter = 0;
-    static const Unit Millimeter = 1;
-    static const Unit Centimeter = 2;
-    static const Unit Inch  = 3;
-    static const Unit Point = 4;
-    static const Unit Pixel = 5;
+    static const Unit kMeter = 0;
+    static const Unit kMillimeter = 1;
+    static const Unit kCentimeter = 2;
+    static const Unit kInch  = 3;
+    static const Unit kPoint = 4;
+    static const Unit kPixel = 5;
 
 private:
-    static double PPI;
+    static double kPPI;
     
 public:
     static void setPixelsPerInch (double ppi)
     {
-        Units::PPI = ppi;
+        Units::kPPI = ppi;
     }
     
     static Affine pointToPixel()
     {
-        return Affine::scale (Vector (Units::PPI / 72.0, Units::PPI / 72.0));
+        return Affine::scale (Vector (Units::kPPI / 72.0, Units::kPPI / 72.0));
     }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -71,12 +71,12 @@ public:
     static double getConversionFactor (Unit unit)            /* Conversion ratio to the SI unit. */
     {
         switch (unit) {
-            case Meter      : return 1.0;
-            case Millimeter : return 1.0 / 1000.0;
-            case Centimeter : return 1.0 / 100.0;
-            case Inch       : return 25.4 / 1000.0;
-            case Point      : return 25.4 / 1000.0 / 72.0;
-            case Pixel      : return 25.4 / 1000.0 / PPI;
+            case kMeter      : return 1.0;
+            case kMillimeter : return 1.0 / 1000.0;
+            case kCentimeter : return 1.0 / 100.0;
+            case kInch       : return 25.4 / 1000.0;
+            case kPoint      : return 25.4 / 1000.0 / 72.0;
+            case kPixel      : return 25.4 / 1000.0 / kPPI;
         }
         
         return 1.0;
@@ -131,78 +131,12 @@ public:
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef Measurement < Units::Meter > Meters;
-typedef Measurement < Units::Millimeter > Millimeters;
-typedef Measurement < Units::Centimeter > Centimeters;
-typedef Measurement < Units::Inch > Inches;
-typedef Measurement < Units::Point > Points;
-typedef Measurement < Units::Pixel > Pixels;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* < https://en.wikipedia.org/wiki/ISO_216 > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-class Paper {
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-public:
-    static Inches landscape (Inches size)
-    {
-        return Inches (Math::max (size.getX(), size.getY()), Math::min (size.getX(), size.getY()));
-    }
-    
-    static Inches portrait (Inches size)
-    {
-        return Inches (Math::min (size.getX(), size.getY()), Math::max (size.getX(), size.getY()));
-    }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-public:
-    static bool isSmallerThan (const Inches& a, const Inches& b)
-    {
-        return (a.getX() < b.getX()) && (a.getY() < b.getY());
-    }
-    
-    static bool isGreaterThan (const Inches& a, const Inches& b)
-    {
-        return (a.getX() > b.getX()) && (a.getY() > b.getY());
-    }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-public:
-    static bool isSmallerOrEqualThan (const Inches& a, const Inches& b)
-    {
-        return (a.getX() <= b.getX()) && (a.getY() <= b.getY());
-    }
-    
-    static bool isGreaterOrEqualThan (const Inches& a, const Inches& b)
-    {
-        return (a.getX() >= b.getX()) && (a.getY() >= b.getY());
-    }
-    
-public:
-    static const Inches Letter;
-    static const Inches Legal;
-    
-    static const Millimeters A2;
-    static const Millimeters A3;
-    static const Millimeters A4;
-    static const Millimeters A5;
-};
+typedef Measurement < Units::kMeter > Meters;
+typedef Measurement < Units::kMillimeter > Millimeters;
+typedef Measurement < Units::kCentimeter > Centimeters;
+typedef Measurement < Units::kInch > Inches;
+typedef Measurement < Units::kPoint > Points;
+typedef Measurement < Units::kPixel > Pixels;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -212,18 +146,7 @@ public:
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-double Units::PPI = 72.0;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-const Inches Paper::Letter  (8.5, 11.0);
-const Inches Paper::Legal   (8.5, 14.0);
-
-const Millimeters Paper::A2 (420.0, 594.0);
-const Millimeters Paper::A3 (297.0, 420.0);
-const Millimeters Paper::A4 (210.0, 297.0);
-const Millimeters Paper::A5 (148.0, 210.0);
+double Units::kPPI = 72.0;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

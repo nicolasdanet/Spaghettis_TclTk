@@ -120,6 +120,10 @@ class Colors {
 public:
     static const Color empty()                  { return Color (0.0f, 0.0f, 0.0f, 0.0f); }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 public:
     static const Color aliceblue()              { return Color (240, 248, 255); }
     static const Color antiquewhite()           { return Color (250, 235, 215); }

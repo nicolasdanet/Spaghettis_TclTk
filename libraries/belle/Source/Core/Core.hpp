@@ -21,6 +21,7 @@
 #include "Colors.hpp"
 #include "Affine.hpp"
 #include "Units.hpp"
+#include "Paper.hpp"
 #include "Instruction.hpp"
 #include "Path.hpp"
 #include "Glyph.hpp"

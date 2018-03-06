@@ -147,7 +147,7 @@ private:
 // MARK: -
 
 public:
-    Pdf (const String& filename) : filename_ (filename), size_ (Paper::portrait (Paper::A4))
+    Pdf (const String& filename) : filename_ (filename), size_ (Paper::portrait (Paper::A4()))
     {
     }
 

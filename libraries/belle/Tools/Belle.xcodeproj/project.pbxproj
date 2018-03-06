@@ -63,6 +63,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		17674DAC204ED633008EE603 /* Paper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Paper.hpp; sourceTree = "<group>"; };
 		37077B881AB5663E00C7C0C4 /* GentiumBasicBold.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GentiumBasicBold.hpp; sourceTree = "<group>"; };
 		37077B891AB5663E00C7C0C4 /* GentiumBasicItalic.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GentiumBasicItalic.hpp; sourceTree = "<group>"; };
 		37077B8A1AB5663E00C7C0C4 /* GentiumBasicRegular.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GentiumBasicRegular.hpp; sourceTree = "<group>"; };
@@ -289,6 +290,7 @@
 				3728B62419E6C755000C88D4 /* Colors.hpp */,
 				3728B62219E6C755000C88D4 /* Affine.hpp */,
 				3728B63119E6C755000C88D4 /* Units.hpp */,
+				17674DAC204ED633008EE603 /* Paper.hpp */,
 				37938BC91A00058E00541727 /* Instruction.hpp */,
 				3728B62C19E6C755000C88D4 /* Path.hpp */,
 				3728B62619E6C755000C88D4 /* Glyph.hpp */,
