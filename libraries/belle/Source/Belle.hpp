@@ -28,7 +28,11 @@
 // MARK: -
 
 #ifndef PRIM_WITH_TEST
-#define PRIM_WITH_TEST     0    /* Enable memory leaks detector and assertions. */
+#define PRIM_WITH_TEST      0       /* Enable memory leaks detector and assertions. */
+#endif
+
+#ifndef PRIM_WITH_BELLE
+#define PRIM_WITH_BELLE     1       /* Unset it to use MICA only. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -55,11 +59,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "Core/Core.hpp"
-#include "Fonts/Fonts.hpp"
-#include "Symbols/Symbols.hpp"
-#include "Modern/Modern.hpp"
-#include "Painters/Painters.hpp"
+#if PRIM_WITH_BELLE
+
+    #include "Core/Core.hpp"
+    #include "Fonts/Fonts.hpp"
+    #include "Symbols/Symbols.hpp"
+    #include "Modern/Modern.hpp"
+    #include "Painters/Painters.hpp"
+
+#endif // PRIM_WITH_BELLE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
