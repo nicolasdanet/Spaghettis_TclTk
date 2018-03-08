@@ -27,39 +27,32 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef PRIM_WITH_TEST
-#define PRIM_WITH_TEST      0       /* Enable memory leaks detector and assertions. */
+#ifndef BELLE_WITH_TEST
+#define BELLE_WITH_TEST     0       /* Enable memory leaks detector and assertions. */
 #endif
 
-#ifndef PRIM_WITH_BELLE
-#define PRIM_WITH_BELLE     1       /* Unset it to use MICA only. */
+#ifndef BELLE_MICA_ONLY
+#define BELLE_MICA_ONLY     0       /* Use MICA only. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef PRIM_LIBRARY
-    #ifdef BELLE_COMPILE_INLINE
-        #define PRIM_COMPILE_INLINE
-    #endif
-    #include "Core/Prim/Prim.hpp"
+#include "Core/Prim/Prim.hpp"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#ifdef BELLE_COMPILE_INLINE
+    #include "Core/MICA/Mica.cpp"
 #endif
+#include "Core/MICA/Mica.hpp"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#ifndef MICA_LIBRARY
-    #ifdef BELLE_COMPILE_INLINE
-        #include "Core/MICA/Mica.cpp"
-    #endif
-    #include "Core/MICA/Mica.hpp"
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PRIM_WITH_BELLE
+#if ! ( BELLE_MICA_ONLY )
 
     #include "Core/Core.hpp"
     #include "Fonts/Fonts.hpp"
@@ -67,7 +60,7 @@
     #include "Modern/Modern.hpp"
     #include "Painters/Painters.hpp"
 
-#endif // PRIM_WITH_BELLE
+#endif // BELLE_MICA_ONLY
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

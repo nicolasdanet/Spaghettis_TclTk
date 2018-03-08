@@ -76,7 +76,7 @@ template <> struct StaticAssert < true > { static void dummy() { } };
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PRIM_WITH_TEST
+#if BELLE_WITH_TEST
     #define PRIM_ASSERT(x)          if (!(x)) { prim::Assert::debugAssert (__FILE__, __LINE__); }
 #else
     #define PRIM_ASSERT(x)

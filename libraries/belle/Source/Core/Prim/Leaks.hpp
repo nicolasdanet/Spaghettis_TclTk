@@ -113,7 +113,7 @@ private:
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PRIM_WITH_TEST
+#if BELLE_WITH_TEST
     #define PRIM_LEAK_DETECTOR(Owner) \
         friend class prim::LeakDetector < Owner >; \
         static const char* getClassName() { return #Owner; } \
