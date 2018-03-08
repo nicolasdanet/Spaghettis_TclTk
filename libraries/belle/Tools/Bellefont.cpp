@@ -114,7 +114,7 @@ private:
         
         scale_ = Affine::scale (Vector (72.0, 72.0));
         
-        if (Paper::isSmallerThan (painter_->getPageSize(), Paper::portrait (Paper::A5))) { return false; }
+        if (Paper::isSmallerThan (painter_->getPageSize(), Paper::portrait (Paper::A5()))) { return false; }
         else {
         //
         Inches inches = painter_->getPageSize();
