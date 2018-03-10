@@ -58,7 +58,7 @@ private:
     
         #if PRIM_CPP11
         
-        Iterator (Iterator&&) noexcept
+        Iterator (Iterator&&)
         {
             reset();
         }
@@ -152,7 +152,7 @@ public:
 // MARK: -
 
 public:
-    void swapWith (String& o) noexcept
+    void swapWith (String& o)
     {
         using std::swap;
         
@@ -569,7 +569,7 @@ private:
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void swap (String& a, String& b) noexcept;
+void swap (String& a, String& b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -584,7 +584,7 @@ const ascii String::empty_ = 0;   /* The empty null-terminated string. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void swap (String& a, String& b) noexcept
+void swap (String& a, String& b)
 {
     a.swapWith (b);
 }

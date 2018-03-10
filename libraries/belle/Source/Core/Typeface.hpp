@@ -52,7 +52,7 @@ private:
     #endif
     
     public:
-        void swapWith (GlyphPointer& o) noexcept
+        void swapWith (GlyphPointer& o)
         {
             glyph_.swapWith (o.glyph_);
         }
@@ -125,7 +125,7 @@ private:
 // MARK: -
 
 public:
-    void swapWith (Typeface& o) noexcept
+    void swapWith (Typeface& o)
     {
         using std::swap;
         
@@ -428,7 +428,7 @@ private:
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-friend void swap (GlyphPointer&, GlyphPointer&) noexcept;
+friend void swap (GlyphPointer&, GlyphPointer&);
 
 private:
     Array < GlyphPointer > glyphs_;
@@ -446,8 +446,8 @@ private:
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void swap (Typeface& a, Typeface& b) noexcept;
-void swap (Typeface::GlyphPointer& a, Typeface::GlyphPointer& b) noexcept;
+void swap (Typeface& a, Typeface& b);
+void swap (Typeface::GlyphPointer& a, Typeface::GlyphPointer& b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -458,12 +458,12 @@ void swap (Typeface::GlyphPointer& a, Typeface::GlyphPointer& b) noexcept;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void swap (Typeface& a, Typeface& b) noexcept
+void swap (Typeface& a, Typeface& b)
 {
     a.swapWith (b);
 }
 
-void swap (Typeface::GlyphPointer& a, Typeface::GlyphPointer& b) noexcept
+void swap (Typeface::GlyphPointer& a, Typeface::GlyphPointer& b)
 {
     a.swapWith (b);
 }

@@ -94,7 +94,7 @@ public:
 #if PRIM_CPP11
 
 public:
-    Array (Array < T > && toMove) noexcept : data_ (toMove.data_), size_ (toMove.size_)
+    Array (Array < T > && toMove) : data_ (toMove.data_), size_ (toMove.size_)
     {
         toMove.data_ = nullptr;
         toMove.size_ = 0;
@@ -121,7 +121,7 @@ public:
 // MARK: -
 
 public:
-    void swapWith (Array < T > & o) noexcept
+    void swapWith (Array < T > & o)
     {
         using std::swap;
         
@@ -409,7 +409,7 @@ private:
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-template < class T > void swap (Array < T > & a, Array < T > & b) noexcept
+template < class T > void swap (Array < T > & a, Array < T > & b)
 {
     a.swapWith (b);
 }

@@ -91,7 +91,7 @@ private:
 // MARK: -
 
 public:
-    void swapWith (List < T > & o) noexcept
+    void swapWith (List < T > & o)
     {
         using std::swap;
             
@@ -275,7 +275,7 @@ private:
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-template < class T > void swap (List < T > & a, List < T > & b) noexcept
+template < class T > void swap (List < T > & a, List < T > & b)
 {
     a.swapWith (b);
 }

@@ -98,7 +98,7 @@ public:
 #if PRIM_CPP11
 
 public:
-    Pointer (Pointer < T > && toMove) noexcept : reference_ (toMove.reference_), pointer_ (toMove.pointer_)
+    Pointer (Pointer < T > && toMove) : reference_ (toMove.reference_), pointer_ (toMove.pointer_)
     {
         toMove.reference_ = nullptr;
         toMove.pointer_   = nullptr;
@@ -124,7 +124,7 @@ public:
 // MARK: -
 
 public:
-    void swapWith (Pointer < T > & o) noexcept
+    void swapWith (Pointer < T > & o)
     {
         using std::swap;
         
@@ -228,7 +228,7 @@ private:
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-template < class T > void swap (Pointer < T > & a, Pointer < T > & b) noexcept
+template < class T > void swap (Pointer < T > & a, Pointer < T > & b)
 {
     a.swapWith (b);
 }
