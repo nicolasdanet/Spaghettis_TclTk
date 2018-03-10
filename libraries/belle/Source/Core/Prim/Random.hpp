@@ -12,6 +12,9 @@
 
 namespace prim {
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* < http://www.eng.tau.ac.il/~yash/infosec-seminar/2007/Random_Bit_Generator.pdf > */
 /* < http://www.cse.yorku.ca/~oz/hash.html > */
 /* < https://sphinxsearch.googlecode.com/svn/trunk/src/sphinxstd.cpp > */
