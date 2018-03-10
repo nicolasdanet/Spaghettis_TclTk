@@ -31,6 +31,10 @@
 #define BELLE_WITH_TEST     0       /* Enable memory leaks detector and assertions. */
 #endif
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 #ifndef BELLE_MICA_ONLY
 #define BELLE_MICA_ONLY     0       /* Use MICA only. */
 #endif

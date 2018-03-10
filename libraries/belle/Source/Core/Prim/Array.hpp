@@ -10,8 +10,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Element MUST be default constructible and NOT polymorphic (copyable with std::memcpy). */
-/* Assignment is used to add an element. */
+/* Element MUST be default constructible and NOT polymorphic (trivially copyable). */
+/* Assignment is used while adding an element. */
 /* Copy constructors and comparaison may also be needed. */
 /* Efficient swap should be implemented in case of sort. */
 
@@ -24,19 +24,18 @@ namespace prim {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+template < class T, int N > int sizeOfArray (T (&array)[N])
+{
+    (void)array; return N;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Use portable bit hacks? */
 
 /* < http://graphics.stanford.edu/~seander/bithacks.html > */
 /* < http://aggregate.org/MAGIC/ > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-template < class T, int N > int sizeOfArray (T (&array)[N])
-{
-    (void)array;
-    return N;
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -285,6 +284,7 @@ public:
     int indexOf (const T& v) const
     {
         for (int i = 0; i < size_; ++i) { if (get (i) == v) { return i; } }
+    
         return -1;
     }
     
@@ -349,7 +349,7 @@ public:
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* < http://www.sorting-algorithms.com/static/QuicksortIsOptimal.pdf > */
+/* < https://www.cs.princeton.edu/~rs/talks/QuicksortIsOptimal.pdf > */
 /* < http://en.wikipedia.org/wiki/RANDU > */
 /* < https://en.wikipedia.org/wiki/Fisher-Yates_shuffle > */
 
