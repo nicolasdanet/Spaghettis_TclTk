@@ -258,7 +258,7 @@ public:
     {
         resize (size_ + 1);
         
-        PRIM_ASSERT (size_ != 0);   /* Throw in case of overflow? */
+        PRIM_ASSERT (size_ != 0);   // -- FIXME: Throw in case of overflow?
         
         getLast() = v;
     }
