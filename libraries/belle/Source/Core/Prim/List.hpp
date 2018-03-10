@@ -224,8 +224,7 @@ public:
         //
         }
 
-        delete p;
-        size_--;
+        delete p; size_--;
     }
     
     void sort (bool up = true)
@@ -257,6 +256,7 @@ private:
         while (j != i) { p = p->next_; j++; }
         
         pointer_ = p; index_ = j;
+        
         return p;
     }
 
