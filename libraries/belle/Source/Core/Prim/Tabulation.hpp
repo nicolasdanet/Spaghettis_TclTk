@@ -33,7 +33,7 @@ public:
 // MARK: -
 
 public:
-    operator const ascii*()
+    operator const char*()
     {
         return spaces_;
     }

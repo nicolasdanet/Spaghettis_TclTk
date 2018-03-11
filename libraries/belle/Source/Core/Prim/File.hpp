@@ -21,7 +21,7 @@ struct File {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static bool writeFromString (const ascii* filename, const String& data)
+static bool writeFromString (const char* filename, const String& data)
 {
     bool b = false;
     
@@ -39,13 +39,13 @@ static bool writeFromString (const ascii* filename, const String& data)
     return b;
 }
 
-static bool readToString (const ascii* filename, String& data)
+static bool readToString (const char* filename, String& data)
 {
     bool b = false;
     
     Array < byte > t;
     b = readToArray (filename, t);
-    if (b) { t.add (0); data << reinterpret_cast < const ascii* > (&t[0]); }
+    if (b) { t.add (0); data << reinterpret_cast < const char* > (&t[0]); }
     
     return b;
 }
@@ -54,7 +54,7 @@ static bool readToString (const ascii* filename, String& data)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-template < class T > static bool writeFromArray (const ascii* filename, const Array < T > & data)
+template < class T > static bool writeFromArray (const char* filename, const Array < T > & data)
 {
     bool b = false;
     
@@ -72,7 +72,7 @@ template < class T > static bool writeFromArray (const ascii* filename, const Ar
     return b;
 }
 
-template < class T > static bool readToArray (const ascii* filename, Array < T > & data)
+template < class T > static bool readToArray (const char* filename, Array < T > & data)
 {
     bool b = false;
     

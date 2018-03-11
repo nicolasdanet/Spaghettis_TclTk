@@ -121,7 +121,7 @@ public:
         clear(); 
     }
     
-    String (const ascii* s) 
+    String (const char* s)
     {
         clear(); append (s);
     }
@@ -184,7 +184,7 @@ public:
 // MARK: -
 
 public:
-    ascii get (int i) const
+    char get (int i) const
     {
         if (i >= 0 && i < length_) {
             if (i < iter_.i_) { iter_.reset(); }
@@ -197,7 +197,7 @@ public:
         return 0;
     }
     
-    ascii operator[] (int i) const
+    char operator[] (int i) const
     {   
         return get (i);
     }
@@ -207,17 +207,17 @@ public:
 // MARK: -
 
 public:
-    String& append (const ascii* s) 
+    String& append (const char* s)
     {
         appendFragment (s, lengthOf (s)); return *this;
     }
     
-    String& prepend (const ascii* s) 
+    String& prepend (const char* s)
     {
         prependFragment (s, lengthOf (s)); return *this;
     }
     
-    String& insert (const ascii* s, int before)
+    String& insert (const char* s, int before)
     {
         insertFragment (s, lengthOf (s), before); return *this;
     }
@@ -241,14 +241,14 @@ public:
 // MARK: -
 
 public:
-    const ascii* merge() const
+    const char* merge() const
     {
         if (length_ == 0) { return &String::empty_; } 
         if (data_.size() == 1 + 4 + 4 + length_ + 4) { return &data_[1 + 4 + 4]; }
         
         iter_.reset();
                 
-        Array < ascii > scoped;
+        Array < char > scoped;
         
         scoped.resize (1 + 4 + 4 + length_ + 4);
         scoped[0] = 0;
@@ -261,7 +261,7 @@ public:
         memcpy (&scoped[f], &n, sizeof (n));
         memcpy (&scoped[1 + 4 + 4 + length_], &z, sizeof (z));
 
-        ascii* s = &scoped[1 + 4 + 4];
+        char* s = &scoped[1 + 4 + 4];
         
         Iterator q;
         while (q.next (this)) { Memory::copy (&s[q.i_], &data_[q.f_ + 4], q.n_); }
@@ -272,7 +272,7 @@ public:
         return s;
     }
     
-    const ascii* toCString() const 
+    const char* toCString() const
     {
         return merge();
     }
@@ -318,7 +318,7 @@ public:
         return *this;
     }
 
-    String& operator << (const ascii* s)
+    String& operator << (const char* s)
     {
         append (s);
         return *this;
@@ -385,7 +385,7 @@ public:
 // MARK: -
 
 public:
-    template < class T > static String paddedLeft (T v, int n, ascii c = ' ')
+    template < class T > static String paddedLeft (T v, int n, char c = ' ')
     {
         String raw, padded; 
         raw << v;
@@ -441,7 +441,7 @@ private:
         memcpy (&data_[i], &t, sizeof (t));
     }
 
-    void writeFragment (int start, int size, const ascii* fragment, int next)
+    void writeFragment (int start, int size, const char* fragment, int next)
     {
         writeMarker (start, size);
         writeMarker (start + 4 + size, next);
@@ -453,7 +453,7 @@ private:
 // MARK: -
 
 private:
-    void appendFragment (const ascii* fragment, int size)
+    void appendFragment (const char* fragment, int size)
     {
         if (size <= 0) { return; }
         
@@ -484,7 +484,7 @@ private:
         length_ += size;
     }
 
-    void prependFragment (const ascii* fragment, int size)
+    void prependFragment (const char* fragment, int size)
     {
         if (size <= 0) { return; }    
         if (length_ == 0) { appendFragment (fragment, size); return; }
@@ -501,15 +501,15 @@ private:
         length_ += size;
     }
     
-    void insertFragment (const ascii* fragment, int size, int before)
+    void insertFragment (const char* fragment, int size, int before)
     {
         if (size <= 0)   { return; }
         if (before <= 0) { return prependFragment (fragment, size); }
         if (length_ == 0 || before >= length_) { return appendFragment (fragment, size); }
         
-        const ascii* a = merge();
+        const char* a = merge();
         
-        Array < ascii > scoped;
+        Array < char > scoped;
         
         scoped.resize (1 + 4 + 4 + length_ + size + 4);
         scoped[0] = 0; 
@@ -522,7 +522,7 @@ private:
         memcpy (&scoped[f], &n, sizeof (n));
         memcpy (&scoped[1 + 4 + 4 + length_ + size], &z, sizeof (z));
         
-        ascii* b = &scoped[1 + 4 + 4];
+        char* b = &scoped[1 + 4 + 4];
 
         Memory::copy (&b[0], a, before);
         Memory::copy (&b[before], fragment, size);
@@ -537,7 +537,7 @@ private:
 // MARK: -
 
 private:
-    static int lengthOf (const ascii* s)
+    static int lengthOf (const char* s)
     {
         if (!s) { return 0; }
         else {
@@ -546,13 +546,13 @@ private:
     }
 
 private:
-    static const ascii empty_;
+    static const char empty_;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 private:
-    mutable Array < ascii > data_;
+    mutable Array < char > data_;
     mutable int length_;
     mutable int last_;
     mutable Iterator iter_;
@@ -575,7 +575,7 @@ void swap (String& a, String& b);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-const ascii String::empty_ = 0;   /* The empty null-terminated string. */
+const char String::empty_ = 0;   /* The empty null-terminated string. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

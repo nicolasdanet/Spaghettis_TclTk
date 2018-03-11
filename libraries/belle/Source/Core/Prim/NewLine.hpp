@@ -19,7 +19,7 @@ namespace prim {
 class NewLine {
 
 public:
-    operator const ascii*()
+    operator const char*()
     {
         return "\r\n";
     }

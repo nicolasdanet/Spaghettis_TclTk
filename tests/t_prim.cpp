@@ -187,7 +187,6 @@ TTT_BEGIN (PrimTypes, 100, "Prim - Types")
     TTT_EXPECT (sizeof (prim::uint64)  == 8);
     TTT_EXPECT (sizeof (prim::float32) == 4);
     TTT_EXPECT (sizeof (prim::float64) == 8);
-    TTT_EXPECT (sizeof (prim::ascii)   == 1);
     TTT_EXPECT (sizeof (prim::unicode) == 4);
     TTT_EXPECT (sizeof (prim::byte)    == 1);
             
@@ -1256,7 +1255,7 @@ TTT_BEGIN (PrimString, 107, "Prim - String")
     TTT_EXPECT (text.length() == 4);
     
     text.append ("EFGH");
-    for (int i = 0; i < text.length(); ++i) { TTT_EXPECT (text[i] == 'A' + (prim::ascii)i); }
+    for (int i = 0; i < text.length(); ++i) { TTT_EXPECT (text[i] == 'A' + (char)i); }
     
     std::string result ("Toto et Jojo et Momo mangent 3 carottes!");
     

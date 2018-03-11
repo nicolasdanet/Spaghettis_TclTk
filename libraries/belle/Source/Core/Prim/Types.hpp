@@ -59,7 +59,6 @@ typedef double                  float64;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef int8                    ascii;
 typedef uint32                  unicode;
 typedef uint8                   byte;
 
