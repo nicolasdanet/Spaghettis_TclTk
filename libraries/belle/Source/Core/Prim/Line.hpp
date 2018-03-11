@@ -108,6 +108,8 @@ public:
         return false;
     }
     
+    /* Get the point of intersection. */
+    
     bool intersects (const Line& o, Point& pt) const
     {
         if (intersects (o)) { return intersectionWithLine (o, pt); }

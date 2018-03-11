@@ -39,8 +39,6 @@ static bool writeFromString (const char* filename, const String& data)
     return b;
 }
 
-#if 0
-
 static bool readToString (const char* filename, String& data)
 {
     bool b = false;
@@ -51,8 +49,6 @@ static bool readToString (const char* filename, String& data)
     
     return b;
 }
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
