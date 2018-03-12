@@ -75,12 +75,11 @@ template < int N > Concept mapping (Concept (&array)[N])
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-Concept::Concept (const prim::String& key) 
+Concept::Concept (const std::string& key)
 {
-    prim::String s ("en:");
-    s << key;
+    std::string s ("en:"); s += key;
     
-    *this = KeyToConcept::find (s.toCString());
+    *this = KeyToConcept::find (s.c_str());
 }
 
 // -----------------------------------------------------------------------------------------------------------
