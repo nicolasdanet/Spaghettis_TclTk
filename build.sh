@@ -10,8 +10,8 @@
 
 case "$OSTYPE" in
     solaris*) echo "SOLARIS" ;;
-    darwin*)  ./buildMAC.sh ;; 
-    linux*)   ./buildGNU.sh ;;
+    darwin*)  ./buildMacOS.sh ;;
+    linux*)   ./buildDebian.sh ;;
     bsd*)     echo "BSD" ;;
     *)        echo "unknown: $OSTYPE" ;;
 esac
