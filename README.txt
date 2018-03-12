@@ -11,19 +11,13 @@ Remark:
 
     This is an (AT YOUR OWN RISK) work-in-progress version.
 
-Requirements:
-
-    On macOS install ActiveTcl 8.6.7 (or 8.5.18) first.
-
 Build:
 
+    On macOS install ActiveTcl first.
     Download this repository.
     Open a terminal and go to the "Spaghettis/build.sh" script.
     Run the "./build.sh" command.
     Notice that to avoid conflicts nothing is installed.
-
-Run:
-
     On GNU/Linux execute "Spaghettis/build/bin/spaghettis".
     Launch the "Application/Spaghettis.app" on macOS.
 
