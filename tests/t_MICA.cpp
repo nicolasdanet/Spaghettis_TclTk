@@ -22,7 +22,7 @@ TTT_BEGIN (MicaStandard, 150, "MICA - Standard")
     {
     //
     mica::Concept c;
-    TTT_EXPECT (c.toString() == prim::String ("(Undefined)"));
+    TTT_EXPECT (c.toString() == std::string ("(Undefined)"));
     
     c = mica::Concept ("");
     TTT_EXPECT (c == mica::Undefined);
@@ -31,20 +31,20 @@ TTT_BEGIN (MicaStandard, 150, "MICA - Standard")
     TTT_EXPECT (c == mica::Undefined);
                 
     c = mica::Concept ("D Mixolydian");
-    TTT_EXPECT (c.toString() == prim::String ("D Mixolydian"));
+    TTT_EXPECT (c.toString() == std::string ("D Mixolydian"));
     
     c = mica::C;
-    TTT_EXPECT (c.toString() == prim::String ("C"));
+    TTT_EXPECT (c.toString() == std::string ("C"));
     
     c = mica::Concept (-1234);
     
-    TTT_EXPECT (c.toString()                   == prim::String ("(Integer)"));
+    TTT_EXPECT (c.toString()                   == std::string ("(Integer)"));
     TTT_EXPECT (c.getNumerator()               == -1234);
     TTT_EXPECT (c.getDenominator()             == 1);
     
     c = mica::Concept (prim::Ratio (1234, -2468));
     
-    TTT_EXPECT (c.toString()                   == prim::String ("(Ratio)"));
+    TTT_EXPECT (c.toString()                   == std::string ("(Ratio)"));
     TTT_EXPECT (c.getNumerator()               == -1);
     TTT_EXPECT (c.getDenominator()             == 2);
     //
@@ -56,7 +56,7 @@ TTT_BEGIN (MicaStandard, 150, "MICA - Standard")
     
     TTT_EXPECT (c                              == mica::Undefined);
     TTT_EXPECT (c.isValid()                    == true);
-    TTT_EXPECT (c.toString()                   == prim::String ("(Undefined)"));
+    TTT_EXPECT (c.toString()                   == std::string ("(Undefined)"));
     TTT_EXPECT (c.getDenominator()             == 0);
     TTT_EXPECT (c.getNumerator()               == 0);
     TTT_EXPECT (c.toRatio().isUndefined()      == true);
@@ -80,7 +80,7 @@ TTT_BEGIN (MicaStandard, 150, "MICA - Standard")
     mica::Concept wrong2 (bad2);
     
     TTT_EXPECT (wrong1.isValid()               == false);
-    TTT_EXPECT (wrong1.toString()              == prim::String ("(Wrong)"));
+    TTT_EXPECT (wrong1.toString()              == std::string ("(Wrong)"));
     TTT_EXPECT (wrong1.getDenominator()        == 0);
     TTT_EXPECT (wrong1.getNumerator()          == 0);
     TTT_EXPECT (wrong1.toRatio().isUndefined() == true);
@@ -92,7 +92,7 @@ TTT_BEGIN (MicaStandard, 150, "MICA - Standard")
     TTT_EXPECT (wrong1.length()                == 0);
     
     TTT_EXPECT (wrong2.isValid()               == false);
-    TTT_EXPECT (wrong2.toString()              == prim::String ("(Wrong)"));
+    TTT_EXPECT (wrong2.toString()              == std::string ("(Wrong)"));
     TTT_EXPECT (wrong2.getDenominator()        == 0);
     TTT_EXPECT (wrong2.getNumerator()          == 0);
     TTT_EXPECT (wrong2.toRatio().isUndefined() == true);
@@ -133,112 +133,112 @@ TTT_BEGIN (MicaDatabase, 151, "MICA - Database")
     c = mica::map (mica::A, mica::B);
     
     TTT_EXPECT (c == mica::WholeStep);
-    TTT_EXPECT (c.toString() == prim::String ("Whole Step"));
+    TTT_EXPECT (c.toString() == std::string ("Whole Step"));
     
     c = mica::map (mica::B, mica::A);
     
     TTT_EXPECT (c == mica::WholeStep);
-    TTT_EXPECT (c.toString() == prim::String ("Whole Step"));
+    TTT_EXPECT (c.toString() == std::string ("Whole Step"));
 
     c = mica::map (mica::D, mica::Flat);
     
     TTT_EXPECT (c == mica::DFlat);
-    TTT_EXPECT (c.toString() == prim::String ("D Flat"));
+    TTT_EXPECT (c.toString() == std::string ("D Flat"));
     
     c = mica::map (mica::D, mica::Flat, 4);
     
     TTT_EXPECT (c == mica::DFlat4);
-    TTT_EXPECT (c.toString() == prim::String ("D4 Flat"));
+    TTT_EXPECT (c.toString() == std::string ("D4 Flat"));
     
     c = mica::map (mica::D, 4);
     
     TTT_EXPECT (c == mica::D4);
-    TTT_EXPECT (c.toString() == prim::String ("D4"));
+    TTT_EXPECT (c.toString() == std::string ("D4"));
     
     c = mica::map (mica::DFlat4, mica::DiatonicPitch);
     
     TTT_EXPECT (c == mica::D4);
-    TTT_EXPECT (c.toString() == prim::String ("D4"));
+    TTT_EXPECT (c.toString() == std::string ("D4"));
     
     c = mica::map (mica::DFlat4, mica::ChromaticNote);
     
     TTT_EXPECT (c == mica::DFlat);
-    TTT_EXPECT (c.toString() == prim::String ("D Flat"));
+    TTT_EXPECT (c.toString() == std::string ("D Flat"));
     
     c = mica::map (mica::DFlat4, mica::Accidental);
     
     TTT_EXPECT (c == mica::Flat);
-    TTT_EXPECT (c.toString() == prim::String ("Flat"));
+    TTT_EXPECT (c.toString() == std::string ("Flat"));
     
     c = mica::map (mica::DFlat4, mica::Letter);
     
     TTT_EXPECT (c == mica::D);
-    TTT_EXPECT (c.toString() == prim::String ("D"));
+    TTT_EXPECT (c.toString() == std::string ("D"));
 
     c = mica::map (2, mica::TrebleClef);
     
     TTT_EXPECT (c == mica::D5);
-    TTT_EXPECT (c.toString() == prim::String ("D5"));
+    TTT_EXPECT (c.toString() == std::string ("D5"));
     
     c = mica::map (mica::D, mica::Flat, 6);
     
     TTT_EXPECT (c == mica::DFlat6);
-    TTT_EXPECT (c.toString() == prim::String ("D6 Flat"));
+    TTT_EXPECT (c.toString() == std::string ("D6 Flat"));
     
     c = mica::map (mica::F, mica::Natural, 0);
     
     TTT_EXPECT (c == mica::F0);
-    TTT_EXPECT (c.toString() == prim::String ("F0"));
+    TTT_EXPECT (c.toString() == std::string ("F0"));
     
     c = mica::map (mica::C, mica::DoubleSharp, -1);
     
     TTT_EXPECT (c == mica::CDoubleSharp_1);
-    TTT_EXPECT (c.toString() == prim::String ("C-1 Double Sharp"));
+    TTT_EXPECT (c.toString() == std::string ("C-1 Double Sharp"));
     
     c = mica::map (mica::DFlat, mica::Major);
     
     TTT_EXPECT (c == mica::DFlatMajor);
-    TTT_EXPECT (c.toString() == prim::String ("D Flat Major"));
+    TTT_EXPECT (c.toString() == std::string ("D Flat Major"));
     
     c = mica::map (mica::DFlat, mica::Dorian);
     
     TTT_EXPECT (c == mica::DFlatDorian);
-    TTT_EXPECT (c.toString() == prim::String ("D Flat Dorian"));
+    TTT_EXPECT (c.toString() == std::string ("D Flat Dorian"));
     
     c = mica::map (mica::DFlatMajor, mica::KeySignature);
     
     TTT_EXPECT (c == mica::FiveFlats);
-    TTT_EXPECT (c.toString() == prim::String ("Five Flats"));
+    TTT_EXPECT (c.toString() == std::string ("Five Flats"));
     
     c = mica::map (mica::DFlatDorian, mica::KeySignature);
     
     TTT_EXPECT (c == mica::SevenFlats);
-    TTT_EXPECT (c.toString() == prim::String ("Seven Flats"));
+    TTT_EXPECT (c.toString() == std::string ("Seven Flats"));
     
     c = mica::map (mica::DFlatMajor, mica::Mode);
     
     TTT_EXPECT (c == mica::Major);
-    TTT_EXPECT (c.toString() == prim::String ("Major"));
+    TTT_EXPECT (c.toString() == std::string ("Major"));
     
     c = mica::map (mica::DFlatDorian, mica::Mode);
     
     TTT_EXPECT (c == mica::Dorian);
-    TTT_EXPECT (c.toString() == prim::String ("Dorian"));
+    TTT_EXPECT (c.toString() == std::string ("Dorian"));
   
     c = mica::map (mica::Fourth, mica::Perfect);
     
     TTT_EXPECT (c == mica::PerfectFourth);
-    TTT_EXPECT (c.toString() == prim::String ("Perfect Fourth"));
+    TTT_EXPECT (c.toString() == std::string ("Perfect Fourth"));
     
     c = mica::map (mica::PerfectFourth, mica::Distance);
     
     TTT_EXPECT (c == mica::Fourth);
-    TTT_EXPECT (c.toString() == prim::String ("Fourth"));
+    TTT_EXPECT (c.toString() == std::string ("Fourth"));
     
     c = mica::map (mica::PerfectFourth, mica::Quality);
     
     TTT_EXPECT (c == mica::Perfect);
-    TTT_EXPECT (c.toString() == prim::String ("Perfect"));
+    TTT_EXPECT (c.toString() == std::string ("Perfect"));
     //
     }
     
@@ -284,8 +284,8 @@ TTT_BEGIN (MicaSignature, 152, "MICA - Signature")
     mica::Concept mode  = mica::Concept ("Minor");
     mica::Concept key   = mica::map (tonic, mode);
     
-    TTT_EXPECT (key.toString() == prim::String ("F Sharp Minor"));
-    TTT_EXPECT (mica::map (key, mica::KeySignature).toString() == prim::String ("Three Sharps"));
+    TTT_EXPECT (key.toString() == std::string ("F Sharp Minor"));
+    TTT_EXPECT (mica::map (key, mica::KeySignature).toString() == std::string ("Three Sharps"));
     
     mode = mica::Concept ("abcdefghijklmnop");
     key  = mica::map (tonic, mode);

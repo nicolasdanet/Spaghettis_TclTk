@@ -108,23 +108,23 @@ bool Concept::isCyclic() const
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-prim::String Concept::toString() const
+std::string Concept::toString() const
 {
-    if (isUndefined())    { return prim::String ("(Undefined)"); } 
-    else if (isInteger()) { return prim::String ("(Integer)"); }
-    else if (isNumber())  { return prim::String ("(Ratio)"); }
+    if (isUndefined())    { return std::string ("(Undefined)"); }
+    else if (isInteger()) { return std::string ("(Integer)"); }
+    else if (isNumber())  { return std::string ("(Ratio)"); }
     else {
     //
     const char* s = ConceptLanguageToKey::find (*this, "en");
     
     if (*s != 0) {
         while (*s) { if (*s++ == ':') { break; } }
-        return prim::String (s);
+        return std::string (s);
     }
     //
     }
     
-    return prim::String ("(Wrong)");
+    return std::string ("(Wrong)");
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -202,12 +202,12 @@ Concept item (Concept sequence, Concept origin, int64 i)
 
 prim::String& operator << (prim::String& s, mica::Concept concept)
 {
-    return s << concept.toString().toCString();
+    return s << concept.toString().c_str();
 }
 
 std::ostream& operator << (std::ostream& stream, mica::Concept concept)
 {
-    return stream << concept.toString().toCString();
+    return stream << concept.toString();
 }
 
 std::ostream& operator << (std::ostream& stream, prim::String& s)

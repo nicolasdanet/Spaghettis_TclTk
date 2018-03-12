@@ -190,7 +190,7 @@ public:
         }
     }
 
-    prim::String toString() const;
+    std::string toString() const;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -199,7 +199,7 @@ public:
 public:
     bool isValid() const
     {
-        return (toString() != prim::String ("(Wrong)"));
+        return (toString() != std::string ("(Wrong)"));
     }
     
     bool isUndefined() const
