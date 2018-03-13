@@ -50,31 +50,35 @@ class Bellefont : public Paintable {
 // MARK: -
 
 public:
-    Bellefont (const String& name, int first = 0, int last = -1)
+    Bellefont (const std::string& name, int first = 0, int last = -1)
     {
+        std::string filepath;
+    
+        filepath += "../../../Resources/Bellefont/";
+        filepath += name;
+        filepath += ".bellefont";
+    
         Array < byte > input, output;
-        
-        String filepath;
-        filepath << "../../../Resources/Bellefont/" << String (name) << ".bellefont";
-        
-        if (File::readToArray (filepath.toCString(), input)) { 
+    
+        if (File::readToArray (filepath.c_str(), input)) {
         //
         typeface_.importBinary (&input[0]); 
         typeface_.crop (first, last);
         typeface_.exportBinary (output);
         
-        String txt;
+        std::string txt;
         
         for (int i = 0; i < typeface_.size(); ++i) {
             std::string u = String::asHex (typeface_.getGlyphAtIndex (i)->getCharacter());
-            txt << String (String::paddedLeft (u, 4, '0').c_str()) << " ";
-            if ((i + 1) % 10 == 0) { txt << newLine; }
+            txt += String::paddedLeft (u, 4, '0');
+            txt += " ";
+            if ((i + 1) % 10 == 0) { txt += newLine; }
         }
         
-        String constant = Binary::make ((String (name) << "Bellefont"), output);
+        std::string constant = Binary::make (name + "Bellefont", output);
         
-        File::writeFromString ((String (name) << ".txt").toCString(), std::string (txt.toCString()));
-        File::writeFromString ((String (name) << ".hpp").toCString(), std::string (constant.toCString()));
+        File::writeFromString ((name + ".txt").c_str(), txt);
+        File::writeFromString ((name + ".hpp").c_str(), constant);
         //
         }
     }

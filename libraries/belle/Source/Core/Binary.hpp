@@ -21,9 +21,9 @@ struct Binary {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static String make (const String& name, const Array < byte > & data)
+static std::string make (const std::string& name, const Array < byte > & data)
 {
-    String s;
+    std::ostringstream s;
     
     s << newLine;
     s << "/* Auto-generated file. */" << newLine;
@@ -42,7 +42,7 @@ static String make (const String& name, const Array < byte > & data)
     for (int i = 0; i < data.size(); ++i) {
     //
     if ((i % 10) == 0) { s << newLine << Tab << Tab; }
-    s << String (String::paddedLeft (static_cast < int > (data[i]), 4).c_str());
+    s << String::paddedLeft (static_cast < int > (data[i]), 4);
     if (i != (data.size() - 1)) { s << ","; }
     //
     }
@@ -58,7 +58,7 @@ static String make (const String& name, const Array < byte > & data)
     s << "} // namespace belle" << newLine;
     s << newLine;
     
-    return s;
+    return s.str();
 }
 
 // -----------------------------------------------------------------------------------------------------------
