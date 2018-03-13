@@ -61,12 +61,12 @@ private:
     {
         String s;
         
-        String cp1X = String::paddedLeft (getControl1().getX(), 12);
-        String cp1Y = String::paddedLeft (getControl1().getY(), 12);
-        String cp2X = String::paddedLeft (getControl2().getX(), 12);
-        String cp2Y = String::paddedLeft (getControl2().getY(), 12);
-        String endX = String::paddedLeft (getEnd().getX(), 12);
-        String endY = String::paddedLeft (getEnd().getY(), 12);
+        String cp1X = String (String::paddedLeft (getControl1().getX(), 12).c_str());
+        String cp1Y = String (String::paddedLeft (getControl1().getY(), 12).c_str());
+        String cp2X = String (String::paddedLeft (getControl2().getX(), 12).c_str());
+        String cp2Y = String (String::paddedLeft (getControl2().getY(), 12).c_str());
+        String endX = String (String::paddedLeft (getEnd().getX(), 12).c_str());
+        String endY = String (String::paddedLeft (getEnd().getY(), 12).c_str());
         
         if (isMoveTo())         { s << Tab << endX << " " << endY << " m" << newLine; } 
         else if (isLineTo())    { s << Tab << endX << " " << endY << " l" << newLine; } 

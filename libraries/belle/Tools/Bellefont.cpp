@@ -66,8 +66,8 @@ public:
         String txt;
         
         for (int i = 0; i < typeface_.size(); ++i) {
-            String u = String::asHex (typeface_.getGlyphAtIndex (i)->getCharacter());
-            txt << String::paddedLeft (u, 4, '0') << " ";
+            std::string u = String::asHex (typeface_.getGlyphAtIndex (i)->getCharacter());
+            txt << String (String::paddedLeft (u, 4, '0').c_str()) << " ";
             if ((i + 1) % 10 == 0) { txt << newLine; }
         }
         

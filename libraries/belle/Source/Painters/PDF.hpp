@@ -83,7 +83,7 @@ public:
 public:
     String getOffset() const
     {
-        String s = String::paddedLeft (offset_, 10, '0'); s << " 00000 n ";
+        String s = String (String::paddedLeft (offset_, 10, '0').c_str()); s << " 00000 n ";
         return s;
     }
     

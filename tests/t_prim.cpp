@@ -1337,25 +1337,25 @@ TTT_BEGIN (PrimString, 107, "Prim - String")
     
     {
     //
-    prim::String s;
+    std::string s;
     
     s = prim::String::asHex (0);
-    TTT_EXPECT (s == "0");
+    TTT_EXPECT (s == std::string ("0"));
     s = prim::String::asHex (1234);
-    TTT_EXPECT (s == "4d2");
+    TTT_EXPECT (s == std::string ("4d2"));
     s = prim::String::asHex (-1234);
-    TTT_EXPECT (s == "fffffb2e");
+    TTT_EXPECT (s == std::string ("fffffb2e"));
     s = prim::String::asHex (65535);
-    TTT_EXPECT (s == "ffff");
+    TTT_EXPECT (s == std::string ("ffff"));
     
     s = prim::String::paddedLeft ("7", 10);
-    TTT_EXPECT (s == "         7");
+    TTT_EXPECT (s == std::string ("         7"));
     s = prim::String::paddedLeft ("o", 10, 'x');
-    TTT_EXPECT (s == "xxxxxxxxxo");
+    TTT_EXPECT (s == std::string ("xxxxxxxxxo"));
     s = prim::String::paddedLeft ("123456789", 4, '?');
-    TTT_EXPECT (s == "123456789");
+    TTT_EXPECT (s == std::string ("123456789"));
     s = prim::String::paddedLeft ("123456789", -1234, '?');
-    TTT_EXPECT (s == "123456789");
+    TTT_EXPECT (s == std::string ("123456789"));
     //
     }
     

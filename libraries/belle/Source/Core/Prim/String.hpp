@@ -385,17 +385,24 @@ public:
 // MARK: -
 
 public:
-    template < class T > static String paddedLeft (T v, int n, char c = ' ')
+    template < class T > static std::string paddedLeft (T v, int n, char c = ' ')
     {
-        String raw, padded; 
+        std::ostringstream raw;
+        std::string padded;
+    
         raw << v;
-        for (int i = 0; i < Math::max (n - raw.length(), 0); ++i) { padded << c; }
-        padded << raw;
+    
+        for (int i = 0; i < Math::max (n - static_cast < int > (raw.str().length()), 0); ++i) {
+            padded += c;
+        }
+    
+        padded += raw.str();
+    
         return padded;
     }
 
 public:
-    static String asHex (uint32 u)
+    static std::string asHex (uint32 u)
     {
         return toHexString (u);
     }
@@ -405,7 +412,7 @@ public:
 // MARK: -
 
 private:
-    template < class T > static String toHexString (T v)
+    template < class T > static std::string toHexString (T v)
     {
         static const char hex[] = "0123456789abcdef";
         const int size = 32;
@@ -420,7 +427,7 @@ private:
         //
         } while (v != 0);
         
-        return String (buffer + i);
+        return std::string (buffer + i);
     }
     
 // -----------------------------------------------------------------------------------------------------------

@@ -42,7 +42,7 @@ static String make (const String& name, const Array < byte > & data)
     for (int i = 0; i < data.size(); ++i) {
     //
     if ((i % 10) == 0) { s << newLine << Tab << Tab; }
-    s << String::paddedLeft (static_cast < int > (data[i]), 4);
+    s << String (String::paddedLeft (static_cast < int > (data[i]), 4).c_str());
     if (i != (data.size() - 1)) { s << ","; }
     //
     }
