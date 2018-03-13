@@ -100,40 +100,6 @@ void Music::proceed (const Typesetter::Instantwise& f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void Typesetters::Debug::start (Music&) const
-{
-}
-
-void Typesetters::Debug::end (Music&) const
-{
-}
-
-void Typesetters::Debug::endPart (Music&) const
-{
-}
-    
-void Typesetters::Debug::perform (Music& music, NodePtr island) const
-{
-    Pointer < Stamp > stamp = island->getObject().getStamp();
-    NodePtr token = music.getToken (island);
-    Pointer < Engraver > engraver = token->getObject().getEngraver();
-    
-    PRIM_ASSERT (stamp != nullptr);
-    PRIM_ASSERT (token != nullptr);
-    PRIM_ASSERT (engraver != nullptr);
-    
-    String s;
-    s << stamp->getPart() << " / " << stamp->getInstant() << " / ";
-    s << token->getObject().getAttribute (mica::Kind);
-    s << ((Select::isSelected (island)) ? " / Selected" : "");
-    
-    std::cout << s.toCString() << std::endl;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void Typesetters::Allocate::start (Music& music) const
 {
     music.getParts().clear();

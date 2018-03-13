@@ -197,22 +197,3 @@ Concept item (Concept sequence, Concept origin, int64 i)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-prim::String& operator << (prim::String& s, mica::Concept concept)
-{
-    return s << concept.toString().c_str();
-}
-
-std::ostream& operator << (std::ostream& stream, mica::Concept concept)
-{
-    return stream << concept.toString();
-}
-
-std::ostream& operator << (std::ostream& stream, prim::String& s)
-{
-    return stream << s.toCString();
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
