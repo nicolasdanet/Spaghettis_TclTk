@@ -146,14 +146,14 @@ private:
         //
         repeated = true;
         
-        String t;
+        std::string t;
         
         for (int i = 0; i < (linespaces.size() / size); ++i) {
         //
-        String s;
+        std::ostringstream s;
         for (int j = 0; j < size; ++j) { s << linespaces[(i * size) + j]; }
-        if (t.length() && (t != s)) { repeated = false; break; }
-        t = s;
+        if (t.length() && (t != s.str())) { repeated = false; break; }
+        t = s.str();
         //
         }
         //
