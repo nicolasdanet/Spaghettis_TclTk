@@ -170,7 +170,6 @@
 		37B5F4811AFD0C3B00BF4351 /* Standard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Standard.hpp; sourceTree = "<group>"; };
 		37B5F4821AFD0C3B00BF4351 /* String.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = String.hpp; sourceTree = "<group>"; };
 		37B5F4831AFD0C3B00BF4351 /* Table.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Table.hpp; sourceTree = "<group>"; };
-		37B5F4841AFD0C3B00BF4351 /* Tabulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Tabulation.hpp; sourceTree = "<group>"; };
 		37B5F4851AFD0C3B00BF4351 /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Types.hpp; sourceTree = "<group>"; };
 		37C71D601A1BB478006D105F /* Optics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Optics.hpp; sourceTree = "<group>"; };
 		37D9B3AA1AAB099C00C7A911 /* Engravers.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Engravers.hpp; sourceTree = "<group>"; };
@@ -455,7 +454,6 @@
 				37B5F4701AFD0C3B00BF4351 /* Copy.hpp */,
 				37B5F4821AFD0C3B00BF4351 /* String.hpp */,
 				37B5F47A1AFD0C3B00BF4351 /* NewLine.hpp */,
-				37B5F4841AFD0C3B00BF4351 /* Tabulation.hpp */,
 				37B5F47E1AFD0C3B00BF4351 /* Random.hpp */,
 				37B5F4731AFD0C3B00BF4351 /* File.hpp */,
 				37B5F4831AFD0C3B00BF4351 /* Table.hpp */,

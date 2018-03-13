@@ -33,7 +33,6 @@
 #include "Copy.hpp"
 #include "String.hpp"
 #include "NewLine.hpp"
-#include "Tabulation.hpp"
 #include "Random.hpp"
 #include "File.hpp"
 #include "Table.hpp"
