@@ -197,13 +197,13 @@ public:
 // MARK: -
 
 public:
-    String asPDFString() const
+    std::string asPDFString() const
     {
-        String s;
+        std::ostringstream s; s.setf (std::ios::fixed, std::ios::floatfield);
         
         for (int i = 0; i < size(); ++i) { s << get (i).asPDFString(); }
         
-        return s;
+        return s.str();
     }
 
 // -----------------------------------------------------------------------------------------------------------

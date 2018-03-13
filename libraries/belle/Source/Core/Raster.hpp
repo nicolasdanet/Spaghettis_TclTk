@@ -50,9 +50,9 @@ public:
 // MARK: -
 
 public:
-    String asPDFString() const
+    std::string asPDFString() const
     {
-        String s;
+        std::ostringstream s; s.setf (std::ios::fixed, std::ios::floatfield);
         
         s << "    ";
         s << getStrokeColor().getRed();
@@ -68,7 +68,7 @@ public:
         
         if (getWidth() > 0.0) { s << "    " << getWidth(); s << " w" << newLine; }
 
-        return s;
+        return s.str();
     }
 
 // -----------------------------------------------------------------------------------------------------------

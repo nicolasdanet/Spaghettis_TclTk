@@ -187,7 +187,7 @@ public:
         state_ = state;
         
         if (stream_) { 
-            stream_->addToContent (state_.asPDFString()); 
+            stream_->addToContent (String (state_.asPDFString().c_str()));
         }
     }
     
@@ -195,7 +195,7 @@ public:
     {
         String s;
         
-        s << "    " << "q" << newLine << affine.asPDFString();
+        s << "    " << "q" << newLine << String (affine.asPDFString().c_str());
         
         if (stream_) { 
             stream_->addToContent (s); 
@@ -217,7 +217,7 @@ public:
     {
         String s;
 
-        s << path.asPDFString();
+        s << String (path.asPDFString().c_str());
         
         bool fill   = (state_.getFillColor().getAlpha() > 0.0);
         bool stroke = (state_.getStrokeColor().getAlpha() > 0.0) && (state_.getWidth() > 0.0);

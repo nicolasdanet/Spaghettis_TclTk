@@ -89,9 +89,9 @@ public:
 // MARK: -
 
 public:
-    String asPDFString() const
+    std::string asPDFString() const
     {
-        String s;
+        std::ostringstream s; s.setf (std::ios::fixed, std::ios::floatfield);
         
         s << "    ";
         s << a_ << " ";
@@ -101,7 +101,7 @@ public:
         s << e_ << " "; 
         s << f_ << " cm" << newLine;
         
-        return s;
+        return s.str();
     }
     
 // -----------------------------------------------------------------------------------------------------------

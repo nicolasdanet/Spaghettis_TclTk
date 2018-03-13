@@ -57,16 +57,16 @@ public:
 // MARK: -
 
 private:
-    String asPDFString() const
+    std::string asPDFString() const
     {
-        String s;
+        std::ostringstream s; s.setf (std::ios::fixed, std::ios::floatfield);
         
-        String cp1X = String (String::paddedLeft (getControl1().getX(), 12).c_str());
-        String cp1Y = String (String::paddedLeft (getControl1().getY(), 12).c_str());
-        String cp2X = String (String::paddedLeft (getControl2().getX(), 12).c_str());
-        String cp2Y = String (String::paddedLeft (getControl2().getY(), 12).c_str());
-        String endX = String (String::paddedLeft (getEnd().getX(), 12).c_str());
-        String endY = String (String::paddedLeft (getEnd().getY(), 12).c_str());
+        std::string cp1X = String::paddedLeft (getControl1().getX(), 12);
+        std::string cp1Y = String::paddedLeft (getControl1().getY(), 12);
+        std::string cp2X = String::paddedLeft (getControl2().getX(), 12);
+        std::string cp2Y = String::paddedLeft (getControl2().getY(), 12);
+        std::string endX = String::paddedLeft (getEnd().getX(), 12);
+        std::string endY = String::paddedLeft (getEnd().getY(), 12);
         
         if (isMoveTo())         { s << "    " << endX << " " << endY << " m" << newLine; }
         else if (isLineTo())    { s << "    " << endX << " " << endY << " l" << newLine; }
@@ -84,7 +84,7 @@ private:
         //
         }
         
-        return s;
+        return s.str();
     }
     
 // -----------------------------------------------------------------------------------------------------------

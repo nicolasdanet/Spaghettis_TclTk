@@ -387,18 +387,17 @@ public:
 public:
     template < class T > static std::string paddedLeft (T v, int n, char c = ' ')
     {
-        std::ostringstream raw;
+        std::ostringstream s; s.setf (std::ios::fixed, std::ios::floatfield);
+    
+        s << v;
+    
         std::string padded;
     
-        raw.setf (std::ios::fixed, std::ios::floatfield);
-    
-        raw << v;
-    
-        for (int i = 0; i < Math::max (n - static_cast < int > (raw.str().length()), 0); ++i) {
+        for (int i = 0; i < Math::max (n - static_cast < int > (s.str().length()), 0); ++i) {
             padded += c;
         }
     
-        padded += raw.str();
+        padded += s.str();
     
         return padded;
     }
