@@ -93,7 +93,7 @@ public:
     {
         String s;
         
-        s << Tab;
+        s << "    ";
         s << a_ << " ";
         s << b_ << " ";
         s << c_ << " ";

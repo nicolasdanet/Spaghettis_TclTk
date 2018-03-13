@@ -54,19 +54,19 @@ public:
     {
         String s;
         
-        s << Tab;
+        s << "    ";
         s << getStrokeColor().getRed();
         s << " " << getStrokeColor().getGreen();
         s << " " << getStrokeColor().getBlue();
         s << " " << "SC" << newLine;
       
-        s << Tab;
+        s << "    ";
         s << getFillColor().getRed();
         s << " " << getFillColor().getGreen();
         s << " " << getFillColor().getBlue();
         s << " " << "sc" << newLine;
         
-        if (getWidth() > 0.0) { s << Tab << getWidth(); s << " w" << newLine; }
+        if (getWidth() > 0.0) { s << "    " << getWidth(); s << " w" << newLine; }
 
         return s;
     }

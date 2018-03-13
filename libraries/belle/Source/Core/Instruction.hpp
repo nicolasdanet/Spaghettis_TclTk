@@ -68,12 +68,12 @@ private:
         String endX = String (String::paddedLeft (getEnd().getX(), 12).c_str());
         String endY = String (String::paddedLeft (getEnd().getY(), 12).c_str());
         
-        if (isMoveTo())         { s << Tab << endX << " " << endY << " m" << newLine; } 
-        else if (isLineTo())    { s << Tab << endX << " " << endY << " l" << newLine; } 
-        else if (isClosePath()) { s << Tab << "h" << newLine; }
+        if (isMoveTo())         { s << "    " << endX << " " << endY << " m" << newLine; }
+        else if (isLineTo())    { s << "    " << endX << " " << endY << " l" << newLine; }
+        else if (isClosePath()) { s << "    " << "h" << newLine; }
         else if (isCubicTo())   {
         //
-        s << Tab;
+        s << "    ";
         s << cp1X;
         s << " " << cp1Y;
         s << " " << cp2X;

@@ -195,7 +195,7 @@ public:
     {
         String s;
         
-        s << Tab << "q" << newLine << affine.asPDFString();
+        s << "    " << "q" << newLine << affine.asPDFString();
         
         if (stream_) { 
             stream_->addToContent (s); 
@@ -206,7 +206,7 @@ public:
     {
         String s;
         
-        for (int i = 0; i < n; ++i) { s << Tab << "Q" << newLine; }
+        for (int i = 0; i < n; ++i) { s << "    " << "Q" << newLine; }
         
         if (stream_) { 
             stream_->addToContent (s); 
@@ -222,11 +222,11 @@ public:
         bool fill   = (state_.getFillColor().getAlpha() > 0.0);
         bool stroke = (state_.getStrokeColor().getAlpha() > 0.0) && (state_.getWidth() > 0.0);
         
-        if (fill && stroke) { s << Tab << "B" << newLine; }
-        else if (fill)      { s << Tab << "f" << newLine; }
-        else if (stroke)    { s << Tab << "S" << newLine; }
+        if (fill && stroke) { s << "    " << "B" << newLine; }
+        else if (fill)      { s << "    " << "f" << newLine; }
+        else if (stroke)    { s << "    " << "S" << newLine; }
         else { 
-            s << Tab << "n" << newLine; 
+            s << "    " << "n" << newLine;
         }
       
         if (stream_) { stream_->addToContent (s); }
@@ -247,8 +247,8 @@ public:
         String s;
             
         s << newLine;
-        s << Tab << "/DeviceRGB cs" << newLine;
-        s << Tab << "/DeviceRGB CS" << newLine;
+        s << "    " << "/DeviceRGB cs" << newLine;
+        s << "    " << "/DeviceRGB CS" << newLine;
             
         stream_->addToContent (s);
         //
@@ -291,25 +291,25 @@ private:
         for (int i = 0; i < n; ++i) { contents_.add (Pointer < Object > (new Object (count++))); }
             
         headers_[catalog]->addToDictionary ("/Type /Catalog");
-        headers_[catalog]->addToDictionary (Tab << "/Pages " << headers_[tree].get()->asReference());
+        headers_[catalog]->addToDictionary (String ("    " "/Pages ") << headers_[tree].get()->asReference());
         
         headers_[info]->addToDictionary ("/Producer (Belle, Bonne, Sage)");
         
         headers_[tree]->addToDictionary ("/Type /Pages");
-        headers_[tree]->addToDictionary (Tab << "/Kids [ " << pages_[0].get()->asReference());
+        headers_[tree]->addToDictionary (String ("    " "/Kids [ ") << pages_[0].get()->asReference());
         for (int i = 1; i < n; ++i) { 
-        headers_[tree]->addToDictionary (Tab << "        " << pages_[i].get()->asReference());
+        headers_[tree]->addToDictionary (String ("    " "        ") << pages_[i].get()->asReference());
         }
-        headers_[tree]->addToDictionary (Tab << "      ]");
-        headers_[tree]->addToDictionary (Tab << "/Count " << pages_.size());
+        headers_[tree]->addToDictionary (String ("    " "      ]"));
+        headers_[tree]->addToDictionary (String ("    " "/Count ") << pages_.size());
         
         for (int i = 0; i < n; ++i) {
         //
         pages_[i]->addToDictionary ("/Type /Page");
-        pages_[i]->addToDictionary (Tab << "/Parent " << headers_[tree].get()->asReference());
-        pages_[i]->addToDictionary (Tab << "/Contents " << contents_[i].get()->asReference());
-        pages_[i]->addToDictionary (Tab << "/MediaBox [ 0 0 " << size_.getX() << " " << size_.getY() << " ]");
-        pages_[i]->addToDictionary (Tab << "/Resources " << "<<  >>");
+        pages_[i]->addToDictionary (String ("    " "/Parent ") << headers_[tree].get()->asReference());
+        pages_[i]->addToDictionary (String ("    " "/Contents ") << contents_[i].get()->asReference());
+        pages_[i]->addToDictionary (String ("    " "/MediaBox [ 0 0 ") << size_.getX() << " " << size_.getY() << " ]");
+        pages_[i]->addToDictionary ("    " "/Resources " "<<  >>");
         //
         }
     }
@@ -351,11 +351,11 @@ private:
         output << newLine;
         output << "trailer" << newLine;
         output << " << " << "/Root " << headers_[0]->asReference() << newLine;
-        output << Tab << "/Info " << headers_[1]->asReference() << newLine;
-        output << Tab << "/Size " << size << newLine;
-        output << Tab << "/ID [ " << "<" << unique << ">" << newLine;
-        output << Tab << "      " << "<" << unique << ">" << newLine;
-        output << Tab << "    ]" << newLine;
+        output << "    " << "/Info " << headers_[1]->asReference() << newLine;
+        output << "    " << "/Size " << size << newLine;
+        output << "    " << "/ID [ " << "<" << unique << ">" << newLine;
+        output << "    " << "      " << "<" << unique << ">" << newLine;
+        output << "    " << "    ]" << newLine;
         output << " >>" << newLine;
         output << "startxref" << newLine;
         output << XRefLocation << newLine;
@@ -382,7 +382,7 @@ private:
         
         if (object->getContent().length() == 0) { output << " >>" << newLine; }
         else {
-            if (object->getDictionary().length()) { output << Tab; } 
+            if (object->getDictionary().length()) { output << "    "; } 
             output << "/Length " << object->getContent().length() << newLine;
             output << " >>" << newLine;
             output << "stream" << newLine;
