@@ -390,6 +390,8 @@ public:
         std::ostringstream raw;
         std::string padded;
     
+        raw.setf (std::ios::fixed, std::ios::floatfield);
+    
         raw << v;
     
         for (int i = 0; i < Math::max (n - static_cast < int > (raw.str().length()), 0); ++i) {
