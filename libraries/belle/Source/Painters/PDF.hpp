@@ -167,16 +167,6 @@ private:
 // MARK: -
 
 public:
-    Pdf& setUniqueID (const String& s)
-    {
-        unique_ = s; return *this;
-    }
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-public:
     bool originIsTopLeft() const override
     {
         return false;
@@ -356,7 +346,7 @@ private:
         for (int i = 0; i < contents_.size(); ++i) { output << contents_[i]->getOffset() << newLine; }
       
         Random rand (filename_);
-        String unique = (unique_.length() == 0) ? rand.nextID() : unique_;
+        std::string unique = rand.nextID();
         
         output << newLine;
         output << "trailer" << newLine;
@@ -406,7 +396,6 @@ private:
     
 private:
     std::string filename_;
-    String unique_;
     Points size_;
     Raster state_;
     Pointer < Object > stream_;

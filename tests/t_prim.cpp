@@ -1565,10 +1565,6 @@ TTT_BEGIN (PrimRandom, 109, "Prim - Random")
     prim::Random random ("Random");     /* Randomness of the PRNG with Diehard tests? */
     
     for (int i = 0; i < 100; ++i) { 
-        TTT_EXPECT (random.nextID (128).length() == 128);
-    }
-    
-    for (int i = 0; i < 100; ++i) { 
         double f = random.nextDouble(); TTT_EXPECT (f >= 0.0 && f < 1.0);
     }
             
