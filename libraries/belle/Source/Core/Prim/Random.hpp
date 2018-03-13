@@ -33,23 +33,23 @@ class Random {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Rely on default copy operations. */
-
 public:
-    Random (const String& s)
+    Random (const std::string& key)
     {
-        String t;
-        
+        std::ostringstream s;
+    
         #if PRIM_WINDOWS
-        t << _getpid();
+        s << _getpid();
         #else
-        t << getpid();
+        s << getpid();
         #endif 
-        t << s;
-        t << std::time (nullptr);
-        
+        s << key;
+        s << std::time (nullptr);
+    
+        std::string t = s.str();
+    
         uint32 seed = 5381;
-        for (int i = 0; i < t.length(); ++i) { seed = ((seed << 5) + seed) + t[i]; }
+        for (int i = 0; i < (int)t.length(); ++i) { seed = ((seed << 5) + seed) + t[i]; }
         for (int i = 0; i < 5; ++i) { seed *= 29943829; seed -= 1; history_[i] = seed; }
         for (int i = 0; i < (static_cast < int > (std::clock()) % 101) + 12; ++i) { next(); }
     }

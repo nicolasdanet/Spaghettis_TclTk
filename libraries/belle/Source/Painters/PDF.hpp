@@ -140,7 +140,7 @@ private:
 // MARK: -
 
 public:
-    Pdf (const String& filename) : filename_ (filename), size_ (Paper::portrait (Paper::A4()))
+    Pdf (const std::string& filename) : filename_ (filename), size_ (Paper::portrait (Paper::A4()))
     {
     }
 
@@ -375,7 +375,7 @@ private:
         pages_.clear();
         contents_.clear();
         
-        if (filename_.length()) { File::writeFromString (filename_.toCString(), output); }
+        if (filename_.length()) { File::writeFromString (filename_.c_str(), output); }
     }
     
 // -----------------------------------------------------------------------------------------------------------
@@ -405,7 +405,7 @@ private:
     }
     
 private:
-    String filename_;
+    std::string filename_;
     String unique_;
     Points size_;
     Raster state_;
