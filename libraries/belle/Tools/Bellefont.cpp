@@ -73,8 +73,8 @@ public:
         
         String constant = Binary::make ((String (name) << "Bellefont"), output);
         
-        File::writeFromString ((String (name) << ".txt").toCString(), txt);
-        File::writeFromString ((String (name) << ".hpp").toCString(), constant);
+        File::writeFromString ((String (name) << ".txt").toCString(), std::string (txt.toCString()));
+        File::writeFromString ((String (name) << ".hpp").toCString(), std::string (constant.toCString()));
         //
         }
     }

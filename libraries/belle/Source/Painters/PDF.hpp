@@ -365,7 +365,7 @@ private:
         pages_.clear();
         contents_.clear();
         
-        if (filename_.length()) { File::writeFromString (filename_.c_str(), output); }
+        if (filename_.length()) { File::writeFromString (filename_.c_str(), std::string (output.toCString())); }
     }
     
 // -----------------------------------------------------------------------------------------------------------

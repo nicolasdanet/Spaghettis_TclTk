@@ -21,7 +21,7 @@ struct File {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static bool writeFromString (const char* filename, const String& data)
+static bool writeFromString (const char* filename, const std::string& data)
 {
     bool b = false;
     
@@ -30,22 +30,11 @@ static bool writeFromString (const char* filename, const String& data)
     
     if (stream.is_open()) { 
     //
-    stream.write (data.toCString(), data.length()); 
+    stream.write (data.c_str(), data.length());
     b = stream.good();
     stream.close(); 
     //
     }
-    
-    return b;
-}
-
-static bool readToString (const char* filename, String& data)
-{
-    bool b = false;
-    
-    Array < byte > t;
-    b = readToArray (filename, t);
-    if (b) { t.add (0); data << reinterpret_cast < const char* > (&t[0]); }
     
     return b;
 }
