@@ -34,21 +34,24 @@ using namespace belle;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void convert (const String& name)
+void convert (const std::string& name)
 {
     /* LLVM analyzer (clang-802.0.42) seems to report false positives. */
     
     #ifndef __clang_analyzer__
     
+    std::string filepath;
+    
+    filepath += "../../../Resources/Gentium/";
+    filepath += name;
+    filepath += ".ttf";
+    
     Typeface typeface;
     
-    String filepath;
-    filepath << "../../../Resources/Gentium/" << String (name) << ".ttf";
-        
-    if (typeface.importFont (filepath.toCString())) {
+    if (typeface.importFont (filepath.c_str())) {
         Array < byte > t;
         typeface.exportBinary (t);
-        File::writeFromArray ((String (name) << ".bellefont").toCString(), t);
+        File::writeFromArray ((name + ".bellefont").c_str(), t);
     }
     
     #endif
