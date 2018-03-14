@@ -1236,277 +1236,33 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test107__string() {   /* Do NOT manage UTF-8. */
+void test107__utils() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimString, 107, "Prim - String")
+TTT_BEGIN (PrimUtils, 107, "Prim - Utils")
 
-    /* Basic. */
-    
-    {
-    //
-    prim::String text;
-    TTT_EXPECT (text.length() == 0);
-    
-    text.append ("ABCD");
-    TTT_EXPECT (text.length() == 4);
-    
-    text.append ("EFGH");
-    for (int i = 0; i < text.length(); ++i) { TTT_EXPECT (text[i] == 'A' + (char)i); }
-    
-    std::string result ("Toto et Jojo et Momo mangent 3 carottes!");
-    
-    text.clear();
-    text << "mangent ";
-    text << 3 << " carottes!";
-    text.prepend ("Toto et Jojo ");
-    text.insert ("et Momo ", 13);
-    
-    TTT_EXPECT (std::string (text.toCString()) == result);
-    //
-    }
-    
-    /* Swappable / Copyable. */
-    
-    {
-    //
-    prim::String temp;
-    prim::String vian ("longeait");
-    
-    vian.insert ("Le sentier ", -1);
-    vian.insert (" la falaise.", 1234);
-    
-    temp.swapWith (vian);
-    
-    TTT_EXPECT (vian.length() == 0);
-    TTT_EXPECT (temp.length() == 31);
-    
-    std::string result ("Le sentier longeait la falaise.");
-    
-    TTT_EXPECT (std::string (temp.toCString()) == result);
-    
-    prim::String copy (temp);
-    
-    TTT_EXPECT (std::string (copy.toCString()) == result);
-    //
-    }
-    
-    /* Empty string. */
-    
-    {
-    //
-    prim::String none = prim::String ("");
-    
-    TTT_EXPECT (none.length() == 0);
-    TTT_EXPECT (none.get (0) == 0);
-    TTT_EXPECT (none.toCString() != nullptr);
-    
-    prim::String s;
-    
-    TTT_EXPECT (s.length() == 0);
-    TTT_EXPECT (s.get (0) == 0);
-    TTT_EXPECT (s.toCString() != nullptr);
-    //
-    }
-    
-    /* Comparaison operations. */
-    
-    {
-    //
-    TTT_EXPECT (prim::String ("salade") > prim::String ("carottes"));
-    TTT_EXPECT (prim::String ("Salade") < prim::String ("carottes"));
-    
-    TTT_EXPECT (prim::String ("") == prim::String (""));
-    
-    TTT_EXPECT (prim::String ("ABCDEFGH") == prim::String ("ABCDEFGH"));
-    TTT_EXPECT (prim::String ("ABCDEFGH") != prim::String ("ABCDEFG"));
-    TTT_EXPECT (prim::String ("ABCDEFGH") != prim::String ("abcDEFGH"));
-    TTT_EXPECT (prim::String ("ABCDEFGH") != prim::String (""));
-    
-    TTT_EXPECT (prim::String ("Chocolat") != prim::String ("Chocolaterie"));
-    TTT_EXPECT (prim::String ("trombone") != prim::String ("trombose"));
-    TTT_EXPECT (prim::String ("trombone") != prim::String ("trombose"));
-    TTT_EXPECT (prim::String ("lucioles") != prim::String ("couilles"));
-    //
-    }
-
-    /* Utils / Assignable. */
-    
-    {
-    //
     std::string s;
     
-    s = prim::String::asHex (0);
+    s = prim::Utils::asHex (0);
     TTT_EXPECT (s == std::string ("0"));
-    s = prim::String::asHex (1234);
+    s = prim::Utils::asHex (1234);
     TTT_EXPECT (s == std::string ("4d2"));
-    s = prim::String::asHex (-1234);
+    s = prim::Utils::asHex (-1234);
     TTT_EXPECT (s == std::string ("fffffb2e"));
-    s = prim::String::asHex (65535);
+    s = prim::Utils::asHex (65535);
     TTT_EXPECT (s == std::string ("ffff"));
     
-    s = prim::String::paddedLeft ("7", 10);
+    s = prim::Utils::paddedLeft ("7", 10);
     TTT_EXPECT (s == std::string ("         7"));
-    s = prim::String::paddedLeft ("o", 10, 'x');
+    s = prim::Utils::paddedLeft ("o", 10, 'x');
     TTT_EXPECT (s == std::string ("xxxxxxxxxo"));
-    s = prim::String::paddedLeft ("123456789", 4, '?');
+    s = prim::Utils::paddedLeft ("123456789", 4, '?');
     TTT_EXPECT (s == std::string ("123456789"));
-    s = prim::String::paddedLeft ("123456789", -1234, '?');
+    s = prim::Utils::paddedLeft ("123456789", -1234, '?');
     TTT_EXPECT (s == std::string ("123456789"));
-    //
-    }
-    
-    /* Utils / Implicit constructor. */
-    
-    {
-    //
-    prim::String s;
-    
-    s = "1234";
-    TTT_EXPECT (s.isInteger()  == true);
-    TTT_EXPECT (s.getInteger() == 1234);
-    
-    s = "-1234";
-    TTT_EXPECT (s.isInteger()  == true);
-    TTT_EXPECT (s.getInteger() == -1234);
-    
-    s = "";
-    TTT_EXPECT (s.isInteger()  == true);
-    TTT_EXPECT (s.getInteger() == 0);
-    
-    s = "3.14";
-    TTT_EXPECT (s.isInteger()  == false);
-    TTT_EXPECT (s.getInteger() == 3);
-    
-    s = "Le sentier longeait la falaise.";
-    TTT_EXPECT (s.isInteger()  == false);
-    TTT_EXPECT (s.getInteger() == 0);
-    
-    s = "123456789012345678901234567890123456789012345678901234567890";
-    TTT_EXPECT (s.isInteger()  == true);
-    TTT_EXPECT (s.getInteger() == LLONG_MAX);
-    //
-    }
-    
-    {
-    //
-    prim::String s;
-    
-    s = "3.14";
-    TTT_EXPECT (s.isFloat() == true);
-    TTT_EXPECT (s.getFloat() - 3.14 < kEpsilon);
-    
-    s = "-1234";
-    TTT_EXPECT (s.isFloat() == true);
-    TTT_EXPECT (s.getFloat() + 1234 < kEpsilon);
-    
-    s = "";
-    TTT_EXPECT (s.isFloat() == true);
-    TTT_EXPECT (s.getFloat() - 0.0 < kEpsilon);
-    
-    s = "Le sentier longeait la falaise.";
-    TTT_EXPECT (s.isFloat() == false);
-    TTT_EXPECT (s.getFloat() - 0.0 < kEpsilon);
-    //
-    }
-    
-    {
-    //
-    prim::String s;
-    
-    s = "True";
-    TTT_EXPECT (s.isBoolean()  == true);
-    TTT_EXPECT (s.getBoolean() == true);
-    
-    s = "False";
-    TTT_EXPECT (s.isBoolean()  == true);
-    TTT_EXPECT (s.getBoolean() == false);
-    
-    s = "3.14";
-    TTT_EXPECT (s.isBoolean()  == false);
-    TTT_EXPECT (s.getBoolean() == false);
-    
-    s = "Le sentier longeait la falaise.";
-    TTT_EXPECT (s.isBoolean()  == false);
-    TTT_EXPECT (s.getBoolean() == false);
-    //
-    }
-    
-    /* Fragmentation (under the hood). */
-    
-    {
-    //
-    prim::String s;
-    
-    s = prim::String ("");
-    TTT_EXPECT (s.fragments() == 0);
-    
-    s << "Le sentier";
-    TTT_EXPECT (s.fragments() == 1);
-    s << "longeait la falaise.";
-    TTT_EXPECT (s.fragments() == 1);
-    
-    s.prepend ("Stately, plump Buck Mulligan came from the stairhead, ");
-    TTT_EXPECT (s.fragments() == 2);
-    s.prepend ("bearing a bowl of lather on which a mirror and a razor lay crossed.");
-    TTT_EXPECT (s.fragments() == 3);
-    
-    s.toCString();
-    TTT_EXPECT (s.fragments() == 1);
-    
-    s.clear();
-    TTT_EXPECT (s.fragments() == 0);
-    //
-    }
-    
-    {
-    //
-    prim::String s;
-    
-    s.append ("Choux");
-    s.prepend ("Genoux");
-    s.append ("Hiboux");
-    s.prepend ("Cailloux");
-    s.append ("Bijoux");
-    s.prepend ("Joujoux");
-    s.append ("Poux");
-    
-    TTT_EXPECT (s.fragments() == 7);
-    
-    s.merge();
-
-    TTT_EXPECT (s.fragments() == 1);
-    //
-    }
-    
-    #if PRIM_CPP11
-    
-    /* Movable. */
-    
-    {
-    //
-    prim::String t ("- Allons ! encore notre vieux carrick !"); // --
-    
-    std::string result (t.toCString());
-    
-    prim::String a (std::move (t));
-    
-    TTT_EXPECT (std::string (a.toCString()) == result);
-    
-    prim::String b = std::move (a);
-    
-    TTT_EXPECT (std::string (b.toCString()) == result);
-    
-    prim::String c = prim::String ("- Allons ! encore notre vieux carrick !");  // --
-    
-    TTT_EXPECT (std::string (c.toCString()) == result);
-    //
-    }
-    
-    #endif
     
 TTT_END
 
@@ -1521,13 +1277,13 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test109__random() {
+void test108__random() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimRandom, 109, "Prim - Random")
+TTT_BEGIN (PrimRandom, 108, "Prim - Random")
 
     prim::Random random ("Random");     /* Randomness of the PRNG with Diehard tests? */
     
@@ -1548,13 +1304,13 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test110__table() {
+void test109__table() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimTable, 110, "Prim - Table")
+TTT_BEGIN (PrimTable, 109, "Prim - Table")
 
     /* Basic / Empty. */
     
@@ -1847,13 +1603,13 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test111__rational() {
+void test110__rational() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimRational, 111, "Prim - Rational")
+TTT_BEGIN (PrimRational, 110, "Prim - Rational")
 
     /* Basic. */
     
@@ -1974,13 +1730,13 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test112__rectangle() {
+void test111__rectangle() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimRectangle, 112, "Prim - Rectangle")
+TTT_BEGIN (PrimRectangle, 111, "Prim - Rectangle")
 
     /* Basic. */
     
@@ -2082,13 +1838,13 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test113__line() {
+void test112__line() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimLine, 113, "Prim - Line")
+TTT_BEGIN (PrimLine, 112, "Prim - Line")
 
     /* Segment geometry. */
     
@@ -2312,13 +2068,13 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test114__polygon() {
+void test113__polygon() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimPolygon, 114, "Prim - Polygon")
+TTT_BEGIN (PrimPolygon, 113, "Prim - Polygon")
 
     /* Basic. */
     
@@ -2477,13 +2233,13 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test115__graph() {
+void test114__graph() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimGraph, 115, "Prim - Graph")
+TTT_BEGIN (PrimGraph, 114, "Prim - Graph")
 
     /* Add. */
     
@@ -2780,13 +2536,13 @@ TTT_END
 // -----------------------------------------------------------------------------------------------------------
 
 #if 0
-void test116__sort() {
+void test115__sort() {
 #endif 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-TTT_BEGIN (PrimSort, 116, "Prim - Sort")
+TTT_BEGIN (PrimSort, 115, "Prim - Sort")
     
     {
     //
