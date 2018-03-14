@@ -69,8 +69,8 @@ public:
         std::string txt;
         
         for (int i = 0; i < typeface_.size(); ++i) {
-            std::string u = Utils::asHex (typeface_.getGlyphAtIndex (i)->getCharacter());
-            txt += Utils::paddedLeft (u, 4, '0');
+            std::string u = prim::Utils::asHex (typeface_.getGlyphAtIndex (i)->getCharacter());
+            txt += prim::Utils::paddedLeft (u, 4, '0');
             txt += " ";
             if ((i + 1) % 10 == 0) { txt += newLine; }
         }
