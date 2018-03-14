@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17039C6D20597DE000C86496 /* x_mica.c in Sources */ = {isa = PBXBuildFile; fileRef = 17039C6C20597DE000C86496 /* x_mica.c */; };
 		17073FB61F398EE2004042C0 /* x_textdelete.c in Sources */ = {isa = PBXBuildFile; fileRef = 17073FB51F398EE2004042C0 /* x_textdelete.c */; };
 		171741441FCEB5240083B19B /* d_greater.c in Sources */ = {isa = PBXBuildFile; fileRef = 171741431FCEB5240083B19B /* d_greater.c */; };
 		171F2EA61FCC70DB00E3E53E /* d_mag.c in Sources */ = {isa = PBXBuildFile; fileRef = 171F2EA51FCC70DB00E3E53E /* d_mag.c */; };
@@ -407,6 +408,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		17039C6B20597DE000C86496 /* x_mica.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_mica.h; path = src/x_mica.h; sourceTree = "<group>"; };
+		17039C6C20597DE000C86496 /* x_mica.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_mica.c; path = src/x_mica.c; sourceTree = "<group>"; };
 		17073FB51F398EE2004042C0 /* x_textdelete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textdelete.c; path = src/x_textdelete.c; sourceTree = "<group>"; };
 		171741431FCEB5240083B19B /* d_greater.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_greater.c; path = src/d_greater.c; sourceTree = "<group>"; };
 		171F2EA51FCC70DB00E3E53E /* d_mag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_mag.c; path = src/d_mag.c; sourceTree = "<group>"; };
@@ -953,6 +956,15 @@
 				371655A51BA3469200ABDE22 /* Spaghettis */,
 			);
 			name = Source;
+			sourceTree = "<group>";
+		};
+		17039C6A20597DC200C86496 /* MICA */ = {
+			isa = PBXGroup;
+			children = (
+				17039C6B20597DE000C86496 /* x_mica.h */,
+				17039C6C20597DE000C86496 /* x_mica.c */,
+			);
+			name = MICA;
 			sourceTree = "<group>";
 		};
 		17BBF6651F6E598100CEF275 /* Tab */ = {
@@ -1648,6 +1660,7 @@
 				374905C71D99702300377F1E /* Flow */,
 				374905C91D99703B00377F1E /* Miscellaneous */,
 				374905CC1D99707A00377F1E /* MIDI */,
+				17039C6A20597DC200C86496 /* MICA */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -2092,6 +2105,7 @@
 				379C1B721D37934500C4D92C /* g_plot.c in Sources */,
 				379C1BB01D37954000C4D92C /* g_drawpolygon.c in Sources */,
 				379C1BCB1D37961E00C4D92C /* g_field.c in Sources */,
+				17039C6D20597DE000C86496 /* x_mica.c in Sources */,
 				379C1BE01D3796B800C4D92C /* g_struct.c in Sources */,
 				37128AF81D43640300EFB4FC /* m_color.c in Sources */,
 				37D642BC1D47924100071C3C /* g_append.c in Sources */,

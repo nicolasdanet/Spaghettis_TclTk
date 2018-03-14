@@ -115,6 +115,7 @@ void makenote_setup             (void);
 void math_setup                 (void);
 void message_setup              (void);
 void metro_setup                (void);
+void mica_setup                 (void);
 void midiin_setup               (void);
 void midiout_setup              (void);
 void midirealtimein_setup       (void);
@@ -571,6 +572,7 @@ void setup_setup (void)
     math_setup();
     message_setup();
     metro_setup();
+    mica_setup();
     midiin_setup();
     midiout_setup();
     midirealtimein_setup();
