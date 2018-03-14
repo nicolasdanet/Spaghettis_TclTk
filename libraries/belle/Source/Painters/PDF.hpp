@@ -196,7 +196,7 @@ public:
     {
         String s;
         
-        s << "    " << "q" << newLine << String (affine.asPDFString().c_str());
+        s << "    " "q" << newLine << String (affine.asPDFString().c_str());
         
         if (stream_) { 
             stream_->addToContent (s); 
@@ -207,7 +207,7 @@ public:
     {
         String s;
         
-        for (int i = 0; i < n; ++i) { s << "    " << "Q" << newLine; }
+        for (int i = 0; i < n; ++i) { s << "    " "Q" << newLine; }
         
         if (stream_) { 
             stream_->addToContent (s); 
@@ -223,11 +223,11 @@ public:
         bool fill   = (state_.getFillColor().getAlpha() > 0.0);
         bool stroke = (state_.getStrokeColor().getAlpha() > 0.0) && (state_.getWidth() > 0.0);
         
-        if (fill && stroke) { s << "    " << "B" << newLine; }
-        else if (fill)      { s << "    " << "f" << newLine; }
-        else if (stroke)    { s << "    " << "S" << newLine; }
+        if (fill && stroke) { s << "    " "B" << newLine; }
+        else if (fill)      { s << "    " "f" << newLine; }
+        else if (stroke)    { s << "    " "S" << newLine; }
         else { 
-            s << "    " << "n" << newLine;
+            s << "    " "n" << newLine;
         }
       
         if (stream_) { stream_->addToContent (s); }
@@ -248,8 +248,8 @@ public:
         String s;
             
         s << newLine;
-        s << "    " << "/DeviceRGB cs" << newLine;
-        s << "    " << "/DeviceRGB CS" << newLine;
+        s << "    " "/DeviceRGB cs" << newLine;
+        s << "    " "/DeviceRGB CS" << newLine;
             
         stream_->addToContent (s);
         //
@@ -330,7 +330,7 @@ private:
         String output;
         
         output << "%PDF-1.3" << newLine;
-        output << "%" << "\xc2\xa5\xc2\xb1\xc3\xab" << newLine;
+        output << "%" "\xc2\xa5\xc2\xb1\xc3\xab" << newLine;
         output << newLine;
         
         int size = headers_.size() + pages_.size() + contents_.size() + 1;
@@ -354,12 +354,12 @@ private:
         
         output << newLine;
         output << "trailer" << newLine;
-        output << " << " << "/Root " << headers_[0]->asReference() << newLine;
-        output << "    " << "/Info " << headers_[1]->asReference() << newLine;
-        output << "    " << "/Size " << size << newLine;
-        output << "    " << "/ID [ " << "<" << unique << ">" << newLine;
-        output << "    " << "      " << "<" << unique << ">" << newLine;
-        output << "    " << "    ]" << newLine;
+        output << " << " "/Root " << headers_[0]->asReference() << newLine;
+        output << "    " "/Info " << headers_[1]->asReference() << newLine;
+        output << "    " "/Size " << size << newLine;
+        output << "    " "/ID [ " << "<" << unique << ">" << newLine;
+        output << "    " "      " << "<" << unique << ">" << newLine;
+        output << "    " "    ]" << newLine;
         output << " >>" << newLine;
         output << "startxref" << newLine;
         output << XRefLocation << newLine;

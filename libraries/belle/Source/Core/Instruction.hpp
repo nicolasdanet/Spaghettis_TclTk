@@ -70,7 +70,7 @@ private:
         
         if (isMoveTo())         { s << "    " << endX << " " << endY << " m" << newLine; }
         else if (isLineTo())    { s << "    " << endX << " " << endY << " l" << newLine; }
-        else if (isClosePath()) { s << "    " << "h" << newLine; }
+        else if (isClosePath()) { s << "    " "h" << newLine; }
         else if (isCubicTo())   {
         //
         s << "    ";

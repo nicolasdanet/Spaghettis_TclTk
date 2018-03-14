@@ -58,13 +58,13 @@ public:
         s << getStrokeColor().getRed();
         s << " " << getStrokeColor().getGreen();
         s << " " << getStrokeColor().getBlue();
-        s << " " << "SC" << newLine;
+        s << " " "SC" << newLine;
       
         s << "    ";
         s << getFillColor().getRed();
         s << " " << getFillColor().getGreen();
         s << " " << getFillColor().getBlue();
-        s << " " << "sc" << newLine;
+        s << " " "sc" << newLine;
         
         if (getWidth() > 0.0) { s << "    " << getWidth(); s << " w" << newLine; }
 

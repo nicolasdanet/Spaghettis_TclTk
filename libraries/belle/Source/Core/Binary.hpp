@@ -37,18 +37,18 @@ static std::string make (const std::string& name, const Array < byte > & data)
     s << "#ifdef BELLE_COMPILE_INLINE" << newLine;
     s << newLine;
     s << "static const prim::byte " << name <<"Data[" << data.size() <<"] = " << newLine;
-    s << "    " << "{";
+    s << "    " "{";
     
     for (int i = 0; i < data.size(); ++i) {
     //
-    if ((i % 10) == 0) { s << newLine << "    " << "    "; }
+    if ((i % 10) == 0) { s << newLine << "    " "    "; }
     s << String::paddedLeft (static_cast < int > (data[i]), 4);
     if (i != (data.size() - 1)) { s << ","; }
     //
     }
     
     s << newLine;
-    s << "    " << "};" << newLine;
+    s << "    " "};" << newLine;
     s << newLine;
     s << "const prim::byte* " << name;
     s << " = static_cast < const prim::byte* > (" << name << "Data);" << newLine;
