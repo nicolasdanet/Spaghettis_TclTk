@@ -81,10 +81,9 @@ public:
 // MARK: -
 
 public:
-    String getOffset() const
+    std::string getOffset() const
     {
-        String s = String (String::paddedLeft (offset_, 10, '0').c_str()); s << " 00000 n ";
-        return s;
+        return String::paddedLeft (offset_, 10, '0') +  " 00000 n ";
     }
     
     int getLabel() const
@@ -92,7 +91,7 @@ public:
         return label_;
     }
     
-    const String& getContent() const
+    const std::string& getContent() const
     {
         return content_;
     }
@@ -118,9 +117,10 @@ public:
 // MARK: -
 
 public:
-    void addToContent (const String& s)
+    void addToContent (const std::string& s)
     {
-        content_ << s << newLine;
+        content_ += s;
+        content_ += newLine;
     }
     
     void addToDictionary (const std::string& s)
@@ -132,7 +132,7 @@ public:
 private:
     int label_;
     int offset_;
-    String content_;
+    std::string content_;
     std::string dictionary_;
 };
 
@@ -188,49 +188,64 @@ public:
         state_ = state;
         
         if (stream_) { 
-            stream_->addToContent (String (state_.asPDFString().c_str()));
+            stream_->addToContent (state_.asPDFString());
         }
     }
     
     void pushAffine (const Affine& affine) override
     {
-        String s;
+        if (stream_) {
+        //
+        std::string s;
         
-        s << "    " "q" << newLine << String (affine.asPDFString().c_str());
+        s += "    " "q";
+        s += newLine;
+        s += affine.asPDFString();
         
-        if (stream_) { 
-            stream_->addToContent (s); 
+        stream_->addToContent (s);
+        //
         }
     }
     
     void popAffine (int n) override
     {
-        String s;
+        if (stream_) {
+        //
+        std::string s;
         
-        for (int i = 0; i < n; ++i) { s << "    " "Q" << newLine; }
+        for (int i = 0; i < n; ++i) {
+            s += "    " "Q";
+            s += newLine;
+        }
         
-        if (stream_) { 
-            stream_->addToContent (s); 
+        stream_->addToContent (s);
+        //
         }
     }
     
     void draw (const Path& path) override
     {
-        String s;
-
-        s << String (path.asPDFString().c_str());
+        if (stream_) {
+        //
+        std::string s (path.asPDFString());
         
         bool fill   = (state_.getFillColor().getAlpha() > 0.0);
         bool stroke = (state_.getStrokeColor().getAlpha() > 0.0) && (state_.getWidth() > 0.0);
-        
-        if (fill && stroke) { s << "    " "B" << newLine; }
-        else if (fill)      { s << "    " "f" << newLine; }
-        else if (stroke)    { s << "    " "S" << newLine; }
+    
+        s += "    ";
+    
+        if (fill && stroke) { s += "B"; }
+        else if (fill)      { s += "f"; }
+        else if (stroke)    { s += "S"; }
         else { 
-            s << "    " "n" << newLine;
+            s += "n";
         }
-      
-        if (stream_) { stream_->addToContent (s); }
+    
+        s += newLine;
+
+        stream_->addToContent (s);
+        //
+        }
     }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -245,11 +260,13 @@ public:
         //
         stream_ = contents_[n];
             
-        String s;
+        std::string s;
             
-        s << newLine;
-        s << "    " "/DeviceRGB cs" << newLine;
-        s << "    " "/DeviceRGB CS" << newLine;
+        s += newLine;
+        s += "    " "/DeviceRGB cs";
+        s += newLine;
+        s += "    " "/DeviceRGB CS";
+        s += newLine;
             
         stream_->addToContent (s);
         //
@@ -327,7 +344,7 @@ private:
     
     void writeClose (Paintable&)
     {
-        String output;
+        std::ostringstream output;
         
         output << "%PDF-1.3" << newLine;
         output << "%" "\xc2\xa5\xc2\xb1\xc3\xab" << newLine;
@@ -339,7 +356,7 @@ private:
         for (int i = 0; i < pages_.size(); ++i)    { writeObject (pages_[i], output);    }
         for (int i = 0; i < contents_.size(); ++i) { writeObject (contents_[i], output); }
     
-        int XRefLocation = output.length();
+        int XRefLocation = static_cast < int > (output.str().length());
         
         output << "xref" << newLine;
         output << "0 " << size << newLine;
@@ -369,7 +386,7 @@ private:
         pages_.clear();
         contents_.clear();
         
-        if (filename_.length()) { File::writeFromString (filename_.c_str(), std::string (output.toCString())); }
+        if (filename_.length()) { File::writeFromString (filename_.c_str(), output.str().c_str()); }
     }
     
 // -----------------------------------------------------------------------------------------------------------
@@ -377,9 +394,9 @@ private:
 // MARK: -
 
 private:
-    static void writeObject (Pointer < Object > object, String& output)
+    static void writeObject (Pointer < Object > object, std::ostringstream& output)
     {
-        object->setOffset (output.length());
+        object->setOffset (static_cast < int > (output.str().length()));
 
         output << object->getLabel() << " 0 obj" << newLine;
         output << " << " << object->getDictionary().c_str();
