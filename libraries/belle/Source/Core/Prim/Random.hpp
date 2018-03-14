@@ -75,7 +75,7 @@ public:
     std::string nextID()
     {
         const char hex[] = "0123456789abcdef";
-        const size_t n = 32;
+        const std::size_t n = 32;
     
         std::string s;
         
@@ -83,7 +83,7 @@ public:
         //
         uint32 v = next();
         do {
-        s += hex[static_cast < size_t > (v & 15)];
+        s += hex[static_cast < std::size_t > (v & 15)];
         v >>= 4;
         } while ((v != 0) && (s.length() < n));
         //

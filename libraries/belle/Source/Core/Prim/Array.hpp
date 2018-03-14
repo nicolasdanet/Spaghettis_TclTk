@@ -47,12 +47,12 @@ class PowerOfTwoGrowth {
 template < class T, class GM > friend class Array;
 
 private:
-    static size_t getMemorySize (int size)   
+    static std::size_t getMemorySize (int size)
     {
         if (size <= 0) { return 0; }
         else {
-            size_t k = 1;
-            while (k < static_cast < size_t > (size)) { k <<= 1; }
+            std::size_t k = 1;
+            while (k < static_cast < std::size_t > (size)) { k <<= 1; }
             return k;
         }
     }
@@ -173,8 +173,8 @@ public:
         //
         }
         
-        size_t oldMemorySize = GM::getMemorySize (size_);
-        size_t newMemorySize = GM::getMemorySize (newSize);
+        std::size_t oldMemorySize = GM::getMemorySize (size_);
+        std::size_t newMemorySize = GM::getMemorySize (newSize);
           
         if (oldMemorySize == newMemorySize) { 
         //

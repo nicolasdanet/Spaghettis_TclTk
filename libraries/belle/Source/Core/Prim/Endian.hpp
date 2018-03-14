@@ -49,7 +49,7 @@ private:
         byte* oldPointer = reinterpret_cast < byte* > (&data);
         byte* newPointer = reinterpret_cast < byte* > (&v);
       
-        for (size_t i = 0; i < sizeof (T); ++i) { newPointer[i] = oldPointer[sizeof (T) - i - 1]; }
+        for (std::size_t i = 0; i < sizeof (T); ++i) { newPointer[i] = oldPointer[sizeof (T) - i - 1]; }
         
         data = v;
     }

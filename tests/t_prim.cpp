@@ -2669,3 +2669,64 @@ TTT_END
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+#if 0
+void test116__string() {
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+TTT_BEGIN (PrimString, 116, "Prim - String")
+
+    /* Default string. */
+    
+    {
+    //
+    prim::String s1 = prim::String ("");
+    prim::String s2;
+    
+    TTT_EXPECT (s2 == s1);
+    
+    s2 = prim::String ("Cailloux");
+    
+    TTT_EXPECT (s2 != s1);
+    
+    s1 = s2;
+    
+    TTT_EXPECT (s1 == s2);
+    //
+    }
+    
+    /* Comparaison operations. */
+    
+    {
+    //
+    TTT_EXPECT (prim::String ("salade") > prim::String ("carottes"));
+    TTT_EXPECT (prim::String ("Salade") < prim::String ("carottes"));
+    
+    TTT_EXPECT (prim::String ("") == prim::String (""));
+    
+    TTT_EXPECT (prim::String ("ABCDEFGH") == prim::String ("ABCDEFGH"));
+    TTT_EXPECT (prim::String ("ABCDEFGH") != prim::String ("ABCDEFG"));
+    TTT_EXPECT (prim::String ("ABCDEFGH") != prim::String ("abcDEFGH"));
+    TTT_EXPECT (prim::String ("ABCDEFGH") != prim::String (""));
+    
+    TTT_EXPECT (prim::String ("Chocolat") != prim::String ("Chocolaterie"));
+    TTT_EXPECT (prim::String ("trombone") != prim::String ("trombose"));
+    TTT_EXPECT (prim::String ("trombone") != prim::String ("trombose"));
+    TTT_EXPECT (prim::String ("lucioles") != prim::String ("couilles"));
+    //
+    }
+    
+TTT_END
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if 0
+}
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

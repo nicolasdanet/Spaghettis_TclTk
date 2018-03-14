@@ -28,12 +28,12 @@ struct Memory {
 
 template < class T > static void clear (T* a, int items)
 {
-    memset (static_cast < void* > (a), 0, sizeof (T) * items);
+    std::memset (static_cast < void* > (a), 0, sizeof (T) * items);
 }
 
-template < class T > static void copy (T* destination, const T* source, int items = 1)
+template < class T > static void copy (T* dest, const T* src, int items = 1)
 {
-    memcpy (static_cast < void* > (destination), static_cast < const void* > (source), sizeof (T) * items);
+    std::memcpy (static_cast < void* > (dest), static_cast < const void* > (src), sizeof (T) * items);
 }
 
 // -----------------------------------------------------------------------------------------------------------

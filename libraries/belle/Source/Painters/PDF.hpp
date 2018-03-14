@@ -71,7 +71,7 @@ private:
 // MARK: -
 
 public:
-    void setOffset (size_t offset)
+    void setOffset (std::size_t offset)
     {
         offset_ = offset;
     }
@@ -131,7 +131,7 @@ public:
 
 private:
     int label_;
-    size_t offset_;
+    std::size_t offset_;
     std::string content_;
     std::string dictionary_;
 };
@@ -356,7 +356,7 @@ private:
         for (int i = 0; i < pages_.size(); ++i)    { writeObject (pages_[i], output);    }
         for (int i = 0; i < contents_.size(); ++i) { writeObject (contents_[i], output); }
     
-        size_t XRefLocation = output.str().length();
+        std::size_t XRefLocation = output.str().length();
         
         output << "xref" << newLine;
         output << "0 " << size << newLine;
