@@ -27,8 +27,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef BELLE_WITH_TEST
-#define BELLE_WITH_TEST     0       /* Enable memory leaks detector and assertions. */
+#ifndef BELLE_WITH_DEBUG
+#define BELLE_WITH_DEBUG    0       /* Enable memory leaks detector and assertions. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

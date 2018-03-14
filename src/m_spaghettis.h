@@ -455,7 +455,7 @@
 
 #if PD_WITH_BELLE
 #if PD_WITH_DEBUG
-    #define BELLE_WITH_TEST         1
+    #define BELLE_WITH_DEBUG        1
 #endif
     #define BELLE_MICA_ONLY         1
 #endif
