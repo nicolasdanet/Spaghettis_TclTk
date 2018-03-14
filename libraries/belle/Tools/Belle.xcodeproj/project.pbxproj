@@ -64,6 +64,7 @@
 
 /* Begin PBXFileReference section */
 		17674DAC204ED633008EE603 /* Paper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Paper.hpp; sourceTree = "<group>"; };
+		17F82D3A2058FDA0004FB77A /* Utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Utils.hpp; sourceTree = "<group>"; };
 		37077B881AB5663E00C7C0C4 /* GentiumBasicBold.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GentiumBasicBold.hpp; sourceTree = "<group>"; };
 		37077B891AB5663E00C7C0C4 /* GentiumBasicItalic.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GentiumBasicItalic.hpp; sourceTree = "<group>"; };
 		37077B8A1AB5663E00C7C0C4 /* GentiumBasicRegular.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GentiumBasicRegular.hpp; sourceTree = "<group>"; };
@@ -452,6 +453,7 @@
 				37B5F46C1AFD0C3B00BF4351 /* Array.hpp */,
 				37B5F4771AFD0C3B00BF4351 /* List.hpp */,
 				37B5F4701AFD0C3B00BF4351 /* Copy.hpp */,
+				17F82D3A2058FDA0004FB77A /* Utils.hpp */,
 				37B5F4821AFD0C3B00BF4351 /* String.hpp */,
 				37B5F47A1AFD0C3B00BF4351 /* NewLine.hpp */,
 				37B5F47E1AFD0C3B00BF4351 /* Random.hpp */,

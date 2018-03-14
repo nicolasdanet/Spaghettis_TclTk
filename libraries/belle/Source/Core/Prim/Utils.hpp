@@ -10,56 +10,62 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-namespace belle {
+namespace prim {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct Binary {
+struct Utils {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static std::string make (const std::string& name, const Array < byte > & data)
-{
-    std::ostringstream s;
+public:
+    template < class T > static std::string paddedLeft (T v, int n = 0, char c = ' ')
+    {
+        std::ostringstream s; s.setf (std::ios::fixed, std::ios::floatfield);
     
-    s << newLine;
-    s << "/* Auto-generated file. */" << newLine;
-    s << newLine;
-    s << "// ====================================" << newLine;
-    s << newLine;
-    s << "namespace belle {" << newLine;
-    s << newLine;
-    s << "extern const prim::byte* " << name << ";" << newLine;
-    s << newLine;
-    s << "#ifdef BELLE_COMPILE_INLINE" << newLine;
-    s << newLine;
-    s << "static const prim::byte " << name <<"Data[" << data.size() <<"] = " << newLine;
-    s << "    " "{";
+        s << v;
     
-    for (int i = 0; i < data.size(); ++i) {
-    //
-    if ((i % 10) == 0) { s << newLine << "    " "    "; }
-    s << Utils::paddedLeft (static_cast < int > (data[i]), 4);
-    if (i != (data.size() - 1)) { s << ","; }
-    //
+        std::string padded;
+    
+        for (int i = 0; i < Math::max (n - static_cast < int > (s.str().length()), 0); ++i) {
+            padded += c;
+        }
+    
+        padded += s.str();
+    
+        return padded;
     }
+
+    static std::string asHex (uint32 u)
+    {
+        return toHexString (u);
+    }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+private:
+    template < class T > static std::string toHexString (T v)
+    {
+        static const char hex[] = "0123456789abcdef";
+        const int size = 32;
     
-    s << newLine;
-    s << "    " "};" << newLine;
-    s << newLine;
-    s << "const prim::byte* " << name;
-    s << " = static_cast < const prim::byte* > (" << name << "Data);" << newLine;
-    s << newLine;
-    s << "#endif // BELLE_COMPILE_INLINE" << newLine;
-    s << newLine;
-    s << "} // namespace belle" << newLine;
-    s << newLine;
+        char buffer[size] = { 0 };
+        int i = size - 1;
+
+        do {
+        //
+        buffer[--i] = hex[static_cast < size_t > (v & 15)];
+        v >>= 4;
+        //
+        } while (v != 0);
     
-    return s.str();
-}
+        return std::string (buffer + i);
+    }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -69,7 +75,7 @@ static std::string make (const std::string& name, const Array < byte > & data)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-} // namespace belle
+} // namespace prim
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

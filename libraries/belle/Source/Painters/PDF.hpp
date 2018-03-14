@@ -83,7 +83,7 @@ public:
 public:
     std::string getOffset() const
     {
-        return String::paddedLeft (offset_, 10, '0') +  " 00000 n ";
+        return prim::Utils::paddedLeft (offset_, 10, '0') +  " 00000 n ";
     }
     
     int getLabel() const
@@ -319,12 +319,12 @@ private:
         headers_[tree]->addToDictionary ("    " "        " + pages_[i].get()->asReference());
         }
         headers_[tree]->addToDictionary ("    " "      ]");
-        headers_[tree]->addToDictionary ("    " "/Count " + String::paddedLeft (pages_.size()));
+        headers_[tree]->addToDictionary ("    " "/Count " + prim::Utils::paddedLeft (pages_.size()));
         
         for (int i = 0; i < n; ++i) {
         //
-        std::string sizeX = String::paddedLeft (size_.getX());
-        std::string sizeY = String::paddedLeft (size_.getY());
+        std::string sizeX = prim::Utils::paddedLeft (size_.getX());
+        std::string sizeY = prim::Utils::paddedLeft (size_.getY());
         
         pages_[i]->addToDictionary ("/Type /Page");
         pages_[i]->addToDictionary ("    " "/Parent " + headers_[tree].get()->asReference());

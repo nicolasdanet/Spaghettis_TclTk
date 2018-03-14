@@ -61,12 +61,12 @@ private:
     {
         std::ostringstream s; s.setf (std::ios::fixed, std::ios::floatfield);
         
-        std::string cp1X = String::paddedLeft (getControl1().getX(), 12);
-        std::string cp1Y = String::paddedLeft (getControl1().getY(), 12);
-        std::string cp2X = String::paddedLeft (getControl2().getX(), 12);
-        std::string cp2Y = String::paddedLeft (getControl2().getY(), 12);
-        std::string endX = String::paddedLeft (getEnd().getX(), 12);
-        std::string endY = String::paddedLeft (getEnd().getY(), 12);
+        std::string cp1X = Utils::paddedLeft (getControl1().getX(), 12);
+        std::string cp1Y = Utils::paddedLeft (getControl1().getY(), 12);
+        std::string cp2X = Utils::paddedLeft (getControl2().getX(), 12);
+        std::string cp2Y = Utils::paddedLeft (getControl2().getY(), 12);
+        std::string endX = Utils::paddedLeft (getEnd().getX(), 12);
+        std::string endY = Utils::paddedLeft (getEnd().getY(), 12);
         
         if (isMoveTo())         { s << "    " << endX << " " << endY << " m" << newLine; }
         else if (isLineTo())    { s << "    " << endX << " " << endY << " l" << newLine; }
