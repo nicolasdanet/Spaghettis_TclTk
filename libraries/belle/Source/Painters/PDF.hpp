@@ -97,7 +97,7 @@ public:
         return content_;
     }
 
-    const String& getDictionary() const
+    const std::string& getDictionary() const
     {
         return dictionary_;
     }
@@ -107,10 +107,10 @@ public:
 // MARK: -
 
 public:
-    String asReference() const
+    std::string asReference() const
     {
-        String s; s << label_ << " 0 R";
-        return s;
+        std::ostringstream s; s << label_ << " 0 R";
+        return s.str();
     } 
     
 // -----------------------------------------------------------------------------------------------------------
@@ -123,16 +123,17 @@ public:
         content_ << s << newLine;
     }
     
-    void addToDictionary (const String& s)
+    void addToDictionary (const std::string& s)
     {
-        dictionary_ << s << newLine;
+        dictionary_ += s;
+        dictionary_ += newLine;
     }
 
 private:
     int label_;
     int offset_;
     String content_;
-    String dictionary_;
+    std::string dictionary_;
 };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -291,24 +292,27 @@ private:
         for (int i = 0; i < n; ++i) { contents_.add (Pointer < Object > (new Object (count++))); }
             
         headers_[catalog]->addToDictionary ("/Type /Catalog");
-        headers_[catalog]->addToDictionary (String ("    " "/Pages ") << headers_[tree].get()->asReference());
+        headers_[catalog]->addToDictionary ("    " "/Pages " + headers_[tree].get()->asReference());
         
         headers_[info]->addToDictionary ("/Producer (Belle, Bonne, Sage)");
         
         headers_[tree]->addToDictionary ("/Type /Pages");
-        headers_[tree]->addToDictionary (String ("    " "/Kids [ ") << pages_[0].get()->asReference());
+        headers_[tree]->addToDictionary ("    " "/Kids [ " + pages_[0].get()->asReference());
         for (int i = 1; i < n; ++i) { 
-        headers_[tree]->addToDictionary (String ("    " "        ") << pages_[i].get()->asReference());
+        headers_[tree]->addToDictionary ("    " "        " + pages_[i].get()->asReference());
         }
-        headers_[tree]->addToDictionary (String ("    " "      ]"));
-        headers_[tree]->addToDictionary (String ("    " "/Count ") << pages_.size());
+        headers_[tree]->addToDictionary ("    " "      ]");
+        headers_[tree]->addToDictionary ("    " "/Count " + String::paddedLeft (pages_.size()));
         
         for (int i = 0; i < n; ++i) {
         //
+        std::string sizeX = String::paddedLeft (size_.getX());
+        std::string sizeY = String::paddedLeft (size_.getY());
+        
         pages_[i]->addToDictionary ("/Type /Page");
-        pages_[i]->addToDictionary (String ("    " "/Parent ") << headers_[tree].get()->asReference());
-        pages_[i]->addToDictionary (String ("    " "/Contents ") << contents_[i].get()->asReference());
-        pages_[i]->addToDictionary (String ("    " "/MediaBox [ 0 0 ") << size_.getX() << " " << size_.getY() << " ]");
+        pages_[i]->addToDictionary ("    " "/Parent " + headers_[tree].get()->asReference());
+        pages_[i]->addToDictionary ("    " "/Contents " + contents_[i].get()->asReference());
+        pages_[i]->addToDictionary ("    " "/MediaBox [ 0 0 " + sizeX + " " + sizeY + " ]");
         pages_[i]->addToDictionary ("    " "/Resources " "<<  >>");
         //
         }
@@ -378,11 +382,11 @@ private:
         object->setOffset (output.length());
 
         output << object->getLabel() << " 0 obj" << newLine;
-        output << " << " << object->getDictionary();
+        output << " << " << object->getDictionary().c_str();
         
         if (object->getContent().length() == 0) { output << " >>" << newLine; }
         else {
-            if (object->getDictionary().length()) { output << "    "; } 
+            if (object->getDictionary().length()) { output << "    "; }
             output << "/Length " << object->getContent().length() << newLine;
             output << " >>" << newLine;
             output << "stream" << newLine;
