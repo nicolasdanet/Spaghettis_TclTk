@@ -71,7 +71,7 @@ private:
 // MARK: -
 
 public:
-    void setOffset (int offset)
+    void setOffset (size_t offset)
     {
         offset_ = offset;
     }
@@ -131,7 +131,7 @@ public:
 
 private:
     int label_;
-    int offset_;
+    size_t offset_;
     std::string content_;
     std::string dictionary_;
 };
@@ -356,7 +356,7 @@ private:
         for (int i = 0; i < pages_.size(); ++i)    { writeObject (pages_[i], output);    }
         for (int i = 0; i < contents_.size(); ++i) { writeObject (contents_[i], output); }
     
-        int XRefLocation = static_cast < int > (output.str().length());
+        size_t XRefLocation = output.str().length();
         
         output << "xref" << newLine;
         output << "0 " << size << newLine;
@@ -396,7 +396,7 @@ private:
 private:
     static void writeObject (Pointer < Object > object, std::ostringstream& output)
     {
-        object->setOffset (static_cast < int > (output.str().length()));
+        object->setOffset (output.str().length());
 
         output << object->getLabel() << " 0 obj" << newLine;
         output << " << " << object->getDictionary().c_str();
