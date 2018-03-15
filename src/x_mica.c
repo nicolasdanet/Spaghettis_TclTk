@@ -31,6 +31,7 @@ t_class *concept_class;             /* Shared. */
 
 typedef struct _concept {
     t_pd        x_pd;               /* Must be the first. */
+    t_symbol    *x_name;
     mica::UUID  x_uuid;
     } t_concept;
 
@@ -38,11 +39,14 @@ typedef struct _concept {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_concept *concept_new (mica::UUID uuid)
+static t_concept *concept_new (t_symbol *s, mica::UUID uuid)
 {
     t_concept *x = (t_concept *)pd_new (concept_class);
     
+    x->x_name = s;
     x->x_uuid = uuid;
+    
+    pd_bind (cast_pd (x), x->x_name);
     
     return x;
 }
@@ -50,6 +54,8 @@ static t_concept *concept_new (mica::UUID uuid)
 static void concept_free (t_concept *x)
 {
     post_log ("FREE %s", mica::Concept (x->x_uuid).toString().c_str());
+    
+    pd_unbind (cast_pd (x), x->x_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------

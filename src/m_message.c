@@ -154,11 +154,13 @@ void message_release (void)
     //
     sym1 = sym2->s_next;
     
-    {
+    if (symbol_hasThingQuiet (sym2)) {
+    
         t_pd *t1 = symbol_getThingByClass (sym2, template_class);
         t_pd *t2 = symbol_getThingByClass (sym2, concept_class);
-        if (t1) { pd_unbind (t1, sym2); pd_free (t1); }
-        if (t2) { pd_unbind (t2, sym2); pd_free (t2); }
+        
+        if (t1) { pd_free (t1); }   /* Can be required for legacy patches. */
+        if (t2) { pd_free (t2); }
     }
     
     if (sym2->s_thing) {
