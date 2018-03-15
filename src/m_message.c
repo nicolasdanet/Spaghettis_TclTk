@@ -156,7 +156,7 @@ void message_release (void)
     
     if (sym2->s_thing) {
         t_class *c = pd_class (sym2->s_thing);
-        if (c == bindlist_class || c == template_class) { pd_free (sym2->s_thing); }
+        if (c == bindlist_class || c == template_class || c == concept_class) { pd_free (sym2->s_thing); }
         else {
             PD_BUG; post_log ("%s", sym2->s_name);
         }

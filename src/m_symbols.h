@@ -233,6 +233,7 @@ extern t_symbol *sym_closebang;
 extern t_symbol *sym_cnv;
 extern t_symbol *sym_color;
 extern t_symbol *sym_comment;
+extern t_symbol *sym_concept;
 extern t_symbol *sym_connect;
 extern t_symbol *sym_console;
 extern t_symbol *sym_constant;

@@ -233,6 +233,7 @@ t_symbol *sym_closebang;
 t_symbol *sym_cnv;
 t_symbol *sym_color;
 t_symbol *sym_comment;
+t_symbol *sym_concept;
 t_symbol *sym_connect;
 t_symbol *sym_console;
 t_symbol *sym_constant;
@@ -869,6 +870,7 @@ void symbols_initialize (void)
     sym_cnv                                     = gensym ("cnv");
     sym_color                                   = gensym ("color");
     sym_comment                                 = gensym ("comment");
+    sym_concept                                 = gensym ("concept");
     sym_connect                                 = gensym ("connect");
     sym_console                                 = gensym ("console");
     sym_constant                                = gensym ("constant");
