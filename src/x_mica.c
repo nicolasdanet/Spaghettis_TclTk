@@ -25,19 +25,19 @@ static void *mica_makeObject (t_symbol *s, int argc, t_atom *argv)
     
     instance_setNewestObject (NULL);
     
-    if (!argc || !IS_SYMBOL (argv)) { }
+    if (!argc || !IS_SYMBOL (argv)) { newest = (t_pd *)micaset_new (s, argc, argv); }
     else {
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (t == sym_set)           { }
-    else if (t == sym_get)      { }
-    else if (t == sym_map)      { }
-    else if (t == sym_index)    { }
-    else if (t == sym_item)     { }
-    else if (t == sym_info)     { }
-    else if (t == sym_interval) { }
-    else if (t == sym_spell)    { }
+    if (t == sym_set)               { newest = (t_pd *)micaset_new (s, argc - 1, argv + 1); }
+    else if (t == sym_get)          { }
+    else if (t == sym_map)          { }
+    else if (t == sym_index)        { }
+    else if (t == sym_item)         { }
+    else if (t == sym_info)         { }
+    else if (t == sym_interval)     { }
+    else if (t == sym_spell)        { }
     else {
         error_unexpected (sym_mica, t);
     }

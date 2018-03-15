@@ -28,6 +28,7 @@
 		17A01DC11F70E74600BE34E2 /* x_listgroup.c in Sources */ = {isa = PBXBuildFile; fileRef = 17A01DC01F70E74600BE34E2 /* x_listgroup.c */; };
 		17ACD8191FA46D3B00E4DB71 /* x_counter.c in Sources */ = {isa = PBXBuildFile; fileRef = 17ACD8181FA46D3B00E4DB71 /* x_counter.c */; };
 		17BAF2FC1EFBF9E9002B8D90 /* m_symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */; };
+		17BDE5A3205A4AB6009CBC5C /* x_micaset.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BDE5A2205A4AB5009CBC5C /* x_micaset.c */; };
 		17C02C062015EDD100C7EDEE /* d_functions.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C02C052015EDD100C7EDEE /* d_functions.c */; };
 		17C02C082015EDDC00C7EDEE /* d_vperform.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C02C072015EDDC00C7EDEE /* d_vperform.c */; };
 		17C15CEA1F8E4EF8000695B7 /* x_arguments.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C15CE91F8E4EF7000695B7 /* x_arguments.c */; };
@@ -445,6 +446,7 @@
 		17A2BD231F0A30480071D330 /* d_macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = d_macros.h; path = src/d_macros.h; sourceTree = "<group>"; };
 		17ACD8181FA46D3B00E4DB71 /* x_counter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_counter.c; path = src/x_counter.c; sourceTree = "<group>"; };
 		17BAF2FB1EFBF9E9002B8D90 /* m_symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_symbol.c; path = src/m_symbol.c; sourceTree = "<group>"; };
+		17BDE5A2205A4AB5009CBC5C /* x_micaset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_micaset.c; path = src/x_micaset.c; sourceTree = "<group>"; };
 		17C02C052015EDD100C7EDEE /* d_functions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_functions.c; path = src/d_functions.c; sourceTree = "<group>"; };
 		17C02C072015EDDC00C7EDEE /* d_vperform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_vperform.c; path = src/d_vperform.c; sourceTree = "<group>"; };
 		17C15CE91F8E4EF7000695B7 /* x_arguments.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_arguments.c; path = src/x_arguments.c; sourceTree = "<group>"; };
@@ -963,6 +965,7 @@
 			children = (
 				17039C6B20597DE000C86496 /* x_mica.h */,
 				17039C6C20597DE000C86496 /* x_mica.c */,
+				17BDE5A2205A4AB5009CBC5C /* x_micaset.c */,
 			);
 			name = MICA;
 			sourceTree = "<group>";
@@ -2146,6 +2149,7 @@
 				378E4B4B1D8FB07000DFFDC3 /* x_listfromsymbol.c in Sources */,
 				378E4B741D8FB1C300DFFDC3 /* x_listlength.c in Sources */,
 				378E4BA81D8FC01F00DFFDC3 /* x_listtrim.c in Sources */,
+				17BDE5A3205A4AB6009CBC5C /* x_micaset.c in Sources */,
 				378E4BD01D8FD2B000DFFDC3 /* x_listsplit.c in Sources */,
 				378E4C031D8FD46100DFFDC3 /* x_listprepend.c in Sources */,
 				378E4C4E1D8FD67D00DFFDC3 /* x_listappend.c in Sources */,

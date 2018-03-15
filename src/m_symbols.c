@@ -375,6 +375,7 @@ t_symbol *sym_message;
 t_symbol *sym_messageresponder;
 t_symbol *sym_metro;
 t_symbol *sym_mica;
+t_symbol *sym_mica__space__set;
 t_symbol *sym_midiclkin;
 t_symbol *sym_midiin;
 t_symbol *sym_midiout;
@@ -1010,6 +1011,7 @@ void symbols_initialize (void)
     sym_messageresponder                        = gensym ("messageresponder");
     sym_metro                                   = gensym ("metro");
     sym_mica                                    = gensym ("mica");
+    sym_mica__space__set                        = gensym ("mica set");
     sym_midiclkin                               = gensym ("midiclkin");
     sym_midiin                                  = gensym ("midiin");
     sym_midiout                                 = gensym ("midiout");

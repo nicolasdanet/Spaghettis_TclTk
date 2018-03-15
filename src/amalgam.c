@@ -269,6 +269,7 @@
 #include "x_sysexin.c"
 #include "x_midirealtimein.c"
 #include "x_mica.c"
+#include "x_micaset.c"
 
 /* DSP. */
 
