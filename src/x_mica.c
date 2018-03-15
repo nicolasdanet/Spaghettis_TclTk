@@ -47,6 +47,11 @@ static t_concept *concept_new (mica::UUID uuid)
     return x;
 }
 
+static void concept_free (t_concept *x)
+{
+    post_log ("FREE %s", mica::Concept (x->x_uuid).toString().c_str());
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -57,7 +62,7 @@ void concept_setup (void)
     
     c = class_new (sym_concept,
             NULL,
-            NULL,
+            (t_method)concept_free,
             sizeof (t_concept),
             CLASS_NOBOX,
             A_NULL);
