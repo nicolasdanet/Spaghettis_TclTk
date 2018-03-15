@@ -8,7 +8,18 @@
 // MARK: -
 
 #include "m_spaghettis.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WITH_BELLE
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #include "m_core.h"
+#include "s_system.h"
+#include "x_mica.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -30,17 +41,23 @@ typedef struct _micaset {
 
 static void micaset_bang (t_micaset *x)
 {
-
+    if (x->x_concept) { outlet_symbol (x->x_outlet, x->x_concept); }
 }
 
 static void micaset_float (t_micaset *x, t_float f)
 {
-
+    x->x_concept = concept_withFloat (f); micaset_bang (x);
 }
 
 static void micaset_list (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
 {
-
+    char *t = atom_atomsToString (argc, argv);
+    
+    x->x_concept = concept_withString (t);
+    
+    PD_MEMORY_FREE (t);
+    
+    micaset_bang (x);
 }
 
 static void micaset_anything (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
@@ -56,7 +73,8 @@ void *micaset_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaset *x = (t_micaset *)pd_new (micaset_class);
     
-    x->x_outlet = outlet_newSymbol (cast_object (x));
+    x->x_concept = concept_withString ("Undefined");
+    x->x_outlet  = outlet_newSymbol (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
@@ -93,6 +111,18 @@ void micaset_destroy (void)
 {
     class_free (micaset_class);
 }
+
+#else
+
+void micaset_setup (void)
+{
+}
+
+void micaset_destroy (void)
+{
+}
+
+#endif // PD_WITH_BELLE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
