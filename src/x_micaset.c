@@ -18,7 +18,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_core.h"
-#include "s_system.h"
 #include "x_mica.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -46,18 +45,12 @@ static void micaset_bang (t_micaset *x)
 
 static void micaset_float (t_micaset *x, t_float f)
 {
-    x->x_concept = concept_withFloat (f); micaset_bang (x);
+    t_atom a; SET_FLOAT (&a, f); x->x_concept = concept_withArguments (1, &a); micaset_bang (x);
 }
 
 static void micaset_list (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
 {
-    char *t = atom_atomsToString (argc, argv);
-    
-    x->x_concept = concept_withString (t);
-    
-    PD_MEMORY_FREE (t);
-    
-    micaset_bang (x);
+    x->x_concept = concept_withArguments (argc, argv); micaset_bang (x);
 }
 
 static void micaset_anything (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
@@ -73,7 +66,7 @@ void *micaset_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaset *x = (t_micaset *)pd_new (micaset_class);
     
-    x->x_concept = concept_withString ("Undefined");
+    x->x_concept = concept_withArguments (0, NULL);
     x->x_outlet  = outlet_newSymbol (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }

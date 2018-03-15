@@ -18,6 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_core.h"
+#include "s_system.h"
 #include "x_mica.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -38,14 +39,27 @@ typedef struct _concept {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *concept_withString (const char *s)
+t_symbol *concept_withArguments (int argc, t_atom *argv)
 {
-    post ("? %s", s); return NULL;
-}
-
-t_symbol *concept_withFloat (t_float f)
-{
-    post ("? %f", f); return NULL;
+    mica::Concept c;
+    
+    if (argc) {
+    //
+    if (argc == 1 && IS_FLOAT (argv)) {
+        c = mica::Concept ((prim::int64)GET_FLOAT (argv));
+    }else if (argc == 2 && IS_FLOAT (argv) && IS_FLOAT (argv + 1)) {
+        c = mica::Concept (prim::Ratio ((prim::int64)GET_FLOAT (argv), (prim::int64)GET_FLOAT (argv + 1)));
+    } else {
+        char *t = atom_atomsToString (argc, argv);
+        c = mica::Concept (std::string (t));
+        PD_MEMORY_FREE (t);
+    }
+    //
+    }
+    
+    post_log ("? %s", c.toString().c_str());
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
