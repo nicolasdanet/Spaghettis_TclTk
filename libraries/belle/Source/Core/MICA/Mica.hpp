@@ -255,6 +255,24 @@ public:
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+public:
+    static UUID asUUID (Concept concept)
+    {
+        UUID uuid = { concept.high_, concept.low_ }; return uuid;
+    }
+    
+    static std::string asHex (Concept concept)
+    {
+        std::string a = prim::Utils::paddedLeft (prim::Utils::asHex (concept.high_), 16, '0');
+        std::string b = prim::Utils::paddedLeft (prim::Utils::asHex (concept.low_),  16, '0');
+    
+        return a + b;
+    }
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 private:
     PRIM_LEAK_DETECTOR (Concept)

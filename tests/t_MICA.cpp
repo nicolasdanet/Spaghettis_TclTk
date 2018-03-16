@@ -29,12 +29,15 @@ TTT_BEGIN (MicaStandard, 150, "MICA - Standard")
     
     c = mica::Concept ("Le sentier longeait la falaise.");
     TTT_EXPECT (c == mica::Undefined);
-                
+    TTT_EXPECT (mica::Concept::asHex (c) == std::string ("00000000000000000000000000000000"));
+    
     c = mica::Concept ("D Mixolydian");
     TTT_EXPECT (c.toString() == std::string ("D Mixolydian"));
+    TTT_EXPECT (mica::Concept::asHex (c) == std::string ("0b103de4673b3dcb9e47229298d9d463"));
     
     c = mica::C;
     TTT_EXPECT (c.toString() == std::string ("C"));
+    TTT_EXPECT (mica::Concept::asHex (c) == std::string ("5e3d3a92ee26396d8c7df2b2592be252"));
     
     c = mica::Concept (-1234);
     

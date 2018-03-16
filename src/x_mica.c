@@ -58,6 +58,7 @@ t_symbol *concept_withArguments (int argc, t_atom *argv)
     }
     
     post_log ("? %s", c.toString().c_str());
+    post_log ("? %s", mica::Concept::asHex (c).c_str());
     
     return NULL;
 }

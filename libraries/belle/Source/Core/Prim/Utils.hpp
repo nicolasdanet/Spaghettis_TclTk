@@ -39,7 +39,7 @@ public:
         return padded;
     }
 
-    static std::string asHex (uint32 u)
+    static std::string asHex (uint64 u)
     {
         return toHexString (u);
     }
