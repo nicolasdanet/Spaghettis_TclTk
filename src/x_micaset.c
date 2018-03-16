@@ -66,10 +66,8 @@ void *micaset_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaset *x = (t_micaset *)pd_new (micaset_class);
     
-    x->x_concept = concept_withArguments (0, NULL);
+    x->x_concept = concept_withArguments (argc, argv);
     x->x_outlet  = outlet_newSymbol (cast_object (x));
-    
-    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     return x;
 }

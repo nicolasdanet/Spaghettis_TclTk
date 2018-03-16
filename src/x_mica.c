@@ -57,10 +57,13 @@ t_symbol *concept_withArguments (int argc, t_atom *argv)
     //
     }
     
-    post_log ("? %s", c.toString().c_str());
-    post_log ("? %s", mica::Concept::asHex (c).c_str());
+    std::string t (sym___arrobe__->s_name);
     
-    return NULL;
+    t += mica::Concept::asHex (c);
+    
+    t_symbol *s = gensym (t.c_str());
+    
+    return s;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -128,7 +131,7 @@ static void *mica_makeObject (t_symbol *s, int argc, t_atom *argv)
     
     instance_setNewestObject (NULL);
     
-    if (!argc || !IS_SYMBOL (argv)) { newest = (t_pd *)micaset_new (s, argc, argv); }
+    if (!argc) { newest = (t_pd *)micaset_new (s, 0, NULL); }
     else {
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
@@ -142,7 +145,7 @@ static void *mica_makeObject (t_symbol *s, int argc, t_atom *argv)
     else if (t == sym_interval)     { }
     else if (t == sym_spell)        { }
     else {
-        error_unexpected (sym_mica, t);
+        newest = (t_pd *)micaset_new (s, argc, argv);
     }
     //
     }
