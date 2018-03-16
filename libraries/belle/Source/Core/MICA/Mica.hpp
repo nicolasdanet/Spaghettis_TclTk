@@ -70,7 +70,11 @@ public:
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* < http://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation > */
+public:
+    static UUID withHex (const std::string&)
+    {
+        return Undefined;
+    }
 
 public:
     static UUID merge (UUID a, UUID b)
@@ -78,6 +82,8 @@ public:
         UUID c = { merge (a.high_, b.high_), merge (a.low_, b.low_) };
         return c;
     }
+
+/* < http://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation > */
 
 private:
     static uint64 merge (uint64 a, uint64 b)

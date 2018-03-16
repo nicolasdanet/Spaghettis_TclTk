@@ -1248,12 +1248,16 @@ TTT_BEGIN (PrimUtils, 107, "Prim - Utils")
     
     s = prim::Utils::asHex (0);
     TTT_EXPECT (s == std::string ("0"));
+    TTT_EXPECT (prim::Utils::withHex (s) == 0);
     s = prim::Utils::asHex (1234);
     TTT_EXPECT (s == std::string ("4d2"));
+    TTT_EXPECT (prim::Utils::withHex (s) == 1234);
     s = prim::Utils::asHex (-1234);
     TTT_EXPECT (s == std::string ("fffffffffffffb2e"));
+    TTT_EXPECT (prim::Utils::withHex (s) == -1234);
     s = prim::Utils::asHex (65535);
     TTT_EXPECT (s == std::string ("ffff"));
+    TTT_EXPECT (prim::Utils::withHex (s) == 65535);
     
     s = prim::Utils::paddedLeft ("7", 10);
     TTT_EXPECT (s == std::string ("         7"));

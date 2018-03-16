@@ -39,22 +39,12 @@ public:
         return padded;
     }
 
-    static std::string asHex (uint64 u)
-    {
-        return toHexString (u);
-    }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-private:
-    template < class T > static std::string toHexString (T v)
+    static std::string asHex (uint64 v)
     {
         static const char hex[] = "0123456789abcdef";
         const int size = 32;
-    
         char buffer[size] = { 0 };
+    
         int i = size - 1;
 
         do {
@@ -66,10 +56,11 @@ private:
     
         return std::string (buffer + i);
     }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
+    
+    static uint64 withHex (const std::string& s)
+    {
+        std::istringstream converter (s); uint64 v; converter >> std::hex >> v; return v;
+    }
 };
 
 // -----------------------------------------------------------------------------------------------------------

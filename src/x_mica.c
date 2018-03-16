@@ -81,7 +81,10 @@ mica::Concept concept_fetch (t_symbol *s)
     
     t_concept *concept = (t_concept *)symbol_getThingByClass (s, concept_class);
 
-    if (concept) { return t = mica::Concept (concept->x_uuid); }
+    if (concept) { t = mica::Concept (concept->x_uuid); }
+    else if (string_startWith (s->s_name, sym___arrobe__->s_name)) {
+        std::string hex (s->s_name + 1);
+    }
     
     return t;
 }
