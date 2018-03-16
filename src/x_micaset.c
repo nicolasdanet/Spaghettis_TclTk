@@ -45,12 +45,12 @@ static void micaset_bang (t_micaset *x)
 
 static void micaset_float (t_micaset *x, t_float f)
 {
-    t_atom a; SET_FLOAT (&a, f); x->x_concept = concept_withArguments (1, &a); micaset_bang (x);
+    t_atom a; SET_FLOAT (&a, f); x->x_concept = concept_tag (1, &a); micaset_bang (x);
 }
 
 static void micaset_list (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_concept = concept_withArguments (argc, argv); micaset_bang (x);
+    x->x_concept = concept_tag (argc, argv); micaset_bang (x);
 }
 
 static void micaset_anything (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
@@ -66,7 +66,7 @@ void *micaset_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaset *x = (t_micaset *)pd_new (micaset_class);
     
-    x->x_concept = concept_withArguments (argc, argv);
+    x->x_concept = concept_tag (argc, argv);
     x->x_outlet  = outlet_newSymbol (cast_object (x));
     
     return x;

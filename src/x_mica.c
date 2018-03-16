@@ -39,46 +39,6 @@ typedef struct _concept {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *concept_withArguments (int argc, t_atom *argv)
-{
-    mica::Concept c;
-    
-    if (argc) {
-    //
-    if (argc == 1 && IS_FLOAT (argv)) {
-        c = mica::Concept ((prim::int64)GET_FLOAT (argv));
-    }else if (argc == 2 && IS_FLOAT (argv) && IS_FLOAT (argv + 1)) {
-        c = mica::Concept (prim::Ratio ((prim::int64)GET_FLOAT (argv), (prim::int64)GET_FLOAT (argv + 1)));
-    } else {
-        char *t = atom_atomsToString (argc, argv);
-        c = mica::Concept (std::string (t));
-        PD_MEMORY_FREE (t);
-    }
-    //
-    }
-    
-    std::string t (sym___arrobe__->s_name);
-    
-    t += mica::Concept::asHex (c);
-    
-    t_symbol *s = gensym (t.c_str());
-    
-    return s;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-mica::UUID concept_fetch (t_symbol *s)
-{
-    return mica::UUID::Undefined;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static t_concept *concept_new (t_symbol *s, mica::UUID uuid)
 {
     t_concept *x = (t_concept *)pd_new (concept_class);
@@ -88,14 +48,63 @@ static t_concept *concept_new (t_symbol *s, mica::UUID uuid)
     
     pd_bind (cast_pd (x), x->x_name);
     
+    post_log ("New %s", mica::Concept (x->x_uuid).toString().c_str());
+    
     return x;
 }
 
 static void concept_free (t_concept *x)
 {
-    post_log ("FREE %s", mica::Concept (x->x_uuid).toString().c_str());
-    
+    post_log ("Free %s", mica::Concept (x->x_uuid).toString().c_str());
+
     pd_unbind (cast_pd (x), x->x_name);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_symbol *concept_register (mica::Concept c)
+{
+    std::string t (sym___arrobe__->s_name); t += mica::Concept::asHex (c);
+    
+    t_symbol *s = gensym (t.c_str());
+    
+    if (!symbol_getThingByClass (s, concept_class)) { concept_new (s, mica::Concept::asUUID (c)); }
+    
+    return s;
+}
+
+mica::Concept concept_fetch (t_symbol *s)
+{
+    mica::Concept t;
+    
+    t_concept *concept = (t_concept *)symbol_getThingByClass (s, concept_class);
+
+    if (concept) { return t = mica::Concept (concept->x_uuid); }
+    
+    return t;
+}
+
+t_symbol *concept_tag (int argc, t_atom *argv)
+{
+    mica::Concept c;
+    
+    if (argc) {
+    //
+    if (argc == 1 && IS_FLOAT (argv)) {
+        c = mica::Concept ((prim::int64)GET_FLOAT (argv));
+    } else if (argc == 2 && IS_FLOAT (argv) && IS_FLOAT (argv + 1)) {
+        c = mica::Concept (prim::Ratio ((prim::int64)GET_FLOAT (argv), (prim::int64)GET_FLOAT (argv + 1)));
+    } else {
+        char *t = atom_atomsToString (argc, argv);
+        c = mica::Concept (std::string (t));
+        PD_MEMORY_FREE (t);
+    }
+    //
+    }
+
+    return concept_register (c);
 }
 
 // -----------------------------------------------------------------------------------------------------------
