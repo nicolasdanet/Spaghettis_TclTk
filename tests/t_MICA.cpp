@@ -78,7 +78,10 @@ TTT_BEGIN (MicaStandard, 150, "MICA - Standard")
     //
     mica::UUID bad1 = { 0xbebefadacacafadeULL, 0xcacafadebebefadaULL };
     mica::UUID bad2 = { 0x0000000000000064ULL, 0x0000000000000032ULL };
-              
+    
+    TTT_EXPECT (bad1 == mica::UUID::withHex (std::string ("bebefadacacafadecacafadebebefada")));
+    TTT_EXPECT (bad2 == mica::UUID::withHex (std::string ("00000000000000640000000000000032")));
+    
     mica::Concept wrong1 (bad1);
     mica::Concept wrong2 (bad2);
     

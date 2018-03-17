@@ -77,16 +77,19 @@ static t_symbol *concept_register (mica::Concept c)
 
 mica::Concept concept_fetch (t_symbol *s)
 {
-    mica::Concept t;
-    
     t_concept *concept = (t_concept *)symbol_getThingByClass (s, concept_class);
 
-    if (concept) { t = mica::Concept (concept->x_uuid); }
-    else if (string_startWith (s->s_name, sym___arrobe__->s_name)) {
-        std::string hex (s->s_name + 1);
+    if (concept) { return mica::Concept (concept->x_uuid); }
+    else {
+    //
+    if (string_startWith (s->s_name, sym___arrobe__->s_name)) {
+        mica::Concept t (mica::UUID::withHex (std::string (s->s_name + 1)));
+        if (t.isValid()) { concept_register (t); }
+    }
+    //
     }
     
-    return t;
+    return mica::Concept();
 }
 
 t_symbol *concept_tag (int argc, t_atom *argv)

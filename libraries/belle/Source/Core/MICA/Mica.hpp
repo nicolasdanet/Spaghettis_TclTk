@@ -71,9 +71,18 @@ public:
 // -----------------------------------------------------------------------------------------------------------
 
 public:
-    static UUID withHex (const std::string&)
+    static UUID withHex (const std::string& s)
     {
-        return Undefined;
+        UUID uuid = Undefined;
+    
+        size_t size = s.length();
+    
+        if (size == 32) {
+            uuid.high_ = prim::Utils::withHex (s.substr (0,  16));
+            uuid.low_  = prim::Utils::withHex (s.substr (16, 16));
+        }
+    
+        return uuid;
     }
 
 public:
