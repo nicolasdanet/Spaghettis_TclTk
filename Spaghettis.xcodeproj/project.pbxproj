@@ -410,7 +410,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		17039C6B20597DE000C86496 /* x_mica.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x_mica.h; path = src/x_mica.h; sourceTree = "<group>"; };
+		17039C6B20597DE000C86496 /* x_mica.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = x_mica.hpp; path = src/x_mica.hpp; sourceTree = "<group>"; };
 		17039C6C20597DE000C86496 /* x_mica.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_mica.c; path = src/x_mica.c; sourceTree = "<group>"; };
 		17073FB51F398EE2004042C0 /* x_textdelete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_textdelete.c; path = src/x_textdelete.c; sourceTree = "<group>"; };
 		171741431FCEB5240083B19B /* d_greater.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_greater.c; path = src/d_greater.c; sourceTree = "<group>"; };
@@ -965,7 +965,7 @@
 		17039C6A20597DC200C86496 /* MICA */ = {
 			isa = PBXGroup;
 			children = (
-				17039C6B20597DE000C86496 /* x_mica.h */,
+				17039C6B20597DE000C86496 /* x_mica.hpp */,
 				17039C6C20597DE000C86496 /* x_mica.c */,
 				17BDE5A2205A4AB5009CBC5C /* x_micaset.c */,
 				17CC052B205D0DEB0097E417 /* x_micaget.c */,

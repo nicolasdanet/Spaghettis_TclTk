@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_core.h"
-#include "x_mica.h"
+#include "x_mica.hpp"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ static void micaget_symbol (t_micaget *x, t_symbol *s)
 
 static void micaget_list (t_micaget *x, t_symbol *s, int argc, t_atom *argv)
 {
-    micaget_symbol (x, atom_getSymbolAtIndex (0, argc, argv));
+    int i; for (i = 0; i < argc; i++) { micaget_symbol (x, atom_getSymbolAtIndex (i, argc, argv)); }
 }
 
 static void micaget_anything (t_micaget *x, t_symbol *s, int argc, t_atom *argv)

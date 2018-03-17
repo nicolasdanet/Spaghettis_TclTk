@@ -19,7 +19,7 @@
 
 #include "m_core.h"
 #include "s_system.h"
-#include "x_mica.h"
+#include "x_mica.hpp"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,15 +48,11 @@ static t_concept *concept_new (t_symbol *s, mica::UUID uuid)
     
     pd_bind (cast_pd (x), x->x_name);
     
-    post_log ("New %s", mica::Concept (x->x_uuid).toString().c_str());
-    
     return x;
 }
 
 static void concept_free (t_concept *x)
 {
-    post_log ("Free %s", mica::Concept (x->x_uuid).toString().c_str());
-
     pd_unbind (cast_pd (x), x->x_name);
 }
 
