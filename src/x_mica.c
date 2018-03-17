@@ -84,7 +84,7 @@ mica::Concept concept_fetch (t_symbol *s)
     //
     if (string_startWith (s->s_name, sym___arrobe__->s_name)) {
         mica::Concept t (mica::UUID::withHex (std::string (s->s_name + 1)));
-        if (t.isValid()) { concept_register (t); }
+        if (t.isValid()) { concept_register (t); return t; }
     }
     //
     }
@@ -152,7 +152,7 @@ static void *mica_makeObject (t_symbol *s, int argc, t_atom *argv)
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
     if (t == sym_set)               { newest = (t_pd *)micaset_new (s, argc - 1, argv + 1); }
-    //else if (t == sym_get)          { }
+    else if (t == sym_get)          { newest = (t_pd *)micaget_new (s, argc - 1, argv + 1); }
     //else if (t == sym_map)          { }
     //else if (t == sym_index)        { }
     //else if (t == sym_item)         { }

@@ -270,6 +270,7 @@
 #include "x_midirealtimein.c"
 #include "x_mica.c"
 #include "x_micaset.c"
+#include "x_micaget.c"
 
 /* DSP. */
 
