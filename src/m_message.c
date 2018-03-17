@@ -157,10 +157,16 @@ void message_release (void)
     if (symbol_hasThingQuiet (sym2)) {
     
         t_pd *t1 = symbol_getThingByClass (sym2, template_class);
-        t_pd *t2 = symbol_getThingByClass (sym2, concept_class);
         
         if (t1) { pd_free (t1); }   /* Can be required for legacy patches. */
+        
+        #if PD_WITH_BELLE
+        
+        t_pd *t2 = symbol_getThingByClass (sym2, concept_class);
+        
         if (t2) { pd_free (t2); }
+        
+        #endif
     }
     
     if (sym2->s_thing) {
