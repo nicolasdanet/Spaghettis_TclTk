@@ -31,8 +31,9 @@ mica::Concept   concept_fetch   (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *micaset_new (t_symbol *s, int argc, t_atom *argv);
-void *micaget_new (t_symbol *s, int argc, t_atom *argv);
+void *micaset_new   (t_symbol *s, int argc, t_atom *argv);
+void *micaget_new   (t_symbol *s, int argc, t_atom *argv);
+void *micainfo_new  (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

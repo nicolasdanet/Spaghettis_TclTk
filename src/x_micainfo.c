@@ -23,51 +23,75 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *micaset_class;          /* Shared. */
+static t_class *micainfo_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _micaset {
+typedef struct _micainfo {
     t_object    x_obj;                  /* Must be the first. */
     t_symbol    *x_tag;
     t_outlet    *x_outlet;
-    } t_micaset;
+    } t_micainfo;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void micaset_bang (t_micaset *x)
+static void micainfo_out (t_micainfo *x, t_symbol *s, int n)
 {
-    if (x->x_tag) { outlet_symbol (x->x_outlet, x->x_tag); }
-}
-
-static void micaset_float (t_micaset *x, t_float f)
-{
-    t_atom a; SET_FLOAT (&a, f); x->x_tag = concept_tag (1, &a); micaset_bang (x);
-}
-
-static void micaset_list (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
-{
-    x->x_tag = concept_tag (argc, argv); micaset_bang (x);
-}
-
-static void micaset_anything (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
-{
-    utils_anythingToList (cast_pd (x), (t_listmethod)micaset_list, s, argc, argv);
+    t_atom a; SET_FLOAT (&a, n); outlet_anything (x->x_outlet, s, 1, &a);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *micaset_new (t_symbol *s, int argc, t_atom *argv)
+static void micainfo_bang (t_micainfo *x)
 {
-    t_micaset *x = (t_micaset *)pd_new (micaset_class);
+    if (x->x_tag) {
+    //
+    mica::Concept t (concept_fetch (x->x_tag));
     
-    x->x_tag    = concept_tag (argc, argv);
-    x->x_outlet = outlet_newSymbol (cast_object (x));
+    micainfo_out (x, sym_undefined,     t.isUndefined());
+    micainfo_out (x, sym_number,        t.isNumber());
+    micainfo_out (x, sym_integer,       t.isInteger());
+    micainfo_out (x, sym_numerator,     t.getNumerator());
+    micainfo_out (x, sym_denominator,   t.getDenominator());
+    micainfo_out (x, sym_sequence,      t.isSequence());
+    micainfo_out (x, sym_cyclic,        t.isCyclic());
+    micainfo_out (x, sym_length,        t.length());
+    //
+    }
+}
+
+static void micainfo_symbol (t_micainfo *x, t_symbol *s)
+{
+    x->x_tag = s; micainfo_bang (x);
+}
+
+static void micainfo_list (t_micainfo *x, t_symbol *s, int argc, t_atom *argv)
+{
+    int i; for (i = 0; i < argc; i++) { micainfo_symbol (x, atom_getSymbolAtIndex (i, argc, argv)); }
+}
+
+static void micainfo_anything (t_micainfo *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)micainfo_list, s, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void *micainfo_new (t_symbol *s, int argc, t_atom *argv)
+{
+    t_micainfo *x = (t_micainfo *)pd_new (micainfo_class);
+    
+    x->x_tag    = &s_;
+    x->x_outlet = outlet_newAnything (cast_object (x));
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     return x;
 }
@@ -76,31 +100,31 @@ void *micaset_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void micaset_setup (void)
+void micainfo_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_mica__space__set,
-            (t_newmethod)micaset_new,
+    c = class_new (sym_mica__space__info,
+            (t_newmethod)micainfo_new,
             NULL,
-            sizeof (t_micaset),
+            sizeof (t_micainfo),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, (t_method)micaset_bang);
-    class_addFloat (c, (t_method)micaset_float);
-    class_addList (c, (t_method)micaset_list);
-    class_addAnything (c, (t_method)micaset_anything);
+    class_addBang (c, (t_method)micainfo_bang);
+    class_addSymbol (c, (t_method)micainfo_symbol);
+    class_addList (c, (t_method)micainfo_list);
+    class_addAnything (c, (t_method)micainfo_anything);
     
     class_setHelpName (c, sym_mica);
     
-    micaset_class = c;
+    micainfo_class = c;
 }
 
-void micaset_destroy (void)
+void micainfo_destroy (void)
 {
-    class_free (micaset_class);
+    class_free (micainfo_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -109,11 +133,11 @@ void micaset_destroy (void)
 
 #else
 
-void micaset_setup (void)
+void micainfo_setup (void)
 {
 }
 
-void micaset_destroy (void)
+void micainfo_destroy (void)
 {
 }
 
