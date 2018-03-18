@@ -380,6 +380,7 @@ extern t_symbol *sym_messageresponder;
 extern t_symbol *sym_metro;
 extern t_symbol *sym_mica;
 extern t_symbol *sym_mica__space__get;
+extern t_symbol *sym_mica__space__index;
 extern t_symbol *sym_mica__space__info;
 extern t_symbol *sym_mica__space__map;
 extern t_symbol *sym_mica__space__set;
