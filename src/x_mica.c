@@ -150,11 +150,11 @@ static void *mica_makeObject (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (t == sym_set)               { newest = (t_pd *)micaset_new (s,  argc - 1, argv + 1); }
-    else if (t == sym_get)          { newest = (t_pd *)micaget_new (s,  argc - 1, argv + 1); }
-    else if (t == sym_info)         { newest = (t_pd *)micainfo_new (s, argc - 1, argv + 1); }
-    else if (t == sym_map)          { newest = (t_pd *)micamap_new (s,  argc - 1, argv + 1); }
-    //else if (t == sym_index)        { }
+    if (t == sym_set)               { newest = (t_pd *)micaset_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_get)          { newest = (t_pd *)micaget_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_info)         { newest = (t_pd *)micainfo_new (s,     argc - 1, argv + 1); }
+    else if (t == sym_map)          { newest = (t_pd *)micamap_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_index)        { newest = (t_pd *)micaindex_new (s,    argc - 1, argv + 1); }
     //else if (t == sym_item)         { }
     //else if (t == sym_interval)     { }
     //else if (t == sym_spell)        { }
