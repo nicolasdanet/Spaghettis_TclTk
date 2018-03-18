@@ -40,8 +40,6 @@ typedef struct _micaget {
 
 static void micaget_bang (t_micaget *x)
 {
-    if (x->x_tag) {
-    //
     mica::Concept t (concept_fetch (x->x_tag));
     
     if (t.isInteger())     { outlet_float (x->x_outlet, t.getNumerator()); }
@@ -52,8 +50,6 @@ static void micaget_bang (t_micaget *x)
         outlet_list (x->x_outlet, 2, a);
     } else {
         outlet_symbol (x->x_outlet, gensym (t.toString().c_str()));
-    }
-    //
     }
 }
 

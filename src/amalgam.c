@@ -272,6 +272,7 @@
 #include "x_micaset.c"
 #include "x_micaget.c"
 #include "x_micainfo.c"
+#include "x_micamap.c"
 
 /* DSP. */
 

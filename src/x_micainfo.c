@@ -49,8 +49,6 @@ static void micainfo_out (t_micainfo *x, t_symbol *s, int n)
 
 static void micainfo_bang (t_micainfo *x)
 {
-    if (x->x_tag) {
-    //
     mica::Concept t (concept_fetch (x->x_tag));
     
     micainfo_out (x, sym_undefined,     t.isUndefined());
@@ -61,8 +59,6 @@ static void micainfo_bang (t_micainfo *x)
     micainfo_out (x, sym_sequence,      t.isSequence());
     micainfo_out (x, sym_cyclic,        t.isCyclic());
     micainfo_out (x, sym_length,        t.length());
-    //
-    }
 }
 
 static void micainfo_symbol (t_micainfo *x, t_symbol *s)

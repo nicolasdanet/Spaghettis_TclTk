@@ -381,6 +381,7 @@ t_symbol *sym_metro;
 t_symbol *sym_mica;
 t_symbol *sym_mica__space__get;
 t_symbol *sym_mica__space__info;
+t_symbol *sym_mica__space__map;
 t_symbol *sym_mica__space__set;
 t_symbol *sym_midiclkin;
 t_symbol *sym_midiin;
@@ -1025,6 +1026,7 @@ void symbols_initialize (void)
     sym_mica                                    = gensym ("mica");
     sym_mica__space__get                        = gensym ("mica get");
     sym_mica__space__info                       = gensym ("mica info");
+    sym_mica__space__map                        = gensym ("mica map");
     sym_mica__space__set                        = gensym ("mica set");
     sym_midiclkin                               = gensym ("midiclkin");
     sym_midiin                                  = gensym ("midiin");

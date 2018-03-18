@@ -23,51 +23,65 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *micaset_class;          /* Shared. */
+static t_class *micamap_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _micaset {
+typedef struct _micamap {
     t_object    x_obj;                  /* Must be the first. */
     t_symbol    *x_tag;
     t_outlet    *x_outlet;
-    } t_micaset;
+    } t_micamap;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void micaset_bang (t_micaset *x)
+static void micamap_bang (t_micamap *x)
 {
     outlet_symbol (x->x_outlet, x->x_tag);
 }
 
-static void micaset_float (t_micaset *x, t_float f)
+static void micamap_list (t_micamap *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom a; SET_FLOAT (&a, f); x->x_tag = concept_tagParsed (1, &a); micaset_bang (x);
+    mica::Concept t;
+    
+    if (argc > 1) {
+    //
+    mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
+    mica::Concept b (concept_fetch (atom_getSymbolAtIndex (1, argc, argv)));
+    mica::Concept c (concept_fetch (atom_getSymbolAtIndex (2, argc, argv)));
+    
+    if (argc > 2) { t = mica::map (a, b, c); }
+    else {
+        t = mica::map (a, b);
+    }
+    //
+    }
+    
+    x->x_tag = concept_tag (t);
+    
+    micamap_bang (x);
 }
 
-static void micaset_list (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
+static void micamap_anything (t_micamap *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_tag = concept_tagParsed (argc, argv); micaset_bang (x);
-}
-
-static void micaset_anything (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
-{
-    utils_anythingToList (cast_pd (x), (t_listmethod)micaset_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)micamap_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *micaset_new (t_symbol *s, int argc, t_atom *argv)
+void *micamap_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_micaset *x = (t_micaset *)pd_new (micaset_class);
+    t_micamap *x = (t_micamap *)pd_new (micamap_class);
     
-    x->x_tag    = concept_tagParsed (argc, argv);
+    x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newSymbol (cast_object (x));
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     return x;
 }
@@ -76,31 +90,30 @@ void *micaset_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void micaset_setup (void)
+void micamap_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_mica__space__set,
-            (t_newmethod)micaset_new,
+    c = class_new (sym_mica__space__map,
+            (t_newmethod)micamap_new,
             NULL,
-            sizeof (t_micaset),
+            sizeof (t_micamap),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, (t_method)micaset_bang);
-    class_addFloat (c, (t_method)micaset_float);
-    class_addList (c, (t_method)micaset_list);
-    class_addAnything (c, (t_method)micaset_anything);
+    class_addBang (c, (t_method)micamap_bang);
+    class_addList (c, (t_method)micamap_list);
+    class_addAnything (c, (t_method)micamap_anything);
     
     class_setHelpName (c, sym_mica);
     
-    micaset_class = c;
+    micamap_class = c;
 }
 
-void micaset_destroy (void)
+void micamap_destroy (void)
 {
-    class_free (micaset_class);
+    class_free (micamap_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -109,11 +122,11 @@ void micaset_destroy (void)
 
 #else
 
-void micaset_setup (void)
+void micamap_setup (void)
 {
 }
 
-void micaset_destroy (void)
+void micamap_destroy (void)
 {
 }
 

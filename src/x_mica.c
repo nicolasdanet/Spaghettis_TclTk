@@ -60,7 +60,7 @@ static void concept_free (t_concept *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_symbol *concept_register (mica::Concept c)
+t_symbol *concept_tag (mica::Concept c)
 {
     std::string t (sym___arrobe__->s_name); t += mica::Concept::asHex (c);
     
@@ -71,24 +71,7 @@ static t_symbol *concept_register (mica::Concept c)
     return s;
 }
 
-mica::Concept concept_fetch (t_symbol *s)
-{
-    t_concept *concept = (t_concept *)symbol_getThingByClass (s, concept_class);
-
-    if (concept) { return mica::Concept (concept->x_uuid); }
-    else {
-    //
-    if (string_startWith (s->s_name, sym___arrobe__->s_name)) {
-        mica::Concept t (mica::UUID::withHex (std::string (s->s_name + 1)));
-        if (t.isValid()) { concept_register (t); return t; }
-    }
-    //
-    }
-    
-    return mica::Concept();
-}
-
-t_symbol *concept_tag (int argc, t_atom *argv)
+t_symbol *concept_tagParsed (int argc, t_atom *argv)
 {
     mica::Concept c;
     
@@ -106,7 +89,27 @@ t_symbol *concept_tag (int argc, t_atom *argv)
     //
     }
 
-    return concept_register (c);
+    return concept_tag (c);
+}
+
+mica::Concept concept_fetch (t_symbol *s)
+{
+    t_concept *concept = (t_concept *)symbol_getThingByClass (s, concept_class);
+
+    if (concept) { return mica::Concept (concept->x_uuid); }
+    else {
+    //
+    /* It is allowed to store tag as symbol in a patch. */
+    /* The tag is unique and deterministic for each concept. */
+    
+    if (string_startWith (s->s_name, sym___arrobe__->s_name)) {
+        mica::Concept t (mica::UUID::withHex (std::string (s->s_name + 1)));
+        if (t.isValid()) { concept_tag (t); return t; }
+    }
+    //
+    }
+    
+    return mica::Concept();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -150,7 +153,7 @@ static void *mica_makeObject (t_symbol *s, int argc, t_atom *argv)
     if (t == sym_set)               { newest = (t_pd *)micaset_new (s,  argc - 1, argv + 1); }
     else if (t == sym_get)          { newest = (t_pd *)micaget_new (s,  argc - 1, argv + 1); }
     else if (t == sym_info)         { newest = (t_pd *)micainfo_new (s, argc - 1, argv + 1); }
-    //else if (t == sym_map)          { }
+    else if (t == sym_map)          { newest = (t_pd *)micamap_new (s,  argc - 1, argv + 1); }
     //else if (t == sym_index)        { }
     //else if (t == sym_item)         { }
     //else if (t == sym_interval)     { }

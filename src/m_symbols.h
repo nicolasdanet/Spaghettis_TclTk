@@ -381,6 +381,7 @@ extern t_symbol *sym_metro;
 extern t_symbol *sym_mica;
 extern t_symbol *sym_mica__space__get;
 extern t_symbol *sym_mica__space__info;
+extern t_symbol *sym_mica__space__map;
 extern t_symbol *sym_mica__space__set;
 extern t_symbol *sym_midiclkin;
 extern t_symbol *sym_midiin;
