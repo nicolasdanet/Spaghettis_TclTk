@@ -45,8 +45,6 @@ static void micainterval_bang (t_micainterval *x)
 
 static void micainterval_list (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
 {
-    mica::Concept t;
-    
     if (argc == 2) {
     //
     mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
@@ -68,6 +66,53 @@ static void micainterval_list (t_micainterval *x, t_symbol *s, int argc, t_atom 
 static void micainterval_anything (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
 {
     utils_anythingToList (cast_pd (x), (t_listmethod)micainterval_list, s, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void micainterval_set (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
+{
+    mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
+    mica::Concept b (concept_fetch (atom_getSymbolAtIndex (1, argc, argv)));
+    
+    prim::int64 n = (prim::int64)atom_getFloatAtIndex (2, argc, argv);
+    
+    mica::MIR::Interval t;
+    
+    if (argc == 1) { t = mica::MIR::Interval::withName (a);       }
+    if (argc == 2) { t = mica::MIR::Interval::withName (a, b);    }
+    if (argc == 3) { t = mica::MIR::Interval::withName (a, b, n); }
+    
+    if (t.isValid()) { x->x_interval = t; }
+}
+
+static void micainterval_apply (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
+{
+    mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
+    mica::Concept t (x->x_interval.appliedTo (a));
+    outlet_symbol (x->x_outlet, concept_tag (t));
+}
+
+static void micainterval_octaves (t_micainterval *x)
+{
+    outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getOctaves()));
+}
+
+static void micainterval_distance (t_micainterval *x)
+{
+    outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getDistance()));
+}
+
+static void micainterval_quality (t_micainterval *x)
+{
+    outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getQuality()));
+}
+
+static void micainterval_direction (t_micainterval *x)
+{
+    outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getDirection()));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -115,6 +160,13 @@ void micainterval_setup (void)
     class_addBang (c, (t_method)micainterval_bang);
     class_addList (c, (t_method)micainterval_list);
     class_addAnything (c, (t_method)micainterval_anything);
+    
+    class_addMethod (c, (t_method)micainterval_set,       sym_set,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)micainterval_apply,     sym_apply,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)micainterval_octaves,   sym_octaves,   A_NULL);
+    class_addMethod (c, (t_method)micainterval_distance,  sym_distance,  A_NULL);
+    class_addMethod (c, (t_method)micainterval_quality,   sym_quality,   A_NULL);
+    class_addMethod (c, (t_method)micainterval_direction, sym_direction, A_NULL);
     
     class_setHelpName (c, sym_mica);
     
