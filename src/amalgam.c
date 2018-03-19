@@ -275,6 +275,7 @@
 #include "x_micamap.c"
 #include "x_micaindex.c"
 #include "x_micaitem.c"
+#include "x_micainterval.c"
 
 /* DSP. */
 

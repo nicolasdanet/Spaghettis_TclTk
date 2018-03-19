@@ -156,7 +156,7 @@ static void *mica_makeObject (t_symbol *s, int argc, t_atom *argv)
     else if (t == sym_map)          { newest = (t_pd *)micamap_new (s,      argc - 1, argv + 1); }
     else if (t == sym_index)        { newest = (t_pd *)micaindex_new (s,    argc - 1, argv + 1); }
     else if (t == sym_item)         { newest = (t_pd *)micaitem_new (s,     argc - 1, argv + 1); }
-    //else if (t == sym_interval)     { }
+    else if (t == sym_interval)     { newest = (t_pd *)micainterval_new (s, argc - 1, argv + 1); }
     //else if (t == sym_spell)        { }
     else {
         newest = (t_pd *)micaset_new (s, argc, argv);
