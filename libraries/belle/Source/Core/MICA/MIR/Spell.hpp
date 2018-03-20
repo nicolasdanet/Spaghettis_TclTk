@@ -98,6 +98,16 @@ private:
 // MARK: -
 
 public:
+    static bool keyIsValid (Concept c)
+    {
+        return !mica::map (c, mica::KeySignature).isUndefined();
+    }
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+public:
     bool isValid() const
     {
         return (accidentals_.size() != 0);

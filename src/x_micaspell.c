@@ -71,14 +71,11 @@ static void micaspell_list (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
 
 static void micaspell_set (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc) { x->x_spell.setKey (concept_fetch (atom_getSymbolAtIndex (0, argc, argv))); }
+    mica::Concept c = concept_fetch (atom_getSymbolAtIndex (0, argc, argv));
     
-    if (!x->x_spell.isValid()) {
-    //
-    error_invalid (sym_mica__space__spell, sym_key);
-    
-    x->x_spell.setKey (mica::CMajor);
-    //
+    if (mica::MIR::Spell::keyIsValid (c)) { x->x_spell.setKey (c); }
+    else {
+        error_invalid (sym_mica__space__spell, sym_key);
     }
 }
 

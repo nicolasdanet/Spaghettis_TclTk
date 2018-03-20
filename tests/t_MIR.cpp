@@ -346,7 +346,19 @@ TTT_BEGIN (MicaSpell, 164, "MICA - Spell")
     TTT_EXPECT (bMajor.getPenalty (Interval::withNotes (mica::ESharp4, mica::BSharp3))  == 6);
     //
     }
-
+    
+    {
+    //
+    TTT_EXPECT (mica::MIR::Spell::keyIsValid (mica::CMajor));
+    TTT_EXPECT (mica::MIR::Spell::keyIsValid (mica::EFlatPhrygian));
+    TTT_EXPECT (mica::MIR::Spell::keyIsValid (mica::GSharpLocrian));
+    
+    TTT_EXPECT (!mica::MIR::Spell::keyIsValid (mica::Undefined));
+    TTT_EXPECT (!mica::MIR::Spell::keyIsValid (mica::B));
+    TTT_EXPECT (!mica::MIR::Spell::keyIsValid (mica::Sharp));
+    //
+    }
+    
     {
     //
     const int midi[] = 
