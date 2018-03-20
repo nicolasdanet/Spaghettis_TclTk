@@ -18,18 +18,19 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_core.h"
+#include "s_system.h"
 #include "x_mica.hpp"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *micaspell_class;         /* Shared. */
+static t_class *micaspell_class;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _micaspell {
-    t_object            x_obj;              /* Must be the first. */
+    t_object            x_obj;          /* Must be the first. */
     mica::MIR::Spell    x_spell;
     t_outlet            *x_outlet;
     } t_micaspell;
@@ -40,16 +41,45 @@ typedef struct _micaspell {
 
 static void micaspell_list (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
 {
-
+    PD_ASSERT (x->x_spell.isValid());
+    
+    prim::Array < int > notes; notes.resize (argc);
+    
+    for (int i = 0; i < argc; ++i) { int n = (int)atom_getFloat (argv + i); notes[i] = PD_CLAMP (n, 0, 127); }
+    
+    prim::Array < mica::Concept > result = x->x_spell.getSpelling (notes);
+    
+    if (result.size() != argc) { PD_BUG; }
+    else {
+    //
+    t_atom *a;
+    
+    PD_ATOMS_ALLOCA (a, argc);
+    
+    for (int i = 0; i < argc; ++i) { t_symbol *t = concept_tag (result[i]); SET_SYMBOL (a + i, t); }
+    
+    outlet_list (x->x_outlet, argc, a);
+    
+    PD_ATOMS_FREEA (a, argc);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void micaspell_key (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
+static void micaspell_set (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
 {
-
+    if (argc) { x->x_spell.setKey (concept_fetch (atom_getSymbolAtIndex (0, argc, argv))); }
+    
+    if (!x->x_spell.isValid()) {
+    //
+    error_invalid (sym_mica__space__spell, sym_key);
+    
+    x->x_spell.setKey (mica::CMajor);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -92,7 +122,7 @@ void micaspell_setup (void)
     
     class_addList (c, (t_method)micaspell_list);
     
-    class_addMethod (c, (t_method)micaspell_key, sym_key, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)micaspell_set, sym_set, A_GIMME, A_NULL);
     
     class_setHelpName (c, sym_mica);
     
