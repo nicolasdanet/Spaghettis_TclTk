@@ -389,6 +389,7 @@ extern t_symbol *sym_mica__space__interval;
 extern t_symbol *sym_mica__space__item;
 extern t_symbol *sym_mica__space__map;
 extern t_symbol *sym_mica__space__set;
+extern t_symbol *sym_mica__space__spell;
 extern t_symbol *sym_midiclkin;
 extern t_symbol *sym_midiin;
 extern t_symbol *sym_midiout;
