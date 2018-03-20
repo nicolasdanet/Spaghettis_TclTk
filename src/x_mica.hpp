@@ -38,6 +38,7 @@ void            *micamap_new            (t_symbol *s, int argc, t_atom *argv);
 void            *micaindex_new          (t_symbol *s, int argc, t_atom *argv);
 void            *micaitem_new           (t_symbol *s, int argc, t_atom *argv);
 void            *micainterval_new       (t_symbol *s, int argc, t_atom *argv);
+void            *micaspell_new          (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
