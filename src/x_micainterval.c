@@ -76,14 +76,13 @@ static void micainterval_set (t_micainterval *x, t_symbol *s, int argc, t_atom *
 {
     mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
     mica::Concept b (concept_fetch (atom_getSymbolAtIndex (1, argc, argv)));
-    
-    prim::int64 n = (prim::int64)atom_getFloatAtIndex (2, argc, argv);
+    mica::Concept c (concept_fetch (atom_getSymbolAtIndex (2, argc, argv)));
     
     mica::MIR::Interval t;
     
-    if (argc == 1) { t = mica::MIR::Interval::withName (a);       }
-    if (argc == 2) { t = mica::MIR::Interval::withName (a, b);    }
-    if (argc == 3) { t = mica::MIR::Interval::withName (a, b, n); }
+    if (argc == 1) { t = mica::MIR::Interval::withName (a); }
+    if (argc == 2) { t = mica::MIR::Interval::withName (a, b); }
+    if (argc == 3) { t = mica::MIR::Interval::withName (a, b, c.getNumerator()); }
     
     if (t.isValid()) { x->x_interval = t; }
 }

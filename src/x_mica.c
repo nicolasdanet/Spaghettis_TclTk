@@ -94,6 +94,8 @@ t_symbol *concept_tagParsed (int argc, t_atom *argv)
 
 mica::Concept concept_fetch (t_symbol *s)
 {
+    if (s != &s_) {
+    //
     t_concept *concept = (t_concept *)symbol_getThingByClass (s, concept_class);
 
     if (concept) { return mica::Concept (concept->x_uuid); }
@@ -105,6 +107,8 @@ mica::Concept concept_fetch (t_symbol *s)
     if (string_startWith (s->s_name, sym___arrobe__->s_name)) {
         mica::Concept t (mica::UUID::withHex (std::string (s->s_name + 1)));
         if (t.isValid()) { concept_tag (t); return t; }
+    }
+    //
     }
     //
     }
