@@ -1,4 +1,4 @@
-#N canvas 511 109 593 617 12;
+#N canvas 511 109 597 645 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 12 324 Examples.;
@@ -12,7 +12,7 @@
 #X obj 36 276 mica spell;
 #X text 24 24 MICA;
 #X text 12 72 MICA (Music Information Concept Archive).;
-#X text 12 576 William Andrew Burnson < https://github.com/burnson/belle#mica >.;
+#X text 12 600 William Andrew Burnson < https://github.com/burnson/belle#mica >.;
 #X f 65;
 #X text 192 108 Set a concept.;
 #X text 192 132 Get a concept.;
@@ -303,4 +303,20 @@
 #X connect 8 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 528 pd spell;
+#N canvas 440 203 583 405 arguments 0;
+#X obj 36 180 mica map Sharp;
+#X obj 36 216 mica get;
+#X obj 36 108 mica;
+#X obj 36 252 print;
+#X msg 36 48 A;
+#X msg 36 72 E;
+#X text 12 12 Some objects can be initialized with a immutable concept parsed.;
+#X f 65;
+#X connect 0 0 1 0;
+#X connect 1 0 3 0;
+#X connect 2 0 0 0;
+#X connect 4 0 2 0;
+#X connect 5 0 2 0;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 36 552 pd arguments;
 #X coords 0 0 1 1 250 175 0 0 0;

@@ -30,6 +30,7 @@ static t_class *micamap_class;          /* Shared. */
 
 typedef struct _micamap {
     t_object    x_obj;                  /* Must be the first. */
+    t_symbol    *x_parsed;
     t_symbol    *x_tag;
     t_outlet    *x_outlet;
     } t_micamap;
@@ -47,15 +48,23 @@ static void micamap_list (t_micamap *x, t_symbol *s, int argc, t_atom *argv)
 {
     mica::Concept t;
     
-    if (argc > 1) {
+    if (argc) {
     //
     mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
     mica::Concept b (concept_fetch (atom_getSymbolAtIndex (1, argc, argv)));
     mica::Concept c (concept_fetch (atom_getSymbolAtIndex (2, argc, argv)));
     
-    if (argc > 2) { t = mica::map (a, b, c); }
-    else {
-        t = mica::map (a, b);
+    if (x->x_parsed) {
+        if (argc > 1) { t = mica::map (a, b, mica::Concept (concept_fetch (x->x_parsed))); }
+        else {
+            t = mica::map (a, mica::Concept (concept_fetch (x->x_parsed)));
+        }
+    
+    } else {
+        if (argc > 2) { t = mica::map (a, b, c); }
+        else {
+            t = mica::map (a, b);
+        }
     }
     //
     }
@@ -78,10 +87,17 @@ void *micamap_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micamap *x = (t_micamap *)pd_new (micamap_class);
     
+    x->x_parsed = NULL;
     x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newSymbol (cast_object (x));
     
-    if (argc) { warning_unusedArguments (s, argc, argv); }
+    if (argc) {
+    //
+    x->x_parsed = concept_tagParsed (argc, argv);
+    
+    if (concept_fetch (x->x_parsed).isUndefined ()) { warning_invalid (sym_mica__space__map, sym_concept); }
+    //
+    }
     
     return x;
 }
