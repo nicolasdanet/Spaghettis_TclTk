@@ -1,0 +1,8 @@
+#N canvas 581 120 611 502 12;
+#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj -60 12 freeze;
+#X text 24 24 notes;
+#X text 12 72 MIDI key number to notes.;
+#X floatatom 48 120 5 0 127 1 - - -;
+#X f 5;
+#X coords 0 0 1 1 250 175 0 0 0;
