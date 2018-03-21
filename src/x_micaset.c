@@ -30,6 +30,7 @@ static t_class *micaset_class;          /* Shared. */
 
 typedef struct _micaset {
     t_object    x_obj;                  /* Must be the first. */
+    t_symbol    *x_parsed;
     t_symbol    *x_tag;
     t_outlet    *x_outlet;
     } t_micaset;
@@ -40,17 +41,24 @@ typedef struct _micaset {
 
 static void micaset_bang (t_micaset *x)
 {
-    outlet_symbol (x->x_outlet, x->x_tag);
+    if (!x->x_parsed) { outlet_symbol (x->x_outlet, x->x_tag); }
+    else {
+        outlet_symbol (x->x_outlet, x->x_parsed);
+    }
 }
 
 static void micaset_float (t_micaset *x, t_float f)
 {
-    t_atom a; SET_FLOAT (&a, f); x->x_tag = concept_tagParsed (1, &a); micaset_bang (x);
+    if (!x->x_parsed) { t_atom a; SET_FLOAT (&a, f); x->x_tag = concept_tagParsed (1, &a); }
+    
+    micaset_bang (x);
 }
 
 static void micaset_list (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_tag = concept_tagParsed (argc, argv); micaset_bang (x);
+    if (!x->x_parsed) { x->x_tag = concept_tagParsed (argc, argv); }
+    
+    micaset_bang (x);
 }
 
 static void micaset_anything (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
@@ -66,8 +74,17 @@ void *micaset_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaset *x = (t_micaset *)pd_new (micaset_class);
     
-    x->x_tag    = concept_tagParsed (argc, argv);
+    x->x_parsed = NULL;
+    x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newSymbol (cast_object (x));
+    
+    if (argc) {
+    //
+    x->x_parsed = concept_tagParsed (argc, argv);
+    
+    if (concept_fetch (x->x_parsed).isUndefined ()) { warning_invalid (sym_mica__space__set, sym_concept); }
+    //
+    }
     
     return x;
 }

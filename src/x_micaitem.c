@@ -87,6 +87,7 @@ void *micaitem_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaitem *x = (t_micaitem *)pd_new (micaitem_class);
     
+    x->x_parsed = NULL;
     x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newSymbol (cast_object (x));
     
