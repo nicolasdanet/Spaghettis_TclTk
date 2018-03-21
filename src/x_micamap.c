@@ -55,9 +55,9 @@ static void micamap_list (t_micamap *x, t_symbol *s, int argc, t_atom *argv)
     mica::Concept c (concept_fetch (atom_getSymbolAtIndex (2, argc, argv)));
     
     if (x->x_parsed) {
-        if (argc > 1) { t = mica::map (a, b, mica::Concept (concept_fetch (x->x_parsed))); }
+        if (argc > 1) { t = mica::map (mica::Concept (concept_fetch (x->x_parsed)), a, b); }
         else {
-            t = mica::map (a, mica::Concept (concept_fetch (x->x_parsed)));
+            t = mica::map (mica::Concept (concept_fetch (x->x_parsed)), a);
         }
     
     } else {
