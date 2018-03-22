@@ -52,7 +52,7 @@ static void micaspell_list (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
     if (result.size() != argc) { PD_BUG; }
     else {
     //
-    t_atom *a;
+    t_atom *a = NULL;
     
     PD_ATOMS_ALLOCA (a, argc);
     

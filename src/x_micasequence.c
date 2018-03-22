@@ -18,74 +18,75 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_core.h"
+#include "s_system.h"
 #include "x_mica.hpp"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *micainfo_class;          /* Shared. */
+static t_class *micasequence_class;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _micainfo {
+typedef struct _micasequence {
     t_object    x_obj;                  /* Must be the first. */
     t_symbol    *x_tag;
     t_outlet    *x_outlet;
-    } t_micainfo;
+    } t_micasequence;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void micainfo_out (t_micainfo *x, t_symbol *s, int n)
-{
-    t_atom a; SET_FLOAT (&a, n); outlet_anything (x->x_outlet, s, 1, &a);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void micainfo_bang (t_micainfo *x)
+static void micasequence_bang (t_micasequence *x)
 {
     mica::Concept t (concept_fetch (x->x_tag));
     
-    micainfo_out (x, sym_undefined,     t.isUndefined());
-    micainfo_out (x, sym_number,        t.isNumber());
-    micainfo_out (x, sym_integer,       t.isInteger());
-    micainfo_out (x, sym_numerator,     t.getNumerator());
-    micainfo_out (x, sym_denominator,   t.getDenominator());
-    micainfo_out (x, sym_sequence,      t.isSequence());
-    micainfo_out (x, sym_cyclic,        t.isCyclic());
-    micainfo_out (x, sym_length,        t.length());
+    if (!t.isSequence()) { outlet_list (x->x_outlet, 0, NULL); }
+    else {
+    //
+    int i, n = t.length();
+    t_atom *a = NULL;
+    
+    PD_ATOMS_ALLOCA (a, n);
+    
+    for (i = 0; i < n; i++) {
+        t_symbol *s = concept_tag (mica::item (t, i)); SET_SYMBOL (a + i, s);
+    }
+    
+    outlet_list (x->x_outlet, n, a);
+    
+    PD_ATOMS_FREEA (a, n);
+    //
+    }
 }
 
-static void micainfo_symbol (t_micainfo *x, t_symbol *s)
+static void micasequence_symbol (t_micasequence *x, t_symbol *s)
 {
-    x->x_tag = s; micainfo_bang (x);
+    x->x_tag = s; micasequence_bang (x);
 }
 
-static void micainfo_list (t_micainfo *x, t_symbol *s, int argc, t_atom *argv)
+static void micasequence_list (t_micasequence *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int i; for (i = 0; i < argc; i++) { micainfo_symbol (x, atom_getSymbolAtIndex (i, argc, argv)); }
+    int i; for (i = 0; i < argc; i++) { micasequence_symbol (x, atom_getSymbolAtIndex (i, argc, argv)); }
 }
 
-static void micainfo_anything (t_micainfo *x, t_symbol *s, int argc, t_atom *argv)
+static void micasequence_anything (t_micasequence *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), (t_listmethod)micainfo_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)micasequence_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *micainfo_new (t_symbol *s, int argc, t_atom *argv)
+void *micasequence_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_micainfo *x = (t_micainfo *)pd_new (micainfo_class);
+    t_micasequence *x = (t_micasequence *)pd_new (micasequence_class);
     
     x->x_tag    = concept_tag (mica::Undefined);
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newList (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
@@ -96,31 +97,31 @@ void *micainfo_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void micainfo_setup (void)
+void micasequence_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_mica__space__info,
-            (t_newmethod)micainfo_new,
+    c = class_new (sym_mica__space__sequence,
+            (t_newmethod)micasequence_new,
             NULL,
-            sizeof (t_micainfo),
+            sizeof (t_micasequence),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
     
-    class_addBang (c, (t_method)micainfo_bang);
-    class_addSymbol (c, (t_method)micainfo_symbol);
-    class_addList (c, (t_method)micainfo_list);
-    class_addAnything (c, (t_method)micainfo_anything);
+    class_addBang (c, (t_method)micasequence_bang);
+    class_addSymbol (c, (t_method)micasequence_symbol);
+    class_addList (c, (t_method)micasequence_list);
+    class_addAnything (c, (t_method)micasequence_anything);
     
     class_setHelpName (c, sym_mica);
     
-    micainfo_class = c;
+    micasequence_class = c;
 }
 
-void micainfo_destroy (void)
+void micasequence_destroy (void)
 {
-    class_free (micainfo_class);
+    class_free (micasequence_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -129,11 +130,11 @@ void micainfo_destroy (void)
 
 #else
 
-void micainfo_setup (void)
+void micasequence_setup (void)
 {
 }
 
-void micainfo_destroy (void)
+void micasequence_destroy (void)
 {
 }
 

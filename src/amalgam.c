@@ -272,6 +272,7 @@
 #include "x_micaset.c"
 #include "x_micaget.c"
 #include "x_micainfo.c"
+#include "x_micasequence.c"
 #include "x_micamap.c"
 #include "x_micaindex.c"
 #include "x_micaitem.c"

@@ -49,6 +49,7 @@
 		17CB7648205FABE800F919E4 /* x_micainterval.c in Sources */ = {isa = PBXBuildFile; fileRef = 17CB7647205FABE800F919E4 /* x_micainterval.c */; };
 		17CC052C205D0DEB0097E417 /* x_micaget.c in Sources */ = {isa = PBXBuildFile; fileRef = 17CC052B205D0DEB0097E417 /* x_micaget.c */; };
 		17D35C0B2046FBCB00B1763C /* belle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D35C0A2046FBCB00B1763C /* belle.cpp */; };
+		17DA55822063832E00570B4E /* x_micasequence.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DA55812063832E00570B4E /* x_micasequence.c */; };
 		17DD0B4520611A5E00E79C0D /* x_micaspell.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DD0B4420611A5E00E79C0D /* x_micaspell.c */; };
 		17F6BD3C1F110686001E602C /* m_snap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F6BD3B1F110686001E602C /* m_snap.c */; };
 		17FB394520286650000BBED2 /* d_blockinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 17FB394420286650000BBED2 /* d_blockinfo.c */; };
@@ -482,6 +483,7 @@
 		17CB7647205FABE800F919E4 /* x_micainterval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_micainterval.c; path = src/x_micainterval.c; sourceTree = "<group>"; };
 		17CC052B205D0DEB0097E417 /* x_micaget.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_micaget.c; path = src/x_micaget.c; sourceTree = "<group>"; };
 		17D35C0A2046FBCB00B1763C /* belle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = belle.cpp; path = src/belle.cpp; sourceTree = "<group>"; };
+		17DA55812063832E00570B4E /* x_micasequence.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_micasequence.c; path = src/x_micasequence.c; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_inlet.h; path = src/m_inlet.h; sourceTree = "<group>"; };
 		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_outlet.h; path = src/m_outlet.h; sourceTree = "<group>"; };
 		17DD0B4420611A5E00E79C0D /* x_micaspell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_micaspell.c; path = src/x_micaspell.c; sourceTree = "<group>"; };
@@ -982,6 +984,7 @@
 				17BDE5A2205A4AB5009CBC5C /* x_micaset.c */,
 				17CC052B205D0DEB0097E417 /* x_micaget.c */,
 				1747CB45205D4D0A005BE8D7 /* x_micainfo.c */,
+				17DA55812063832E00570B4E /* x_micasequence.c */,
 				17C25F53205E579A00C4339A /* x_micamap.c */,
 				173673BC205E9EE60078832A /* x_micaindex.c */,
 				17CB7645205F8ED400F919E4 /* x_micaitem.c */,
@@ -2003,6 +2006,7 @@
 				370303231E3B587E009D8A6D /* finddefault.c in Sources */,
 				3703031E1E3B586D009D8A6D /* readbinaryplist.c in Sources */,
 				372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */,
+				17DA55822063832E00570B4E /* x_micasequence.c in Sources */,
 				371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */,
 				371655971BA3466600ABDE22 /* portmidi.c in Sources */,
 				371655951BA3466000ABDE22 /* pmutil.c in Sources */,

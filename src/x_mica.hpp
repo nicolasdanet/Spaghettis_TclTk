@@ -34,6 +34,7 @@ mica::Concept   concept_fetch           (t_symbol *s);
 void            *micaset_new            (t_symbol *s, int argc, t_atom *argv);
 void            *micaget_new            (t_symbol *s, int argc, t_atom *argv);
 void            *micainfo_new           (t_symbol *s, int argc, t_atom *argv);
+void            *micasequence_new       (t_symbol *s, int argc, t_atom *argv);
 void            *micamap_new            (t_symbol *s, int argc, t_atom *argv);
 void            *micaindex_new          (t_symbol *s, int argc, t_atom *argv);
 void            *micaitem_new           (t_symbol *s, int argc, t_atom *argv);

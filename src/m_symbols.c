@@ -388,6 +388,7 @@ t_symbol *sym_mica__space__info;
 t_symbol *sym_mica__space__interval;
 t_symbol *sym_mica__space__item;
 t_symbol *sym_mica__space__map;
+t_symbol *sym_mica__space__sequence;
 t_symbol *sym_mica__space__set;
 t_symbol *sym_mica__space__spell;
 t_symbol *sym_midiclkin;
@@ -1042,6 +1043,7 @@ void symbols_initialize (void)
     sym_mica__space__interval                   = gensym ("mica interval");
     sym_mica__space__item                       = gensym ("mica item");
     sym_mica__space__map                        = gensym ("mica map");
+    sym_mica__space__sequence                   = gensym ("mica sequence");
     sym_mica__space__set                        = gensym ("mica set");
     sym_mica__space__spell                      = gensym ("mica spell");
     sym_midiclkin                               = gensym ("midiclkin");

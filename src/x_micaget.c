@@ -76,7 +76,7 @@ void *micaget_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaget *x = (t_micaget *)pd_new (micaget_class);
     
-    x->x_tag    = &s_;
+    x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newAnything (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }

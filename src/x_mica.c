@@ -157,6 +157,7 @@ static void *mica_makeObject (t_symbol *s, int argc, t_atom *argv)
     if (t == sym_set)               { newest = (t_pd *)micaset_new (s,      argc - 1, argv + 1); }
     else if (t == sym_get)          { newest = (t_pd *)micaget_new (s,      argc - 1, argv + 1); }
     else if (t == sym_info)         { newest = (t_pd *)micainfo_new (s,     argc - 1, argv + 1); }
+    else if (t == sym_sequence)     { newest = (t_pd *)micasequence_new (s, argc - 1, argv + 1); }
     else if (t == sym_map)          { newest = (t_pd *)micamap_new (s,      argc - 1, argv + 1); }
     else if (t == sym_index)        { newest = (t_pd *)micaindex_new (s,    argc - 1, argv + 1); }
     else if (t == sym_item)         { newest = (t_pd *)micaitem_new (s,     argc - 1, argv + 1); }
