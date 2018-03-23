@@ -21,6 +21,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Notice that this function may introduce unescaped whitespaces. */
+/* Extra care is required at the risk to trouble the parser. */
+
 t_symbol *symbol_withAtoms (int argc, t_atom *argv)
 {
     t_symbol *s = &s_;
