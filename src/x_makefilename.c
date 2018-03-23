@@ -154,7 +154,7 @@ static void *makefilename_new (t_symbol *dummy, int argc, t_atom *argv)
     
     t_symbol *t = symbol_withAtoms (argc, argv);
     
-    if (t == &s_) { t = sym_file__dot____percent__d; }
+    if (t == &s_) { t = sym___percent__s; }
         
     x->x_typeRequired           = A_NULL;
     x->x_isIntegerCastRequired  = 0;
