@@ -31,6 +31,7 @@ static t_class *micaget_class;          /* Shared. */
 typedef struct _micaget {
     t_object    x_obj;                  /* Must be the first. */
     t_symbol    *x_tag;
+    t_buffer    *x_cache;
     t_outlet    *x_outlet;
     } t_micaget;
 
@@ -42,15 +43,18 @@ static void micaget_bang (t_micaget *x)
 {
     mica::Concept t (concept_fetch (x->x_tag));
     
-    if (t.isInteger())     { outlet_float (x->x_outlet, t.getNumerator()); }
+    buffer_clear (x->x_cache);
+    
+    if (t.isInteger())     { buffer_appendFloat (x->x_cache, t.getNumerator()); }
     else if (t.isNumber()) {
-        t_atom a[2];
-        SET_FLOAT (a + 0, t.getNumerator());
-        SET_FLOAT (a + 1, t.getDenominator());
-        outlet_list (x->x_outlet, 2, a);
+        buffer_appendFloat (x->x_cache, t.getNumerator());
+        buffer_appendFloat (x->x_cache, t.getDenominator());
     } else {
-        outlet_symbol (x->x_outlet, gensym (t.toString().c_str()));
+        std::string s = t.toString();
+        buffer_withStringUnzeroed (x->x_cache, s.c_str(), (int)s.length());
     }
+    
+    outlet_list (x->x_outlet, buffer_getSize (x->x_cache), buffer_getAtoms (x->x_cache));
 }
 
 static void micaget_symbol (t_micaget *x, t_symbol *s)
@@ -77,11 +81,17 @@ void *micaget_new (t_symbol *s, int argc, t_atom *argv)
     t_micaget *x = (t_micaget *)pd_new (micaget_class);
     
     x->x_tag    = concept_tag (mica::Undefined);
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_cache  = buffer_new();
+    x->x_outlet = outlet_newList (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
     return x;
+}
+
+void micaget_free (t_micaget *x)
+{
+    buffer_free (x->x_cache);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -94,7 +104,7 @@ void micaget_setup (void)
     
     c = class_new (sym_mica__space__get,
             (t_newmethod)micaget_new,
-            NULL,
+            (t_method)micaget_free,
             sizeof (t_micaget),
             CLASS_DEFAULT,
             A_GIMME,
