@@ -196,6 +196,7 @@ static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_clear (object_getBuffer (cast_object (x)));
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
+    buffer_reparseIfNeeded (object_getBuffer (cast_object (x)));    /* Copy and paste needs it. */
     box_retext (box_fetch (x->m_owner, cast_object (x)));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
     message_dirty (x);
@@ -205,6 +206,7 @@ static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
     buffer_appendSemicolon (object_getBuffer (cast_object (x)));
+    buffer_reparseIfNeeded (object_getBuffer (cast_object (x)));
     box_retext (box_fetch (x->m_owner, &x->m_obj));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
     message_dirty (x);
@@ -213,6 +215,7 @@ static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
 static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
+    buffer_reparseIfNeeded (object_getBuffer (cast_object (x)));
     box_retext (box_fetch (x->m_owner, cast_object (x)));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
     message_dirty (x);

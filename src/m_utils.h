@@ -39,6 +39,7 @@ t_symbol    *symbol_emptyAsDash             (t_symbol *s);
 
 int         symbol_isNil                    (t_symbol *s);
 int         symbol_isNilOrDash              (t_symbol *s);
+int         symbol_containsWhitespace       (t_symbol *s);
 
 t_symbol    *symbol_dollarToHash            (t_symbol *s);
 t_symbol    *symbol_hashToDollar            (t_symbol *s);

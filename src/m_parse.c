@@ -243,6 +243,39 @@ char *buffer_toString (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void buffer_reparseIfNeeded (t_buffer *x)
+{
+    int i, size = buffer_getSize (x);
+    int reparse = 0;
+    
+    for (i = 0; i < size; i++) {
+    //
+    t_atom *a = buffer_getAtomAtIndex (x, i);
+    
+    if (IS_SYMBOL (a) && symbol_containsWhitespace (GET_SYMBOL (a))) {
+        reparse = 1; break;
+    }
+    //
+    }
+    
+    if (reparse) { buffer_reparse (x); }
+}
+
+void buffer_reparse (t_buffer *x)
+{
+    char *s = NULL;
+    int size = 0;
+    
+    buffer_toStringUnzeroed (x, &s, &size);
+    buffer_withStringUnzeroed (x, s, size);
+    
+    PD_MEMORY_FREE (s);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void buffer_serialize (t_buffer *x, t_buffer *y)
 {
     t_buffer *copy = buffer_new();
