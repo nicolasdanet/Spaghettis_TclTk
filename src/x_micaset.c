@@ -82,7 +82,7 @@ void *micaset_new (t_symbol *s, int argc, t_atom *argv)
     //
     x->x_parsed = concept_tagParsed (argc, argv);
     
-    if (concept_fetch (x->x_parsed).isUndefined ()) { warning_invalid (sym_mica__space__set, sym_concept); }
+    if (concept_fetch (x->x_parsed).isUndefined()) { warning_invalid (sym_mica__space__set, sym_concept); }
     //
     }
     
