@@ -21,7 +21,7 @@ class NewLine {
 public:
     operator const char*()
     {
-        return "\r\n";
+        return "\n";
     }
 };
 
