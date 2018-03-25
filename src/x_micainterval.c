@@ -18,6 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_core.h"
+#include "s_system.h"
 #include "x_mica.hpp"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -89,9 +90,25 @@ static void micainterval_set (t_micainterval *x, t_symbol *s, int argc, t_atom *
 
 static void micainterval_apply (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
 {
-    mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
-    mica::Concept t (x->x_interval.appliedTo (a));
-    outlet_symbol (x->x_outlet, concept_tag (t));
+    if (argc) {
+    //
+    t_atom *a = NULL;
+    int i;
+    
+    PD_ATOMS_ALLOCA (a, argc);
+    
+    for (i = 0; i < argc; i++) {
+        mica::Concept c (concept_fetch (atom_getSymbolAtIndex (i, argc, argv)));
+        mica::Concept t (x->x_interval.appliedTo (c));
+        t_symbol *tag = concept_tag (t);
+        SET_SYMBOL (a + i, tag);
+    }
+    
+    outlet_list (x->x_outlet, argc, a);
+    
+    PD_ATOMS_FREEA (a, argc);
+    //
+    }
 }
 
 static void micainterval_octaves (t_micainterval *x)
@@ -126,7 +143,7 @@ void *micainterval_new (t_symbol *s, int argc, t_atom *argv)
     
     try { new (x) t_micainterval; } catch (...) { PD_BUG; }
     
-    x->x_outlet = outlet_newSymbol (cast_object (x));
+    x->x_outlet = outlet_newAnything (cast_object (x));
     
     if (argc) {
     //
