@@ -91,7 +91,13 @@ void *micaspell_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_outlet = outlet_newList (cast_object (x));
     
-    if (argc) { warning_unusedArguments (s, argc, argv); }
+    if (argc) {
+    //
+    t_symbol *t = concept_tagParsed (argc, argv);
+    
+    t_atom a; SET_SYMBOL (&a, t); micaspell_set (x, sym_set, 1, &a);
+    //
+    }
     
     return x;
 }
