@@ -248,8 +248,8 @@
 #X connect 30 0 19 0;
 #X connect 31 0 28 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 36 552 pd interval;
-#N canvas 662 246 594 383 spell 0;
+#X restore 36 576 pd interval;
+#N canvas 970 446 594 383 spell 0;
 #X msg 36 48 60 63 67 68 59 67 66 65 64 63 62;
 #X text 12 12 Pitch spelling algorithm (based on Emilios Cambouropoulos papers).;
 #X f 66;
@@ -268,8 +268,8 @@
 #X connect 7 0 2 0;
 #X connect 8 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 36 576 pd spell;
-#N canvas 621 192 621 505 arguments 0;
+#X restore 36 600 pd spell;
+#N canvas 967 313 621 505 arguments 0;
 #X obj 36 180 mica map Sharp;
 #X obj 36 204 mica get;
 #X obj 36 108 mica;
@@ -314,7 +314,7 @@
 #X connect 21 0 20 0;
 #X connect 22 0 19 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 36 600 pd arguments;
+#X restore 36 552 pd arguments;
 #N canvas 778 187 463 628 set 0;
 #X msg 36 48 7;
 #X msg 36 72 3 4;
