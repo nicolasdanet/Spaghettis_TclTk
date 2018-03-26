@@ -147,9 +147,37 @@ void *micainterval_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc) {
     //
-    t_symbol *t = concept_tagParsed (argc, argv);
+    t_symbol *t3 = NULL;
+    t_symbol *t2 = NULL;
+    t_symbol *t1 = NULL;
     
-    t_atom a; SET_SYMBOL (&a, t); micainterval_set (x, sym_set, 1, &a);
+    if (IS_FLOAT (argv + argc - 1)) { t3 = concept_tagParsed (1, argv + argc - 1); argc --; }
+    
+    if (argc) {
+    //
+    t_symbol *last = atom_getSymbolAtIndex (argc - 1, argc, argv);
+    
+    if (last == sym_Above || last == sym_Below) { t2 = concept_tagParsed (1, argv + argc - 1); argc --; }
+    
+    if (argc) {
+    //
+    t1 = concept_tagParsed (argc, argv);
+    
+    t_atom a[3];
+    
+    SET_SYMBOL (a + 0, t1);
+    SET_SYMBOL (a + 1, t2);
+    SET_SYMBOL (a + 2, t3);
+    
+    if (t1 && t2 && t3) { micainterval_set (x, sym_set, 3, a); }
+    else if (t1 && t2)  { micainterval_set (x, sym_set, 2, a); }
+    else {
+        micainterval_set (x, sym_set, 1, a);
+    }
+    //
+    }
+    //
+    }
     //
     }
     
