@@ -86,8 +86,8 @@ static t_int *cpole_tilde_perform (t_int *w)
         *out2++ = lastImaginary = imaginaryPart;
     }
     
-    if (PD_IS_BIG_OR_SMALL (lastReal))      { lastReal      = (t_sample)0.0; }
-    if (PD_IS_BIG_OR_SMALL (lastImaginary)) { lastImaginary = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)lastReal))      { lastReal      = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)lastImaginary)) { lastImaginary = (t_sample)0.0; }
     
     x->x_real      = lastReal;
     x->x_imaginary = lastImaginary;

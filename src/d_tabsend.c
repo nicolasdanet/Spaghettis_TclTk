@@ -77,7 +77,7 @@ static t_int *tabsend_tilde_perform (t_int *w)
     while (n--) {
     //  
     t_sample f = *in++;
-    if (PD_IS_BIG_OR_SMALL (f)) { f = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)f)) { f = (t_sample)0.0; }
     WORD_FLOAT (data) = f;
     data++;
     //

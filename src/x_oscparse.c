@@ -122,8 +122,7 @@ static t_error oscparse_proceedArgumentsFloat (t_oscparse *x,
     else {
         t_rawcast32 z;
         z.z_i = OSC_4READ (argv + k);
-        float f = z.z_f;
-        if (PD_IS_DENORMAL_OR_ZERO (f)) { f = (float)0.0; }
+        float f = z.z_f; if (PD_FLOAT32_IS_DENORMAL_OR_ZERO (f)) { f = (float)0.0; }
         SET_FLOAT (a + n, (t_float)f);
         n++; k += 4;
     }

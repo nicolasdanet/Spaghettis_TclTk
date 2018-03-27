@@ -184,15 +184,8 @@ typedef union {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-        
-static inline int PD_IS_NAN (t_float f)                 /* True if NaN. */
-{
-    t_rawcast32 z;
-    z.z_f = f;
-    return ((z.z_i & 0x7fffffff) > 0x7f800000);
-}
 
-static inline int PD_IS_DENORMAL_OR_ZERO (t_float f)    /* True if zero, denormal, infinite, or NaN. */
+static inline int PD_FLOAT32_IS_DENORMAL_OR_ZERO (float f)      /* True if zero, denormal, infinite, or NaN. */
 {
     t_rawcast32 z;
     z.z_f = f;
@@ -200,7 +193,7 @@ static inline int PD_IS_DENORMAL_OR_ZERO (t_float f)    /* True if zero, denorma
     return ((z.z_i == 0) || (z.z_i == 0x7f800000));
 }
 
-static inline int PD_IS_BIG_OR_SMALL (t_float f)        /* True if exponent falls out (-64, 64) range. */
+static inline int PD_FLOAT32_IS_BIG_OR_SMALL (float f)          /* True if exponent falls out (-64, 64) range. */
 {
     t_rawcast32 z;
     z.z_f = f;

@@ -122,8 +122,8 @@ static t_int *bp_tilde_perform (t_int *w)
         last1  = f;
     }
     
-    if (PD_IS_BIG_OR_SMALL (last1)) { last1 = (t_sample)0.0; }
-    if (PD_IS_BIG_OR_SMALL (last2)) { last2 = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last1)) { last1 = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last2)) { last2 = (t_sample)0.0; }
     
     c->c_real1 = last1;
     c->c_real2 = last2;

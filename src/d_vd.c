@@ -56,8 +56,6 @@ static t_int *vd_tilde_perform (t_int *w)
     //
     t_float delayInSamples, f = (t_float)(*in++);
     
-    if (PD_IS_NAN (f)) { f = (t_float)0.0; }
-    
     /* Note that the offset size is reported as zero in non-recirculating cases. */
     
     delayInSamples = (x->x_samplesPerMilliseconds * f) - x->x_offsetSize;
