@@ -326,7 +326,7 @@ static int soundfiler_writeEncode (int f,
     int sizeInBytes  = sizeInFrames * bytesPerFrame;
     
     soundfile_encode (args->ap_numberOfChannels,
-        (t_float **)w,
+        (t_sample **)w,
         (unsigned char *)t,
         sizeInFrames,
         args->ap_onset,

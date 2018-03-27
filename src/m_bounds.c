@@ -15,7 +15,7 @@
 
 t_error bounds_set (t_bounds *b, t_float left, t_float top, t_float right, t_float bottom)
 {
-    b->b_left   = 0.0;     /* Avoid overzealous warning. */
+    b->b_left   = 0.0;      /* Avoid overzealous warning. */
     b->b_top    = 0.0;
     b->b_right  = 0.0;
     b->b_bottom = 0.0;
