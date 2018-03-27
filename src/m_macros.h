@@ -156,7 +156,7 @@ static inline uint64_t sys_nextPowerOfTwo (uint64_t v)
 /* Assumed IEEE 754 floating-point format. */
 
 typedef union {
-    t_float     z_f;
+    float       z_f;
     uint32_t    z_i;
     } t_rawcast32;
 
