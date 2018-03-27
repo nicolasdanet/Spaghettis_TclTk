@@ -53,7 +53,7 @@ static void line_tilde_float (t_line_tilde *x, t_float f)
         x->x_target             = f;
         x->x_retarget           = 1;
         x->x_timeRampCurrent    = x->x_timeRamp;
-        x->x_timeRamp           = (t_float)0.0;
+        x->x_timeRamp           = 0.0;
     }
 }
 

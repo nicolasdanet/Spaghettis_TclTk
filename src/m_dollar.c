@@ -161,7 +161,7 @@ int dollar_expandWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int a
     if (n > 0 && n <= argc) { *a = *(argv + n - 1); return 1; }
     else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero (glist)); return 1; }
     else {
-        SET_FLOAT (a, (t_float)0.0);
+        SET_FLOAT (a, 0.0);
     }
     
     return 0;

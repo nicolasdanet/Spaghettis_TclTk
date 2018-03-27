@@ -228,7 +228,7 @@ static void toggle_out (t_toggle *x)
 
 static void toggle_bang (t_toggle *x)
 {
-    toggle_set (x, (x->x_state == 0.0) ? x->x_nonZero : (t_float)0.0);
+    toggle_set (x, (x->x_state == 0.0) ? x->x_nonZero : 0.0);
     toggle_out (x);
 }
 
@@ -412,7 +412,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     int labelX          = 0;
     int labelY          = 0;
     int labelFontSize   = IEM_DEFAULT_FONT;
-    t_float state       = (t_float)0.0;
+    t_float state       = 0.0;
     t_float nonZero     = (t_float)1.0;
 
     if (argc < 13) { iemgui_deserializeDefault (cast_iem (x)); }
@@ -448,9 +448,9 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
         
     x->x_nonZero = (nonZero != 0.0) ? nonZero : (t_float)1.0;
     
-    if (x->x_gui.iem_loadbang) { x->x_state = (state != 0.0) ? nonZero : (t_float)0.0; }
+    if (x->x_gui.iem_loadbang) { x->x_state = (state != 0.0) ? nonZero : 0.0; }
     else {
-        x->x_state = (t_float)0.0;
+        x->x_state = 0.0;
     }
 
     x->x_outlet = outlet_newFloat (cast_object (x));

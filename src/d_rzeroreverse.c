@@ -47,7 +47,7 @@ static void rzero_tilde_rev_set (t_rzero_tilde_rev *x, t_float f)
 
 static void rzero_tilde_rev_clear (t_rzero_tilde_rev *x)
 {
-    rzero_tilde_rev_set (x, (t_float)0.0);
+    rzero_tilde_rev_set (x, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

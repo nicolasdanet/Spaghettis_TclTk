@@ -755,7 +755,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     
     if (x->x_gui.iem_loadbang) { dial_set (x, (t_float)value); }
     else {
-        dial_set (x, (t_float)0.0);
+        dial_set (x, 0.0);
     }
 
     x->x_outlet = outlet_newFloat (cast_object (x));

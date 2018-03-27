@@ -185,7 +185,7 @@ void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    message_float (x, (t_float)0.0);
+    message_float (x, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

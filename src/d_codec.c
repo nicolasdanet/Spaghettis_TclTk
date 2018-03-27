@@ -509,7 +509,7 @@ void soundfile_decode (int numberOfChannels,
         
         for (i = numberOfChannels; i < n; i++) {
             for (j = 0, s = v[i] + (spread * onset); j < numberOfFrames; j++, s += spread) { 
-                *s = (t_sample)0.0; 
+                *s = 0.0; 
             }
         }
     }

@@ -93,14 +93,14 @@ static t_int *tabplay_tilde_perform (t_int *w)
     phase += size;
     
     while (size--) { *out++ = WORD_FLOAT (data); data++; }
-    while (pad--)  { *out++ = (t_sample)0.0; }
+    while (pad--)  { *out++ = 0.0; }
             
     if (phase >= end) { clock_delay (x->x_clock, 0.0); x->x_phase = PD_INT_MAX; }
     else { 
         x->x_phase = phase;
     }
     //
-    } else { while (n--) { *out++ = (t_sample)0.0; } }
+    } else { while (n--) { *out++ = 0.0; } }
     
     return (w + 4);
 }

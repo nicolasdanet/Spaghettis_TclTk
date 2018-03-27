@@ -94,7 +94,7 @@ static void metro_floatDelay (t_metro *x, t_float f)
 
 static void metro_stop (t_metro *x)
 {
-    metro_float (x, (t_float)0.0);
+    metro_float (x, 0.0);
 }
 
 /* Note that float arguments are always passed at last. */

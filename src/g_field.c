@@ -35,7 +35,7 @@ void field_setAsFloatVariable (t_fielddescriptor *fd, t_symbol *s)
 
 void field_setAsFloat (t_fielddescriptor *fd, int argc, t_atom *argv)
 {
-    field_setAsFloatConstant (fd, (t_float)0.0);
+    field_setAsFloatConstant (fd, 0.0);
         
     if (argc > 0) {
         if (IS_SYMBOL (argv)) { field_setAsFloatVariable (fd, GET_SYMBOL (argv)); }
@@ -47,7 +47,7 @@ void field_setAsFloat (t_fielddescriptor *fd, int argc, t_atom *argv)
 
 void field_setAsArray (t_fielddescriptor *fd, int argc, t_atom *argv)
 {
-    field_setAsFloatConstant (fd, (t_float)0.0);
+    field_setAsFloatConstant (fd, 0.0);
     
     if (argc > 0) {
         if (IS_SYMBOL (argv)) {

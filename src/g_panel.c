@@ -346,8 +346,8 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     x->x_panelWidth  = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
     x->x_panelHeight = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
 
-    SET_FLOAT (&x->x_t[0], (t_float)0.0);
-    SET_FLOAT (&x->x_t[1], (t_float)0.0);
+    SET_FLOAT (&x->x_t[0], 0.0);
+    SET_FLOAT (&x->x_t[1], 0.0);
     
     return x;
 }

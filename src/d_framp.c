@@ -62,8 +62,8 @@ static t_int *framp_tilde_perform (t_int *w)
     in1 += 2;
     in2 += 2;
     
-    *out1++ = (t_sample)0.0;
-    *out2++ = (t_sample)0.0;
+    *out1++ = 0.0;
+    *out2++ = 0.0;
 
     n -= 2;
     

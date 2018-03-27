@@ -71,7 +71,7 @@ static t_int *tabread4_tilde_perform (t_int *w)
     //
     }
     //
-    } else { while (n--) { *out++ = (t_sample)0.0; } }
+    } else { while (n--) { *out++ = 0.0; } }
     
     return (w + 5);
 }

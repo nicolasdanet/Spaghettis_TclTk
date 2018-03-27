@@ -77,7 +77,7 @@ static void *throw_tilde_new (t_symbol *s)
 {
     t_throw_tilde *x = (t_throw_tilde *)pd_new (throw_tilde_class);
     
-    x->x_f      = (t_float)0.0;
+    x->x_f      = 0.0;
     x->x_vector = NULL;
     x->x_name   = s;
 

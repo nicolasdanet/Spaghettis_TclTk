@@ -210,7 +210,7 @@ static void vexpr_bang (t_expr *x)
     
     PD_ATOMS_ALLOCA (t, size);
     
-    x->x_f[0] = (t_float)0.0;
+    x->x_f[0] = 0.0;
     
     for (i = 0; i < EXPR_VARIABLES; i++) { x->x_v[i] = (double)x->x_f[i]; }
     

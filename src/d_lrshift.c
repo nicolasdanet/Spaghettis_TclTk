@@ -43,7 +43,7 @@ static t_int *lrshift_tilde_peformShiftRight (t_int *w)
     in -= shift;
     
     while (n--)     { --out; --in; *out = *in; }
-    while (shift--) { --out; *out = (t_sample)0.0; }
+    while (shift--) { --out; *out = 0.0; }
     
     return (w + 5);
 }
@@ -61,7 +61,7 @@ static t_int *lrshift_tilde_peformShiftLeft (t_int *w)
     n  -= shift;
     
     while (n--)     { *out++ = *in++; }
-    while (shift--) { *out++ = (t_sample)0.0; }
+    while (shift--) { *out++ = 0.0; }
     
     return (w + 5);
 }

@@ -47,7 +47,7 @@ static t_int *vd_tilde_perform (t_int *w)
 
     int mismatch = (x->x_vectorSize != c->c_vectorSize) || (x->x_sampleRate != c->c_sampleRate);
     
-    if (mismatch) { while (n--) { *out++ = (t_sample)0.0; } }
+    if (mismatch) { while (n--) { *out++ = 0.0; } }
     else {
     //
     t_float limit = c->c_size - n;

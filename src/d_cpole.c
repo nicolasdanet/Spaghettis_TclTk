@@ -50,7 +50,7 @@ static void cpole_tilde_set (t_cpole_tilde *x, t_float real, t_float imaginary)
 
 static void cpole_tilde_clear (t_cpole_tilde *x)
 {
-    cpole_tilde_set (x, (t_float)0.0, (t_float)0.0);
+    cpole_tilde_set (x, 0.0, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -86,8 +86,8 @@ static t_int *cpole_tilde_perform (t_int *w)
         *out2++ = lastImaginary = imaginaryPart;
     }
     
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)lastReal))      { lastReal      = (t_sample)0.0; }
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)lastImaginary)) { lastImaginary = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)lastReal))      { lastReal      = 0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)lastImaginary)) { lastImaginary = 0.0; }
     
     x->x_real      = lastReal;
     x->x_imaginary = lastImaginary;

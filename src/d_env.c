@@ -84,7 +84,7 @@ static t_int *env_tilde_perform (t_int *w)
     //
     }
     
-    *sum = (t_sample)0.0;
+    *sum = 0.0;
     
     x->x_phase -= n;
     
@@ -94,7 +94,7 @@ static t_int *env_tilde_perform (t_int *w)
     
     for (i = x->x_period; i < x->x_window; i += x->x_period) { *sum = *(sum + 1); sum++; } 
     
-    *sum = (t_sample)0.0;
+    *sum = 0.0;
     
     x->x_phase = x->x_period - n;
     

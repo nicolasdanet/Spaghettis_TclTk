@@ -58,7 +58,7 @@ static t_int *voutlet_performEpilogue (t_int *w)
     // PD_LOG ("/");
     // PD_LOG_NUMBER (n);
     
-    while (n--) { *out = *in; *in = (t_sample)0.0; out++; in++; }
+    while (n--) { *out = *in; *in = 0.0; out++; in++; }
     if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
     
     x->vo_bufferRead = in;

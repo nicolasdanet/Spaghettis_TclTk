@@ -185,7 +185,7 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
 {
     if (!glist_isLoading (x->x_owner)) {
     //
-    t_float a = (t_float)0.0;
+    t_float a = 0.0;
     t_float b = bounds_getTop (glist_getBounds (x->x_owner));
     t_float c = (t_float)((style == PLOT_POINTS || size == 1) ? size : size - 1);
     t_float d = bounds_getBottom (glist_getBounds (x->x_owner));
@@ -335,7 +335,7 @@ t_float garray_getAmplitude (t_garray *x)
     
     int i, size = array_getSize (array);
     
-    t_float f = (t_float)0.0;
+    t_float f = 0.0;
     
     for (i = 0; i < size; i++) { t_float t = GARRAY_AT (i); f = PD_MAX (f, PD_ABS (t)); }
 
@@ -525,7 +525,7 @@ static void garray_read (t_garray *x, t_symbol *name)
         //
         }
         
-        while (i < array_getSize (array)) { GARRAY_AT (i) = (t_float)0.0; i++; }
+        while (i < array_getSize (array)) { GARRAY_AT (i) = 0.0; i++; }
         
         fclose (file);      /* < http://stackoverflow.com/a/13691168 > */
         

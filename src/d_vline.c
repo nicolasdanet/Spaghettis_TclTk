@@ -150,8 +150,8 @@ static void vline_tilde_float (t_vline_tilde *x, t_float f)
     //
     }
     
-    x->x_timeRamp = (t_float)0.0;
-    x->x_delay    = (t_float)0.0;
+    x->x_timeRamp = 0.0;
+    x->x_delay    = 0.0;
 }
 
 static void vline_tilde_stop (t_vline_tilde *x)
@@ -159,8 +159,8 @@ static void vline_tilde_stop (t_vline_tilde *x)
     vline_tilde_addToUnusedSegments (x, x->x_segments);
     
     x->x_increment  = 0.0;
-    x->x_timeRamp   = (t_float)0.0;
-    x->x_delay      = (t_float)0.0;
+    x->x_timeRamp   = 0.0;
+    x->x_delay      = 0.0;
     x->x_segments   = NULL;
     x->x_target     = (t_sample)x->x_current;
     x->x_timeTarget = VLINE_TIME_NONE;

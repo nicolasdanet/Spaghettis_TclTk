@@ -236,7 +236,7 @@ static void *route_newProceed (int argc, t_atom *argv)
 
 static void *route_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 0) { t_atom a; SET_FLOAT (&a, (t_float)0.0); return route_newProceed (1, &a); }
+    if (argc == 0) { t_atom a; SET_FLOAT (&a, 0.0); return route_newProceed (1, &a); }
     else {
         return route_newProceed (argc, argv);
     }

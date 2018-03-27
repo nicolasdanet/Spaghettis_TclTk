@@ -57,7 +57,7 @@ static void lop_tilde_frequency (t_lop_tilde *x, t_float f)
 
 static void lop_tilde_clear (t_lop_tilde *x)
 {
-    x->x_space.c_real = (t_sample)0.0;
+    x->x_space.c_real = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ static t_int *lop_tilde_perform (t_int *w)
         *out++ = last = f;
     }
     
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last)) { last = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last)) { last = 0.0; }
     
     c->c_real = last;
     

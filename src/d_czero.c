@@ -50,7 +50,7 @@ static void czero_tilde_set (t_czero_tilde *x, t_float real, t_float imaginary)
 
 static void czero_tilde_clear (t_czero_tilde *x)
 {
-    czero_tilde_set (x, (t_float)0.0, (t_float)0.0);
+    czero_tilde_set (x, 0.0, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

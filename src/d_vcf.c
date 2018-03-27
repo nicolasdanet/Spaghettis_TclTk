@@ -110,8 +110,8 @@ static t_int *vcf_tilde_perform (t_int *w)
     //
     }
     
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)re)) { re = (t_sample)0.0; }
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)im)) { im = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)re)) { re = 0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)im)) { im = 0.0; }
     
     c->c_real = re;
     c->c_imaginary = im;
@@ -145,10 +145,10 @@ static void *vcf_tilde_new (t_float f)
 {
     t_vcf_tilde *x = (t_vcf_tilde *)pd_new (vcf_tilde_class);
 
-    x->x_space.c_real       = (t_sample)0.0;
-    x->x_space.c_imaginary  = (t_sample)0.0;
-    x->x_space.c_q          = (t_sample)0.0;
-    x->x_space.c_conversion = (t_sample)0.0;
+    x->x_space.c_real       = 0.0;
+    x->x_space.c_imaginary  = 0.0;
+    x->x_space.c_q          = 0.0;
+    x->x_space.c_conversion = 0.0;
 
     vcf_tilde_qFactor (x, f);
     

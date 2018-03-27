@@ -211,21 +211,21 @@ static void plot_getPixelsAtIndex (t_plotproperties *p,
         int size = array_getSize (p->p_array);
         
         if (p->p_fieldX) { 
-            valueX = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldX) : (t_float)0.0; 
+            valueX = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldX) : 0.0; 
         } else { 
             valueX = i * p->p_incrementX;
         }
         
         if (p->p_fieldY) {
-            valueY = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldY) : (t_float)0.0; 
+            valueY = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldY) : 0.0; 
         } else { 
-            valueY = (t_float)0.0;
+            valueY = 0.0;
         }
         
         if (p->p_fieldW) { 
-            valueW = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldW) : (t_float)0.0; 
+            valueW = (i < size) ? array_getFloatAtIndex (p->p_array, i, p->p_fieldW) : 0.0; 
         } else {
-            valueW = (t_float)0.0;
+            valueW = 0.0;
         }
         
         c->p_x = c->p_pixelX = relativeX + valueX;
@@ -738,8 +738,8 @@ static int plot_behaviorMouseMatch (t_plot *x,
     if (m->m_clicked) {
     //
     plot_direction        = (t_float)1.0;
-    plot_cumulativeX      = (t_float)0.0;
-    plot_cumulativeY      = (t_float)0.0;
+    plot_cumulativeX      = 0.0;
+    plot_cumulativeY      = 0.0;
     plot_startX           = i;
     plot_previousX        = i;
     plot_fieldDescriptorX = NULL;
@@ -832,7 +832,7 @@ static int plot_behaviorMouseArray (t_plot *x, t_plotproperties *p, t_mouse *m)
     
     plot_thickness        = PLOT_THICKNESS_NONE;
     plot_direction        = (t_float)1.0;
-    plot_cumulativeX      = (t_float)0.0;
+    plot_cumulativeX      = 0.0;
     plot_cumulativeY      = valueY;
     plot_startX           = i;
     plot_previousX        = i;
@@ -902,8 +902,8 @@ static void *plot_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new (plot_class);
     
-    field_setAsFloatConstant (&x->x_array,          (t_float)0.0);      /* Default is invalid. */
-    field_setAsFloatConstant (&x->x_colorOutline,   (t_float)0.0);
+    field_setAsFloatConstant (&x->x_array,          0.0);      /* Default is invalid. */
+    field_setAsFloatConstant (&x->x_colorOutline,   0.0);
     field_setAsFloatConstant (&x->x_width,          (t_float)1.0);
     field_setAsFloatConstant (&x->x_positionX,      (t_float)1.0);
     field_setAsFloatConstant (&x->x_positionY,      (t_float)1.0);

@@ -50,7 +50,7 @@ static void czero_rev_tilde_set (t_czero_rev_tilde *x, t_float real, t_float ima
 
 static void czero_rev_tilde_clear (t_czero_rev_tilde *x)
 {
-    czero_rev_tilde_set (x, (t_float)0.0, (t_float)0.0);
+    czero_rev_tilde_set (x, 0.0, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

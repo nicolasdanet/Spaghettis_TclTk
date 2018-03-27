@@ -67,7 +67,7 @@ static void threshold_tilde_set (t_threshold_tilde *x, t_symbol *s, int argc, t_
 static void threshold_tilde_state (t_threshold_tilde *x, t_float f)
 {
     x->x_state = (f != 0.0);
-    x->x_wait  = (t_float)0.0;
+    x->x_wait  = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

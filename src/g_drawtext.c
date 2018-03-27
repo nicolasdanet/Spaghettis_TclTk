@@ -268,9 +268,9 @@ static void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_drawtext *x = (t_drawtext *)pd_new (drawtext_class);
 
-    field_setAsFloatConstant (&x->x_positionX,  (t_float)0.0);
-    field_setAsFloatConstant (&x->x_positionY,  (t_float)0.0);
-    field_setAsFloatConstant (&x->x_color,      (t_float)0.0);
+    field_setAsFloatConstant (&x->x_positionX,  0.0);
+    field_setAsFloatConstant (&x->x_positionY,  0.0);
+    field_setAsFloatConstant (&x->x_color,      0.0);
     field_setAsFloatConstant (&x->x_isVisible,  (t_float)1.0);
     
     x->x_label = &s_;

@@ -193,7 +193,7 @@ static void select2_free (t_select2 *x)
 
 static void *select_new (t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 0) { t_atom a; SET_FLOAT (&a, (t_float)0.0); return select1_new (1, &a); }
+    if (argc == 0) { t_atom a; SET_FLOAT (&a, 0.0); return select1_new (1, &a); }
     if (argc == 1) { return select1_new (argc, argv); }
 
     return select2_new (argc, argv);

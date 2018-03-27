@@ -125,7 +125,7 @@ static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_
                         m++; ip++; break;
                         
     case A_FLOAT     :  if (!argc) { return PD_ERROR; }         /* Break is missing deliberately. */
-    case A_DEFFLOAT  :  if (!argc) { *fp = (t_float)0.0; }
+    case A_DEFFLOAT  :  if (!argc) { *fp = 0.0; }
                         else {
                             if (IS_FLOAT (argv)) { *fp = GET_FLOAT (argv); }
                             else { 
@@ -195,7 +195,7 @@ static t_error method_slot (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     if (s == &s_float) {
         if (argc && IS_FLOAT (argv)) { (*(class_getFloatMethod (c))) (x, GET_FLOAT (argv)); }
         else {
-            if (!argc) { (*(class_getFloatMethod (c))) (x, (t_float)0.0); }
+            if (!argc) { (*(class_getFloatMethod (c))) (x, 0.0); }
             else {
                 err = PD_ERROR;
             }

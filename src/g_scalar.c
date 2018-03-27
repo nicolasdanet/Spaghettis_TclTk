@@ -454,7 +454,7 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
     
     if (template_fieldIsFloat (tmpl, fieldName)) {
-        t_float f = (t_float)0.0;
+        t_float f = 0.0;
         if (count) { f = atom_getFloat (atoms); atoms++; count--; }
         word_setFloat (x->sc_element, tmpl, fieldName, f);
         

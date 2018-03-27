@@ -40,7 +40,7 @@ static t_int *rfft_tilde_performFlipZero (t_int *w)
     PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)w[3];
     
-    while (n--) { t_sample f = *in; --out; *out = - f; *in = (t_sample)0.0; in++; }
+    while (n--) { t_sample f = *in; --out; *out = - f; *in = 0.0; in++; }
         
     return (w + 4);
 }

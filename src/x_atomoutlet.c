@@ -112,7 +112,7 @@ t_error atomoutlet_broadcastIfTypeMatch (t_atomoutlet *x, t_atom *a)
 
 static void atomoutlet_init (t_atomoutlet *x)
 {
-    SET_FLOAT (&x->ao_atom, (t_float)0.0);
+    SET_FLOAT (&x->ao_atom, 0.0);
     gpointer_init (&x->ao_gpointer); 
     x->ao_outlet = NULL;
 }

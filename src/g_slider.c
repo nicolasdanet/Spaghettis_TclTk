@@ -665,7 +665,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONT;
     double minimum      = 0.0;
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
-    t_float position    = (t_float)0.0;
+    t_float position    = 0.0;
 
     if (argc < 17) { iemgui_deserializeDefault (cast_iem (x)); }
     else {

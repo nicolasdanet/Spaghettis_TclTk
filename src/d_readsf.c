@@ -159,7 +159,7 @@ static t_int *readsf_tilde_perform (t_int *w)
     
     for (i = 0; i < x->sf_numberOfAudioOutlets; i++) {
         PD_RESTRICTED out = x->sf_vectorsOut[i];
-        for (j = numberOfFramesRead; j < n; j++) { out[j] = (t_sample)0.0; }
+        for (j = numberOfFramesRead; j < n; j++) { out[j] = 0.0; }
     }
     //
     }

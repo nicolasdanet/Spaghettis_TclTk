@@ -104,7 +104,7 @@ static t_int *tabosc4_tilde_perform (t_int *w)
     z.z_i[PD_RAWCAST64_MSB] = t;
     x->x_phase = (z.z_d - DSP_UNITBIT * size) * x->x_sizeInverse;
     //
-    } else { while (n--) { *out++ = (t_sample)0.0; } }
+    } else { while (n--) { *out++ = 0.0; } }
     
     return (w + 5);
 }

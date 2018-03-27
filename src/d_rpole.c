@@ -47,7 +47,7 @@ static void rpole_tilde_set (t_rpole_tilde *x, t_float f)
 
 static void rpole_tilde_clear (t_rpole_tilde *x)
 {
-    rpole_tilde_set (x, (t_float)0.0);
+    rpole_tilde_set (x, 0.0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ static t_int *rpole_tilde_perform (t_int *w)
         *out++ = last = f;
     }
     
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last)) { last = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last)) { last = 0.0; }
         
     x->x_real = last;
     

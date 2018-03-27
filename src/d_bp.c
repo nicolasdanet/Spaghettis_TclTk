@@ -92,8 +92,8 @@ static void bp_tilde_q (t_bp_tilde *x, t_float q)
 
 static void bp_tilde_clear (t_bp_tilde *x)
 {
-    x->x_space.c_real1 = (t_sample)0.0;
-    x->x_space.c_real2 = (t_sample)0.0;
+    x->x_space.c_real1 = 0.0;
+    x->x_space.c_real2 = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -122,8 +122,8 @@ static t_int *bp_tilde_perform (t_int *w)
         last1  = f;
     }
     
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last1)) { last1 = (t_sample)0.0; }
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last2)) { last2 = (t_sample)0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last1)) { last1 = 0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last2)) { last2 = 0.0; }
     
     c->c_real1 = last1;
     c->c_real2 = last2;

@@ -210,9 +210,9 @@ static int soundfiler_readProceed (t_glist *glist, int argc, t_atom *argv)
             /* Note that file is closed in function called above. */
             
             for (i = 0; i < argc; i++) {
-                if (i >= properties.ap_numberOfChannels) { garray_setDataFromIndex (a[i], 0, (t_float)0.0); }
+                if (i >= properties.ap_numberOfChannels) { garray_setDataFromIndex (a[i], 0, 0.0); }
                 else {
-                    garray_setDataFromIndex (a[i], numberOfFramesRead, (t_float)0.0);
+                    garray_setDataFromIndex (a[i], numberOfFramesRead, 0.0);
                 }
                 garray_redraw (a[i]);
             }
@@ -254,7 +254,7 @@ static t_error soundfiler_writeFetch (int argc,
     
     if (!err) {
     //
-    t_sample maximum = (t_sample)0.0;
+    t_sample maximum = 0.0;
     int i;
         
     for (i = 0; i < argc; i++) {
@@ -372,7 +372,7 @@ static int soundfiler_writeProceed (t_glist *glist, int argc, t_atom *argv)
     t_garray *a[SOUNDFILE_CHANNELS] = { NULL };
     t_word   *w[SOUNDFILE_CHANNELS] = { NULL };
 
-    t_sample maximumAmplitude = (t_sample)0.0;
+    t_sample maximumAmplitude = 0.0;
     
     err = soundfiler_writeFetch (argc, argv, a, w, &maximumAmplitude, &properties);
     

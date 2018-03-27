@@ -110,8 +110,8 @@ static int textsearch_listIsBetter (t_textsearch *x,
     t_float f            = GET_FLOAT (argv + j);
     t_float bestValue    = GET_FLOAT (buffer_getAtomAtIndex (b, bestLineStart + field));
     t_float thisValue    = GET_FLOAT (buffer_getAtomAtIndex (b, start + field)); 
-    t_float bestDistance = math_euclideanDistance (f, (t_float)0.0, bestValue, (t_float)0.0);
-    t_float thisDistance = math_euclideanDistance (f, (t_float)0.0, thisValue, (t_float)0.0);
+    t_float bestDistance = math_euclideanDistance (f, 0.0, bestValue, 0.0);
+    t_float thisDistance = math_euclideanDistance (f, 0.0, thisValue, 0.0);
     
     if (type != TEXTSEARCH_EQUAL) { 
         int cmp = math_compareFloat (thisDistance, bestDistance);

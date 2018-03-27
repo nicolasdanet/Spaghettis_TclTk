@@ -170,7 +170,7 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             t_float scaleX = glist_getValueForOnePixelX (glist);
             t_float scaleY = glist_getValueForOnePixelY (glist);
         
-            bounds_set (&bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
+            bounds_set (&bounds, 0.0, 0.0, PD_ABS (scaleX), PD_ABS (scaleY));
         }
     }
     
@@ -330,7 +330,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     if (scaleX == 0.0) { scaleX = (t_float)1.0; }
     if (scaleY == 0.0) { scaleY = (t_float)1.0; }
     
-    bounds_set (&bounds, (t_float)0.0, (t_float)0.0, PD_ABS (scaleX), PD_ABS (scaleY));
+    bounds_set (&bounds, 0.0, 0.0, PD_ABS (scaleX), PD_ABS (scaleY));
     
     glist_setGraphGeometry (glist, &r, &bounds, isGOP);
     

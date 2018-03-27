@@ -242,7 +242,7 @@ static inline t_sample rsqrt_fastLUT (t_sample f)
 
     z.z_f = f;
     
-    if (z.z_f <= 0.0) { return (t_sample)0.0; }
+    if (z.z_f <= 0.0) { return 0.0; }
     else {
     //
     int e = (z.z_i >> 23) & (RSQRT_EXPONENTIAL_SIZE - 1);
@@ -270,12 +270,12 @@ static inline t_sample sqrt_fastLUT (t_sample f)
 
 static inline t_sample rsqrt_fastSTD (t_sample f)
 {
-    return (f <= (t_sample)0.0 ? (t_sample)0.0 : ((t_sample)1.0 / sqrtf (f)));
+    return (f <= 0.0 ? 0.0 : ((t_sample)1.0 / sqrtf (f)));
 }
 
 static inline t_sample sqrt_fastSTD (t_sample f)
 {
-    return (f <= (t_sample)0.0 ? (t_sample)0.0 : sqrtf (f));
+    return (f <= 0.0 ? 0.0 : sqrtf (f));
 }
 
 // -----------------------------------------------------------------------------------------------------------

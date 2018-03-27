@@ -37,7 +37,7 @@ static void *send_tilde_new (t_symbol *s)
 {
     t_send_tilde *x = (t_send_tilde *)pd_new (send_tilde_class);
 
-    x->x_f      = (t_float)0.0;
+    x->x_f      = 0.0;
     x->x_vector = (t_sample *)PD_MEMORY_GET (INTERNAL_BLOCKSIZE * sizeof (t_sample));
     x->x_name   = s;
     

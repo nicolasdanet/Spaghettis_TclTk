@@ -70,7 +70,7 @@ static void poly_removeAtIndex (t_poly *x, int i, int dump)
     x->x_vector[i].v_serial = x->x_serial++;
     
     if (k) {
-        outlet_float (x->x_outletRight,  (t_float)0.0);
+        outlet_float (x->x_outletRight,  0.0);
         outlet_float (x->x_outletMiddle, t);
         outlet_float (x->x_outletLeft,   i + 1);
     }

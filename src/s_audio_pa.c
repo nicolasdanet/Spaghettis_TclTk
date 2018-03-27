@@ -323,7 +323,7 @@ int audio_pollNative (void)
         for (i = 0, sound = audio_soundOut, p1 = t; i < pa_channelsOut; i++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsOut) {
                 *p2 = *sound;
-                *sound = (t_sample)0.0;
+                *sound = 0.0;
             }
         }
         PaUtil_WriteRingBuffer (&pa_ringOut, t, requiredOut);
