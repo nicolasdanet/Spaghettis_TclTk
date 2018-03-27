@@ -41,6 +41,10 @@ typedef struct _micaget {
 
 static void micaget_bang (t_micaget *x)
 {
+    /* LLVM analyzer seems to report false positives. */
+
+    #ifndef __clang_analyzer__
+
     mica::Concept t (concept_fetch (x->x_tag));
     
     buffer_clear (x->x_cache);
@@ -55,6 +59,8 @@ static void micaget_bang (t_micaget *x)
     }
     
     outlet_list (x->x_outlet, buffer_getSize (x->x_cache), buffer_getAtoms (x->x_cache));
+    
+    #endif
 }
 
 static void micaget_symbol (t_micaget *x, t_symbol *s)

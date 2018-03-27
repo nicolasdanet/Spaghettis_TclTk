@@ -113,22 +113,46 @@ static void micainterval_apply (t_micainterval *x, t_symbol *s, int argc, t_atom
 
 static void micainterval_octaves (t_micainterval *x)
 {
+    /* LLVM analyzer seems to report false positives. */
+
+    #ifndef __clang_analyzer__
+    
     outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getOctaves()));
+    
+    #endif
 }
 
 static void micainterval_distance (t_micainterval *x)
 {
+    /* LLVM analyzer seems to report false positives. */
+
+    #ifndef __clang_analyzer__
+    
     outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getDistance()));
+    
+    #endif
 }
 
 static void micainterval_quality (t_micainterval *x)
 {
+    /* LLVM analyzer seems to report false positives. */
+
+    #ifndef __clang_analyzer__
+    
     outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getQuality()));
+    
+    #endif
 }
 
 static void micainterval_direction (t_micainterval *x)
 {
+    /* LLVM analyzer seems to report false positives. */
+
+    #ifndef __clang_analyzer__
+
     outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getDirection()));
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -41,6 +41,12 @@ typedef struct _micaspell {
 
 static void micaspell_list (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
 {
+    /* LLVM analyzer seems to report false positives. */
+
+    #ifndef __clang_analyzer__
+
+    if (argc) {
+    //
     PD_ASSERT (x->x_spell.isValid());
     
     prim::Array < int > notes; notes.resize (argc);
@@ -63,6 +69,10 @@ static void micaspell_list (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
     PD_ATOMS_FREEA (a, argc);
     //
     }
+    //
+    }
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------

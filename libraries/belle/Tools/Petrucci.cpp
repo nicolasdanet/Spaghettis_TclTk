@@ -36,7 +36,7 @@ using namespace belle;
 
 int main()
 {
-    /* LLVM analyzer (clang-802.0.42) seems to report false positives. */
+    /* LLVM analyzer seems to report false positives. */
     
     #ifndef __clang_analyzer__
     

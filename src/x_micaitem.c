@@ -46,6 +46,10 @@ static void micaitem_bang (t_micaitem *x)
 
 static void micaitem_list (t_micaitem *x, t_symbol *s, int argc, t_atom *argv)
 {
+    /* LLVM analyzer seems to report false positives. */
+    
+    #ifndef __clang_analyzer__
+
     mica::Concept t;
     
     if (argc) {
@@ -72,6 +76,8 @@ static void micaitem_list (t_micaitem *x, t_symbol *s, int argc, t_atom *argv)
     x->x_tag = concept_tag (t);
     
     micaitem_bang (x);
+    
+    #endif
 }
 
 static void micaitem_anything (t_micaitem *x, t_symbol *s, int argc, t_atom *argv)
