@@ -24,7 +24,7 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
     int type = v->ds_type;
     
     switch (type) {
-        case DATA_FLOAT  : WORD_FLOAT (w)  = 0.0;                              break;
+        case DATA_FLOAT  : WORD_FLOAT (w)  = 0.0;                                       break;
         case DATA_SYMBOL : WORD_SYMBOL (w) = &s_symbol;                                 break;
         case DATA_TEXT   : WORD_BUFFER (w) = buffer_new();                              break;
         case DATA_ARRAY  : WORD_ARRAY (w)  = array_new (v->ds_templateIdentifier, gp);  break;

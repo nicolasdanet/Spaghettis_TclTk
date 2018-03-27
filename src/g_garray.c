@@ -869,15 +869,15 @@ void garray_setup (void)
     
     class_addMethod (c, (t_method)garray_constant,      sym_constant,       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)garray_normalize,     sym_normalize,      A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)garray_sinesum,       sym_sinesum,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)garray_cosinesum,     sym_cosinesum,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)garray_sinesum,       sym_sinesum,        A_GIMME,  A_NULL);
+    class_addMethod (c, (t_method)garray_cosinesum,     sym_cosinesum,      A_GIMME,  A_NULL);
     class_addMethod (c, (t_method)garray_rename,        sym_rename,         A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_read,          sym_read,           A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)garray_write,         sym_write,          A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)garray_range,         sym_range,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)garray_fromDialog,    sym__arraydialog,   A_GIMME, A_NULL);
-        
+    class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT,  A_NULL);
+    class_addMethod (c, (t_method)garray_range,         sym_range,          A_GIMME,  A_NULL);
+    class_addMethod (c, (t_method)garray_fromDialog,    sym__arraydialog,   A_GIMME,  A_NULL);
+    
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)garray_constant, sym_const, A_DEFFLOAT, A_NULL);
