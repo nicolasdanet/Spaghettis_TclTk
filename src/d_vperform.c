@@ -942,14 +942,14 @@ t_int *vPerform_magnitude (t_int *w)
     t_sample g6 = s2[6];
     t_sample g7 = s2[7];
 
-    s3[0] = (t_sample)sqrt_fast ((t_float)(f0 * f0 + g0 * g0));
-    s3[1] = (t_sample)sqrt_fast ((t_float)(f1 * f1 + g1 * g1));
-    s3[2] = (t_sample)sqrt_fast ((t_float)(f2 * f2 + g2 * g2));
-    s3[3] = (t_sample)sqrt_fast ((t_float)(f3 * f3 + g3 * g3));
-    s3[4] = (t_sample)sqrt_fast ((t_float)(f4 * f4 + g4 * g4));
-    s3[5] = (t_sample)sqrt_fast ((t_float)(f5 * f5 + g5 * g5));
-    s3[6] = (t_sample)sqrt_fast ((t_float)(f6 * f6 + g6 * g6));
-    s3[7] = (t_sample)sqrt_fast ((t_float)(f7 * f7 + g7 * g7));
+    s3[0] = sqrt_fast (f0 * f0 + g0 * g0);
+    s3[1] = sqrt_fast (f1 * f1 + g1 * g1);
+    s3[2] = sqrt_fast (f2 * f2 + g2 * g2);
+    s3[3] = sqrt_fast (f3 * f3 + g3 * g3);
+    s3[4] = sqrt_fast (f4 * f4 + g4 * g4);
+    s3[5] = sqrt_fast (f5 * f5 + g5 * g5);
+    s3[6] = sqrt_fast (f6 * f6 + g6 * g6);
+    s3[7] = sqrt_fast (f7 * f7 + g7 * g7);
     
     n -= 8;
     s1 += 8;
@@ -990,14 +990,14 @@ t_int *vPerform_inverseMagnitude (t_int *w)
     t_sample g6 = s2[6];
     t_sample g7 = s2[7];
 
-    s3[0] = (t_sample)rsqrt_fast (f0 * f0 + g0 * g0);
-    s3[1] = (t_sample)rsqrt_fast (f1 * f1 + g1 * g1);
-    s3[2] = (t_sample)rsqrt_fast (f2 * f2 + g2 * g2);
-    s3[3] = (t_sample)rsqrt_fast (f3 * f3 + g3 * g3);
-    s3[4] = (t_sample)rsqrt_fast (f4 * f4 + g4 * g4);
-    s3[5] = (t_sample)rsqrt_fast (f5 * f5 + g5 * g5);
-    s3[6] = (t_sample)rsqrt_fast (f6 * f6 + g6 * g6);
-    s3[7] = (t_sample)rsqrt_fast (f7 * f7 + g7 * g7);
+    s3[0] = rsqrt_fast (f0 * f0 + g0 * g0);
+    s3[1] = rsqrt_fast (f1 * f1 + g1 * g1);
+    s3[2] = rsqrt_fast (f2 * f2 + g2 * g2);
+    s3[3] = rsqrt_fast (f3 * f3 + g3 * g3);
+    s3[4] = rsqrt_fast (f4 * f4 + g4 * g4);
+    s3[5] = rsqrt_fast (f5 * f5 + g5 * g5);
+    s3[6] = rsqrt_fast (f6 * f6 + g6 * g6);
+    s3[7] = rsqrt_fast (f7 * f7 + g7 * g7);
     
     n -= 8;
     s1 += 8;
