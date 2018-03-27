@@ -53,7 +53,7 @@ static t_int *osc_tilde_perform (t_int *w)
     t_float k = x->x_conversion;
     t_rawcast64 z;
     
-    while (n--) { *out++ = dsp_getCosineAtLUT (phase); phase += (*in++) * k; }
+    while (n--) { *out++ = (t_sample)dsp_getCosineAtLUT (phase); phase += (*in++) * k; }
 
     /* Wrap the phase to the cosine table size. */
     

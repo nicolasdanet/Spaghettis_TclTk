@@ -70,7 +70,7 @@ static t_int *cos_tilde_perform (t_int *w)
     PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    while (n--) { *out++ = dsp_getCosineAtLUT ((*in++) * COSINE_TABLE_SIZE); }
+    while (n--) { *out++ = (t_sample)dsp_getCosineAtLUT ((*in++) * COSINE_TABLE_SIZE); }
 
     return (w + 4);
 }
