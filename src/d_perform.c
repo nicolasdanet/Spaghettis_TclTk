@@ -418,7 +418,7 @@ t_int *perform_inverseMagnitude (t_int *w)
     t_sample f1 = *s1++;
     t_sample f2 = *s2++;
     
-    *s3++ = (t_sample)rsqrt_fast ((t_float)(f1 * f1 + f2 * f2));
+    *s3++ = (t_sample)rsqrt_fast (f1 * f1 + f2 * f2);
     //
     }
     

@@ -32,8 +32,8 @@ typedef struct _rsqrt_tilde {
 
 #if PD_WITH_DEADCODE
 
-t_float rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];           /* Static. */
-t_float rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Static. */
+t_sample rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];           /* Static. */
+t_sample rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Static. */
 
 #endif
 
@@ -55,16 +55,16 @@ void rsqrt_tilde_initialize (void)
             z.z_i = (i == RSQRT_EXPONENTIAL_SIZE - 1 ? RSQRT_EXPONENTIAL_SIZE - 2 : i) << 23;
         }
 
-        rsqrt_tableExponential[i] = (t_float)(1.0 / sqrt (z.z_f));
+        rsqrt_tableExponential[i] = (t_sample)(1.0 / sqrt (z.z_f));
     }
     
     for (i = 0; i < RSQRT_MANTISSA_SIZE; i++) {
     
         /* Exponent is zero with a IEEE float inside the 1.0 to 2.0 range. */
         
-        t_float f = (t_float)(1.0 + (1.0 / RSQRT_MANTISSA_SIZE) * i);
+        t_sample f = (t_sample)(1.0 + (1.0 / RSQRT_MANTISSA_SIZE) * i);
         
-        rsqrt_tableMantissa[i] = (t_float)(1.0 / sqrt (f));      
+        rsqrt_tableMantissa[i] = (t_sample)(1.0 / sqrt (f));
     }
     
     #endif // PD_WITH_DEADCODE
