@@ -90,9 +90,9 @@ static t_int *tabosc4_tilde_perform (t_int *w)
     //
     z.z_d = phase;
     phase += (*in++) * conversion;
-    p = data + (z.z_i[PD_RAWCAST64_MSB] & sizeMask);    /* Integer part. */
+    p = data + (z.z_i[PD_RAWCAST64_MSB] & sizeMask);
     z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
-    *out++ = dsp_4PointsInterpolationWithWords ((t_float)(z.z_d - DSP_UNITBIT), p);     /* Fractional part. */
+    *out++ = (t_sample)dsp_4PointsInterpolationWithWords ((t_float)(z.z_d - DSP_UNITBIT), p);
     //
     }
 

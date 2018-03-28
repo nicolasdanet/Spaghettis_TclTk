@@ -67,7 +67,7 @@ static t_int *tabread4_tilde_perform (t_int *w)
     if (i < 1) { i = 1; fractional = 0.0; }
     else if (i > size - 3) { i = size - 3; fractional = 1.0; }
 
-    *out++ = dsp_4PointsInterpolationWithWords ((t_float)fractional, data + i - 1);
+    *out++ = (t_sample)dsp_4PointsInterpolationWithWords ((t_float)fractional, data + i - 1);
     //
     }
     //
