@@ -53,7 +53,7 @@ static void *sin_new (void)
 
 static void sin_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, sinf (x->x_f));
+    outlet_float (x->x_outlet, sin (x->x_f));
 }
 
 static void sin_float (t_math *x, t_float f)
@@ -76,7 +76,7 @@ static void *cos_new (void)
 
 static void cos_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, cosf (x->x_f));
+    outlet_float (x->x_outlet, cos (x->x_f));
 }
 
 static void cos_float (t_math *x, t_float f)
@@ -99,8 +99,8 @@ static void *tan_new (void)
 
 static void tan_bang (t_math *x)
 {
-    t_float c = cosf (x->x_f);
-    t_float t = (t_float)(c == 0.0 ? 0.0 : sinf (x->x_f) / c);
+    t_float c = cos (x->x_f);
+    t_float t = (t_float)(c == 0.0 ? 0.0 : sin (x->x_f) / c);
     
     outlet_float (x->x_outlet, t);
 }
@@ -125,7 +125,7 @@ static void *log_new (void)
 
 static void log_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, (t_float)(x->x_f > 0.0 ? logf (x->x_f) : -1000.0));
+    outlet_float (x->x_outlet, (t_float)(x->x_f > 0.0 ? log (x->x_f) : -1000.0));
 }
 
 static void log_float (t_math *x, t_float f)
@@ -148,7 +148,7 @@ static void *exp_new (void)
 
 static void exp_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, expf ((t_float)PD_MIN (x->x_f, MATH_MAXIMUM_LOGARITHM)));
+    outlet_float (x->x_outlet, exp ((t_float)PD_MIN (x->x_f, MATH_MAXIMUM_LOGARITHM)));
 }
 
 static void exp_float (t_math *x, t_float f)
@@ -171,7 +171,7 @@ static void *abs_new (void)
 
 static void abs_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, fabsf (x->x_f));
+    outlet_float (x->x_outlet, fabs (x->x_f));
 }
 
 static void abs_float (t_math *x, t_float f)
@@ -194,7 +194,7 @@ static void *sqrt_new (void)
 
 static void sqrt_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, (t_float)(x->x_f > 0.0 ? sqrtf (x->x_f) : 0.0));
+    outlet_float (x->x_outlet, (t_float)(x->x_f > 0.0 ? sqrt (x->x_f) : 0.0));
 }
 
 static void sqrt_float (t_math *x, t_float f)
@@ -240,7 +240,7 @@ static void *atan_new (void)
 
 static void atan_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, atanf (x->x_f));
+    outlet_float (x->x_outlet, atan (x->x_f));
 }
 
 static void atan_float (t_math *x, t_float f)

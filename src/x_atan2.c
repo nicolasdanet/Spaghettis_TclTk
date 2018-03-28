@@ -42,7 +42,7 @@ static void *atan2_new (void)
 
 static void atan2_bang (t_atan2 *x)
 {
-    outlet_float (x->x_outlet, (x->x_f1 == 0.0 && x->x_f2 == 0.0 ? 0.0 : atan2f (x->x_f1, x->x_f2)));
+    outlet_float (x->x_outlet, (x->x_f1 == 0.0 && x->x_f2 == 0.0 ? 0.0 : atan2 (x->x_f1, x->x_f2)));
 }
 
 static void atan2_float (t_atan2 *x, t_float f)
