@@ -495,7 +495,7 @@
     typedef long                    t_int;              /* Ditto (LP64 / ILP64). */
 #endif
 
-typedef float                       t_float;
+typedef double                      t_float;
 typedef float                       t_sample;
 
 // -----------------------------------------------------------------------------------------------------------

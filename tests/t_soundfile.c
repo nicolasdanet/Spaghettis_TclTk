@@ -18,9 +18,9 @@ TTT_BEGIN (AtomicSoundfile, 40, "Soundfile - Define")
     TTT_EXPECT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_AIFF);
     TTT_EXPECT (SOUNDFILE_HELPER_SIZE > SOUNDFILE_HEADER_NEXT);
     
-    TTT_EXPECT (sizeof (t_sample) == sizeof (t_float));         /* Required for encoding and decoding. */
-    TTT_EXPECT (sizeof (t_word) >= sizeof (t_sample));          /* Ditto. */
-    TTT_EXPECT (sizeof (t_word) % sizeof (t_sample) == 0);      /* Ditto. */
+    TTT_EXPECT (sizeof (t_word) == sizeof (t_float));   /* Required for encoding and decoding. */
+    TTT_EXPECT (sizeof (t_word) == sizeof (double));    /* Ditto. */
+    TTT_EXPECT (sizeof (t_word) == 8);                  /* Ditto. */
     
 TTT_END
 
