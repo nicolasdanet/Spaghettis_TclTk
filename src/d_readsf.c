@@ -140,14 +140,13 @@ static t_int *readsf_tilde_perform (t_int *w)
         
         numberOfFramesRead = (int)(loaded / bytesPerFrame);
         
-        soundfile_decode (numberOfChannels,
+        soundfile_decode32 (numberOfChannels,
             x->sf_vectorsOut,
             x->sf_cached,
             numberOfFramesRead,
             0,
             x->sf_properties.ap_bytesPerSample,
             x->sf_properties.ap_isBigEndian,
-            1,
             x->sf_numberOfAudioOutlets);
     }
     //

@@ -118,15 +118,14 @@ static t_int *writesf_tilde_perform (t_int *w)
     
     if (required < x->sf_bufferSize) {
     //
-    soundfile_encode (numberOfChannels,
+    soundfile_encode32 (numberOfChannels,
         x->sf_vectorsIn,
         x->sf_cached,
         n,
         0,
         x->sf_properties.ap_bytesPerSample,
         x->sf_properties.ap_isBigEndian,
-        1,
-        (t_sample)1.0);
+        (float)1.0);
     
     {
         int32_t written = ringbuffer_write (sfthread_getBuffer (x->sf_thread), x->sf_cached, required);

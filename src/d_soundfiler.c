@@ -150,14 +150,16 @@ static int soundfiler_readDecode (int f,
     
     if ((int)(fread (t, (size_t)bytesPerFrame, (size_t)size, fp)) != size) { PD_BUG; break; }
     else {
-        soundfile_decode (args->ap_numberOfChannels,
-            (t_sample **)w, 
+        
+        /* Note that in function below sizeof (t_word) is assumed equal to sizeof (double). */
+        
+        soundfile_decode64 (args->ap_numberOfChannels,
+            (double **)w,
             (unsigned char *)t,
             size,
             framesAlreadyRead,
             args->ap_bytesPerSample,
             args->ap_isBigEndian,
-            (int)(sizeof (t_word) / sizeof (t_sample)),
             channelsRequired);
     }
             
@@ -247,14 +249,14 @@ static t_error soundfiler_writeFetch (int argc,
     t_atom *argv,
     t_garray **a,
     t_word **w,
-    t_sample *m, 
+    float *m,
     t_audioproperties *args)
 {
     t_error err = (argc < 1 || argc > SOUNDFILE_CHANNELS);
     
     if (!err) {
     //
-    t_sample maximum = 0.0;
+    float maximum = 0.0;
     int i;
         
     for (i = 0; i < argc; i++) {
@@ -266,7 +268,7 @@ static t_error soundfiler_writeFetch (int argc,
     if (a[i] == NULL) { error_canNotFind (sym_soundfiler, t); err = PD_ERROR; break; }
     else {
         int size;
-        t_sample f = garray_getAmplitude (a[i]);
+        float f = garray_getAmplitude (a[i]);
         maximum = PD_MAX (maximum, f);
         garray_getData (a[i], &size, &w[i]);
         args->ap_numberOfFrames = PD_MIN (size - args->ap_onset, args->ap_numberOfFrames);
@@ -284,9 +286,9 @@ static t_error soundfiler_writeFetch (int argc,
     return err;
 }
 
-static t_sample soundfiler_writeGetFactor (t_sample maximumAmplitude, t_audioproperties *args)
+static float soundfiler_writeGetFactor (float maximumAmplitude, t_audioproperties *args)
 {
-    t_sample f = (t_sample)1.0;
+    float f = (float)1.0;
     
     /* Linear PCM encoding requires a signal in common range. */
     
@@ -295,7 +297,7 @@ static t_sample soundfiler_writeGetFactor (t_sample maximumAmplitude, t_audiopro
     }
     
     if (args->ap_needToNormalize) {
-        if (maximumAmplitude > 0.0) { f = (t_sample)(32767.0 / (32768.0 * maximumAmplitude)); }
+        if (maximumAmplitude > 0.0) { f = (float)(32767.0 / (32768.0 * maximumAmplitude)); }
     }
     
     return f;
@@ -305,10 +307,10 @@ static int soundfiler_writeEncode (int f,
     int channelsRequired,
     t_garray **a,
     t_word **w,
-    t_sample *m,
+    float *m,
     t_audioproperties *args)
 {
-    t_sample normalizationFactor = soundfiler_writeGetFactor (*m, args);
+    float normalizationFactor    = soundfiler_writeGetFactor (*m, args);
     int bytesPerFrame            = args->ap_numberOfChannels * args->ap_bytesPerSample;
     int framesToWrite            = args->ap_numberOfFrames;
     int framesAlreadyWritten     = 0;
@@ -324,15 +326,16 @@ static int soundfiler_writeEncode (int f,
     int framesRemaining = framesToWrite - framesAlreadyWritten;
     int sizeInFrames = PD_MIN (framesRemaining, framesBufferSize);
     int sizeInBytes  = sizeInFrames * bytesPerFrame;
+
+    /* Note that in function below sizeof (t_word) is assumed equal to sizeof (double). */
     
-    soundfile_encode (args->ap_numberOfChannels,
-        (t_sample **)w,
+    soundfile_encode64 (args->ap_numberOfChannels,
+        (double **)w,
         (unsigned char *)t,
         sizeInFrames,
         args->ap_onset,
         args->ap_bytesPerSample,
         args->ap_isBigEndian,
-        (int)(sizeof (t_word) / sizeof (t_sample)),
         normalizationFactor);
    
     {
@@ -372,7 +375,7 @@ static int soundfiler_writeProceed (t_glist *glist, int argc, t_atom *argv)
     t_garray *a[SOUNDFILE_CHANNELS] = { NULL };
     t_word   *w[SOUNDFILE_CHANNELS] = { NULL };
 
-    t_sample maximumAmplitude = 0.0;
+    float maximumAmplitude = 0.0;
     
     err = soundfiler_writeFetch (argc, argv, a, w, &maximumAmplitude, &properties);
     

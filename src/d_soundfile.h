@@ -328,25 +328,42 @@ t_error soundfile_writeFileClose    (int f, int itemsWritten, t_audioproperties 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    soundfile_encode            (int numberOfChannels,
-                                        t_sample **v,
+void    soundfile_encode32          (int numberOfChannels,
+                                        float **v,
                                         unsigned char *t,
                                         int numberOfFrames,
                                         int onset,
                                         int bytesPerSamples,
                                         int isBigEndian,
-                                        int spread,
-                                        t_sample normalFactor);
+                                        float normalFactor);
                                             
-void    soundfile_decode            (int numberOfChannels,
-                                        t_sample **v,
+void    soundfile_decode32          (int numberOfChannels,
+                                        float **v,
                                         unsigned char *t,
                                         int numberOfFrames,
                                         int onset,
                                         int bytesPerSamples,
                                         int isBigEndian,
-                                        int spread,
-                                        int n);
+                                        int n);                         /* Number of channels required. */
+
+void    soundfile_encode64          (int numberOfChannels,
+                                        double **v,
+                                        unsigned char *t,
+                                        int numberOfFrames,
+                                        int onset,
+                                        int bytesPerSamples,
+                                        int isBigEndian,
+                                        float normalFactor);
+
+void    soundfile_decode64          (int numberOfChannels,
+                                        double **v,
+                                        unsigned char *t,
+                                        int numberOfFrames,
+                                        int onset,
+                                        int bytesPerSamples,
+                                        int isBigEndian,
+                                        int n);                         /* Number of channels required. */
+
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -27,14 +27,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline int soundfile_encodeLinear16Value (t_sample f, t_sample k)
+static inline int soundfile_encodeLinear16Value (float f, float k)
 {
     int v = (int)(32768.0 + (f * k));
     v -= 32768;
     return PD_CLAMP (v, -32767, 32767);
 }
 
-static inline void soundfile_encodeLinear16BigEndian (t_sample f, t_sample k, unsigned char *p)
+static inline void soundfile_encodeLinear16BigEndian (float f, float k, unsigned char *p)
 {
     int v = soundfile_encodeLinear16Value (f, k);
     
@@ -42,7 +42,7 @@ static inline void soundfile_encodeLinear16BigEndian (t_sample f, t_sample k, un
     p[1] = 0xff & (v);
 }
 
-static inline void soundfile_encodeLinear16LittleEndian (t_sample f, t_sample k, unsigned char *p)
+static inline void soundfile_encodeLinear16LittleEndian (float f, float k, unsigned char *p)
 {
     int v = soundfile_encodeLinear16Value (f, k);
     
@@ -53,14 +53,14 @@ static inline void soundfile_encodeLinear16LittleEndian (t_sample f, t_sample k,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline int soundfile_encodeLinear24Value (t_sample f, t_sample k)
+static inline int soundfile_encodeLinear24Value (float f, float k)
 {
     int v = (int)(8388608.0 + (f * k));
     v -= 8388608;
     return PD_CLAMP (v, -8388607, 8388607);
 }
 
-static inline void soundfile_encodeLinear24BigEndian (t_sample f, t_sample k, unsigned char *p)
+static inline void soundfile_encodeLinear24BigEndian (float f, float k, unsigned char *p)
 {
     int v = soundfile_encodeLinear24Value (f, k);
     
@@ -69,7 +69,7 @@ static inline void soundfile_encodeLinear24BigEndian (t_sample f, t_sample k, un
     p[2] = 0xff & (v);
 }
 
-static inline void soundfile_encodeLinear24LittleEndian (t_sample f, t_sample k, unsigned char *p)
+static inline void soundfile_encodeLinear24LittleEndian (float f, float k, unsigned char *p)
 {
     int v = soundfile_encodeLinear24Value (f, k);
     
@@ -81,7 +81,7 @@ static inline void soundfile_encodeLinear24LittleEndian (t_sample f, t_sample k,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline void soundfile_encodeFloatBigEndian (t_sample f, t_sample k, unsigned char *p)
+static inline void soundfile_encodeFloat32BigEndian (float f, float k, unsigned char *p)
 {
     t_rawcast32 z;
     
@@ -93,7 +93,7 @@ static inline void soundfile_encodeFloatBigEndian (t_sample f, t_sample k, unsig
     p[3] = 0xff & (z.z_i);
 }
 
-static inline void soundfile_encodeFloatLittleEndian (t_sample f, t_sample k, unsigned char *p)
+static inline void soundfile_encodeFloat32LittleEndian (float f, float k, unsigned char *p)
 {
     t_rawcast32 z;
     
@@ -109,29 +109,28 @@ static inline void soundfile_encodeFloatLittleEndian (t_sample f, t_sample k, un
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void soundfile_encodeLinear16 (int numberOfChannels,
-    t_sample **v,
+void soundfile_encode32Linear16 (int numberOfChannels,
+    float **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
     int isBigEndian,
-    t_sample normalFactor,
-    int spread)
+    float normalFactor)
 {
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    t_sample *s = NULL;
+    float *s = NULL;
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     
-    t_sample k = (t_sample)(normalFactor * 32768.0);
-    int offset = spread * onset;
+    float k = (float)(normalFactor * 32768.0);
+    int offset = onset;
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
             soundfile_encodeLinear16BigEndian (*s, k, p2);
         }
         
@@ -140,7 +139,7 @@ void soundfile_encodeLinear16 (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
             soundfile_encodeLinear16LittleEndian (*s, k, p2);
         }
         
@@ -149,29 +148,28 @@ void soundfile_encodeLinear16 (int numberOfChannels,
     }
 }
 
-void soundfile_encodeLinear24 (int numberOfChannels,
-    t_sample **v,
+void soundfile_encode32Linear24 (int numberOfChannels,
+    float **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
     int isBigEndian,
-    t_sample normalFactor,
-    int spread)
+    float normalFactor)
 {
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    t_sample *s = NULL;
+    float *s = NULL;
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     
-    t_sample k = (t_sample)(normalFactor * 8388608.0);
-    int offset = spread * onset;
+    float k = (float)(normalFactor * 8388608.0);
+    int offset = onset;
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
             soundfile_encodeLinear24BigEndian (*s, k, p2);
         }
         
@@ -180,7 +178,7 @@ void soundfile_encodeLinear24 (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
             soundfile_encodeLinear24LittleEndian (*s, k, p2);
         }
         
@@ -189,28 +187,27 @@ void soundfile_encodeLinear24 (int numberOfChannels,
     }
 }
 
-void soundfile_encodeFloat (int numberOfChannels,
-    t_sample **v,
+void soundfile_encode32Float (int numberOfChannels,
+    float **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
     int isBigEndian,
-    t_sample normalFactor,
-    int spread)
+    float normalFactor)
 {
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    t_sample *s = NULL;
+    float *s = NULL;
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
-    int offset = spread * onset;
+    int offset = onset;
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
-            soundfile_encodeFloatBigEndian (*s, normalFactor, p2);
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            soundfile_encodeFloat32BigEndian (*s, normalFactor, p2);
         }
         
         p1 += bytesPerSample;
@@ -218,8 +215,8 @@ void soundfile_encodeFloat (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
-            soundfile_encodeFloatLittleEndian (*s, normalFactor, p2);
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            soundfile_encodeFloat32LittleEndian (*s, normalFactor, p2);
         }
         
         p1 += bytesPerSample;
@@ -227,52 +224,215 @@ void soundfile_encodeFloat (int numberOfChannels,
     }
 }
 
-void soundfile_encode (int numberOfChannels,
-    t_sample **v,
+void soundfile_encode32 (int numberOfChannels,
+    float **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
     int isBigEndian,
-    int spread, 
-    t_sample normalFactor)
+    float normalFactor)
 {
     if (bytesPerSample == 2) {
     
-        soundfile_encodeLinear16 (numberOfChannels,
+        soundfile_encode32Linear16 (numberOfChannels,
             v, 
             t, 
             numberOfFrames,
             onset,
             bytesPerSample,
             isBigEndian,
-            normalFactor,
-            spread); 
+            normalFactor);
     
     } else if (bytesPerSample == 3) {
 
-        soundfile_encodeLinear24 (numberOfChannels,
+        soundfile_encode32Linear24 (numberOfChannels,
             v, 
             t, 
             numberOfFrames,
             onset,
             bytesPerSample,
             isBigEndian,
-            normalFactor,
-            spread);
+            normalFactor);
             
     } else if (bytesPerSample == 4) {
 
-        soundfile_encodeFloat (numberOfChannels,
+        soundfile_encode32Float (numberOfChannels,
             v, 
             t, 
             numberOfFrames,
             onset,
             bytesPerSample,
             isBigEndian,
-            normalFactor,
-            spread);
+            normalFactor);
             
+    } else {
+    
+        PD_BUG;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void soundfile_encode64Linear16 (int numberOfChannels,
+    double **v,
+    unsigned char *t,
+    int numberOfFrames,
+    int onset,
+    int bytesPerSample,
+    int isBigEndian,
+    float normalFactor)
+{
+    int i, j;
+    unsigned char *p1 = t;
+    unsigned char *p2 = NULL;
+    double *s = NULL;
+    
+    int bytesPerFrame = bytesPerSample * numberOfChannels;
+    
+    float k = (float)(normalFactor * 32768.0);
+    int offset = onset;
+    
+    if (isBigEndian) {
+        for (i = 0; i < numberOfChannels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            soundfile_encodeLinear16BigEndian (*s, k, p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+        
+    } else {
+        for (i = 0; i < numberOfChannels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            soundfile_encodeLinear16LittleEndian (*s, k, p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+    }
+}
+
+void soundfile_encode64Linear24 (int numberOfChannels,
+    double **v,
+    unsigned char *t,
+    int numberOfFrames,
+    int onset,
+    int bytesPerSample,
+    int isBigEndian,
+    float normalFactor)
+{
+    int i, j;
+    unsigned char *p1 = t;
+    unsigned char *p2 = NULL;
+    double *s = NULL;
+    
+    int bytesPerFrame = bytesPerSample * numberOfChannels;
+    
+    float k = (float)(normalFactor * 8388608.0);
+    int offset = onset;
+    
+    if (isBigEndian) {
+        for (i = 0; i < numberOfChannels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            soundfile_encodeLinear24BigEndian (*s, k, p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+        
+    } else {
+        for (i = 0; i < numberOfChannels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            soundfile_encodeLinear24LittleEndian (*s, k, p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+    }
+}
+
+void soundfile_encode64Float (int numberOfChannels,
+    double **v,
+    unsigned char *t,
+    int numberOfFrames,
+    int onset,
+    int bytesPerSample,
+    int isBigEndian,
+    float normalFactor)
+{
+    int i, j;
+    unsigned char *p1 = t;
+    unsigned char *p2 = NULL;
+    double *s = NULL;
+    
+    int bytesPerFrame = bytesPerSample * numberOfChannels;
+    int offset = onset;
+    
+    if (isBigEndian) {
+        for (i = 0; i < numberOfChannels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            soundfile_encodeFloat32BigEndian (*s, normalFactor, p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+        
+    } else {
+        for (i = 0; i < numberOfChannels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            soundfile_encodeFloat32LittleEndian (*s, normalFactor, p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+    }
+}
+
+void soundfile_encode64 (int numberOfChannels,
+    double **v,
+    unsigned char *t,
+    int numberOfFrames,
+    int onset,
+    int bytesPerSample,
+    int isBigEndian,
+    float normalFactor)
+{
+    if (bytesPerSample == 2) {
+    
+        soundfile_encode64Linear16 (numberOfChannels,
+            v,
+            t,
+            numberOfFrames,
+            onset,
+            bytesPerSample,
+            isBigEndian,
+            normalFactor);
+    
+    } else if (bytesPerSample == 3) {
+
+        soundfile_encode64Linear24 (numberOfChannels,
+            v,
+            t,
+            numberOfFrames,
+            onset,
+            bytesPerSample,
+            isBigEndian,
+            normalFactor);
+        
+    } else if (bytesPerSample == 4) {
+
+        soundfile_encode64Float (numberOfChannels,
+            v,
+            t,
+            numberOfFrames,
+            onset,
+            bytesPerSample,
+            isBigEndian,
+            normalFactor);
+        
     } else {
     
         PD_BUG;
@@ -285,33 +445,33 @@ void soundfile_encode (int numberOfChannels,
 
 /* Left operand of the shift operator is promote to the int type (assumed 32-bit). */
 
-static inline t_sample soundfile_decodeLinear16BigEndian (unsigned char *p)
+static inline float soundfile_decodeLinear16BigEndian (unsigned char *p)
 {
-    return (t_sample)(SOUNDFILE_SCALE * ((p[0] << 24) | (p[1] << 16)));
+    return (float)(SOUNDFILE_SCALE * ((p[0] << 24) | (p[1] << 16)));
 }
 
-static inline t_sample soundfile_decodeLinear16LittleEndian (unsigned char *p)
+static inline float soundfile_decodeLinear16LittleEndian (unsigned char *p)
 {
-    return (t_sample)(SOUNDFILE_SCALE * ((p[1] << 24) | (p[0] << 16)));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static inline t_sample soundfile_decodeLinear24BigEndian (unsigned char *p)
-{
-    return (t_sample)(SOUNDFILE_SCALE * ((p[0] << 24) | (p[1] << 16) | (p[2] << 8)));
-}
-
-static inline t_sample soundfile_decodeLinear24LittleEndian (unsigned char *p)
-{
-    return (t_sample)(SOUNDFILE_SCALE * ((p[2] << 24) | (p[1] << 16) | (p[0] << 8)));
+    return (float)(SOUNDFILE_SCALE * ((p[1] << 24) | (p[0] << 16)));
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static inline t_sample soundfile_decodeFloatBigEndian (unsigned char *p)
+static inline float soundfile_decodeLinear24BigEndian (unsigned char *p)
+{
+    return (float)(SOUNDFILE_SCALE * ((p[0] << 24) | (p[1] << 16) | (p[2] << 8)));
+}
+
+static inline float soundfile_decodeLinear24LittleEndian (unsigned char *p)
+{
+    return (float)(SOUNDFILE_SCALE * ((p[2] << 24) | (p[1] << 16) | (p[0] << 8)));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static inline float soundfile_decodeFloat32BigEndian (unsigned char *p)
 {
     t_rawcast32 z;
     
@@ -320,7 +480,7 @@ static inline t_sample soundfile_decodeFloatBigEndian (unsigned char *p)
     return z.z_f;
 }
 
-static inline t_sample soundfile_decodeFloatLittleEndian (unsigned char *p)
+static inline float soundfile_decodeFloat32LittleEndian (unsigned char *p)
 {
     t_rawcast32 z;
     
@@ -333,28 +493,27 @@ static inline t_sample soundfile_decodeFloatLittleEndian (unsigned char *p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void soundfile_decodeLinear16 (int numberOfChannels,
+void soundfile_decode32Linear16 (int numberOfChannels,
     int n,
-    t_sample **v,
+    float **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
-    int isBigEndian,
-    int spread)
+    int isBigEndian)
 {
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    t_sample *s = NULL;
+    float *s = NULL;
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
-    int offset = spread * onset;
+    int offset = onset;
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
             *s = soundfile_decodeLinear16BigEndian (p2);
         }
         
@@ -363,7 +522,7 @@ void soundfile_decodeLinear16 (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
             *s = soundfile_decodeLinear16LittleEndian (p2);
         }
         
@@ -372,28 +531,27 @@ void soundfile_decodeLinear16 (int numberOfChannels,
     }
 }
 
-void soundfile_decodeLinear24 (int numberOfChannels,
+void soundfile_decode32Linear24 (int numberOfChannels,
     int n,
-    t_sample **v,
+    float **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
-    int isBigEndian,
-    int spread)
+    int isBigEndian)
 {
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    t_sample *s = NULL;
+    float *s = NULL;
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
-    int offset = spread * onset;
+    int offset = onset;
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
             *s = soundfile_decodeLinear24BigEndian (p2);
         }
         
@@ -402,7 +560,7 @@ void soundfile_decodeLinear24 (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
             *s = soundfile_decodeLinear24LittleEndian (p2);
         }
         
@@ -411,29 +569,28 @@ void soundfile_decodeLinear24 (int numberOfChannels,
     }
 }
 
-void soundfile_decodeFloat (int numberOfChannels,
+void soundfile_decode32Float (int numberOfChannels,
     int n,
-    t_sample **v,
+    float **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
-    int isBigEndian,
-    int spread)
+    int isBigEndian)
 {
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    t_sample *s = NULL;
+    float *s = NULL;
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
-    int offset = spread * onset;
+    int offset = onset;
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
-            *s = soundfile_decodeFloatBigEndian (p2);
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            *s = soundfile_decodeFloat32BigEndian (p2);
         }
         
         p1 += bytesPerSample;
@@ -441,8 +598,8 @@ void soundfile_decodeFloat (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s += spread) {
-            *s = soundfile_decodeFloatLittleEndian (p2);
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            *s = soundfile_decodeFloat32LittleEndian (p2);
         }
         
         p1 += bytesPerSample;
@@ -450,51 +607,47 @@ void soundfile_decodeFloat (int numberOfChannels,
     }
 }
 
-void soundfile_decode (int numberOfChannels,
-    t_sample **v,
+void soundfile_decode32 (int numberOfChannels,
+    float **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
     int bytesPerSample,
     int isBigEndian,
-    int spread, 
     int n)
 {
     if (bytesPerSample == 2) {
         
-        soundfile_decodeLinear16 (numberOfChannels,
+        soundfile_decode32Linear16 (numberOfChannels,
             n,
             v,
             t,
             numberOfFrames,
             onset,
             bytesPerSample,
-            isBigEndian,
-            spread);
+            isBigEndian);
     
     } else if (bytesPerSample == 3) {
         
-        soundfile_decodeLinear24 (numberOfChannels,
+        soundfile_decode32Linear24 (numberOfChannels,
             n,
             v,
             t,
             numberOfFrames,
             onset,
             bytesPerSample,
-            isBigEndian,
-            spread);
+            isBigEndian);
             
     } else if (bytesPerSample == 4) {
         
-        soundfile_decodeFloat (numberOfChannels,
+        soundfile_decode32Float (numberOfChannels,
             n,
             v,
             t,
             numberOfFrames,
             onset,
             bytesPerSample,
-            isBigEndian,
-            spread);
+            isBigEndian);
             
     } else {
         
@@ -505,11 +658,190 @@ void soundfile_decode (int numberOfChannels,
     
     {
         int i, j;
-        t_sample *s = NULL;
+        float *s = NULL;
         
         for (i = numberOfChannels; i < n; i++) {
-            for (j = 0, s = v[i] + (spread * onset); j < numberOfFrames; j++, s += spread) { 
+            for (j = 0, s = v[i] + onset; j < numberOfFrames; j++, s++) {
                 *s = 0.0; 
+            }
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void soundfile_decode64Linear16 (int numberOfChannels,
+    int n,
+    double **v,
+    unsigned char *t,
+    int numberOfFrames,
+    int onset,
+    int bytesPerSample,
+    int isBigEndian)
+{
+    int i, j;
+    unsigned char *p1 = t;
+    unsigned char *p2 = NULL;
+    double *s = NULL;
+    
+    int channels = PD_MIN (numberOfChannels, n);
+    int bytesPerFrame = bytesPerSample * numberOfChannels;
+    int offset = onset;
+    
+    if (isBigEndian) {
+        for (i = 0; i < channels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            *s = soundfile_decodeLinear16BigEndian (p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+        
+    } else {
+        for (i = 0; i < channels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            *s = soundfile_decodeLinear16LittleEndian (p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+    }
+}
+
+void soundfile_decode64Linear24 (int numberOfChannels,
+    int n,
+    double **v,
+    unsigned char *t,
+    int numberOfFrames,
+    int onset,
+    int bytesPerSample,
+    int isBigEndian)
+{
+    int i, j;
+    unsigned char *p1 = t;
+    unsigned char *p2 = NULL;
+    double *s = NULL;
+    
+    int channels = PD_MIN (numberOfChannels, n);
+    int bytesPerFrame = bytesPerSample * numberOfChannels;
+    int offset = onset;
+    
+    if (isBigEndian) {
+        for (i = 0; i < channels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            *s = soundfile_decodeLinear24BigEndian (p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+        
+    } else {
+        for (i = 0; i < channels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            *s = soundfile_decodeLinear24LittleEndian (p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+    }
+}
+
+void soundfile_decode64Float (int numberOfChannels,
+    int n,
+    double **v,
+    unsigned char *t,
+    int numberOfFrames,
+    int onset,
+    int bytesPerSample,
+    int isBigEndian)
+{
+    int i, j;
+    unsigned char *p1 = t;
+    unsigned char *p2 = NULL;
+    double *s = NULL;
+    
+    int channels = PD_MIN (numberOfChannels, n);
+    int bytesPerFrame = bytesPerSample * numberOfChannels;
+    int offset = onset;
+    
+    if (isBigEndian) {
+        for (i = 0; i < channels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            *s = soundfile_decodeFloat32BigEndian (p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+        
+    } else {
+        for (i = 0; i < channels; i++) {
+        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
+            *s = soundfile_decodeFloat32LittleEndian (p2);
+        }
+        
+        p1 += bytesPerSample;
+        }
+    }
+}
+
+void soundfile_decode64 (int numberOfChannels,
+    double **v,
+    unsigned char *t,
+    int numberOfFrames,
+    int onset,
+    int bytesPerSample,
+    int isBigEndian,
+    int n)
+{
+    if (bytesPerSample == 2) {
+        
+        soundfile_decode64Linear16 (numberOfChannels,
+            n,
+            v,
+            t,
+            numberOfFrames,
+            onset,
+            bytesPerSample,
+            isBigEndian);
+    
+    } else if (bytesPerSample == 3) {
+        
+        soundfile_decode64Linear24 (numberOfChannels,
+            n,
+            v,
+            t,
+            numberOfFrames,
+            onset,
+            bytesPerSample,
+            isBigEndian);
+        
+    } else if (bytesPerSample == 4) {
+        
+        soundfile_decode64Float (numberOfChannels,
+            n,
+            v,
+            t,
+            numberOfFrames,
+            onset,
+            bytesPerSample,
+            isBigEndian);
+        
+    } else {
+        
+        PD_BUG;
+    }
+    
+    /* Set to zero the supernumerary channels. */
+    
+    {
+        int i, j;
+        double *s = NULL;
+    
+        for (i = numberOfChannels; i < n; i++) {
+            for (j = 0, s = v[i] + onset; j < numberOfFrames; j++, s++) {
+                *s = 0.0;
             }
         }
     }
