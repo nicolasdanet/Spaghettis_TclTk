@@ -1,4 +1,4 @@
-#N canvas 837 164 536 356 12;
+#N canvas 675 57 527 347 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj 36 300 print;
 #X msg 36 144 -3.14;
@@ -26,7 +26,7 @@
 #X connect 9 0 3 0;
 #X connect 11 0 3 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 396 300 pd edit;
+#X restore 396 252 pd edit;
 #X text 24 24 bng;
 #X obj -60 12 freeze;
 #X msg 36 216 1 2 doublezon;
