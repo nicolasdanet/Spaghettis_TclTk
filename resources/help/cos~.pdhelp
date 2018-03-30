@@ -1,11 +1,11 @@
-#N canvas 315 112 534 368 12;
+#N canvas 449 132 525 368 12;
 #X obj 36 144 cos~;
 #X obj 96 324 osc~;
 #X obj 144 324 tabread4~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 cos~;
-#N canvas 795 96 436 524 more 0;
+#N canvas 806 123 436 514 more 0;
 #X obj 216 144 sig~;
 #X obj 36 180 cos~;
 #X obj 216 180 cos~;
@@ -49,7 +49,7 @@
 #X text 12 324 See also:;
 #X text 12 72 Cosine function (for waveshaping).;
 #X obj 36 264 tabwrite~ \$0-array 250;
-#N canvas 705 162 547 288 again 0;
+#N canvas 705 162 538 288 again 0;
 #X obj 36 84 -~ 0.5;
 #X obj 36 120 *~ 0.5;
 #X obj 36 156 cos~;

@@ -1,4 +1,4 @@
-#N canvas 500 230 538 284 12;
+#N canvas 500 230 524 273 12;
 #X obj -60 12 freeze;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 cnv;
@@ -19,7 +19,7 @@
 #X connect 5 0 1 0;
 #X connect 6 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 396 228 pd edit;
+#X restore 396 180 pd edit;
 #X obj 36 108 cnv 15 50 50 \$0-from \$0-to empty 0 -7 0 10 #9999cc #000000;
 #X obj 204 156 s \$0-to;
 #X obj 204 180 r \$0-from;
