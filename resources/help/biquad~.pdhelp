@@ -1,4 +1,4 @@
-#N canvas 416 108 780 562 12;
+#N canvas 416 108 779 527 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 biquad~;
@@ -29,8 +29,6 @@
 #X connect 1 0 2 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 276 336 pd more;
-#X text 12 516 < https://en.wikipedia.org/wiki/Digital_biquad_filter#Direct_form_2 >;
-#X f 70;
 #X text 12 192 WARNING: coefficients are not constrained. Bad ones could cause DAMAGES to your hardware.;
 #X f 89;
 #X text 12 132 w[n] = x[n] + a1 * w[n-1] + a2 * w[n-2];
