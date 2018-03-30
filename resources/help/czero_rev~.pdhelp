@@ -1,12 +1,11 @@
-#N canvas 480 84 791 372 12;
-#X obj 96 324 czero~;
+#N canvas 480 84 778 333 12;
+#X obj 96 288 czero~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 czero_rev~;
 #X text 12 72 Complex "reverse" One-Zero filter.;
 #X f 34;
-#X text 12 324 See also:;
-#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >;
+#X text 12 288 See also:;
 #X text 12 144 It calculates the following difference equation:;
 #X f 48;
 #N canvas 604 161 567 373 more 0;

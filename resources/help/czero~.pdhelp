@@ -1,13 +1,12 @@
-#N canvas 179 22 787 376 12;
-#X obj 96 324 rzero~;
-#X obj 156 324 cpole~;
+#N canvas 363 160 781 331 12;
+#X obj 96 288 rzero~;
+#X obj 156 288 cpole~;
 #X obj 36 108 czero~ 0.9 0.4;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 czero~;
 #X text 12 72 Complex One-Zero filter.;
-#X text 12 324 See also:;
-#X text 12 288 < https://ccrma.stanford.edu/~jos/filters/One_Zero.html >;
+#X text 12 288 See also:;
 #X text 12 144 It calculates the following difference equation:;
 #X f 48;
 #N canvas 620 82 565 357 more 0;
@@ -29,5 +28,5 @@
 #X text 12 204 WARNING: coefficients are not constrained. Bad ones could cause DAMAGES to your hardware.;
 #X f 89;
 #X text 12 168 y[n] = x[n] - b[n] * x[n-1];
-#X obj 216 324 czero_rev~;
+#X obj 216 288 czero_rev~;
 #X coords 0 0 1 1 250 175 0 0 0;
