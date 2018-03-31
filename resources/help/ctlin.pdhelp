@@ -1,4 +1,4 @@
-#N canvas 463 125 409 307 12;
+#N canvas 443 135 409 307 12;
 #X obj 36 108 ctlin;
 #X f 5;
 #X obj 96 264 pgmin;
@@ -13,7 +13,7 @@
 #X obj 36 216 print value;
 #X obj 72 180 print control;
 #X obj 96 144 print channel;
-#N canvas 758 301 318 298 more 0;
+#N canvas 880 226 320 302 more 0;
 #X obj 36 48 ctlin 7;
 #X obj 36 204 ctlin 7 1;
 #X obj 36 120 print value;

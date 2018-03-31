@@ -7,14 +7,14 @@
 #X floatatom 36 228 5 0 0 1 - #0-to #0-from;
 #X f 5;
 #X obj 36 276 print;
-#N canvas 841 22 488 602 more 0;
+#N canvas 841 22 476 602 more 0;
 #X symbolatom 36 84 10 0 0 1 - - -;
 #X f 10;
 #X msg 36 48 set mouse;
 #X obj 36 120 print;
 #X text 12 12 It can be a symbol instead of a number.;
 #X msg 36 204 range -10 10;
-#X floatatom 36 288 5 0 0 1 - - -;
+#X floatatom 36 288 5 -10 10 1 - - -;
 #X f 5;
 #X obj 36 324 print;
 #X msg 60 240 range 0 0;
