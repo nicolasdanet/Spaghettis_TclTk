@@ -1,4 +1,4 @@
-#N canvas 633 92 396 240 12;
+#N canvas 633 92 351 239 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 12 192 See also:;
@@ -7,13 +7,13 @@
 #X text 12 72 Get the audio status.;
 #X obj 36 108 dspstatus;
 #X obj 36 156 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
-#N canvas 597 342 334 373 more 0;
+#N canvas 597 342 300 373 more 0;
 #X text 12 12 Get infos while DSP is starting.;
 #X obj 36 48 dspstatus;
 #X obj 36 120 samplerate;
 #X floatatom 36 156 5 0 0 1 - - -;
 #X f 5;
-#X obj 36 276 dspstatus;
+#X obj 36 288 dspstatus;
 #X text 12 204 Get the status later.;
 #X obj 36 240 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 324 print;

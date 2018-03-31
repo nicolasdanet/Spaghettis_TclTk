@@ -1,4 +1,4 @@
-#N canvas 826 173 463 288 12;
+#N canvas 617 219 447 282 12;
 #X obj 204 240 plot;
 #X obj 96 240 drawpolygon;
 #X obj 252 240 struct;
@@ -56,14 +56,12 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 192 156 pd init;
 #X obj 192 120 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#N canvas 494 156 588 517 more 0;
-#X obj 36 348 drawnumber;
-#X obj 36 372 drawtext;
-#X obj 36 396 drawsymbol;
-#X text 12 312 Three names for the same object!;
-#X obj 36 468 drawnumber -visible foo cat;
-#X text 12 432 Alternatively \, visibility can be handled by a value of a field.;
-#X f 63;
+#N canvas 911 158 354 507 more 0;
+#X obj 36 336 drawnumber;
+#X obj 36 360 drawtext;
+#X obj 36 384 drawsymbol;
+#X text 12 300 Three names for the same object!;
+#X obj 36 456 drawnumber -visible foo cat;
 #X text 12 12 Name of the field to draw.;
 #X text 12 84 A pair giving relative coordinates.;
 #X text 12 156 Digit color.;
@@ -73,8 +71,10 @@
 #X obj 36 120 drawsymbol bird 0 -30;
 #X obj 36 192 drawsymbol bird 0 -30 800;
 #X obj 36 264 drawsymbol bird 0 -30 800 bird=;
+#X text 12 420 Visibility can be handled by a field.;
+#X f 38;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 360 156 pd more;
+#X restore 348 156 pd more;
 #N canvas 718 334 291 193 color 0;
 #X obj 36 24 hradio 15 1 1 9 \$0-1 empty empty 0 -7 0 10 #ffffff #000000 #000000 8;
 #X obj 36 48 hradio 15 1 1 9 \$0-2 empty empty 0 -7 0 10 #ffffff #000000 #000000 0;
@@ -124,6 +124,6 @@
 #X floatatom 204 72 5 0 0 1 - #0-B -;
 #X f 5;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 360 180 pd color;
+#X restore 348 180 pd color;
 #X connect 11 0 10 0;
 #X coords 0 0 1 1 250 175 0 0 0;
