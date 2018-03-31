@@ -1,4 +1,4 @@
-#N canvas 420 108 412 401 12;
+#N canvas 608 102 397 391 12;
 #X obj 36 264 sig~;
 #X obj 96 348 delwrite~;
 #X obj 180 348 delread4~;
@@ -7,7 +7,7 @@
 #X text 24 24 delread~;
 #X text 12 72 Read a signal from a delay line.;
 #X text 12 348 See also:;
-#N canvas 464 126 642 296 more 0;
+#N canvas 242 232 637 287 more 0;
 #X obj 36 48 delread~ \$0-delay;
 #X obj 36 120 delread~ \$0-delay 1000;
 #X text 12 12 First argument is the name of the delay line (multiple readers allowed).;
@@ -17,8 +17,8 @@
 #X obj 36 240 delread~ \$0-delay;
 #X floatatom 36 204 5 0 0 1 - - -;
 #X f 5;
-#X text 12 168 Delay time can be set afterward (clamped by the buffer size).;
-#X f 63;
+#X text 12 168 Delay time can be set afterward.;
+#X f 32;
 #X connect 5 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 288 300 pd more;
