@@ -248,7 +248,14 @@ static void plot_getPixelsAtIndex (t_plotproperties *p,
         c->p_pixelW = pixelW;
     }
 }
-    
+
+/* Reduce floating-point precision to avoid artefacts with infinitesimal values. */
+
+int plot_toInteger (t_float f)
+{
+    return (int)round ((round (f * 100.0)) / 100.0);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -485,9 +492,9 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
                         " -tags %lxPLOT\n",
                         glist_getTagAsString (glist_getView (glist)),
                         (p->p_fieldX == NULL) ? (int)here.p_pixelX : (int)here.p_pixelX - 1,
-                        (int)minY,
+                        plot_toInteger (minY),
                         (p->p_fieldX == NULL) ? (int)next.p_pixelX : (int)here.p_pixelX + 1,
-                        (int)maxY,
+                        plot_toInteger (maxY),
                         (int)PD_MAX (0, p->p_width - 1.0),
                         color->s_name,
                         color->s_name,
@@ -525,8 +532,8 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     
     if (p->p_fieldX || (int)c.p_pixelX != previous) {
         cX[elementsDrawn] = (int)(c.p_pixelX);
-        cL[elementsDrawn] = (int)(c.p_pixelY - c.p_pixelW);
-        cH[elementsDrawn] = (int)(c.p_pixelY + c.p_pixelW);
+        cL[elementsDrawn] = plot_toInteger (c.p_pixelY - c.p_pixelW);
+        cH[elementsDrawn] = plot_toInteger (c.p_pixelY + c.p_pixelW);
         if (++elementsDrawn >= PLOT_MAXIMUM_DRAWN) { PD_BUG; break; }
     }
 
@@ -591,7 +598,7 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
     plot_getPixelsAtIndex (p, relativeX, relativeY, i, glist, p->p_width, &c);
     
     if (p->p_fieldX || (int)c.p_pixelX != previous) {
-        heapstring_addSprintf (t, " %d %d", (int)c.p_pixelX, (int)c.p_pixelY);
+        heapstring_addSprintf (t, " %d %d", (int)c.p_pixelX, plot_toInteger (c.p_pixelY));
         elementsDrawn++;
         previous = (int)c.p_pixelX;
     }
