@@ -5,8 +5,6 @@ Yet another fork of Pure Data < https://puredata.info/ >.
 
 < http://msp.ucsd.edu/ >
 
-An attempt to make it simple, fast, and embeddable.
-
 Remark:
 
     This is an (AT YOUR OWN RISK) work-in-progress version.
