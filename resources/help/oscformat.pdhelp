@@ -1,4 +1,4 @@
-#N canvas 481 186 472 436 12;
+#N canvas 481 186 461 437 12;
 #X obj 36 288 oscparse;
 #X msg 36 108 4 5 weasel 6 7 rat;
 #X obj 96 396 oscparse;
@@ -10,7 +10,7 @@
 #X text 12 72 Convert message to OSC packets.;
 #X f 31;
 #X text 12 360 < http://opensoundcontrol.org/introduction-osc >;
-#N canvas 647 34 668 723 more 0;
+#N canvas 711 22 657 719 more 0;
 #X msg 36 516 format b;
 #X obj 36 636 oscparse;
 #X msg 36 48 1 2 3;
