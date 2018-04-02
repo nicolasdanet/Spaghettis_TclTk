@@ -1,4 +1,4 @@
-#N canvas 530 144 346 311 12;
+#N canvas 771 96 277 304 12;
 #X obj 36 180 openpanel;
 #X obj 36 216 print;
 #X obj 96 264 savepanel;
@@ -6,7 +6,7 @@
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 openpanel;
-#X msg 84 108 /Users;
+#X msg 72 108 /Users;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X text 12 72 Ask for a filename.;
 #X connect 0 0 1 0;

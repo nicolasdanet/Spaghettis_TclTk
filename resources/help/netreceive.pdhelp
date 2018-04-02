@@ -1,7 +1,7 @@
-#N canvas 563 160 399 317 12;
+#N canvas 563 160 348 317 12;
 #X obj 108 276 netsend;
 #X obj 36 192 netreceive;
-#N canvas 539 142 650 347 more 0;
+#N canvas 539 142 650 343 more 0;
 #X obj 36 144 netreceive -udp;
 #X msg 36 72 listen 3001;
 #X msg 36 96 close;

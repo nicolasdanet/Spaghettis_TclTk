@@ -1,4 +1,4 @@
-#N canvas 514 267 415 316 12;
+#N canvas 523 154 409 317 12;
 #X msg 36 108 60;
 #X obj 96 276 stripnote;
 #X text 12 276 See also:;
@@ -9,7 +9,7 @@
 #X f 15;
 #X obj 36 240 print;
 #X obj 36 180 makenote 90 500;
-#N canvas 747 271 377 237 more 0;
+#N canvas 902 220 377 244 more 0;
 #X obj 36 192 print;
 #X obj 36 156 pack;
 #X f 16;

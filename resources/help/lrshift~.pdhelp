@@ -11,7 +11,7 @@
 #X text 12 420 See also:;
 #X obj 96 420 fft~;
 #X obj 36 108 tabreceive~ \$0-array;
-#N canvas 670 339 264 152 init 0;
+#N canvas 609 338 243 144 init 0;
 #X obj 36 24 inlet;
 #X msg 36 60 \; \$0-array constant 0 \; \$0-array 31 1 1;
 #X connect 0 0 1 0;
@@ -29,7 +29,7 @@
 #X obj 216 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 216 lrshift~ 16;
 #X obj 192 216 lrshift~ -16;
-#N canvas 99 219 424 120 more 0;
+#N canvas 99 219 418 114 more 0;
 #X msg 36 48 \; \$0-array constant 0.5;
 #X text 12 12 Result is padded with zero for missing values.;
 #X coords 0 0 1 1 250 175 0 0 0;

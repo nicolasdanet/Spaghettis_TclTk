@@ -1,4 +1,4 @@
-#N canvas 339 273 457 334 12;
+#N canvas 634 150 450 332 12;
 #X obj 288 240 namecanvas bonzo;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 namecanvas;
