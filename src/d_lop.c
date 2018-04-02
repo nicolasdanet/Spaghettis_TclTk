@@ -82,7 +82,7 @@ static t_int *lop_tilde_perform (t_int *w)
         *out++ = last = f;
     }
     
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)last)) { last = 0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL (last)) { last = 0.0; }
     
     c->c_real = last;
     

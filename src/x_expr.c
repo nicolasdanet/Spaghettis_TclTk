@@ -187,11 +187,15 @@ static int expr_getNumberOfVariables (char *expression)
 
 static void expr_bang (t_expr *x)
 {
-    int i; 
+    int i;
     
     for (i = 0; i < EXPR_VARIABLES; i++) { x->x_v[i] = (double)x->x_f[i]; }
     
-    outlet_float (x->x_outlet, (t_float)(te_eval (x->x_expression)));
+    {
+        double f = te_eval (x->x_expression);
+    
+        outlet_float (x->x_outlet, PD_FLOAT64_IS_INVALID_OR_ZERO (f) ? 0.0 : f);
+    }
 }
 
 static void expr_float (t_expr *x, t_float f)
@@ -220,7 +224,9 @@ static void vexpr_bang (t_expr *x)
     x->x_v[0] = (double)x->x_f[0];
     
     {
-        t_float f = (t_float)te_eval (x->x_expression); SET_FLOAT (t + i, f);
+        t_float f = te_eval (x->x_expression);
+    
+        SET_FLOAT (t + i, PD_FLOAT64_IS_INVALID_OR_ZERO (f) ? 0.0 : f);
     }
     //
     }

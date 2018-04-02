@@ -66,7 +66,7 @@ static t_int *delwrite_tilde_perform (t_int *w)
     //
     t_sample f = *in++;
     
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)f)) { f = 0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL (f)) { f = 0.0; }
     
     *p++ = f;
     

@@ -110,8 +110,8 @@ static t_int *vcf_tilde_perform (t_int *w)
     //
     }
     
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)re)) { re = 0.0; }
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)im)) { im = 0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL (re)) { re = 0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL (im)) { im = 0.0; }
     
     c->c_real = re;
     c->c_imaginary = im;

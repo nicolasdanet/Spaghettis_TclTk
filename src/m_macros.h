@@ -168,6 +168,8 @@ typedef union {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* < https://en.wikipedia.org/wiki/Endianness#Floating_point > */
+
 #if PD_LITTLE_ENDIAN
 
     #define PD_RAWCAST64_MSB        1                                                              
@@ -184,7 +186,9 @@ typedef union {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline int PD_FLOAT32_IS_DENORMAL_OR_ZERO (float f)      /* True if zero, denormal, infinite, or NaN. */
+ /* True if zero, denormal, infinite, or NaN. */
+
+static inline int PD_FLOAT32_IS_INVALID_OR_ZERO (float f)
 {
     t_rawcast32 z;
     z.z_f = f;
@@ -192,7 +196,21 @@ static inline int PD_FLOAT32_IS_DENORMAL_OR_ZERO (float f)      /* True if zero,
     return ((z.z_i == 0) || (z.z_i == 0x7f800000));
 }
 
-static inline int PD_FLOAT32_IS_BIG_OR_SMALL (float f)          /* True if exponent falls out (-64, 64) range. */
+static inline int PD_FLOAT64_IS_INVALID_OR_ZERO (double f)
+{
+    t_rawcast64 z;
+    z.z_d = f;
+    z.z_i[PD_RAWCAST64_MSB] &= 0x7ff00000;
+    return ((z.z_i[PD_RAWCAST64_MSB] == 0) || (z.z_i[PD_RAWCAST64_MSB] == 0x7ff00000));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* True if exponent falls out (-64, 64) range. */
+
+static inline int PD_FLOAT32_IS_BIG_OR_SMALL (float f)
 {
     t_rawcast32 z;
     z.z_f = f;

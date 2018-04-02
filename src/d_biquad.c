@@ -99,7 +99,7 @@ static t_int *biquad_tilde_perform (t_int *w)
     //
     t_sample f = (*in++) + a1 * last1 + a2 * last2; 
         
-    if (PD_FLOAT32_IS_BIG_OR_SMALL ((float)f)) { f = 0.0; }
+    if (PD_FLOAT32_IS_BIG_OR_SMALL (f)) { f = 0.0; }
         
     *out++ = b0 * f + b1 * last1 + b2 * last2;
     last2  = last1;
