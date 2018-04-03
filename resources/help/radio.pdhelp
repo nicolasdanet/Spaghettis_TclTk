@@ -1,4 +1,4 @@
-#N canvas 500 120 541 339 12;
+#N canvas 500 120 522 333 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 12 72 Copyright musil@iem.kug.ac.at IEM KUG graz \, austria '2002'.;
 #X obj -60 12 freeze;
@@ -30,7 +30,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 432 240 pd edit;
 #X obj 36 156 vradio 15 1 1 8 empty empty empty 17 7 0 10 #ffffff #000000 #000000 3;
-#X obj 132 240 hradio 15 1 1 8 \$0-from \$0-to empty 0 -7 0 10 #ffffff #000000 #000000 4;
+#X obj 132 240 hradio 15 1 1 8 \$0-from \$0-to empty 0 -7 0 10 #ffffff #000000 #000000 10;
 #X floatatom 36 108 5 0 0 1 - - -;
 #X f 5;
 #X floatatom 36 288 5 0 0 1 - - -;
