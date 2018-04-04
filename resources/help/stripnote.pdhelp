@@ -1,4 +1,4 @@
-#N canvas 488 205 408 340 12;
+#N canvas 488 205 404 340 12;
 #X obj 36 192 stripnote;
 #X obj 96 300 makenote;
 #X text 12 300 See also:;
