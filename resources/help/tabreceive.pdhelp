@@ -11,7 +11,7 @@
 #X text 12 288 See also:;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#N canvas 709 315 489 260 more 1;
+#N canvas 709 315 489 260 more 0;
 #X obj 36 216 print;
 #X msg 36 72 set \$0-foo;
 #X msg 36 48 set \$0-array;

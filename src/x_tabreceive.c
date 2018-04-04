@@ -58,7 +58,7 @@ static void tabreceive_bang (t_tabreceive *x)
 {
     t_garray *garray = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
-    if (garray) { tabreceive_output (x, garray); }
+    if (garray) { buffer_clear (x->x_previous); tabreceive_output (x, garray); }
 }
 
 static void tabreceive_set (t_tabreceive *x, t_symbol *s)
