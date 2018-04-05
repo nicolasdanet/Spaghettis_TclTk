@@ -132,6 +132,7 @@ makefilename
 key
 keyup
 keyname
+mica
 
 struct
 drawpolygon
