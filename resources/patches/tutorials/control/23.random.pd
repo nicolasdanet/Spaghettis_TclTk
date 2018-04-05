@@ -1,4 +1,4 @@
-#N canvas 499 38 605 759 12;
+#N canvas 618 22 588 756 12;
 #X obj 36 144 random 5;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
@@ -6,12 +6,12 @@
 #X text 12 72 Make pseudo-random numbers.;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 180 print;
-#X obj 192 144 random;
-#X obj 192 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 192 180 print;
-#X msg 324 108 10;
-#X obj 324 180 print;
-#X obj 324 144 expr rand()*$f1-$f1/2;
+#X obj 180 144 random;
+#X obj 180 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 180 180 print;
+#X msg 312 108 10;
+#X obj 312 180 print;
+#X obj 312 144 expr rand()*$f1-$f1/2;
 #X obj 36 456 random 100;
 #X obj 36 492 moses 10;
 #X obj 120 528 moses 30;
@@ -28,7 +28,7 @@
 #X array \$0-distribution 10 float 3;
 #A 0 0.297147 0.388574 0.514286 0.622857 0.759999 0.708571 0.577136 0.462853 0.331426 0.222857;
 #X coords 0 1 10 0 250 175 1 0 0;
-#X restore 324 552 graph \$0-distribution;
+#X restore 312 552 graph \$0-distribution;
 #X text 12 384 Various approaches to design weighted random numbers.;
 #X obj 36 300 vexpr randmt();
 #X obj 36 336 print;

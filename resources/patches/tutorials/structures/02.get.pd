@@ -1,10 +1,10 @@
-#N canvas 698 45 493 409 12;
+#N canvas 698 45 486 402 12;
 #X obj 36 240 pointer;
 #X msg 60 192 next;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 get;
-#N canvas 556 256 533 400 init 0;
+#N canvas 556 256 522 395 init 0;
 #X obj 36 24 inlet;
 #X obj 36 96 t b b;
 #X obj 300 288 pointer;
@@ -29,7 +29,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 336 336 pd \$0-data;
 #X obj 336 276 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#N canvas 633 307 495 157 \$0-template 0;
+#N canvas 633 307 477 145 \$0-template 0;
 #X obj 36 60 filledpolygon q q 3 0 0 20 z 40 0;
 #X f 33;
 #X obj 36 24 drawnumber z 50 -8 q;

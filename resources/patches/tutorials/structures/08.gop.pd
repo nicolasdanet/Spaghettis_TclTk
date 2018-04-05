@@ -1,4 +1,4 @@
-#N canvas 676 138 504 363 12;
+#N canvas 676 138 435 359 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 GOP;
@@ -11,7 +11,7 @@
 #X coords 0 0 1 1 225 225 1 0 0;
 #X restore 36 108 pd \$0-data;
 #X obj 288 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#N canvas 634 120 527 366 init 0;
+#N canvas 634 120 518 362 init 0;
 #X obj 300 276 pointer;
 #X msg 300 240 traverse \$0-data \, bang;
 #X msg 132 132 \; pd-\$0-data clear;
@@ -39,8 +39,8 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 288 288 pd init;
 #X text 12 72 Works with graphed on parent patches.;
-#N canvas 774 530 417 141 more 0;
-#N canvas 75 103 522 371 fun 0;
+#N canvas 418 528 366 132 more 0;
+#N canvas 75 103 508 371 fun 0;
 #X obj 300 252 pointer;
 #X obj 36 60 t b b;
 #X f 5;
