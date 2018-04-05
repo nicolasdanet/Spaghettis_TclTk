@@ -1,4 +1,4 @@
-#N canvas 617 62 574 493 12;
+#N canvas 785 113 582 490 12;
 #X obj 36 216 +;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
@@ -33,7 +33,7 @@
 #X obj 216 372 t f f;
 #X text 12 300 Use the trigger object to guarantee right-to-left operations.;
 #X f 62;
-#N canvas 791 203 449 207 more 0;
+#N canvas 791 203 380 199 more 0;
 #X obj 36 120 +;
 #X floatatom 36 48 5 0 0 0 - - -;
 #X f 5;
