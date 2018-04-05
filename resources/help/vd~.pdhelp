@@ -1,11 +1,11 @@
-#N canvas 554 47 499 275 12;
+#N canvas 557 47 477 259 12;
 #X obj 36 144 sig~;
-#X obj 96 228 delwrite~;
-#X obj 180 228 delread~;
+#X obj 96 216 delwrite~;
+#X obj 180 216 delread~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 vd~;
-#X text 12 228 See also:;
+#X text 12 216 See also:;
 #X text 12 72 Variable delay line reader with 4-point-interpolation.;
 #X floatatom 36 108 5 0 0 1 - - -;
 #X f 5;
