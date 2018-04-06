@@ -7,8 +7,34 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef __s_apis_h_
-#define __s_apis_h_
+#ifndef __s_API_h_
+#define __s_API_h_
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+const char *midi_nameNative         (void);
+t_error midi_getListsNative         (t_deviceslist *);
+void    midi_initializeNative       (void);
+void    midi_releaseNative          (void);
+void    midi_openNative             (t_devicesproperties *);
+void    midi_closeNative            (void);
+void    midi_pushNextMessageNative  (int, int, int, int);
+void    midi_pushNextByteNative     (int, int );
+void    midi_pollNative             (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+const char  *audio_nameNative       (void);
+t_error audio_getListsNative        (t_deviceslist *);
+t_error audio_initializeNative      (void);
+void    audio_releaseNative         (void);
+void    audio_closeNative           (void);
+t_error audio_openNative            (t_devicesproperties *);
+int     audio_pollNative            (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -61,4 +87,18 @@ t_error     audio_deviceAsStringWithNumber      (int isOutput, int k, char *dest
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // __s_apis_h_
+// MARK: -
+
+static inline void midi_initialize (void)
+{
+    return midi_initializeNative();
+}
+
+static inline void midi_release (void)
+{
+    return midi_releaseNative();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#endif // __s_API_h_
