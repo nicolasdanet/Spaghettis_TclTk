@@ -1013,18 +1013,6 @@
 			name = Belle;
 			sourceTree = "<group>";
 		};
-		17DE84301FE965670055AB80 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				374449391D66154D00E54A0D /* m_rectangle.c */,
-				373545601E6D6BF700BCFBE1 /* m_bounds.c */,
-				3716C79C1D6335C400022709 /* m_iterator.c */,
-				37E0BC361C53E0B700114412 /* m_pathlist.c */,
-				37C41F4E1D5B240000DC9C3E /* m_heapstring.c */,
-			);
-			name = Helpers;
-			sourceTree = "<group>";
-		};
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1199,7 +1187,11 @@
 				37128AF71D43640300EFB4FC /* m_color.c */,
 				374448191D66000B00E54A0D /* m_math.c */,
 				37A7BBF21D030B45000C7AB5 /* m_string.c */,
-				17DE84301FE965670055AB80 /* Helpers */,
+				374449391D66154D00E54A0D /* m_rectangle.c */,
+				373545601E6D6BF700BCFBE1 /* m_bounds.c */,
+				3716C79C1D6335C400022709 /* m_iterator.c */,
+				37E0BC361C53E0B700114412 /* m_pathlist.c */,
+				37C41F4E1D5B240000DC9C3E /* m_heapstring.c */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -1220,6 +1212,11 @@
 				17C9FE231FE00B78007066EC /* s_MT.h */,
 				17C9FE261FE00B79007066EC /* s_MT32.h */,
 				17C9FE201FE00B78007066EC /* s_MT64.h */,
+				376CF0681E4CBB0400B17967 /* s_apis.h */,
+				379E8AAF1C9156D50081E7D3 /* s_midi_apis.h */,
+				379E8AB01C9156E50081E7D3 /* s_audio_apis.h */,
+				37B911AA1E4C78FE001D9136 /* s_devicesproperties.h */,
+				174A6B8E201B78060055EA4D /* s_deviceslist.h */,
 				378971F21C4F716700263434 /* s_entry.c */,
 				378971F61C4F716700263434 /* s_main.c */,
 				378971E41C4F716700263434 /* s_scheduler.c */,
@@ -1254,7 +1251,17 @@
 				17C9FE271FE00B79007066EC /* s_MT.c */,
 				17C9FE291FE00B79007066EC /* s_MT32.c */,
 				17C9FE221FE00B78007066EC /* s_MT64.c */,
-				3722C53E1C4F955500D2BF6F /* API */,
+				37B911A91E4C78FE001D9136 /* s_devicesproperties.c */,
+				376209A51E4F0FC300D97CF4 /* s_deviceslist.c */,
+				37A402671C77524D00001FD3 /* s_midiAPI.c */,
+				378971FA1C4F716700263434 /* s_midi_pm.c */,
+				378971F71C4F716700263434 /* s_midi_alsa.c */,
+				378971F91C4F716700263434 /* s_midi_oss.c */,
+				378971F81C4F716700263434 /* s_midi_dummy.c */,
+				373F78241C7E097A0083D316 /* s_audioAPI.c */,
+				378971F01C4F716700263434 /* s_audio_pa.c */,
+				378971ED1C4F716700263434 /* s_audio_jack.c */,
+				378971EC1C4F716700263434 /* s_audio_dummy.c */,
 			);
 			name = System;
 			sourceTree = "<group>";
@@ -1294,22 +1301,6 @@
 				37B1AA491DC1EDE70017355A /* Objects */,
 			);
 			name = DSP;
-			sourceTree = "<group>";
-		};
-		3722C53E1C4F955500D2BF6F /* API */ = {
-			isa = PBXGroup;
-			children = (
-				376CF0681E4CBB0400B17967 /* s_apis.h */,
-				37B911AA1E4C78FE001D9136 /* s_devicesproperties.h */,
-				174A6B8E201B78060055EA4D /* s_deviceslist.h */,
-				37A402671C77524D00001FD3 /* s_midiAPI.c */,
-				373F78241C7E097A0083D316 /* s_audioAPI.c */,
-				37B911A91E4C78FE001D9136 /* s_devicesproperties.c */,
-				376209A51E4F0FC300D97CF4 /* s_deviceslist.c */,
-				37A59CDB1C538B3200FBD0AD /* MIDI */,
-				37A59CDC1C538B4800FBD0AD /* Audio */,
-			);
-			name = API;
 			sourceTree = "<group>";
 		};
 		3735D9701E5995B300858959 /* Objects */ = {
@@ -1637,29 +1628,6 @@
 				3715DB131E560F7D002B5FB7 /* Objects */,
 			);
 			name = Scalars;
-			sourceTree = "<group>";
-		};
-		37A59CDB1C538B3200FBD0AD /* MIDI */ = {
-			isa = PBXGroup;
-			children = (
-				379E8AAF1C9156D50081E7D3 /* s_midi_apis.h */,
-				378971FA1C4F716700263434 /* s_midi_pm.c */,
-				378971F71C4F716700263434 /* s_midi_alsa.c */,
-				378971F91C4F716700263434 /* s_midi_oss.c */,
-				378971F81C4F716700263434 /* s_midi_dummy.c */,
-			);
-			name = MIDI;
-			sourceTree = "<group>";
-		};
-		37A59CDC1C538B4800FBD0AD /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				379E8AB01C9156E50081E7D3 /* s_audio_apis.h */,
-				378971F01C4F716700263434 /* s_audio_pa.c */,
-				378971ED1C4F716700263434 /* s_audio_jack.c */,
-				378971EC1C4F716700263434 /* s_audio_dummy.c */,
-			);
-			name = Audio;
 			sourceTree = "<group>";
 		};
 		37ACC43E1E321BB60026E5FA /* Shared */ = {
