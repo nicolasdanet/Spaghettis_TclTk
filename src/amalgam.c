@@ -91,8 +91,8 @@
 #include "s_MT64.c"
 #include "s_devicesproperties.c"
 #include "s_deviceslist.c"
-#include "s_midiAPI.c"
-#include "s_audioAPI.c"
+#include "s_midi_API.c"
+#include "s_audio_API.c"
 
 /* Graphics. */
 
