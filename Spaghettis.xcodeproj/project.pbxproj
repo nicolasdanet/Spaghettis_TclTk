@@ -1042,23 +1042,6 @@
 			name = Osc;
 			sourceTree = "<group>";
 		};
-		3715DB131E560F7D002B5FB7 /* Objects */ = {
-			isa = PBXGroup;
-			children = (
-				378971D31C4F716700263434 /* g_pointer.c */,
-				37D643751D4796C700071C3C /* g_get.c */,
-				37D643531D4795ED00071C3C /* g_set.c */,
-				37D643351D47955B00071C3C /* g_element.c */,
-				37D6430D1D47944400071C3C /* g_getsize.c */,
-				37D642F21D4793A800071C3C /* g_setsize.c */,
-				37D642BB1D47924100071C3C /* g_append.c */,
-				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
-				379C1B711D37934500C4D92C /* g_plot.c */,
-				379C1B3F1D3790C200C4D92C /* g_drawtext.c */,
-			);
-			name = Objects;
-			sourceTree = "<group>";
-		};
 		371655471BA3451000ABDE22 /* PortAudio */ = {
 			isa = PBXGroup;
 			children = (
@@ -1278,8 +1261,21 @@
 		3722C5361C4F925600D2BF6F /* Control */ = {
 			isa = PBXGroup;
 			children = (
-				37AEFD551DB5182A0039FB59 /* Shared */,
-				37AEFD541DB518100039FB59 /* Objects */,
+				174D8A0B1F0BBE2E00C94065 /* x_atomoutlet.h */,
+				3759441D1E48E04A00CF3FD7 /* tinyexpr.h */,
+				37B145831D9E97A1003A354F /* x_atomoutlet.c */,
+				3759441C1E48E04A00CF3FD7 /* tinyexpr.c */,
+				37CD71BA1D9A9DDF00A61BD3 /* Atom */,
+				37F86D531D8EEA3F0009717B /* List */,
+				3751490D1D86DC48005679B0 /* Text */,
+				3751490E1D86DC68005679B0 /* Array */,
+				17BBF6651F6E598100CEF275 /* Tab */,
+				379079D31D96D7EC0055CBFF /* Math */,
+				37D724561D92757C00408D24 /* Time */,
+				374905C71D99702300377F1E /* Flow */,
+				374905C91D99703B00377F1E /* Miscellaneous */,
+				374905CC1D99707A00377F1E /* MIDI */,
+				17039C6A20597DC200C86496 /* MICA */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -1292,24 +1288,24 @@
 				17A2BD211F0A135E0071D330 /* d_resample.h */,
 				17A2BD221F0A2D6C0071D330 /* d_functions.h */,
 				17A2BD231F0A30480071D330 /* d_macros.h */,
+				37A853431E34AC8D00A4491D /* d_fft.h */,
+				37998F781E2F688200632A45 /* d_fftOOURA.h */,
+				17C7712220148CF400584EE6 /* d_cos.h */,
+				37ACC4181E32190F0026E5FA /* d_fftOOURA.c */,
+				378971B51C4F716700263434 /* fftsg.c */,
 				37C000261DE2FBF800F90584 /* Graph */,
-				37ACC43E1E321BB60026E5FA /* Shared */,
-				37B1AA491DC1EDE70017355A /* Objects */,
+				37C000571DE2FE4B00F90584 /* Global */,
+				370D017F1DE6BFA4005918D4 /* Osc */,
+				3772C0401DFBDF450036466E /* Convert */,
+				370157B71DFFD41700F3FE0C /* Delay */,
+				37C9FADD1DF718CD00309D57 /* Tab */,
+				377C79961DF08AD0008195B0 /* Math */,
+				37C000561DE2FE3800F90584 /* Miscellaneous */,
+				37E0CBA81E03FA6C00993022 /* Soundfile */,
+				37E4DA031DEC6BB500190484 /* Filters */,
+				378B85961E2D2D6B00BDF703 /* FFT */,
 			);
 			name = DSP;
-			sourceTree = "<group>";
-		};
-		3735D9701E5995B300858959 /* Objects */ = {
-			isa = PBXGroup;
-			children = (
-				377899A41CFED7B60056BE61 /* g_message.c */,
-				378971D11C4F716700263434 /* g_text.c */,
-				377899DC1CFEDB5B0056BE61 /* g_gatom.c */,
-				378971BF1C4F716700263434 /* g_garray.c */,
-				3720EBB41D239650001675BD /* g_vinlet.c */,
-				3720EBB51D239650001675BD /* g_voutlet.c */,
-			);
-			name = Objects;
 			sourceTree = "<group>";
 		};
 		374905C71D99702300377F1E /* Flow */ = {
@@ -1601,7 +1597,12 @@
 				37321C9A1E9244F2009C1EE0 /* g_arrange.c */,
 				378971CD1C4F716700263434 /* g_file.c */,
 				378971C11C4F716700263434 /* g_canvas.c */,
-				3735D9701E5995B300858959 /* Objects */,
+				377899A41CFED7B60056BE61 /* g_message.c */,
+				378971D11C4F716700263434 /* g_text.c */,
+				377899DC1CFEDB5B0056BE61 /* g_gatom.c */,
+				378971BF1C4F716700263434 /* g_garray.c */,
+				3720EBB41D239650001675BD /* g_vinlet.c */,
+				3720EBB51D239650001675BD /* g_voutlet.c */,
 			);
 			name = Patch;
 			sourceTree = "<group>";
@@ -1621,67 +1622,18 @@
 				379C1BDF1D3796B800C4D92C /* g_struct.c */,
 				378971CF1C4F716700263434 /* g_scalar.c */,
 				371430B01D0D46BC00E68D11 /* g_paint.c */,
-				3715DB131E560F7D002B5FB7 /* Objects */,
+				378971D31C4F716700263434 /* g_pointer.c */,
+				37D643751D4796C700071C3C /* g_get.c */,
+				37D643531D4795ED00071C3C /* g_set.c */,
+				37D643351D47955B00071C3C /* g_element.c */,
+				37D6430D1D47944400071C3C /* g_getsize.c */,
+				37D642F21D4793A800071C3C /* g_setsize.c */,
+				37D642BB1D47924100071C3C /* g_append.c */,
+				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
+				379C1B711D37934500C4D92C /* g_plot.c */,
+				379C1B3F1D3790C200C4D92C /* g_drawtext.c */,
 			);
 			name = Scalars;
-			sourceTree = "<group>";
-		};
-		37ACC43E1E321BB60026E5FA /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				37A853431E34AC8D00A4491D /* d_fft.h */,
-				37998F781E2F688200632A45 /* d_fftOOURA.h */,
-				37ACC4181E32190F0026E5FA /* d_fftOOURA.c */,
-				378971B51C4F716700263434 /* fftsg.c */,
-				17C7712220148CF400584EE6 /* d_cos.h */,
-			);
-			name = Shared;
-			sourceTree = "<group>";
-		};
-		37AEFD541DB518100039FB59 /* Objects */ = {
-			isa = PBXGroup;
-			children = (
-				37CD71BA1D9A9DDF00A61BD3 /* Atom */,
-				37F86D531D8EEA3F0009717B /* List */,
-				3751490D1D86DC48005679B0 /* Text */,
-				3751490E1D86DC68005679B0 /* Array */,
-				17BBF6651F6E598100CEF275 /* Tab */,
-				379079D31D96D7EC0055CBFF /* Math */,
-				37D724561D92757C00408D24 /* Time */,
-				374905C71D99702300377F1E /* Flow */,
-				374905C91D99703B00377F1E /* Miscellaneous */,
-				374905CC1D99707A00377F1E /* MIDI */,
-				17039C6A20597DC200C86496 /* MICA */,
-			);
-			name = Objects;
-			sourceTree = "<group>";
-		};
-		37AEFD551DB5182A0039FB59 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				174D8A0B1F0BBE2E00C94065 /* x_atomoutlet.h */,
-				37B145831D9E97A1003A354F /* x_atomoutlet.c */,
-				3759441D1E48E04A00CF3FD7 /* tinyexpr.h */,
-				3759441C1E48E04A00CF3FD7 /* tinyexpr.c */,
-			);
-			name = Shared;
-			sourceTree = "<group>";
-		};
-		37B1AA491DC1EDE70017355A /* Objects */ = {
-			isa = PBXGroup;
-			children = (
-				37C000571DE2FE4B00F90584 /* Global */,
-				370D017F1DE6BFA4005918D4 /* Osc */,
-				3772C0401DFBDF450036466E /* Convert */,
-				370157B71DFFD41700F3FE0C /* Delay */,
-				37C9FADD1DF718CD00309D57 /* Tab */,
-				377C79961DF08AD0008195B0 /* Math */,
-				37C000561DE2FE3800F90584 /* Miscellaneous */,
-				37E0CBA81E03FA6C00993022 /* Soundfile */,
-				37E4DA031DEC6BB500190484 /* Filters */,
-				378B85961E2D2D6B00BDF703 /* FFT */,
-			);
-			name = Objects;
 			sourceTree = "<group>";
 		};
 		37C000261DE2FBF800F90584 /* Graph */ = {
