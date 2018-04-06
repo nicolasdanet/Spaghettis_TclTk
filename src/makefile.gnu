@@ -51,7 +51,7 @@ CXXFLAGS = $(CXXSTD) $(CFLAGS)
 
 # Expr with TinyExpr.
 
-EXPR_SRC = tinyexpr.c
+EXPR_SRC = control/tinyexpr.c
 
 # Sources amalgamated.
 
