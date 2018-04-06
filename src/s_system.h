@@ -288,15 +288,15 @@ static inline void sys_closeSocket (int fd)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "s_clock.h"
-#include "s_time.h"
-#include "s_atomic.h"
-#include "s_ringbuffer.h"
-#include "s_logger.h"
-#include "s_MT.h"
-#include "s_devicesproperties.h"
-#include "s_deviceslist.h"
-#include "s_API.h"
+#include "system/s_clock.h"
+#include "system/s_time.h"
+#include "system/s_atomic.h"
+#include "system/s_ringbuffer.h"
+#include "system/s_logger.h"
+#include "system/s_MT.h"
+#include "system/s_devicesproperties.h"
+#include "system/s_deviceslist.h"
+#include "system/s_API.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

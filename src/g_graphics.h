@@ -71,12 +71,12 @@ static inline const char *proxy_getTagAsString (t_proxy *x)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "g_patch.h"
-#include "g_editor.h"
-#include "g_glist.h"
-#include "g_objects.h"
-#include "g_iem.h"
-#include "g_scalar.h"
+#include "graphics/patch/g_patch.h"
+#include "graphics/patch/g_editor.h"
+#include "graphics/patch/g_glist.h"
+#include "graphics/patch/g_objects.h"
+#include "graphics/iem/g_iem.h"
+#include "graphics/scalars/g_scalar.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

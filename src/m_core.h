@@ -15,19 +15,19 @@
 
 /* Order of inclusion matters. */
 
-#include "m_macros.h"
-#include "m_symbols.h"
-#include "m_snap.h"
-#include "m_helpers.h"
-#include "m_clipboard.h"
-#include "m_environment.h"
-#include "m_instance.h"
-#include "m_class.h"
-#include "m_object.h"
-#include "m_inlet.h"
-#include "m_outlet.h"
-#include "m_error.h"
-#include "m_utils.h"
+#include "core/m_macros.h"
+#include "core/m_symbols.h"
+#include "core/m_snap.h"
+#include "core/m_helpers.h"
+#include "core/m_clipboard.h"
+#include "core/m_environment.h"
+#include "core/m_instance.h"
+#include "core/m_class.h"
+#include "core/m_object.h"
+#include "core/m_inlet.h"
+#include "core/m_outlet.h"
+#include "core/m_error.h"
+#include "core/m_utils.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
