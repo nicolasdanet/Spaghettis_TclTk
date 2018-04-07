@@ -9,6 +9,7 @@ Application/
 *.pdobject32
 *.mode2v3
 *.pbxuser
+*.sublime-workspace
 xcuserdata/
 xcshareddata/
 tests/tests
