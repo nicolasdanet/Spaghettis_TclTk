@@ -1918,11 +1918,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				378972191C4F716800263434 /* fftsg.c in Sources */,
+				3759441E1E48E04A00CF3FD7 /* tinyexpr.c in Sources */,
 				3716554F1BA3452E00ABDE22 /* pa_allocation.c in Sources */,
 				370303231E3B587E009D8A6D /* finddefault.c in Sources */,
 				3703031E1E3B586D009D8A6D /* readbinaryplist.c in Sources */,
 				372F9C6D1E3B461100A0BEF8 /* pa_mac_hostapis.c in Sources */,
-				17DA55822063832E00570B4E /* x_micasequence.c in Sources */,
 				371655991BA3467500ABDE22 /* ptmacosx_cf.c in Sources */,
 				371655971BA3466600ABDE22 /* portmidi.c in Sources */,
 				371655951BA3466000ABDE22 /* pmutil.c in Sources */,
@@ -1941,8 +1942,7 @@
 				371655551BA3455900ABDE22 /* pa_dither.c in Sources */,
 				371655531BA3453E00ABDE22 /* pa_cpuload.c in Sources */,
 				371655511BA3453500ABDE22 /* pa_converters.c in Sources */,
-				3759441E1E48E04A00CF3FD7 /* tinyexpr.c in Sources */,
-				378972191C4F716800263434 /* fftsg.c in Sources */,
+				17DA55822063832E00570B4E /* x_micasequence.c in Sources */,
 				17C9FE331FE00B7A007066EC /* s_atomicMac.c in Sources */,
 				17304EBD1F77DA3E00DCA7EC /* x_dspstatus.c in Sources */,
 				378972151C4F716800263434 /* d_tabplay.c in Sources */,
