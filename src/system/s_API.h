@@ -21,7 +21,7 @@ void    midi_releaseNative          (void);
 void    midi_openNative             (t_devicesproperties *);
 void    midi_closeNative            (void);
 void    midi_pushNextMessageNative  (int, int, int, int);
-void    midi_pushNextByteNative     (int, int );
+void    midi_pushNextByteNative     (int, int);
 void    midi_pollNative             (void);
 
 // -----------------------------------------------------------------------------------------------------------

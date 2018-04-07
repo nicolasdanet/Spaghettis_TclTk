@@ -175,13 +175,13 @@ void *micainterval_new (t_symbol *s, int argc, t_atom *argv)
     t_symbol *t2 = NULL;
     t_symbol *t1 = NULL;
     
-    if (IS_FLOAT (argv + argc - 1)) { t3 = concept_tagParsed (1, argv + argc - 1); argc --; }
+    if (IS_FLOAT (argv + argc - 1)) { t3 = concept_tagParsed (1, argv + argc - 1); argc--; }
     
     if (argc) {
     //
     t_symbol *last = atom_getSymbolAtIndex (argc - 1, argc, argv);
     
-    if (last == sym_Above || last == sym_Below) { t2 = concept_tagParsed (1, argv + argc - 1); argc --; }
+    if (last == sym_Above || last == sym_Below) { t2 = concept_tagParsed (1, argv + argc - 1); argc--; }
     
     if (argc) {
     //
