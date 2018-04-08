@@ -1,11 +1,19 @@
 {
-	"folders":
-	[
-		{
-			"path": "../src"
-		},
-		{
-			"path": "../tcl"
-		}
-	]
+    "folders":
+    [
+        {
+            "path": "../src"
+        },
+        {
+            "path": "../tcl"
+        }
+    ],
+    "build_systems":
+    [
+        {
+            "name": "Spaghettis",
+            "working_dir": "${project_path}/../",
+            "shell_cmd": "./build.sh"
+        }
+    ]
 }
