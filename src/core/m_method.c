@@ -51,7 +51,7 @@ typedef t_pd *(*t_newmethod20)  (t_int, t_int);
 static void method_execute (t_pd *x, t_method f, int m, t_int *ai, int n, t_float *af)
 {
     if (instance_isMakerObject (x)) {
-    
+
         t_pd *o = NULL;
 
         switch (METHOD_COMBINE (m, n)) {
@@ -62,16 +62,16 @@ static void method_execute (t_pd *x, t_method f, int m, t_int *ai, int n, t_floa
         case METHOD_COMBINE (1, 0)  : o = (*(t_newmethod10)f) (ai[0]);          break;
         case METHOD_COMBINE (1, 1)  : o = (*(t_newmethod11)f) (ai[0], af[0]);   break;
         case METHOD_COMBINE (2, 0)  : o = (*(t_newmethod20)f) (ai[0], ai[1]);   break;
-        default : PD_BUG; 
+        default : PD_BUG;
         //
         }
-        
+
         instance_setNewestObject (o);
 
-    } else { 
-    
+    } else {
+
         /* In that case adress of the object is passed at first. */
-        
+
         switch (METHOD_COMBINE (m, n)) {
         //
         case METHOD_COMBINE (1, 0)  : (*(t_method10)f) (ai[0]);                 break;
@@ -80,7 +80,7 @@ static void method_execute (t_pd *x, t_method f, int m, t_int *ai, int n, t_floa
         case METHOD_COMBINE (2, 0)  : (*(t_method20)f) (ai[0], ai[1]);          break;
         case METHOD_COMBINE (2, 1)  : (*(t_method21)f) (ai[0], ai[1], af[0]);   break;
         case METHOD_COMBINE (3, 0)  : (*(t_method30)f) (ai[0], ai[1], ai[2]);   break;
-        default : PD_BUG; 
+        default : PD_BUG;
         //
         }
     }
@@ -104,12 +104,12 @@ static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_
     t_float *fp = af;
     int m = 0;
     int n = 0;
-    
+
     if (!instance_isMakerObject (x)) { *ip = (t_int)x; ip++; m++; }
     if (argc > PD_ARGUMENTS) {
         warning_unusedArguments (s, argc - PD_ARGUMENTS, argv + PD_ARGUMENTS); argc = PD_ARGUMENTS;
     }
-        
+
     while ((t = *p++)) {
     //
     switch (t) {
@@ -117,36 +117,36 @@ static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_
     case A_POINTER   :  if (!argc) { return PD_ERROR; }
                         else {
                             if (IS_POINTER (argv)) { *ip = (t_int)GET_POINTER (argv); }
-                            else { 
-                                return PD_ERROR; 
-                            }
-                            argc--; argv++;
-                        }
-                        m++; ip++; break;
-                        
-    case A_FLOAT     :  if (!argc) { return PD_ERROR; }         /* Break is missing deliberately. */
-    case A_DEFFLOAT  :  if (!argc) { *fp = 0.0; }
-                        else {
-                            if (IS_FLOAT (argv)) { *fp = GET_FLOAT (argv); }
-                            else { 
-                                return PD_ERROR; 
-                            }
-                            argc--; argv++;
-                        }
-                        n++; fp++; break;
-                        
-    case A_SYMBOL    :  if (!argc) { return PD_ERROR;  }        /* Ditto. */
-    case A_DEFSYMBOL :  if (!argc) { *ip = (t_int)&s_; }
-                        else {
-                            if (IS_SYMBOL (argv)) { *ip = (t_int)GET_SYMBOL (argv); }
-                            else if (IS_FLOAT (argv) && GET_FLOAT (argv) == 0.0) { *ip = (t_int)&s_; }
-                            else { 
+                            else {
                                 return PD_ERROR;
                             }
                             argc--; argv++;
                         }
                         m++; ip++; break;
-                            
+
+    case A_FLOAT     :  if (!argc) { return PD_ERROR; }         /* Falls through. */
+    case A_DEFFLOAT  :  if (!argc) { *fp = 0.0; }
+                        else {
+                            if (IS_FLOAT (argv)) { *fp = GET_FLOAT (argv); }
+                            else {
+                                return PD_ERROR;
+                            }
+                            argc--; argv++;
+                        }
+                        n++; fp++; break;
+
+    case A_SYMBOL    :  if (!argc) { return PD_ERROR;  }        /* Falls through. */
+    case A_DEFSYMBOL :  if (!argc) { *ip = (t_int)&s_; }
+                        else {
+                            if (IS_SYMBOL (argv)) { *ip = (t_int)GET_SYMBOL (argv); }
+                            else if (IS_FLOAT (argv) && GET_FLOAT (argv) == 0.0) { *ip = (t_int)&s_; }
+                            else {
+                                return PD_ERROR;
+                            }
+                            argc--; argv++;
+                        }
+                        m++; ip++; break;
+
     default          :  return PD_ERROR;
     //
     }
@@ -154,13 +154,13 @@ static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_
     }
 
     method_execute (x, f, m, ai, n, af);
-    
-    if (instance_isMakerObject (x)) { 
-    if (argc) { 
-        warning_unusedArguments (s, argc, argv); 
+
+    if (instance_isMakerObject (x)) {
+    if (argc) {
+        warning_unusedArguments (s, argc, argv);
     }
     }
-    
+
     return PD_ERROR_NONE;
 }
 
@@ -172,26 +172,26 @@ static t_error method_entryTyped (t_entry *e, t_pd *x, t_symbol *s, int argc, t_
 static t_error method_entry (t_entry *e, t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atomtype *p = e->me_arguments;
-    
+
     if (*p != A_GIMME) { return method_entryTyped (e, x, s, argc, argv); }
     else {
         if (!instance_isMakerObject (x)) { (*((t_gimme)e->me_method)) (x, s, argc, argv); }
         else {
             t_pd *t = ((*((t_newgimme)e->me_method)) (s, argc, argv));
-            
+
             instance_setNewestObject (t);
         }
     }
-    
+
     return PD_ERROR_NONE;
 }
 
 static t_error method_slot (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_error err = PD_ERROR_NONE;
-    
+
     t_class *c = pd_class (x);
-        
+
     if (s == &s_float) {
         if (argc && IS_FLOAT (argv)) { (*(class_getFloatMethod (c))) (x, GET_FLOAT (argv)); }
         else {
@@ -200,13 +200,13 @@ static t_error method_slot (t_pd *x, t_symbol *s, int argc, t_atom *argv)
                 err = PD_ERROR;
             }
         }
-        
+
     } else if (s == &s_bang)   {
         (*(class_getBangMethod (c))) (x);
-        
+
     } else if (s == &s_list)   {
         (*(class_getListMethod (c))) (x, s, argc, argv);
-        
+
     } else if (s == &s_symbol) {
         if (argc && IS_SYMBOL (argv)) { (*(class_getSymbolMethod (c))) (x, GET_SYMBOL (argv)); }
         else {
@@ -217,14 +217,14 @@ static t_error method_slot (t_pd *x, t_symbol *s, int argc, t_atom *argv)
             }
         }
     }
-    
+
     if (!err && instance_isMakerObject (x)) {
     //
     if (argc > 0 && s == &s_bang)       { warning_unusedArguments (s, argc, argv); }
     else if (argc > 1 && s != &s_list)  { warning_unusedArguments (s, argc - 1, argv + 1); }
     //
     }
-    
+
     return err;
 }
 
@@ -237,40 +237,40 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     t_error err = PD_ERROR_NONE;
 
     t_class *c = pd_class (x);
-        
+
     /* Note that "pointer" is not catched. */
     /* It aims to let the pointer object be A_GIMME initialized. */
 
     PD_ASSERT (s != &s_pointer || instance_isMakerObject (x));
-    
+
     /* Notice that slot methods MUST be managed here. */
     /* For instance to create identical name objects. */
-    
+
     if (s == &s_bang || s == &s_float || s == &s_symbol || s == &s_list) {
         err = method_slot (x, s, argc, argv);
-        if (!err) { 
-            return; 
-        }  
+        if (!err) {
+            return;
+        }
     }
-        
+
     if (!err) {
-    
+
         t_entry *m = NULL;
         int i;
-            
+
         for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
             if (m->me_name == s) {
-                err = method_entry (m, x, s, argc, argv); 
-                if (!err) { return; } 
+                err = method_entry (m, x, s, argc, argv);
+                if (!err) { return; }
                 else {
                     break;
                 }
             }
         }
-        
+
         if (!err) {
-            (*(class_getAnythingMethod (c))) (x, s, argc, argv); 
-            return; 
+            (*(class_getAnythingMethod (c))) (x, s, argc, argv);
+            return;
         }
     }
 

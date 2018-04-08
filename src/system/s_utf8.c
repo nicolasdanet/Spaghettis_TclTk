@@ -89,29 +89,29 @@ int u8_utf8toucs2 (uint16_t *dest, int sz, char *src, int srcsz)
     while (i < sz - 1) {
     //
     uint16_t ch = 0;
-    
+
     int nb = u8_trailingBytesForUTF8[(unsigned char)*src];
-    
+
     if (!src_end) { if (*src == 0) { break; } }
     else {
         if (src + nb >= src_end) { break; }
     }
-    
+
     /* These fall through (missing break) deliberately. */
-    
+
     switch (nb) {
-        case 3  : ch += (unsigned char)*src++; ch <<= 6;
-        case 2  : ch += (unsigned char)*src++; ch <<= 6;
-        case 1  : ch += (unsigned char)*src++; ch <<= 6;
+        case 3  : ch += (unsigned char)*src++; ch <<= 6;    /* Falls through. */
+        case 2  : ch += (unsigned char)*src++; ch <<= 6;    /* Falls through. */
+        case 1  : ch += (unsigned char)*src++; ch <<= 6;    /* Falls through. */
         case 0  : ch += (unsigned char)*src++;
     }
-    
+
     dest[i++] = ch - u8_offsetsFromUTF8[nb];
     //
     }
-    
+
     dest[i] = 0;
-    
+
     return i;
 }
 
@@ -137,13 +137,13 @@ int u8_ucs2toutf8 (char *dest, int sz, uint16_t *src, int srcsz)
 
     } else if (ch < 0x800) {
         if (dest >= dest_end - 1) { return -1; }
-        else { 
+        else {
             *dest++ = (ch >> 6) | 0xC0; *dest++ = (ch & 0x3F) | 0x80;
         }
 
     } else {
         if (dest >= dest_end - 2) { return -1; }
-        else { 
+        else {
             *dest++ = (ch >> 12) | 0xE0; *dest++ = ((ch >> 6) & 0x3F) | 0x80; *dest++ = (ch & 0x3F) | 0x80;
         }
     }
@@ -211,7 +211,7 @@ int u8_offset (char *s, int charnum)
         if (s[i++] & 0x80) { (void)(UTF8_IS_UTF (s[++i]) || UTF8_IS_UTF (s[++i]) || ++i); }
         charnum--;
     }
-    
+
     return i;
 }
 
@@ -224,7 +224,7 @@ int u8_charnum (char *s, int offset)
         if (s[i++] & 0x80) { (void)(UTF8_IS_UTF (s[++i]) || UTF8_IS_UTF (s[++i]) || ++i); }
         charnum++;
     }
-    
+
     return charnum;
 }
 
