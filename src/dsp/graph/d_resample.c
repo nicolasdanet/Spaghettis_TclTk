@@ -177,7 +177,7 @@ static void resample_addResampling (t_resample *x,
     
     switch (type) {
     //
-    case RESAMPLE_DEFAULT : PD_BUG;
+    case RESAMPLE_DEFAULT : PD_BUG;     /* Falls through. */
     case RESAMPLE_ZERO    : dsp_add (resample_performUpsamplingZero,    4, in, out, t, inSize); break;
     case RESAMPLE_HOLD    : dsp_add (resample_performUpsamplingHold,    4, in, out, t, inSize); break;
     case RESAMPLE_LINEAR  : dsp_add (resample_performUpsamplingLinear,  5, &x->r_buffer, in, out, t, inSize);

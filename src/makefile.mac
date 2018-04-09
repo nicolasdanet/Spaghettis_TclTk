@@ -58,7 +58,8 @@ CPPFLAGS = -DNDEBUG \
     -I$(PM_DIR)/porttime \
     -I$(PA_DIR)/include \
     -I$(PA_DIR)/src/common \
-    -DPA_USE_COREAUDIO
+    -DPA_USE_COREAUDIO \
+    $(PD_OPTIONS)
 
 CFLAGS   = -g -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
 CXXFLAGS = $(CXXSTD) $(CFLAGS)

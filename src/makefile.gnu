@@ -38,14 +38,12 @@ WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-strict-overflow
 
 # Linker flags.
 
-LIB = -ldl -lpthread -lm -lasound -ljack
-
-LDFLAGS = -rdynamic
+LIB      = -ldl -lpthread -lm -lasound -ljack
+LDFLAGS  = -rdynamic
 
 # Preprocessor and compiler flags.
 
-CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION -I$(BELLE_DIR)/Source
-
+CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION -I$(BELLE_DIR)/Source $(PD_OPTIONS)
 CFLAGS   = -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
 CXXFLAGS = $(CXXSTD) $(CFLAGS)
 
