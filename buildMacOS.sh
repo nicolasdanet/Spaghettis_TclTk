@@ -68,7 +68,12 @@ patches="${rep}/resources/patches"
 # Avoid march=native flag on Mac OS X 10.6 system.
 # Assume C++11 supported on a later OS.
 
-echo "Build binaries ..."
+if [ -n "${PD_OPTIONS}" ]; then
+    echo "Build binaries ${PD_OPTIONS} ..."
+else
+    echo "Build binaries ..."
+fi
+
 cd "${rep}/src"                                                         || exit 1
 if [ "$OSTYPE" != "darwin10.0" ]; then
     make -f makefile.mac MARCH="-march=native" CXXSTD="-std=c++11"      || exit 1

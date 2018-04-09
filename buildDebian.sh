@@ -54,7 +54,12 @@ patches="${rep}/resources/patches"
 
 # Build the binaries.
 
-echo "Build binaries ..."
+if [ -n "${PD_OPTIONS}" ]; then
+    echo "Build binaries ${PD_OPTIONS} ..."
+else
+    echo "Build binaries ..."
+fi
+
 cd "${rep}/src"                                                     || exit 1
 make -f makefile.gnu MARCH="-march=native" CXXSTD="-std=c++11"      || exit 1
 cd "${rep}"                                                         || exit 1
