@@ -56,7 +56,7 @@ proc error {message} {
 
 proc _create {} {
 
-    toplevel .console -class PdConsole
+    toplevel .console -class $::var(appName)
     wm title .console [_ $::var(appName)]
     wm group .console .
     
