@@ -298,7 +298,7 @@ void glist_setFrozen (t_glist *glist, int n)
 
 void glist_setFontSize (t_glist *g, int n)
 {
-    if (n > 0) { g->gl_fontSize = font_getNearestValidFontSize (n); }
+    if (n > 0) { g->gl_fontSize = font_getHostFontSize (n); }
 }
 
 void glist_setMotion (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)

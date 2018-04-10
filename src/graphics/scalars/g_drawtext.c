@@ -156,7 +156,7 @@ static void drawtext_behaviorGetRectangle (t_gobj *z,
     t_float valueY      = baseY + gpointer_getFloatByDescriptor (gp, &x->x_positionY);
     int pixelX          = glist_valueToPixelX (glist, valueX);
     int pixelY          = glist_valueToPixelY (glist, valueY);
-    t_fontsize fontSize = glist_getFontSize (glist);
+    int fontSize        = glist_getFontSize (glist);
     
     if (!drawtext_getContents (x, gp, t, PD_STRING, &m, &n)) {
     

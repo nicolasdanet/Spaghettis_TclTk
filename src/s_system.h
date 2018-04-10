@@ -251,12 +251,9 @@ void        leak_release                            (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        font_setDefaultFontSize                 (int size);
-t_fontsize  font_getDefaultFontSize                 (void);
-t_fontsize  font_getNearestValidFontSize            (int size);
-int         font_getHostFontSize                    (t_fontsize fontSize);
-double      font_getHostFontWidth                   (t_fontsize fontSize);
-double      font_getHostFontHeight                  (t_fontsize fontSize);
+int         font_getHostFontSize                    (int fontSize);
+double      font_getHostFontWidth                   (int fontSize);
+double      font_getHostFontHeight                  (int fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -283,6 +280,15 @@ static inline void sys_closeSocket (int fd)
     #else
         close (fd);
     #endif
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline int font_getDefaultFontSize (void)
+{
+    return 12;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -28,7 +28,7 @@ struct _glist {
     t_bounds            gl_bounds;
     t_rectangle         gl_geometryGraph;
     t_rectangle         gl_geometryWindow;
-    t_fontsize          gl_fontSize;
+    int                 gl_fontSize;
     int                 gl_hasBeenCloseBanged;
     int                 gl_hasWindow;
     int                 gl_isMapped;
@@ -398,7 +398,7 @@ static inline t_unique glist_getIdentifier (t_glist *g)
     return g->gl_uniqueIdentifier;
 }
 
-static inline t_fontsize glist_getFontSize (t_glist *g)
+static inline int glist_getFontSize (t_glist *g)
 {
     return g->gl_fontSize;
 }

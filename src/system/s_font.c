@@ -21,18 +21,13 @@
 // MARK: -
 
 typedef struct _fontinfo {
-    t_fontsize  fi_size;
-    int         fi_requiredWidth;
-    int         fi_requiredHeight;
-    double      fi_hostSize;
-    double      fi_hostWidth;
-    double      fi_hostHeight;
+    int     fi_size;
+    int     fi_requiredWidth;
+    int     fi_requiredHeight;
+    double  fi_hostSize;
+    double  fi_hostWidth;
+    double  fi_hostHeight;
     } t_fontinfo;
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_fontsize font_defaultSize = 12;                /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -69,44 +64,21 @@ static t_fontinfo *font_getNearest (int fontSize)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void font_setDefaultFontSize (int size)
-{
-    font_defaultSize = font_getNearestValidFontSize (size);
-}
-
-t_fontsize font_getDefaultFontSize (void)
-{
-    return font_defaultSize;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_fontsize font_getNearestValidFontSize (int size)
-{
-    return (font_getNearest (size)->fi_size);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int font_getHostFontSize (t_fontsize fontSize)
+int font_getHostFontSize (int fontSize)
 {
     int k = (int)(font_getNearest (fontSize)->fi_hostSize);
     
     return PD_MAX (k, 1);
 }
 
-double font_getHostFontWidth (t_fontsize fontSize)
+double font_getHostFontWidth (int fontSize)
 {
     double k = font_getNearest (fontSize)->fi_hostWidth;
     
     return PD_MAX (k, 1.0);
 }
 
-double font_getHostFontHeight (t_fontsize fontSize)
+double font_getHostFontHeight (int fontSize)
 {
     double k = font_getNearest (fontSize)->fi_hostHeight;
     

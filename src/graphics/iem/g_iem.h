@@ -99,7 +99,7 @@ typedef struct _iem {
     int         iem_height;
     int         iem_labelX;                     /* Unused but kept for compatibility. */
     int         iem_labelY;                     /* Unused but kept for compatibility. */
-    t_fontsize  iem_fontSize;                   /* Unused but kept for compatibility. */
+    int         iem_fontSize;                   /* Unused but kept for compatibility. */
     t_color     iem_colorBackground;
     t_color     iem_colorForeground;
     t_color     iem_colorLabel;                 /* Unused but kept for compatibility. */

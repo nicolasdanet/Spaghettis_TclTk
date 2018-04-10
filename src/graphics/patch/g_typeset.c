@@ -51,7 +51,7 @@
 typedef struct _typesethelper {
     int         p_x;
     int         p_y;
-    t_fontsize  p_fontSize;
+    int         p_fontSize;
     double      p_fontWidth;
     double      p_fontHeight;
     int         p_numberOfCharacters;
