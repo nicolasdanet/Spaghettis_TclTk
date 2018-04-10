@@ -51,6 +51,7 @@ bin="${rep}/bin"
 tcl="${rep}/tcl"
 help="${rep}/resources/help"
 patches="${rep}/resources/patches"
+font="${rep}/resources/font"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -103,6 +104,7 @@ mv "${app}/Contents/MacOS/Wish" "${app}/Contents/MacOS/Spaghettis"      || exit 
 cp -R "${bin}" "${app}/Contents/Resources/"                             || exit 1
 cp -R "${tcl}" "${app}/Contents/Resources/"                             || exit 1
 cp -R "${help}" "${app}/Contents/Resources/"                            || exit 1
+cp -R "${font}" "${app}/Contents/Resources/"                            || exit 1
 cd "${app}/Contents/Resources/"                                         || exit 1
 ln -s "tcl" "Scripts"                                                   || exit 1
 cd "${rep}"                                                             || exit 1

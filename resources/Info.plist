@@ -69,6 +69,8 @@
 	<string>Wish.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>ATSApplicationFontsPath</key>
+	<string>font</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.6.0</string>
 </dict>
