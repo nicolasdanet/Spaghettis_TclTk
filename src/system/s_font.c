@@ -34,12 +34,12 @@ typedef struct _fontinfo {
 
 static t_fontinfo font_fontList[FONT_LIST_SIZE] =       /* Static. */
     {
-        { 8,   6, 10,   8.0,   6.0, 10.0 }, 
-        { 10,  7, 13,   10.0,  7.0, 13.0 }, 
-        { 12,  9, 16,   12.0,  9.0, 16.0 },
-        { 16, 10, 21,   16.0, 10.0, 21.0 }, 
-        { 24, 15, 25,   24.0, 15.0, 25.0 }, 
-        { 36, 25, 45,   36.0, 25.0, 45.0 }
+        { 8,   6, 10,   8.0,   6.0, 10.0 },
+        { 10,  7, 13,   10.0,  7.0, 13.0 },
+        { 12,  8, 16,   12.0,  8.0, 16.0 },
+        { 16, 12, 20,   16.0, 12.0, 20.0 },
+        { 24, 16, 32,   24.0, 16.0, 32.0 },
+        { 36, 26, 46,   36.0, 26.0, 46.0 }
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -100,16 +100,19 @@ void font_withHostMeasured (int argc, t_atom *argv)
     for (i = 0; i < FONT_LIST_SIZE; i++) {
     //
     int best = 0;
+    int    required       = font_fontList[i].fi_size;
     double requiredWidth  = font_fontList[i].fi_requiredWidth;
     double requiredHeight = font_fontList[i].fi_requiredHeight;
-    
+        
     for (j = 0; j < n; j++) {
     //
+    int    k = atom_getFloatAtIndex ((3 * j) + 0, argc, argv);
     double w = atom_getFloatAtIndex ((3 * j) + 1, argc, argv);
     double h = atom_getFloatAtIndex ((3 * j) + 2, argc, argv);
     
-    if (w <= requiredWidth && h <= requiredHeight) { 
-        best = j; 
+    if (k == required) { best = j; break; }                         /* Always prefers exact match. */
+    else if (w <= requiredWidth && h <= requiredHeight) {
+        best = j;
     }
     //
     }
