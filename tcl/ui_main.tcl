@@ -59,7 +59,7 @@ package require ui_text
 # ------------------------------------------------------------------------------------------------------------
 
 # MUST be a monospaced font.
-# https://en.wikipedia.org/wiki/List_of_monospaced_typefaces
+# ( https://en.wikipedia.org/wiki/List_of_monospaced_typefaces ).
 
 proc getDefaultFamily {} {
     
