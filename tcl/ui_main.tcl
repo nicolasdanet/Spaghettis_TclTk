@@ -59,6 +59,7 @@ package require ui_text
 # ------------------------------------------------------------------------------------------------------------
 
 # MUST be a monospaced font.
+# https://en.wikipedia.org/wiki/List_of_monospaced_typefaces
 
 proc getDefaultFamily {} {
     
@@ -67,9 +68,9 @@ proc getDefaultFamily {} {
                 "Inconsolata" \
                 "Consolas" \
                 "Droid Sans Mono" \
+                "Monaco" \
                 "Andale Mono" \
-                "Menlo" \
-                "Monaco" }
+                "Menlo" }
               
     foreach family $fonts {
         if {[lsearch -exact -nocase [font families] $family] > -1} {
