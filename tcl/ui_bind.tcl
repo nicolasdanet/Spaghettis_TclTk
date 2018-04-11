@@ -122,15 +122,15 @@ proc initialize {} {
     event add <<PopupMenu>>                 <ButtonPress-3>
     event add <<ClickRelease>>              <ButtonRelease-1>
     
-    bind $::var(appName)    <FocusIn>       { ::ui_bind::_focusIn %W }
-    bind PdDialog           <FocusIn>       { ::ui_bind::_focusIn %W }
-    bind PdPatch            <FocusIn>       { ::ui_bind::_focusIn %W }
-    bind PdText             <FocusIn>       { ::ui_bind::_focusIn %W }
-    bind PdTool             <FocusIn>       { ::ui_bind::_focusIn %W }
+    bind Spaghettis <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdDialog   <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdPatch    <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdText     <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdTool     <FocusIn>               { ::ui_bind::_focusIn %W }
     
-    bind PdPatch            <Configure>     { ::ui_bind::_resized %W %w %h %x %y }
-    bind PdPatch            <Map>           { ::ui_bind::_mapped %W   }
-    bind PdPatch            <Unmap>         { ::ui_bind::_unmapped %W }
+    bind PdPatch    <Configure>             { ::ui_bind::_resized %W %w %h %x %y }
+    bind PdPatch    <Map>                   { ::ui_bind::_mapped %W   }
+    bind PdPatch    <Unmap>                 { ::ui_bind::_unmapped %W }
 
     bind all <Escape>                       { ::cancel %W }
      
@@ -216,7 +216,7 @@ proc _focusIn {top} {
     set ::var(windowFocused) $top
     
     switch -regexp -- [winfo class $top] {
-        $::var(appName)     {
+        "Spaghettis"        {
             ::ui_menu::configureForConsole
             ::ui_menu::disableEditing
             set ::var(isEditMode) 0

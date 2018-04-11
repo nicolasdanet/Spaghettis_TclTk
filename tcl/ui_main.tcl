@@ -94,8 +94,6 @@ proc getDefaultWeight {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-set var(appName)                    "Spaghettis"
-
 set var(filesExtensions)            ".pd .pdhelp"
 set var(filesOpenPended)            {}
 set var(filesTypes)                 { {{Patch} {.pd}} {{Help} {.pdhelp}} }

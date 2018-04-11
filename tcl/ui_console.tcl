@@ -56,8 +56,8 @@ proc error {message} {
 
 proc _create {} {
 
-    toplevel .console -class $::var(appName)
-    wm title .console [_ $::var(appName)]
+    toplevel .console -class Spaghettis
+    wm title .console "Spaghettis"
     wm group .console .
     
     wm minsize  .console {*}[::styleMinimumSize]

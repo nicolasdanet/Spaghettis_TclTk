@@ -190,7 +190,7 @@ proc _apple {m} {
     menu $m.apple
     
     $m.apple add command \
-        -label [_ [format "About %s" $::var(appName)]] \
+        -label [_ "About Spaghettis"] \
         -command {}
 
     $m add cascade -menu $m.apple
