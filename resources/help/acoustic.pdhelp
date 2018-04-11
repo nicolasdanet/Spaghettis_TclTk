@@ -23,7 +23,7 @@
 #X floatatom 132 228 5 0 0 1 - - -;
 #X f 5;
 #X text 12 264 See also:;
-#X obj 96 264 mtof~;
+#X obj 84 264 mtof~;
 #N canvas 432 146 383 320 more 0;
 #X obj 36 240 ftom;
 #X obj 36 276 print;
