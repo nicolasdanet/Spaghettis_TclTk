@@ -1,6 +1,6 @@
-#N canvas 708 199 390 240 12;
-#X obj 96 192 delread~;
-#X obj 180 192 delread4~;
+#N canvas 708 199 322 231 12;
+#X obj 84 192 delread~;
+#X obj 156 192 delread4~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 delwrite~;
@@ -8,7 +8,7 @@
 #X text 12 192 See also:;
 #X obj 36 108 osc~ 440;
 #X obj 36 144 delwrite~ \$0-delay 500;
-#N canvas 311 396 550 171 more 0;
+#N canvas 311 396 483 163 more 0;
 #X obj 36 48 delwrite~ \$0-foo;
 #X obj 36 120 delwrite~ \$0-foo 2000;
 #X text 12 84 Secondth argument is the size (in milliseconds) of its buffer.;
@@ -16,6 +16,6 @@
 #X text 12 12 First argument is the name of the delay line (must be unique).;
 #X f 62;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 300 144 pd more;
+#X restore 240 144 pd more;
 #X connect 7 0 8 0;
 #X coords 0 0 1 1 250 175 0 0 0;
