@@ -1,7 +1,7 @@
 #N canvas 860 164 274 255 12;
 #X obj 36 180 print;
 #X obj 36 144 savepanel;
-#X obj 96 216 openpanel;
+#X obj 84 216 openpanel;
 #X text 12 216 See also:;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
