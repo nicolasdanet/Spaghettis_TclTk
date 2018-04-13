@@ -1,4 +1,4 @@
-#N canvas 600 70 510 265 12;
+#N canvas 600 70 482 266 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 pgmout;
@@ -6,9 +6,9 @@
 #X text 12 72 Output MIDI program change.;
 #X obj 36 180 pgmout;
 #X msg 36 108 1 2;
-#X obj 96 228 midiout;
-#X obj 168 228 noteout;
-#X obj 240 228 ctlout;
+#X obj 84 228 midiout;
+#X obj 144 228 noteout;
+#X obj 204 228 ctlout;
 #X obj 108 180 bendout;
 #X msg 108 144 \$1 2;
 #X floatatom 108 108 5 0 0 1 - - -;
@@ -23,14 +23,14 @@
 #X floatatom 348 108 5 0 0 1 - - -;
 #X f 5;
 #X obj 288 144 pack;
-#N canvas 902 234 332 167 more 0;
+#N canvas 893 385 288 163 more 0;
 #X obj 36 48 pgmout 2;
 #X obj 36 72 bendout 2;
 #X obj 36 96 touchout 2;
 #X obj 36 120 polytouchout 2;
 #X text 12 12 Define the channel at instantiation.;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 420 180 pd more;
+#X restore 408 180 pd more;
 #X connect 6 0 5 0;
 #X connect 11 0 10 0;
 #X connect 12 0 11 0;

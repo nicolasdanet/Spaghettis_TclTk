@@ -1,12 +1,11 @@
-#N canvas 817 181 352 281 12;
+#N canvas 861 131 275 278 12;
 #X obj 36 204 print~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 print~;
 #X text 12 240 See also:;
-#X obj 96 240 print;
-#X obj 252 240 snapshot~;
-#X obj 156 240 tabwrite~;
+#X obj 84 240 print;
+#X obj 132 240 snapshot~;
 #N canvas 919 311 308 212 more 0;
 #X msg 72 48 count 2;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
@@ -17,10 +16,10 @@
 #X connect 1 0 3 0;
 #X connect 2 0 3 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 216 156 pd more;
+#X restore 156 156 pd more;
 #X obj 72 156 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 108 phasor~ 440;
 #X text 12 72 Print out raw values of a signal.;
+#X connect 8 0 0 0;
 #X connect 9 0 0 0;
-#X connect 10 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
