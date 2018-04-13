@@ -2,8 +2,8 @@
 #X obj 36 204 symbol foo;
 #X msg 36 132 zorglub;
 #X text 12 276 See also:;
-#X obj 96 276 int;
-#X obj 132 276 float;
+#X obj 84 276 int;
+#X obj 120 276 float;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
