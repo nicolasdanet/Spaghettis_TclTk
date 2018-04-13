@@ -40,12 +40,12 @@
 #X array \$0-another 34475 float 2;
 #X coords 0 1 34475 -1 250 175 1 0 0;
 #X restore 312 324 graph \$0-another;
-#N canvas 315 146 355 176 init 0;
-#X obj 36 132 soundfiler;
+#N canvas 315 146 313 168 init 0;
+#X obj 36 120 soundfiler;
 #X f 10;
-#X msg 84 60 read -resize bell.aiff \$0-sample;
+#X msg 36 60 read -resize bell.aiff \$0-sample;
 #X obj 36 24 loadbang;
-#X msg 84 96 read -resize you.aiff \$0-another;
+#X msg 36 84 read -resize you.aiff \$0-another;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
 #X connect 2 0 3 0;
