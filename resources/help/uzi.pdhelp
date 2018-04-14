@@ -1,4 +1,4 @@
-#N canvas 907 99 278 325 12;
+#N canvas 907 99 274 326 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -72 12 freeze;
 #X text 24 24 uzi;
@@ -8,15 +8,15 @@
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X msg 72 108 5;
 #X obj 36 252 print;
-#X obj 84 204 pack foo f;
-#N canvas 912 496 296 246 more 0;
+#X obj 72 204 pack foo f;
+#N canvas 603 107 266 269 more 0;
 #X obj 36 84 uzi 100;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 36 204 print;
-#X obj 108 120 t f f;
-#X obj 168 156 >= 9;
-#X obj 168 180 select 1;
-#X msg 168 204 stop;
+#X obj 36 228 print;
+#X obj 96 120 t f f;
+#X obj 144 144 >= 9;
+#X obj 144 168 select 1;
+#X msg 144 192 stop;
 #X text 12 12 It can be aborted while banging.;
 #X connect 0 1 2 0;
 #X connect 0 2 3 0;
@@ -29,7 +29,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 180 156 pd more;
 #X text 12 72 Bang a given number of times.;
-#X obj 96 288 t;
+#X obj 84 288 t;
 #X connect 4 0 8 0;
 #X connect 4 1 7 0;
 #X connect 4 2 8 1;

@@ -1,4 +1,4 @@
-#N canvas 480 291 277 151 12;
+#N canvas 812 253 201 142 12;
 #X obj 36 24 inlet;
 #X obj 36 60 float \$1;
 #X obj 36 96 send \$2;
