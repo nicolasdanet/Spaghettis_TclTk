@@ -151,6 +151,8 @@ if {[tk windowingsystem] eq "x11"} {
 
 proc main {argc argv} {
 
+    tk appname spaghettis
+
     # Configure to UTF-8 encoding.
     
     encoding system utf-8
