@@ -1,4 +1,4 @@
-#N canvas 882 157 428 273 12;
+#N canvas 882 157 424 272 12;
 #X obj 252 108 r one-a;
 #X obj 252 192 r two-a;
 #X obj 336 108 r one-b;
@@ -10,11 +10,11 @@
 #X obj -60 12 freeze;
 #X floatatom 36 108 5 0 0 1 - - -;
 #X f 5;
-#X floatatom 144 108 5 0 0 1 - - -;
+#X floatatom 132 108 5 0 0 1 - - -;
 #X f 5;
 #X floatatom 36 192 5 0 0 1 - - -;
 #X f 5;
-#X floatatom 144 192 5 0 0 1 - - -;
+#X floatatom 132 192 5 0 0 1 - - -;
 #X f 5;
 #X floatatom 252 144 5 0 0 1 - - -;
 #X f 5;
