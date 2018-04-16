@@ -1,4 +1,4 @@
-#N canvas 395 209 421 377 12;
+#N canvas 554 176 421 377 12;
 #X obj 264 336 get;
 #X obj 300 336 set;
 #X obj 144 336 element;
@@ -9,7 +9,7 @@
 #X text 24 24 append;
 #X text 12 336 See also:;
 #X obj -60 12 freeze;
-#N canvas 62 343 335 326 \$0-data 1;
+#N canvas 271 287 335 326 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 276 pd \$0-data;
 #N canvas 467 243 374 116 \$0-template 0;

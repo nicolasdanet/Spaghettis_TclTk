@@ -1,4 +1,4 @@
-#N canvas 892 210 276 254 12;
+#N canvas 892 270 276 254 12;
 #X obj 36 108 bang~;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 bang~;
@@ -9,8 +9,8 @@
 #X f 5;
 #X text 12 72 Bang after each DSP cycle.;
 #X obj 36 144 counter;
-#N canvas 786 510 391 191 more 0;
-#N canvas 622 170 230 166 reblocked 0;
+#N canvas 744 464 391 191 more 0;
+#N canvas 633 270 307 168 reblocked 0;
 #X obj 36 24 bang~;
 #X obj 36 60 t b b;
 #X obj 36 84 timer;

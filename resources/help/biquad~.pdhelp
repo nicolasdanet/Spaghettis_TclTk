@@ -1,4 +1,4 @@
-#N canvas 416 108 671 499 12;
+#N canvas 416 168 671 499 12;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 biquad~;
@@ -20,7 +20,7 @@
 #X text 12 72 Two-Pole Two-Zero filter (Direct Form II with additions only).;
 #X f 63;
 #X obj 156 324 r \$0-biquad;
-#N canvas 837 276 217 164 more 0;
+#N canvas 837 336 307 170 more 0;
 #X msg 36 72 set 0 0;
 #X msg 36 48 clear;
 #X obj 36 120 s \$0-biquad;
