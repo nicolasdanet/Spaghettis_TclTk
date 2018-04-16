@@ -1,4 +1,4 @@
-#N canvas 480 38 513 509 12;
+#N canvas 480 98 513 509 12;
 #X obj 36 252 +~;
 #X obj 84 252 -~;
 #X obj 132 252 *~;
@@ -17,7 +17,7 @@
 #X obj 276 468 wrap~;
 #X obj 180 468 clip~;
 #X obj 228 468 abs~;
-#N canvas 707 162 419 487 more 0;
+#N canvas 707 282 418 475 more 0;
 #X obj 36 120 +~ 5;
 #X floatatom 72 84 5 0 0 1 - - -;
 #X f 5;
@@ -30,10 +30,10 @@
 #X f 55;
 #X obj 36 264 sig~ 1;
 #X obj 36 288 sig~ 1;
-#X obj 36 408 snapshot~ 0;
-#X floatatom 36 444 5 0 0 1 - - -;
+#X obj 36 396 snapshot~ 0;
+#X floatatom 36 432 5 0 0 1 - - -;
 #X f 5;
-#X obj 36 372 *~ 1;
+#X obj 36 360 *~ 1;
 #X obj 36 312 sig~ 1;
 #X connect 0 0 2 0;
 #X connect 1 0 0 1;
