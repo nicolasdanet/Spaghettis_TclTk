@@ -61,7 +61,7 @@ proc _create {} {
     wm group .console .
     
     wm minsize  .console {*}[::styleMinimumSize]
-    wm geometry .console "=400x300+30+60"
+    wm geometry .console "=400x300+60+60"
     
     .console configure -menu .menubar
 

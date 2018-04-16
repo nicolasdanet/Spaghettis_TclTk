@@ -16,6 +16,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define GLIST_X         100
+#define GLIST_Y         100
+#define GLIST_WIDTH     500
+#define GLIST_HEIGHT    350
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void glist_task (t_glist *glist)
 {
     glist_redraw (glist);
@@ -112,8 +121,8 @@ t_glist *glist_newPatch (t_symbol *name,
     t_bounds t1; t_rectangle t2, t3;
     
     bounds_set (&t1, 0, 0, 1, 1);
-    rectangle_set (&t2, 0, 0, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-    rectangle_set (&t3, 0, WINDOW_HEADER, WINDOW_WIDTH, WINDOW_HEIGHT + WINDOW_HEADER);
+    rectangle_set (&t2, 0, 0, GLIST_WIDTH / 2, GLIST_HEIGHT / 2);
+    rectangle_set (&t3, GLIST_X, GLIST_Y, GLIST_X + GLIST_WIDTH, GLIST_Y + GLIST_HEIGHT);
     
     if (bounds) { bounds_setCopy (&t1, bounds);    }
     if (graph)  { rectangle_setCopy (&t2, graph);  }
