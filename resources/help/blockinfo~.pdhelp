@@ -1,11 +1,11 @@
-#N canvas 546 87 275 205 12;
+#N canvas 570 218 309 208 12;
 #X text 12 168 See also:;
 #X obj -60 12 freeze;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 blockinfo~;
 #X obj 96 168 block~;
 #X text 12 72 Report block~ machinery.;
-#N canvas 534 417 586 262 more 0;
+#N canvas 525 464 586 262 more 0;
 #X msg 204 48 set 64;
 #X obj 36 48 blockinfo~;
 #N canvas 0 22 500 350 \$0-local 0;
@@ -27,7 +27,7 @@
 #X connect 8 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 108 pd more;
-#N canvas 891 34 304 644 again 0;
+#N canvas 891 124 304 644 again 0;
 #X obj 36 600 block~ 128 1 4;
 #X obj 36 48 blockinfo~;
 #X f 11;
