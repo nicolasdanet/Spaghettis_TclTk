@@ -1,5 +1,5 @@
 #N canvas 675 57 457 341 12;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj 36 300 print;
 #X msg 36 132 -3.14;
 #N canvas 1021 59 242 666 edit 0;

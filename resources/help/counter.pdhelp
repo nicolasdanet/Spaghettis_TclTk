@@ -1,7 +1,7 @@
 #N canvas 720 133 275 248 12;
 #X text 12 216 See also:;
 #X obj 84 216 select;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 counter;
 #X obj 144 216 uzi;

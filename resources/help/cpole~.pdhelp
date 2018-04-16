@@ -3,7 +3,7 @@
 #X obj 84 288 lop~;
 #X obj 132 288 rpole~;
 #X obj 192 288 czero~;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 cpole~;
 #X text 12 72 Complex One-Pole filter.;

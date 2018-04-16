@@ -3,7 +3,7 @@
 #X floatatom 36 264 0 0 0 0 - - -;
 #X obj 36 204 hip~ 5;
 #X obj 36 108 osc~ 100;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 hip~;
 #X text 12 312 See also:;

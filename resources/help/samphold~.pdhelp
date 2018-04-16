@@ -1,6 +1,6 @@
 #N canvas 774 82 513 363 12;
 #X obj 36 204 samphold~;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 samphold~;
 #X text 12 72 Sample and hold unit.;

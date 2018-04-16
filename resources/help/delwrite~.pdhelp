@@ -1,7 +1,7 @@
 #N canvas 708 199 322 231 12;
 #X obj 84 192 delread~;
 #X obj 156 192 delread4~;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 delwrite~;
 #X text 12 72 Writes a signal in a delay line.;

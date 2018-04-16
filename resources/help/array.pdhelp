@@ -42,7 +42,7 @@
 #X obj 36 276 array random;
 #X obj 36 204 array max;
 #X obj 36 228 array min;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 array;
 #X text 12 504 See also:;
 #X text 168 108 Get or change size.;

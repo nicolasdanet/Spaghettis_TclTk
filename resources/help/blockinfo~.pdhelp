@@ -1,7 +1,7 @@
 #N canvas 570 218 309 208 12;
 #X text 12 168 See also:;
 #X obj -60 12 freeze;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 blockinfo~;
 #X obj 96 168 block~;
 #X text 12 72 Report block~ machinery.;

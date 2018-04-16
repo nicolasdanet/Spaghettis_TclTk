@@ -2,7 +2,7 @@
 #X obj 84 240 drawpolygon;
 #X text 12 240 See also:;
 #X obj 180 240 drawnumber;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 plot;
 #N canvas 633 85 427 594 more 0;

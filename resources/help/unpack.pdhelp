@@ -4,7 +4,7 @@
 #X msg 36 108 1 2;
 #X msg 36 132 3 4 shut;
 #X msg 36 156 5 6 pick 7 8;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 unpack;
 #X obj 36 204 unpack f f s f f;
 #X f 20;

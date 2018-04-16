@@ -1,5 +1,5 @@
 #N canvas 671 69 497 314 12;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X obj 132 276 tabwrite~;
 #X text 12 276 See also:;

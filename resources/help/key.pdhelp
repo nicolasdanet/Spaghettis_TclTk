@@ -4,7 +4,7 @@
 #X obj 180 108 keyname;
 #X symbolatom 252 144 10 0 0 0 - - -;
 #X f 10;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 key;
 #X text 12 288 See also:;

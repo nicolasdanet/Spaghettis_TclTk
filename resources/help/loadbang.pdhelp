@@ -1,6 +1,6 @@
 #N canvas 1028 156 274 254 12;
 #X obj 36 108 loadbang;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 loadbang;
 #X msg 36 132 Hello!;
