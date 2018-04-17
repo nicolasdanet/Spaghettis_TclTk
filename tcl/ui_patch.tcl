@@ -31,7 +31,7 @@ array set patchIsEditMode    {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc create {top width height coordinates isEditMode} {
+proc create {top width height coordinateX coordinateY isEditMode} {
 
     variable patchTitle
     variable patchIsEditMode
@@ -39,7 +39,7 @@ proc create {top width height coordinates isEditMode} {
     toplevel $top -class PdPatch
     wm group $top .
 
-    wm geometry $top [format "=%dx%d%s" $width $height $coordinates]
+    wm geometry $top [format "=%dx%d+%d+%d" $width $height $coordinateX $coordinateY]
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
     

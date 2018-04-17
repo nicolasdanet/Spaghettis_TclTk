@@ -601,7 +601,7 @@ void glist_windowOpen (t_glist *glist)
     //
     t_rectangle *r = glist_getWindowGeometry (glist);
     
-    gui_vAdd ("::ui_patch::create %s %d %d +%d+%d %d\n",    // --
+    gui_vAdd ("::ui_patch::create %s %d %d %d %d %d\n",    // --
                     glist_getTagAsString (glist),
                     rectangle_getWidth (r),
                     rectangle_getHeight (r),
