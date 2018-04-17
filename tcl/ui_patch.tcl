@@ -48,7 +48,7 @@ proc create {top width height coordinateX coordinateY isEditMode} {
         set offset 0
     }
     
-    wm minsize  $top {*}[::styleMinimumSize]
+    wm minsize  $top {*}[::styleMinimumSizePatch]
     wm geometry $top [format "=%dx%d+%d+%d" $width $height $coordinateX [expr { $coordinateY - $offset }]]
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
