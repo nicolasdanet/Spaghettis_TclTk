@@ -39,16 +39,17 @@ proc create {top width height coordinateX coordinateY isEditMode} {
     toplevel $top -class PdPatch
     wm group $top .
 
-    wm minsize $top {*}[::styleMinimumSize]
-
     # On GNU/Linux an offset is required due to the window decorators.
     # TODO: Fetch the exact value (instead of magic number).
 
-    if {[tk windowingsystem] ne "x11"} {
-        wm geometry $top [format "=%dx%d+%d+%d" $width $height $coordinateX $coordinateY]
+    if {[tk windowingsystem] eq "x11"} {
+        set offset 60
     } else {
-        wm geometry $top [format "=%dx%d+%d+%d" $width $height $coordinateX [expr { $coordinateY - 60 }]]
+        set offset 0
     }
+    
+    wm minsize $top {*}[::styleMinimumSize]
+    wm geometry $top [format "=%dx%d+%d+%d" $width $height $coordinateX [expr { $coordinateY - $offset }]]
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
     
