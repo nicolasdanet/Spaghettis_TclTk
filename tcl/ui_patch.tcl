@@ -39,7 +39,16 @@ proc create {top width height coordinateX coordinateY isEditMode} {
     toplevel $top -class PdPatch
     wm group $top .
 
-    wm geometry $top [format "=%dx%d+%d+%d" $width $height $coordinateX $coordinateY]
+    wm minsize $top {*}[::styleMinimumSize]
+
+    # On GNU/Linux an offset is required due to the window decorators.
+    # TODO: Fetch the exact value (instead of magic number).
+
+    if {[tk windowingsystem] ne "x11"} {
+        wm geometry $top [format "=%dx%d+%d+%d" $width $height $coordinateX $coordinateY]
+    } else {
+        wm geometry $top [format "=%dx%d+%d+%d" $width $height $coordinateX [expr { $coordinateY - 60 }]]
+    }
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
     
