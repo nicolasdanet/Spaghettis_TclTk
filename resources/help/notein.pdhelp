@@ -1,4 +1,4 @@
-#N canvas 766 102 277 255 12;
+#N canvas 742 152 300 255 12;
 #X obj 36 108 notein;
 #X f 10;
 #X obj 84 216 ctlin;
@@ -8,7 +8,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 notein;
 #X text 12 216 See also:;
-#N canvas 996 232 369 318 more 0;
+#N canvas 860 214 369 318 more 0;
 #X obj 36 48 notein 1;
 #X text 12 12 Fetch only a given channel.;
 #X obj 36 120 print pitch;
