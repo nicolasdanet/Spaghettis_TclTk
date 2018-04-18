@@ -1,9 +1,9 @@
-#N canvas 1028 156 274 254 12;
+#N canvas 729 136 300 254 12;
 #X obj 36 108 loadbang;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 loadbang;
-#X msg 36 132 Hello!;
+#X msg 36 144 Hello!;
 #X obj 36 180 print;
 #X text 12 216 See also:;
 #N canvas 917 449 352 201 more 0;
