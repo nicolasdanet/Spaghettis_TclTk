@@ -17,10 +17,10 @@
 #X text 24 24 get;
 #X text 12 324 See also:;
 #X text 12 72 Get values from a scalar.;
-#N canvas 454 116 375 337 \$0-data 1;
+#N canvas 399 193 375 337 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 288 252 pd \$0-data;
-#N canvas 852 262 422 450 more 0;
+#N canvas 712 231 422 450 more 0;
 #X obj 36 348 pointer;
 #X obj 36 108 pointer;
 #X obj 36 372 get - x;
@@ -49,7 +49,7 @@
 #X connect 10 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 192 180 pd more;
-#N canvas 843 607 400 145 \$0-template 0;
+#N canvas 847 552 400 145 \$0-template 0;
 #X obj 36 96 struct \$0-template float x float y symbol s;
 #X obj 36 60 filledpolygon 800 800 0 -10 0 0 10 10 0 0 -10;
 #X obj 36 24 drawsymbol s 15 -8 0;
@@ -57,11 +57,11 @@
 #X restore 288 276 pd \$0-template;
 #X msg 36 108 traverse \$0-data \, next;
 #X obj 36 240 get \$0-template x y s;
-#N canvas 888 411 305 262 init 0;
-#X obj 108 180 pointer;
-#X msg 108 156 traverse \$0-data \, bang;
+#N canvas 805 257 325 286 init 0;
+#X obj 120 204 pointer;
+#X msg 120 168 traverse \$0-data \, bang;
 #X obj 96 24 loadbang;
-#X msg 108 108 \; pd-\$0-data clear;
+#X msg 120 108 \; pd-\$0-data clear;
 #X obj 36 24 inlet;
 #X obj 36 72 t b b b;
 #X f 8;
@@ -93,7 +93,7 @@
 #X connect 8 0 7 0;
 #X connect 10 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 36 216 pd shapes;
+#X restore 36 240 pd shapes;
 #X connect 0 0 6 1;
 #X connect 1 0 0 0;
 #X connect 2 0 5 0;

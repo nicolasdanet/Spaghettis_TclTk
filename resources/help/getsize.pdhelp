@@ -1,4 +1,4 @@
-#N canvas 813 80 345 459 12;
+#N canvas 818 106 345 459 12;
 #X obj 84 420 pointer;
 #X obj 144 420 setsize;
 #X obj 36 156 pointer;
@@ -12,13 +12,13 @@
 #N canvas 301 408 457 173 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 324 pd \$0-data;
-#N canvas 456 328 533 112 \$0-template 0;
+#N canvas 456 328 478 118 \$0-template 0;
 #X obj 36 60 struct \$0-template float x float y array a \$0-element;
 #X f 54;
 #X obj 36 24 plot a 777 1 10 15 50;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 372 pd \$0-template;
-#N canvas 530 329 387 108 \$0-element 0;
+#N canvas 530 329 362 114 \$0-element 0;
 #X obj 36 24 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
 #X obj 36 60 struct \$0-element float y;
 #X coords 0 0 1 1 250 175 0 0 0;
@@ -84,7 +84,7 @@
 #X msg 36 108 traverse \$0-data \, next;
 #X obj 36 180 getsize \$0-template a;
 #X obj 36 216 print;
-#N canvas 916 109 486 470 more 0;
+#N canvas 379 146 429 465 more 0;
 #X obj 84 120 pointer;
 #X msg 84 84 traverse \$0-data \, next;
 #X msg 36 48 set \$0-template a;
