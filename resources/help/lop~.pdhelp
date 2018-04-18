@@ -1,4 +1,4 @@
-#N canvas 967 85 276 337 12;
+#N canvas 639 199 300 337 12;
 #X obj 84 300 hip~;
 #X obj 132 300 bp~;
 #X obj 168 300 vcf~;
@@ -9,7 +9,7 @@
 #X obj 36 228 env~;
 #X floatatom 36 264 0 0 0 0 - - -;
 #X obj 36 108 osc~ 100;
-#N canvas 746 235 369 209 more 0;
+#N canvas 746 235 373 216 more 0;
 #X text 12 12 Creation argument initializes cutoff frequency.;
 #X text 12 84 Reinitialize the internal state.;
 #X msg 36 120 clear;
