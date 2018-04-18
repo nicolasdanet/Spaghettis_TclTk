@@ -1,4 +1,4 @@
-#N canvas 485 81 669 328 12;
+#N canvas 496 117 669 328 12;
 #X obj 36 108 cpole~ 0.9 0.4;
 #X obj 84 288 lop~;
 #X obj 132 288 rpole~;

@@ -1,4 +1,4 @@
-#N canvas 696 103 406 267 12;
+#N canvas 698 134 406 267 12;
 #X obj 180 228 plot;
 #X obj 84 228 drawpolygon;
 #X obj 228 228 struct;
@@ -56,7 +56,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 192 156 pd init;
 #X obj 192 120 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#N canvas 1094 88 299 498 more 0;
+#N canvas 943 111 300 498 more 0;
 #X obj 36 336 drawnumber;
 #X obj 36 360 drawtext;
 #X obj 36 384 drawsymbol;

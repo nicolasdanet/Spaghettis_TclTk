@@ -61,14 +61,14 @@
 #X f 43;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 204 pd unsupported;
-#N canvas 460 540 332 113 limited 0;
+#N canvas 512 465 332 113 limited 0;
 #X obj 36 48 tabsend~;
 #X obj 36 72 tabreceive~;
 #X text 12 12 Following are limited (clamped or zeroed).;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 228 pd limited;
 #X obj 168 300 blockinfo~;
-#N canvas 501 200 627 95 more 0;
+#N canvas 501 200 627 100 more 0;
 #X text 12 12 The smaller the blocksize the more expensive the computations are.;
 #X f 66;
 #X text 12 36 Thus it's a good idea to isolate the portion of the patch that requires reblocking.;

@@ -1,4 +1,4 @@
-#N canvas 616 80 438 268 12;
+#N canvas 614 112 438 268 12;
 #X obj 36 144 sig~;
 #X obj 84 228 delwrite~;
 #X obj 168 228 delread4~;

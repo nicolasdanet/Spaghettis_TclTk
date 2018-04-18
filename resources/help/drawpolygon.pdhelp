@@ -1,4 +1,4 @@
-#N canvas 706 85 424 315 12;
+#N canvas 679 147 424 315 12;
 #X obj 84 276 drawnumber;
 #X obj 168 276 plot;
 #X obj 216 276 struct;

@@ -1,4 +1,4 @@
-#N canvas 677 83 276 303 12;
+#N canvas 680 112 300 303 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 change;
@@ -9,7 +9,7 @@
 #X obj 36 228 print;
 #X obj 60 156 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X text 12 72 Eliminate redundancy in a stream.;
-#N canvas 896 108 253 355 more 0;
+#N canvas 896 108 300 355 more 0;
 #X obj 36 96 change 1;
 #X obj 36 132 print;
 #X text 12 12 Initialise it with an argument.;

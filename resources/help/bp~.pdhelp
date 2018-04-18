@@ -7,7 +7,7 @@
 #X obj 180 348 lop~;
 #X obj 132 348 hip~;
 #X floatatom 36 312 0 0 0 0 - - -;
-#N canvas 684 267 373 193 more 0;
+#N canvas 719 266 373 193 more 0;
 #X obj 36 48 bp~ 440;
 #X text 12 12 First argument initialize the center frequency.;
 #X text 12 84 Next argument is the Q factor.;

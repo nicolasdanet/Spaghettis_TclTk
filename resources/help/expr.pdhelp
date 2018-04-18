@@ -1,4 +1,4 @@
-#N canvas 707 55 513 411 12;
+#N canvas 716 142 558 450 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 expr;
 #X floatatom 180 108 0 0 0 0 - - -;
@@ -8,7 +8,7 @@
 #X floatatom 180 180 0 0 0 0 - - -;
 #X floatatom 336 180 0 0 0 0 - - -;
 #X text 12 72 Evaluation engine for math expressions.;
-#N canvas 506 86 764 500 more 0;
+#N canvas 517 139 764 500 more 0;
 #X obj 36 420 expr fac($f1);
 #X msg 36 384 5;
 #X floatatom 36 456 5 0 0 1 - - -;
@@ -65,11 +65,11 @@
 #X f 5;
 #X msg 180 228 9;
 #X obj 180 288 expr $f1 ^ 0.5;
-#X text 12 372 See also:;
-#X obj 84 372 +;
-#X obj 120 372 pow;
-#X obj 156 372 &;
-#X obj 192 372 >;
+#X text 12 408 See also:;
+#X obj 84 408 +;
+#X obj 120 408 pow;
+#X obj 156 408 &;
+#X obj 192 408 >;
 #N canvas 427 121 550 594 again 0;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 84 expr rand()*pi;
@@ -147,11 +147,6 @@
 #X connect 9 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 336 276 pd vexpr;
-#N canvas 478 271 615 49 credits 0;
-#X text 12 12 Based on TinyExpr from Lewis Van Winkle < https://github.com/codeplea/tinyexpr >.;
-#X f 81;
-#X coords 0 0 1 1 250 175 0 0 0;
-#X restore 336 324 pd credits;
 #N canvas 789 217 309 271 zero 0;
 #X obj 36 84 expr $f1/$f2;
 #X obj 36 120 print;
@@ -166,6 +161,8 @@
 #X connect 4 0 3 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 336 300 pd zero;
+#X text 12 372 TinyExpr from Lewis Van Winkle < https://github.com/codeplea/tinyexpr >.;
+#X f 81;
 #X connect 2 0 10 0;
 #X connect 3 0 5 0;
 #X connect 4 0 3 0;
