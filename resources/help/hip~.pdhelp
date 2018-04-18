@@ -1,4 +1,4 @@
-#N canvas 761 79 297 347 12;
+#N canvas 698 165 300 347 12;
 #X obj 36 228 env~;
 #X floatatom 36 264 0 0 0 0 - - -;
 #X obj 36 204 hip~ 5;
@@ -21,7 +21,7 @@
 #X obj 180 312 bp~;
 #X obj 132 312 vcf~;
 #X text 12 72 One-Pole One-Zero high-pass filter.;
-#N canvas 602 154 521 452 again 0;
+#N canvas 640 119 529 456 again 0;
 #X text 12 12 Often used for DC removal.;
 #X obj 36 264 hip~ 5;
 #X obj 36 84 *~ 0.5;

@@ -1,4 +1,4 @@
-#N canvas 740 141 353 326 12;
+#N canvas 676 184 353 326 12;
 #X obj 36 108 key;
 #X obj 108 108 keyup;
 #X obj 180 108 keyname;
@@ -19,7 +19,7 @@
 #X f 5;
 #X floatatom 180 144 5 0 0 1 - - -;
 #X f 5;
-#X obj 36 192 sel 32;
+#X obj 36 180 sel 32;
 #X obj 36 252 print;
 #X msg 36 216 The space bar launch the MOAB.;
 #X connect 0 0 11 0;
