@@ -1,4 +1,4 @@
-#N canvas 855 104 275 275 12;
+#N canvas 796 147 300 275 12;
 #X obj 36 168 openpanel;
 #X obj 36 204 print;
 #X obj 96 240 savepanel;

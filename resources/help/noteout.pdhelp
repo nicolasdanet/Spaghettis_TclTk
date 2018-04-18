@@ -1,4 +1,4 @@
-#N canvas 884 90 276 278 12;
+#N canvas 619 163 300 278 12;
 #X obj 36 192 noteout;
 #X obj 36 144 makenote 64 250;
 #X msg 36 108 60;
@@ -9,7 +9,7 @@
 #X text 24 24 noteout;
 #X text 12 72 Ouptut MIDI notes.;
 #X text 12 240 See also:;
-#N canvas 1013 92 366 260 more 0;
+#N canvas 696 206 366 260 more 0;
 #X text 12 156 Add a multiple of '16' to get other MIDI ports.;
 #X text 12 12 Third inlet define the channel (default is 1).;
 #X obj 36 120 noteout;
