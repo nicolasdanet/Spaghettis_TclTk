@@ -9,7 +9,7 @@
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 netsend;
-#N canvas 783 127 586 512 more 0;
+#N canvas 448 88 586 512 more 0;
 #X msg 72 168 send foo \$1;
 #X msg 36 96 disconnect;
 #X msg 36 72 connect localhost 3001;
