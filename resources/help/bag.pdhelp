@@ -1,4 +1,4 @@
-#N canvas 953 170 276 279 12;
+#N canvas 844 155 300 279 12;
 #X obj 132 240 makenote;
 #X obj 36 204 print;
 #X obj 84 240 poly;
@@ -14,8 +14,8 @@
 #X text 12 12 If the second value is nonzero \, first value is added (otherwise removed).;
 #X f 74;
 #X obj 36 300 bag;
-#X obj 96 264 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
-#X msg 96 216 clear;
+#X obj 72 276 tgl 15 1 empty empty empty 17 7 0 10 #ffffff #000000 #000000 1 1;
+#X msg 36 240 clear;
 #X obj 36 336 print;
 #X floatatom 36 216 5 0 0 1 - - -;
 #X f 5;
@@ -34,13 +34,13 @@
 #X obj 36 168 bag 1;
 #X msg 96 108 flush;
 #X f 5;
-#N canvas 474 205 364 185 again 0;
+#N canvas 627 335 342 188 again 0;
 #X obj 36 108 bag 1;
 #X floatatom 72 48 5 0 0 1 - - -;
 #X f 5;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 144 print;
-#X text 12 12 Bang can be used instead of the flush message.;
+#X text 12 12 Bang can be used instead of flush message.;
 #X connect 0 0 3 0;
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
