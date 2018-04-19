@@ -24,7 +24,8 @@ typedef struct _savepanel {
     t_object    x_obj;                  /* Must be the first. */
     t_glist     *x_owner;
     t_proxy     *x_proxy;
-    t_outlet    *x_outlet;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
     } t_savepanel;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -43,11 +44,22 @@ static void savepanel_bang (t_savepanel *x)
     savepanel_symbol (x, &s_);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void savepanel_callback (t_savepanel *x, t_symbol *s)
 {
-    glist_redrawRequired (x->x_owner);  /* Redraw everything to avoid artefacts due to the modal window. */
+    glist_redrawRequired (x->x_owner);      /* Avoid artefacts due to the modal window. */
 
-    outlet_symbol (x->x_outlet, s);
+    outlet_symbol (x->x_outletLeft, s);
+}
+
+static void savepanel_cancel (t_savepanel *x)
+{
+    glist_redrawRequired (x->x_owner);      /* Ditto. */
+    
+    outlet_bang (x->x_outletRight);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -60,9 +72,10 @@ static void *savepanel_new (void)
 {
     t_savepanel *x = (t_savepanel *)pd_new (savepanel_class);
     
-    x->x_owner  = instance_contextGetCurrent();
-    x->x_proxy  = proxy_new (cast_pd (x));
-    x->x_outlet = outlet_newSymbol (cast_object (x));
+    x->x_owner       = instance_contextGetCurrent();
+    x->x_proxy       = proxy_new (cast_pd (x));
+    x->x_outletLeft  = outlet_newSymbol (cast_object (x));
+    x->x_outletRight = outlet_newBang (cast_object (x));
     
     return x;
 }
@@ -90,7 +103,8 @@ void savepanel_setup (void)
     class_addBang (c, (t_method)savepanel_bang);
     class_addSymbol (c, (t_method)savepanel_symbol);
     
-    class_addMethod (c, (t_method)savepanel_callback, sym__callback, A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)savepanel_callback,   sym__callback,  A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)savepanel_cancel,     sym__cancel,    A_NULL);
     
     savepanel_class = c;
 }

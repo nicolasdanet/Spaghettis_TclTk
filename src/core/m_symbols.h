@@ -126,6 +126,7 @@ extern t_symbol *sym__autorelease;
 extern t_symbol *sym__back;
 extern t_symbol *sym__bendin;
 extern t_symbol *sym__callback;
+extern t_symbol *sym__cancel;
 extern t_symbol *sym__canvasdialog;
 extern t_symbol *sym__copy;
 extern t_symbol *sym__ctlin;

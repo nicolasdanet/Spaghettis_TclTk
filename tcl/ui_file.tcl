@@ -142,6 +142,8 @@ proc openPanel {target directory} {
     
     if {$filename ne ""} {
         ::ui_interface::pdsend "$target _callback [::escaped $filename]"
+    } else {
+        ::ui_interface::pdsend "$target _cancel"
     }
 }
 
@@ -157,6 +159,8 @@ proc savePanel {target directory} {
     
     if {$filename ne ""} {
         ::ui_interface::pdsend "$target _callback [::escaped $filename]"
+    } else {
+        ::ui_interface::pdsend "$target _cancel"
     }
 }
 

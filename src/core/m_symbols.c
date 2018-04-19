@@ -126,6 +126,7 @@ t_symbol *sym__autorelease;
 t_symbol *sym__back;
 t_symbol *sym__bendin;
 t_symbol *sym__callback;
+t_symbol *sym__cancel;
 t_symbol *sym__canvasdialog;
 t_symbol *sym__copy;
 t_symbol *sym__ctlin;
@@ -783,6 +784,7 @@ void symbols_initialize (void)
     sym__back                                   = gensym ("_back");
     sym__bendin                                 = gensym ("_bendin");
     sym__callback                               = gensym ("_callback");
+    sym__cancel                                 = gensym ("_cancel");
     sym__canvasdialog                           = gensym ("_canvasdialog");
     sym__copy                                   = gensym ("_copy");
     sym__ctlin                                  = gensym ("_ctlin");
