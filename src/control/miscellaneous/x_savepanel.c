@@ -22,6 +22,7 @@ static t_class *savepanel_class;        /* Shared. */
 
 typedef struct _savepanel {
     t_object    x_obj;                  /* Must be the first. */
+    t_glist     *x_owner;
     t_proxy     *x_proxy;
     t_outlet    *x_outlet;
     } t_savepanel;
@@ -44,6 +45,8 @@ static void savepanel_bang (t_savepanel *x)
 
 static void savepanel_callback (t_savepanel *x, t_symbol *s)
 {
+    glist_redrawRequired (x->x_owner);  /* Redraw everything to avoid artefacts due to the modal window. */
+
     outlet_symbol (x->x_outlet, s);
 }
 
@@ -57,6 +60,7 @@ static void *savepanel_new (void)
 {
     t_savepanel *x = (t_savepanel *)pd_new (savepanel_class);
     
+    x->x_owner  = instance_contextGetCurrent();
     x->x_proxy  = proxy_new (cast_pd (x));
     x->x_outlet = outlet_newSymbol (cast_object (x));
     
@@ -86,7 +90,7 @@ void savepanel_setup (void)
     class_addBang (c, (t_method)savepanel_bang);
     class_addSymbol (c, (t_method)savepanel_symbol);
     
-    class_addMethod (c, (t_method)savepanel_callback, sym__callback, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)savepanel_callback, sym__callback, A_DEFSYMBOL, A_NULL);
     
     savepanel_class = c;
 }

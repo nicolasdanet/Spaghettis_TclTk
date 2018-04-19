@@ -22,6 +22,7 @@ static t_class *openpanel_class;            /* Shared. */
 
 typedef struct _openpanel {
     t_object    x_obj;                      /* Must be the first. */
+    t_glist     *x_owner;
     t_proxy     *x_proxy;
     t_outlet    *x_outlet;
     } t_openpanel;
@@ -64,6 +65,8 @@ static void openpanel_anything (t_openpanel *x, t_symbol *s, int argc, t_atom *a
 
 static void openpanel_callback (t_openpanel *x, t_symbol *s)
 {
+    glist_redrawRequired (x->x_owner);  /* Redraw everything to avoid artefacts due to the modal window. */
+
     outlet_symbol (x->x_outlet, s);
 }
 
@@ -77,6 +80,7 @@ static void *openpanel_new (void)
 {
     t_openpanel *x = (t_openpanel *)pd_new (openpanel_class);
 
+    x->x_owner  = instance_contextGetCurrent();
     x->x_proxy  = proxy_new (cast_pd (x));
     x->x_outlet = outlet_newSymbol (cast_object (x));
         
@@ -108,7 +112,7 @@ void openpanel_setup (void)
     class_addList (c, (t_method)openpanel_list);
     class_addAnything (c, (t_method)openpanel_anything);
     
-    class_addMethod (c, (t_method)openpanel_callback, sym__callback, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)openpanel_callback, sym__callback, A_DEFSYMBOL, A_NULL);
     
     openpanel_class = c;
 }
