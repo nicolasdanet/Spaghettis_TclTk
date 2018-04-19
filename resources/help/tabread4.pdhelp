@@ -9,7 +9,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 tabread4;
 #X text 12 324 See also:;
-#N canvas 553 305 455 440 more 0;
+#N canvas 555 220 455 429 more 0;
 #X msg 36 132 set \$0-foo;
 #X msg 36 108 set \$0-array;
 #N canvas 0 22 500 350 \$0-foo 0;
@@ -22,8 +22,8 @@
 #X text 12 12 Indices should range from '1' to (size - '2').;
 #X f 46;
 #X obj 36 180 tabread4 \$0-foo;
-#X obj 36 360 tabread4 \$0-foo;
-#X obj 36 396 print;
+#X obj 36 348 tabread4 \$0-foo;
+#X obj 36 384 print;
 #X msg 36 288 0 \, 1;
 #X msg 36 312 9 \, 8;
 #X text 12 252 Indices outside are replaced by the nearest in range.;

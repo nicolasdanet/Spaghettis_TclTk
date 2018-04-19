@@ -36,7 +36,7 @@
 #X restore 108 300 pd more;
 #X floatatom 36 108 5 0 9 1 - - -;
 #X f 5;
-#N canvas 204 74 385 253 init 0;
+#N canvas 211 171 385 253 init 0;
 #X obj 36 24 inlet;
 #X msg 132 108 \; \$0-array 0 0 9 1 8 2 7 3 6 4 5;
 #X obj 36 60 t b b;
