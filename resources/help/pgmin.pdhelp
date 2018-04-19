@@ -11,7 +11,7 @@
 #X obj 204 216 notein;
 #X obj 264 216 ctlin;
 #X obj 36 180 print program change;
-#N canvas 744 153 237 210 again 0;
+#N canvas 744 153 300 213 again 0;
 #X text 12 12 Listen to a specific channel.;
 #X obj 36 48 pgmin 10;
 #X obj 36 72 bendin 10;
@@ -24,7 +24,7 @@
 #X connect 4 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 228 144 pd again;
-#N canvas 313 144 258 407 more 0;
+#N canvas 432 134 300 407 more 0;
 #X obj 36 24 bendin;
 #X obj 96 60 print channel;
 #X obj 36 96 print pitch bend;

@@ -1,4 +1,4 @@
-#N canvas 565 220 275 243 12;
+#N canvas 565 220 300 243 12;
 #X obj 84 204 block~;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;

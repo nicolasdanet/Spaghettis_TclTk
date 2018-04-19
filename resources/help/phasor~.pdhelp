@@ -1,4 +1,4 @@
-#N canvas 707 96 486 328 12;
+#N canvas 631 196 486 328 12;
 #X obj 84 288 osc~;
 #X obj 132 288 cos~;
 #X obj 180 288 tabread4~;
@@ -28,7 +28,7 @@
 #X restore 216 84 graph \$0-array;
 #X obj 36 108 phasor~ 440;
 #X obj 36 156 tabwrite~ \$0-array 250;
-#N canvas 860 279 295 179 again 0;
+#N canvas 860 279 300 179 again 0;
 #X msg 120 84 0.5;
 #X obj 120 48 loadbang;
 #X obj 36 132 phasor~;

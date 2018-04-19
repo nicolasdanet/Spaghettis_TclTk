@@ -1,11 +1,11 @@
-#N canvas 883 119 276 278 12;
+#N canvas 883 119 300 278 12;
 #X obj 84 240 drawpolygon;
 #X text 12 240 See also:;
 #X obj 180 240 drawnumber;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 plot;
-#N canvas 633 85 427 594 more 0;
+#N canvas 633 87 427 594 more 0;
 #X text 12 12 Name of the array to draw.;
 #X obj 36 48 plot a;
 #X text 12 84 Digit color.;
@@ -46,12 +46,12 @@
 #X obj 36 60 struct \$0-element1 float y;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 132 pd \$0-element1;
-#N canvas 161 163 345 107 \$0-element2 0;
+#N canvas 521 244 345 107 \$0-element2 0;
 #X obj 36 60 struct \$0-element2 float x float y;
 #X obj 36 24 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 156 pd \$0-element2;
-#N canvas 161 163 385 113 \$0-element3 0;
+#N canvas 491 273 385 113 \$0-element3 0;
 #X obj 36 24 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
 #X obj 36 60 struct \$0-element3 float x float y float w;
 #X coords 0 0 1 1 250 175 0 0 0;
