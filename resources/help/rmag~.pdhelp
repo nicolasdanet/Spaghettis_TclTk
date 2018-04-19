@@ -1,4 +1,4 @@
-#N canvas 813 114 319 335 12;
+#N canvas 813 114 300 335 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 12 300 See also:;
 #X obj -60 12 freeze;
@@ -17,18 +17,18 @@
 #X obj 36 240 snapshot~ 0;
 #X floatatom 36 264 5 0 0 1 - - -;
 #X f 5;
-#N canvas 818 307 312 197 more 0;
+#N canvas 759 304 313 188 more 0;
 #X text 12 12 Note that inverse of zero returns zero.;
 #X obj 36 84 rmag~;
 #X obj 36 48 sig~ 0;
 #X obj 36 120 snapshot~ 0;
-#X floatatom 36 156 5 0 0 1 - - -;
+#X floatatom 36 144 5 0 0 1 - - -;
 #X f 5;
 #X connect 1 0 3 0;
 #X connect 2 0 1 0;
 #X connect 3 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 240 192 pd more;
+#X restore 228 192 pd more;
 #N canvas 479 140 260 206 rmag 0;
 #X obj 108 24 inlet~;
 #X obj 180 24 inlet~;

@@ -1,4 +1,4 @@
-#N canvas 644 81 673 330 12;
+#N canvas 511 200 673 330 12;
 #X obj 144 288 rpole~;
 #X obj 204 288 rzero_rev~;
 #X obj 84 288 czero~;
@@ -9,7 +9,7 @@
 #X text 12 288 See also:;
 #X text 12 144 It calculates the following difference equation:;
 #X f 48;
-#N canvas 745 201 487 269 more 0;
+#N canvas 745 201 486 276 more 0;
 #X msg 36 180 clear;
 #X msg 36 156 set 1;
 #X obj 36 48 noise~;

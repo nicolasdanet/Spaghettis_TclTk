@@ -1,4 +1,4 @@
-#N canvas 872 102 308 385 12;
+#N canvas 872 102 302 385 12;
 #X msg 36 156 1;
 #X msg 36 132 54;
 #X msg 36 108 23;
@@ -37,7 +37,7 @@
 #X connect 12 0 0 0;
 #X connect 12 1 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 216 204 pd more;
+#X restore 204 204 pd more;
 #X obj 36 312 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 72 312 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 108 312 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
@@ -49,7 +49,7 @@
 #X msg 36 204 symbol cort;
 #N canvas 712 180 375 287 again 0;
 #X obj 36 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 60 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 84 252 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X msg 36 72 the doctor;
 #X msg 36 96 is a woman;
 #X msg 36 48 1 the 3 4;
@@ -67,7 +67,7 @@
 #X connect 6 0 5 0;
 #X connect 8 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 216 228 pd again;
+#X restore 204 228 pd again;
 #X connect 0 0 16 0;
 #X connect 1 0 16 0;
 #X connect 2 0 16 0;

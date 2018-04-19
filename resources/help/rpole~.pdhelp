@@ -1,4 +1,4 @@
-#N canvas 664 65 674 329 12;
+#N canvas 641 178 674 329 12;
 #X obj 84 288 lop~;
 #X obj 192 288 rzero~;
 #X obj 132 288 cpole~;
@@ -9,7 +9,7 @@
 #X text 24 24 rpole~;
 #X text 12 72 Real One-Pole filter.;
 #X text 12 288 See also:;
-#N canvas 548 139 488 269 more 0;
+#N canvas 548 139 488 275 more 0;
 #X msg 36 180 clear;
 #X msg 36 156 set 1;
 #X text 12 12 Notice that a[n] (the filter coefficient) can be also a signal.;

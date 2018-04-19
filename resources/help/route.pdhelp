@@ -1,4 +1,4 @@
-#N canvas 672 77 390 423 12;
+#N canvas 583 151 390 423 12;
 #X obj 36 264 route 23 54 1;
 #X msg 36 180 234 345 456;
 #X msg 36 108 23 34 45;
@@ -56,7 +56,7 @@
 #X obj 204 324 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X text 12 72 Route a message according to its first atom.;
 #X f 44;
-#N canvas 388 25 421 608 again 0;
+#N canvas 388 87 421 608 again 0;
 #X msg 36 72 5;
 #X msg 36 96 symbol pie;
 #X msg 36 120 1 2 3;

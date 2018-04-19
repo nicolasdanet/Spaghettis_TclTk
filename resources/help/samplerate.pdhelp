@@ -1,5 +1,5 @@
-#N canvas 901 162 275 253 12;
-#N canvas 933 435 233 164 more 0;
+#N canvas 901 162 300 253 12;
+#N canvas 933 435 300 164 more 0;
 #X obj 36 120 print;
 #N canvas 196 259 326 139 resampled 0;
 #X obj 36 24 inlet;
