@@ -1,4 +1,4 @@
-#N canvas 697 65 392 420 12;
+#N canvas 697 87 392 420 12;
 #X obj 144 384 pointer;
 #X obj 204 156 pointer;
 #X floatatom 36 108 5 0 0 0 - - -;
@@ -11,7 +11,7 @@
 #X obj 84 384 getsize;
 #X text 12 72 Set the number of elements of an array.;
 #X text 12 384 See also:;
-#N canvas 217 426 457 173 \$0-data 1;
+#N canvas 177 417 457 173 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 300 pd \$0-data;
 #N canvas 553 344 469 114 \$0-template 0;
@@ -25,7 +25,7 @@
 #X obj 36 60 struct \$0-element float y;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 324 pd \$0-element;
-#N canvas 824 162 407 351 init 0;
+#N canvas 824 162 406 358 init 0;
 #X obj 36 276 append \$0-template x y;
 #X obj 216 240 pointer;
 #X msg 216 216 traverse \$0-data \, bang;
@@ -86,7 +86,7 @@
 #X msg 204 132 traverse \$0-data \, next;
 #X obj 204 108 loadbang;
 #X obj 36 204 setsize \$0-template a;
-#N canvas 906 184 376 376 more 0;
+#N canvas 906 184 375 379 more 0;
 #X obj 108 132 pointer;
 #X msg 108 108 traverse \$0-data \, next;
 #X msg 36 48 set \$0-template a;

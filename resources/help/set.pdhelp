@@ -1,4 +1,4 @@
-#N canvas 769 194 536 312 12;
+#N canvas 737 223 536 312 12;
 #X obj 180 276 append;
 #X obj 240 276 element;
 #X floatatom 36 108 5 0 0 0 - - -;
@@ -51,7 +51,7 @@
 #X msg 120 108 \; pd-\$0-data clear;
 #X obj 36 24 inlet;
 #X obj 36 72 t b b b;
-#X f 8;
+#X f 7;
 #N canvas 867 233 359 391 shapes 0;
 #X obj 108 120 t 2;
 #X obj 36 24 inlet;
@@ -91,7 +91,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 408 192 pd init;
 #X obj 408 156 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#N canvas 460 214 285 289 \$0-data 1;
+#N canvas 384 181 300 289 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 408 216 pd \$0-data;
 #N canvas 198 530 399 143 \$0-template 0;
@@ -105,12 +105,12 @@
 #X msg 204 132 traverse \$0-data \, next;
 #X obj 36 228 set \$0-template x y;
 #X obj 36 192 pak;
-#N canvas 912 571 367 184 again 0;
-#X obj 36 144 set - x;
+#N canvas 748 526 369 176 again 0;
+#X obj 36 132 set - x;
 #X floatatom 36 48 5 0 0 0 - - -;
 #X f 5;
-#X obj 108 108 pointer;
-#X msg 108 84 traverse \$0-data \, next;
+#X obj 108 84 pointer;
+#X msg 108 48 traverse \$0-data \, next;
 #X text 12 12 Use a wild card (for heterogeneous collection).;
 #X f 47;
 #X connect 1 0 0 0;
