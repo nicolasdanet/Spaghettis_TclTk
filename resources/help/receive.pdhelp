@@ -1,4 +1,4 @@
-#N canvas 914 90 379 314 12;
+#N canvas 677 143 379 311 12;
 #X obj 84 276 send;
 #X text 12 276 See also:;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
@@ -20,7 +20,7 @@
 #X text 12 72 Receive messages from a named pipe.;
 #X f 35;
 #X obj 204 276 value;
-#N canvas 746 144 433 366 more 0;
+#N canvas 203 174 433 368 more 0;
 #X text 12 12 Without any argument a inlet is added to set the source.;
 #X obj 36 108 r;
 #X msg 36 48 symbol choucroute;
@@ -32,8 +32,8 @@
 #X obj 36 216 loadbang;
 #X obj 36 324 print;
 #X msg 144 216 \; more Garcimore;
-#X text 12 180 Attach a listener to report patch name.;
-#X f 39;
+#X text 12 180 Attach a listener to report by patch name.;
+#X f 44;
 #X connect 1 0 4 0;
 #X connect 2 0 1 0;
 #X connect 3 0 1 0;

@@ -1,4 +1,4 @@
-#N canvas 745 120 277 434 12;
+#N canvas 745 120 300 434 12;
 #X obj 84 396 route;
 #X obj 132 396 makenote;
 #X msg 36 108 60 64;
@@ -13,7 +13,7 @@
 #X text 24 24 poly;
 #X text 12 72 Polyphonic voice allocator.;
 #X text 12 396 See also:;
-#N canvas 908 78 330 471 more 0;
+#N canvas 908 87 331 477 more 0;
 #X obj 36 192 pack 0 0 0;
 #X f 10;
 #X obj 36 228 print;
@@ -32,8 +32,8 @@
 #X f 5;
 #X obj 36 372 poly 4 1;
 #X f 10;
-#X text 12 264 Second argument set voice stealing.;
 #X text 12 12 Release with or without dumping notes-off.;
+#X text 12 264 Second argument set voice stealing mode.;
 #X connect 0 0 1 0;
 #X connect 2 0 0 0;
 #X connect 2 1 0 1;

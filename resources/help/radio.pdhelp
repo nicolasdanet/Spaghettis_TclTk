@@ -1,10 +1,10 @@
-#N canvas 582 65 462 328 12;
+#N canvas 582 87 462 328 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 12 72 Copyright musil@iem.kug.ac.at IEM KUG graz \, austria '2002'.;
 #X obj -60 12 freeze;
 #X text 24 24 vradio;
 #X text 84 24 hradio;
-#N canvas 854 63 251 484 edit 0;
+#N canvas 854 87 300 484 edit 0;
 #X msg 36 96 move 15 15;
 #X msg 36 24 initialize 1;
 #X msg 36 72 size 30;

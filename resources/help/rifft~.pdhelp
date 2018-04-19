@@ -1,4 +1,4 @@
-#N canvas 722 68 513 606 12;
+#N canvas 709 106 513 606 12;
 #X obj 132 564 fft~;
 #X obj 180 564 ifft~;
 #X obj 84 564 rfft~;
@@ -17,7 +17,7 @@
 #X coords 0 1 63 0 250 175 1 0 0;
 #X restore 240 168 graph \$0-impulse;
 #X obj 132 264 nbx 5 40 0 63 0 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 12 63;
-#N canvas 438 393 198 225 impulse 0;
+#N canvas 438 393 300 225 impulse 0;
 #X obj 36 24 inlet;
 #X obj 36 180 s \$0-impulse;
 #X obj 36 60 t f b;
