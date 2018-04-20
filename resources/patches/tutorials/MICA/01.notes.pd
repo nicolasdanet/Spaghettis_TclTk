@@ -1,5 +1,5 @@
-#N canvas 730 58 506 632 12;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#N canvas 586 108 507 636 12;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 notes;
 #X floatatom 36 108 5 0 127 1 - - -;
@@ -20,7 +20,7 @@
 #X obj 312 300 print;
 #X obj 312 264 mica get;
 #X obj 396 144 mica;
-#X obj 396 168 prepend set;
+#X obj 396 180 prepend set;
 #X msg 396 108 C Minor;
 #X text 12 72 MIDI key numbers to notes.;
 #X floatatom 36 372 5 0 127 1 - - -;
