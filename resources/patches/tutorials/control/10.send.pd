@@ -1,4 +1,4 @@
-#N canvas 570 112 485 525 12;
+#N canvas 499 99 483 532 12;
 #X obj 180 108 receive crackers;
 #X obj 180 168 receive pickles;
 #X obj 36 132 send crackers;
@@ -7,7 +7,7 @@
 #X obj 180 228 receive pickles;
 #X obj 36 480 r crackers;
 #X obj 36 456 s crackers;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 send;
 #X obj -60 12 freeze;
 #X floatatom 36 108 5 0 0 1 - - -;

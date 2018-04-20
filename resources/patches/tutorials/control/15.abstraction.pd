@@ -1,9 +1,9 @@
-#N canvas 584 105 469 463 12;
+#N canvas 565 161 469 463 12;
 #X msg 36 108 bang;
 #X f 4;
 #X obj 36 144 sendnumber 45 cookies;
 #X obj 252 108 r cookies;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 abstraction;
 #X text 12 72 A patch instantiated as an object is called an abstraction.;

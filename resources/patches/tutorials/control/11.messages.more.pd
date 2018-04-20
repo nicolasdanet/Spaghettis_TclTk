@@ -1,11 +1,11 @@
-#N canvas 664 52 510 580 12;
+#N canvas 611 124 501 586 12;
 #X obj 36 540 print;
 #X msg 96 108 3 \, 4 \, 5;
 #X msg 36 108 3 4 5;
 #X obj 36 204 print;
 #X obj 180 540 print;
 #X msg 180 504 cis \$1 \, boom \$2 \, bah \$3;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 24 24 messages (more);
 #X obj -60 12 freeze;
 #X obj 180 276 r number6;
@@ -19,8 +19,8 @@
 #X msg 96 144 I am not a number \, I am a free man!;
 #X msg 36 420 kilomètres 45;
 #X msg 36 504 \$2 \$1 à pied;
-#X msg 396 420 foo bar;
-#X msg 396 468 \; number6 \$1 \; number2 \$2;
+#X msg 384 420 foo bar;
+#X msg 384 468 \; number6 \$1 \; number2 \$2;
 #X floatatom 180 420 5 0 0 1 - - -;
 #X f 5;
 #X floatatom 240 420 5 0 0 1 - - -;
