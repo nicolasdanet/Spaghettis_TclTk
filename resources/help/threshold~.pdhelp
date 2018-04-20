@@ -1,4 +1,4 @@
-#N canvas 778 67 305 410 12;
+#N canvas 764 142 305 410 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 threshold~;
@@ -27,7 +27,7 @@
 #X obj 72 192 nbx 5 40 -1 1 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
 #X obj 36 300 threshold~;
 #X msg 72 252 set 0.75 100 -0.75 100;
-#N canvas 723 248 299 129 again 0;
+#N canvas 723 248 301 136 again 0;
 #X obj 36 84 threshold~ 10 100 0 100;
 #X obj 216 48 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
 #X text 12 12 Force the state with the right inlet.;

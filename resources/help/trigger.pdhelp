@@ -1,4 +1,4 @@
-#N canvas 874 107 275 292 12;
+#N canvas 874 107 300 292 12;
 #X text 12 252 See also:;
 #X obj 84 252 pack;
 #X obj 132 252 unpack;
@@ -20,7 +20,7 @@
 #X connect 2 3 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 180 180 pd again;
-#N canvas 460 40 423 214 more 0;
+#N canvas 570 187 423 214 more 0;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X text 12 12 Types can be abbreviated with "b" "f" "s" "l" "a" "p".;
 #X obj 144 168 print;

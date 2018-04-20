@@ -1,4 +1,4 @@
-#N canvas 806 124 350 279 12;
+#N canvas 789 153 300 281 12;
 #X obj 36 168 timer;
 #X obj 204 240 delay;
 #X obj 156 240 metro;
@@ -24,8 +24,6 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 156 168 pd more;
 #X floatatom 36 204 0 0 0 1 - - -;
-#X text 12 72 Measures elapsed logical time (milliseconds).;
-#X f 45;
 #N canvas 605 219 305 452 again 0;
 #X obj 36 84 t f f;
 #X obj 36 48 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
@@ -56,7 +54,9 @@
 #X restore 156 192 pd again;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000;
 #X obj 96 132 bng 15 250 50 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000;
+#X text 12 72 Elapsed logical time (milliseconds).;
+#X f 36;
 #X connect 0 0 9 0;
-#X connect 12 0 0 0;
-#X connect 13 0 0 1;
+#X connect 11 0 0 0;
+#X connect 12 0 0 1;
 #X coords 0 0 1 1 250 175 0 0 0;

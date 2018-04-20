@@ -1,4 +1,4 @@
-#N canvas 695 89 434 291 12;
+#N canvas 631 188 434 291 12;
 #X floatatom 36 108 5 0 0 0 - - -;
 #X f 5;
 #X floatatom 36 216 5 0 0 0 - - -;
@@ -17,7 +17,7 @@
 #X obj 84 252 send;
 #X obj 132 252 receive;
 #X text 12 252 See also:;
-#N canvas 832 451 223 202 more 0;
+#N canvas 832 451 300 202 more 0;
 #X obj 36 120 v nimportkwa;
 #X floatatom 36 48 5 0 0 1 - - -;
 #X f 5;
@@ -31,17 +31,17 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 348 156 pd more;
 #X obj 192 180 value nimportkwa;
-#N canvas 740 182 302 331 again 0;
-#X floatatom 36 156 5 0 0 1 - - -;
+#N canvas 602 186 314 357 again 0;
+#X floatatom 36 168 5 0 0 1 - - -;
 #X f 5;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X floatatom 36 288 5 0 0 1 - - -;
+#X floatatom 36 312 5 0 0 1 - - -;
 #X f 5;
 #X obj 36 132 v;
 #X msg 36 96 set nimportkwa;
 #X msg 36 72 set \$0-truc;
-#X obj 36 264 v \$0-truc;
-#X obj 36 204 nbx 5 40 0 127 0 1 empty empty empty 0 0 0 10 #ffffff #000000 #000000 54 127;
+#X obj 36 276 v \$0-truc;
+#X obj 36 216 nbx 5 40 0 127 0 1 empty empty empty 0 0 0 10 #ffffff #000000 #000000 54 127;
 #X text 12 12 Named variable are settable afterward.;
 #X connect 1 0 3 0;
 #X connect 3 0 0 0;

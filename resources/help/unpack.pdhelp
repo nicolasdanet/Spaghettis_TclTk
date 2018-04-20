@@ -1,4 +1,4 @@
-#N canvas 824 78 295 336 12;
+#N canvas 669 181 300 336 12;
 #X obj 84 300 pack;
 #X text 12 300 See also;
 #X msg 36 108 1 2;

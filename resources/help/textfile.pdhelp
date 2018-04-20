@@ -1,4 +1,4 @@
-#N canvas 640 101 275 362 12;
+#N canvas 580 135 300 362 12;
 #X msg 96 108 rewind;
 #X obj 36 228 textfile;
 #X msg 96 180 read textfile.txt;
@@ -32,7 +32,7 @@
 #X connect 6 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 192 252 pd edit;
-#N canvas 671 154 346 165 more 0;
+#N canvas 671 154 350 170 more 0;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X text 12 12 Note that textfile handles dollar expansion.;
 #X obj 36 84 textfile dollars.txt;
