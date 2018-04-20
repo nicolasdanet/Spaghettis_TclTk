@@ -1,4 +1,4 @@
-#N canvas 816 91 275 337 12;
+#N canvas 658 184 300 337 12;
 #X msg 36 108 1 1000;
 #X msg 36 156 stop;
 #X obj 84 300 line;
@@ -11,7 +11,7 @@
 #X text 12 300 See also:;
 #X obj 36 228 snapshot~ 0;
 #X floatatom 36 264 0 0 0 1 - - -;
-#N canvas 525 74 306 404 more 0;
+#N canvas 533 157 306 404 more 0;
 #X text 12 12 Set the value instantly.;
 #X floatatom 36 156 5 0 0 1 - - -;
 #X f 5;
@@ -57,7 +57,7 @@
 #X connect 6 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 180 228 pd delay;
-#N canvas 599 33 337 232 again 0;
+#N canvas 533 184 337 232 again 0;
 #X obj 36 48 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
 #X msg 84 72 1000;
 #X floatatom 36 192 5 0 0 1 - - -;
