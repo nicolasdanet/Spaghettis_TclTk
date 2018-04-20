@@ -1,7 +1,7 @@
 #N canvas 719 113 452 547 12;
 #X obj 36 192 pointer;
 #X msg 72 144 next;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 set;
 #N canvas 523 251 441 221 \$0-template 0;
