@@ -1,4 +1,4 @@
-#N canvas 671 69 497 314 12;
+#N canvas 575 160 497 314 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X obj 132 276 tabwrite~;
@@ -8,17 +8,17 @@
 #X obj 84 276 array;
 #N canvas 0 22 500 350 \$0-array 0;
 #X array \$0-array 10 float 1;
-#A 0 0.592424 0.681634 0.508513 0.213139 0.4029 0.0470247 0.602787 0.511355 0.10418 0.644806;
+#A 0 0.35 0.681634 0.508513 0.213139 0.4029 0.0470247 0.602787 0.511355 0.10418 0.644806;
 #X coords 0 1 9 0 250 175 1 0 0;
 #X restore 228 84 graph \$0-array;
-#N canvas 663 465 534 235 more 0;
+#N canvas 663 465 537 235 more 0;
 #X obj 36 60 uzi 10;
 #X obj 36 24 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 108 random;
 #X msg 144 60 set \$0-foo;
 #N canvas 0 22 500 350 \$0-foo 0;
 #X array \$0-foo 10 float 3;
-#A 0 0.128948 0.953791 0.254923 0.747277 0.09805 0.103565 0.754774 0.4168 0.993323 0.125976;
+#A 0 0.976839 0.674223 0.182856 0.998629 0.580737 0.794327 0.951826 0.655356 0.604276 0.13505;
 #X coords 0 1 10 0 250 175 1 0 0;
 #X restore 264 36 graph \$0-foo;
 #X msg 144 84 set \$0-array;
@@ -34,7 +34,7 @@
 #X obj 36 192 tabwrite \$0-array;
 #X floatatom 168 156 5 0 9 1 - - -;
 #X f 5;
-#X obj 36 108 nbx 5 40 0 1 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
+#X obj 36 108 nbx 5 40 0 1 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0.35 100;
 #X obj 216 276 tabread~;
 #X connect 10 0 9 1;
 #X connect 11 0 9 0;
