@@ -60,7 +60,7 @@ public:
         return Interval (a, b);
     }
     
-    static Interval withName (Concept name, Concept direction = mica::Above, int64 n = 0)
+    static Interval withName (Concept name, Concept direction = mica::Ascending, int64 n = 0)
     {
         Concept note = n < 0 ? mica::Undefined : Interval::transpose (mica::C4, name, direction, n);
         
@@ -131,7 +131,7 @@ public:
 public:
     Concept appliedTo (Concept p) const
     {   
-        Concept d = order().getNumerator() < 0 ? mica::Below : mica::Above;
+        Concept d = order().getNumerator() < 0 ? mica::Descending : mica::Ascending;
         
         return Interval::transpose (p, getName(), d, getOctaves());
     }
@@ -265,7 +265,7 @@ private:
         //
         if (keyA == keyB) { return mica::Unison; }      /* Enharmonic. */
         else { 
-            return (order().getNumerator() < 0 ? mica::Below : mica::Above); 
+            return (order().getNumerator() < 0 ? mica::Descending : mica::Ascending);
         }
         //
         }
@@ -320,7 +320,7 @@ private:
         //
         /* Get the direction. */
         
-        int64 sign = (direction == mica::Above ? 1 : -1);
+        int64 sign = (direction == mica::Ascending ? 1 : -1);
         
         /* Get the interval values. */
         

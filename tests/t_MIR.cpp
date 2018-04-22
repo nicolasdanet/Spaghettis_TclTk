@@ -78,59 +78,59 @@ TTT_BEGIN (MicaIntervals, 161, "MICA - Intervals")
     
     {
     //
-    TTT_EXPECT (Interval::withNotes (G3, D4).getDirection()                     == Above);
-    TTT_EXPECT (Interval::withNotes (G3, D3).getDirection()                     == Below);
-    TTT_EXPECT (Interval::withNotes (G3, G3).getDirection()                     == Unison);
-    TTT_EXPECT (Interval::withNotes (FSharp3, GFlat3).getDirection()            == Unison);
+    TTT_EXPECT (Interval::withNotes (G3, D4).getDirection()                             == Ascending);
+    TTT_EXPECT (Interval::withNotes (G3, D3).getDirection()                             == Descending);
+    TTT_EXPECT (Interval::withNotes (G3, G3).getDirection()                             == Unison);
+    TTT_EXPECT (Interval::withNotes (FSharp3, GFlat3).getDirection()                    == Unison);
 
-    TTT_EXPECT (Interval::withNotes (C3, G4).getOctaves().getNumerator()        == 1);
-    TTT_EXPECT (Interval::withNotes (G4, C3).getOctaves().getNumerator()        == 1);
-    TTT_EXPECT (Interval::withNotes (C2, C3).getOctaves().getNumerator()        == 0);
-    TTT_EXPECT (Interval::withNotes (C2, C2).getOctaves().getNumerator()        == 0);
-    TTT_EXPECT (Interval::withNotes (C0, G2).getOctaves().getNumerator()        == 2);
+    TTT_EXPECT (Interval::withNotes (C3, G4).getOctaves().getNumerator()                == 1);
+    TTT_EXPECT (Interval::withNotes (G4, C3).getOctaves().getNumerator()                == 1);
+    TTT_EXPECT (Interval::withNotes (C2, C3).getOctaves().getNumerator()                == 0);
+    TTT_EXPECT (Interval::withNotes (C2, C2).getOctaves().getNumerator()                == 0);
+    TTT_EXPECT (Interval::withNotes (C0, G2).getOctaves().getNumerator()                == 2);
         
-    TTT_EXPECT (Interval::withNotes (G3, D4).getDistance()                      == Fifth);
-    TTT_EXPECT (Interval::withNotes (G3, D3).getDistance()                      == Fourth);
-    TTT_EXPECT (Interval::withNotes (G3, G3).getDistance()                      == Unison);
-    TTT_EXPECT (Interval::withNotes (G3, G4).getDistance()                      == Octave);
-    TTT_EXPECT (Interval::withNotes (G3, DFlat4).getDistance()                  == Fifth);
-    TTT_EXPECT (Interval::withNotes (G3, CSharp4).getDistance()                 == Fourth);
+    TTT_EXPECT (Interval::withNotes (G3, D4).getDistance()                              == Fifth);
+    TTT_EXPECT (Interval::withNotes (G3, D3).getDistance()                              == Fourth);
+    TTT_EXPECT (Interval::withNotes (G3, G3).getDistance()                              == Unison);
+    TTT_EXPECT (Interval::withNotes (G3, G4).getDistance()                              == Octave);
+    TTT_EXPECT (Interval::withNotes (G3, DFlat4).getDistance()                          == Fifth);
+    TTT_EXPECT (Interval::withNotes (G3, CSharp4).getDistance()                         == Fourth);
 
-    TTT_EXPECT (Interval::withNotes (G3, D4).getQuality()                       == Perfect);
-    TTT_EXPECT (Interval::withNotes (B3, G3).getQuality()                       == Major);
-    TTT_EXPECT (Interval::withNotes (G3, DFlat4).getQuality()                   == Diminished);
-    TTT_EXPECT (Interval::withNotes (G3, CSharp4).getQuality()                  == Augmented);
-    TTT_EXPECT (Interval::withNotes (G3, FSharp4).getQuality()                  == Major);
-    TTT_EXPECT (Interval::withNotes (AFlat8, BSharp8).getQuality()              == DoublyAugmented);
-    TTT_EXPECT (Interval::withNotes (A8, CSharp9).getQuality()                  == Major);
-    TTT_EXPECT (Interval::withNotes (A8, DFlat9).getQuality()                   == Diminished);
-    TTT_EXPECT (Interval::withNotes (AFlat8, EDoubleFlat9).getQuality()         == Diminished);
+    TTT_EXPECT (Interval::withNotes (G3, D4).getQuality()                               == Perfect);
+    TTT_EXPECT (Interval::withNotes (B3, G3).getQuality()                               == Major);
+    TTT_EXPECT (Interval::withNotes (G3, DFlat4).getQuality()                           == Diminished);
+    TTT_EXPECT (Interval::withNotes (G3, CSharp4).getQuality()                          == Augmented);
+    TTT_EXPECT (Interval::withNotes (G3, FSharp4).getQuality()                          == Major);
+    TTT_EXPECT (Interval::withNotes (AFlat8, BSharp8).getQuality()                      == DoublyAugmented);
+    TTT_EXPECT (Interval::withNotes (A8, CSharp9).getQuality()                          == Major);
+    TTT_EXPECT (Interval::withNotes (A8, DFlat9).getQuality()                           == Diminished);
+    TTT_EXPECT (Interval::withNotes (AFlat8, EDoubleFlat9).getQuality()                 == Diminished);
     
-    TTT_EXPECT (Interval::withNotes (F2, C3).getName()                          == PerfectFifth);
-    TTT_EXPECT (Interval::withNotes (BFlat2, F2).getName()                      == PerfectFourth);
-    TTT_EXPECT (Interval::withNotes (F2, E2).getName()                          == MinorSecond);
-    TTT_EXPECT (Interval::withNotes (F2, E3).getName()                          == MajorSeventh);
-    TTT_EXPECT (Interval::withNotes (BFlat2, E2).getName()                      == DiminishedFifth);
-    TTT_EXPECT (Interval::withNotes (D4, F4).getName()                          == MinorThird);
-    TTT_EXPECT (Interval::withNotes (F4, GFlat4).getName()                      == MinorSecond);
+    TTT_EXPECT (Interval::withNotes (F2, C3).getName()                                  == PerfectFifth);
+    TTT_EXPECT (Interval::withNotes (BFlat2, F2).getName()                              == PerfectFourth);
+    TTT_EXPECT (Interval::withNotes (F2, E2).getName()                                  == MinorSecond);
+    TTT_EXPECT (Interval::withNotes (F2, E3).getName()                                  == MajorSeventh);
+    TTT_EXPECT (Interval::withNotes (BFlat2, E2).getName()                              == DiminishedFifth);
+    TTT_EXPECT (Interval::withNotes (D4, F4).getName()                                  == MinorThird);
+    TTT_EXPECT (Interval::withNotes (F4, GFlat4).getName()                              == MinorSecond);
         
-    TTT_EXPECT (Interval::withName (PerfectFifth).appliedTo (F3)                == C4);
-    TTT_EXPECT (Interval::withName (MinorThird).appliedTo (A0)                  == C1);
-    TTT_EXPECT (Interval::withName (AugmentedFourth).appliedTo (B5)             == ESharp6);
-    TTT_EXPECT (Interval::withName (MinorSecond).appliedTo (C4)                 == DFlat4);
-    TTT_EXPECT (Interval::withName (DoublyAugmentedSecond).appliedTo (AFlat2)   == BSharp2);
-    TTT_EXPECT (Interval::withName (MajorThird).appliedTo (A1)                  == CSharp2);
-    TTT_EXPECT (Interval::withName (DiminishedFourth).appliedTo (A7)            == DFlat8);
-    TTT_EXPECT (Interval::withName (TriplyDiminishedFifth).appliedTo (ASharp6)  == EDoubleFlat7);
+    TTT_EXPECT (Interval::withName (PerfectFifth).appliedTo (F3)                        == C4);
+    TTT_EXPECT (Interval::withName (MinorThird).appliedTo (A0)                          == C1);
+    TTT_EXPECT (Interval::withName (AugmentedFourth).appliedTo (B5)                     == ESharp6);
+    TTT_EXPECT (Interval::withName (MinorSecond).appliedTo (C4)                         == DFlat4);
+    TTT_EXPECT (Interval::withName (DoublyAugmentedSecond).appliedTo (AFlat2)           == BSharp2);
+    TTT_EXPECT (Interval::withName (MajorThird).appliedTo (A1)                          == CSharp2);
+    TTT_EXPECT (Interval::withName (DiminishedFourth).appliedTo (A7)                    == DFlat8);
+    TTT_EXPECT (Interval::withName (TriplyDiminishedFifth).appliedTo (ASharp6)          == EDoubleFlat7);
     
-    TTT_EXPECT (Interval::withName (PerfectOctave, Below).appliedTo (GFlat3)    == GFlat2);
-    TTT_EXPECT (Interval::withName (MajorThird, Below).appliedTo (ASharp0)      == FSharp0);
-    TTT_EXPECT (Interval::withName (DiminishedSeventh, Below).appliedTo (B5)    == CDoubleSharp5);
-    TTT_EXPECT (Interval::withName (MajorSixth, Below).appliedTo (CDoubleFlat4) == ETripleFlat3);
-    TTT_EXPECT (Interval::withName (MinorThird, Above, 1).appliedTo (G3)        == BFlat4);
-    TTT_EXPECT (Interval::withName (MajorThird, Below, 1).appliedTo (D3)        == BFlat1);
-    TTT_EXPECT (Interval::withName (MajorSecond, Above, 1).appliedTo (FFlat1)   == GFlat2);
-    TTT_EXPECT (Interval::withName (MinorSecond, Below, 1).appliedTo (CSharp5)  == BSharp3);
+    TTT_EXPECT (Interval::withName (PerfectOctave, Descending).appliedTo (GFlat3)       == GFlat2);
+    TTT_EXPECT (Interval::withName (MajorThird, Descending).appliedTo (ASharp0)         == FSharp0);
+    TTT_EXPECT (Interval::withName (DiminishedSeventh, Descending).appliedTo (B5)       == CDoubleSharp5);
+    TTT_EXPECT (Interval::withName (MajorSixth, Descending).appliedTo (CDoubleFlat4)    == ETripleFlat3);
+    TTT_EXPECT (Interval::withName (MinorThird, Ascending, 1).appliedTo (G3)            == BFlat4);
+    TTT_EXPECT (Interval::withName (MajorThird, Descending, 1).appliedTo (D3)           == BFlat1);
+    TTT_EXPECT (Interval::withName (MajorSecond, Ascending, 1).appliedTo (FFlat1)       == GFlat2);
+    TTT_EXPECT (Interval::withName (MinorSecond, Descending, 1).appliedTo (CSharp5)     == BSharp3);
     //
     }
     
@@ -143,16 +143,16 @@ TTT_BEGIN (MicaIntervals, 161, "MICA - Intervals")
     Interval c = Interval::withNotes (C4, CFlat4);
     Interval d = Interval::withNotes (CFlat4, CSharp4);
     
-    TTT_EXPECT (a.getDirection()        == Below);
+    TTT_EXPECT (a.getDirection()        == Descending);
     TTT_EXPECT (a.getDistance()         == Second);
     TTT_EXPECT (a.getQuality()          == DoublyDiminished);
-    TTT_EXPECT (b.getDirection()        == Above);
+    TTT_EXPECT (b.getDirection()        == Ascending);
     TTT_EXPECT (b.getDistance()         == Second);
     TTT_EXPECT (b.getQuality()          == DoublyDiminished);
-    TTT_EXPECT (c.getDirection()        == Below);
+    TTT_EXPECT (c.getDirection()        == Descending);
     TTT_EXPECT (c.getDistance()         == Unison);
     TTT_EXPECT (c.getQuality()          == Augmented);
-    TTT_EXPECT (d.getDirection()        == Above);
+    TTT_EXPECT (d.getDirection()        == Ascending);
     TTT_EXPECT (d.getDistance()         == Unison);
     TTT_EXPECT (d.getQuality()          == DoublyAugmented);
         

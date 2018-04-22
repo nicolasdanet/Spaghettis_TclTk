@@ -9,6 +9,16 @@
     </concept>
     
     <concept>
+      <identifier lang="en">Ascending</identifier>
+      <definition lang="en" name="Ascending"/>
+    </concept>
+    
+    <concept>
+      <identifier lang="en">Descending</identifier>
+      <definition lang="en" name="Descending"/>
+    </concept>
+    
+    <concept>
       <identifier lang="en">QuadruplyDiminishedUnison</identifier>
       <definition lang="en" name="Quadruply Diminished Unison"/>
     </concept>

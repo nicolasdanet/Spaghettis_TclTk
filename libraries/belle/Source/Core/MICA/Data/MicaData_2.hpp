@@ -5,7 +5,7 @@
 
 namespace internal {
 
-static const int keyToConceptSize = 1062;
+static const int keyToConceptSize = 1064;
 static const KeyToConcept keyToConceptLookup[keyToConceptSize] = {
 { "en:A",                                               { 0xa3435834218630aaULL, 0xbe5412f53dcd5211ULL } },
 { "en:A Aeolian",                                       { 0xd932e0151a7936bbULL, 0x8d71eba71fe7e8f7ULL } },
@@ -128,6 +128,7 @@ static const KeyToConcept keyToConceptLookup[keyToConceptSize] = {
 { "en:Alto Clef",                                       { 0x43c12c8909ab3d35ULL, 0xa02deea37701b536ULL } },
 { "en:Alto Clef Flats",                                 { 0x2190aa4fa9643968ULL, 0x89979782291c70fbULL } },
 { "en:Alto Clef Sharps",                                { 0x77c921f3f6d63839ULL, 0xa5411dbb0ed85b28ULL } },
+{ "en:Ascending",                                       { 0x2d384699ff4c39fcULL, 0xad59ac39703fa36aULL } },
 { "en:Augmented",                                       { 0xed247156a7ca38e2ULL, 0x87088800ecdca768ULL } },
 { "en:Augmented Fifth",                                 { 0xbae96f943333319aULL, 0x8905ea67951c3b05ULL } },
 { "en:Augmented Fourth",                                { 0x7ad09bf5be2337e2ULL, 0x8c2ef9dd2f6b32c3ULL } },
@@ -499,6 +500,7 @@ static const KeyToConcept keyToConceptLookup[keyToConceptSize] = {
 { "en:D9 Sharp",                                        { 0xce8e43ef8a713027ULL, 0x948014427d19bb8cULL } },
 { "en:D9 Triple Flat",                                  { 0x716ba950212e369fULL, 0xa8f0db7131bcf189ULL } },
 { "en:D9 Triple Sharp",                                 { 0x8033ea3d73993649ULL, 0x902de3fdb8d28bfdULL } },
+{ "en:Descending",                                      { 0x4a611261368e3842ULL, 0x8260227578a1efb5ULL } },
 { "en:Diatonic Note",                                   { 0xdd1757aee81c3893ULL, 0x89e6be7a55c18d94ULL } },
 { "en:Diatonic Pitch",                                  { 0x259f980fa15e35c3ULL, 0x8a998c6234e7db64ULL } },
 { "en:Diminished",                                      { 0x0c1548d54f55349dULL, 0x9ec5314a0e7790b0ULL } },
