@@ -20,7 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define PORTAUDIO_MICROSLEEP    nano_sleep (1000000);
+#define PORTAUDIO_SLEEP     nano_sleep (1000000);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -317,7 +317,7 @@ int audio_pollNative (void)
     if (pa_channelsOut) {
         int needToWait = 0;
         while (PaUtil_GetRingBufferWriteAvailable (&pa_ringOut) < requiredOut) {
-            status = DACS_SLEPT; if (needToWait < 10) { PORTAUDIO_MICROSLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT; if (needToWait < 10) { PORTAUDIO_SLEEP; } else { return DACS_NO; }
             needToWait++;
         }
         for (i = 0, sound = audio_soundOut, p1 = t; i < pa_channelsOut; i++, p1++) {
@@ -332,7 +332,7 @@ int audio_pollNative (void)
     if (pa_channelsIn) {
         int needToWait = 0;
         while (PaUtil_GetRingBufferReadAvailable (&pa_ringIn) < requiredIn) {
-            status = DACS_SLEPT; if (needToWait < 10) { PORTAUDIO_MICROSLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT; if (needToWait < 10) { PORTAUDIO_SLEEP; } else { return DACS_NO; }
             needToWait++;
         }
         PaUtil_ReadRingBuffer (&pa_ringIn, t, requiredIn);
