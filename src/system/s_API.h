@@ -14,27 +14,27 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-const char *midi_nameNative         (void);
-t_error midi_getListsNative         (t_deviceslist *);
-void    midi_initializeNative       (void);
-void    midi_releaseNative          (void);
-void    midi_openNative             (t_devicesproperties *);
-void    midi_closeNative            (void);
-void    midi_pushNextMessageNative  (int, int, int, int);
-void    midi_pushNextByteNative     (int, int);
-void    midi_pollNative             (void);
+const char  *midi_nameNative                    (void);
+t_error     midi_getListsNative                 (t_deviceslist *);
+void        midi_initializeNative               (void);
+void        midi_releaseNative                  (void);
+void        midi_openNative                     (t_devicesproperties *);
+void        midi_closeNative                    (void);
+void        midi_pushNextMessageNative          (int, int, int, int);
+void        midi_pushNextByteNative             (int, int);
+void        midi_pollNative                     (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-const char  *audio_nameNative       (void);
-t_error audio_getListsNative        (t_deviceslist *);
-t_error audio_initializeNative      (void);
-void    audio_releaseNative         (void);
-void    audio_closeNative           (void);
-t_error audio_openNative            (t_devicesproperties *);
-int     audio_pollNative            (void);
+const char  *audio_nameNative                   (void);
+t_error     audio_getListsNative                (t_deviceslist *);
+t_error     audio_initializeNative              (void);
+void        audio_releaseNative                 (void);
+void        audio_closeNative                   (void);
+t_error     audio_openNative                    (t_devicesproperties *);
+int         audio_pollNative                    (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
