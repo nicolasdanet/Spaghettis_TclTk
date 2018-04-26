@@ -141,7 +141,7 @@ static void jack_shutdownCallback (void *dummy)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void jack_freeClientNames (void)
+static void jack_clientNamesFree (void)
 {
     int i;
     for (i = 0; i < JACK_MAXIMUM_CLIENTS; i++) {
@@ -149,13 +149,13 @@ static void jack_freeClientNames (void)
     }
 }
 
-static void jack_fetchClientNames (void)
+static void jack_clientNamesFetch (void)
 {
     const char **ports;
     
     PD_ASSERT (jack_client_name_size() <= PD_STRING);
     
-    jack_freeClientNames();
+    jack_clientNamesFree();
     
     ports = jack_get_ports (jack_client, "", "", 0);
     
@@ -210,7 +210,7 @@ static void jack_fetchClientNames (void)
     }
 }
 
-static void jack_connectAllPortsToFirstClient (void)
+static void jack_clientConnectToFirst (void)
 {
     if (jack_clientNames[0] != NULL) {
     //
@@ -336,8 +336,8 @@ t_error audio_openNative (t_devicesproperties *p)
     
     if (!jack_activate (jack_client)) {
     //
-    jack_fetchClientNames();
-    jack_connectAllPortsToFirstClient();
+    jack_clientNamesFetch();
+    jack_clientConnectToFirst();
     
     pthread_mutex_init (&jack_mutex, NULL);
     pthread_cond_init (&jack_cond, NULL);
@@ -375,7 +375,7 @@ void audio_closeNative (void)
     pthread_cond_destroy (&jack_cond);
     pthread_mutex_destroy (&jack_mutex);
     
-    jack_freeClientNames();
+    jack_clientNamesFree();
     
     if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn = NULL;  }
     if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); jack_bufferOut = NULL; }
