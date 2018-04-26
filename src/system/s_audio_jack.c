@@ -14,7 +14,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "jack/weakjack.h"
 #include "jack/jack.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -266,11 +265,7 @@ t_error audio_openNative (t_devicesproperties *p)
     int numberOfChannelsIn  = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
     int numberOfChannelsOut = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
     // int sampleRate          = devices_getSampleRate (p);
-    
-    /* Jackmp linked as a weak framework. */
         
-    if (!jack_client_open) { error_canNotFind (sym_audio, sym_JACK); return PD_ERROR; }
-    
     PD_ASSERT (sizeof (t_sample) == sizeof (jack_default_audio_sample_t));
     PD_ABORT  (sizeof (t_sample) != sizeof (jack_default_audio_sample_t));
     
