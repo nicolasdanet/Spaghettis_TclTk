@@ -267,14 +267,10 @@ t_error audio_openNative (t_devicesproperties *p)
     int numberOfChannelsOut = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
     // int sampleRate          = devices_getSampleRate (p);
     
-    #if PD_APPLE    /* Jackmp linked as a weak framework. */
+    /* Jackmp linked as a weak framework. */
         
-    if (!jack_client_open) {
-        error_canNotFind (sym_audio, sym_JACK); return PD_ERROR;
-    }
+    if (!jack_client_open) { error_canNotFind (sym_audio, sym_JACK); return PD_ERROR; }
     
-    #endif
-
     PD_ASSERT (sizeof (t_sample) == sizeof (jack_default_audio_sample_t));
     PD_ABORT  (sizeof (t_sample) != sizeof (jack_default_audio_sample_t));
     
