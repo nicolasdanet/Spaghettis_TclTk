@@ -46,7 +46,7 @@ void *logger_task (void *dummy)
 {
     while (PD_ATOMIC_INT32_READ (&logger_quit) == 0) {
     //
-    nano_sleep (MILLISECONDS_TO_NANOSECONDS (LOGGER_SLEEP));
+    nano_sleep (PD_MILLISECONDS_TO_NANOSECONDS (LOGGER_SLEEP));
     
     {
         char t[LOGGER_CHUNK + 1] = { 0 };

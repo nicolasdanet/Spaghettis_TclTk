@@ -15,12 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define SCHEDULER_BLOCKING_LAPSE    1000
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 enum {
     SCHEDULER_RUN       = 0,
     SCHEDULER_QUIT      = 1,
@@ -107,6 +101,11 @@ void scheduler_needToExitWithError (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_float scheduler_getTimeToWaitInMilliseconds (void)
+{
+    return (1.0 * AUDIO_DEFAULT_SAMPLERATE / audio_getSampleRate());
+}
+
 static t_systime scheduler_getSystimePerDSPTick (void)
 {
     return (SYSTIME_PER_SECOND * ((double)INTERNAL_BLOCKSIZE / audio_getSampleRate()));
@@ -187,7 +186,7 @@ static void scheduler_mainLoop (void)
     if (!scheduler_quit && (monitor_nonBlocking() || gui_flush())) { didSomething = 1; }
     if (!scheduler_quit && !didSomething) {
         if (timeForward != DACS_SLEPT) {
-            monitor_blocking (SCHEDULER_BLOCKING_LAPSE);    // -- FIXME: Consider sample rate?
+            monitor_blocking (PD_MILLISECONDS_TO_MICROSECONDS (scheduler_getTimeToWaitInMilliseconds()));
         }
     }
     //

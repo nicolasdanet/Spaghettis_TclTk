@@ -58,9 +58,7 @@ int audio_poll (void)
 
 t_float audio_getSampleRate (void)
 {
-    PD_ASSERT (audio_sampleRate > 0);
-    
-    return audio_sampleRate;
+    return (audio_sampleRate <= 0 ? AUDIO_DEFAULT_SAMPLERATE : audio_sampleRate);
 }
 
 int audio_getTotalOfChannelsIn (void) 
