@@ -288,8 +288,8 @@ t_error audio_openNative (t_devicesproperties *p)
     //
     int i;
     
-    if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  }
-    if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); }
+    if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn = NULL;  }
+    if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); jack_bufferOut = NULL; }
     
     if (numberOfChannelsIn) {
     //
