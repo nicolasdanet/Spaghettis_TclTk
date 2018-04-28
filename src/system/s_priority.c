@@ -48,7 +48,7 @@ static t_error priority_setRTLinuxScheduling (void)
     int min = sched_get_priority_min (SCHED_FIFO);
     int max = sched_get_priority_max (SCHED_FIFO);
     
-    param.sched_priority = PD_MIN (min + 5, max);   /* Arbitrary. */
+    param.sched_priority = PD_MIN (min + 4, max);   /* Arbitrary. */
 
     return (sched_setscheduler (0, SCHED_FIFO, &param) == -1);
 }
