@@ -29,24 +29,24 @@ proc initialize {} { ::ui_console::_create }
 
 proc post {message} { 
 
-    .console.text.internal insert end $message basicLog
-    .console.text.internal insert end "\n"
+    .console.text insert end $message basicLog
+    .console.text insert end "\n"
     
     after idle ::ui_console::_update
 }
 
 proc warning {message} { 
 
-    .console.text.internal insert end $message warningLog
-    .console.text.internal insert end "\n"
+    .console.text insert end $message warningLog
+    .console.text insert end "\n"
     
     after idle ::ui_console::_update
 }
 
 proc error {message} { 
 
-    .console.text.internal insert end $message errorLog
-    .console.text.internal insert end "\n"
+    .console.text insert end $message errorLog
+    .console.text insert end "\n"
     
     after idle ::ui_console::_update
 }
@@ -73,8 +73,9 @@ proc _create {} {
                                         -undo 0 \
                                         -yscrollcommand ".console.scroll set"
         
-    pack .console.text                  -side right -fill both -expand 1
-        
+    pack .console.text                  -side right -fill both  -expand 1
+    pack .console.scroll                -side right -fill y     -before .console.text
+    
     bind .console <<SelectAll>> ".console.text tag add sel 1.0 end"
     
     wm protocol .console WM_DELETE_WINDOW   { ::ui_console::closed }
@@ -84,18 +85,6 @@ proc _create {} {
     .console.text tag configure errorLog    -foreground red
     .console.text tag configure warningLog  -foreground red
     .console.text tag configure basicLog    -foreground black
-    
-    # Read-only text widget ( http://wiki.tcl.tk/1152 ).
-  
-    rename ::.console.text ::.console.text.internal
-
-    proc ::.console.text {args} {
-        switch -exact -- [lindex $args 0] {
-            "insert"  {}
-            "delete"  {}
-            "default" { return [eval ::.console.text.internal $args] }
-        }
-    }
 }
 
 proc closed {} {
@@ -108,14 +97,6 @@ proc closed {} {
 
 proc _update {} {
 
-    set view [.console.text yview]
-    
-    if {[lindex $view 0] == 0.0 && [lindex $view 1] == 1.0} {
-        pack forget .console.scroll
-    } else {
-        pack .console.scroll -side right -fill y -before .console.text
-    }
-        
     .console.text yview end
 }
 
