@@ -19,13 +19,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include <regex.h>
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define JACK_MAXIMUM_CLIENTS    128
-#define JACK_MAXIMUM_PORTS      128
+#define JACK_MAXIMUM_PORTS  128
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,7 +42,6 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static char                 *jack_clientNames[JACK_MAXIMUM_CLIENTS];            /* Static. */
 static jack_client_t        *jack_client;                                       /* Static. */
 
 static t_sample             *jack_bufferIn;                                     /* Static. */
@@ -141,111 +134,6 @@ static void jack_shutdownCallback (void *dummy)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void jack_clientNamesFree (void)
-{
-    int i;
-    for (i = 0; i < JACK_MAXIMUM_CLIENTS; i++) {
-        if (jack_clientNames[i]) { PD_MEMORY_FREE (jack_clientNames[i]); } jack_clientNames[i] = NULL;
-    }
-}
-
-static void jack_clientNamesFetch (void)
-{
-    const char **ports;
-    
-    PD_ASSERT (jack_client_name_size() <= PD_STRING);
-    
-    jack_clientNamesFree();
-    
-    ports = jack_get_ports (jack_client, "", "", 0);
-    
-    if (ports) {
-    //
-    int i, n = 0;
-    
-    regex_t e; regcomp (&e, "^[^:]*", REG_EXTENDED);    // --
-
-    for (i = 0; ports[i] != NULL && n < JACK_MAXIMUM_CLIENTS; i++) {
-    //
-    int j, seen = 0;
-    size_t size = 0;
-    regmatch_t info;
-    char t[PD_STRING] = { 0 };
-    
-    // -- Parse "clientname:portname" syntax (e.g. "system:playback_1" to "system").
-    
-    regexec (&e, ports[i], 1, &info, 0);
-    size = PD_MIN (info.rm_eo - info.rm_so, PD_STRING - 1);
-    memcpy (t, &ports[i][info.rm_so], size);
-    t[size] = 0;
-        
-    /* Do we know about this port's client yet? */
-
-    for (j = 0; j < n; j++) { if (strcmp (t, jack_clientNames[j]) == 0) { seen = 1; } }
-
-    /* Append the unknown ones. */
-    
-    if (!seen) {
-    //
-    jack_clientNames[n] = (char *)PD_MEMORY_GET (strlen (t) + 1);
-
-    if ((strcmp ("alsa_pcm", t) == 0) && (n > 0)) {    /* The "alsa_pcm" client MUST be the first. */
-        char *tmp = jack_clientNames[n];
-        jack_clientNames[n] = jack_clientNames[0];
-        jack_clientNames[0] = tmp;
-        strcpy (jack_clientNames[0], t);
-        
-    } else {
-        strcpy (jack_clientNames[n], t);
-    }
-    
-    n++;
-    //
-    }
-    //
-    }
-
-    jack_free (ports);
-    //
-    }
-}
-
-static void jack_clientConnectToFirst (void)
-{
-    if (jack_clientNames[0] != NULL) {
-    //
-    const char **ports;
-    char t[PD_STRING] = { 0 };
-
-    string_sprintf (t, PD_STRING, "%s:.*", jack_clientNames[0]);    // --
-
-    ports = jack_get_ports (jack_client, t, NULL, JackPortIsOutput);
-    
-    if (ports) {
-        int i;
-        for (i = 0; ports[i] != NULL && i < jack_numberOfPortsIn; i++) {
-            jack_connect (jack_client, ports[i], jack_port_name (jack_portsIn[i]));
-        }
-        jack_free (ports);
-    }
-    
-    ports = jack_get_ports (jack_client, t, NULL, JackPortIsInput);
-    
-    if (ports) {
-        int i;
-        for (i = 0; ports[i] != NULL && i < jack_numberOfPortsOut; i++) {     
-            jack_connect (jack_client, jack_port_name (jack_portsOut[i]), ports[i]);
-        }
-        jack_free (ports);
-    }
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 const char *audio_nameNative (void)
 {
     static const char *name = "JACK"; return name;      /* Static. */
@@ -288,18 +176,18 @@ t_error audio_openNative (t_devicesproperties *p)
     //
     int i;
     
-    if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn = NULL;  }
+    if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn  = NULL; }
     if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); jack_bufferOut = NULL; }
     
-    if (numberOfChannelsIn) {
+    if (numberOfChannelsIn)  {
     //
-    jack_bufferIn = (t_sample *)PD_MEMORY_GET (numberOfChannelsIn * JACK_BUFFER_SIZE * sizeof (t_sample));
+    jack_bufferIn  = (t_sample *)PD_MEMORY_GET (JACK_BUFFER_SIZE * sizeof (t_sample) * numberOfChannelsIn);
     //
     }
 
     if (numberOfChannelsOut) {
     //
-    jack_bufferOut = (t_sample *)PD_MEMORY_GET (numberOfChannelsOut * JACK_BUFFER_SIZE * sizeof (t_sample));
+    jack_bufferOut = (t_sample *)PD_MEMORY_GET (JACK_BUFFER_SIZE * sizeof (t_sample) * numberOfChannelsOut);
     //
     }
 
@@ -336,9 +224,6 @@ t_error audio_openNative (t_devicesproperties *p)
     
     if (!jack_activate (jack_client)) {
     //
-    jack_clientNamesFetch();
-    jack_clientConnectToFirst();
-    
     pthread_mutex_init (&jack_mutex, NULL);
     pthread_cond_init (&jack_cond, NULL);
     
@@ -374,8 +259,6 @@ void audio_closeNative (void)
     pthread_cond_broadcast (&jack_cond);
     pthread_cond_destroy (&jack_cond);
     pthread_mutex_destroy (&jack_mutex);
-    
-    jack_clientNamesFree();
     
     if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn = NULL;  }
     if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); jack_bufferOut = NULL; }
