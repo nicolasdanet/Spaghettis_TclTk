@@ -84,7 +84,7 @@ void midi_openNative (t_devicesproperties *p)
         err = snd_seq_open (&midialsa_handle, "default", SND_SEQ_OPEN_INPUT,  0);
         
     } else if (numberOfDevicesOut > 0) {
-        err = snd_seq_open (&midialsa_handle, "default", SND_SEQ_OPEN_OUTPUT,  0);
+        err = snd_seq_open (&midialsa_handle, "default", SND_SEQ_OPEN_OUTPUT, 0);
     }
     
     if (err) { PD_BUG; }
