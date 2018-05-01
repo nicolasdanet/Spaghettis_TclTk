@@ -1,4 +1,4 @@
-#N canvas 539 127 537 487 12;
+#N canvas 539 129 551 486 12;
 #X obj 36 108 osc~ 440;
 #X obj 36 276 *~;
 #X obj 84 228 line~;
@@ -10,17 +10,17 @@
 #X array \$0-out 128 float 3;
 #A 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
 #X coords 0 1 128 -1 250 175 1 0 0;
-#X restore 264 288 graph \$0-out;
+#X restore 276 288 graph \$0-out;
 #X obj 84 156 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 0.5;
 #X obj 84 276 tabwrite~ \$0-ramp 250;
 #N canvas 0 22 500 350 \$0-ramp 0;
 #X array \$0-ramp 128 float 3;
 #A 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
 #X coords 0 1 128 -1 250 175 1 0 0;
-#X restore 264 84 graph \$0-ramp;
+#X restore 276 84 graph \$0-ramp;
 #X msg 84 192 \$1 1000;
 #X obj 36 432 dac~;
-#X text 12 72 Doesn't click with a ramp.;
+#X text 12 72 Amplitude with a ramp (no clicks).;
 #X connect 0 0 1 0;
 #X connect 1 0 6 0;
 #X connect 1 0 12 0;
