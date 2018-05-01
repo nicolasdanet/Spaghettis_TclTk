@@ -2,7 +2,7 @@
 #X obj 36 180 line~;
 #X msg 36 144 500 \, 1423 4000;
 #X obj 36 372 output;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #N canvas 476 587 808 183 more 0;
 #X text 12 12 In this example \, the fundamental only reaches '1423' \, but the tables contain high partials.;

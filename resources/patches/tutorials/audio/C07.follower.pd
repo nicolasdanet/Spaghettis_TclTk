@@ -1,6 +1,6 @@
 #N canvas 506 99 416 464 12;
 #X obj 72 204 env~;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #N canvas 823 144 227 476 attack 0;
 #X obj 24 60 t b f;

@@ -5,7 +5,7 @@
 #X obj 120 228 pack 0 50;
 #X obj 120 264 line~;
 #X obj 36 348 *~;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 exponential;
 #X text 12 72 Waveshaping using an exponential function.;

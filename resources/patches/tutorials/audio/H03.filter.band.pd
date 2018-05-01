@@ -5,7 +5,7 @@
 #X floatatom 108 252 5 0 0 0 - - -;
 #X f 5;
 #X obj 36 384 bp~;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 filter (band-pass);
 #X text 12 72 Two-Pole resonant band-pass filter.;

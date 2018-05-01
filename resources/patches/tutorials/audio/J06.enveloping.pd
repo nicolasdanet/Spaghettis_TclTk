@@ -6,7 +6,7 @@
 #X obj 108 504 min~;
 #X obj 36 588 *~;
 #X obj 108 540 clip~ 0 1;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 enveloping;
 #X text 12 72 Envelope generators from line segments.;

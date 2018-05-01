@@ -1,6 +1,6 @@
 #N canvas 497 133 669 579 12;
 #X obj 132 264 +~ 1;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -72 12 freeze;
 #N canvas 698 223 352 542 init 0;
 #X obj 36 204 loadbang;

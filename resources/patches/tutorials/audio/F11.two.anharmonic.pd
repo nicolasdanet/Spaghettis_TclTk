@@ -8,7 +8,7 @@
 #X obj 264 252 *;
 #X obj 36 300 osc~;
 #X obj 264 300 phasor~;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 two-cosine (anharmonic);
 #N canvas 0 22 500 350 \$0-spectrum 0;

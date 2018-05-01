@@ -195,7 +195,7 @@
 #X restore 312 36 graph \$0-last-imaginary;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 192 264 pd tables;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 vocoder (reverb);
 #X text 12 72 A phase vocoder acting as a reverberator.;

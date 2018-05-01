@@ -22,7 +22,7 @@
 #X obj 36 564 shepard 8500;
 #X obj 36 588 shepard 9000;
 #X obj 36 612 shepard 9500;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #N canvas 292 150 614 511 control 0;
 #X obj 36 24 dspstatus;

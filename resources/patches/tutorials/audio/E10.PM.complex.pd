@@ -11,7 +11,7 @@
 #X obj 360 288 line~;
 #X obj 360 252 pack 0 50;
 #X obj 300 144 osc~;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 PM (complex);
 #X text 12 72 Spectrum of complex phase modulation.;

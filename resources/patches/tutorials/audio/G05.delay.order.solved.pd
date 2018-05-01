@@ -35,7 +35,7 @@
 #X connect 8 1 6 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 108 pd pulse;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 delay (order);
 #X obj 144 216 nbx 5 40 0 127 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 19 127;

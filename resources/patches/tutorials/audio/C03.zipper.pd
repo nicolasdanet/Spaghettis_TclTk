@@ -3,7 +3,7 @@
 #X obj 36 384 *~;
 #X obj 108 324 line;
 #X obj 36 108 osc~ 880;
-#X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X obj 108 252 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
 #X obj 108 180 tgl 15 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000 0 1;
