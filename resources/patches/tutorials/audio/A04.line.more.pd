@@ -1,4 +1,4 @@
-#N canvas 509 123 552 491 12;
+#N canvas 503 115 552 491 12;
 #X obj 36 372 *~;
 #X obj 120 300 line~;
 #N canvas 0 22 450 278 \$0-out 0;
@@ -25,7 +25,7 @@
 #X obj 36 108 osc~ 110;
 #X msg 120 252 \$1 75 \; \$0-bang bang;
 #X obj 72 168 tabwrite~ \$0-wave;
-#X text 12 72 Amplitude with a ramp (alternate).;
+#X text 12 72 Amplitude ramp graphed.;
 #X connect 0 0 13 0;
 #X connect 1 0 0 1;
 #X connect 1 0 12 0;

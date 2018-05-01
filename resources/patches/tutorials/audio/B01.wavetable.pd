@@ -1,4 +1,4 @@
-#N canvas 521 107 527 491 12;
+#N canvas 521 109 527 491 12;
 #X obj 36 144 mtof;
 #X obj 36 396 output;
 #X obj 12 12 cnv 15 250 45 empty empty empty 0 -7 0 10 #cccccc #000000;
@@ -8,11 +8,11 @@
 #X f 5;
 #X floatatom 36 180 5 0 0 1 - - -;
 #X f 5;
-#N canvas 174 319 491 231 init 0;
+#N canvas 174 321 491 231 init 0;
 #X obj 36 24 inlet;
 #X obj 36 84 t b b;
 #X msg 36 168 \; \$0-pitch 69;
-#X obj 36 48 loadbang;
+#X obj 96 24 loadbang;
 #X msg 84 120 \; \$0-table cosinesum 256 0.2 -0.2 0.2 -0.2 0.2 -0.2 0.2;
 #X connect 0 0 1 0;
 #X connect 1 0 2 0;
