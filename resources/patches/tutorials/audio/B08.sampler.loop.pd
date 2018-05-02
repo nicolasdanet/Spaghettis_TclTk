@@ -1,4 +1,4 @@
-#N canvas 544 153 540 525 12;
+#N canvas 544 157 540 525 12;
 #X obj 36 288 +~ 1;
 #X obj 36 432 output;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
@@ -49,11 +49,11 @@
 #X floatatom 84 180 5 0 0 1 - #0-chunk -;
 #X f 5;
 #X obj 120 432 hradio 15 1 1 4 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0;
-#X text 144 180 Size of chunk.;
-#X text 96 108 Loops per second.;
+#X text 132 180 Size of chunk.;
+#X text 84 108 Loops per second.;
 #X text 12 72 Basic looper (with clicks at looping point).;
 #X f 44;
-#X text 24 24 sampler (basic);
+#X text 24 24 sampler (loop);
 #X connect 0 0 7 0;
 #X connect 7 0 1 0;
 #X connect 7 0 8 0;
