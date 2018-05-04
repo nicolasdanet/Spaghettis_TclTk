@@ -1,4 +1,4 @@
-#N canvas 496 113 584 631 12;
+#N canvas 496 115 584 631 12;
 #X obj 108 276 cos~;
 #X obj 36 324 *~;
 #X obj 108 240 *~;
@@ -8,7 +8,7 @@
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 packets;
-#N canvas 619 116 303 487 pulse 0;
+#N canvas 619 118 301 476 pulse 0;
 #X obj 156 108 line~;
 #X obj 36 300 cos~;
 #X obj 156 84 pack 0 50;
@@ -19,7 +19,7 @@
 #X obj 156 132 +~ 1;
 #X obj 36 324 +~ 1;
 #X obj 156 24 inlet;
-#X obj 36 444 outlet~;
+#X obj 36 432 outlet~;
 #X obj 36 348 *~ 0.5;
 #X obj 36 132 phasor~;
 #X obj 36 108 / 256;
@@ -47,7 +47,7 @@
 #X connect 15 0 14 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 168 pd pulse;
-#X obj 36 108 nbx 5 40 0 4 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 1.2 100;
+#X obj 36 108 nbx 5 40 0 4 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
 #X obj 192 108 nbx 5 40 0 10 0 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 3 100;
 #N canvas 0 22 500 350 \$0-pulse 0;
 #X array \$0-pulse 512 float 1;

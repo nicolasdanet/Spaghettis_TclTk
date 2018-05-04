@@ -1,8 +1,8 @@
-#N canvas 562 103 570 626 12;
+#N canvas 562 107 570 626 12;
 #X obj 144 192 line~;
 #X obj 36 408 cos~;
 #X obj 144 168 pack 0 50;
-#X obj 36 132 -~ 0.5;
+#X obj 36 216 -~ 0.5;
 #X obj 36 264 *~;
 #X obj 36 336 clip~ -0.5 0.5;
 #X obj 144 216 +~ 1;
@@ -29,9 +29,9 @@
 #X coords 0 1 511 -1 250 175 1 0 0;
 #X restore 300 432 graph \$0-pulse;
 #X obj 144 108 nbx 5 40 0 4 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
-#X obj 48 300 tabwrite~ \$0-phase 250;
-#X obj 48 372 tabwrite~ \$0-clip 250;
-#X obj 48 492 tabwrite~ \$0-pulse 250;
+#X obj 60 300 tabwrite~ \$0-phase 250;
+#X obj 60 372 tabwrite~ \$0-clip 250;
+#X obj 60 492 tabwrite~ \$0-pulse 250;
 #X obj 36 108 phasor~ 440;
 #X connect 0 0 6 0;
 #X connect 1 0 8 0;
