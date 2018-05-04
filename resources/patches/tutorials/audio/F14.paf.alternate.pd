@@ -1,4 +1,4 @@
-#N canvas 685 146 415 461 12;
+#N canvas 793 142 404 462 12;
 #X obj 36 372 output;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
@@ -94,8 +94,8 @@
 #X connect 10 0 1 2;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 336 pd waves;
-#X obj 276 192 line~;
-#X obj 276 168 pack 0 50;
+#X obj 264 192 line~;
+#X obj 264 168 pack 0 50;
 #X obj 168 168 pack 0 50;
 #X obj 168 192 line~;
 #X floatatom 36 108 5 0 0 1 - #0-fundamental -;
@@ -106,10 +106,10 @@
 #X obj 168 144 mtof;
 #X obj 84 288 *~;
 #X obj 60 192 expr 1/$f1;
-#X obj 192 288 *~;
-#X floatatom 276 108 5 0 0 1 - #0-bandwidth -;
+#X obj 168 288 *~;
+#X floatatom 264 108 5 0 0 1 - #0-bandwidth -;
 #X f 5;
-#X obj 276 144 mtof;
+#X obj 264 144 mtof;
 #X f 4;
 #N canvas 228 89 310 173 init 0;
 #X obj 36 24 inlet;
