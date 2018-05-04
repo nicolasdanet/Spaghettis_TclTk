@@ -18,7 +18,7 @@
 #X obj -60 12 freeze;
 #X obj 96 144 nbx 5 40 0 0.25 0 1 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0.11 25;
 #X obj 36 216 +~;
-#N canvas 543 143 654 429 play 0;
+#N canvas 543 143 655 421 play 0;
 #X obj 36 192 mod 11;
 #X obj 36 276 mtof;
 #X obj 36 348 *~;
@@ -31,9 +31,9 @@
 #X obj 36 384 outlet~;
 #X obj 36 168 counter;
 #X obj 204 168 pipe 100;
-#X obj 36 108 t b 1 0;
+#X obj 36 132 t b 1 0;
 #X f 15;
-#X obj 36 84 metro 250;
+#X obj 36 96 metro 250;
 #X obj 204 240 adsr 70 10 90 50 50;
 #N canvas 0 22 500 350 \$0-sequence 0;
 #X array \$0-sequence 11 float 1;
