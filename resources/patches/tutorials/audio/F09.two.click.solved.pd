@@ -1,4 +1,4 @@
-#N canvas 556 125 350 473 12;
+#N canvas 547 121 360 471 12;
 #X obj 36 144 metro 400;
 #X obj 36 384 output;
 #X msg 96 228 13.5;
