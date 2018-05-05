@@ -1,4 +1,4 @@
-#N canvas 590 115 391 626 12;
+#N canvas 590 115 400 628 12;
 #N canvas 213 171 571 358 chord 0;
 #X obj 36 48 -~ 0.5;
 #X obj 36 96 clip~ -0.5 0.5;
@@ -68,7 +68,7 @@
 #X obj 264 216 *~ 0.6;
 #X obj 180 276 -~;
 #X obj 180 216 sig~ 0.97;
-#N canvas 396 269 760 179 more 0;
+#N canvas 396 294 766 179 more 0;
 #X text 12 12 A phaser simply adds an all-passed copy of the signal to the original.;
 #X f 71;
 #X text 12 36 It makes phase reinforcement and cancellation at frequencies that depend on the all-pass coefficients.;

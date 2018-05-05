@@ -1,4 +1,4 @@
-#N canvas 542 146 576 479 12;
+#N canvas 368 200 576 479 12;
 #X obj 36 360 filter-graph1 100 5000;
 #X f 35;
 #N canvas 533 363 606 99 more 0;
@@ -25,7 +25,7 @@
 #X obj 36 432 filter-graph2 \$0-frequency \$0-phase;
 #X floatatom 36 396 5 0 0 1 - - -;
 #X f 5;
-#X obj 288 396 butterworth3 830 8300;
+#X obj 300 396 butterworth3 830 8300;
 #X text 24 24 measure (butterworth);
 #X connect 0 0 8 0;
 #X connect 0 0 9 0;
