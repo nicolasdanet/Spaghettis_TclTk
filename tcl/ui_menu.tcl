@@ -397,7 +397,7 @@ proc _media {m} {
 proc _tools {m} {
 
     $m add check \
-        -label [_ "Path"] \
+        -label [_ "Path..."] \
         -variable ::var(isPath) \
         -command { 
             if {$::var(isPath)} { ::ui_path::show } else { ::ui_path::hide } 
