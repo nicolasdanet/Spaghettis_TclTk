@@ -14,7 +14,7 @@
 #X obj -60 12 freeze;
 #X text 24 24 subtractive;
 #X text 12 72 The classic subtractive synth sound.;
-#N canvas 307 216 360 458 phasor 0;
+#N canvas 307 216 346 458 phasor 0;
 #X obj 36 108 phasor~;
 #X obj 36 408 outlet~;
 #X obj 96 180 wrap~;
@@ -23,7 +23,7 @@
 #X obj 240 180 wrap~;
 #X obj 180 240 +~;
 #X obj 36 336 +~;
-#X obj 204 408 block~ 1024 1 16;
+#X obj 180 408 block~ 1024 1 16;
 #X obj 36 24 inlet;
 #N canvas 256 89 301 405 butterworth 0;
 #X obj 36 60 *~ 0.064;
