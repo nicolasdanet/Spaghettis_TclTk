@@ -15,6 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "portaudio.h"
+#include "pa_ringbuffer.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -43,9 +44,11 @@ extern t_sample *audio_soundOut;
 // MARK: -
 
 static PaStream         *pa_stream;                     /* Static. */
+static char             *pa_bufferIn;                   /* Static. */
+static char             *pa_bufferOut;                  /* Static. */
 
-static t_ringbuffer     *pa_ringIn;                     /* Static. */
-static t_ringbuffer     *pa_ringOut;                    /* Static. */
+static PaUtilRingBuffer pa_ringIn;                      /* Static. */
+static PaUtilRingBuffer pa_ringOut;                     /* Static. */
 
 static int              pa_channelsIn;                  /* Static. */
 static int              pa_channelsOut;                 /* Static. */
@@ -73,20 +76,20 @@ static int pa_ringCallback (const void *input,
     PaStreamCallbackFlags statusFlags, 
     void *userData)
 {
-    int32_t requiredIn  = (int32_t)(frameCount * pa_channelsIn);
-    int32_t requiredOut = (int32_t)(frameCount * pa_channelsOut);
+    ring_buffer_size_t requiredIn  = (ring_buffer_size_t)(frameCount * pa_channelsIn);
+    ring_buffer_size_t requiredOut = (ring_buffer_size_t)(frameCount * pa_channelsOut);
     
     if (output) {
     //
-    if (ringbuffer_getAvailableRead (pa_ringOut) >= requiredOut) {
-        ringbuffer_read (pa_ringOut, output, requiredOut);
+    if (PaUtil_GetRingBufferReadAvailable (&pa_ringOut) >= requiredOut) {
+        PaUtil_ReadRingBuffer (&pa_ringOut, output, requiredOut);
     } else {
-        memset (output, 0, requiredOut * sizeof (t_sample));        /* Fill with zeros. */
+        memset (output, 0, requiredOut * sizeof (t_sample));    /* Fill with zeros. */
     }
     //
     }
     
-    if (input) { ringbuffer_write (pa_ringIn, input, requiredIn); }
+    if (input) { PaUtil_WriteRingBuffer (&pa_ringIn, input, requiredIn); }
     
     return paContinue;
 }
@@ -233,24 +236,36 @@ t_error audio_openNative (t_devicesproperties *p)
     audio_vectorShrinkIn (pa_channelsIn = numberOfChannelsIn);        /* Cached for convenience. */
     audio_vectorShrinkOut (pa_channelsOut = numberOfChannelsOut);     /* Ditto. */
 
-    if (pa_ringIn)  { ringbuffer_free (pa_ringIn);  pa_ringIn  = NULL; }
-    if (pa_ringOut) { ringbuffer_free (pa_ringOut); pa_ringOut = NULL; }
+    if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
+    if (pa_bufferOut) { PD_MEMORY_FREE (pa_bufferOut); pa_bufferOut = NULL; }
 
     if (pa_channelsIn || pa_channelsOut) {
     //
     PaError err = paNoError;
     
     {
-        int32_t k = PD_MAX (PORTAUDIO_BUFFER_SIZE, INTERNAL_BLOCKSIZE) * pa_channelsIn;
-        k = (int32_t)PD_NEXT_POWER_2 (k + 1);
-        PD_ASSERT (k > 0);
-        pa_ringIn  = ringbuffer_new (sizeof (t_sample), k);
+        size_t k = PD_MAX (PORTAUDIO_BUFFER_SIZE, INTERNAL_BLOCKSIZE) * pa_channelsIn;
+        k = (size_t)PD_NEXT_POWER_2 (k + 1);
+        pa_bufferIn = (char *)PD_MEMORY_GET (k * sizeof (t_sample));
+        PD_ASSERT ((ring_buffer_size_t)k > 0);
+        if (PaUtil_InitializeRingBuffer (&pa_ringIn,    // --
+                (ring_buffer_size_t)sizeof (t_sample),
+                (ring_buffer_size_t)k,
+                (void *)pa_bufferIn)) { 
+            PD_BUG;
+        }
     }
     {
-        int32_t k = PD_MAX (PORTAUDIO_BUFFER_SIZE, INTERNAL_BLOCKSIZE) * pa_channelsOut;
-        k = (int32_t)PD_NEXT_POWER_2 (k + 1);
-        PD_ASSERT (k > 0);
-        pa_ringOut = ringbuffer_new (sizeof (t_sample), k);
+        size_t k = PD_MAX (PORTAUDIO_BUFFER_SIZE, INTERNAL_BLOCKSIZE) * pa_channelsOut;
+        k = (size_t)PD_NEXT_POWER_2 (k + 1);
+        pa_bufferOut = (char *)PD_MEMORY_GET (k * sizeof (t_sample));
+        PD_ASSERT ((ring_buffer_size_t)k > 0);
+        if (PaUtil_InitializeRingBuffer (&pa_ringOut,   // --
+                (ring_buffer_size_t)sizeof (t_sample),
+                (ring_buffer_size_t)k,
+                (void *)pa_bufferOut)) { 
+            PD_BUG; 
+        }
     }
     
     err = pa_openWithCallback (sampleRate,
@@ -278,8 +293,8 @@ void audio_closeNative (void)
         pa_stream = NULL;
     }
     
-    if (pa_ringIn)  { ringbuffer_free (pa_ringIn);  pa_ringIn  = NULL; }
-    if (pa_ringOut) { ringbuffer_free (pa_ringOut); pa_ringOut = NULL; }
+    if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
+    if (pa_bufferOut) { PD_MEMORY_FREE (pa_bufferOut); pa_bufferOut = NULL; } 
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -298,8 +313,8 @@ int audio_pollNative (void)
     if (!pa_stream || (pa_channelsIn <= 0 && pa_channelsOut <= 0)) { return DACS_NO; }
     else {
     //
-    int32_t requiredIn  = INTERNAL_BLOCKSIZE * pa_channelsIn;
-    int32_t requiredOut = INTERNAL_BLOCKSIZE * pa_channelsOut;
+    ring_buffer_size_t requiredIn  = INTERNAL_BLOCKSIZE * pa_channelsIn;
+    ring_buffer_size_t requiredOut = INTERNAL_BLOCKSIZE * pa_channelsOut;
     
     /* Buffer on the stack in order to interleave and deinterleave. */
     
@@ -307,7 +322,7 @@ int audio_pollNative (void)
 
     if (pa_channelsOut) {
         int needToWait = 0;
-        while (ringbuffer_getAvailableWrite (pa_ringOut) < requiredOut) {
+        while (PaUtil_GetRingBufferWriteAvailable (&pa_ringOut) < requiredOut) {
             status = DACS_SLEPT; if (needToWait < 10) { PORTAUDIO_SLEEP; } else { return DACS_NO; }
             needToWait++;
         }
@@ -317,16 +332,16 @@ int audio_pollNative (void)
                 *sound = 0.0;
             }
         }
-        ringbuffer_write (pa_ringOut, t, requiredOut);
+        PaUtil_WriteRingBuffer (&pa_ringOut, t, requiredOut);
     }
     
     if (pa_channelsIn) {
         int needToWait = 0;
-        while (ringbuffer_getAvailableRead (pa_ringIn) < requiredIn) {
+        while (PaUtil_GetRingBufferReadAvailable (&pa_ringIn) < requiredIn) {
             status = DACS_SLEPT; if (needToWait < 10) { PORTAUDIO_SLEEP; } else { return DACS_NO; }
             needToWait++;
         }
-        ringbuffer_read (pa_ringIn, t, requiredIn);
+        PaUtil_ReadRingBuffer (&pa_ringIn, t, requiredIn);
         for (i = 0, sound = audio_soundIn, p1 = t; i < pa_channelsIn; i++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsIn) {
                 *sound = *p2;
