@@ -241,16 +241,12 @@ t_error audio_openNative (t_devicesproperties *p)
     PaError err = paNoError;
     
     {
-        int32_t k = PD_MAX (PORTAUDIO_BUFFER_SIZE, INTERNAL_BLOCKSIZE) * pa_channelsIn;
-        k = (int32_t)PD_NEXT_POWER_2 (k + 1);
-        PD_ASSERT (k > 0);
-        pa_ringIn  = ringbuffer_new (sizeof (t_sample), k);
+        int32_t k  = (int32_t)PD_NEXT_POWER_2 (PORTAUDIO_BUFFER_SIZE * pa_channelsIn);
+        pa_ringIn  = ringbuffer_new (sizeof (t_sample), k == 0 ? 1 : k);
     }
     {
-        int32_t k = PD_MAX (PORTAUDIO_BUFFER_SIZE, INTERNAL_BLOCKSIZE) * pa_channelsOut;
-        k = (int32_t)PD_NEXT_POWER_2 (k + 1);
-        PD_ASSERT (k > 0);
-        pa_ringOut = ringbuffer_new (sizeof (t_sample), k);
+        int32_t k  = (int32_t)PD_NEXT_POWER_2 (PORTAUDIO_BUFFER_SIZE * pa_channelsOut);
+        pa_ringOut = ringbuffer_new (sizeof (t_sample), k == 0 ? 1 : k);
     }
     
     err = pa_openWithCallback (sampleRate,
