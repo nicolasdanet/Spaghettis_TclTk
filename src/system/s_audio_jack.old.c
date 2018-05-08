@@ -150,7 +150,7 @@ t_error audio_openNative (t_devicesproperties *p)
 {
     int numberOfChannelsIn  = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
     int numberOfChannelsOut = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
-    // int sampleRate       = devices_getSampleRate (p);
+    int sampleRate          = devices_getSampleRate (p);
         
     PD_ASSERT (sizeof (t_sample) == sizeof (jack_default_audio_sample_t));
     PD_ABORT  (sizeof (t_sample) != sizeof (jack_default_audio_sample_t));
@@ -166,6 +166,16 @@ t_error audio_openNative (t_devicesproperties *p)
 
     jack_client = jack_client_open (PD_NAME_LOWERCASE, JackNoStartServer, &status, NULL);
     
+    if (jack_client) {
+    //
+    if (jack_get_sample_rate (jack_client) != (jack_nframes_t)sampleRate) {
+        jack_client_close (jack_client);
+        jack_client = NULL;
+        error_invalid (sym_JACK, sym_samplerate);
+    }
+    //
+    }
+
     if (jack_client) {
     //
     int i;
