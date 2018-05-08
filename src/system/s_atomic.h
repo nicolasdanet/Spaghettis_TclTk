@@ -84,11 +84,11 @@
 // MARK: -
 
 #if PD_MAC_ATOMIC
-    #include "s_atomicMac.h"
+    #include "s_atomic_mac.h"
 #endif
 
 #if PD_POSIX_ATOMIC
-    #include "s_atomicPosix.h"
+    #include "s_atomic_posix.h"
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
