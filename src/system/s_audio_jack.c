@@ -171,6 +171,7 @@ t_error audio_openNative (t_devicesproperties *p)
     if (jack_get_sample_rate (jack_client) != (jack_nframes_t)sampleRate) {
         jack_client_close (jack_client);
         jack_client = NULL;
+        error_invalid (sym_JACK, sym_samplerate);
     }
     //
     }
