@@ -15,7 +15,7 @@
 
 #if PD_32BIT
 
-    #include "s_MT32.h"
+    #include "s_MT_32.h"
     typedef MTState32 t_randMT;
 
 #endif // PD_32BIT
@@ -25,7 +25,7 @@
 
 #if PD_64BIT
 
-    #include "s_MT64.h"
+    #include "s_MT_64.h"
     typedef MTState64 t_randMT;
 
 #endif // PD_64BIT
