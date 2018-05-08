@@ -44,7 +44,7 @@ LDFLAGS  = -rdynamic
 # Preprocessor and compiler flags.
 
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION -I$(BELLE_DIR)/Source $(PD_OPTIONS)
-CFLAGS   = -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
+CFLAGS   = -ggdb -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
 CXXFLAGS = $(CXXSTD) $(CFLAGS)
 
 # Expr with TinyExpr.
