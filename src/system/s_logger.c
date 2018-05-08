@@ -56,7 +56,7 @@ void *logger_task (void *dummy)
             int32_t k = PD_MIN (LOGGER_CHUNK, size);
             ringbuffer_read (logger_ring, t, k);
             t[k] = '\n';
-            write (logger_file, t, k + 1);
+            { ssize_t w = write (logger_file, t, k + 1); (void)w; }     /* Avoid unused return warning. */
         }
     }
     //
