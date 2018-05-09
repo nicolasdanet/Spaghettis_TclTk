@@ -9,10 +9,9 @@ VPATH = ../obj
 
 BELLE_DIR = ../libraries/belle
 
-BIN_DIR = ../bin
-TCL_DIR = ../tcl
-
-HELP_DIR = ../resources/help
+BIN_DIR   = ../bin
+TCL_DIR   = ../tcl
+HELP_DIR  = ../resources/help
 
 # Install paths.
 
