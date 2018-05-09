@@ -1,9 +1,0 @@
-
-# Platforms
-
-Known supported platforms (either first hand or via reliable reports).
-
-    - Mac OS X 10.6 / ActiveTcl 8.5.18
-    - macOS 10.13.4 / ActiveTcl 8.6.7
-    - Ubuntu 18.04  / tk8.6
-
