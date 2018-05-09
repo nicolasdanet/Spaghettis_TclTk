@@ -64,9 +64,6 @@ font="${rep}/resources/font"
 # ------------------------------------------------------------------------------------------------------------
 
 # Build the binaries.
-# Workaround for annoying GCC 4.2.1 bug ( https://gcc.gnu.org/bugzilla/show_bug.cgi?id=33144 ).
-# Avoid march=native flag on Mac OS X 10.6 system.
-# Assume C++11 supported on a later OS.
 
 if [ -n "${PD_OPTIONS}" ]; then
     echo "Build binaries ${PD_OPTIONS} ..."
@@ -75,11 +72,7 @@ else
 fi
 
 cd "${rep}/src"                                                         || exit 1
-if [ "$OSTYPE" != "darwin10.0" ]; then
-    make -f makefile.mac MARCH="-march=native" CXXSTD="-std=c++11"      || exit 1
-else
-    make -f makefile.mac                                                || exit 1
-fi
+make -f makefile.mac                                                    || exit 1
 cd "${rep}"                                                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------

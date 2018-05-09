@@ -33,11 +33,9 @@ HELP_DIR = ../resources/help
 # libpdtcldir     = $(libpddir)/tcl
 # libpdhelpdir    = $(libpddir)/help
 
-# Warnings (prohibited due to PortAudio and PortMidi).
+# Flags (warnings prohibited due to PortAudio and PortMidi).
 
 WARNINGS = -w
-
-# Linker flags.
 
 LIB = -ldl -lpthread
 
@@ -47,8 +45,6 @@ LDFLAGS = -framework CoreAudio \
     -framework AudioToolbox \
     -framework Carbon \
     -Wno-deprecated
-
-# Preprocessor and compiler flags.
 
 CPPFLAGS = -DNDEBUG \
     -DPD_BUILDING_APPLICATION \
@@ -61,8 +57,8 @@ CPPFLAGS = -DNDEBUG \
     -DPA_USE_COREAUDIO \
     $(PD_OPTIONS)
 
-CFLAGS   = -g -O3 -ffast-math $(MARCH) -fvisibility=hidden $(WARNINGS)
-CXXFLAGS = $(CXXSTD) $(CFLAGS)
+CFLAGS   = -g -O3 -ffast-math -march=native -fvisibility=hidden $(WARNINGS)
+CXXFLAGS = -std=c++11 $(CFLAGS)
 
 # PortMidi.
 

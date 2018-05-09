@@ -60,7 +60,7 @@ else
 fi
 
 cd "${rep}/src"                                                     || exit 1
-make -f makefile.gnu MARCH="-march=native" CXXSTD="-std=c++11"      || exit 1
+make -f makefile.gnu                                                || exit 1
 cd "${rep}"                                                         || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
