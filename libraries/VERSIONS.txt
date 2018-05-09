@@ -13,10 +13,8 @@ PORTMIDI
     
 TINYEXPR
 
-    < https://github.com/codeplea/tinyexpr >
-    
-    commit 9476568b69de4c384903f1d5f255907b92592f45
-    
+    < https://github.com/nicolasdanet/tinyexpr >
+
 OOURA
 
     < http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html >
