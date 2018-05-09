@@ -489,13 +489,20 @@ static void garray_cosinesum (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 
 static void garray_rename (t_garray *x, t_symbol *s)
 {
+    t_symbol *expanded = dollar_expandSymbol (s, x->x_owner);
+    
+    if (symbol_getThingByClass (expanded, garray_class)) { error_alreadyExists (expanded); }
+    else {
+    //
     pd_unbind (cast_pd (x), x->x_name);
     x->x_unexpandedName = s;
-    x->x_name = dollar_expandSymbol (s, x->x_owner);
+    x->x_name = expanded;
     pd_bind (cast_pd (x), x->x_name);
     garray_redraw (x);
     garray_updateGraphName (x);
     garray_updateGraphWindow (x);
+    //
+    }
 }
 
 static void garray_read (t_garray *x, t_symbol *name)
@@ -735,13 +742,18 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     if (name != x->x_unexpandedName) {
     //
-    x->x_unexpandedName = name;
-    pd_unbind (cast_pd (x), x->x_name);
-    x->x_name = dollar_expandSymbol (name, x->x_owner);
-    pd_bind (cast_pd (x), x->x_name);
+    t_symbol *expanded = dollar_expandSymbol (name, x->x_owner);
+    
+    if (symbol_getThingByClass (expanded, garray_class)) { error_alreadyExists (expanded); }
+    else {
+        x->x_unexpandedName = name;
+        pd_unbind (cast_pd (x), x->x_name);
+        x->x_name = expanded;
+        pd_bind (cast_pd (x), x->x_name);
 
-    garray_updateGraphName (x);
-    dsp_update();
+        garray_updateGraphName (x);
+        dsp_update();
+    }
     //
     }
 
