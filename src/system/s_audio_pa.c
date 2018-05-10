@@ -68,13 +68,13 @@ void audio_vectorShrinkOut  (int);
 
 static int pa_ringCallback (const void *input,
     void *output,
-    unsigned long frameCount,
+    unsigned long framesCount,
     const PaStreamCallbackTimeInfo *timeInfo,
     PaStreamCallbackFlags statusFlags, 
     void *userData)
 {
-    int32_t requiredIn  = (int32_t)(frameCount * pa_channelsIn);
-    int32_t requiredOut = (int32_t)(frameCount * pa_channelsOut);
+    int32_t requiredIn  = (int32_t)(framesCount * pa_channelsIn);
+    int32_t requiredOut = (int32_t)(framesCount * pa_channelsOut);
     
     if (output) {
     //
