@@ -99,7 +99,7 @@ static void jack_buffersAllocate (int numberOfChannelsIn, int numberOfChannelsOu
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Take all channels or none. */
+/* Take ALL channels or NONE. */
 
 static int jack_pollCallback (jack_nframes_t framesCount, void *dummy)
 {
@@ -293,8 +293,9 @@ int audio_pollNative (void)
     //
     if (jack_numberOfPortsIn) {
     //
+    int needToWait = 0;
+
     for (i = 0; i < jack_numberOfPortsIn; i++) {
-        int needToWait = 0;
         while (ringbuffer_getAvailableRead (jack_ringIn[i]) < INTERNAL_BLOCKSIZE) {
             status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
             needToWait++;
@@ -312,8 +313,9 @@ int audio_pollNative (void)
     
     if (jack_numberOfPortsOut) {
     //
+    int needToWait = 0;
+
     for (i = 0; i < jack_numberOfPortsOut; i++) {
-        int needToWait = 0;
         while (ringbuffer_getAvailableWrite (jack_ringOut[i]) < INTERNAL_BLOCKSIZE) {
             status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
             needToWait++;
