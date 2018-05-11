@@ -13,7 +13,9 @@ PORTMIDI
     
 TINYEXPR
 
-    < https://github.com/nicolasdanet/tinyexpr >
+    < https://github.com/codeplea/tinyexpr >
+
+    commit ffb0d41b13e5f8d318db95feb071c220c134fe70
 
 OOURA
 
