@@ -19,6 +19,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_float scheduler_getTimeToWaitInMilliseconds (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define JACK_SLEEP nano_sleep (PD_MILLISECONDS_TO_NANOSECONDS (scheduler_getTimeToWaitInMilliseconds()));
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #define JACK_MAXIMUM_PORTS  128
 
 // -----------------------------------------------------------------------------------------------------------
@@ -33,27 +44,20 @@ extern t_sample *audio_soundOut;
 
 static jack_client_t        *jack_client;                                       /* Static. */
 
-static t_sample             *jack_bufferIn;                                     /* Static. */
-static t_sample             *jack_bufferOut;                                    /* Static. */
 static jack_port_t          *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Static. */
 static jack_port_t          *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Static. */
+
+static t_ringbuffer         *jack_ringIn[JACK_MAXIMUM_PORTS];                   /* Static. */
+static t_ringbuffer         *jack_ringOut[JACK_MAXIMUM_PORTS];                  /* Static. */
 
 static int                  jack_numberOfPortsIn;                               /* Static. */
 static int                  jack_numberOfPortsOut;                              /* Static. */
 
-static jack_nframes_t       jack_framesRequired;                                /* Static. */
-static jack_nframes_t       jack_framesFilled;                                  /* Static. */
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static pthread_cond_t       jack_cond;                                          /* Static. */
-static pthread_mutex_t      jack_mutex;                                         /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define JACK_BUFFER_SIZE    4096        /* Buffer size (per channel). */ 
+#define JACK_BUFFER_SIZE    8192        /* Buffer size (per channel). */
+                                        /* MUST be a power of two. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,48 +70,83 @@ void audio_vectorShrinkOut  (int);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
+static void jack_buffersFree (void)
 {
     int i;
-    jack_default_audio_sample_t *in  = NULL;
-    jack_default_audio_sample_t *out = NULL;
 
-    size_t size = numberOfFrames * sizeof (t_sample);
-    
-    pthread_mutex_lock (&jack_mutex);
-        
-    jack_framesRequired = PD_MAX (numberOfFrames, INTERNAL_BLOCKSIZE);
-    
-    if (jack_framesFilled >= numberOfFrames) {
-    //
-    PD_ASSERT (jack_framesFilled == numberOfFrames);
-    
-    for (i = 0; i < jack_numberOfPortsOut; i++) {
-        if ((out = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsOut[i], numberOfFrames))) {
-            memcpy (out, jack_bufferOut + (i * JACK_BUFFER_SIZE), size);
-        }
+    for (i = 0; i < JACK_MAXIMUM_PORTS; i++) {
+        if (jack_ringIn[i])  { ringbuffer_free (jack_ringIn[i]);  jack_ringIn[i]  = NULL; }
+        if (jack_ringOut[i]) { ringbuffer_free (jack_ringOut[i]); jack_ringOut[i] = NULL; }
+    }
+}
+
+static void jack_buffersAllocate (int numberOfChannelsIn, int numberOfChannelsOut)
+{
+    int i;
+
+    jack_buffersFree();
+
+    for (i = 0; i < numberOfChannelsIn;  i++) {
+        jack_ringIn[i]  = ringbuffer_new (sizeof (t_sample), JACK_BUFFER_SIZE);
     }
     
+    for (i = 0; i < numberOfChannelsOut; i++) {
+        jack_ringOut[i] = ringbuffer_new (sizeof (t_sample), JACK_BUFFER_SIZE);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* Take all channels or none. */
+
+static int jack_pollCallback (jack_nframes_t framesCount, void *dummy)
+{
+    int i;
+
+    if (jack_numberOfPortsOut) {
+    //
+    int readable = 1;
+
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+    //
+    if (ringbuffer_getAvailableRead (jack_ringOut[i]) < (int32_t)framesCount) { readable = 0; break; }
+    //
+    }
+
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+    //
+    void *t = jack_port_get_buffer (jack_portsOut[i], framesCount);
+
+    if (readable) { ringbuffer_read (jack_ringOut[i], t, framesCount); } 
+    else { 
+        memset (t, 0, framesCount * sizeof (t_sample));                     /* Fill with zeros. */
+    }
+    //
+    }
+    //
+    }
+    
+    if (jack_numberOfPortsIn) {
+    //
+    int writable = 1;
+
     for (i = 0; i < jack_numberOfPortsIn; i++) {
-        if ((in = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsIn[i], numberOfFrames))) {
-            memcpy (jack_bufferIn + (i * JACK_BUFFER_SIZE), in, size);
-        }
-    }
     //
-    } else {    /* Fill with zeros. */
-    //
-    for (i = 0; i < jack_numberOfPortsOut; i++) {
-        if ((out = (jack_default_audio_sample_t *)jack_port_get_buffer (jack_portsOut[i], numberOfFrames))) {
-            memset (out, 0, size);
-        }
-    }
+    if (ringbuffer_getAvailableWrite (jack_ringIn[i]) < (int32_t)framesCount) { writable = 0; break; }
     //
     }
-    
-    jack_framesFilled = 0;
-    
-    pthread_cond_broadcast (&jack_cond);
-    pthread_mutex_unlock (&jack_mutex);
+
+    for (i = 0; i < jack_numberOfPortsIn; i++) {
+    //
+    void *t = jack_port_get_buffer (jack_portsIn[i], framesCount);
+
+    if (writable) { ringbuffer_write (jack_ringIn[i], t, framesCount); }    /* Simply drop if full. */
+    //
+    }
+    //
+    }
     
     return 0;
 }
@@ -115,8 +154,8 @@ static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
 static void jack_shutdownCallback (void *dummy)
 {
     jack_client = NULL;
+    jack_buffersFree();
     scheduler_needToExitWithError();
-    pthread_cond_broadcast (&jack_cond);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -175,20 +214,7 @@ t_error audio_openNative (t_devicesproperties *p)
     //
     int i;
     
-    if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn  = NULL; }
-    if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); jack_bufferOut = NULL; }
-    
-    if (numberOfChannelsIn)  {
-    //
-    jack_bufferIn  = (t_sample *)PD_MEMORY_GET (JACK_BUFFER_SIZE * sizeof (t_sample) * numberOfChannelsIn);
-    //
-    }
-
-    if (numberOfChannelsOut) {
-    //
-    jack_bufferOut = (t_sample *)PD_MEMORY_GET (JACK_BUFFER_SIZE * sizeof (t_sample) * numberOfChannelsOut);
-    //
-    }
+    jack_buffersAllocate (numberOfChannelsIn, numberOfChannelsOut);
 
     jack_set_process_callback (jack_client, jack_pollCallback, NULL);
     jack_on_shutdown (jack_client, jack_shutdownCallback, NULL);
@@ -221,13 +247,7 @@ t_error audio_openNative (t_devicesproperties *p)
     
     audio_vectorShrinkOut (jack_numberOfPortsOut = numberOfChannelsOut = i);
     
-    if (!jack_activate (jack_client)) {
-    //
-    pthread_mutex_init (&jack_mutex, NULL);
-    pthread_cond_init (&jack_cond, NULL);
-    
-    return PD_ERROR_NONE;
-    }
+    if (!jack_activate (jack_client)) { return PD_ERROR_NONE; }
     //
     }
     //
@@ -254,13 +274,8 @@ void audio_closeNative (void)
     jack_client = NULL;
     //
     }
-    
-    pthread_cond_broadcast (&jack_cond);
-    pthread_cond_destroy (&jack_cond);
-    pthread_mutex_destroy (&jack_mutex);
-    
-    if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn = NULL;  }
-    if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); jack_bufferOut = NULL; }
+
+    jack_buffersFree();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -269,40 +284,51 @@ void audio_closeNative (void)
 
 int audio_pollNative (void)
 {
+    int i;
     int status = DACS_YES;
-    
+    t_sample *sound = NULL;
+
     if (!jack_client || (!jack_numberOfPortsIn && !jack_numberOfPortsOut)) { return DACS_NO; }
     else {
     //
-    int i;
-    t_sample *p = NULL;
-    double now = clock_getRealTimeInSeconds();
-    size_t size = INTERNAL_BLOCKSIZE * sizeof (t_sample);
-    
-    pthread_mutex_lock (&jack_mutex);
-    
-    if (jack_framesFilled >= jack_framesRequired) { pthread_cond_wait (&jack_cond, &jack_mutex); }
-
-    p = audio_soundOut;
-    
-    for (i = 0; i < jack_numberOfPortsOut; i++) {
-        memcpy (jack_bufferOut + (i * JACK_BUFFER_SIZE) + jack_framesFilled, p, size);
-        memset (p, 0, size);
-        p += INTERNAL_BLOCKSIZE;  
-    }
-    
-    p = audio_soundIn;
-    
+    if (jack_numberOfPortsIn) {
+    //
     for (i = 0; i < jack_numberOfPortsIn; i++) {
-        memcpy (p, jack_bufferIn + (i * JACK_BUFFER_SIZE) + jack_framesFilled, size);
-        p += INTERNAL_BLOCKSIZE;
+        int needToWait = 0;
+        while (ringbuffer_getAvailableRead (jack_ringIn[i]) < INTERNAL_BLOCKSIZE) {
+            status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
+            needToWait++;
+        }
+    }
+
+    sound = audio_soundIn;
+        
+    for (i = 0; i < jack_numberOfPortsIn; i++) {
+        ringbuffer_read (jack_ringIn[i], (void *)sound, INTERNAL_BLOCKSIZE);
+        sound += INTERNAL_BLOCKSIZE;
+    }
+    //
     }
     
-    jack_framesFilled += INTERNAL_BLOCKSIZE;
-    
-    pthread_mutex_unlock (&jack_mutex);
-
-    if (clock_getRealTimeInSeconds() - now > PD_MILLISECONDS_TO_SECONDS (2)) { status = DACS_SLEPT; }
+    if (jack_numberOfPortsOut) {
+    //
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+        int needToWait = 0;
+        while (ringbuffer_getAvailableWrite (jack_ringOut[i]) < INTERNAL_BLOCKSIZE) {
+            status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
+            needToWait++;
+        }
+    }
+        
+    sound = audio_soundOut;
+        
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+        ringbuffer_write (jack_ringOut[i], (const void *)sound, INTERNAL_BLOCKSIZE);
+        memset ((void *)sound, 0, INTERNAL_BLOCKSIZE * sizeof (t_sample));                  /* Zeroed. */
+        sound += INTERNAL_BLOCKSIZE;
+    }
+    //
+    }
     //
     }
     
