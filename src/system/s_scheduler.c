@@ -156,7 +156,7 @@ static void scheduler_mainLoop (void)
     
     while (!scheduler_quit) {
     //
-    int timeForward, didSomething = 0;
+    int timeForward;
 
     if (scheduler_audioState != SCHEDULER_AUDIO_STOP) {
         if ((timeForward = audio_poll())) { idleCount = 0; }
@@ -179,15 +179,17 @@ static void scheduler_mainLoop (void)
     if (!scheduler_quit) {
     //
     if (timeForward != DACS_NO) { scheduler_tick(); }
-    if (timeForward != DACS_NO) { didSomething = 1; }
-
-    midi_poll();
     
-    if (!scheduler_quit && (monitor_nonBlocking() || gui_flush())) { didSomething = 1; }
+    if (!scheduler_quit) {
+        midi_poll();
+        monitor_nonBlocking();
+        gui_flush();
+    }
     
-    if (!scheduler_quit && !didSomething) {     /* With DSP running it almost never happens. */
-
-        monitor_blocking (PD_MILLISECONDS_TO_MICROSECONDS (scheduler_getTimeToWaitInMilliseconds()));
+    if (!scheduler_quit) {
+        if (timeForward != DACS_SLEPT) {
+            monitor_blocking (PD_MILLISECONDS_TO_MICROSECONDS (scheduler_getTimeToWaitInMilliseconds()));
+        }
     }
     //
     }
