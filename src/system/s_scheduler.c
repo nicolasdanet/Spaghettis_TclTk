@@ -178,16 +178,16 @@ static void scheduler_mainLoop (void)
     
     if (!scheduler_quit) {
     //
-    if (timeForward != DACS_NO)  { scheduler_tick(); }
-    if (timeForward == DACS_YES) { didSomething = 1; }
+    if (timeForward != DACS_NO) { scheduler_tick(); }
+    if (timeForward != DACS_NO) { didSomething = 1; }
 
     midi_poll();
     
     if (!scheduler_quit && (monitor_nonBlocking() || gui_flush())) { didSomething = 1; }
-    if (!scheduler_quit && !didSomething) {
-        if (timeForward != DACS_SLEPT) {
-            monitor_blocking (PD_MILLISECONDS_TO_MICROSECONDS (scheduler_getTimeToWaitInMilliseconds()));
-        }
+    
+    if (!scheduler_quit && !didSomething) {     /* With DSP running it almost never happens. */
+
+        monitor_blocking (PD_MILLISECONDS_TO_MICROSECONDS (scheduler_getTimeToWaitInMilliseconds()));
     }
     //
     }
