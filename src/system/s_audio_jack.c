@@ -291,17 +291,32 @@ int audio_pollNative (void)
     if (!jack_client || (!jack_numberOfPortsIn && !jack_numberOfPortsOut)) { return DACS_NO; }
     else {
     //
-    if (jack_numberOfPortsIn) {
-    //
     int needToWait = 0;
 
+    if (jack_numberOfPortsIn) {
+    //
     for (i = 0; i < jack_numberOfPortsIn; i++) {
         while (ringbuffer_getAvailableRead (jack_ringIn[i]) < INTERNAL_BLOCKSIZE) {
             status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
             needToWait++;
         }
     }
+    //
+    }
+    
+    if (jack_numberOfPortsOut) {
+    //
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+        while (ringbuffer_getAvailableWrite (jack_ringOut[i]) < INTERNAL_BLOCKSIZE) {
+            status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
+            needToWait++;
+        }
+    }
+    //
+    }
 
+    if (jack_numberOfPortsIn) {
+    //
     sound = audio_soundIn;
         
     for (i = 0; i < jack_numberOfPortsIn; i++) {
@@ -310,18 +325,9 @@ int audio_pollNative (void)
     }
     //
     }
-    
-    if (jack_numberOfPortsOut) {
-    //
-    int needToWait = 0;
 
-    for (i = 0; i < jack_numberOfPortsOut; i++) {
-        while (ringbuffer_getAvailableWrite (jack_ringOut[i]) < INTERNAL_BLOCKSIZE) {
-            status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
-            needToWait++;
-        }
-    }
-        
+    if (jack_numberOfPortsOut) {
+    //  
     sound = audio_soundOut;
         
     for (i = 0; i < jack_numberOfPortsOut; i++) {
