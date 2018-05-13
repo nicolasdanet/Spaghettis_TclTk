@@ -101,9 +101,11 @@ void scheduler_needToExitWithError (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_float scheduler_getTimeToWaitInMilliseconds (void)
+/* A little less than the time spent by one audio vector. */
+
+double scheduler_getTimeToWaitInMilliseconds (void)
 {
-    return (1.0 * AUDIO_DEFAULT_SAMPLERATE / audio_getSampleRate());
+    return (1.4 * AUDIO_DEFAULT_SAMPLERATE / audio_getSampleRate());
 }
 
 static t_systime scheduler_getSystimePerDSPTick (void)
@@ -176,6 +178,10 @@ static void scheduler_mainLoop (void)
     
     if (!scheduler_quit) {
     //
+    double start = 0.0;
+    
+    if (timeForward != DACS_SLEPT) { start = clock_getRealTimeInSeconds(); }
+    
     if (timeForward != DACS_NO) { scheduler_tick(); }
     
     if (!scheduler_quit) {
@@ -186,10 +192,17 @@ static void scheduler_mainLoop (void)
     
     if (!scheduler_quit) {
     //
-    /* It almost never happens with a small vector size. */
+    if (timeForward != DACS_SLEPT) {    /* It almost never happens with a small vector size. */
+    //
+    double elapsed = PD_SECONDS_TO_MILLISECONDS (clock_getRealTimeInSeconds() - start);
+    double monitor = 1.0;
+        
+    if (scheduler_audioState != SCHEDULER_AUDIO_STOP) { monitor = scheduler_getTimeToWaitInMilliseconds(); }
     
-    if (timeForward != DACS_SLEPT) {
-        monitor_blocking (PD_MILLISECONDS_TO_MICROSECONDS (scheduler_getTimeToWaitInMilliseconds()));
+    monitor -= elapsed; monitor = PD_MAX (0.0, monitor);
+    
+    monitor_blocking (monitor);
+    //
     }
     //
     }

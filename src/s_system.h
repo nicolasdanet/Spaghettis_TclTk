@@ -112,7 +112,7 @@ int         receiver_isClosed                       (t_receiver *x);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         monitor_blocking                        (int microseconds);
+int         monitor_blocking                        (double milliseconds);
 int         monitor_nonBlocking                     (void);
 void        monitor_addPoller                       (int fd, t_pollfn fn, void *ptr);
 void        monitor_removePoller                    (int fd);

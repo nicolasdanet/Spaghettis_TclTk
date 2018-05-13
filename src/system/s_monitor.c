@@ -73,9 +73,9 @@ static int monitor_proceed (int microseconds)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int monitor_blocking (int microseconds)
+int monitor_blocking (double milliseconds)
 {
-    return monitor_proceed (microseconds);
+    return monitor_proceed (PD_MILLISECONDS_TO_MICROSECONDS (milliseconds));
 }
 
 int monitor_nonBlocking (void)
