@@ -185,9 +185,13 @@ static void scheduler_mainLoop (void)
     }
     
     if (!scheduler_quit) {
-        if (timeForward != DACS_SLEPT) {
-            monitor_blocking (PD_MILLISECONDS_TO_MICROSECONDS (scheduler_getTimeToWaitInMilliseconds()));
-        }
+    //
+    /* It almost never happens with a small vector size. */
+    
+    if (timeForward != DACS_SLEPT) {
+        monitor_blocking (PD_MILLISECONDS_TO_MICROSECONDS (scheduler_getTimeToWaitInMilliseconds()));
+    }
+    //
     }
     //
     }
