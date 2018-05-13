@@ -161,9 +161,7 @@ static void scheduler_mainLoop (void)
     if (scheduler_audioState != SCHEDULER_AUDIO_STOP) {
         if ((timeForward = audio_poll())) { idleCount = 0; }
         else {
-            if (!(++idleCount % 31)) { 
-                scheduler_pollStuck (idleCount == 32);
-            }
+            idleCount++; if (!(idleCount % 32)) { scheduler_pollStuck (idleCount == 32); }
         }
         
     } else {

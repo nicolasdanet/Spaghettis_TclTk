@@ -25,7 +25,8 @@ t_float scheduler_getTimeToWaitInMilliseconds (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define JACK_SLEEP nano_sleep (PD_MILLISECONDS_TO_NANOSECONDS (scheduler_getTimeToWaitInMilliseconds()));
+#define JACK_SLEEP \
+    nano_sleep (PD_MILLISECONDS_TO_NANOSECONDS (scheduler_getTimeToWaitInMilliseconds() / 4.0));
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
