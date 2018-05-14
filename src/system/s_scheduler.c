@@ -102,10 +102,12 @@ void scheduler_needToExitWithError (void)
 // MARK: -
 
 /* A little less than the time spent by one audio vector. */
+/* Required to slow down audio computation in case of a large vector size. */
+/* Without, regularity of clocks would be very bad. */
 
 double scheduler_getTimeToWaitInMilliseconds (void)
 {
-    return (1.4 * AUDIO_DEFAULT_SAMPLERATE / audio_getSampleRate());
+    return (1.25 * AUDIO_DEFAULT_SAMPLERATE / audio_getSampleRate());
 }
 
 static t_systime scheduler_getSystimePerDSPTick (void)
