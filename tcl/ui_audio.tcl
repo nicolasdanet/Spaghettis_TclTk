@@ -85,7 +85,7 @@ proc show {top \
     set audioSampleRate     $sampleRate
     set audioSampleRateOld  $sampleRate
 
-    set sampleRateValues {22050 32000 44100 48000 88200 96000 192000}
+    set sampleRateValues {22050 32000 44100 48000 88200 96000}
         
     toplevel $top -class PdDialog
     wm title $top [_ "Audio"]
