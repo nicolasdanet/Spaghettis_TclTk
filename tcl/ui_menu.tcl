@@ -267,6 +267,12 @@ proc _edit {m} {
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
         -command { ::ui_menu::_handle "editmode $::var(isEditMode)" }
+    $m add separator
+    
+    $m add command \
+        -label [_ "Clear Console"] \
+        -accelerator "${accelerator}+L" \
+        -command { ::ui_console::clear }
 }
 
 proc _arrange {m} {
@@ -287,9 +293,10 @@ proc _arrange {m} {
         -label [_ "Snap"] \
         -accelerator "${accelerator}+Y" \
         -command { ::ui_menu::_handle _snap }
+    $m add separator
+    
     $m add check \
         -label [_ "Snap to Grid"] \
-        -accelerator "Alt+${accelerator}+G" \
         -variable ::var(isSnapToGrid) \
         -command {
             ::ui_interface::pdsend "pd _grid $::var(isSnapToGrid)"

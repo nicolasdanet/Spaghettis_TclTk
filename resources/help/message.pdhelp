@@ -60,7 +60,7 @@
 #X obj 144 192 print;
 #X msg 144 144 \$1 kilometres race walk;
 #X f 23;
-#N canvas 782 499 363 138 again 0;
+#N canvas 782 499 366 138 again 0;
 #X obj 36 96 print;
 #X msg 36 48 \$1 plus \$2 égale la tête à toto.;
 #X text 12 12 The default expansion is done with number zero.;
