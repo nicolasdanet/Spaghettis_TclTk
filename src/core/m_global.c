@@ -60,6 +60,11 @@ static void global_quit (void *dummy)
     interface_quit();
 }
 
+static void global_clear (void *dummy)
+{
+    gui_add ("::ui_console::clear\n");
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -142,6 +147,7 @@ void global_setup (void)
     class_addMethod (c, (t_method)global_open,                  sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_dsp,                   sym_dsp,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_quit,                  sym_quit,   A_NULL);
+    class_addMethod (c, (t_method)global_clear,                 sym_clear,  A_NULL);
     
     class_addMethod (c, (t_method)global_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_font,                  sym__font,              A_GIMME, A_NULL);
