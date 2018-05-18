@@ -176,6 +176,17 @@ int         file_openReadConsideringSearchPath      (const char *directory,
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_pathlist  *recentfiles_get                        (void);
+
+void        recentfiles_add                        (t_symbol *name, t_symbol *directory);
+void        recentfiles_appendPath                  (char *filepath);
+void        recentfiles_clear                       (void);
+void        recentfiles_update                      (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_pathlist  *searchpath_get                         (void);
 
 void        searchpath_appendPath                   (char *filepath);
@@ -220,6 +231,7 @@ void        properties_setKey                       (const char *key, const char
 // MARK: -
 
 void        preferences_load                        (void);
+void        preferences_save                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

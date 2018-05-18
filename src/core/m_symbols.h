@@ -476,6 +476,7 @@ extern t_symbol *sym_readsf__tilde__;
 extern t_symbol *sym_realtime;
 extern t_symbol *sym_receive;
 extern t_symbol *sym_receive__tilde__;
+extern t_symbol *sym_recent;
 extern t_symbol *sym_rename;
 extern t_symbol *sym_resampling;
 extern t_symbol *sym_reset;

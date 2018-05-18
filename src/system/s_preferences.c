@@ -52,6 +52,17 @@ void preferences_load (void)
         }
     }
     
+    /* Recent files. */
+    
+    for (i = 0; 1; i++) {
+
+        string_sprintf (k, PD_STRING, "RecentFile%d", i + 1);
+        if (!properties_getKey (k, v, PD_STRING)) { break; }
+        else {
+            recentfiles_appendPath (v);
+        }
+    }
+    
     /* Audio devices. */
     
     for (i = 0; i < DEVICES_MAXIMUM_IO; i++) {
@@ -157,6 +168,21 @@ void preferences_save (void)
         if (!pathlist_getPath (l)) { break; }
         else {
             string_sprintf (k, PD_STRING, "Path%d", i + 1);
+            properties_setKey (k, pathlist_getPath (l));
+        }
+        
+        l = pathlist_getNext (l);
+    }
+    
+    /* Recent files. */
+    
+    l = recentfiles_get();
+    
+    for (i = 0; 1; i++) {
+
+        if (!pathlist_getPath (l)) { break; }
+        else {
+            string_sprintf (k, PD_STRING, "RecentFile%d", i + 1);
             properties_setKey (k, pathlist_getPath (l));
         }
         

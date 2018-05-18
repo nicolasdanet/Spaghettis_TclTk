@@ -96,6 +96,7 @@ proc getDefaultWeight {} {
 
 set var(filesExtensions)            ".pd .pdhelp"
 set var(filesOpenPended)            {}
+set var(filesRecent)                {}
 set var(filesTypes)                 { {{Patch} {.pd}} {{Help} {.pdhelp}} }
 
 set var(fontFamily)                 [::getDefaultFamily]
