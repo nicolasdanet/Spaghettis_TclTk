@@ -125,7 +125,9 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasO
 
     variable popupX
     variable popupY
-    
+
+    if {$top eq $::var(windowFocused)} {
+
     set popupX $xcanvas
     set popupY $ycanvas
     
@@ -165,6 +167,8 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasO
     set ypopup [expr {int([winfo rooty $top.c] + $ycanvas - [$top.c canvasy 0])}]
         
     tk_popup .popup $xpopup $ypopup 0
+
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
