@@ -24,7 +24,6 @@ void audio_fromDialog           (int, t_atom *);
 void midi_requireDialog         (void);
 void midi_fromDialog            (int, t_atom *);
 void canvas_quit                (void);
-void preferences_save           (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -42,7 +41,15 @@ void global_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 
 static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
 {
-    instance_patchOpen (name, directory);
+    if (!instance_patchOpen (name, directory)) { recentfiles_add (name, directory); }
+}
+
+static void global_clear (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc && atom_getSymbol (argv) == sym_recent) { recentfiles_clear(); recentfiles_update(); }
+    else {
+        gui_add ("::ui_console::clear\n");
+    }
 }
 
 static void global_dsp (void *dummy, t_symbol *s, int argc, t_atom *argv)
@@ -58,11 +65,6 @@ static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
 static void global_quit (void *dummy)
 {
     interface_quit();
-}
-
-static void global_clear (void *dummy)
-{
-    gui_add ("::ui_console::clear\n");
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -145,9 +147,10 @@ void global_setup (void)
 
     class_addMethod (c, (t_method)global_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_open,                  sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)global_clear,                 sym_clear,  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_dsp,                   sym_dsp,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_quit,                  sym_quit,   A_NULL);
-    class_addMethod (c, (t_method)global_clear,                 sym_clear,  A_NULL);
+    
     
     class_addMethod (c, (t_method)global_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_font,                  sym__font,              A_GIMME, A_NULL);

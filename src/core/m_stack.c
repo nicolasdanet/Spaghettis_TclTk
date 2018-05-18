@@ -144,8 +144,10 @@ static void instance_loadPatchLoadbang (void)
     }
 }
 
-static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, const char *s, int visible)
+static int instance_loadPatchProceed (t_symbol *name, t_symbol *directory, const char *s, int visible)
 {
+    int done = 0;
+    
     instance_contextStore();
     instance_contextSetCurrent (NULL);          /* The root patch do NOT have parent. */
         
@@ -153,21 +155,23 @@ static void instance_loadPatchProceed (t_symbol *name, t_symbol *directory, cons
     else   { eval_file (name, directory); }
     
     if (instance_contextGetCurrent() != NULL) { 
-        instance_stackPopPatch (instance_contextGetCurrent(), visible); 
+        instance_stackPopPatch (instance_contextGetCurrent(), visible); done = 1;
     }
     
     PD_ASSERT (instance_contextGetCurrent() == NULL);
     
     instance_loadPatchLoadbang();
     instance_contextRestore();
+    
+    return done;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void instance_loadPatch (t_symbol *name, t_symbol *directory)
+static int instance_loadPatch (t_symbol *name, t_symbol *directory)
 {
-    instance_loadPatchProceed (name, directory, NULL, 1);
+    return instance_loadPatchProceed (name, directory, NULL, 1);
 }
 
 /* Load invisible patches (mainly used for built-in templates). */
@@ -203,13 +207,14 @@ void instance_patchNew (t_symbol *name, t_symbol *directory)
     instance_environmentResetFile();
 }
 
-void instance_patchOpen (t_symbol *name, t_symbol *directory)
+t_error instance_patchOpen (t_symbol *name, t_symbol *directory)
 {
     int state = dsp_suspend();
+    int done  = instance_loadPatch (name, directory);
     
-    instance_loadPatch (name, directory);
+    dsp_resume (state);
     
-    dsp_resume (state); 
+    return (done != 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------

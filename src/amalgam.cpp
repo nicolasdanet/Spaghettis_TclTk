@@ -74,6 +74,7 @@
 #include "system/s_outmidi.c"
 #include "system/s_audio.c"
 #include "system/s_file.c"
+#include "system/s_recentfiles.c"
 #include "system/s_searchpath.c"
 #include "system/s_path.c"
 #include "system/s_loader.c"

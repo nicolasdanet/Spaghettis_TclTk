@@ -170,7 +170,7 @@ void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 // MARK: -
 
 void    instance_patchNew                       (t_symbol *name, t_symbol *directory);
-void    instance_patchOpen                      (t_symbol *name, t_symbol *directory);
+t_error instance_patchOpen                      (t_symbol *name, t_symbol *directory);
 
 void    instance_loadAbstraction                (t_symbol *name, int argc, t_atom *argv);
 void    instance_loadInvisible                  (t_symbol *name, const char *s);

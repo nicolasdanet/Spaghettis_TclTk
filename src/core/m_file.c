@@ -27,8 +27,7 @@ t_error buffer_fromFile (t_buffer *x, const char *name, const char *directory)
     
     err = (f < 0);
     
-    if (err) { PD_BUG; }
-    else {
+    if (!err) {
     //
     off_t length;
     

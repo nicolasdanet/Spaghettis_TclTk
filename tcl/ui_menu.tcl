@@ -174,6 +174,30 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasO
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Recent files menu must be labeled .menubar.file.recent in the initializing functions.
+
+proc updateRecent {} {
+
+    set m .menubar.file.recent
+    
+    $m delete 0 end
+    
+    foreach f [lreverse $::var(filesRecent)] {
+        
+        $m add command \
+            -label [file tail $f] \
+            -command [list ::ui_file::openFile $f]
+    }
+    
+    $m add separator
+    $m add command \
+        -label [_ "Clear Menu"] \
+        -command { ::ui_file::clearRecent }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc enableCopying {}               { _copying normal }
 proc enableEditing {}               { _editing normal }
 proc enableCopyingAndEditing {}     { _copying normal; _editing normal }
@@ -204,6 +228,10 @@ proc _file {m} {
 
     variable accelerator
     
+    menu $m.recent
+    
+    ::ui_menu::updateRecent
+    
     $m add command \
         -label [_ "New Patch"] \
         -accelerator "${accelerator}+N" \
@@ -212,6 +240,9 @@ proc _file {m} {
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
         -command { ::ui_file::openPatch }
+    $m add cascade \
+        -label [_ "Open Recent"] \
+        -menu $m.recent
     $m add separator
     
     $m add command \

@@ -53,6 +53,7 @@ static void canvas_saveProceed (t_glist *glist, t_symbol *name, t_symbol *direct
     if (buffer_fileWrite (b, name, directory)) { error_failsToWrite (name); }
     else {
         post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
+        recentfiles_add (name, directory);
         environment_setDirectory (glist_getEnvironment (glist), directory);
         glist_setDirty (glist, 0);
         if (destroy) {

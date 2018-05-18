@@ -66,7 +66,7 @@ static t_error main_entryVersion (int console)
     if (!err) {
         if (!console) { fprintf (stdout, "%s\n", t); }
         else {
-            post ("%s", t);
+            post ("%s", t); recentfiles_update();
         }
     }
     

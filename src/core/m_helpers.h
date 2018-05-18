@@ -391,7 +391,9 @@ t_pathlist  *pathlist_newAppend                 (t_pathlist *x, const char *s);
 t_pathlist  *pathlist_newAppendEncoded          (t_pathlist *x, t_symbol *s);
 char        *pathlist_getPath                   (t_pathlist *x);
 t_pathlist  *pathlist_getNext                   (t_pathlist *x);
+t_pathlist  *pathlist_removeFirst               (t_pathlist *x);
 
+int         pathlist_getSize                    (t_pathlist *x);
 void        pathlist_free                       (t_pathlist *x);
 
 // -----------------------------------------------------------------------------------------------------------
