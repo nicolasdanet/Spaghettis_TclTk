@@ -76,6 +76,7 @@ proc initialize {} {
     event add <<SelectAll>>                 <$mod-Key-a>
     event add <<EditMode>>                  <$mod-Key-e>
     event add <<ClearConsole>>              <$mod-Key-l>
+    event add <<Properties>>                <$mod-Key-i>
     event add <<Snap>>                      <$mod-Key-y>
     event add <<NewFile>>                   <$mod-Key-n>
     event add <<OpenFile>>                  <$mod-Key-o>
@@ -191,6 +192,8 @@ proc bindPatch {top} {
     bind $top.c <Shift-MouseWheel>          { ::ui_patch::scroll %W x %D }
     bind $top.c <Destroy>                   { ::ui_patch::closed [winfo toplevel %W] }
     
+    bind $top.c <<Properties>>              { ::ui_bind::_properties %W }
+    
     wm protocol $top WM_DELETE_WINDOW       "::ui_patch::willClose $top"
 }
 
@@ -273,6 +276,15 @@ proc _mouseUp {c x y} {
     }
     
     set isResizing 0
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _properties {c} {
+
+    set top [winfo toplevel $c]
+    ::ui_interface::pdsend "$top _properties"
 }
 
 # ------------------------------------------------------------------------------------------------------------
