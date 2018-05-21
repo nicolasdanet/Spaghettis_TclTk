@@ -25,12 +25,13 @@ set ::tk::mac::antialiasedtext  1
 
 proc ::tk::mac::OpenDocument {args} {
 
-    foreach filename $args {
-        if {$::var(isInitialized)} {
-            ::ui_file::openFile $filename
-        } else {
-            lappend ::var(filesOpenPended) $filename
-        }
+    if {$::var(isInitialized)} {
+        
+        foreach filename $args { ::ui_file::openFile $filename }
+    
+    } else {
+    
+        foreach filename $args { lappend ::var(filesOpenPended) $filename }
     }
 }
 
