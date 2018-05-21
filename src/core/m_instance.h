@@ -55,6 +55,7 @@ struct _pdinstance {
     t_stack         pd_stack;
     t_environment   pd_environment;
     t_position      pd_locate;
+    t_unique        pd_pollingCount;
     int             pd_overflowCount;
     int             pd_dspChainIdentifier;
     int             pd_dspChainSize;

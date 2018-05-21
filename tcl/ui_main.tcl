@@ -104,9 +104,9 @@ set var(fontWeight)                 [::getDefaultWeight]
 set var(fontSizes)                  "6 8 9 10 11 12 14 16 18 20 24 36"
 
 set var(isPath)                     0
-set var(isInitialized)              0
 set var(isDsp)                      0
 set var(isEditMode)                 0
+set var(isInitialized)              0
 set var(isSnapToGrid)               0
 
 set var(nil)                        "empty"
@@ -216,12 +216,20 @@ proc initialize {} {
     # Respond to executable with measured fonts.
     
     ::ui_interface::pdsend "pd _font $measured"
-    
-    # Open pended files.
-    
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# Called on macOS only.
+
+proc openPendedFiles {} {
+
     set ::var(isInitialized) 1
     
     foreach filename $::var(filesOpenPended) { ::ui_file::openFile $filename }
+    
+    set ::var(filesOpenPended) {}
 }
 
 # ------------------------------------------------------------------------------------------------------------

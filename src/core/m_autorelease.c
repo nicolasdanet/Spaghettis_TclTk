@@ -93,12 +93,30 @@ void instance_autoreleaseProceed (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#if PD_APPLE
+
+void interface_openPendedFiles (void);
+
+#endif // PD_APPLE
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void instance_pollingTask (void *dummy)
 {
     if (symbol_hasThingQuiet (sym__polling)) {
         pd_message (symbol_getThing (sym__polling), sym__polling, 0, NULL);
     }  
     
+    #if PD_APPLE
+
+    instance_get()->pd_pollingCount++;
+    
+    if (instance_get()->pd_pollingCount == 10) { interface_openPendedFiles(); }
+
+    #endif // PD_APPLE
+
     clock_delay (instance_get()->pd_polling, POLLING_PERIOD);
 }
 
