@@ -166,7 +166,7 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasO
     set xpopup [expr {int([winfo rootx $top.c] + $xcanvas - [$top.c canvasx 0])}]
     set ypopup [expr {int([winfo rooty $top.c] + $ycanvas - [$top.c canvasy 0])}]
         
-    tk_popup .popup $xpopup $ypopup 0
+    tk_popup .popup $xpopup $ypopup
 
     }
 }
