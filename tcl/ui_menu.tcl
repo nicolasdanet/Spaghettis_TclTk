@@ -346,37 +346,37 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::ui_menu::_handle obj } 
+        -command { ::ui_menu::_handleDirty obj }
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::ui_menu::_handle msg }
+        -command { ::ui_menu::_handleDirty msg }
     $m add command \
         -label [_ "Atom"] \
         -accelerator "${accelerator}+3" \
-        -command { ::ui_menu::_handle floatatom }
+        -command { ::ui_menu::_handleDirty floatatom }
     $m add command \
         -label [_ "Symbol"] \
         -accelerator "${accelerator}+4" \
-        -command { ::ui_menu::_handle symbolatom }
+        -command { ::ui_menu::_handleDirty symbolatom }
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::ui_menu::_handle comment }
+        -command { ::ui_menu::_handleDirty comment }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
         -accelerator "${accelerator}+6" \
-        -command { ::ui_menu::_handle bng }
+        -command { ::ui_menu::_handleDirty bng }
     $m add command \
         -label [_ "Toggle"] \
         -accelerator "${accelerator}+7" \
-        -command { ::ui_menu::_handle tgl }
+        -command { ::ui_menu::_handleDirty tgl }
     $m add command \
         -label [_ "Dial"] \
         -accelerator "${accelerator}+8" \
-        -command { ::ui_menu::_handle nbx }
+        -command { ::ui_menu::_handleDirty nbx }
     $m add command \
         -label [_ "Array"] \
         -accelerator "${accelerator}+9" \
@@ -385,29 +385,29 @@ proc _object {m} {
     
     $m add command \
         -label [_ "VU"] \
-        -command { ::ui_menu::_handle vu }
+        -command { ::ui_menu::_handleDirty vu }
     $m add command \
         -label [_ "Panel"] \
-        -command { ::ui_menu::_handle cnv }
+        -command { ::ui_menu::_handleDirty cnv }
     $m add separator
     
     menu $m.vertical
     
     $m.vertical add command \
         -label [_ "Slider"] \
-        -command { ::ui_menu::_handle vslider }
+        -command { ::ui_menu::_handleDirty vslider }
     $m.vertical add command \
         -label [_ "Radio Button"] \
-        -command { ::ui_menu::_handle vradio }
+        -command { ::ui_menu::_handleDirty vradio }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
-        -command { ::ui_menu::_handle hslider }
+        -command { ::ui_menu::_handleDirty hslider }
     $m.horizontal add command \
         -label [_ "Radio Button"] \
-        -command { ::ui_menu::_handle hradio }
+        -command { ::ui_menu::_handleDirty hradio }
         
     $m add cascade \
         -label [_ "Vertical"] \
@@ -463,30 +463,30 @@ proc _popup {m} {
     
         $m.object add command \
             -label [_ "Object"] \
-            -command { ::ui_menu::_handle obj }
+            -command { ::ui_menu::_handleDirty obj }
         $m.object add command \
             -label [_ "Message"] \
-            -command { ::ui_menu::_handle msg }
+            -command { ::ui_menu::_handleDirty msg }
         $m.object add command \
             -label [_ "Atom"] \
-            -command { ::ui_menu::_handle floatatom }
+            -command { ::ui_menu::_handleDirty floatatom }
         $m.object add command \
             -label [_ "Symbol"] \
-            -command { ::ui_menu::_handle symbolatom }
+            -command { ::ui_menu::_handleDirty symbolatom }
         $m.object add command \
             -label [_ "Comment"] \
-            -command { ::ui_menu::_handle comment }
+            -command { ::ui_menu::_handleDirty comment }
         $m.object add separator
         
         $m.object add command \
             -label [_ "Bang"] \
-            -command { ::ui_menu::_handle bng }
+            -command { ::ui_menu::_handleDirty bng }
         $m.object add command \
             -label [_ "Toggle"] \
-            -command { ::ui_menu::_handle tgl }
+            -command { ::ui_menu::_handleDirty tgl }
         $m.object add command \
             -label [_ "Dial"] \
-            -command { ::ui_menu::_handle nbx }
+            -command { ::ui_menu::_handleDirty nbx }
         $m.object add command \
             -label [_ "Array"] \
             -command { ::ui_menu::_handle _array }
@@ -494,29 +494,29 @@ proc _popup {m} {
         
         $m.object add command \
             -label [_ "VU"] \
-            -command { ::ui_menu::_handle vu }
+            -command { ::ui_menu::_handleDirty vu }
         $m.object add command \
             -label [_ "Panel"] \
-            -command { ::ui_menu::_handle cnv }
+            -command { ::ui_menu::_handleDirty cnv }
         $m.object add separator
         
         menu $m.object.vertical
         
         $m.object.vertical add command \
             -label [_ "Slider"] \
-            -command { ::ui_menu::_handle vslider }
+            -command { ::ui_menu::_handleDirty vslider }
         $m.object.vertical add command \
             -label [_ "Radio Button"] \
-            -command { ::ui_menu::_handle vradio }
+            -command { ::ui_menu::_handleDirty vradio }
         
         menu $m.object.horizontal
             
         $m.object.horizontal add command \
             -label [_ "Slider"] \
-            -command { ::ui_menu::_handle hslider }
+            -command { ::ui_menu::_handleDirty hslider }
         $m.object.horizontal add command \
             -label [_ "Radio Button"] \
-            -command { ::ui_menu::_handle hradio }
+            -command { ::ui_menu::_handleDirty hradio }
             
         $m.object add cascade \
             -label [_ "Vertical"] \
@@ -580,6 +580,19 @@ proc _handle {message} {
     set top [winfo toplevel $::var(windowFocused)]
     
     if {[winfo class $top] eq "PdPatch"} { ::ui_interface::pdsend "$top $message" }
+}
+
+# Force the dirty bit also.
+
+proc _handleDirty {message} {
+
+    set top [winfo toplevel $::var(windowFocused)]
+    
+    if {[winfo class $top] eq "PdPatch"} {
+    
+        ::ui_interface::pdsend "$top $message"
+        ::ui_interface::pdsend "$top dirty 1"
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
