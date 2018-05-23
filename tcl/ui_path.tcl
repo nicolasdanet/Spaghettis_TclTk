@@ -25,6 +25,8 @@ namespace eval ::ui_path:: {
 proc show {} { 
     
     if {[winfo exists .path]} { ::bringToFront .path } else { ::ui_path::_create }
+    
+    ::ui_path::_updateInfo
 }
 
 proc hide {} {
@@ -52,8 +54,15 @@ proc _create {} {
     pack            .path.f.paths       {*}[::packCategory]
     
     listbox         .path.f.paths.list  -selectmode extended \
-                                        -activestyle none \
-                                        -borderwidth 0
+                                            -activestyle none \
+                                            -borderwidth 0 \
+                                            -background white
+                                        
+    label           .path.f.paths.info  -text [_ "Double-click to add a path"] \
+                                            -anchor center \
+                                            -foreground DarkGrey \
+                                            -background white
+                                            
     pack            .path.f.paths.list  -side top -fill both -expand 1
 
     foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
@@ -87,6 +96,7 @@ proc _addItem {} {
     if {$item ne ""} { .path.f.paths.list insert end $item; .path.f.paths.list selection set end }
     
     ::ui_path::_apply
+    ::ui_path::_updateInfo
 }
 
 proc _deleteItems {} {
@@ -96,6 +106,7 @@ proc _deleteItems {} {
     foreach item [.path.f.paths.list curselection] { .path.f.paths.list delete [expr {$item - $i}]; incr i }
     
     ::ui_path::_apply
+    ::ui_path::_updateInfo
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -109,6 +120,20 @@ proc _apply {} {
 
     ::ui_interface::pdsend "pd _path $::var(searchPath)"
     ::ui_interface::pdsend "pd _savepreferences"
+}
+
+# Show info message if the search path is empty.
+
+proc _updateInfo {} {
+    
+    if {[.path.f.paths.list size] == 0} {
+    
+        place .path.f.paths.info -relwidth .8 -relheight .3 -relx .1 -rely .35
+    
+    } else {
+    
+        place forget .path.f.paths.info
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
