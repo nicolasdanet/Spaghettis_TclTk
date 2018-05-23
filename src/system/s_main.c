@@ -224,7 +224,7 @@ static t_error main_getRootDirectory (void)
     return err;
 }
 
-t_error main_setPaths (t_symbol *root)
+static t_error main_setPaths (t_symbol *root)
 {
     if (root == NULL) { PD_BUG; return PD_ERROR; }
     else {
@@ -269,6 +269,49 @@ t_error main_setPaths (t_symbol *root)
     }
 }
 
+/* Prevent to run multiple instances (it doesn't defeat an obstinate user). */
+/* Assume that the lock is released by the system in all the ending situations. */
+
+static int main_alreadyExists (void)
+{
+    #if PD_LINUX
+    
+    char path[PD_STRING] = { 0 };
+    
+    t_error err = string_sprintf (path, PD_STRING, "%s/ui_lock.tcl", main_directoryTcl->s_name);
+
+    if (!err) {
+    //
+    int f = file_openWrite (path);
+    
+    err = (f < 0);
+
+    if (!err) {
+    //
+    struct flock lock;
+    
+    lock.l_start    = 0;
+    lock.l_len      = 0;
+    lock.l_type     = F_WRLCK;
+    lock.l_whence   = SEEK_SET;
+    
+    err = (fcntl (f, F_SETLK, &lock) < 0);
+    //
+    }
+    //
+    }
+    
+    PD_ASSERT (!err);
+    
+    return (err != PD_ERROR_NONE);
+    
+    #else
+    
+    return 0;   /* Don't care on macOS. */
+    
+    #endif
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -292,15 +335,19 @@ int main_entry (int argc, char **argv)
     err |= main_getRootDirectory();
     err |= main_parseArguments (argc - 1, argv + 1);
     err |= main_setPaths (main_directoryRoot);
-    
+
     PD_ASSERT (main_directoryRoot    != NULL);
     PD_ASSERT (main_directoryBin     != NULL);
     PD_ASSERT (main_directoryTcl     != NULL);
     PD_ASSERT (main_directoryHelp    != NULL);
     PD_ASSERT (main_directorySupport != NULL);
     
+    main_version |= main_alreadyExists();
+    
     if (main_version) { err |= main_entryVersion (0); }
     else {
+    //
+    if (!err) {
     //
     err |= logger_initialize();
 
@@ -325,6 +372,8 @@ int main_entry (int argc, char **argv)
     }
     
     logger_release();
+    //
+    }
     //
     }
     //
