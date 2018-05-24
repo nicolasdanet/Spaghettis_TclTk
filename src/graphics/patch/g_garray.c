@@ -181,6 +181,28 @@ static void garray_updateGraphRange (t_garray *x, t_float up, t_float down)
     if (!err) { glist_setBounds (x->x_owner, &bounds); }
 }
 
+static void garray_updateGraphGeometry (t_garray *x, int width, int height)
+{
+    int w = rectangle_getWidth (glist_getGraphGeometry (x->x_owner));
+    int h = rectangle_getHeight (glist_getGraphGeometry (x->x_owner));
+    
+    PD_ASSERT (glist_isArray (x->x_owner));
+    
+    if (w != width || h != height) {
+    //
+    PD_ASSERT (width > 0);
+    PD_ASSERT (height > 0);
+    
+    rectangle_setWidth (glist_getGraphGeometry (x->x_owner), width);
+    rectangle_setHeight (glist_getGraphGeometry (x->x_owner), height);
+    
+    /* Required if it has its own window opened. */
+    
+    if (glist_isParentOnScreen (x->x_owner)) { glist_redrawRequired (glist_getParent (x->x_owner)); }
+    //
+    }
+}
+
 static void garray_updateGraphSize (t_garray *x, int size, int style)
 {
     if (!glist_isLoading (x->x_owner)) {
@@ -693,13 +715,15 @@ void garray_functionProperties (t_garray *x)
     int style = scalar_getFloat (x->x_scalar, sym_style);
     t_array *array = garray_getArray (x);
     t_bounds *bounds = glist_getBounds (x->x_owner);
-    
+
     PD_ASSERT (glist_isArray (x->x_owner));
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %g %g %d %d %d\n",
+                "::ui_array::show %%s %s %d %d %d %g %g %d %d %d\n",
                 symbol_dollarToHash (x->x_unexpandedName)->s_name,
                 array_getSize (array),
+                rectangle_getWidth (glist_getGraphGeometry (x->x_owner)),
+                rectangle_getHeight (glist_getGraphGeometry (x->x_owner)),
                 bounds_getTop (bounds),
                 bounds_getBottom (bounds),
                 x->x_saveWithParent,
@@ -715,7 +739,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty = 0;
     
-    PD_ASSERT (argc == 7);
+    PD_ASSERT (argc == 9);
     
     t_symbol *t1 = x->x_name;
     int t2       = x->x_saveWithParent;
@@ -723,18 +747,22 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     int t4       = garray_getSize (x);
     t_float t5   = scalar_getFloat (x->x_scalar, sym_style);
     t_bounds t6;
+    t_rectangle t7;
 
     bounds_setCopy (&t6, glist_getBounds (x->x_owner));
+    rectangle_setCopy (&t7, glist_getGraphGeometry (x->x_owner));
     
     {
     //
     t_symbol *name = symbol_hashToDollar (atom_getSymbolAtIndex (0, argc, argv));
     int size       = (int)atom_getFloatAtIndex (1, argc, argv);
-    t_float up     = atom_getFloatAtIndex (2, argc, argv);
-    t_float down   = atom_getFloatAtIndex (3, argc, argv);
-    int save       = (int)atom_getFloatAtIndex (4, argc, argv);
-    int style      = (int)atom_getFloatAtIndex (5, argc, argv);
-    int hide       = (int)atom_getFloatAtIndex (6, argc, argv);
+    int width      = (int)atom_getFloatAtIndex (2, argc, argv);
+    int height     = (int)atom_getFloatAtIndex (3, argc, argv);
+    t_float up     = atom_getFloatAtIndex (4, argc, argv);
+    t_float down   = atom_getFloatAtIndex (5, argc, argv);
+    int save       = (int)atom_getFloatAtIndex (6, argc, argv);
+    int style      = (int)atom_getFloatAtIndex (7, argc, argv);
+    int hide       = (int)atom_getFloatAtIndex (8, argc, argv);
 
     PD_ASSERT (size > 0);
     
@@ -766,6 +794,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     garray_setHideName (x, hide);
     garray_updateGraphSize (x, size, style);
     garray_updateGraphRange (x, up, down);
+    garray_updateGraphGeometry (x, width, height);
     garray_updateGraphWindow (x);
     garray_setSaveWithParent (x, save);
     garray_redraw (x);
@@ -778,6 +807,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t4 != garray_getSize (x));
     isDirty |= (t5 != scalar_getFloat (x->x_scalar, sym_style));
     isDirty |= !bounds_areEquals (&t6, glist_getBounds (x->x_owner));
+    isDirty |= !rectangle_areEquals (&t7, glist_getGraphGeometry (x->x_owner));
     
     if (isDirty) { glist_setDirty (x->x_owner, 1); }
 }

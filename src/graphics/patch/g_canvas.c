@@ -257,9 +257,14 @@ static void canvas_requireArrayDialog (t_glist *glist)
 {
     char t[PD_STRING] = { 0 };
     
+    int width  = GLIST_WIDTH / 2;
+    int height = GLIST_HEIGHT / 2;
+    
     t_error err = string_sprintf (t, PD_STRING, 
-                        "::ui_array::show %%s %s 100 1 -1 0 1 0\n",
-                        utils_getUnusedBindName (garray_class, sym_array)->s_name);
+                        "::ui_array::show %%s %s 100 %d %d 1 -1 0 1 0\n",
+                        utils_getUnusedBindName (garray_class, sym_array)->s_name,
+                        width,
+                        height);
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
@@ -311,6 +316,8 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
 
 static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    PD_ASSERT (argc == 9);
+    
     canvas_makeArrayFromDialog (glist, s, argc, argv);
 }
 

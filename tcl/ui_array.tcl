@@ -24,35 +24,41 @@ namespace eval ::ui_array:: {
 
 variable  arrayName
 variable  arraySize
+variable  arrayWidth
+variable  arrayHeight
 variable  arrayUp
 variable  arrayDown
 variable  arraySave
 variable  arrayDraw
 variable  arrayHide
 
-array set arrayName  {}
-array set arraySize  {}
-array set arrayUp    {}
-array set arrayDown  {}
-array set arraySave  {}
-array set arrayDraw  {}
-array set arrayHide  {}
+array set arrayName   {}
+array set arraySize   {}
+array set arrayWidth  {}
+array set arrayHeight {}
+array set arrayUp     {}
+array set arrayDown   {}
+array set arraySave   {}
+array set arrayDraw   {}
+array set arrayHide   {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top name size up down save style hide} {
+proc show {top name size width height up down save style hide} {
 
-    ::ui_array::_create $top $name $size $up $down $save $style $hide
+    ::ui_array::_create $top $name $size $width $height $up $down $save $style $hide
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top name size up down save style hide} {
+proc _create {top name size width height up down save style hide} {
 
     variable arrayName
     variable arraySize
+    variable arrayWidth
+    variable arrayHeight
     variable arrayUp
     variable arrayDown
     variable arraySave
@@ -69,6 +75,8 @@ proc _create {top name size up down save style hide} {
     
     set arrayName($top)         [::hashToDollar $name]
     set arraySize($top)         $size
+    set arrayWidth($top)        $width
+    set arrayHeight($top)       $height
     set arrayUp($top)           $up
     set arrayDown($top)         $down
     set arraySave($top)         $save
@@ -77,6 +85,8 @@ proc _create {top name size up down save style hide} {
     
     set arrayName(${top}.old)   [::dollarToHash $name]
     set arraySize(${top}.old)   $size
+    set arrayWidth(${top}.old)  $width
+    set arrayHeight(${top}.old) $height
     set arrayUp(${top}.old)     $up
     set arrayDown(${top}.old)   $down
     
@@ -101,7 +111,19 @@ proc _create {top name size up down save style hide} {
     ttk::entry $top.f.properties.size               {*}[::styleEntryNumber] \
                                                         -textvariable ::ui_array::arraySize($top) \
                                                         -width $::width(small)
-
+    
+    ttk::label $top.f.properties.widthLabel         {*}[::styleLabel] \
+                                                        -text [_ "View Width"]
+    ttk::entry $top.f.properties.width              {*}[::styleEntryNumber] \
+                                                        -textvariable ::ui_array::arrayWidth($top) \
+                                                        -width $::width(small)
+    
+    ttk::label $top.f.properties.heightLabel        {*}[::styleLabel] \
+                                                        -text [_ "View Height"]
+    ttk::entry $top.f.properties.height             {*}[::styleEntryNumber] \
+                                                        -textvariable ::ui_array::arrayHeight($top) \
+                                                        -width $::width(small)
+                                                        
     ttk::label $top.f.properties.saveLabel          {*}[::styleLabel] \
                                                         -text [_ "Save Contents"]
     ttk::checkbutton $top.f.properties.save         {*}[::styleCheckButton] \
@@ -136,12 +158,16 @@ proc _create {top name size up down save style hide} {
     grid $top.f.properties.name                     -row 0 -column 1 -sticky ew
     grid $top.f.properties.sizeLabel                -row 1 -column 0 -sticky ew
     grid $top.f.properties.size                     -row 1 -column 1 -sticky ew
-    grid $top.f.properties.saveLabel                -row 2 -column 0 -sticky ew
-    grid $top.f.properties.save                     -row 2 -column 1 -sticky ew
-    grid $top.f.properties.hideLabel                -row 3 -column 0 -sticky ew
-    grid $top.f.properties.hide                     -row 3 -column 1 -sticky ew
-    grid $top.f.properties.drawLabel                -row 4 -column 0 -sticky ew
-    grid $top.f.properties.draw                     -row 4 -column 1 -sticky ew
+    grid $top.f.properties.widthLabel               -row 2 -column 0 -sticky ew
+    grid $top.f.properties.width                    -row 2 -column 1 -sticky ew
+    grid $top.f.properties.heightLabel              -row 3 -column 0 -sticky ew
+    grid $top.f.properties.height                   -row 3 -column 1 -sticky ew
+    grid $top.f.properties.saveLabel                -row 4 -column 0 -sticky ew
+    grid $top.f.properties.save                     -row 4 -column 1 -sticky ew
+    grid $top.f.properties.hideLabel                -row 5 -column 0 -sticky ew
+    grid $top.f.properties.hide                     -row 5 -column 1 -sticky ew
+    grid $top.f.properties.drawLabel                -row 6 -column 0 -sticky ew
+    grid $top.f.properties.draw                     -row 6 -column 1 -sticky ew
     
     grid $top.f.bounds.upLabel                      -row 0 -column 0 -sticky ew
     grid $top.f.bounds.up                           -row 0 -column 1 -sticky ew
@@ -151,11 +177,13 @@ proc _create {top name size up down save style hide} {
     grid columnconfigure $top.f.properties          0 -weight 1
     grid columnconfigure $top.f.bounds              0 -weight 1
     
-    bind $top.f.properties.name <Return>            { ::nextEntry %W }
-    bind $top.f.properties.size <Return>            { ::nextEntry %W }
+    bind $top.f.properties.name   <Return>          { ::nextEntry %W }
+    bind $top.f.properties.size   <Return>          { ::nextEntry %W }
+    bind $top.f.properties.width  <Return>          { ::nextEntry %W }
+    bind $top.f.properties.height <Return>          { ::nextEntry %W }
     
-    bind $top.f.bounds.up       <Return>            { ::nextEntry %W }
-    bind $top.f.bounds.down     <Return>            { ::nextEntry %W }
+    bind $top.f.bounds.up         <Return>          { ::nextEntry %W }
+    bind $top.f.bounds.down       <Return>          { ::nextEntry %W }
     
     focus $top.f.properties.name
     
@@ -168,6 +196,8 @@ proc closed {top} {
     
     variable arrayName
     variable arraySize
+    variable arrayWidth
+    variable arrayHeight
     variable arrayUp
     variable arrayDown
     variable arraySave
@@ -178,6 +208,8 @@ proc closed {top} {
     
     unset arrayName($top)
     unset arraySize($top)
+    unset arrayWidth($top)
+    unset arrayHeight($top)
     unset arrayUp($top)
     unset arrayDown($top)
     unset arraySave($top)
@@ -186,6 +218,8 @@ proc closed {top} {
     
     unset arrayName(${top}.old)
     unset arraySize(${top}.old)
+    unset arrayWidth(${top}.old)
+    unset arrayHeight(${top}.old)
     unset arrayUp(${top}.old)
     unset arrayDown(${top}.old)
     
@@ -199,6 +233,8 @@ proc _apply {top} {
 
     variable arrayName
     variable arraySize
+    variable arrayWidth
+    variable arrayHeight
     variable arrayUp
     variable arrayDown
     variable arraySave
@@ -207,10 +243,13 @@ proc _apply {top} {
         
     ::ui_array::_forceSize $top
     ::ui_array::_forceBounds $top
+    ::ui_array::_forceGeometry $top
     
     ::ui_interface::pdsend "$top _arraydialog \
             [::sanitized [::dollarToHash [::withNil $arrayName($top)]]] \
             $arraySize($top) \
+            $arrayWidth($top) \
+            $arrayHeight($top) \
             $arrayUp($top) \
             $arrayDown($top) \
             $arraySave($top) \
@@ -242,6 +281,17 @@ proc _forceBounds {top} {
     if {$arrayUp($top) == $arrayDown($top)} {
         set arrayUp($top) $arrayUp(${top}.old); set arrayDown($top) $arrayDown(${top}.old)
     }
+}
+
+proc _forceGeometry {top} {
+
+    variable arrayWidth
+    variable arrayHeight
+
+    set arrayWidth($top)  [::ifInteger $arrayWidth($top) $arrayWidth(${top}.old)]
+    set arrayWidth($top)  [::tcl::mathfunc::max $arrayWidth($top) 5]
+    set arrayHeight($top) [::ifInteger $arrayHeight($top) $arrayHeight(${top}.old)]
+    set arrayHeight($top) [::tcl::mathfunc::max $arrayHeight($top) 5]
 }
 
 # ------------------------------------------------------------------------------------------------------------

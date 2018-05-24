@@ -293,6 +293,7 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     if (y && gobj_isCanvas (y)) {
     //
     if (glist_isAbstraction (cast_glist (y))) { canProperties = 0; }
+    if (glist_hasWindow (cast_glist (y)))     { canProperties = canOpen = canHelp = 0; }
     //
     }
     
