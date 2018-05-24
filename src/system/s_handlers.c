@@ -22,7 +22,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if ( PD_WINDOWS || PD_CYGWIN )
+#if PD_WINDOWS
 
 void sys_setSignalHandlers (void)
 {

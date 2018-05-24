@@ -274,7 +274,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if ( PD_LINUX || PD_BSD || PD_HURD )
+#if PD_LINUX
     #if PD_64BIT
         #define PD_PLUGIN           ".pdobject64"
     #else
@@ -286,7 +286,7 @@
     #else
         #define PD_PLUGIN           ".pdbundle32"
     #endif
-#elif ( PD_WINDOWS || PD_CYGWIN )
+#elif PD_WINDOWS
     #if PD_64BIT
         #define PD_PLUGIN           ".pdlibrary64"
     #else
