@@ -40,7 +40,7 @@ t_receiver  *interface_guiReceiver;             /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if ( PD_LINUX || PD_BSD || PD_HURD )
+#if PD_LINUX
     #define INTERFACE_LOCALHOST                 "127.0.0.1"
 #else
     #define INTERFACE_LOCALHOST                 "localhost"
