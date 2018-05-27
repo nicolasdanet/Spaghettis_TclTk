@@ -141,6 +141,7 @@ extern t_symbol *sym__front;
 extern t_symbol *sym__gatomdialog;
 extern t_symbol *sym__graph;
 extern t_symbol *sym__grid;
+extern t_symbol *sym__help;
 extern t_symbol *sym__iemdialog;
 extern t_symbol *sym__inlet2;
 extern t_symbol *sym__inlet3;

@@ -236,6 +236,10 @@ static void canvas_map (t_glist *glist, t_float f)
     glist_windowMapped (glist, (f != 0.0));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void canvas_properties (t_glist *glist)
 {
     if (glist_objectGetNumberOfSelected (glist) > 0) {
@@ -247,6 +251,13 @@ static void canvas_properties (t_glist *glist)
             }
         }
     } else { canvas_functionProperties (cast_gobj (glist), NULL); }
+}
+
+static void canvas_help (t_glist *glist)
+{
+    if (glist_objectGetNumberOfSelected (glist) == 1) {
+        gobj_help (selection_getObject (editor_getSelection (glist_getEditor (glist))));
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -536,6 +547,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_bringToFront,          sym__front,             A_NULL);
     class_addMethod (c, (t_method)canvas_sendToBack,            sym__back,              A_NULL);
     class_addMethod (c, (t_method)canvas_properties,            sym__properties,        A_NULL);
+    class_addMethod (c, (t_method)canvas_help,                  sym__help,              A_NULL);
     
     class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,             A_NULL);
     class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,       A_GIMME, A_NULL);

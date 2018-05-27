@@ -141,6 +141,7 @@ t_symbol *sym__front;
 t_symbol *sym__gatomdialog;
 t_symbol *sym__graph;
 t_symbol *sym__grid;
+t_symbol *sym__help;
 t_symbol *sym__iemdialog;
 t_symbol *sym__inlet2;
 t_symbol *sym__inlet3;
@@ -801,6 +802,7 @@ void symbols_initialize (void)
     sym__gatomdialog                            = gensym ("_gatomdialog");
     sym__graph                                  = gensym ("_graph");
     sym__grid                                   = gensym ("_grid");
+    sym__help                                   = gensym ("_help");
     sym__iemdialog                              = gensym ("_iemdialog");
     sym__inlet2                                 = gensym ("_inlet2");
     sym__inlet3                                 = gensym ("_inlet3");
