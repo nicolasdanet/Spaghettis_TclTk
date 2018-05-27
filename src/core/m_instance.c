@@ -67,9 +67,9 @@ void instance_rootsFreeAll (void)
         
         if (glist == NULL) { break; }
         else {
-            glist_closebang (glist); pd_free (cast_pd (glist)); 
-            if (glist == instance_get()->pd_roots) { 
-                PD_BUG; break;                                      /* Not removed? */
+            glist_close (glist);
+            if (glist == instance_get()->pd_roots) {    /* Not removed? */
+                PD_BUG; break;
             }   
         }
     }

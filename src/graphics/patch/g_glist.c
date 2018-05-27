@@ -466,6 +466,29 @@ void glist_closebang (t_glist *glist)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void glist_close (t_glist *glist)
+{
+    t_environment *e    = glist_getEnvironment (glist);
+    t_symbol *filename  = environment_getFileName (e);
+    t_symbol *directory = environment_getDirectory (e);
+    
+    if (filename != sym__texttemplate) {            /* Invisible patches. */
+    if (filename != sym__floatarraytemplate) {
+    if (filename != sym__floattemplate) {
+    //
+    recentfiles_add (filename, directory);
+    //
+    }
+    }
+    }
+    
+    glist_closebang (glist); pd_free (cast_pd (glist));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* Files are searching in the directory of the patch first. */
 /* Without success it tries to find it using the search path. */
