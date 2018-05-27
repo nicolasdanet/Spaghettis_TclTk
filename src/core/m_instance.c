@@ -22,6 +22,7 @@ t_pdinstance *pd_this;  /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 
 void canvas_new (void *, t_symbol *, int, t_atom *);
+void canvas_closeProceed (t_glist *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ void instance_rootsFreeAll (void)
         
         if (glist == NULL) { break; }
         else {
-            glist_close (glist);
+            canvas_closeProceed (glist);
             if (glist == instance_get()->pd_roots) {    /* Not removed? */
                 PD_BUG; break;
             }   

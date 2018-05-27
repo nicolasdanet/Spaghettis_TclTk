@@ -73,12 +73,18 @@ void recentfiles_update (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void recentfiles_add (t_symbol *name, t_symbol *directory)
+void recentfiles_add (t_symbol *name, t_symbol *directory, int check)
 {
     char filepath[PD_STRING] = { 0 };
 
     if (!path_withDirectoryAndName (filepath, PD_STRING, directory->s_name, name->s_name)) {
-        recentfiles_appendPath (filepath); recentfiles_update();
+    //
+    if (!check || path_isFileExistAsRegularFile (filepath)) {
+    //
+    recentfiles_appendPath (filepath); recentfiles_update();
+    //
+    }
+    //
     }
 }
 
