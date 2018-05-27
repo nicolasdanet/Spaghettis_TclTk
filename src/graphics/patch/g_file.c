@@ -53,7 +53,7 @@ static void canvas_saveProceed (t_glist *glist, t_symbol *name, t_symbol *direct
     if (buffer_fileWrite (b, name, directory)) { error_failsToWrite (name); }
     else {
         post (PD_TRANSLATE ("file: saved to %s/%s"), directory->s_name, name->s_name);  // --
-        recentfiles_add (name, directory);
+        recentfiles_add (name, directory, 0);
         environment_setDirectory (glist_getEnvironment (glist), directory);
         glist_setDirty (glist, 0);
         if (destroy) {
@@ -151,6 +151,25 @@ void canvas_quit (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void canvas_closeProceed (t_glist *glist)
+{
+    t_environment *e    = glist_getEnvironment (glist);
+    t_symbol *filename  = environment_getFileName (e);
+    t_symbol *directory = environment_getDirectory (e);
+    
+    if (filename != sym__texttemplate) {            /* Invisible patches. */
+    if (filename != sym__floatarraytemplate) {
+    if (filename != sym__floattemplate) {
+    //
+    recentfiles_add (filename, directory, 1);
+    //
+    }
+    }
+    }
+    
+    glist_closebang (glist); pd_free (cast_pd (glist));
+}
+
 void canvas_closeUnsetDirtyAndContinue (t_glist *glist)
 {
     glist_setDirty (glist, 0); canvas_quit();   /* Note that patches not dirty are closed later. */
@@ -163,7 +182,7 @@ void canvas_closeSubpatchOrAbstraction (t_glist *glist)
 
 void canvas_closeDestroyAlreadyChecked (t_glist *glist, int destroy)
 {
-    glist_close (glist); if (destroy == CONTINUE) { canvas_quit(); }
+    canvas_closeProceed (glist); if (destroy == CONTINUE) { canvas_quit(); }
 }
 
 void canvas_closeDestroyOrCheckIfNecessary (t_glist *glist)
@@ -179,7 +198,7 @@ void canvas_closeDestroyOrCheckIfNecessary (t_glist *glist)
                         DESTROY);
 
     } else {
-        glist_close (glist);
+        canvas_closeProceed (glist);
     }
 }
 

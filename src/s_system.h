@@ -178,7 +178,7 @@ int         file_openReadConsideringSearchPath      (const char *directory,
 
 t_pathlist  *recentfiles_get                        (void);
 
-void        recentfiles_add                         (t_symbol *name, t_symbol *directory);
+void        recentfiles_add                         (t_symbol *name, t_symbol *directory, int check);
 void        recentfiles_appendPath                  (char *filepath);
 void        recentfiles_clear                       (void);
 void        recentfiles_update                      (void);
