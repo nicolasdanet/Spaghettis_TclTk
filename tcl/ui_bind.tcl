@@ -124,6 +124,15 @@ proc initialize {} {
     event add <<PopupMenu>>                 <ButtonPress-3>
     event add <<ClickRelease>>              <ButtonRelease-1>
     
+    # On macOS the Option-Click behaviour is reserved (thus Control-Click is used instead).
+    
+    if {[tk windowingsystem] eq "aqua"} {
+    
+    event add <<MotionExtended>>            <Control-Motion>
+    event add <<ClickExtended>>             <Control-ButtonPress-1>
+    
+    }
+        
     bind Spaghettis <FocusIn>               { ::ui_bind::_focusIn %W }
     bind PdDialog   <FocusIn>               { ::ui_bind::_focusIn %W }
     bind PdPatch    <FocusIn>               { ::ui_bind::_focusIn %W }
@@ -185,7 +194,14 @@ proc bindPatch {top} {
     bind $top.c <<ClickLeft4>>              { ::ui_bind::_mouseDown %W %x %y 4   }
     bind $top.c <<ClickLeft5>>              { ::ui_bind::_mouseDown %W %x %y 16  }
     bind $top.c <<PopupMenu>>               { ::ui_bind::_mouseDown %W %x %y 8   }
+    
+    if {[tk windowingsystem] eq "aqua"} {
+    
+    bind $top.c <<MotionExtended>>          { ::ui_bind::_motion %W %x %y 32     }
+    bind $top.c <<ClickExtended>>           { ::ui_bind::_mouseDown %W %x %y 32  }
 
+    }
+    
     bind $top.c <<ClickRelease>>            { ::ui_bind::_mouseUp %W %x %y       }
     bind $top.c <<ClickDummy>>              { ::ui_interface::pdsend "pd _dummy" }
     

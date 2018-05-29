@@ -40,7 +40,14 @@ typedef struct _editor {
     t_drag              e_drag;
     int                 e_action;
     int                 e_isSelectedBoxDirty;
+    int                 e_isSelectedGraph;
     } t_editor;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define EDIT_GRIP_SIZE  5
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -69,7 +76,14 @@ void        editor_selectedLineSet              (t_editor *x,
                                                     int i,
                                                     int n,
                                                     int j);
-    
+
+void        editor_graphSetSelected             (t_editor *x, int isSelected);
+int         editor_graphHit                     (t_editor *x, int a, int b);
+int         editor_graphHitRightSide            (t_editor *x, int a, int b);
+void        editor_graphDeplace                 (t_editor *x, int a, int b);
+void        editor_graphSetBottomRight          (t_editor *x, int a, int b);
+void        editor_graphSnap                    (t_editor *x);
+
 void        editor_motionProceed                (t_editor *x, int deltaX, int deltaY, int m);
 void        editor_motionSet                    (t_editor *x,
                                                     t_gobj  *y,
@@ -103,6 +117,11 @@ static inline int editor_hasSelection (t_editor *x)
 static inline int editor_hasSelectedLine (t_editor *x)
 {
     return (x->e_selectedLineConnection != NULL);
+}
+
+static inline int editor_hasSelectedGraph (t_editor *x)
+{
+    return x->e_isSelectedGraph;
 }
 
 static inline int editor_hasAction (t_editor *x)

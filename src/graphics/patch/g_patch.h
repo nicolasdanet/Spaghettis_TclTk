@@ -22,13 +22,15 @@
 
 enum {
     ACTION_NONE         = 0,
-    ACTION_MOVE         = 1,
-    ACTION_LINE         = 2,
-    ACTION_SIGNAL       = 3,
-    ACTION_REGION       = 4,
-    ACTION_PASS         = 5,
-    ACTION_DRAG         = 6,
-    ACTION_RESIZE       = 7
+    ACTION_MOVE         = 1,        /* Move object. */
+    ACTION_LINE         = 2,        /* Make connection. */
+    ACTION_SIGNAL       = 3,        /* Ditto. */
+    ACTION_REGION       = 4,        /* Select with lasso. */
+    ACTION_PASS         = 5,        /* Pass motion to GUI object. */
+    ACTION_DRAG         = 6,        /* Drag text in box. */
+    ACTION_RESIZE       = 7,        /* Resize object. */
+    ACTION_GRAPH_MOVE   = 8,        /* Move GOP. */
+    ACTION_GRAPH_RESIZE = 9         /* Resize GOP. */
     };
 
 enum {
@@ -43,12 +45,13 @@ enum {
 enum {
     MODIFIER_NONE       = 0,
     MODIFIER_SHIFT      = 1,
-    MODIFIER_CTRL       = 2,        /* Command key on Mac OS X. */
-    MODIFIER_ALT        = 4,
+    MODIFIER_CTRL       = 2,        /* On macOS, the Command key. */
+    MODIFIER_ALT        = 4,        /* On macOS, the Option key. */
     MODIFIER_RIGHT      = 8,
     MODIFIER_DOUBLE     = 16,
-    MODIFIER_INSIDE_X   = 32,
-    MODIFIER_INSIDE_Y   = 64
+    MODIFIER_EXTENDED   = 32,       /* On macOS, the Control key. */
+    MODIFIER_INSIDE_X   = 64,
+    MODIFIER_INSIDE_Y   = 128
     };
 
 enum {

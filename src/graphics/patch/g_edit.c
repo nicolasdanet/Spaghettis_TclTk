@@ -15,12 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define EDIT_GRIP_SIZE      5
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void glist_behaviorVisibilityChangedProceed (t_glist *, t_glist *, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -69,7 +63,7 @@ static t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
     return object;
 }
 
-static void glist_updateCursor (t_glist *glist, int type)
+void glist_updateCursor (t_glist *glist, int type)
 {
     static t_glist *lastGlist = NULL;           /* Static. */
     static int lastType = CURSOR_NOTHING;       /* Static. */
@@ -174,6 +168,38 @@ void glist_makeLineEnd (t_glist *glist, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void glist_actionMoveRectangle (t_glist *glist)
+{
+    t_editor *e = glist_getEditor (glist);
+    
+    int deltaX  = drag_getMoveX (editor_getDrag (e));
+    int deltaY  = drag_getMoveY (editor_getDrag (e));
+    
+    if (snap_hasSnapToGrid()) { if (drag_hasMovedOnce (editor_getDrag (e))) { editor_graphSnap (e); } }
+    
+    editor_graphDeplace (e, deltaX, deltaY);
+    
+    drag_close (editor_getDrag (e));
+}
+
+static void glist_actionResizeRectangle (t_glist *glist, int a, int b)
+{
+    t_glist *parent = glist_getParent (glist) ? glist_getView (glist_getParent (glist)) : NULL;
+    
+    if (parent) { glist_behaviorVisibilityChangedProceed (glist, parent, 0, 1); }
+    
+    editor_graphSetBottomRight (glist_getEditor (glist), a, b);
+    
+    if (parent) {
+    //
+    glist_behaviorVisibilityChangedProceed (glist, parent, 1, 1);
+    glist_updateLinesForObject (parent, cast_object (glist));
+    glist_setDirty (parent, 1);
+    glist_redrawRequired (parent);
+    //
+    }
+}
+
 static void glist_actionResizeBox (t_glist *glist, t_gobj *y, int width)
 {
     int w = (int)(width / font_getHostFontWidth (glist_getFontSize (glist)));
@@ -251,6 +277,7 @@ void glist_actionEnd (t_glist *glist, int a, int b)
     //
     }
     
+    editor_graphSetSelected (e, 0);
     editor_resetAction (e);
 }
 
@@ -264,14 +291,16 @@ void glist_action (t_glist *glist, int a, int b, int m)
     
     switch (editor_getAction (e)) {
     //
-    case ACTION_MOVE    : editor_selectionDeplace (e);                          break;
-    case ACTION_LINE    :
-    case ACTION_SIGNAL  : glist_makeLineBegin (glist, a, b);                    break;
-    case ACTION_REGION  : glist_selectLassoBegin (glist, a, b);                 break;
-    case ACTION_PASS    : editor_motionProceed (e, a, b, m);                    break;
-    case ACTION_DRAG    : box_mouse (box, a - startX, b - startY, BOX_DRAG);    break;
-    case ACTION_RESIZE  : glist_actionResize (glist, a, b);                     break;
-    default             : PD_BUG;
+    case ACTION_MOVE         : editor_selectionDeplace (e);                          break;
+    case ACTION_LINE         : /* Falls through. */
+    case ACTION_SIGNAL       : glist_makeLineBegin (glist, a, b);                    break;
+    case ACTION_REGION       : glist_selectLassoBegin (glist, a, b);                 break;
+    case ACTION_PASS         : editor_motionProceed (e, a, b, m);                    break;
+    case ACTION_DRAG         : box_mouse (box, a - startX, b - startY, BOX_DRAG);    break;
+    case ACTION_RESIZE       : glist_actionResize (glist, a, b);                     break;
+    case ACTION_GRAPH_MOVE   : glist_actionMoveRectangle (glist);                    break;
+    case ACTION_GRAPH_RESIZE : glist_actionResizeRectangle (glist, a, b);            break;
+    default                  : PD_BUG;
     //
     }
     
@@ -364,8 +393,7 @@ static int glist_mouseOverEditResize (t_glist *glist, t_gobj *y, int a, int b, i
     
         if (!clicked) { glist_updateCursor (glist, CURSOR_RESIZE); }
         else {
-            glist_objectSelectIfNotSelected (glist, y);
-            editor_startAction (e, ACTION_RESIZE, a, b, y);
+            glist_objectSelectIfNotSelected (glist, y); editor_startAction (e, ACTION_RESIZE, a, b, y);
         }
     }
     
@@ -429,7 +457,7 @@ static int glist_mouseOverEdit (t_glist *glist, int a, int b, int m, int clicked
 {
     t_rectangle r;
     
-    t_gobj *y = glist_objectHit (glist, a, b, &r);              /* With a tolerance zone up and down. */
+    t_gobj *y = glist_objectHit (glist, a, b, &r);              /* With a tolerance zone around. */
         
     if (y) {
     //
@@ -495,6 +523,30 @@ static void glist_mouseOverRun (t_glist *glist, int a, int b, int m, int clicked
     }
 }
 
+static void glist_mouseOverGraph (t_glist *glist, int a, int b, int m, int clicked)
+{
+    t_editor *e = glist_getEditor (glist);
+    int hit     = editor_graphHit (e, a, b);
+    int resize  = editor_graphHitRightSide (e, a, b);
+    
+    editor_graphSetSelected (e, hit || resize);
+    
+    if (resize)   { glist_updateCursor (glist, CURSOR_RESIZE); }
+    else if (hit) {
+        glist_updateCursor (glist, CURSOR_CLICK);
+    }
+    
+    if (clicked)  {
+    //
+    if (resize)   { editor_startAction (e, ACTION_GRAPH_RESIZE, a, b, NULL); }
+    else if (hit) {
+        editor_startAction (e, ACTION_GRAPH_MOVE, a, b, NULL);
+    }
+    //
+    }
+    
+}
+
 static int glist_mouseHitLines (t_glist *glist, int a, int b, int clicked)
 {
     t_outconnect *connection = NULL;
@@ -529,15 +581,29 @@ void glist_mouse (t_glist *glist, int a, int b, int m, int clicked)
 {
     t_editor *e = glist_getEditor (glist);
     
-    int hasShift     = (m & MODIFIER_SHIFT);
-    int isRightClick = (m & MODIFIER_RIGHT);
-    int isRunMode    = (m & MODIFIER_CTRL) || (!glist_hasEditMode (glist));
+    int hasShift      = ((m & MODIFIER_SHIFT)    != 0);
+    int isRightClick  = ((m & MODIFIER_RIGHT)    != 0);
+    int isRunMode     = ((m & MODIFIER_CTRL)     != 0) || (!glist_hasEditMode (glist));
+    
+    #if PD_APPLE
+        int isGOPMode = ((m & MODIFIER_EXTENDED) != 0) && (glist_hasEditMode (glist));
+    #else
+        int isGOPMode = ((m & MODIFIER_ALT)      != 0) && (glist_hasEditMode (glist));
+    #endif
     
     if (clicked) { editor_motionReset (e); }
 
     PD_ASSERT (!editor_hasAction (e));
     
-    if (isRunMode && !isRightClick) { glist_mouseOverRun (glist, a, b, m, clicked); }
+    isGOPMode &= (glist_isGraphOnParent (glist) && glist_hasWindow (glist) && !glist_isArray (glist));
+    
+    if (!isGOPMode) { editor_graphSetSelected (e, 0); }
+    else if (clicked) {
+        glist_deselectAll (glist);
+    }
+    
+    if (isGOPMode) { glist_mouseOverGraph (glist, a, b, m, clicked); }
+    else if (isRunMode && !isRightClick) { glist_mouseOverRun (glist, a, b, m, clicked); }
     else if (glist_mouseOverEdit (glist, a, b, m, clicked)) { } 
     else {
     //
