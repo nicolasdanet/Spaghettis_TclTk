@@ -293,6 +293,8 @@ void glist_drawRectangle (t_glist *glist)
     int c = rectangle_getBottomRightX (glist_getGraphGeometry (glist));
     int d = rectangle_getBottomRightY (glist_getGraphGeometry (glist));
     
+    int selected = editor_hasSelectedGraph (glist_getEditor (glist));
+    
     gui_vAdd ("%s.c create line %d %d %d %d %d %d %d %d %d %d"
                     " -dash {2 4}"  // --
                     " -fill #%06x"
@@ -308,7 +310,7 @@ void glist_drawRectangle (t_glist *glist)
                     d,
                     a,
                     b, 
-                    COLOR_GOP);
+                    selected ? COLOR_SELECTED : COLOR_GRAPH);
     }
     //
     }

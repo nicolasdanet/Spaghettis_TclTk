@@ -145,6 +145,34 @@ void rectangle_enlargeHeight (t_rectangle *r, int n)
     }
 }
 
+void rectangle_enlargeRight (t_rectangle *r, int n)
+{
+    if (!rectangle_isNothing (r)) {
+    //
+    int a = r->rect_topLeftX;
+    int b = r->rect_topLeftY;
+    int c = r->rect_bottomRightX + n;
+    int d = r->rect_bottomRightY;
+    
+    rectangle_set (r, a, b, c, d);
+    //
+    }
+}
+
+void rectangle_deplace (t_rectangle *r, int x, int y)
+{
+    if (!rectangle_isNothing (r)) {
+    //
+    int a = r->rect_topLeftX + x;
+    int b = r->rect_topLeftY + y;
+    int c = r->rect_bottomRightX + x;
+    int d = r->rect_bottomRightY + y;
+    
+    rectangle_set (r, a, b, c, d);
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

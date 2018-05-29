@@ -15,6 +15,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void glist_updateCursor (t_glist *, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_box *editor_boxFetch (t_editor *x, t_object *object)
 {
     t_box *box = NULL;
@@ -118,7 +124,9 @@ void editor_selectionDeplace (t_editor *x)
     int deltaY = drag_getMoveY (editor_getDrag (x));
     
     if (snap_hasSnapToGrid()) {
-        if (drag_hasMovedOnce (editor_getDrag (x))) { glist_objectSnapSelected (x->e_owner); }
+    //
+    if (drag_hasMovedOnce (editor_getDrag (x))) { glist_objectSnapSelected (x->e_owner); }
+    //
     }
     
     if (deltaX || deltaY) { glist_objectDisplaceSelected (x->e_owner, deltaX, deltaY); }
@@ -191,6 +199,73 @@ void editor_selectedLineDisconnect (t_editor *x)
     glist_lineDisconnect (x->e_owner, m, i, n, j);
     
     editor_selectedLineReset (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void editor_graphSetSelected (t_editor *x, int isSelected)
+{
+    int old = x->e_isSelectedGraph;
+    
+    x->e_isSelectedGraph = (isSelected != 0);
+    
+    if (old != x->e_isSelectedGraph) {
+    //
+    glist_updateRectangle (x->e_owner);
+    
+    if (!isSelected) { glist_updateCursor (x->e_owner, CURSOR_NOTHING); }
+    //
+    }
+}
+
+int editor_graphHit (t_editor *x, int a, int b)
+{
+    t_rectangle *r = glist_getGraphGeometry (x->e_owner);
+    
+    return rectangle_containsPoint (r, a, b);
+}
+
+int editor_graphHitRightSide (t_editor *x, int a, int b)
+{
+    t_rectangle t1, t2;
+    
+    rectangle_setCopy (&t1, glist_getGraphGeometry (x->e_owner));
+    rectangle_setCopy (&t2, glist_getGraphGeometry (x->e_owner));
+    
+    rectangle_enlargeRight (&t1, -EDIT_GRIP_SIZE); rectangle_enlargeRight (&t2, EDIT_GRIP_SIZE);
+    
+    return (rectangle_containsPoint (&t2, a, b) && !rectangle_containsPoint (&t1, a, b));
+}
+
+void editor_graphDeplace (t_editor *x, int a, int b)
+{
+    t_rectangle *r = glist_getGraphGeometry (x->e_owner);
+    
+    if (a || b) { rectangle_deplace (r, a, b); glist_updateRectangle (x->e_owner); }
+}
+
+void editor_graphSetBottomRight (t_editor *x, int c, int d)
+{
+    t_rectangle *r = glist_getGraphGeometry (x->e_owner);
+    
+    int a = rectangle_getTopLeftX (r);
+    int b = rectangle_getTopLeftY (r);
+    
+    rectangle_set (r, a, b, c, d);
+    
+    glist_updateRectangle (x->e_owner);
+}
+
+void editor_graphSnap (t_editor *x)
+{
+    t_rectangle *r = glist_getGraphGeometry (x->e_owner);
+    
+    int m = snap_getOffset (rectangle_getTopLeftX (r));
+    int n = snap_getOffset (rectangle_getTopLeftY (r));
+    
+    if (m || n) { rectangle_deplace (r, m, n); glist_updateRectangle (x->e_owner); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

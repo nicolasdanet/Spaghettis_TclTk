@@ -181,7 +181,7 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
     gui_vAdd ("%s.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
-                    x->x_gui.iem_colorForeground,
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground,
                     x->x_t);
 }
 
@@ -278,7 +278,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     b + k,
                     x->x_t, 
                     x->x_digitsFontSize,
-                    x->x_gui.iem_colorForeground,
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground,
                     x);
     
     dial_hasKnob (x, glist);
@@ -333,7 +333,7 @@ static void dial_drawConfig (t_dial *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x, 
                     x->x_digitsFontSize,
-                    x->x_gui.iem_colorForeground);
+                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
     
     dial_hasKnob (x, glist);
 }
