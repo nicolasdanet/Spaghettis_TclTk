@@ -240,7 +240,7 @@ static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *arg
 {
     #if PD_WITH_DEBUG
     
-    post ("My name is %s.", symbol_stripTemplateIdentifier (x->tp_templateIdentifier)->s_name);
+    post ("%s", symbol_stripTemplateIdentifier (x->tp_templateIdentifier)->s_name);
     
     #endif
 }

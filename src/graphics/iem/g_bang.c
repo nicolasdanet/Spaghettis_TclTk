@@ -84,12 +84,12 @@ static void bng_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void bng_drawUpdate (t_bng *x, t_glist *glist)
+static void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
     gui_jobAdd ((void *)x, glist, bng_drawJob);
 }
 
-void bng_drawMove (t_bng *x, t_glist *glist)
+static void bng_drawMove (t_bng *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
         
@@ -112,7 +112,7 @@ void bng_drawMove (t_bng *x, t_glist *glist)
                     b + x->x_gui.iem_height - 1);
 }
 
-void bng_drawNew (t_bng *x, t_glist *glist)
+static void bng_drawNew (t_bng *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -138,7 +138,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                     x);
 }
 
-void bng_drawSelect (t_bng *x, t_glist *glist)
+static void bng_drawSelect (t_bng *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -152,7 +152,7 @@ void bng_drawSelect (t_bng *x, t_glist *glist)
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
 }
 
-void bng_drawErase (t_bng *x, t_glist *glist)
+static void bng_drawErase (t_bng *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -164,7 +164,7 @@ void bng_drawErase (t_bng *x, t_glist *glist)
                     x);
 }
 
-void bng_drawConfig (t_bng *x, t_glist *glist)
+static void bng_drawConfig (t_bng *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -182,7 +182,7 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void bng_draw (t_bng *x, t_glist *glist, int mode)
+static void bng_draw (t_bng *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_UPDATE    : bng_drawUpdate (x, glist);    break;
