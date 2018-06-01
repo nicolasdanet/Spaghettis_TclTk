@@ -41,12 +41,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define IEM_MAXIMUM_BUTTONS             128
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 #define IEM_DRAW_UPDATE                 0
 #define IEM_DRAW_MOVE                   1
 #define IEM_DRAW_NEW                    2
@@ -137,9 +131,9 @@ typedef struct _radio {
     int         x_isVertical;
     int         x_changed;                      /* Unused but kept for compatibility. */
     int         x_numberOfButtons;
-    int         x_state;
-    int         x_stateDrawn;
+    int64_t     x_state;
     t_float     x_floatValue;
+    t_symbol    *x_mode;
     t_outlet    *x_outlet;
     } t_radio;
 

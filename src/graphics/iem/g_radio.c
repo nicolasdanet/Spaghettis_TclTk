@@ -24,16 +24,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define IEM_RADIO_DEFAULT_BUTTONS   8
+#define IEM_RADIO_BUTTONS_DEFAULT       8
+#define IEM_RADIO_BUTTONS_MAXIMUM       32
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static int  radio_getStateAt            (t_radio *x, int);
 static void radio_buttonsNumber         (t_radio *, t_float);
 static void radio_behaviorGetRectangle  (t_gobj *, t_glist *, t_rectangle *);
 static int  radio_behaviorMouse         (t_gobj *, t_glist *, t_mouse *);
-    
+static void radio_drawConfig            (t_radio *, t_glist *);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -54,7 +57,7 @@ static t_widgetbehavior radio_widgetBehavior =          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void radio_drawMoveVertical (t_radio *x, t_glist *glist)
+static void radio_drawMoveVertical (t_radio *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -87,7 +90,7 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
     }
 }
 
-void radio_drawNewVertical (t_radio *x, t_glist *glist)
+static void radio_drawNewVertical (t_radio *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -115,17 +118,15 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
                     t + k,
                     a + x->x_gui.iem_width - k,
                     t + x->x_gui.iem_height - k,
-                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    radio_getStateAt (x, i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    radio_getStateAt (x, i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     x,
                     i);
     //
     }
-
-    x->x_stateDrawn = x->x_state;
 }
 
-void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
+static void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -158,7 +159,7 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
     }
 }
 
-void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
+static void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -186,51 +187,47 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
                     b + k,
                     t + x->x_gui.iem_width - k, 
                     b + x->x_gui.iem_height - k,
-                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    radio_getStateAt (x, i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    radio_getStateAt (x, i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                     x,
                     i);
     //
     }
-    
-    x->x_stateDrawn = x->x_state;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void radio_drawJob (t_gobj *z, t_glist *glist)
+static void radio_drawJob (t_gobj *z, t_glist *glist)
 {
     t_radio *x = (t_radio *)z;
     t_glist *view = glist_getView (glist);
+    
+    int i;
 
+    for (i = 0; i < x->x_numberOfButtons; i++) {
+    //
     gui_vAdd ("%s.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
-                    glist_getTagAsString (view), 
-                    x, 
-                    x->x_stateDrawn,
-                    x->x_gui.iem_colorBackground,
-                    x->x_gui.iem_colorBackground);
-    gui_vAdd ("%s.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
-                    glist_getTagAsString (view), 
-                    x, 
-                    x->x_state,
-                    x->x_gui.iem_colorForeground,
-                    x->x_gui.iem_colorForeground);
-                
-    x->x_stateDrawn = x->x_state;
+                    glist_getTagAsString (view),
+                    x,
+                    i,
+                    radio_getStateAt (x, i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    radio_getStateAt (x, i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void radio_drawUpdate (t_radio *x, t_glist *glist)
+static void radio_drawUpdate (t_radio *x, t_glist *glist)
 {
     gui_jobAdd ((void *)x, glist, radio_drawJob);
 }
 
-void radio_drawMove (t_radio *x, t_glist *glist)
+static void radio_drawMove (t_radio *x, t_glist *glist)
 {
     if (x->x_isVertical) { radio_drawMoveVertical (x, glist); }
     else {
@@ -238,7 +235,7 @@ void radio_drawMove (t_radio *x, t_glist *glist)
     }
 }
 
-void radio_drawNew (t_radio *x, t_glist *glist)
+static void radio_drawNew (t_radio *x, t_glist *glist)
 {
     if (x->x_isVertical) { radio_drawNewVertical (x, glist); }
     else {
@@ -246,7 +243,7 @@ void radio_drawNew (t_radio *x, t_glist *glist)
     }
 }
 
-void radio_drawSelect (t_radio *x, t_glist *glist)
+static void radio_drawSelect (t_radio *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -263,7 +260,7 @@ void radio_drawSelect (t_radio *x, t_glist *glist)
     }
 }
 
-void radio_drawErase (t_radio *x, t_glist *glist)
+static void radio_drawErase (t_radio *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -283,7 +280,7 @@ void radio_drawErase (t_radio *x, t_glist *glist)
     }
 }
 
-void radio_drawConfig (t_radio *x, t_glist *glist)
+static void radio_drawConfig (t_radio *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -300,8 +297,8 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x,
                     i,
-                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
-                    (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+                    radio_getStateAt (x, i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                    radio_getStateAt (x, i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
     //
     }
 }
@@ -310,7 +307,7 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void radio_draw (t_radio *x, t_glist *glist, int mode)
+static void radio_draw (t_radio *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_UPDATE    : radio_drawUpdate (x, glist);  break;
@@ -319,6 +316,47 @@ void radio_draw (t_radio *x, t_glist *glist, int mode)
         case IEM_DRAW_SELECT    : radio_drawSelect (x, glist);  break;
         case IEM_DRAW_ERASE     : radio_drawErase (x, glist);   break;
         case IEM_DRAW_CONFIG    : radio_drawConfig (x, glist);  break;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void radio_setState (t_radio *x, int64_t n)
+{
+    if (x->x_mode == sym_multiple) { x->x_state = n & (((int64_t)1 << x->x_numberOfButtons) - 1); }
+    else {
+        x->x_state = PD_CLAMP (n, 0, (x->x_numberOfButtons - 1));
+    }
+}
+
+static void radio_setStateAt (t_radio *x, int position)
+{
+    if (x->x_mode != sym_multiple) { radio_setState (x, (int64_t)position); }
+    else {
+    //
+    int64_t n = x->x_state;
+    int64_t i = 1 << position;
+    
+    if (n & i) { n &= ~(i); } else { n |= i; }
+    
+    radio_setState (x, n);
+    //
+    }
+    
+    x->x_floatValue = x->x_state;
+    
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+}
+
+static int radio_getStateAt (t_radio *x, int position)
+{
+    if (x->x_mode != sym_multiple) { return (x->x_state == position); }
+    else {
+    //
+    return ((x->x_state & (1 << position)) != 0);
+    //
     }
 }
 
@@ -346,8 +384,7 @@ static void radio_bang (t_radio *x)
 
 static void radio_float (t_radio *x, t_float f)
 {
-    x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
-    x->x_floatValue = f;
+    radio_setState (x, (int64_t)f); x->x_floatValue = f;
     
     (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     
@@ -360,20 +397,15 @@ static void radio_click (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_float a = atom_getFloatAtIndex (0, argc, argv);
     t_float b = atom_getFloatAtIndex (1, argc, argv);
-    t_float f;
+    int f;
     
     if (x->x_isVertical) { 
-        f = ((b - glist_getPixelY (x->x_gui.iem_owner, cast_object (x))) / x->x_gui.iem_height);
+        f = (int)((b - glist_getPixelY (x->x_gui.iem_owner, cast_object (x))) / x->x_gui.iem_height);
     } else {
-        f = ((a - glist_getPixelX (x->x_gui.iem_owner, cast_object (x))) / x->x_gui.iem_width);
+        f = (int)((a - glist_getPixelX (x->x_gui.iem_owner, cast_object (x))) / x->x_gui.iem_width);
     }
 
-    x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
-    x->x_floatValue = x->x_state;
-    
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
-        
-    radio_out (x);
+    radio_setStateAt (x, f); radio_out (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -404,23 +436,38 @@ static void radio_size (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 
 static void radio_set (t_radio *x, t_float f)
 {
-    x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
-    x->x_floatValue = f;
+    radio_setState (x, (int64_t)f); x->x_floatValue = f;
     
     (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
 {
-    int n = PD_CLAMP ((int)numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
+    int n = PD_CLAMP ((int)numberOfButtons, 1, IEM_RADIO_BUTTONS_MAXIMUM);
 
     if (n != x->x_numberOfButtons) {
         (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_ERASE);
         x->x_numberOfButtons = numberOfButtons;
-        x->x_state = PD_MIN (x->x_state, x->x_numberOfButtons - 1);
-        x->x_floatValue = x->x_state;
+        radio_setState (x, x->x_state);
         (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_NEW);
         glist_updateLinesForObject (x->x_gui.iem_owner, cast_object (x));
+    }
+}
+
+static void radio_mode (t_radio *x, t_symbol *s)
+{
+    t_symbol *old = x->x_mode;
+    
+    x->x_mode = (s == sym_multiple) ? sym_multiple : sym_single;
+    
+    if (old != x->x_mode) {
+    //
+    radio_setState (x, x->x_state);
+    
+    glist_setDirty (cast_iem (x)->iem_owner, 1);
+    
+    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    //
     }
 }
 
@@ -456,6 +503,8 @@ static int radio_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
+/* To keep compatibility with legacy the multiple mode is saved only if activated. */
+
 static void radio_functionSave (t_gobj *z, t_buffer *b)
 {
     t_radio *x = (t_radio *)z;
@@ -471,7 +520,10 @@ static void radio_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendFloat (b,  object_getY (cast_object (z)));
     buffer_appendSymbol (b, x->x_isVertical ? sym_vradio : sym_hradio);
     buffer_appendFloat (b,  x->x_gui.iem_width);
-    buffer_appendFloat (b,  x->x_changed);
+    if (x->x_mode == sym_multiple) { buffer_appendSymbol (b, x->x_mode); }
+    else {
+        buffer_appendFloat (b,  x->x_changed);
+    }
     buffer_appendFloat (b,  iemgui_serializeLoadbang (cast_iem (z)));
     buffer_appendFloat (b,  x->x_numberOfButtons);
     buffer_appendSymbol (b, names.n_unexpandedSend);
@@ -501,13 +553,14 @@ static void radio_functionProperties (t_gobj *z, t_glist *owner)
             "::ui_iem::create %%s {Radio Button}"   // --
             " %d %d Size 0 0 $::var(nil)"           // --
             " 0 $::var(nil) 0 $::var(nil)"          // --
-            " -1 $::var(nil) $::var(nil)"           // --
+            " %d Single Multiple"                   // --
             " %d"
             " %d 256 {Number Of Buttons}"           // --
             " %s %s"
             " %d %d"
             " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
+            x->x_mode == sym_multiple,
             x->x_gui.iem_loadbang,
             x->x_numberOfButtons,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
@@ -530,16 +583,19 @@ static void radio_fromDialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
     {
     //
     int size            = (int)atom_getFloatAtIndex (0, argc, argv);
+    int isMultiple      = (int)atom_getFloatAtIndex (4, argc, argv);
     int numberOfButtons = (int)atom_getFloatAtIndex (6, argc, argv);
-
+    
     x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
     
     isDirty = iemgui_fromDialog (cast_iem (x), argc, argv);
     
-    numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
+    numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_RADIO_BUTTONS_MAXIMUM);
     
-    if (x->x_numberOfButtons != numberOfButtons) { radio_buttonsNumber (x, (t_float)numberOfButtons); } 
+    if (x->x_numberOfButtons != numberOfButtons) { radio_buttonsNumber (x, (t_float)numberOfButtons); }
+
+    radio_mode (x, isMultiple ? sym_multiple : sym_single);
     //
     }
     
@@ -566,8 +622,9 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     int labelY          = 0;
     int labelFontSize   = IEM_DEFAULT_FONT;
     int changed         = 1;
-    int numberOfButtons = IEM_RADIO_DEFAULT_BUTTONS;
+    int numberOfButtons = IEM_RADIO_BUTTONS_DEFAULT;
     t_float floatValue  = 0.0;
+    t_symbol *mode      = NULL;
     
     if (argc != 15) { iemgui_deserializeDefault (cast_iem (x)); }
     else {
@@ -579,6 +636,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     labelY          = (int)atom_getFloatAtIndex (8, argc,  argv);
     labelFontSize   = (int)atom_getFloatAtIndex (10, argc, argv);
     floatValue      = atom_getFloatAtIndex (14, argc, argv);
+    mode            = atom_getSymbolAtIndex (1, argc, argv);
     
     iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (2, argc, argv));
     iemgui_deserializeNames (cast_iem (x), 4, argv);
@@ -602,15 +660,12 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
     x->x_changed = (changed != 0);
-    x->x_numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
+    x->x_numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_RADIO_BUTTONS_MAXIMUM);
     x->x_floatValue = floatValue;
+    x->x_mode = (mode == sym_multiple) ? sym_multiple : sym_single;
     
-    if (x->x_gui.iem_loadbang) {
-        x->x_state = PD_CLAMP ((int)floatValue, 0, x->x_numberOfButtons - 1);
-    } else {
-        x->x_state = 0;
-    }
-
+    radio_setState (x, (int64_t)(x->x_gui.iem_loadbang ? floatValue : 0));
+    
     x->x_outlet = outlet_newFloat (cast_object (x));
     //
     }
@@ -659,6 +714,7 @@ void radio_setup (void)
     class_addMethod (c, (t_method)radio_buttonsNumber,          sym_buttonsnumber,      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)radio_mode,                   sym_mode,               A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     

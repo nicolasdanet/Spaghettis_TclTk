@@ -64,7 +64,7 @@ static t_widgetbehavior panel_widgetBehavior =          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void panel_drawMove (t_panel *x, t_glist *glist)
+static void panel_drawMove (t_panel *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -87,7 +87,7 @@ void panel_drawMove (t_panel *x, t_glist *glist)
                     b + x->x_panelHeight);
 }
 
-void panel_drawNew (t_panel *x, t_glist *glist)
+static void panel_drawNew (t_panel *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -113,7 +113,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                     x);
 }
 
-void panel_drawSelect (t_panel* x, t_glist *glist)
+static void panel_drawSelect (t_panel* x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -123,7 +123,7 @@ void panel_drawSelect (t_panel* x, t_glist *glist)
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
 }
 
-void panel_drawErase (t_panel* x, t_glist *glist)
+static void panel_drawErase (t_panel* x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -135,7 +135,7 @@ void panel_drawErase (t_panel* x, t_glist *glist)
                     x);
 }
 
-void panel_drawConfig (t_panel* x, t_glist *glist)
+static void panel_drawConfig (t_panel* x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -154,7 +154,7 @@ void panel_drawConfig (t_panel* x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void panel_draw (t_panel *x, t_glist *glist, int mode)
+static void panel_draw (t_panel *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_MOVE      : panel_drawMove (x, glist);    break;

@@ -49,7 +49,7 @@ static t_widgetbehavior toggle_widgetBehavior =         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void toggle_drawJob (t_gobj *z, t_glist *glist)
+static void toggle_drawJob (t_gobj *z, t_glist *glist)
 {
     t_toggle *x   = (t_toggle *)z;
     t_glist *view = glist_getView (glist);
@@ -68,12 +68,12 @@ void toggle_drawJob (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void toggle_drawUpdate (t_toggle *x, t_glist *glist)
+static void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 {
     gui_jobAdd ((void *)x, glist, toggle_drawJob);
 }
 
-void toggle_drawMove (t_toggle *x, t_glist *glist)
+static void toggle_drawMove (t_toggle *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -113,7 +113,7 @@ void toggle_drawMove (t_toggle *x, t_glist *glist)
                     b + thickness + 1);
 }
 
-void toggle_drawNew (t_toggle *x, t_glist *glist)
+static void toggle_drawNew (t_toggle *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
     
@@ -150,7 +150,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                     x);
 }
 
-void toggle_drawSelect (t_toggle *x, t_glist *glist)
+static void toggle_drawSelect (t_toggle *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -160,7 +160,7 @@ void toggle_drawSelect (t_toggle *x, t_glist *glist)
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : COLOR_NORMAL);
 }
 
-void toggle_drawErase (t_toggle *x, t_glist *glist)
+static void toggle_drawErase (t_toggle *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -175,7 +175,7 @@ void toggle_drawErase (t_toggle *x, t_glist *glist)
                     x);
 }
 
-void toggle_drawConfig (t_toggle *x, t_glist *glist)
+static void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -197,7 +197,7 @@ void toggle_drawConfig (t_toggle *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void toggle_draw (t_toggle *x, t_glist *glist, int mode)
+static void toggle_draw (t_toggle *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_UPDATE    : toggle_drawUpdate (x, glist); break;

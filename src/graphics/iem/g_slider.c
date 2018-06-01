@@ -248,7 +248,7 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void slider_draw (t_slider *x, t_glist *glist, int mode)
+static void slider_draw (t_slider *x, t_glist *glist, int mode)
 {
     switch (mode) {
         case IEM_DRAW_UPDATE    : slider_drawUpdate (x, glist); break;
