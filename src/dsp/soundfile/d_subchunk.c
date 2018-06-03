@@ -115,7 +115,9 @@ static int subchunk_parseCOMM (t_headerhelper *t, t_audioproperties *args)
         
     int numberOfChannels = (int)soundfile_swap2Pointer (p + 0, args->ap_needToSwap);
     int bitsPerSample    = (int)soundfile_swap2Pointer (p + 6, args->ap_needToSwap);
-
+    double sampleRate    = soundfile_getAiff80BitFloat (p + 8);
+    
+    args->ap_sampleRate       = sampleRate;
     args->ap_bytesPerSample   = bitsPerSample / 8;
     args->ap_numberOfChannels = numberOfChannels;
     
@@ -177,8 +179,10 @@ static int subchunk_parseFMT (t_headerhelper *t, t_audioproperties *args)
     
     int audioFormat      = (int)soundfile_swap2Pointer (p + 0,  args->ap_needToSwap);
     int numberOfChannels = (int)soundfile_swap2Pointer (p + 2,  args->ap_needToSwap);
+    int sampleRate       = (int)soundfile_swap4Pointer (p + 4,  args->ap_needToSwap);
     int bitsPerSample    = (int)soundfile_swap2Pointer (p + 14, args->ap_needToSwap);
     
+    args->ap_sampleRate       = sampleRate;
     args->ap_numberOfChannels = numberOfChannels;
     
     PD_ASSERT (audioFormat == WAVE_FORMAT_PCM || audioFormat == WAVE_FORMAT_FLOAT);

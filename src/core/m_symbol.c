@@ -185,6 +185,28 @@ t_symbol *symbol_decode (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol *symbol_join (t_symbol *s, t_symbol *appended)
+{
+    PD_ASSERT (s);
+    PD_ASSERT (appended);
+    
+    if (appended != &s_) {
+    //
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    err = string_sprintf (t, PD_STRING, "%s%s", s->s_name, appended->s_name);
+    PD_UNUSED (err); PD_ASSERT (!err);
+    return gensym (t);
+    //
+    }
+    
+    return s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_symbol *symbol_removeExtension (t_symbol *s)
 {
     PD_ASSERT (s);

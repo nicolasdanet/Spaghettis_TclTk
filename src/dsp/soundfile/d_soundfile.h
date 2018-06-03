@@ -183,22 +183,64 @@ static inline uint16_t soundfile_swap2Pointer (char *c, int needToSwap)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-static inline void soundfile_makeAiff80BitFloat (double sampleRate, char *s)
+#define UnsignedToFloat(u) (((double)((long)(u - 2147483647L - 1))) + 2147483648.0)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void soundfile_setAiff80BitFloat (double sampleRate, char *bytes)
 {
     int e;
     unsigned int m = (unsigned int)ldexp (frexp (sampleRate, &e), 32);
     
-    s[0] = (e + 16382) >> 8;
-    s[1] = (e + 16382);
-    s[2] = m >> 24;
-    s[3] = m >> 16;
-    s[4] = m >> 8;
-    s[5] = m;
-    s[6] = 0;
-    s[7] = 0;
-    s[8] = 0;
-    s[9] = 0;
+    bytes[0] = (e + 16382) >> 8;
+    bytes[1] = (e + 16382);
+    bytes[2] = m >> 24;
+    bytes[3] = m >> 16;
+    bytes[4] = m >> 8;
+    bytes[5] = m;
+    bytes[6] = 0;
+    bytes[7] = 0;
+    bytes[8] = 0;
+    bytes[9] = 0;
+}
+
+/* < http://www.onicos.com/staff/iz/formats/ieee.c > */
+
+static inline double soundfile_getAiff80BitFloat (char *bytes)
+{
+    double f;
+    int e;
+    unsigned long hi, lo;
+    
+    e  = ((bytes[0] & 0x7F) << 8) | (bytes[1] & 0xFF);
+    
+    hi = ((unsigned long)(bytes[2] & 0xFF) << 24)
+            | ((unsigned long)(bytes[3] & 0xFF) << 16)
+            | ((unsigned long)(bytes[4] & 0xFF) << 8)
+            | ((unsigned long)(bytes[5] & 0xFF));
+    lo = ((unsigned long)(bytes[6] & 0xFF) << 24)
+            | ((unsigned long)(bytes[7] & 0xFF) << 16)
+            | ((unsigned long)(bytes[8] & 0xFF) << 8)
+            | ((unsigned long)(bytes[9] & 0xFF));
+
+    if (e == 0 && hi == 0 && lo == 0) { f = 0; }
+    else {
+        if (e == 0x7FFF) { f = HUGE_VAL; }      /* Infinity or NaN. */
+        else {
+            e -= 16383;
+            f  = ldexp (UnsignedToFloat (hi), e -= 31);
+            f += ldexp (UnsignedToFloat (lo), e -= 32);
+        }
+    }
+
+    if (bytes[0] & 0x80) { return -f; }
+    else {
+        return f;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

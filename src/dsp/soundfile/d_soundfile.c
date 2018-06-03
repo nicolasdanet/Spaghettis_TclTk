@@ -69,9 +69,11 @@ t_error soundfile_readFileParse (t_glist *dummy, t_symbol *s, int *ac, t_atom **
     
     #if PD_WITH_LEGACY
     
-    if (t == sym___dash__maxsize) { t = sym___dash__frames; }
+    if (t == sym___dash__maxsize)  { t = sym___dash__frames; }
     
     #endif
+    
+    if (t == sym___dash__nextstep) { t = sym___dash__next; }
     
     if (argc > 1 && (t == sym___dash__s || t == sym___dash__skip)) {
         onset = (int)atom_getFloat (argv + 1);
@@ -88,7 +90,7 @@ t_error soundfile_readFileParse (t_glist *dummy, t_symbol *s, int *ac, t_atom **
         needToResize = 1;
         argc--; argv++;
         
-    } else if (t == sym___dash__nextstep) {
+    } else if (t == sym___dash__next)     {
         fileExtension = sym___point__snd;
         argc--; argv++;
         
@@ -97,6 +99,10 @@ t_error soundfile_readFileParse (t_glist *dummy, t_symbol *s, int *ac, t_atom **
         argc--; argv++;
         
     } else if (t == sym___dash__aiff)     {
+        fileExtension = sym___point__aiff;
+        argc--; argv++;
+    
+    } else if (t == sym___dash__aif)      {
         fileExtension = sym___point__aif;
         argc--; argv++;
         
@@ -145,6 +151,7 @@ static t_error soundfile_readFileHeaderCanonicalWAVE (int f, t_headerhelper *t, 
     int fmtSize          = (int)soundfile_swap4Pointer (t->h_c + 16, swap);
     int audioFormat      = (int)soundfile_swap2Pointer (t->h_c + 20, swap);
     int numberOfChannels = (int)soundfile_swap2Pointer (t->h_c + 22, swap);
+    int sampleRate       = (int)soundfile_swap4Pointer (t->h_c + 24, swap);
     int bitsPerSample    = (int)soundfile_swap2Pointer (t->h_c + 34, swap);
     int dataSize         = (int)soundfile_swap4Pointer (t->h_c + 40, swap);
     
@@ -156,6 +163,7 @@ static t_error soundfile_readFileHeaderCanonicalWAVE (int f, t_headerhelper *t, 
     //
     if (bitsPerSample == 16 || bitsPerSample == 24 || bitsPerSample == 32) {
     //
+    args->ap_sampleRate        = sampleRate;
     args->ap_headerSize        = SOUNDFILE_HEADER_WAVE;
     args->ap_bytesPerSample    = bitsPerSample / 8;
     args->ap_numberOfChannels  = numberOfChannels;
@@ -192,6 +200,8 @@ static t_error soundfile_readFileHeaderCanonicalAIFF (int f, t_headerhelper *t, 
     int offset           = (int)soundfile_swap4Pointer (t->h_c + 46, swap);
     int blockAlign       = (int)soundfile_swap4Pointer (t->h_c + 50, swap);
     
+    double sampleRate    = soundfile_getAiff80BitFloat (t->h_c + 28);
+    
     PD_ASSERT (offset == 0);        /* Not tested nor implemented for now. */
     PD_ASSERT (blockAlign == 0);    /* Ditto. */
     PD_UNUSED (offset);
@@ -199,6 +209,7 @@ static t_error soundfile_readFileHeaderCanonicalAIFF (int f, t_headerhelper *t, 
     
     if (bitsPerSample == 16 || bitsPerSample == 24 || bitsPerSample == 32) {
     //
+    args->ap_sampleRate        = sampleRate;
     args->ap_headerSize        = SOUNDFILE_HEADER_AIFF;
     args->ap_bytesPerSample    = bitsPerSample / 8;
     args->ap_numberOfChannels  = numberOfChannels;
@@ -227,6 +238,7 @@ static t_error soundfile_readFileHeaderCanonicalNEXT (int f, t_headerhelper *t, 
     int dataLocation     = (int)soundfile_swap4Pointer (t->h_c + 4,  swap);
     int dataSize         = (int)soundfile_swap4Pointer (t->h_c + 8,  swap);
     int audioFormat      = (int)soundfile_swap4Pointer (t->h_c + 12, swap);
+    int sampleRate       = (int)soundfile_swap4Pointer (t->h_c + 16, swap);
     int numberOfChannels = (int)soundfile_swap4Pointer (t->h_c + 20, swap);
     int bytesPerSample   = 0;
     
@@ -236,6 +248,7 @@ static t_error soundfile_readFileHeaderCanonicalNEXT (int f, t_headerhelper *t, 
             
     if (bytesPerSample) {
     //
+    args->ap_sampleRate        = sampleRate;
     args->ap_headerSize        = dataLocation;
     args->ap_bytesPerSample    = bytesPerSample;
     args->ap_numberOfChannels  = numberOfChannels;
@@ -276,6 +289,7 @@ static t_error soundfile_readFileHeaderFormat (int f, t_audioproperties *args)
     
     if (format != SOUNDFILE_UNDEFINED) {
     
+        args->ap_fileType   = format;
         args->ap_needToSwap = (args->ap_isBigEndian != soundfile_systemIsBigEndian());
         
         if (format == SOUNDFILE_WAVE) {
@@ -308,10 +322,13 @@ static int soundfile_readFileHeaderProceed (int f, t_audioproperties *args)
     
     if (!err) {
     //
-    PD_ASSERT (args->ap_headerSize       != SOUNDFILE_UNDEFINED);
-    PD_ASSERT (args->ap_numberOfChannels != SOUNDFILE_UNDEFINED);
-    PD_ASSERT (args->ap_isBigEndian      != SOUNDFILE_UNDEFINED);
-    PD_ASSERT (args->ap_dataSizeInBytes  != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_sampleRate          != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_fileType            != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_headerSize          != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_numberOfChannels    != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_bytesPerSample      != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_isBigEndian         != SOUNDFILE_UNDEFINED);
+    PD_ASSERT (args->ap_dataSizeInBytes     != SOUNDFILE_UNDEFINED);
         
     err |= (args->ap_dataSizeInBytes < 0);
     err |= (args->ap_dataSizeInBytes + args->ap_headerSize > lseek (f, 0, SEEK_END));
@@ -327,12 +344,11 @@ static int soundfile_readFileHeaderProceed (int f, t_audioproperties *args)
         
     if (!err) {
         args->ap_dataSizeInBytes = PD_MAX (0, args->ap_dataSizeInBytes - m);
-        return f;
     }
     //
     }
     
-    return -1;
+    if (!err) { return f; } else { close (f); return -1; }
 }
 
 /* Caller is responsible to close the file. */
@@ -380,9 +396,11 @@ t_error soundfile_writeFileParse (t_glist *glist, t_symbol *s, int *ac, t_atom *
     
     #if PD_WITH_LEGACY
     
-    if (t == sym___dash__nframes) { t = sym___dash__frames; }
+    if (t == sym___dash__nframes)  { t = sym___dash__frames; }
     
     #endif
+    
+    if (t == sym___dash__nextstep) { t = sym___dash__next; }
     
     if (argc > 1 && (t == sym___dash__s || t == sym___dash__skip)) {
         onset = (int)atom_getFloat (argv + 1);
@@ -408,7 +426,7 @@ t_error soundfile_writeFileParse (t_glist *glist, t_symbol *s, int *ac, t_atom *
         needToNormalize = 1;
         argc--; argv++;
     
-    } else if (t == sym___dash__nextstep)   {
+    } else if (t == sym___dash__next)   {
         fileType = SOUNDFILE_NEXT; fileExtension = sym___point__snd;
         argc--; argv++;
         
@@ -417,6 +435,10 @@ t_error soundfile_writeFileParse (t_glist *glist, t_symbol *s, int *ac, t_atom *
         argc--; argv++;
         
     } else if (t == sym___dash__aiff)   {
+        fileType = SOUNDFILE_AIFF; fileExtension = sym___point__aiff;
+        argc--; argv++;
+    
+    } else if (t == sym___dash__aif)    {
         fileType = SOUNDFILE_AIFF; fileExtension = sym___point__aif;
         argc--; argv++;
         
@@ -562,7 +584,7 @@ static t_error soundfile_writeFileHeaderAIFF (t_headerhelper *t, t_audioproperti
     memcpy  (t->h_c + 20,  &h.a_numberOfChannels, 2);
     memcpy  (t->h_c + 22,  &h.a_numberOfFrames, 4);
     memcpy  (t->h_c + 26,  &h.a_bitsPerSample, 2);
-    soundfile_makeAiff80BitFloat (args->ap_sampleRate, t->h_c + 28);
+    soundfile_setAiff80BitFloat (args->ap_sampleRate, t->h_c + 28);
     strncpy (t->h_c + 38, "SSND", 4);
     memcpy  (t->h_c + 42,  &h.a_dataChunkSize, 4);
     memcpy  (t->h_c + 46,  &h.a_dataOffset, 4);
