@@ -199,16 +199,16 @@ static int soundfiler_readProceed (t_glist *glist, int argc, t_atom *argv)
     
     err = (f < 0);
     
-    if (!err) { err = (properties.ap_dataSizeInBytes >= SOUNDFILER_LIMIT_SIZE); }
-    
-    /* Note that at this point the file is positioned at start of the sound. */
-    /* Onset is already handled. */
-    
     if (!err) {
     
-        err = soundfiler_readResizeIfNecessary (f, argc, a, w, &arraysSize, &properties);
+        err = (properties.ap_dataSizeInBytes >= SOUNDFILER_LIMIT_SIZE);
+    
+        /* Note that at this point the file is positioned at start of the sound. */
+        /* Onset is already handled. */
+    
+        if (!err) { err = soundfiler_readResizeIfNecessary (f, argc, a, w, &arraysSize, &properties); }
         
-        if (err) { close (f); }     /* < http://stackoverflow.com/a/13691168 > */
+        if (err)  { close (f); }     /* < http://stackoverflow.com/a/13691168 > */
         else {
         
             int i, numberOfFramesRead = soundfiler_readDecode (f, argc, a, w, &arraysSize, &properties);

@@ -23,6 +23,7 @@
 		177169891EFD1212003CD374 /* m_autorelease.c in Sources */ = {isa = PBXBuildFile; fileRef = 177169881EFD1212003CD374 /* m_autorelease.c */; };
 		1781A2C72039D3D100CCD615 /* x_closebang.c in Sources */ = {isa = PBXBuildFile; fileRef = 1781A2C62039D3D100CCD615 /* x_closebang.c */; };
 		1781A369200655AB00AFBD2F /* d_sfthread.c in Sources */ = {isa = PBXBuildFile; fileRef = 1781A368200655AB00AFBD2F /* d_sfthread.c */; };
+		1786BAF320C4364E009CE75A /* d_soundinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 1786BAF220C4364E009CE75A /* d_soundinfo.c */; };
 		17871B1D20AF20B900447902 /* s_recentfiles.c in Sources */ = {isa = PBXBuildFile; fileRef = 17871B1C20AF20B900447902 /* s_recentfiles.c */; };
 		17981E151F0618A10029AD87 /* s_searchpath.c in Sources */ = {isa = PBXBuildFile; fileRef = 17981E141F0618A10029AD87 /* s_searchpath.c */; };
 		179873E31F01095100BB1B94 /* m_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 179873E21F01095100BB1B94 /* m_file.c */; };
@@ -444,6 +445,7 @@
 		1781A2C62039D3D100CCD615 /* x_closebang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_closebang.c; sourceTree = "<group>"; };
 		1781A368200655AB00AFBD2F /* d_sfthread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = d_sfthread.c; sourceTree = "<group>"; };
 		1781A36A2006563200AFBD2F /* d_sfthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d_sfthread.h; sourceTree = "<group>"; };
+		1786BAF220C4364E009CE75A /* d_soundinfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = d_soundinfo.c; sourceTree = "<group>"; };
 		17871B1C20AF20B900447902 /* s_recentfiles.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = s_recentfiles.c; sourceTree = "<group>"; };
 		178CB8A1201F566300F9B8E1 /* d_block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d_block.h; sourceTree = "<group>"; };
 		1794C5D81F055A6400D78A38 /* m_clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_clipboard.h; sourceTree = "<group>"; };
@@ -1725,6 +1727,7 @@
 				374FA5381E2120FD00C119CA /* d_subchunk.c */,
 				37C470571E0FC3B300E0F726 /* d_codec.c */,
 				3762D32D1E0531D900385DB9 /* d_soundfiler.c */,
+				1786BAF220C4364E009CE75A /* d_soundinfo.c */,
 				1781A368200655AB00AFBD2F /* d_sfthread.c */,
 				3762D2FC1E05308C00385DB9 /* d_readsf.c */,
 				3762D2BC1E051E2700385DB9 /* d_writesf.c */,
@@ -2262,6 +2265,7 @@
 				37329A6B1E4631D5008AA5E4 /* s_monitor.c in Sources */,
 				37ECBA031E488A3000F1CFD1 /* d_lrshift.c in Sources */,
 				371526B61E49D03E00712D43 /* x_expr.c in Sources */,
+				1786BAF320C4364E009CE75A /* d_soundinfo.c in Sources */,
 				37E224BF1E4B542B00314AA4 /* s_properties.c in Sources */,
 				37B911AB1E4C78FE001D9136 /* s_devicesproperties.c in Sources */,
 				376209A61E4F0FC300D97CF4 /* s_deviceslist.c in Sources */,

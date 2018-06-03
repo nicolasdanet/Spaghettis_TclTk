@@ -372,6 +372,7 @@
 #include "dsp/soundfile/d_subchunk.c"
 #include "dsp/soundfile/d_codec.c"
 #include "dsp/soundfile/d_soundfiler.c"
+#include "dsp/soundfile/d_soundinfo.c"
 #include "dsp/soundfile/d_sfthread.c"
 #include "dsp/soundfile/d_readsf.c"
 #include "dsp/soundfile/d_writesf.c"
