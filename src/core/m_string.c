@@ -163,6 +163,22 @@ t_error string_escapeOccurrence (char *dest, size_t size, const char *chars)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* < http://www.cse.yorku.ca/~oz/hash.html > */
+
+t_unique string_hash (const char *s)
+{
+    t_unique hash = 5381;
+    int c;
+    
+    while ((c = *s++)) { hash = ((hash << 5) + hash) + c; }
+    
+    return hash;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 int string_startWith (const char *s, const char *isStartWith)
 {
     size_t n = strlen (isStartWith);

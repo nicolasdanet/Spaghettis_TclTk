@@ -41,7 +41,7 @@ void path_backslashToSlashIfNecessary (char *s)
 
 int path_isFileExist (const char *filepath)
 {
-    struct stat t; return (stat (filepath, &t) == 0);
+    return (access (filepath, F_OK) == 0);
 }
 
 int path_isFileExistAsRegularFile (const char *filepath)
@@ -52,6 +52,11 @@ int path_isFileExistAsRegularFile (const char *filepath)
 int path_isFileExistAsDirectory (const char *filepath)
 {
     struct stat t; return ((stat (filepath, &t) == 0) && S_ISDIR (t.st_mode));
+}
+
+int path_containsHiddenDirectory (const char *filepath)
+{
+    return string_contains (filepath, "/.");
 }
 
 t_error path_createDirectory (const char *filepath)

@@ -59,7 +59,7 @@ t_error buffer_fileRead (t_buffer *x, t_symbol *name, t_glist *glist)
 {
     t_error err = PD_ERROR;
     
-    t_fileproperties p;
+    t_fileproperties p; fileproperties_init (&p);
     
     if (glist_fileExist (glist, name->s_name, "", &p)) {
         err = buffer_fromFile (x, fileproperties_getName (&p), fileproperties_getDirectory (&p));

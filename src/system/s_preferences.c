@@ -48,7 +48,7 @@ void preferences_load (void)
         string_sprintf (k, PD_STRING, "Path%d", i + 1);
         if (!properties_getKey (k, v, PD_STRING)) { break; }
         else {
-            searchpath_appendPath (v);
+            searchpath_appendRoot (v);
         }
     }
     
@@ -161,7 +161,7 @@ void preferences_save (void)
     
     /* Search paths. */
     
-    l = searchpath_get();
+    l = searchpath_getRoots();
     
     for (i = 0; 1; i++) {
 

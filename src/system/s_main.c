@@ -361,6 +361,8 @@ int main_entry (int argc, char **argv)
     setup_initialize();     /* Instance initialized here. */
     preferences_load();
     
+    if (searchpath_scan() != PD_ERROR_NONE) { PD_BUG; }
+    
     if (!(err |= interface_start())) {
         if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
     }

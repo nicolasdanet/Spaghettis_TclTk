@@ -96,6 +96,8 @@ t_error     string_clear                                (char *dest, size_t size
 
 t_error     string_escapeOccurrence                     (char *dest, size_t size, const char *chars);
 
+t_unique    string_hash                                 (const char *s);
+
 int         string_startWith                            (const char *s, const char *isStart);
 int         string_endWith                              (const char *s, const char *isEnd);
 int         string_contains                             (const char *s, const char *isContained);

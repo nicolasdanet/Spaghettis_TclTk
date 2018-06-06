@@ -105,7 +105,7 @@ static int instance_loadAbstractionIsValid (t_symbol *filename)
 
 void instance_loadAbstraction (t_symbol *name, int argc, t_atom *argv)
 {
-    t_fileproperties p;
+    t_fileproperties p; fileproperties_initAbstraction (&p, name);
     
     if (glist_fileExist (instance_contextGetCurrent(), name->s_name, PD_PATCH, &p)) {
     //
