@@ -531,7 +531,7 @@ static void garray_read (t_garray *x, t_symbol *name)
 {
     t_error err = PD_ERROR_NONE;
     
-    t_fileproperties p;
+    t_fileproperties p; fileproperties_init (&p);
     
     int f = glist_fileOpen (glist_getView (x->x_owner), name->s_name, "", &p);
     

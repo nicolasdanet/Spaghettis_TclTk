@@ -97,6 +97,11 @@ void scheduler_needToExitWithError (void)
     scheduler_quit = SCHEDULER_ERROR;
 }
 
+int scheduler_isExiting (void)
+{
+    return (scheduler_quit == SCHEDULER_QUIT || scheduler_quit == SCHEDULER_ERROR);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

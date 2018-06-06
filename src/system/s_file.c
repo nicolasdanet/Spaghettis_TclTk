@@ -54,9 +54,11 @@ int file_openWrite (const char *filepath)
 
 int file_openRead (const char *filepath)
 {
-    if (!(path_isFileExistAsRegularFile (filepath))) { return -1; }
-    
-    return file_openRawNative (filepath, O_RDONLY);
+    if (!(path_isFileExist (filepath))) { return -1; }
+    else if (!(path_isFileExistAsRegularFile (filepath))) { return -1; }
+    else {
+        return file_openRawNative (filepath, O_RDONLY);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -100,18 +102,35 @@ int file_openReadConsideringSearchPath (const char *directory,
     const char *extension,
     t_fileproperties *p)
 {
+    /* Search first (and always) in directory provided (sibling files). */
+    
     int f = file_openReadWithDirectoryAndName (directory, name, extension, p);
+    int n = 0;
+    
+    /* For efficiency, test availability before to explore. */
     
     if (f < 0) {
-        t_pathlist *l = searchpath_get();
-        while (l) {
-            char *path = pathlist_getPath (l);
-            l = pathlist_getNext (l);
-            f = file_openReadWithDirectoryAndName (path, name, extension, p);
-            if (f >= 0) { break; }
+        if (p->f_flag == FILEPROPERTIES_EXTERNAL)    {
+            if (!searchpath_isExternalAvailable (p->f_sym))    { return -1; }
+        }
+        if (p->f_flag == FILEPROPERTIES_ABSTRACTION) {
+            if (!searchpath_isAbstractionAvailable (p->f_sym)) { return -1; }
         }
     }
-
+    
+    /* At last look for in trees. */
+    
+    if (f < 0) {
+        t_pathlist *l = searchpath_getExtended();
+        while (l) {
+            const char *path = pathlist_getPath (l);
+            l = pathlist_getNext (l);
+            f = file_openReadWithDirectoryAndName (path, name, extension, p);
+            if (f >= 0) { searchpath_extendedMatchedAtIndex (n); break; }
+            n++;
+        }
+    }
+    
     return f;
 }
 

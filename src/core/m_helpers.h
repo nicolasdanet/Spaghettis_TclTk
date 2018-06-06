@@ -339,11 +339,37 @@ static inline t_float bounds_getRangeY (t_bounds *b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _fileproperties { char f_directory[PD_STRING]; char *f_name; } t_fileproperties;
+typedef struct _fileproperties {
+    char        f_directory[PD_STRING]; char *f_name;
+    char        f_flag;
+    t_symbol    *f_sym;
+    } t_fileproperties;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+#define FILEPROPERTIES_EXTERNAL     1
+#define FILEPROPERTIES_ABSTRACTION  2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void fileproperties_init (t_fileproperties *p)
+{
+    p->f_directory[0] = 0; p->f_name = p->f_directory; p->f_flag = 0;
+}
+
+static inline void fileproperties_initExternal (t_fileproperties *p, t_symbol *name)
+{
+    fileproperties_init (p); p->f_flag = FILEPROPERTIES_EXTERNAL; p->f_sym = name;
+}
+
+static inline void fileproperties_initAbstraction (t_fileproperties *p, t_symbol *name)
+{
+    fileproperties_init (p); p->f_flag = FILEPROPERTIES_ABSTRACTION; p->f_sym = name;
+}
 
 static inline char *fileproperties_getDirectory (t_fileproperties *p)
 {
@@ -360,20 +386,28 @@ static inline char *fileproperties_getName (t_fileproperties *p)
 // MARK: -
 
 typedef struct _iterator {
-    int                 iter_argc;
-    int                 iter_index;
-    t_atom              *iter_argv;
+    int                     iter_argc;
+    int                     iter_index;
+    t_atom                  *iter_argv;
     } t_iterator;
 
+typedef struct _pathregister {
+    int                     pr_allocated;
+    int                     pr_size;
+    t_unique                *pr_hashes;
+    } t_pathregister;
+
 typedef struct _pathlist {
-    struct _pathlist    *pl_next;
-    char                *pl_string;
+    struct _pathlist        *pl_next;
+    struct _pathregister    *pl_register;
+    char                    *pl_string;
+    t_unique                pl_hash;
     } t_pathlist;
 
 typedef struct _heapstring {
-    size_t              hs_allocated;
-    size_t              hs_size;
-    char                *hs_raw;
+    size_t                  hs_allocated;
+    size_t                  hs_size;
+    char                    *hs_raw;
     } t_heapstring;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -389,14 +423,17 @@ int         iterator_next                       (t_iterator *x, t_atom **a);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_pathlist  *pathlist_newAppend                 (t_pathlist *x, const char *s);
-t_pathlist  *pathlist_newAppendEncoded          (t_pathlist *x, t_symbol *s);
+t_pathlist  *pathlist_newAppend                 (t_pathlist *x, t_pathlist **duplicates, const char *s);
 char        *pathlist_getPath                   (t_pathlist *x);
 t_pathlist  *pathlist_getNext                   (t_pathlist *x);
 t_pathlist  *pathlist_removeFirst               (t_pathlist *x);
+t_pathlist  *pathlist_moveFront                 (t_pathlist *x, int n);
 
+int         pathlist_contains                   (t_pathlist *x, const char *s);
 int         pathlist_getSize                    (t_pathlist *x);
 void        pathlist_free                       (t_pathlist *x);
+
+t_error     pathlist_check                      (t_pathlist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

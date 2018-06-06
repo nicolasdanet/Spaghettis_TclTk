@@ -120,6 +120,7 @@ proc _apply {} {
 
     ::ui_interface::pdsend "pd _path $::var(searchPath)"
     ::ui_interface::pdsend "pd _savepreferences"
+    ::ui_interface::pdsend "pd scan"
 }
 
 # Show info message if the search path is empty.

@@ -355,7 +355,7 @@ static int soundfile_readFileHeaderProceed (int f, t_audioproperties *args)
 
 int soundfile_readFileHeader (t_glist *glist, t_audioproperties *args)
 {
-    t_fileproperties p;
+    t_fileproperties p; fileproperties_init (&p);
     
     PD_ASSERT (args->ap_fileName);
     PD_ASSERT (args->ap_fileExtension);

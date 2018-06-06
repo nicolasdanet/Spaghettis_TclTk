@@ -193,7 +193,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
 
 static void gobj_openHelp (const char *directory, const char *name)
 {
-    t_fileproperties p;
+    t_fileproperties p; fileproperties_init (&p);
     int f = -1;
     
     if (*directory != 0) { f = file_openReadWithDirectoryAndName (directory, name, PD_HELP, &p); }

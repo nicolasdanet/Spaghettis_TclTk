@@ -82,6 +82,7 @@ double      scheduler_getUnitsSince                 (t_systime systime, double u
 void        scheduler_setAudioState                 (int state);
 void        scheduler_needToExit                    (void);
 void        scheduler_needToExitWithError           (void);
+int         scheduler_isExiting                     (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -179,7 +180,7 @@ int         file_openReadConsideringSearchPath      (const char *directory,
 t_pathlist  *recentfiles_get                        (void);
 
 void        recentfiles_add                         (t_symbol *name, t_symbol *directory, int check);
-void        recentfiles_appendPath                  (char *filepath);
+void        recentfiles_appendPath                  (const char *filepath);
 void        recentfiles_clear                       (void);
 void        recentfiles_update                      (void);
 
@@ -187,11 +188,18 @@ void        recentfiles_update                      (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_pathlist  *searchpath_get                         (void);
+t_pathlist  *searchpath_getRoots                    (void);
+t_pathlist  *searchpath_getExtended                 (void);
 
-void        searchpath_appendPath                   (char *filepath);
-void        searchpath_setEncoded                   (int argc, t_atom *argv);
+void        searchpath_extendedMatchedAtIndex       (int n);
 
+void        searchpath_appendRoot                   (const char *filepath);
+void        searchpath_setRootsEncoded              (int argc, t_atom *argv);
+t_error     searchpath_scan                         (void);
+void        searchpath_report                       (void);
+int         searchpath_isExternalAvailable          (t_symbol *s);
+int         searchpath_isAbstractionAvailable       (t_symbol *s);
+int         searchpath_hasDuplicates                (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -202,6 +210,7 @@ void        path_backslashToSlashIfNecessary        (char *s);
 int         path_isFileExist                        (const char *filepath);
 int         path_isFileExistAsRegularFile           (const char *filepath);
 int         path_isFileExistAsDirectory             (const char *filepath);
+int         path_containsHiddenDirectory            (const char *filepath);
 t_error     path_createDirectory                    (const char *filepath);
 
 t_error     path_withDirectoryAndName               (char *dest, 

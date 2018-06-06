@@ -444,6 +444,10 @@ proc _tools {m} {
         -command { 
             if {$::var(isPath)} { ::ui_path::show } else { ::ui_path::hide } 
         }
+    $m add separator
+    $m add command \
+        -label [_ "Rescan"] \
+        -command { ::ui_interface::pdsend "pd scan" }
 }
 
 proc _popup {m} {

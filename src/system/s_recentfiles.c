@@ -37,9 +37,9 @@ static void recentfiles_removeOldPaths (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void recentfiles_appendPath (char *filepath)
+void recentfiles_appendPath (const char *filepath)
 {
-    recentfiles_list = pathlist_newAppend (recentfiles_list, filepath);
+    recentfiles_list = pathlist_newAppend (recentfiles_list, NULL, filepath);
 }
 
 void recentfiles_clear (void)

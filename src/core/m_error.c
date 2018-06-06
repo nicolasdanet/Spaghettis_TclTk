@@ -90,6 +90,11 @@ void error_stubNotFound (void)
     post_error (PD_TRANSLATE ("loader: stub not found"));
 }
 
+void error_searchPathOverflow (void)
+{
+    post_error (PD_TRANSLATE ("scan: search path overflow"));
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -271,6 +276,11 @@ void warning_tooManyCharacters (t_symbol *s)
 void warning_multipleBinding (t_symbol *s)
 { 
     post_warning (PD_TRANSLATE ("%s: multiple binding"), s->s_name);
+}
+
+void warning_containsDuplicates (void)
+{
+    post_error (PD_TRANSLATE ("scan: contains duplicates"));
 }
 
 // -----------------------------------------------------------------------------------------------------------

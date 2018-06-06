@@ -44,6 +44,19 @@ static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
     if (!instance_patchOpen (name, directory)) { recentfiles_add (name, directory, 0); }
 }
 
+static void global_scan (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    t_error err = searchpath_scan();
+    
+    if (argc && atom_getSymbol (argv) == sym_logged) { searchpath_report(); }
+    
+    if (searchpath_hasDuplicates()) { warning_containsDuplicates(); }
+    if (err) { error_searchPathOverflow(); post ("scan: failed"); }  // --
+    else {
+        post ("scan: done");  // --
+    }
+}
+
 static void global_clear (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && atom_getSymbol (argv) == sym_recent) { recentfiles_clear(); recentfiles_update(); }
@@ -103,7 +116,7 @@ static void global_midiDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void global_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    searchpath_setEncoded (argc, argv);
+    searchpath_setRootsEncoded (argc, argv);
 }
 
 static void global_shouldQuit (void *dummy)
@@ -147,10 +160,10 @@ void global_setup (void)
 
     class_addMethod (c, (t_method)global_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_open,                  sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)global_scan,                  sym_scan,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_clear,                 sym_clear,  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_dsp,                   sym_dsp,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_quit,                  sym_quit,   A_NULL);
-    
     
     class_addMethod (c, (t_method)global_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_font,                  sym__font,              A_GIMME, A_NULL);
