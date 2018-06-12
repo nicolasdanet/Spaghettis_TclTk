@@ -97,8 +97,11 @@ proc setTitle {top path name dirty} {
     
     set patchTitle($top) "[file rootname [file tail $name]]"
     
-    if {[tk windowingsystem] eq "aqua"} { wm attributes $top -modified $dirty }
-
+    if {[tk windowingsystem] eq "aqua"} {
+        wm attributes $top -modified $dirty
+        if {[file exists "$path/$name"]} { wm attributes $top -titlepath "$path/$name" }
+    }
+    
     ::ui_patch::_reflectEditmode $top
 }
 
@@ -152,9 +155,7 @@ proc _reflectEditmode {top} {
     
     set title [::ui_patch::getTitle $top]
 
-    # On macOS Sierra extra space is required to avoid ellipsis.
-
-    if {$patchIsEditMode($top)} { wm title $top "$title (Edit)" } else { wm title $top "     $title     " }
+    if {$patchIsEditMode($top)} { wm title $top "$title (Edit)" } else { wm title $top "$title" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
