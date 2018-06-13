@@ -1,7 +1,7 @@
 #N canvas 732 168 382 329 12;
 #X obj 36 180 oscparse;
 #X obj 84 288 oscformat;
-#X obj 156 288 netreceive;
+#X obj 168 288 netreceive;
 #X text 12 288 See also:;
 #X obj -60 12 freeze;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
