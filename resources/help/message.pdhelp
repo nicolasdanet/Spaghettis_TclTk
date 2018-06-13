@@ -1,4 +1,4 @@
-#N canvas 735 123 418 278 12;
+#N canvas 529 74 418 278 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 message;
@@ -67,10 +67,10 @@
 #X connect 1 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 336 216 pd again;
-#N canvas 510 257 495 310 again 0;
+#N canvas 588 218 495 310 again 0;
 #X obj 36 264 print;
-#X obj 132 228 print;
-#X obj 216 228 print;
+#X obj 132 240 print;
+#X obj 216 240 print;
 #X obj 132 192 r \$0-a;
 #X obj 216 192 r \$0-b;
 #X msg 36 192 1 \; \$0-a 2 \; \$0-b 3;
@@ -83,6 +83,14 @@
 #X msg 36 72 miss $\$0-Granger;
 #X msg 216 48 receive $\$0-a;
 #X text 12 156 First atom next to a semicolon must be a receiver object.;
+#N canvas 804 372 300 279 more 0;
+#X msg 36 24 \; pd scan;
+#X msg 36 72 \; pd scan logged;
+#X msg 36 120 \; pd clear;
+#X msg 36 168 \; pd clear recent;
+#X msg 36 216 \; pd quit;
+#X coords 0 0 1 1 250 175 0 0 0;
+#X restore 300 240 pd more;
 #X connect 3 0 1 0;
 #X connect 4 0 2 0;
 #X connect 5 0 0 0;
