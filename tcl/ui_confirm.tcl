@@ -37,6 +37,8 @@ proc checkAction {top message ifYes implicit} {
 
 proc checkClose {top ifYes ifNo ifCancel} {
 
+    ::bringToFront $top
+    
     set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
     
     if {[winfo viewable $top]} {
