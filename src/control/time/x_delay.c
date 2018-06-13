@@ -15,16 +15,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define DELAY_DEFAULT_DELAY         1000.0
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_class *delay_class;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 typedef struct _delay {
     t_object    x_obj;              /* Must be the first. */
@@ -59,16 +53,12 @@ static void delay_bang (t_delay *x)
 
 static void delay_float (t_delay *x, t_float f)
 {
-    delay_floatDelay (x, f);
-    delay_bang (x);
+    delay_floatDelay (x, f); delay_bang (x);
 }
 
 static void delay_floatDelay (t_delay *x, t_float f)
 {
-    if (f < 0.0) { error_invalid (sym_delay, sym_delay); }
-    else {
-        x->x_delay = (double)((f == 0.0) ? DELAY_DEFAULT_DELAY : f);
-    }
+    if (f < 0.0) { error_invalid (sym_delay, sym_delay); } else { x->x_delay = f; }
 }
 
 static void delay_stop (t_delay *x)
