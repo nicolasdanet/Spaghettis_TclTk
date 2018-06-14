@@ -312,9 +312,14 @@ static unsigned char stamp_tagTo4Bits (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int stamp_isTag (t_symbol *s)
+{
+    return (stamp_tagTo4Bits (s) != 0xff);
+}
+
 t_error stamp_setAsTags (int argc, t_atom *argv, t_stamp *stamp)
 {
-    if (argc == STAMP_TAGS_SIZE) {
+    if (argc >= STAMP_TAGS_SIZE) {
     //
     int i;
     
@@ -334,7 +339,7 @@ t_error stamp_setAsTags (int argc, t_atom *argv, t_stamp *stamp)
 
 t_error stamp_getWithTags (int argc, t_atom *argv, t_stamp *stamp)
 {
-    if (argc == STAMP_TAGS_SIZE) {
+    if (argc >= STAMP_TAGS_SIZE) {
     //
     t_error err = PD_ERROR_NONE;
     uint64_t t = 0;

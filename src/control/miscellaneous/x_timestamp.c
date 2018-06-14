@@ -21,9 +21,17 @@ static t_class *timestamp_class;        /* Shared. */
 
 typedef struct _timestamp {
     t_object    x_obj;                  /* Must be the first. */
-    int         x_discard;
+    int         x_mode;
     t_outlet    *x_outlet;
     } t_timestamp;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define TIMESTAMP_IMMEDIATELY           0
+#define TIMESTAMP_DISCARD               1
+#define TIMESTAMP_ELAPSED               2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -57,7 +65,18 @@ static void timestamp_list (t_timestamp *x, t_symbol *s, int argc, t_atom *argv)
     t_stamp now; t_nano ns;
     stamp_set (&now);
     err = stamp_elapsedNanoseconds (&now, &t, &ns);
-    if (!err || !x->x_discard) { outlet_float (x->x_outlet, PD_NANOSECONDS_TO_MILLISECONDS (ns)); }
+    if (x->x_mode == TIMESTAMP_IMMEDIATELY) {
+        outlet_float (x->x_outlet, PD_NANOSECONDS_TO_MILLISECONDS (ns));
+    } else if (x->x_mode == TIMESTAMP_DISCARD) {
+        if (!err) { outlet_float (x->x_outlet, PD_NANOSECONDS_TO_MILLISECONDS (ns)); }
+    } else {
+        if (!err) { outlet_float (x->x_outlet, PD_NANOSECONDS_TO_MILLISECONDS (ns)); }
+        else {
+            err = stamp_elapsedNanoseconds (&t, &now, &ns);
+            PD_ASSERT (!err);
+            outlet_float (x->x_outlet, PD_NANOSECONDS_TO_MILLISECONDS (ns) * (-1.0));
+        }
+    }
     //
     }
 }
@@ -73,7 +92,12 @@ static void timestamp_anything (t_timestamp *x, t_symbol *s, int argc, t_atom *a
 
 static void timestamp_discard (t_timestamp *x, t_float f)
 {
-    x->x_discard = (f != 0.0);
+    x->x_mode = (f == 0.0 ? TIMESTAMP_IMMEDIATELY : TIMESTAMP_DISCARD);
+}
+
+static void timestamp_elapsed (t_timestamp *x, t_float f)
+{
+    x->x_mode = (f == 0.0 ? TIMESTAMP_IMMEDIATELY : TIMESTAMP_ELAPSED);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -92,6 +116,11 @@ static void *timestamp_new (t_symbol *s, int argc, t_atom *argv)
 
     if (t == sym___dash__d || t == sym___dash__discard) {
         timestamp_discard (x, 1.0);
+        argc--;
+        argv++;
+        
+    } else if (t == sym___dash__e || t == sym___dash__elapsed) {
+        timestamp_elapsed (x, 1.0);
         argc--;
         argv++;
         
@@ -130,6 +159,7 @@ void timestamp_setup (void)
     class_addAnything (c, (t_method)timestamp_anything);
     
     class_addMethod (c, (t_method)timestamp_discard, sym_discard, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)timestamp_elapsed, sym_elapsed, A_FLOAT, A_NULL);
     
     timestamp_class = c;
 }

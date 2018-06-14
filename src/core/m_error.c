@@ -242,6 +242,11 @@ void warning_invalid (t_symbol *s1, t_symbol *s2)
     post_warning (PD_TRANSLATE ("%s: invalid %s"), s1->s_name, error__empty (s2));
 }
 
+void warning_empty (t_symbol *s1, t_symbol *s2)
+{
+    post_warning (PD_TRANSLATE ("%s: empty %s"), s1->s_name, error__empty (s2));
+}
+
 void warning_badName (t_symbol *s1, t_symbol *s2)
 {
     post_warning (PD_TRANSLATE ("%s: bad name %s"), s1->s_name, error__empty (s2));

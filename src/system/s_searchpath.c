@@ -142,7 +142,7 @@ void searchpath_report (void)
     //
     t_pathlist *l = searchpath_extended;
 
-    post ("scan: dump %s", t);
+    post ("scan: dump %s", t);  // --
     
     while (l) {
         const char *path = pathlist_getPath (l);
