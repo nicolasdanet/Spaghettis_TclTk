@@ -261,6 +261,7 @@
 #include "control/miscellaneous/x_netreceive.c"
 #include "control/miscellaneous/x_oscparse.c"
 #include "control/miscellaneous/x_oscformat.c"
+#include "control/miscellaneous/x_oscbundle.c"
 #include "control/miscellaneous/x_timestamp.c"
 
 #include "control/midi/x_makenote.c"

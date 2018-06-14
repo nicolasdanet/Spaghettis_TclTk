@@ -11,7 +11,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that this object should be improved to fully support all the OSC features. */
+/* Note that this object is supposed to be compliant to OSC 1.1 Specification. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,9 +46,16 @@ typedef struct _oscformat {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int oscformat_isValidTypetag (char c)
+static char oscformat_getTypeFromSymbol (t_symbol *s)
 {
-    return (c == 'i' || c == 'f' || c == 's' || c == 'b');
+    if (stamp_isTag (s))     { return 't'; }
+    else if (s == sym_true)  { return 'T'; }
+    else if (s == sym_false) { return 'F'; }
+    else if (s == sym_null)  { return 'N'; }
+    else if (s == &s_bang)   { return 'I'; }
+    else {
+        return 's';
+    }
 }
 
 static void oscformat_setString (t_atom *a, int *i, const char *s)
@@ -92,23 +99,42 @@ static int oscformat_proceedGetArgumentsSize (t_oscformat *x, int argc, t_atom *
     t_atom *a = argv + i;
     char type = 'f';
     
-    if (*t) { type = *t; t++; } else if (IS_SYMBOL (a)) { type = 's'; }
+    if (*t) {
+        type = *t; t++;
+    } else if (IS_SYMBOL (a)) {
+        type = oscformat_getTypeFromSymbol (GET_SYMBOL (a));
+    }
     
     if (type == 's') {
         t_symbol *s = IS_SYMBOL (a) ? GET_SYMBOL (a) : sym___question__;
         size += OSC_4ROUND ((int)strlen (s->s_name) + 1);
+        i++;
         
     } else if (type == 'b') {
         int blobSize = (IS_FLOAT (a) && (GET_FLOAT (a) >= 0)) ? (int)GET_FLOAT (a) : (int)PD_INT_MAX;
         blobSize = PD_MIN (argc - i - 1, blobSize);
         size += 4 + OSC_4ROUND (blobSize);
-        i += blobSize;
+        i++; i += blobSize;
+    
+    } else if (type == 't') {
+        size += 8;
+        i += STAMP_TAGS_SIZE;
         
-    } else {
+    } else if (type == 'd') {
+        size += 8;
+        i++;
+    
+    } else if (type == 'T' || type == 'F' || type == 'N' || type == 'I') {
+    
+        size += 0;      /* No bytes in arguments. */
+        i++;
+        
+    } else {            /* Type is 'i' of 'f'. */
+    
         size += 4;
+        i++;
     }
     
-    i++;
     k++;
     //
     }
@@ -182,6 +208,44 @@ static int oscformat_proceedFillBlob (t_oscformat *x, int argc, t_atom *argv, in
     *m = n; j++; return j;
 }
 
+static int oscformat_proceedFillStamp (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
+{
+    int n = *m;
+    
+    t_stamp stamp;
+    t_atom *start = argv + j;
+    int available = argc - j;
+    t_error err = stamp_getWithTags (available, start, &stamp);
+    
+    if (err) { stamp_set (&stamp); error_invalid (sym_oscformat, sym_stamp); }
+    
+    OSC_8WRITE (a + n, stamp);
+    
+    n += 8;
+    j += STAMP_TAGS_SIZE;
+    
+    *m = n; return j;
+}
+
+static int oscformat_proceedFillDouble (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
+{
+    int n = *m;
+    
+    t_rawcast64 z;
+    z.z_d = (double)atom_getFloat (argv + j);
+    OSC_4WRITE (a + n, z.z_i[PD_RAWCAST64_MSB]);
+    n += 4;
+    OSC_4WRITE (a + n, z.z_i[PD_RAWCAST64_LSB]);
+    n += 4;
+    
+    *m = n; j++; return j;
+}
+
+static int oscformat_proceedFillDummy (t_oscformat *x, int argc, t_atom *argv, int j, int *m, t_atom *a)
+{
+    j++; return j;
+}
+
 static t_error oscformat_proceedFill (t_oscformat *x,
     int argc,
     t_atom *argv,
@@ -204,17 +268,27 @@ static t_error oscformat_proceedFill (t_oscformat *x,
 
         char type = 'f';
         
-        if (*t) { type = *t; t++; } else if (IS_SYMBOL (argv + j)) { type = 's'; }
+        if (*t) {
+            type = *t; t++;
+        } else if (IS_SYMBOL (argv + j)) {
+            type = oscformat_getTypeFromSymbol (GET_SYMBOL (argv + j));
+        }
         
         OSC_SETCHAR (a + i, type);
         i++;
         
         switch (type) {
-            case 'f':   j = oscformat_proceedFillFloat (x, argc, argv, j, &n, a);   break;
-            case 'i':   j = oscformat_proceedFillInteger (x, argc, argv, j, &n, a); break;
-            case 's':   j = oscformat_proceedFillString (x, argc, argv, j, &n, a);  break;
-            case 'b':   j = oscformat_proceedFillBlob (x, argc, argv, j, &n, a);    break;
-            default :   return PD_ERROR;
+            case 'f': j = oscformat_proceedFillFloat (x, argc, argv, j, &n, a);   break;
+            case 'i': j = oscformat_proceedFillInteger (x, argc, argv, j, &n, a); break;
+            case 's': j = oscformat_proceedFillString (x, argc, argv, j, &n, a);  break;
+            case 'b': j = oscformat_proceedFillBlob (x, argc, argv, j, &n, a);    break;
+            case 't': j = oscformat_proceedFillStamp (x, argc, argv, j, &n, a);   break;
+            case 'd': j = oscformat_proceedFillDouble (x, argc, argv, j, &n, a);  break;
+            case 'T': /* Falls through. */
+            case 'F': /* Falls through. */
+            case 'N': /* Falls through. */
+            case 'I': j = oscformat_proceedFillDummy (x, argc, argv, j, &n, a);   break;
+            default : return PD_ERROR;
         }
     }
     
@@ -276,6 +350,11 @@ static void oscformat_anything (t_oscformat *x, t_symbol *s, int argc, t_atom *a
     utils_anythingToList (cast_pd (x), (t_listmethod)oscformat_list, s, argc, argv);
 }
 
+static void oscformat_bang (t_oscformat *x)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)oscformat_list, &s_bang, 0, NULL);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -287,7 +366,10 @@ static void oscformat_set (t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
     int i;
 
     for (i = 0; i < argc; i++) {
-        err |= string_add (t, PD_STRING, "/"); err |= string_addAtom (t, PD_STRING, argv + i);
+        err |= string_add (t, PD_STRING, "/");
+        if ((i == argc - 1) || atom_getSymbol (argv + i) != sym___slash__) {
+            err |= string_addAtom (t, PD_STRING, argv + i);
+        }
     }
     
     if (err) { error_invalid (sym_oscformat, sym_path); }
@@ -301,7 +383,7 @@ static void oscformat_format (t_oscformat *x, t_symbol *s)
     const char *t = NULL;
     
     for (t = s->s_name; *t; t++) {
-        if (!oscformat_isValidTypetag (*t)) { error_invalid (sym_oscformat, sym_format); return; }
+        if (!osc_isValidTypetag (*t)) { error_invalid (sym_oscformat, sym_format); return; }
     }
     
     x->x_format = s;
@@ -361,7 +443,8 @@ void oscformat_setup (void)
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-        
+    
+    class_addBang (c, (t_method)oscformat_bang);
     class_addList (c, (t_method)oscformat_list);
     class_addAnything (c, (t_method)oscformat_anything);
     

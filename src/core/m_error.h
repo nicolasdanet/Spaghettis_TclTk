@@ -92,6 +92,7 @@ void warning_multipleBinding                (t_symbol *);
 // -----------------------------------------------------------------------------------------------------------
 
 void warning_invalid                        (t_symbol *, t_symbol *);
+void warning_empty                          (t_symbol *, t_symbol *);
 void warning_badName                        (t_symbol *, t_symbol *);
 void warning_badType                        (t_symbol *, t_symbol *);
 void warning_unusedOption                   (t_symbol *, t_symbol *);
