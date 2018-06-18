@@ -472,6 +472,7 @@ extern t_symbol *sym_osc__tilde__;
 extern t_symbol *sym_oscbundle;
 extern t_symbol *sym_oscformat;
 extern t_symbol *sym_oscparse;
+extern t_symbol *sym_oscstream;
 extern t_symbol *sym_outlet;
 extern t_symbol *sym_outlet__tilde__;
 extern t_symbol *sym_p;
