@@ -57,7 +57,7 @@ static void netsend_socketOptions (t_netsend *x, int fd)
 
 static void netsend_socketClose (t_netsend *x)
 {
-    if (x->ns_fd >= 0) { sys_closeSocket (x->ns_fd); x->ns_fd = -1; }
+    if (x->ns_fd >= 0) { sys_closeSocket (x->ns_fd); x->ns_fd = -1; post ("netsend: closed"); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -199,8 +199,8 @@ static void netsend_polling (t_netsend *x)
     x->ns_fd = fd;
     x->ns_pollingDescriptor = -1;
     netsend_pollingStop (x);
-    outlet_float (x->ns_outlet, 1);
     post ("netsend: connected");    // --
+    outlet_float (x->ns_outlet, 1);
     //
     }
     

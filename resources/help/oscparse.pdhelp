@@ -1,7 +1,6 @@
-#N canvas 898 199 363 305 12;
+#N canvas 844 199 363 305 12;
 #X obj 36 180 oscparse;
 #X obj 168 264 oscformat;
-#X obj 252 264 netreceive;
 #X text 12 264 See also:;
 #X obj -60 12 freeze;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
@@ -33,6 +32,7 @@
 #X msg 36 108 47 100 111 103 47 99 97 116 0 0 0 0 44 102 102 102 115 102 0 0 63 128 0 0 64 0 0 0 64 64 0 0 102 111 111 0 64 160 0 0;
 #X f 40;
 #X obj 84 264 oscbundle;
-#X connect 0 0 9 0;
-#X connect 10 0 0 0;
+#X obj 252 264 oscstream;
+#X connect 0 0 8 0;
+#X connect 9 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;

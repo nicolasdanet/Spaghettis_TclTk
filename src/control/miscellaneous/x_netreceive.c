@@ -207,6 +207,8 @@ static void netreceive_socketOptions (t_netreceive *x, int fd)
 
 static void netreceive_close (t_netreceive *x)
 {
+    int report = (x->nr_fd >= 0);
+    
     if (x->nr_protocol == SOCK_STREAM) {
     if (x->nr_fd >= 0) {
         monitor_removePoller (x->nr_fd);
@@ -217,6 +219,8 @@ static void netreceive_close (t_netreceive *x)
     netreceive_receiversClean (x);
     
     x->nr_fd = -1;
+    
+    if (report) { post ("netreceive: closed"); }
 }
 
 static void netreceive_listen (t_netreceive *x, t_float f)

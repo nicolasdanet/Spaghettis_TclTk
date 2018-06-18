@@ -262,6 +262,7 @@
 #include "control/miscellaneous/x_oscparse.c"
 #include "control/miscellaneous/x_oscformat.c"
 #include "control/miscellaneous/x_oscbundle.c"
+#include "control/miscellaneous/x_oscstream.c"
 #include "control/miscellaneous/x_timestamp.c"
 
 #include "control/midi/x_makenote.c"
