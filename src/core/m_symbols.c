@@ -110,7 +110,6 @@ t_symbol *sym___dash__wait;
 t_symbol *sym___dash__wave;
 t_symbol *sym___dash__width;
 t_symbol *sym___dash__x;
-t_symbol *sym___dash__xrange;
 t_symbol *sym___dash__y;
 t_symbol *sym___dot__;
 t_symbol *sym___equals____equals__;
@@ -817,7 +816,6 @@ void symbols_initialize (void)
     sym___dash__wave                            = gensym ("-wave");
     sym___dash__width                           = gensym ("-width");
     sym___dash__x                               = gensym ("-x");
-    sym___dash__xrange                          = gensym ("-xrange");
     sym___dash__y                               = gensym ("-y");
     sym___dot__                                 = gensym (".");
     sym___equals____equals__                    = gensym ("==");

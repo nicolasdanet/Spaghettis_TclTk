@@ -156,10 +156,18 @@ void word_setText (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b
 
 t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *fd)
 {
+    t_float f = 0.0;
+    
     if (fd->fd_type == DATA_FLOAT) {
     //
-    if (fd->fd_isVariable) { return word_getFloat (w, tmpl, fd->fd_un.fd_variableName); }
-    else {
+    if (fd->fd_isVariable) {
+        f = word_getFloat (w, tmpl, fd->fd_un.fd_variableName);
+        if (fd->fd_isVariableOpposite) { return -f; }
+        else {
+            return f;
+        }
+    
+    } else {
         return (fd->fd_un.fd_float);
     }
     //
@@ -167,7 +175,7 @@ t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescripto
 
     PD_BUG;
     
-    return 0.0;
+    return f;
 }
 
 void word_setFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *fd, t_float f)
@@ -175,7 +183,11 @@ void word_setFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        word_setFloat (w, tmpl, fd->fd_un.fd_variableName, f);
+        if (fd->fd_isVariableOpposite) { word_setFloat (w, tmpl, fd->fd_un.fd_variableName, -f); }
+        else {
+            word_setFloat (w, tmpl, fd->fd_un.fd_variableName, f);
+        }
+        
     } else {
         fd->fd_un.fd_float = f;
     }

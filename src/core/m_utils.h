@@ -33,7 +33,6 @@ int         utils_isNameAllowedForWindow    (t_symbol *s);
 t_symbol    *symbol_withAtoms               (int argc, t_atom *argv);
 
 t_symbol    *symbol_nil                     (void);
-t_symbol    *symbol_dash                    (void);
 t_symbol    *symbol_emptyAsNil              (t_symbol *s);
 t_symbol    *symbol_emptyAsDash             (t_symbol *s);
 

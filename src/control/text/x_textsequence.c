@@ -357,7 +357,6 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
             
             #endif
             
-            
             if (t == sym___dash__g || t == sym___dash__global) { 
                 useGlobal = 1; argc--; argv++; 
                 

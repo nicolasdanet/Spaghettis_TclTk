@@ -51,11 +51,6 @@ t_symbol *symbol_nil (void)
     return sym_empty;
 }
 
-t_symbol *symbol_dash (void)
-{
-    return sym___dash__;
-}
-
 t_symbol *symbol_emptyAsNil (t_symbol *s)
 {
     if (s == &s_) { return sym_empty; }

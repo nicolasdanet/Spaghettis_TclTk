@@ -367,7 +367,7 @@ static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     x->x_size           = x->x_numberOfPoints * 2;
     x->x_coordinates    = (t_fielddescriptor *)PD_MEMORY_GET (x->x_size * sizeof (t_fielddescriptor));
     
-    for (i = 0; i < x->x_size; i++) { field_setAsFloat (x->x_coordinates + i, 1, argv + i); }
+    for (i = 0; i < x->x_size; i++) { field_setAsFloatParseOpposite (x->x_coordinates + i, 1, argv + i); }
 
     if (argc - x->x_size > 0) { warning_unusedArguments (s, argc - x->x_size, argv + x->x_size); }
     
