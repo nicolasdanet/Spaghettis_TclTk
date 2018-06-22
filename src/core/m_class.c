@@ -272,7 +272,11 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     /* Note that "pointer" is not catched. */
     /* It aims to let the pointer object be A_GIMME initialized. */
     
-    PD_ASSERT (s != &s_pointer || class_getName (c) == sym_objectmaker);
+    PD_ASSERT (s != &s_pointer  || (class_getName (c) == sym_objectmaker));
+    
+    /* Don't override the anything method of the object factory. */
+    
+    PD_ASSERT (s != &s_anything || (class_getName (c) != sym_objectmaker));
     
     if (s == &s_bang) {
         if (argtype) { PD_BUG; return; }

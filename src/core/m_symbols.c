@@ -398,6 +398,7 @@ t_symbol *sym_listinlet;
 t_symbol *sym_little;
 t_symbol *sym_loadbang;
 t_symbol *sym_loader;
+t_symbol *sym_localhost;
 t_symbol *sym_log;
 t_symbol *sym_log__tilde__;
 t_symbol *sym_logarithmic;
@@ -1104,6 +1105,7 @@ void symbols_initialize (void)
     sym_little                                  = gensym ("little");
     sym_loadbang                                = gensym ("loadbang");
     sym_loader                                  = gensym ("loader");
+    sym_localhost                               = gensym ("localhost");
     sym_log                                     = gensym ("log");
     sym_log__tilde__                            = gensym ("log~");
     sym_logarithmic                             = gensym ("logarithmic");
