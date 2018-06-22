@@ -186,7 +186,10 @@ static void netsend_polling (t_netsend *x)
         if (getsockopt (fd, SOL_SOCKET, SO_ERROR, &error, &t) < 0) {
             err = PD_ERROR;
         } else {
-            connected = 1;
+            if (error) { err = PD_ERROR; }
+            else {
+                connected = 1;
+            }
         }
     }
     //
@@ -293,7 +296,7 @@ static void netsend_send (t_netsend *x, t_symbol *s, int argc, t_atom *argv)
 static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_netsend *x = (t_netsend *)pd_new (netsend_class);
-
+    
     x->ns_fd        = -1;
     x->ns_isBinary  = 0;
     x->ns_protocol  = SOCK_STREAM;
@@ -313,8 +316,17 @@ static void *netsend_new (t_symbol *s, int argc, t_atom *argv)
     
     error__options (s, argc, argv);
     
-    if (argc) { 
-        warning_unusedArguments (s, argc, argv); 
+    {
+    //
+    t_float port   = -1;
+    t_symbol *host = sym_localhost;
+    
+    if (argc) { if (IS_FLOAT (argv))  { port = GET_FLOAT (argv); } argc--; argv++; }
+    if (argc) { if (IS_SYMBOL (argv)) { host = GET_SYMBOL (argv); } argc--; argv++; }
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+    
+    if (port >= 0) { netsend_connect (x, host, port); }
+    //
     }
     
     return x;

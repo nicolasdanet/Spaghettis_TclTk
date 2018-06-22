@@ -398,6 +398,7 @@ extern t_symbol *sym_listinlet;
 extern t_symbol *sym_little;
 extern t_symbol *sym_loadbang;
 extern t_symbol *sym_loader;
+extern t_symbol *sym_localhost;
 extern t_symbol *sym_log;
 extern t_symbol *sym_log__tilde__;
 extern t_symbol *sym_logarithmic;

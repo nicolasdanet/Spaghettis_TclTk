@@ -313,9 +313,18 @@ static void *netreceive_new (t_symbol *s, int argc, t_atom *argv)
 
     error__options (s, argc, argv);
     
+    if (x->nr_protocol == SOCK_STREAM) { x->nr_outletRight = outlet_newFloat (cast_object (x)); }
+    
+    {
+    //
+    t_float port = -1;
+    
+    if (argc) { if (IS_FLOAT (argv)) { port = GET_FLOAT (argv); } argc--; argv++; }
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
-    if (x->nr_protocol == SOCK_STREAM) { x->nr_outletRight = outlet_newFloat (cast_object (x)); }
+    if (port >= 0) { netreceive_listen (x, port); }
+    //
+    }
     
     return x;
 }
