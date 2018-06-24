@@ -240,9 +240,11 @@ static void loader_externalClose (t_handle handle, t_symbol *name)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* An anything object would by-pass all the load mechanism for abstractions and exterals. */
+
 int loader_load (t_glist *glist, t_symbol *name)
 {
-    return loader_externalOpen (glist, name);
+    if (name == &s_anything) { return 0; } else { return loader_externalOpen (glist, name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
