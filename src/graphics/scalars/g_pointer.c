@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *pointer_class;           /* Shared. */
+static t_class *pointer_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -99,14 +99,16 @@ static void pointer_send (t_pointer *x, t_symbol *s)
 {
     if (!gpointer_isValidOrNull (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
     else {
-        if (symbol_hasThing (s)) { pd_pointer (symbol_getThing (s), &x->x_gpointer); }
+        if (symbol_hasThing (s)) {
+            pd_pointer (symbol_getThing (s), &x->x_gpointer);
+        }
     }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that functions below do not make sense for non scalars. */
+/* Note that functions below do not make sense for non scalars (i.g. element of arrays). */
 
 static void pointer_traverse (t_pointer *x, t_symbol *s)
 {
@@ -127,7 +129,7 @@ static void pointer_rewind (t_pointer *x)
     }
 }
 
-static void pointer_nextProceed (t_pointer *x, int wantSelected)
+static void pointer_nextProceed (t_pointer *x, int wantSelected, int deleteFirst)
 {
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
@@ -136,6 +138,7 @@ static void pointer_nextProceed (t_pointer *x, int wantSelected)
     if (!wantSelected || glist_isOnScreen (glist)) {
 
         t_gobj *z = cast_gobj (gpointer_getScalar (&x->x_gpointer));
+        t_gobj *p = z;
         
         if (!z) { z = glist->gl_graphics; }
         else { 
@@ -143,6 +146,8 @@ static void pointer_nextProceed (t_pointer *x, int wantSelected)
         }
         
         while (z && pointer_nextSkip (z, glist, wantSelected)) { z = z->g_next; }
+        
+        if (p && deleteFirst) { glist_objectRemove (glist, p); }
         
         if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletRight); }
         else {
@@ -160,12 +165,17 @@ static void pointer_nextProceed (t_pointer *x, int wantSelected)
 
 static void pointer_nextSelected (t_pointer *x)
 {
-    pointer_nextProceed (x, 1);
+    pointer_nextProceed (x, 1, 0);
+}
+
+static void pointer_nextDelete (t_pointer *x)
+{
+    pointer_nextProceed (x, 0, 1);
 }
 
 static void pointer_next (t_pointer *x)
 {
-    pointer_nextProceed (x, 0);
+    pointer_nextProceed (x, 0, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -227,7 +237,8 @@ void pointer_setup (void)
     class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,                 A_NULL); 
     class_addMethod (c, (t_method)pointer_next,         sym_next,                   A_NULL);
     class_addMethod (c, (t_method)pointer_nextSelected, sym_nextselected,           A_NULL);
-    
+    class_addMethod (c, (t_method)pointer_nextDelete,   sym_delete,                 A_NULL);
+
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)pointer_nextSelected, sym_vnext,                  A_NULL);

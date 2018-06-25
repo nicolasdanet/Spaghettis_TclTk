@@ -14,9 +14,10 @@
 // -----------------------------------------------------------------------------------------------------------
 
 /* Handle the case when a scalar is deleted while pointers remain. */
-/* A master create a manager that count pointers to the target. */
-/* The pointer can ask the manager about validity of the target. */
-/* The manager is freed only if no master and no pointers is alive. */
+/* A manager is created that count pointers to scalars owned by a master. */
+/* The pointer can ask the manager about validity of the master. */
+/* The master invalidates all pointers if any owned object is deleted. */
+/* The manager is freed once the master and all the pointers are freed. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
