@@ -324,7 +324,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
+void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
 {
     int i;
         
@@ -402,7 +402,7 @@ void drawpolygon_setup (void)
     class_addFloat (c, (t_method)drawpolygon_float);
         
     class_setPainterBehavior (c, &drawpolygon_painterBehavior);
-    
+
     drawpolygon_class = c;
 }
 

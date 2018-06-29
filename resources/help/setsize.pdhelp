@@ -1,4 +1,4 @@
-#N canvas 697 87 392 420 12;
+#N canvas 704 121 392 420 12;
 #X obj 144 384 pointer;
 #X obj 204 156 pointer;
 #X floatatom 36 108 5 0 0 0 - - -;
@@ -14,15 +14,15 @@
 #N canvas 177 417 457 173 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 300 pd \$0-data;
-#N canvas 553 344 469 114 \$0-template 0;
+#N canvas 633 402 471 111 \$0-template 0;
 #X obj 36 60 struct \$0-template float x float y array a \$0-element;
 #X f 54;
-#X obj 36 24 plot a 777 1 10 15 15;
+#X obj 36 24 draw plot -color 777 -x 10 -y 15 -increment 15 -- a;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 348 pd \$0-template;
-#N canvas 530 329 348 110 \$0-element 0;
-#X obj 36 24 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
+#N canvas 691 394 359 108 \$0-element 0;
 #X obj 36 60 struct \$0-element float y;
+#X obj 36 24 draw polygon -fill -- -5 0 0 5 5 0 0 -5;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 324 pd \$0-element;
 #N canvas 824 162 406 358 init 0;

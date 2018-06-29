@@ -12,15 +12,15 @@
 #N canvas 301 408 457 173 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 324 pd \$0-data;
-#N canvas 456 328 478 118 \$0-template 0;
+#N canvas 652 376 470 112 \$0-template 0;
 #X obj 36 60 struct \$0-template float x float y array a \$0-element;
 #X f 54;
-#X obj 36 24 plot a 777 1 10 15 50;
+#X obj 36 24 draw plot -color 777 -x 10 -y 15 -increment 50 -- a;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 372 pd \$0-template;
 #N canvas 530 329 362 114 \$0-element 0;
-#X obj 36 24 filledpolygon 0 0 0 -5 0 0 5 5 0 0 -5;
 #X obj 36 60 struct \$0-element float y;
+#X obj 36 24 draw polygon -fill -- -5 0 0 5 5 0 0 -5;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 348 pd \$0-element;
 #N canvas 854 279 411 355 init 0;

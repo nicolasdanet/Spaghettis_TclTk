@@ -1,4 +1,4 @@
-#N canvas 808 94 438 661 12;
+#N canvas 673 75 438 661 12;
 #X obj 84 624 list;
 #X obj 36 132 text get;
 #N canvas 671 133 446 558 get 0;
@@ -298,7 +298,7 @@
 #X obj 36 120 print;
 #N canvas 575 279 375 113 \$0-template 0;
 #X obj 36 60 struct \$0-template float x float y text z;
-#X obj 36 24 drawtext z 0 0 800;
+#X obj 36 24 draw text -color 800 -- z;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 264 396 pd \$0-template;
 #N canvas 482 165 500 350 \$0-data 0;

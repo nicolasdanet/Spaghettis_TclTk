@@ -905,15 +905,15 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *plot_new (t_symbol *s, int argc, t_atom *argv)
+void *plot_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new (plot_class);
     
     field_setAsFloatConstant (&x->x_array,          0.0);      /* Default is invalid. */
     field_setAsFloatConstant (&x->x_colorOutline,   0.0);
     field_setAsFloatConstant (&x->x_width,          (t_float)1.0);
-    field_setAsFloatConstant (&x->x_positionX,      (t_float)1.0);
-    field_setAsFloatConstant (&x->x_positionY,      (t_float)1.0);
+    field_setAsFloatConstant (&x->x_positionX,      (t_float)0.0);
+    field_setAsFloatConstant (&x->x_positionY,      (t_float)0.0);
     field_setAsFloatConstant (&x->x_incrementX,     (t_float)1.0);
     field_setAsFloatConstant (&x->x_style,          (t_float)PLOT_POLYGONS);
     field_setAsFloatConstant (&x->x_isVisible,      (t_float)1.0);
@@ -989,7 +989,7 @@ void plot_setup (void)
     class_addFloat (c, (t_method)plot_float);
     
     class_setPainterBehavior (c, &plot_painterBehavior);
-    
+        
     plot_class = c;
 }
 

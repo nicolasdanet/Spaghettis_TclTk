@@ -1,0 +1,325 @@
+
+/* Copyright (c) 1997-2018 Miller Puckette and others. */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#include "../../m_spaghettis.h"
+#include "../../m_core.h"
+#include "../../s_system.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void *drawpolygon_new   (t_symbol *, int, t_atom *);
+void *plot_new          (t_symbol *, int, t_atom *);
+void *drawtext_new      (t_symbol *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_class  *draw_class;    /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* A dummy object. */
+
+typedef struct _draw {
+    t_object    x_obj;          /* Must be the first. */
+    } t_draw;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void draw_makeObjectParseText (t_symbol *s, t_buffer *b, int argc, t_atom *argv)
+{
+    t_float x       = 0.0;
+    t_float y       = 0.0;
+    t_float color   = color_withDigits (0);
+    t_symbol *label = &s_;
+    t_symbol *field = &s_;
+    
+    while (argc > 0) {
+
+        t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+        
+        if (t == sym___dash____dash__) {
+            argc--; argv++;
+            break;
+            
+        } else if (argc > 1) {
+        
+            if (t == sym___dash__v || t == sym___dash__visible) {
+                buffer_appendAtom (b, argv + 0);
+                buffer_appendAtom (b, argv + 1);
+                
+            } else if (t == sym___dash__x) {
+                x = atom_getFloatAtIndex (1, argc, argv);
+                
+            } else if (t == sym___dash__y) {
+                y = atom_getFloatAtIndex (1, argc, argv);
+            
+            } else if (t == sym___dash__c || t == sym___dash__color) {
+                color = atom_getFloatAtIndex (1, argc, argv);
+            
+            } else if (t == sym___dash__l || t == sym___dash__label) {
+                label = atom_getSymbolAtIndex (1, argc, argv);
+                
+            } else {
+                break;
+            }
+            
+            argc -= 2; argv += 2;
+            
+        } else {
+            break;
+        }
+    }
+
+    error__options (s, argc, argv);
+    
+    field = atom_getSymbolAtIndex (0, argc, argv);
+    
+    if (argc) { argc--; argv++; }
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+
+    buffer_appendSymbol (b, field);
+    buffer_appendFloat (b, x);
+    buffer_appendFloat (b, y);
+    buffer_appendFloat (b, color);
+    
+    if (label != &s_) { buffer_appendSymbol (b, label); }
+}
+
+static t_symbol *draw_makeObjectParsePolygon (t_symbol *s, t_buffer *b, int argc, t_atom *argv)
+{
+    t_float color     = color_withDigits (0);
+    t_float fillcolor = color_withDigits (0);
+    t_float width     = 1.0;
+    int     isFilled  = 0;
+    int     isCurved  = 0;
+    
+    while (argc > 0) {
+
+        t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+        
+        if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+            buffer_appendAtom (b, argv + 0);
+            buffer_appendAtom (b, argv + 1);
+            argc -= 2; argv += 2;
+        
+        } else if (t == sym___dash__i || t == sym___dash__inhibit) {
+            buffer_appendAtom (b, argv + 0);
+            argc--; argv++;
+            
+        } else if (argc > 1 && (t == sym___dash__c || t == sym___dash__color)) {
+            color = atom_getFloatAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+        
+        } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__fillcolor)) {
+            fillcolor = atom_getFloatAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+            
+        } else if (argc > 1 && (t == sym___dash__w || t == sym___dash__width)) {
+            width = atom_getFloatAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+        
+        } else if (t == sym___dash__curve) {
+            isCurved = 1;
+            argc--; argv++;
+        
+        } else if (t == sym___dash__fill) {
+            isFilled = 1;
+            argc--; argv++;
+        
+        } else if (t == sym___dash____dash__) {
+            argc--; argv++;
+            break;
+            
+        } else {
+            break;
+        }
+    }
+
+    error__options (s, argc, argv);
+
+    if (isFilled) { buffer_appendFloat (b, fillcolor); }
+    
+    buffer_appendFloat (b, color);
+    buffer_appendFloat (b, width);
+    buffer_append (b, argc, argv);
+
+    if (isFilled) {
+        if (isCurved) { return sym_filledcurve; } else { return sym_filledpolygon; }
+    } else {
+        if (isCurved) { return sym_drawcurve; } else { return sym_drawpolygon; }
+    }
+}
+
+static void draw_makeObjectParsePlot (t_symbol *s, t_buffer *b, int argc, t_atom *argv)
+{
+    t_float x         = 0.0;
+    t_float y         = 0.0;
+    t_float color     = color_withDigits (0);
+    t_float width     = 1.0;
+    t_float increment = 1.0;
+    t_symbol *field   = &s_;
+    
+    while (argc > 0) {
+
+        t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+        
+        if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+            buffer_appendAtom (b, argv + 0);
+            buffer_appendAtom (b, argv + 1);
+            argc -= 2; argv += 2;
+        
+        } else if (argc > 1 && (t == sym___dash__x)) {
+            x = atom_getFloatAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+        
+        } else if (argc > 1 && (t == sym___dash__y)) {
+            y = atom_getFloatAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+            
+        } else if (argc > 1 && (t == sym___dash__c || t == sym___dash__color)) {
+            color = atom_getFloatAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+            
+        } else if (argc > 1 && (t == sym___dash__w || t == sym___dash__width)) {
+            width = atom_getFloatAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+        
+        } else if (argc > 1 && (t == sym___dash__increment)) {
+            increment = atom_getFloatAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+        
+        } else if (argc > 1 && (t == sym___dash__fieldx)) {
+            buffer_appendSymbol (b, sym___dash__x);
+            buffer_appendAtom (b, argv + 1);
+            argc -= 2; argv += 2;
+        
+        } else if (argc > 1 && (t == sym___dash__fieldy)) {
+            buffer_appendSymbol (b, sym___dash__y);
+            buffer_appendAtom (b, argv + 1);
+            argc -= 2; argv += 2;
+        
+        } else if (argc > 1 && (t == sym___dash__fieldw)) {
+            buffer_appendSymbol (b, sym___dash__w);
+            buffer_appendAtom (b, argv + 1);
+            argc -= 2; argv += 2;
+        
+        } else if (t == sym___dash__curve) {
+            buffer_appendAtom (b, argv);
+            argc--; argv++;
+        
+        } else if (t == sym___dash____dash__) {
+            argc--; argv++;
+            break;
+            
+        } else {
+            break;
+        }
+    }
+
+    error__options (s, argc, argv);
+    
+    field = atom_getSymbolAtIndex (0, argc, argv);
+    
+    if (argc) { argc--; argv++; }
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+
+    buffer_appendSymbol (b, field);
+    buffer_appendFloat (b, color);
+    buffer_appendFloat (b, width);
+    buffer_appendFloat (b, x);
+    buffer_appendFloat (b, y);
+    buffer_appendFloat (b, increment);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void *draw_makeObject (t_symbol *s, int argc, t_atom *argv)
+{
+    t_pd *newest = NULL;
+    
+    if (!argc || !IS_SYMBOL (argv)) { newest = pd_new (draw_class); }
+    else {
+    //
+    t_symbol *o = NULL;
+    t_symbol *t = GET_SYMBOL (argv);
+    
+    instance_setNewestObject (NULL);
+    
+    if (t == sym_polygon)   { o = sym_drawpolygon; }
+    else if (t == sym_plot) { o = sym_plot; }
+    else if (t == sym_text) { o = sym_drawtext; }
+    else {
+        error_unexpected (sym_draw, t);
+    }
+    
+    argc--; argv++;
+    
+    if (o) {
+    //
+    t_buffer *args = buffer_new();
+    
+    if (o == sym_drawtext) {
+        draw_makeObjectParseText (s, args, argc, argv);
+        newest = (t_pd *)drawtext_new (o, buffer_getSize (args), buffer_getAtoms (args));
+        
+    } else if (o == sym_drawpolygon) {
+        o = draw_makeObjectParsePolygon (s, args, argc, argv);
+        newest = (t_pd *)drawpolygon_new (o, buffer_getSize (args), buffer_getAtoms (args));
+        
+    } else if (o == sym_plot) {
+        draw_makeObjectParsePlot (s, args, argc, argv);
+        newest = (t_pd *)plot_new (o, buffer_getSize (args), buffer_getAtoms (args));
+    }
+    
+    buffer_free (args);
+    
+    instance_setNewestObject (newest);
+    //
+    }
+    //
+    }
+    
+    return newest;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void draw_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (sym_draw,
+            NULL,
+            NULL,
+            sizeof (t_draw),
+            CLASS_DEFAULT,
+            A_NULL);
+    
+    draw_class = c;
+    
+    class_addCreator ((t_newmethod)draw_makeObject, sym_draw, A_GIMME, A_NULL);
+}
+
+void draw_destroy (void)
+{
+    class_free (draw_class);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
