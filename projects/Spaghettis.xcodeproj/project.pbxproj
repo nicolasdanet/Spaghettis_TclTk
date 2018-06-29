@@ -57,6 +57,7 @@
 		17DA55822063832E00570B4E /* x_micasequence.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DA55812063832E00570B4E /* x_micasequence.c */; };
 		17DD0B4520611A5E00E79C0D /* x_micaspell.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DD0B4420611A5E00E79C0D /* x_micaspell.c */; };
 		17DFE17C20D156A600B242D7 /* x_timestamp.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DFE17B20D156A600B242D7 /* x_timestamp.c */; };
+		17E2A05820E11D610031D4AD /* g_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 17E2A05720E11D610031D4AD /* g_draw.c */; };
 		17F6BD3C1F110686001E602C /* m_snap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F6BD3B1F110686001E602C /* m_snap.c */; };
 		17FB394520286650000BBED2 /* d_blockinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 17FB394420286650000BBED2 /* d_blockinfo.c */; };
 		370157EC1DFFD62900F3FE0C /* d_vd.c in Sources */ = {isa = PBXBuildFile; fileRef = 370157EB1DFFD62900F3FE0C /* d_vd.c */; };
@@ -498,6 +499,7 @@
 		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_outlet.h; sourceTree = "<group>"; };
 		17DD0B4420611A5E00E79C0D /* x_micaspell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micaspell.c; sourceTree = "<group>"; };
 		17DFE17B20D156A600B242D7 /* x_timestamp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_timestamp.c; sourceTree = "<group>"; };
+		17E2A05720E11D610031D4AD /* g_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_draw.c; sourceTree = "<group>"; };
 		17F6BD3B1F110686001E602C /* m_snap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_snap.c; sourceTree = "<group>"; };
 		17F6BD3D1F110839001E602C /* m_snap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_snap.h; sourceTree = "<group>"; };
 		17FB394420286650000BBED2 /* d_blockinfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = d_blockinfo.c; sourceTree = "<group>"; };
@@ -1641,6 +1643,7 @@
 				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
 				379C1B711D37934500C4D92C /* g_plot.c */,
 				379C1B3F1D3790C200C4D92C /* g_drawtext.c */,
+				17E2A05720E11D610031D4AD /* g_draw.c */,
 			);
 			path = scalars;
 			sourceTree = "<group>";
@@ -2037,6 +2040,7 @@
 				370939451CC92BF300827F75 /* g_draw.c in Sources */,
 				370939461CC92BF300827F75 /* g_glist.c in Sources */,
 				172BB35F2078C7DD00874B8F /* belle.cpp in Sources */,
+				17E2A05820E11D610031D4AD /* g_draw.c in Sources */,
 				37BA30821CD1DB0F0091113F /* g_object.c in Sources */,
 				379920481CD2649B00750527 /* g_select.c in Sources */,
 				3791F2E21CDF064000F7481C /* m_symbols.c in Sources */,

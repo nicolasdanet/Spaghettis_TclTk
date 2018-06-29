@@ -264,7 +264,7 @@ static int drawtext_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_f
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
+void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_drawtext *x = (t_drawtext *)pd_new (drawtext_class);
 
