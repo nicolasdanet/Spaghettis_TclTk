@@ -114,12 +114,12 @@ static void *timestamp_new (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
 
-    if (t == sym___dash__d || t == sym___dash__discard) {
+    if (t == sym___dash__discard) {
         timestamp_discard (x, 1.0);
         argc--;
         argv++;
         
-    } else if (t == sym___dash__e || t == sym___dash__elapsed) {
+    } else if (t == sym___dash__elapsed) {
         timestamp_elapsed (x, 1.0);
         argc--;
         argv++;

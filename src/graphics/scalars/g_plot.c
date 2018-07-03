@@ -911,12 +911,12 @@ void *plot_new (t_symbol *s, int argc, t_atom *argv)
     
     field_setAsFloatConstant (&x->x_array,          0.0);      /* Default is invalid. */
     field_setAsFloatConstant (&x->x_colorOutline,   0.0);
-    field_setAsFloatConstant (&x->x_width,          (t_float)1.0);
-    field_setAsFloatConstant (&x->x_positionX,      (t_float)0.0);
-    field_setAsFloatConstant (&x->x_positionY,      (t_float)0.0);
-    field_setAsFloatConstant (&x->x_incrementX,     (t_float)1.0);
-    field_setAsFloatConstant (&x->x_style,          (t_float)PLOT_POLYGONS);
-    field_setAsFloatConstant (&x->x_isVisible,      (t_float)1.0);
+    field_setAsFloatConstant (&x->x_width,          1.0);
+    field_setAsFloatConstant (&x->x_positionX,      0.0);
+    field_setAsFloatConstant (&x->x_positionY,      0.0);
+    field_setAsFloatConstant (&x->x_incrementX,     1.0);
+    field_setAsFloatConstant (&x->x_style,          PLOT_POLYGONS);
+    field_setAsFloatConstant (&x->x_isVisible,      1.0);
     
     field_setAsFloatVariable (&x->x_fieldX,         sym_x);
     field_setAsFloatVariable (&x->x_fieldY,         sym_y);
@@ -928,15 +928,14 @@ void *plot_new (t_symbol *s, int argc, t_atom *argv)
         
         #if PD_WITH_LEGACY
         
-        if (t == sym_curve) { t = sym___dash__curve; }
+        if (t == sym_curve)     { t = sym___dash__curve;   }
+        if (t == sym___dash__c) { t = sym___dash__curve;   }
+        if (t == sym___dash__v) { t = sym___dash__visible; }
+        if (t == sym___dash__w) { t = sym___dash__width;   }
         
         #endif
         
-        if (t == sym___dash__c || t == sym___dash__curve) {
-            field_setAsFloatConstant (&x->x_style, (t_float)PLOT_CURVES);
-            argc -= 1; argv += 1;
-            
-        } else if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+        if (argc > 1 && t == sym___dash__visible) {
             field_setAsFloat (&x->x_isVisible, 1, argv + 1);
             argc -= 2; argv += 2;
             
@@ -948,9 +947,13 @@ void *plot_new (t_symbol *s, int argc, t_atom *argv)
             field_setAsFloat (&x->x_fieldY, 1, argv + 1);
             argc -= 2; argv += 2;
             
-        } else if (argc > 1 && (t == sym___dash__w || t == sym___dash__width)) {
+        } else if (argc > 1 && t == sym___dash__width) {
             field_setAsFloat (&x->x_fieldW, 1, argv + 1);
             argc -= 2; argv += 2;
+        
+        } else if (t == sym___dash__curve) {
+            field_setAsFloatConstant (&x->x_style, PLOT_CURVES);
+            argc--; argv++;
             
         } else { break; }
     }

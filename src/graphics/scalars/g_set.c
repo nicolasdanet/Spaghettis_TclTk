@@ -118,8 +118,16 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
     x->x_asSymbol = 0;
     
     if (argc && IS_SYMBOL (argv)) {
+    
         t_symbol *t = GET_SYMBOL (argv);
-        if (t == sym___dash__s || t == sym___dash__symbol) {
+        
+        #if PD_WITH_LEGACY
+        
+        if (t == sym___dash__s) { t = sym___dash__symbol; }
+        
+        #endif
+        
+        if (t == sym___dash__symbol) {
             x->x_asSymbol = 1;
             argc--;
             argv++;

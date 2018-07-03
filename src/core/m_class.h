@@ -46,7 +46,7 @@ typedef int  (*t_mousefn)                   (t_gobj *x, t_glist *glist, t_mouse 
 // MARK: -
 
 typedef void (*t_paintergetrectanglefn)     (t_gobj *x, t_gpointer *gp, t_float a, t_float b, t_rectangle *r);
-typedef void (*t_paintervisibilityfn)       (t_gobj *x, t_gpointer *gp, t_float a, t_float b, int flag);
+typedef void (*t_paintervisibilityfn)       (t_gobj *x, t_gpointer *gp, t_float a, t_float b, int isVisible);
 typedef int  (*t_paintermousefn)            (t_gobj *x, t_gpointer *gp, t_float a, t_float b, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------

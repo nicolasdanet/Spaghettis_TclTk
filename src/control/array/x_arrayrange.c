@@ -35,7 +35,13 @@ void *arrayrange_new (t_class *c, int argc, t_atom *argv, int makeOnsetInlet, in
         //
         t_symbol *t = GET_SYMBOL (argv);
 
-        if (t == sym___dash__f || t == sym___dash__field) {
+        #if PD_WITH_LEGACY
+        
+        if (t == sym___dash__f) { t = sym___dash__field; }
+        
+        #endif
+        
+        if (t == sym___dash__field) {
             if (argc >= 3 && IS_SYMBOL (argv + 1) && IS_SYMBOL (argv + 2)) {
                 x->ar_fieldName = GET_SYMBOL (argv + 2);
                 argc -= 3; argv += 3;

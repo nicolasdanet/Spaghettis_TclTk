@@ -51,42 +51,39 @@ static void draw_makeObjectParseText (t_symbol *s, t_buffer *b, int argc, t_atom
     t_symbol *label = &s_;
     t_symbol *field = &s_;
     
-    field_setAsFloatConstant (&x, 0.0);
-    field_setAsFloatConstant (&y, 0.0);
+    field_setAsFloatConstant (&x,     0.0);
+    field_setAsFloatConstant (&y,     0.0);
     field_setAsFloatConstant (&color, 0.0);
     
     while (argc > 0) {
 
         t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
-        if (t == sym___dash____dash__) {
-            argc--; argv++;
-            break;
-            
-        } else if (argc > 1) {
-        
-            if (t == sym___dash__v || t == sym___dash__visible) {
-                buffer_appendAtom (b, argv + 0);
-                buffer_appendAtom (b, argv + 1);
-                
-            } else if (t == sym___dash__x) {
-                field_setAsFloat (&x, 1, argv + 1);
-                
-            } else if (t == sym___dash__y) {
-                field_setAsFloat (&y, 1, argv + 1);
-            
-            } else if (t == sym___dash__c || t == sym___dash__color) {
-                field_setAsFloat (&color, 1, argv + 1);
-            
-            } else if (t == sym___dash__l || t == sym___dash__label) {
-                label = atom_getSymbolAtIndex (1, argc, argv);
-                
-            } else {
-                break;
-            }
-            
+        if (argc > 1 && t == sym___dash__visible) {
+            buffer_appendAtom (b, argv + 0);
+            buffer_appendAtom (b, argv + 1);
             argc -= 2; argv += 2;
             
+        } else if (argc > 1 && t == sym___dash__x) {
+            field_setAsFloat (&x, 1, argv + 1);
+            argc -= 2; argv += 2;
+            
+        } else if (argc > 1 && t == sym___dash__y) {
+            field_setAsFloat (&y, 1, argv + 1);
+            argc -= 2; argv += 2;
+            
+        } else if (argc > 1 && t == sym___dash__color) {
+            field_setAsFloat (&color, 1, argv + 1);
+            argc -= 2; argv += 2;
+            
+        } else if (argc > 1 && t == sym___dash__label) {
+            label = atom_getSymbolAtIndex (1, argc, argv);
+            argc -= 2; argv += 2;
+        
+        } else if (t == sym___dash____dash__) {
+            argc--; argv++;
+            break;
+        
         } else {
             break;
         }
@@ -115,33 +112,39 @@ static t_symbol *draw_makeObjectParsePolygon (t_symbol *s, t_buffer *b, int argc
     int isFilled = 0;
     int isCurved = 0;
     
-    field_setAsFloatConstant (&color, 0.0);
+    field_setAsFloatConstant (&color,     0.0);
     field_setAsFloatConstant (&fillcolor, 0.0);
-    field_setAsFloatConstant (&width, 1.0);
+    field_setAsFloatConstant (&width,     1.0);
     
     while (argc > 0) {
 
         t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
-        if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+        if (argc > 1 && t == sym___dash__visible) {
             buffer_appendAtom (b, argv + 0);
             buffer_appendAtom (b, argv + 1);
             argc -= 2; argv += 2;
         
-        } else if (t == sym___dash__i || t == sym___dash__inhibit) {
+        } else if (argc > 1 && t == sym___dash__x) {
             buffer_appendAtom (b, argv + 0);
-            argc--; argv++;
+            buffer_appendAtom (b, argv + 1);
+            argc -= 2; argv += 2;
             
-        } else if (argc > 1 && (t == sym___dash__c || t == sym___dash__color)) {
+        } else if (argc > 1 && t == sym___dash__y) {
+            buffer_appendAtom (b, argv + 0);
+            buffer_appendAtom (b, argv + 1);
+            argc -= 2; argv += 2;
+            
+        } else if (argc > 1 && t == sym___dash__color) {
             field_setAsFloat (&color, 1, argv + 1);
             argc -= 2; argv += 2;
         
-        } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__fillcolor)) {
-            field_setAsFloat (&fillcolor, 1, argv + 1);
+        } else if (argc > 1 && t == sym___dash__width) {
+            field_setAsFloat (&width, 1, argv + 1);
             argc -= 2; argv += 2;
             
-        } else if (argc > 1 && (t == sym___dash__w || t == sym___dash__width)) {
-            field_setAsFloat (&width, 1, argv + 1);
+        } else if (argc > 1 && t == sym___dash__fillcolor) {
+            field_setAsFloat (&fillcolor, 1, argv + 1);
             argc -= 2; argv += 2;
         
         } else if (t == sym___dash__curve) {
@@ -185,53 +188,53 @@ static void draw_makeObjectParsePlot (t_symbol *s, t_buffer *b, int argc, t_atom
     t_fielddescriptor increment;
     t_symbol *field = &s_;
     
-    field_setAsFloatConstant (&x, 0.0);
-    field_setAsFloatConstant (&y, 0.0);
-    field_setAsFloatConstant (&color, 0.0);
-    field_setAsFloatConstant (&width, 1.0);
+    field_setAsFloatConstant (&x,         0.0);
+    field_setAsFloatConstant (&y,         0.0);
+    field_setAsFloatConstant (&color,     0.0);
+    field_setAsFloatConstant (&width,     1.0);
     field_setAsFloatConstant (&increment, 1.0);
     
     while (argc > 0) {
 
         t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
-        if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+        if (argc > 1 && t == sym___dash__visible) {
             buffer_appendAtom (b, argv + 0);
             buffer_appendAtom (b, argv + 1);
             argc -= 2; argv += 2;
-        
-        } else if (argc > 1 && (t == sym___dash__x)) {
+            
+        } else if (argc > 1 && t == sym___dash__x) {
             field_setAsFloat (&x, 1, argv + 1);
             argc -= 2; argv += 2;
         
-        } else if (argc > 1 && (t == sym___dash__y)) {
+        } else if (argc > 1 && t == sym___dash__y) {
             field_setAsFloat (&y, 1, argv + 1);
             argc -= 2; argv += 2;
             
-        } else if (argc > 1 && (t == sym___dash__c || t == sym___dash__color)) {
+        } else if (argc > 1 && t == sym___dash__color) {
             field_setAsFloat (&color, 1, argv + 1);
             argc -= 2; argv += 2;
             
-        } else if (argc > 1 && (t == sym___dash__w || t == sym___dash__width)) {
+        } else if (argc > 1 && t == sym___dash__width) {
             field_setAsFloat (&width, 1, argv + 1);
             argc -= 2; argv += 2;
         
-        } else if (argc > 1 && (t == sym___dash__increment)) {
+        } else if (argc > 1 && t == sym___dash__increment) {
             field_setAsFloat (&increment, 1, argv + 1);
             argc -= 2; argv += 2;
         
-        } else if (argc > 1 && (t == sym___dash__fieldx)) {
+        } else if (argc > 1 && t == sym___dash__fieldx) {
             buffer_appendSymbol (b, sym___dash__x);
             buffer_appendAtom (b, argv + 1);
             argc -= 2; argv += 2;
         
-        } else if (argc > 1 && (t == sym___dash__fieldy)) {
+        } else if (argc > 1 && t == sym___dash__fieldy) {
             buffer_appendSymbol (b, sym___dash__y);
             buffer_appendAtom (b, argv + 1);
             argc -= 2; argv += 2;
         
-        } else if (argc > 1 && (t == sym___dash__fieldw)) {
-            buffer_appendSymbol (b, sym___dash__w);
+        } else if (argc > 1 && t == sym___dash__fieldw) {
+            buffer_appendSymbol (b, sym___dash__width);
             buffer_appendAtom (b, argv + 1);
             argc -= 2; argv += 2;
         

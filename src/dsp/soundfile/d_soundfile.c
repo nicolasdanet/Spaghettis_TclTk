@@ -70,17 +70,19 @@ t_error soundfile_readFileParse (t_glist *dummy, t_symbol *s, int *ac, t_atom **
     #if PD_WITH_LEGACY
     
     if (t == sym___dash__maxsize)  { t = sym___dash__frames; }
+    if (t == sym___dash__f)        { t = sym___dash__frames; }
+    if (t == sym___dash__s)        { t = sym___dash__skip;   }
     
     #endif
     
     if (t == sym___dash__nextstep) { t = sym___dash__next; }
     
-    if (argc > 1 && (t == sym___dash__s || t == sym___dash__skip)) {
+    if (argc > 1 && t == sym___dash__skip) {
         onset = (int)atom_getFloat (argv + 1);
         onset = PD_MAX (0, onset);
         argc -= 2; argv += 2;
         
-    } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__frames)) {
+    } else if (argc > 1 && t == sym___dash__frames) {
         numberOfFrames = (int)atom_getFloat (argv + 1);
         numberOfFrames = PD_MAX (0, numberOfFrames);
         needToResize = 1;     
@@ -396,33 +398,39 @@ t_error soundfile_writeFileParse (t_glist *glist, t_symbol *s, int *ac, t_atom *
     
     #if PD_WITH_LEGACY
     
-    if (t == sym___dash__nframes)  { t = sym___dash__frames; }
+    if (t == sym___dash__nframes)  { t = sym___dash__frames;     }
+    if (t == sym___dash__f)        { t = sym___dash__frames;     }
+    if (t == sym___dash__b)        { t = sym___dash__bytes;      }
+    if (t == sym___dash__s)        { t = sym___dash__skip;       }
+    if (t == sym___dash__r)        { t = sym___dash__samplerate; }
+    if (t == sym___dash__rate)     { t = sym___dash__samplerate; }
+    if (t == sym___dash__n)        { t = sym___dash__normalize;  }
     
     #endif
     
     if (t == sym___dash__nextstep) { t = sym___dash__next; }
     
-    if (argc > 1 && (t == sym___dash__s || t == sym___dash__skip)) {
+    if (argc > 1 && t == sym___dash__skip) {
         onset = (int)atom_getFloat (argv + 1);
         onset = PD_MAX (0, onset);
         argc -= 2; argv += 2;
         
-    } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__frames)) {
+    } else if (argc > 1 && t == sym___dash__frames) {
         numberOfFrames = (int)atom_getFloat (argv + 1);
         numberOfFrames = PD_MAX (0, numberOfFrames);
         argc -= 2; argv += 2;
         
-    } else if (argc > 1 && (t == sym___dash__b || t == sym___dash__bytes)) {
+    } else if (argc > 1 && t == sym___dash__bytes) {
         bytesPerSample = (int)atom_getFloat (argv + 1);
         bytesPerSample = PD_CLAMP (bytesPerSample, 2, 4);
         argc -= 2; argv += 2;
         
-    } else if (argc > 1 && (t == sym___dash__r || t == sym___dash__rate || t == sym___dash__samplerate)) {
+    } else if (argc > 1 && t == sym___dash__samplerate) {
         sampleRate = atom_getFloat (argv + 1);
         sampleRate = (t_sample)PD_MAX (1.0, sampleRate);
         argc -= 2; argv += 2;
         
-    } else if (t == sym___dash__n || t == sym___dash__normalize) {
+    } else if (t == sym___dash__normalize) {
         needToNormalize = 1;
         argc--; argv++;
     

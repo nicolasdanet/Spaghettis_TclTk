@@ -132,9 +132,17 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     x->x_name = &s_;
     
     while (argc && IS_SYMBOL (argv)) {
-        if (GET_SYMBOL (argv) == sym___dash__k || GET_SYMBOL (argv) == sym___dash__keep) {
-            x->x_keep = 1; argc--; argv++;
-        } else {
+    
+        t_symbol *t = GET_SYMBOL (argv);
+        
+        #if PD_WITH_LEGACY
+        
+        if (t == sym___dash__k) { t = sym___dash__keep; }
+        
+        #endif
+        
+        if (t == sym___dash__keep) { x->x_keep = 1; argc--; argv++; }
+        else {
             break;
         }
     }
