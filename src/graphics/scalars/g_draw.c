@@ -10,6 +10,7 @@
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
 #include "../../s_system.h"
+#include "../../g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -17,6 +18,11 @@
 void *drawpolygon_new   (t_symbol *, int, t_atom *);
 void *plot_new          (t_symbol *, int, t_atom *);
 void *drawtext_new      (t_symbol *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void buffer_appendDescriptor (t_buffer *, t_fielddescriptor *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -39,11 +45,15 @@ typedef struct _draw {
 
 static void draw_makeObjectParseText (t_symbol *s, t_buffer *b, int argc, t_atom *argv)
 {
-    t_float x       = 0.0;
-    t_float y       = 0.0;
-    t_float color   = color_withDigits (0);
+    t_fielddescriptor x;
+    t_fielddescriptor y;
+    t_fielddescriptor color;
     t_symbol *label = &s_;
     t_symbol *field = &s_;
+    
+    field_setAsFloatConstant (&x, 0.0);
+    field_setAsFloatConstant (&y, 0.0);
+    field_setAsFloatConstant (&color, 0.0);
     
     while (argc > 0) {
 
@@ -60,13 +70,13 @@ static void draw_makeObjectParseText (t_symbol *s, t_buffer *b, int argc, t_atom
                 buffer_appendAtom (b, argv + 1);
                 
             } else if (t == sym___dash__x) {
-                x = atom_getFloatAtIndex (1, argc, argv);
+                field_setAsFloat (&x, 1, argv + 1);
                 
             } else if (t == sym___dash__y) {
-                y = atom_getFloatAtIndex (1, argc, argv);
+                field_setAsFloat (&y, 1, argv + 1);
             
             } else if (t == sym___dash__c || t == sym___dash__color) {
-                color = atom_getFloatAtIndex (1, argc, argv);
+                field_setAsFloat (&color, 1, argv + 1);
             
             } else if (t == sym___dash__l || t == sym___dash__label) {
                 label = atom_getSymbolAtIndex (1, argc, argv);
@@ -90,20 +100,24 @@ static void draw_makeObjectParseText (t_symbol *s, t_buffer *b, int argc, t_atom
     if (argc) { warning_unusedArguments (s, argc, argv); }
 
     buffer_appendSymbol (b, field);
-    buffer_appendFloat (b, x);
-    buffer_appendFloat (b, y);
-    buffer_appendFloat (b, color);
+    buffer_appendDescriptor (b, &x);
+    buffer_appendDescriptor (b, &y);
+    buffer_appendDescriptor (b, &color);
     
     if (label != &s_) { buffer_appendSymbol (b, label); }
 }
 
 static t_symbol *draw_makeObjectParsePolygon (t_symbol *s, t_buffer *b, int argc, t_atom *argv)
 {
-    t_float color     = color_withDigits (0);
-    t_float fillcolor = color_withDigits (0);
-    t_float width     = 1.0;
-    int     isFilled  = 0;
-    int     isCurved  = 0;
+    t_fielddescriptor color;
+    t_fielddescriptor fillcolor;
+    t_fielddescriptor width;
+    int isFilled = 0;
+    int isCurved = 0;
+    
+    field_setAsFloatConstant (&color, 0.0);
+    field_setAsFloatConstant (&fillcolor, 0.0);
+    field_setAsFloatConstant (&width, 1.0);
     
     while (argc > 0) {
 
@@ -119,15 +133,15 @@ static t_symbol *draw_makeObjectParsePolygon (t_symbol *s, t_buffer *b, int argc
             argc--; argv++;
             
         } else if (argc > 1 && (t == sym___dash__c || t == sym___dash__color)) {
-            color = atom_getFloatAtIndex (1, argc, argv);
+            field_setAsFloat (&color, 1, argv + 1);
             argc -= 2; argv += 2;
         
         } else if (argc > 1 && (t == sym___dash__f || t == sym___dash__fillcolor)) {
-            fillcolor = atom_getFloatAtIndex (1, argc, argv);
+            field_setAsFloat (&fillcolor, 1, argv + 1);
             argc -= 2; argv += 2;
             
         } else if (argc > 1 && (t == sym___dash__w || t == sym___dash__width)) {
-            width = atom_getFloatAtIndex (1, argc, argv);
+            field_setAsFloat (&width, 1, argv + 1);
             argc -= 2; argv += 2;
         
         } else if (t == sym___dash__curve) {
@@ -149,10 +163,10 @@ static t_symbol *draw_makeObjectParsePolygon (t_symbol *s, t_buffer *b, int argc
 
     error__options (s, argc, argv);
 
-    if (isFilled) { buffer_appendFloat (b, fillcolor); }
+    if (isFilled) { buffer_appendDescriptor (b, &fillcolor); }
     
-    buffer_appendFloat (b, color);
-    buffer_appendFloat (b, width);
+    buffer_appendDescriptor (b, &color);
+    buffer_appendDescriptor (b, &width);
     buffer_append (b, argc, argv);
 
     if (isFilled) {
@@ -164,12 +178,18 @@ static t_symbol *draw_makeObjectParsePolygon (t_symbol *s, t_buffer *b, int argc
 
 static void draw_makeObjectParsePlot (t_symbol *s, t_buffer *b, int argc, t_atom *argv)
 {
-    t_float x         = 0.0;
-    t_float y         = 0.0;
-    t_float color     = color_withDigits (0);
-    t_float width     = 1.0;
-    t_float increment = 1.0;
-    t_symbol *field   = &s_;
+    t_fielddescriptor x;
+    t_fielddescriptor y;
+    t_fielddescriptor color;
+    t_fielddescriptor width;
+    t_fielddescriptor increment;
+    t_symbol *field = &s_;
+    
+    field_setAsFloatConstant (&x, 0.0);
+    field_setAsFloatConstant (&y, 0.0);
+    field_setAsFloatConstant (&color, 0.0);
+    field_setAsFloatConstant (&width, 1.0);
+    field_setAsFloatConstant (&increment, 1.0);
     
     while (argc > 0) {
 
@@ -181,23 +201,23 @@ static void draw_makeObjectParsePlot (t_symbol *s, t_buffer *b, int argc, t_atom
             argc -= 2; argv += 2;
         
         } else if (argc > 1 && (t == sym___dash__x)) {
-            x = atom_getFloatAtIndex (1, argc, argv);
+            field_setAsFloat (&x, 1, argv + 1);
             argc -= 2; argv += 2;
         
         } else if (argc > 1 && (t == sym___dash__y)) {
-            y = atom_getFloatAtIndex (1, argc, argv);
+            field_setAsFloat (&y, 1, argv + 1);
             argc -= 2; argv += 2;
             
         } else if (argc > 1 && (t == sym___dash__c || t == sym___dash__color)) {
-            color = atom_getFloatAtIndex (1, argc, argv);
+            field_setAsFloat (&color, 1, argv + 1);
             argc -= 2; argv += 2;
             
         } else if (argc > 1 && (t == sym___dash__w || t == sym___dash__width)) {
-            width = atom_getFloatAtIndex (1, argc, argv);
+            field_setAsFloat (&width, 1, argv + 1);
             argc -= 2; argv += 2;
         
         } else if (argc > 1 && (t == sym___dash__increment)) {
-            increment = atom_getFloatAtIndex (1, argc, argv);
+            field_setAsFloat (&increment, 1, argv + 1);
             argc -= 2; argv += 2;
         
         } else if (argc > 1 && (t == sym___dash__fieldx)) {
@@ -236,11 +256,11 @@ static void draw_makeObjectParsePlot (t_symbol *s, t_buffer *b, int argc, t_atom
     if (argc) { warning_unusedArguments (s, argc, argv); }
 
     buffer_appendSymbol (b, field);
-    buffer_appendFloat (b, color);
-    buffer_appendFloat (b, width);
-    buffer_appendFloat (b, x);
-    buffer_appendFloat (b, y);
-    buffer_appendFloat (b, increment);
+    buffer_appendDescriptor (b, &color);
+    buffer_appendDescriptor (b, &width);
+    buffer_appendDescriptor (b, &x);
+    buffer_appendDescriptor (b, &y);
+    buffer_appendDescriptor (b, &increment);
 }
 
 // -----------------------------------------------------------------------------------------------------------
