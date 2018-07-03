@@ -18,13 +18,11 @@
 #define DRAWPOLYGON_NONE            0
 #define DRAWPOLYGON_CLOSED          1
 #define DRAWPOLYGON_BEZIER          2
-#define DRAWPOLYGON_INHIBIT         4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
-#define DRAWPOLYGON_HANDLE_SIZE     8
+#define DRAWPOLYGON_HANDLE          8
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -32,8 +30,8 @@
 static int          drawpolygon_field;                  /* Static. */
 static t_float      drawpolygon_cumulativeX;            /* Static. */
 static t_float      drawpolygon_cumulativeY;            /* Static. */
-static t_float      drawpolygon_valueX;                 /* Static. */
-static t_float      drawpolygon_valueY;                 /* Static. */
+static t_float      drawpolygon_startX;                 /* Static. */
+static t_float      drawpolygon_startY;                 /* Static. */
 static t_float      drawpolygon_stepX;                  /* Static. */
 static t_float      drawpolygon_stepY;                  /* Static. */
 static t_gpointer   drawpolygon_gpointer;               /* Static. */
@@ -50,6 +48,8 @@ static t_class      *drawpolygon_class;                 /* Shared. */
 typedef struct _drawpolygon {
     t_object            x_obj;                          /* Must be the first. */
     int                 x_flags;
+    t_fielddescriptor   x_positionX;
+    t_fielddescriptor   x_positionY;
     t_fielddescriptor   x_colorFill;
     t_fielddescriptor   x_colorOutline;
     t_fielddescriptor   x_width;
@@ -76,7 +76,21 @@ static t_painterbehavior drawpolygon_painterBehavior =
         drawpolygon_behaviorVisibilityChanged,
         drawpolygon_behaviorMouse,
     };
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_float drawpolygon_getRelativeX (t_drawpolygon *x, t_gpointer *gp, t_float baseX)
+{
+    return baseX + gpointer_getFloatByDescriptor (gp, &x->x_positionX);
+}
+
+static t_float drawpolygon_getRelativeY (t_drawpolygon *x, t_gpointer *gp, t_float baseY)
+{
+    return baseY + gpointer_getFloatByDescriptor (gp, &x->x_positionY);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -121,8 +135,8 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
     drawpolygon_cumulativeX += deltaX;
     drawpolygon_cumulativeY += deltaY;
     
-    t_float positionX = drawpolygon_valueX + (drawpolygon_cumulativeX * drawpolygon_stepX);
-    t_float positionY = drawpolygon_valueY + (drawpolygon_cumulativeY * drawpolygon_stepY);
+    t_float positionX = drawpolygon_startX + (drawpolygon_cumulativeX * drawpolygon_stepX);
+    t_float positionY = drawpolygon_startY + (drawpolygon_cumulativeY * drawpolygon_stepY);
     
     gpointer_erase (&drawpolygon_gpointer);
     
@@ -164,7 +178,7 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     
     rectangle_setNothing (r);
         
-    if (visible && !(x->x_flags & DRAWPOLYGON_INHIBIT)) {
+    if (visible) {
     //
     int i;
     t_glist *glist = gpointer_getView (gp);
@@ -172,8 +186,14 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
         
     for (i = 0; i < x->x_size; i += 2) {
     //
-    int a = glist_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
-    int b = glist_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
+    t_float relativeX = drawpolygon_getRelativeX (x, gp, baseX);
+    t_float relativeY = drawpolygon_getRelativeY (x, gp, baseY);
+    t_float offsetX   = gpointer_getFloatByDescriptor (gp, fd + i);
+    t_float offsetY   = gpointer_getFloatByDescriptor (gp, fd + i + 1);
+    t_float valueX    = relativeX + offsetX;
+    t_float valueY    = relativeY + offsetY;
+    int a = glist_valueToPixelX (glist, valueX);
+    int b = glist_valueToPixelY (glist, valueY);
     
     rectangle_addPoint (r, a, b);
     //
@@ -223,10 +243,14 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     
     for (i = 0; i < x->x_size; i += 2) {
     //
-    int a, b;
-    
-    a = glist_valueToPixelX (glist, baseX + gpointer_getFloatByDescriptor (gp, fd + i));
-    b = glist_valueToPixelY (glist, baseY + gpointer_getFloatByDescriptor (gp, fd + i + 1));
+    t_float relativeX = drawpolygon_getRelativeX (x, gp, baseX);
+    t_float relativeY = drawpolygon_getRelativeY (x, gp, baseY);
+    t_float offsetX   = gpointer_getFloatByDescriptor (gp, fd + i);
+    t_float offsetY   = gpointer_getFloatByDescriptor (gp, fd + i + 1);
+    t_float valueX    = relativeX + offsetX;
+    t_float valueY    = relativeY + offsetY;
+    int a = glist_valueToPixelX (glist, valueX);
+    int b = glist_valueToPixelY (glist, valueY);
         
     heapstring_addSprintf (t, " %d %d", a, b);
     //
@@ -280,15 +304,19 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
     //
     if (field_isVariable (fd + i) || field_isVariable (fd + i + 1)) {
     //
-    int valueX = gpointer_getFloatByDescriptor (gp, fd + i);
-    int valueY = gpointer_getFloatByDescriptor (gp, fd + i + 1);
-    int pixelX = glist_valueToPixelX (glist, baseX + valueX);
-    int pixelY = glist_valueToPixelY (glist, baseY + valueY);
+    t_float relativeX = drawpolygon_getRelativeX (x, gp, baseX);
+    t_float relativeY = drawpolygon_getRelativeY (x, gp, baseY);
+    t_float offsetX   = gpointer_getFloatByDescriptor (gp, fd + i);
+    t_float offsetY   = gpointer_getFloatByDescriptor (gp, fd + i + 1);
+    t_float valueX    = relativeX + offsetX;
+    t_float valueY    = relativeY + offsetY;
+    int pixelX = glist_valueToPixelX (glist, valueX);
+    int pixelY = glist_valueToPixelY (glist, valueY);
     int error  = (int)math_euclideanDistance (pixelX, pixelY, m->m_x, m->m_y);
     
     if (error < bestError) {
-        drawpolygon_valueX = valueX;
-        drawpolygon_valueY = valueY;
+        drawpolygon_startX = offsetX;
+        drawpolygon_startY = offsetY;
         bestError = error;
         bestField = i;
     }
@@ -297,7 +325,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
     //
     }
     
-    if (bestError <= DRAWPOLYGON_HANDLE_SIZE) {
+    if (bestError <= DRAWPOLYGON_HANDLE) {
     
         if (m->m_clicked) {
         
@@ -335,22 +363,34 @@ void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     if (s == sym_filledcurve || s == sym_filledpolygon) { x->x_flags |= DRAWPOLYGON_CLOSED; }
     if (s == sym_filledcurve || s == sym_drawcurve)     { x->x_flags |= DRAWPOLYGON_BEZIER; }
     
+    field_setAsFloatConstant (&x->x_positionX,    0.0);
+    field_setAsFloatConstant (&x->x_positionY,    0.0);
     field_setAsFloatConstant (&x->x_colorFill,    0.0);
     field_setAsFloatConstant (&x->x_colorOutline, 0.0);
-    field_setAsFloatConstant (&x->x_width,        (t_float)1.0);
-    field_setAsFloatConstant (&x->x_isVisible,    (t_float)1.0);
+    field_setAsFloatConstant (&x->x_width,        1.0);
+    field_setAsFloatConstant (&x->x_isVisible,    1.0);
     
     while (argc > 0) {
 
         t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
-        if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+        #if PD_WITH_LEGACY
+        
+        if (t == sym___dash__v) { t = sym___dash__visible; }
+        
+        #endif
+        
+        if (argc > 1 && t == sym___dash__visible)  {
             field_setAsFloat (&x->x_isVisible, 1, argv + 1);
             argc -= 2; argv += 2;
             
-        } else if (t == sym___dash__i || t == sym___dash__inhibit) {
-            x->x_flags |= DRAWPOLYGON_INHIBIT;
-            argc -= 1; argv += 1;
+        } else if (argc > 1 && t == sym___dash__x) {
+            field_setAsFloat (&x->x_positionX, 1, argv + 1);
+            argc -= 2; argv += 2;
+            
+        } else if (argc > 1 && t == sym___dash__y) {
+            field_setAsFloat (&x->x_positionY, 1, argv + 1);
+            argc -= 2; argv += 2;
             
         } else { break; }
     }

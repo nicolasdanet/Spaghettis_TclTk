@@ -271,7 +271,7 @@ void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
     field_setAsFloatConstant (&x->x_positionX,  0.0);
     field_setAsFloatConstant (&x->x_positionY,  0.0);
     field_setAsFloatConstant (&x->x_color,      0.0);
-    field_setAsFloatConstant (&x->x_isVisible,  (t_float)1.0);
+    field_setAsFloatConstant (&x->x_isVisible,  1.0);
     
     x->x_label = &s_;
     
@@ -279,7 +279,13 @@ void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
 
         t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
-        if (argc > 1 && (t == sym___dash__v || t == sym___dash__visible)) {
+        #if PD_WITH_LEGACY
+        
+        if (t == sym___dash__v) { t = sym___dash__visible; }
+        
+        #endif
+        
+        if (argc > 1 && t == sym___dash__visible) {
             field_setAsFloat (&x->x_isVisible, 1, argv + 1);
             argc -= 2; argv += 2;
             

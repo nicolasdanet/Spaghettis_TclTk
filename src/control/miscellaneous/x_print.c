@@ -90,7 +90,13 @@ static void *print_new (t_symbol *s, int argc, t_atom *argv)
     
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (t == sym___dash__n || t == sym___dash__none) { x->x_name = &s_; }
+    #if PD_WITH_LEGACY
+    
+    if (t == sym___dash__n) { t = sym___dash__none; }
+    
+    #endif
+    
+    if (t == sym___dash__none) { x->x_name = &s_; }
     else {
         if (argc) { x->x_name = symbol_withAtoms (argc, argv); } 
         else {

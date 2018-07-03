@@ -303,8 +303,15 @@ static void *netreceive_new (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
 
-    if (t == sym___dash__b || t == sym___dash__binary)   { argc--; argv++; x->nr_isBinary = 1; }
-    else if (t == sym___dash__u || t == sym___dash__udp) { argc--; argv++; x->nr_protocol = SOCK_DGRAM; }
+    #if PD_WITH_LEGACY
+    
+    if (t == sym___dash__b) { t = sym___dash__binary; }
+    if (t == sym___dash__u) { t = sym___dash__udp;    }
+    
+    #endif
+    
+    if (t == sym___dash__binary)   { argc--; argv++; x->nr_isBinary = 1; }
+    else if (t == sym___dash__udp) { argc--; argv++; x->nr_protocol = SOCK_DGRAM; }
     else {
         break;
     }

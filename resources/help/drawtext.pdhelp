@@ -61,11 +61,11 @@
 #X text 12 300 Visibility can be handled by a field.;
 #X f 38;
 #X obj 36 48 draw text bird;
-#X text 12 84 Relative coordinates.;
 #X obj 36 120 draw text -x 10 -y 10 bird;
 #X obj 36 192 draw text -color 800 bird;
 #X obj 36 264 draw text -label bird= bird;
 #X obj 36 336 draw text -visible foo bird;
+#X text 12 84 Offset coordinates.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 324 156 pd more;
 #X obj 324 180 colors;

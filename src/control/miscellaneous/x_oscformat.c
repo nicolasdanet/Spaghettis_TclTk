@@ -404,7 +404,13 @@ static void *oscformat_new (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
 
-    if (argc > 1 && IS_SYMBOL (argv + 1) && (t == sym___dash__f || t == sym___dash__format)) { 
+    #if PD_WITH_LEGACY
+        
+    if (t == sym___dash__f) { t = sym___dash__format; }
+        
+    #endif
+        
+    if (argc > 1 && IS_SYMBOL (argv + 1) && (t == sym___dash__format)) {
         oscformat_format (x, GET_SYMBOL (argv + 1));
         argc -= 2;
         argv += 2;

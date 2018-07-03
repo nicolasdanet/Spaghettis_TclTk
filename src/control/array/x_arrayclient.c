@@ -34,7 +34,14 @@ t_error arrayclient_init (t_arrayclient *x, int *ac, t_atom **av)
     //
     t_symbol *t = GET_SYMBOL (argv);
     
-    if (t == sym___dash__s || t == sym___dash__t || t == sym___dash__template) {
+    #if PD_WITH_LEGACY
+        
+    if (t == sym___dash__s) { t = sym___dash__template; }
+    if (t == sym___dash__t) { t = sym___dash__template; }
+      
+    #endif
+    
+    if (t == sym___dash__template) {
         if (argc >= 3 && IS_SYMBOL (argv + 1) && IS_SYMBOL (argv + 2)) {
             x->ac_templateIdentifier = template_makeIdentifierWithWildcard (GET_SYMBOL (argv + 1));
             x->ac_fieldName = GET_SYMBOL (argv + 2);
