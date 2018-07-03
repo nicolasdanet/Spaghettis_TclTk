@@ -234,5 +234,14 @@ void buffer_appendComma (t_buffer *x)
     buffer_append (x, 1, &a);
 }
 
+void buffer_appendDescriptor (t_buffer *x, t_fielddescriptor *fd)
+{
+    if (field_isVariable (fd)) {
+        buffer_appendSymbol (x, field_getVariableName (fd));
+    } else {
+        buffer_appendFloat (x, field_getFloatConstant (fd));
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
