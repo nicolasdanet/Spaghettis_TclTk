@@ -15,6 +15,16 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define POINTER_NEXT        0
+#define POINTER_DELETE      1
+#define POINTER_DISABLE     2
+#define POINTER_ENABLE      4
+#define POINTER_SELECTED    8
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_class *pointer_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -82,6 +92,107 @@ static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Note that functions below do not make sense for non scalars (i.g. element of arrays). */
+
+static void pointer_traverse (t_pointer *x, t_symbol *s)
+{
+    t_glist *glist = cast_glist (symbol_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
+    
+    if (glist && !glist_isArray (glist)) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
+    else { 
+        error_invalid (&s_pointer, &s_pointer);
+    }
+}
+
+static void pointer_rewind (t_pointer *x)
+{
+    if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
+        gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentForScalar (&x->x_gpointer), NULL);
+    } else {
+        error_invalid (&s_pointer, &s_pointer);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void pointer_nextProceed (t_pointer *x, int flag)
+{
+    int deleteFirst  = (flag & POINTER_DELETE);
+    int disableFirst = (flag & POINTER_DISABLE);
+    int enableFirst  = (flag & POINTER_ENABLE);
+    int wantSelected = (flag & POINTER_SELECTED);
+
+    if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
+    //
+    t_glist *glist = gpointer_getParentForScalar (&x->x_gpointer);
+
+    if (!wantSelected || glist_isOnScreen (glist)) {
+
+        t_gobj *z = cast_gobj (gpointer_getScalar (&x->x_gpointer));
+        t_gobj *p = z;
+        
+        if (!z) { z = glist->gl_graphics; }
+        else { 
+            z = z->g_next;
+        }
+        
+        while (z && pointer_nextSkip (z, glist, wantSelected)) { z = z->g_next; }
+        
+        if (p && deleteFirst)  { glist_objectRemove (glist, p); }
+        if (p && enableFirst)  { scalar_enable (cast_scalar (p)); }
+        if (p && disableFirst) { scalar_disable (cast_scalar (p)); }
+        
+        if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletRight); }
+        else {
+            gpointer_setAsScalar (&x->x_gpointer, glist, cast_scalar (z));
+            pointer_bang (x);
+        }
+        
+        return;
+    }
+    //
+    }
+    
+    error_invalid (&s_pointer, &s_pointer);
+}
+
+#if PD_WITH_LEGACY
+
+static void pointer_nextSelected (t_pointer *x)
+{
+    pointer_nextProceed (x, POINTER_NEXT | POINTER_SELECTED);
+}
+
+#endif
+
+static void pointer_nextEnable (t_pointer *x)
+{
+    pointer_nextProceed (x, POINTER_NEXT | POINTER_ENABLE);
+}
+
+static void pointer_nextDisable (t_pointer *x)
+{
+    pointer_nextProceed (x, POINTER_NEXT | POINTER_DISABLE);
+}
+
+static void pointer_nextDelete (t_pointer *x)
+{
+    pointer_nextProceed (x, POINTER_NEXT | POINTER_DELETE);
+}
+
+static void pointer_next (t_pointer *x)
+{
+    pointer_nextProceed (x, POINTER_NEXT);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#if PD_WITH_LEGACY
+
 static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (!gpointer_isValidOrNull (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
@@ -105,78 +216,7 @@ static void pointer_send (t_pointer *x, t_symbol *s)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* Note that functions below do not make sense for non scalars (i.g. element of arrays). */
-
-static void pointer_traverse (t_pointer *x, t_symbol *s)
-{
-    t_glist *glist = cast_glist (symbol_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
-    
-    if (glist && !glist_isArray (glist)) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
-    else { 
-        error_invalid (&s_pointer, &s_pointer);
-    }
-}
-
-static void pointer_rewind (t_pointer *x)
-{
-    if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
-        gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentForScalar (&x->x_gpointer), NULL);
-    } else {
-        error_invalid (&s_pointer, &s_pointer);
-    }
-}
-
-static void pointer_nextProceed (t_pointer *x, int wantSelected, int deleteFirst)
-{
-    if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
-    //
-    t_glist *glist = gpointer_getParentForScalar (&x->x_gpointer);
-
-    if (!wantSelected || glist_isOnScreen (glist)) {
-
-        t_gobj *z = cast_gobj (gpointer_getScalar (&x->x_gpointer));
-        t_gobj *p = z;
-        
-        if (!z) { z = glist->gl_graphics; }
-        else { 
-            z = z->g_next;
-        }
-        
-        while (z && pointer_nextSkip (z, glist, wantSelected)) { z = z->g_next; }
-        
-        if (p && deleteFirst) { glist_objectRemove (glist, p); }
-        
-        if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletRight); }
-        else {
-            gpointer_setAsScalar (&x->x_gpointer, glist, cast_scalar (z));
-            pointer_bang (x);
-        }
-        
-        return;
-    }
-    //
-    }
-    
-    error_invalid (&s_pointer, &s_pointer);
-}
-
-static void pointer_nextSelected (t_pointer *x)
-{
-    pointer_nextProceed (x, 1, 0);
-}
-
-static void pointer_nextDelete (t_pointer *x)
-{
-    pointer_nextProceed (x, 0, 1);
-}
-
-static void pointer_next (t_pointer *x)
-{
-    pointer_nextProceed (x, 0, 0);
-}
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -231,19 +271,19 @@ void pointer_setup (void)
     class_addBang (c, (t_method)pointer_bang); 
     class_addPointer (c, (t_method)pointer_pointer); 
         
-    class_addMethod (c, (t_method)pointer_sendwindow,   sym_sendwindow,             A_GIMME, A_NULL); 
-    class_addMethod (c, (t_method)pointer_send,         sym_send,                   A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,               A_SYMBOL, A_NULL); 
+    class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,               A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,                 A_NULL); 
     class_addMethod (c, (t_method)pointer_next,         sym_next,                   A_NULL);
-    class_addMethod (c, (t_method)pointer_nextSelected, sym_nextselected,           A_NULL);
     class_addMethod (c, (t_method)pointer_nextDelete,   sym_delete,                 A_NULL);
-
+    class_addMethod (c, (t_method)pointer_nextDisable,  sym_disable,                A_NULL);
+    class_addMethod (c, (t_method)pointer_nextEnable,   sym_enable,                 A_NULL);
+    
     #if PD_WITH_LEGACY
     
+    class_addMethod (c, (t_method)pointer_send,         sym_send,                   A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)pointer_nextSelected, sym_vnext,                  A_NULL);
     class_addMethod (c, (t_method)pointer_sendwindow,   sym_send__dash__window,     A_GIMME, A_NULL); 
-    
+
     #endif
 
     pointer_class = c;

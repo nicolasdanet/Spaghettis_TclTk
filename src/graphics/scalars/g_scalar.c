@@ -359,7 +359,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     t_template *tmpl = scalar_getTemplate (x);
     t_glist *view = template_getInstanceViewIfPainters (tmpl);
     
-    if (view) {
+    if (!x->sc_disable && view) {
     //
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
@@ -579,6 +579,20 @@ t_error scalar_setInternalBuffer (t_scalar *x, t_symbol *fieldName, t_buffer *b)
 t_error scalar_unsetInternalBuffer (t_scalar *x, t_symbol *fieldName)
 {
     return word_unsetInternalBuffer (x->sc_element, scalar_getTemplate (x), fieldName);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void scalar_disable (t_scalar *x)
+{
+    x->sc_disable = 1;
+}
+
+void scalar_enable (t_scalar *x)
+{
+    x->sc_disable = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
