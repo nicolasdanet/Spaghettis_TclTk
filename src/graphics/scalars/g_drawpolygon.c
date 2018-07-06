@@ -150,14 +150,14 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
     
     PD_ASSERT (gpointer_isScalar (&drawpolygon_gpointer));
     
+    gpointer_draw (&drawpolygon_gpointer);
+    
     template_notify (gpointer_getTemplate (&drawpolygon_gpointer),
         gpointer_getView (&drawpolygon_gpointer),
         gpointer_getScalar (&drawpolygon_gpointer),
         sym_change,
         0,
         NULL);
-    
-    gpointer_draw (&drawpolygon_gpointer);
     //
     }
 }
@@ -385,11 +385,11 @@ void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
             argc -= 2; argv += 2;
             
         } else if (argc > 1 && t == sym___dash__x) {
-            field_setAsFloat (&x->x_positionX, 1, argv + 1);
+            field_setAsFloatExtended (&x->x_positionX, 1, argv + 1);
             argc -= 2; argv += 2;
             
         } else if (argc > 1 && t == sym___dash__y) {
-            field_setAsFloat (&x->x_positionY, 1, argv + 1);
+            field_setAsFloatExtended (&x->x_positionY, 1, argv + 1);
             argc -= 2; argv += 2;
             
         } else { break; }
@@ -407,7 +407,7 @@ void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
     x->x_size           = x->x_numberOfPoints * 2;
     x->x_coordinates    = (t_fielddescriptor *)PD_MEMORY_GET (x->x_size * sizeof (t_fielddescriptor));
     
-    for (i = 0; i < x->x_size; i++) { field_setAsFloatParseOpposite (x->x_coordinates + i, 1, argv + i); }
+    for (i = 0; i < x->x_size; i++) { field_setAsFloatExtended (x->x_coordinates + i, 1, argv + i); }
 
     if (argc - x->x_size > 0) { warning_unusedArguments (s, argc - x->x_size, argv + x->x_size); }
     

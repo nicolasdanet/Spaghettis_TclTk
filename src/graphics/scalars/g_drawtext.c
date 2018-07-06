@@ -119,14 +119,14 @@ static void drawtext_motion (void *z, t_float deltaX, t_float deltaY, t_float mo
     
     PD_ASSERT (gpointer_isScalar (&drawtext_gpointer));
     
+    gpointer_draw (&drawtext_gpointer);
+    
     template_notify (gpointer_getTemplate (&drawtext_gpointer), 
         gpointer_getView (&drawtext_gpointer), 
         gpointer_getScalar (&drawtext_gpointer),
         sym_change,
         0,
         NULL);
-
-    gpointer_draw (&drawtext_gpointer);
     //
     }
 }
@@ -300,9 +300,9 @@ void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
 
     if (argc) { argc--; argv++; }
     
-    if (argc) { field_setAsFloat (&x->x_positionX,  argc--, argv++); }
-    if (argc) { field_setAsFloat (&x->x_positionY,  argc--, argv++); }
-    if (argc) { field_setAsFloat (&x->x_color,      argc--, argv++); }
+    if (argc) { field_setAsFloatExtended (&x->x_positionX, argc--, argv++); }
+    if (argc) { field_setAsFloatExtended (&x->x_positionY, argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_color, argc--, argv++); }
     
     if (argc) { x->x_label = atom_getSymbolAtIndex (0, argc--, argv++); }
     

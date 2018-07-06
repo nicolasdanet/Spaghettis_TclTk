@@ -266,9 +266,9 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
         word_setFloat (x->sc_element, tmpl, sym_y, f);
     }
     
-    scalar_notifyDisplaced (x, glist, tmpl, (t_float)deltaX, (t_float)deltaY);
     scalar_redraw (x, glist);
     glist_redrawRequired (glist);
+    scalar_notifyDisplaced (x, glist, tmpl, (t_float)deltaX, (t_float)deltaY);
     //
     }
 }
@@ -281,8 +281,8 @@ static void scalar_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     if (!tmpl) { PD_BUG; }
     else {
-        scalar_notifySelected (x, glist, tmpl, isSelected);
         scalar_drawSelectRectangle (x, glist, isSelected);
+        scalar_notifySelected (x, glist, tmpl, isSelected);
     }
 }
 

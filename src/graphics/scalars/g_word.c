@@ -162,9 +162,9 @@ t_float word_getFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescripto
     //
     if (fd->fd_isVariable) {
         f = word_getFloat (w, tmpl, fd->fd_un.fd_variableName);
-        if (fd->fd_isVariableOpposite) { return -f; }
+        if (fd->fd_isVariableOpposite) { return (-f + fd->fd_offset); }
         else {
-            return f;
+            return (f + fd->fd_offset);
         }
     
     } else {
@@ -183,9 +183,13 @@ void word_setFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *
     if (fd->fd_type == DATA_FLOAT) {
     //
     if (fd->fd_isVariable) {
-        if (fd->fd_isVariableOpposite) { word_setFloat (w, tmpl, fd->fd_un.fd_variableName, -f); }
-        else {
-            word_setFloat (w, tmpl, fd->fd_un.fd_variableName, f);
+        
+        f -= fd->fd_offset;
+        
+        if (fd->fd_isVariableOpposite) {
+            word_setFloat (w, tmpl, fd->fd_un.fd_variableName, (-f));
+        } else {
+            word_setFloat (w, tmpl, fd->fd_un.fd_variableName, (f));
         }
         
     } else {
