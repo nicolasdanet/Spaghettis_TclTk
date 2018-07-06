@@ -348,6 +348,8 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
         if (plot_fieldDescriptorX)      { plot_motionHorizontal (array); }
         else if (plot_fieldDescriptorY) { plot_motionVertical (array); }
         
+        if (!isArray) { gpointer_draw (&plot_gpointer); } else { gpointer_redraw (&plot_gpointer); }
+
         if (!isArray) {
 
             PD_ASSERT (gpointer_isScalar (&plot_gpointer));
@@ -367,8 +369,6 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
             
             if (a) { garray_setNextTag (a); }
         }
-        
-        if (!isArray) { gpointer_draw (&plot_gpointer); } else { gpointer_redraw (&plot_gpointer); }
     }
     //
     }
@@ -960,13 +960,13 @@ void *plot_new (t_symbol *s, int argc, t_atom *argv)
     
     error__options (s, argc, argv);
     
-    if (argc) { field_setAsArray (&x->x_array,          argc--, argv++); }
-    if (argc) { field_setAsFloat (&x->x_colorOutline,   argc--, argv++); }
-    if (argc) { field_setAsFloat (&x->x_width,          argc--, argv++); }
-    if (argc) { field_setAsFloat (&x->x_positionX,      argc--, argv++); }
-    if (argc) { field_setAsFloat (&x->x_positionY,      argc--, argv++); }
-    if (argc) { field_setAsFloat (&x->x_incrementX,     argc--, argv++); }
-    if (argc) { field_setAsFloat (&x->x_style,          argc--, argv++); }
+    if (argc) { field_setAsArray (&x->x_array,              argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_colorOutline,       argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_width,              argc--, argv++); }
+    if (argc) { field_setAsFloatExtended (&x->x_positionX,  argc--, argv++); }
+    if (argc) { field_setAsFloatExtended (&x->x_positionY,  argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_incrementX,         argc--, argv++); }
+    if (argc) { field_setAsFloat (&x->x_style,              argc--, argv++); }
 
     if (argc) { warning_unusedArguments (s, argc, argv); }
     

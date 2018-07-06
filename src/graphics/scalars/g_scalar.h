@@ -88,6 +88,7 @@ struct _array {
 
 struct _fielddescriptor {
     int                     fd_type;
+    t_float                 fd_offset;
     int                     fd_isVariable;
     int                     fd_isVariableOpposite;
     union {
@@ -129,7 +130,7 @@ void        field_setAsFloatVariable            (t_fielddescriptor *fd, t_symbol
 void        field_setAsFloat                    (t_fielddescriptor *fd, int argc, t_atom *argv);
 void        field_setAsArray                    (t_fielddescriptor *fd, int argc, t_atom *argv);
 
-void        field_setAsFloatParseOpposite       (t_fielddescriptor *fd, int argc, t_atom *argv);
+void        field_setAsFloatExtended            (t_fielddescriptor *fd, int argc, t_atom *argv);
 
 int         field_isFloat                       (t_fielddescriptor *fd);
 int         field_isFloatConstant               (t_fielddescriptor *fd);
