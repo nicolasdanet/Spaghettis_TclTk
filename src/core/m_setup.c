@@ -32,6 +32,7 @@ void textdefine_initialize      (void);
 
 void clipboard_release          (void);
 void cos_tilde_release          (void);
+void drawcircle_release         (void);
 void drawpolygon_release        (void);
 void drawtext_release           (void);
 void expr_release               (void);
@@ -82,6 +83,7 @@ void ctlout_setup               (void);
 void delay_setup                (void);
 void dial_setup                 (void);
 void draw_setup                 (void);
+void drawcircle_setup           (void);
 void drawpolygon_setup          (void);
 void drawtext_setup             (void);
 void dspstatus_setup            (void);
@@ -326,6 +328,7 @@ void ctlout_destroy             (void);
 void delay_destroy              (void);
 void dial_destroy               (void);
 void draw_destroy               (void);
+void drawcircle_destroy         (void);
 void drawpolygon_destroy        (void);
 void drawtext_destroy           (void);
 void dspstatus_destroy          (void);
@@ -571,6 +574,7 @@ void setup_setup (void)
     delay_setup();
     dial_setup();
     draw_setup();
+    drawcircle_setup();
     drawpolygon_setup();
     drawtext_setup();
     dspstatus_setup();
@@ -808,6 +812,7 @@ void setup_destroy (void)
     delay_destroy();
     dial_destroy();
     draw_destroy();
+    drawcircle_destroy();
     drawpolygon_destroy();
     drawtext_destroy();
     dspstatus_destroy();
@@ -1075,6 +1080,7 @@ void setup_release (void)
     expr_release();
     drawtext_release();
     drawpolygon_release();
+    drawcircle_release();
     cos_tilde_release();
     clipboard_release();
     

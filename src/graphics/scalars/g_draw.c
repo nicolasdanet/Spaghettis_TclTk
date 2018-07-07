@@ -15,9 +15,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void *drawtext_new      (t_symbol *, int, t_atom *);
 void *drawpolygon_new   (t_symbol *, int, t_atom *);
 void *plot_new          (t_symbol *, int, t_atom *);
-void *drawtext_new      (t_symbol *, int, t_atom *);
+void *drawcircle_new    (t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -282,9 +283,10 @@ static void *draw_makeObject (t_symbol *s, int argc, t_atom *argv)
     
     instance_setNewestObject (NULL);
     
-    if (t == sym_polygon)   { o = sym_drawpolygon; }
-    else if (t == sym_plot) { o = sym_plot; }
-    else if (t == sym_text) { o = sym_drawtext; }
+    if (t == sym_text)          { o = sym_drawtext; }
+    else if (t == sym_polygon)  { o = sym_drawpolygon; }
+    else if (t == sym_plot)     { o = sym_plot; }
+    else if (t == sym_circle)   { o = sym_drawcircle; }
     else {
         error_unexpected (sym_draw, t);
     }
@@ -306,6 +308,9 @@ static void *draw_makeObject (t_symbol *s, int argc, t_atom *argv)
     } else if (o == sym_plot) {
         draw_makeObjectParsePlot (s, args, argc, argv);
         newest = (t_pd *)plot_new (o, buffer_getSize (args), buffer_getAtoms (args));
+        
+    } else if (o == sym_drawcircle) {
+        newest = (t_pd *)drawcircle_new (o, argc, argv);
     }
     
     buffer_free (args);
