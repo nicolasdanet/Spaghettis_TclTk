@@ -8,7 +8,6 @@
 #X text 12 156 The line width.;
 #X text 12 372 Visibility can be handled by a field.;
 #X f 39;
-#X obj 36 120 draw polygon -color 0;
 #X obj 36 192 draw polygon -width 2;
 #X obj 36 336 draw polygon -curve;
 #X obj 36 264 draw polygon -fill -fillcolor 800;
@@ -18,6 +17,7 @@
 #X obj 36 408 draw polygon -visible foo;
 #X obj 36 48 draw polygon -x 10 -y 10;
 #X text 12 12 Offset coordinates.;
+#X obj 36 120 draw polygon -color 800;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 288 108 pd more;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;

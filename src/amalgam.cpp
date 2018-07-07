@@ -152,6 +152,7 @@
 #include "graphics/scalars/g_drawpolygon.c"
 #include "graphics/scalars/g_plot.c"
 #include "graphics/scalars/g_drawtext.c"
+#include "graphics/scalars/g_drawcircle.c"
 #include "graphics/scalars/g_draw.c"
 
 /* Control. */
