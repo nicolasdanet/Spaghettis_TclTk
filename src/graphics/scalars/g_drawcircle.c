@@ -290,6 +290,8 @@ static int drawcircle_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
 
     if (!rectangle_isNothing (&t)) {
     //
+    if (rectangle_containsPoint (&t, a, b)) {
+    //
     int w = rectangle_getWidth (&t);
     int h = rectangle_getHeight (&t);
     
@@ -316,6 +318,8 @@ static int drawcircle_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
     //
     } else {
         drawcircle_side = DRAWCIRCLE_TOP; match = 1;    /* Tiny radius. */
+    }
+    //
     }
     //
     }
