@@ -343,9 +343,9 @@ static int drawcircle_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
     }
     
     if (drawcircle_side == DRAWCIRCLE_TOP || drawcircle_side == DRAWCIRCLE_BOTTOM) {
-        return CURSOR_THICKEN;
+        return CURSOR_RESIZE_Y;
     } else {
-        return CURSOR_RESIZE;
+        return CURSOR_RESIZE_X;
     }
     //
     }
