@@ -72,14 +72,14 @@ void glist_updateCursor (t_glist *glist, int type)
             "left_ptr",             // CURSOR_NOTHING
             "hand2",                // CURSOR_CLICK
             "hand2",                // CURSOR_OVER
-            "sb_v_double_arrow",    // CURSOR_THICKEN
             "circle",               // CURSOR_CONNECT
-            "sb_h_double_arrow"     // CURSOR_RESIZE
+            "sb_h_double_arrow",    // CURSOR_RESIZE_X
+            "sb_v_double_arrow"     // CURSOR_RESIZE_Y
         };
     
     if (type == CURSOR_CLICK) { type = CURSOR_NOTHING; }
     
-    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE);
+    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE_Y);   // CURSOR_RESIZE_Y
     
     PD_ASSERT (glist_hasWindow (glist));
     
@@ -391,7 +391,7 @@ static int glist_mouseOverEditResize (t_glist *glist, t_gobj *y, int a, int b, i
     
     if (k) {
     
-        if (!clicked) { glist_updateCursor (glist, CURSOR_RESIZE); }
+        if (!clicked) { glist_updateCursor (glist, CURSOR_RESIZE_X); }
         else {
             glist_objectSelectIfNotSelected (glist, y); editor_startAction (e, ACTION_RESIZE, a, b, y);
         }
@@ -531,7 +531,7 @@ static void glist_mouseOverGraph (t_glist *glist, int a, int b, int m, int click
     
     editor_graphSetSelected (e, hit || resize);
     
-    if (resize)   { glist_updateCursor (glist, CURSOR_RESIZE); }
+    if (resize)   { glist_updateCursor (glist, CURSOR_RESIZE_X); }
     else if (hit) {
         glist_updateCursor (glist, CURSOR_CLICK);
     }

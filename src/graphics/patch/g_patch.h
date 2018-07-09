@@ -37,9 +37,9 @@ enum {
     CURSOR_NOTHING      = 0,        /* Must NOT be changed. */
     CURSOR_CLICK        = 1,        /* Must NOT be changed. */
     CURSOR_OVER         = 2,
-    CURSOR_THICKEN      = 3,
-    CURSOR_CONNECT      = 4,
-    CURSOR_RESIZE       = 5
+    CURSOR_CONNECT      = 3,
+    CURSOR_RESIZE_X     = 4,
+    CURSOR_RESIZE_Y     = 5
     };
 
 enum {
