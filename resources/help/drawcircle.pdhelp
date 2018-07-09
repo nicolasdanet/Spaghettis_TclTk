@@ -1,4 +1,4 @@
-#N canvas 844 244 300 295 12;
+#N canvas 844 244 301 279 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #N canvas 467 227 352 352 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
@@ -18,7 +18,7 @@
 #X obj 36 180 random 100;
 #X obj 36 156 random 300;
 #X obj 36 228 append \$0-template x y r;
-#X obj 36 60 uzi 8;
+#X obj 36 60 uzi 4;
 #X connect 0 0 6 0;
 #X connect 1 0 5 3;
 #X connect 2 0 4 0;
@@ -40,9 +40,9 @@
 #X restore 36 204 pd init;
 #X obj 36 168 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X text 24 24 drawcircle;
-#X obj 84 252 struct;
-#X text 12 252 See also:;
-#X obj 144 252 draw;
+#X obj 84 240 struct;
+#X text 12 240 See also:;
+#X obj 144 240 draw;
 #N canvas 969 226 314 386 more 0;
 #X text 12 84 Digit color.;
 #X f 12;
