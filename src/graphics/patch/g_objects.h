@@ -72,6 +72,7 @@ void        garray_setNextTag               (t_garray *x);
 void        garray_setAsUsedInDSP           (t_garray *x);
 void        garray_setSaveWithParent        (t_garray *x, int savedWithParent);
 void        garray_setHideName              (t_garray *x, int hideName);
+void        garray_setInhibit               (t_garray *x, int inhibit);
 int         garray_isNameShown              (t_garray *x);
 void        garray_redraw                   (t_garray *x);
 void        garray_resize                   (t_garray *x, t_float f);
