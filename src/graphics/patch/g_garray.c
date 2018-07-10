@@ -19,6 +19,7 @@
 #define GARRAY_FLAG_SAVE        (1)
 #define GARRAY_FLAG_PLOT        (2 + 4)
 #define GARRAY_FLAG_HIDE        (8)
+#define GARRAY_FLAG_INHIBIT     (16)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,9 +49,10 @@ struct _garray {
     t_symbol    *x_unexpandedName;
     t_symbol    *x_name;
     t_rand48    x_redrawn;
-    char        x_isUsedInDSP;
-    char        x_saveWithParent;
-    char        x_hideName;
+    int         x_isUsedInDSP;
+    int         x_saveWithParent;
+    int         x_hideName;
+    int         x_inhibit;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -399,12 +401,22 @@ void garray_setAsUsedInDSP (t_garray *x)
 
 void garray_setSaveWithParent (t_garray *x, int savedWithParent)
 {
-    x->x_saveWithParent = savedWithParent;
+    x->x_saveWithParent = (savedWithParent != 0);
 }
 
 void garray_setHideName (t_garray *x, int hideName)
 {
-    x->x_hideName = hideName;
+    x->x_hideName = (hideName != 0);
+}
+
+void garray_setInhibit (t_garray *x, int inhibit)
+{
+    x->x_inhibit = (inhibit != 0);
+    
+    if (x->x_inhibit) { scalar_disable (x->x_scalar); }
+    else {
+        scalar_enable (x->x_scalar);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -677,10 +689,16 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
 {
     t_garray *x = (t_garray *)z;
     int style = scalar_getFloat (x->x_scalar, sym_style);    
-    int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName);
     t_array *array = garray_getArray (x);
     int n = array_getSize (array);
     
+    // GARRAY_FLAG_SAVE
+    // GARRAY_FLAG_PLOT
+    // GARRAY_FLAG_HIDE
+    // GARRAY_FLAG_INHIBIT
+
+    int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName) + (16 * x->x_inhibit);
+
     buffer_appendSymbol (b, sym___hash__X);
     buffer_appendSymbol (b, sym_array);
     buffer_appendSymbol (b, x->x_unexpandedName);
@@ -719,7 +737,7 @@ void garray_functionProperties (t_garray *x)
     PD_ASSERT (glist_isArray (x->x_owner));
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %d %d %g %g %d %d %d\n",
+                "::ui_array::show %%s %s %d %d %d %g %g %d %d %d %d\n",
                 symbol_dollarToHash (x->x_unexpandedName)->s_name,
                 array_getSize (array),
                 rectangle_getWidth (glist_getGraphGeometry (x->x_owner)),
@@ -728,7 +746,8 @@ void garray_functionProperties (t_garray *x)
                 bounds_getBottom (bounds),
                 x->x_saveWithParent,
                 PD_CLAMP (style, PLOT_POLYGONS, PLOT_CURVES),
-                x->x_hideName);
+                x->x_hideName,
+                x->x_inhibit);
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
@@ -739,18 +758,19 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty = 0;
     
-    PD_ASSERT (argc == 9);
+    PD_ASSERT (argc == 10);
     
     t_symbol *t1 = x->x_name;
     int t2       = x->x_saveWithParent;
     int t3       = x->x_hideName;
-    int t4       = garray_getSize (x);
-    t_float t5   = scalar_getFloat (x->x_scalar, sym_style);
-    t_bounds t6;
-    t_rectangle t7;
+    int t4       = x->x_inhibit;
+    int t5       = garray_getSize (x);
+    t_float t6   = scalar_getFloat (x->x_scalar, sym_style);
+    t_bounds t7;
+    t_rectangle t8;
 
-    bounds_setCopy (&t6, glist_getBounds (x->x_owner));
-    rectangle_setCopy (&t7, glist_getGraphGeometry (x->x_owner));
+    bounds_setCopy (&t7, glist_getBounds (x->x_owner));
+    rectangle_setCopy (&t8, glist_getGraphGeometry (x->x_owner));
     
     {
     //
@@ -763,7 +783,8 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     int save       = (int)atom_getFloatAtIndex (6, argc, argv);
     int style      = (int)atom_getFloatAtIndex (7, argc, argv);
     int hide       = (int)atom_getFloatAtIndex (8, argc, argv);
-
+    int inhibit    = (int)atom_getFloatAtIndex (9, argc, argv);
+    
     PD_ASSERT (size > 0);
     
     t_array *array = garray_getArray (x);
@@ -792,6 +813,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     if (size != array_getSize (array)) { garray_resize (x, (t_float)size); }
     
     garray_setHideName (x, hide);
+    garray_setInhibit (x, inhibit);
     garray_updateGraphSize (x, size, style);
     garray_updateGraphRange (x, up, down);
     garray_updateGraphGeometry (x, width, height);
@@ -804,10 +826,11 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t1 != x->x_name);
     isDirty |= (t2 != x->x_saveWithParent);
     isDirty |= (t3 != x->x_hideName);
-    isDirty |= (t4 != garray_getSize (x));
-    isDirty |= (t5 != scalar_getFloat (x->x_scalar, sym_style));
-    isDirty |= !bounds_areEquals (&t6, glist_getBounds (x->x_owner));
-    isDirty |= !rectangle_areEquals (&t7, glist_getGraphGeometry (x->x_owner));
+    isDirty |= (t4 != x->x_inhibit);
+    isDirty |= (t5 != garray_getSize (x));
+    isDirty |= (t6 != scalar_getFloat (x->x_scalar, sym_style));
+    isDirty |= !bounds_areEquals (&t7, glist_getBounds (x->x_owner));
+    isDirty |= !rectangle_areEquals (&t8, glist_getGraphGeometry (x->x_owner));
     
     if (isDirty) { glist_setDirty (x->x_owner, 1); }
 }
@@ -820,7 +843,8 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     t_symbol *name,
     t_symbol *templateIdentifier,
     int save, 
-    int hide)
+    int hide,
+    int inhibit)
 {
     t_garray *x = (t_garray *)pd_new (garray_class);
     
@@ -842,6 +866,8 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     
     glist_objectAdd (glist, cast_gobj (x));
     
+    garray_setInhibit (x, inhibit);
+    
     return x;
 }
 
@@ -857,12 +883,13 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
     
     if (template_fieldIsArrayAndValid (tmpl, sym_z)) {
     //
-    int save  = (((int)flags & GARRAY_FLAG_SAVE) != 0);
-    int hide  = (((int)flags & GARRAY_FLAG_HIDE) != 0);
-    int style = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
-    int n     = (int)PD_MAX (1.0, size);
+    int save    = (((int)flags & GARRAY_FLAG_SAVE) != 0);
+    int hide    = (((int)flags & GARRAY_FLAG_HIDE) != 0);
+    int style   = PD_CLAMP ((((int)flags & GARRAY_FLAG_PLOT) >> 1), PLOT_POLYGONS, PLOT_CURVES);
+    int inhibit = (((int)flags & GARRAY_FLAG_INHIBIT) != 0);
+    int n       = (int)PD_MAX (1.0, size);
     
-    x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide);
+    x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide, inhibit);
 
     array_resize (scalar_getArray (x->x_scalar, sym_z), n);
 

@@ -31,29 +31,31 @@ variable  arrayDown
 variable  arraySave
 variable  arrayDraw
 variable  arrayHide
+variable  arrayInhibit
 
-array set arrayName   {}
-array set arraySize   {}
-array set arrayWidth  {}
-array set arrayHeight {}
-array set arrayUp     {}
-array set arrayDown   {}
-array set arraySave   {}
-array set arrayDraw   {}
-array set arrayHide   {}
+array set arrayName    {}
+array set arraySize    {}
+array set arrayWidth   {}
+array set arrayHeight  {}
+array set arrayUp      {}
+array set arrayDown    {}
+array set arraySave    {}
+array set arrayDraw    {}
+array set arrayHide    {}
+array set arrayInhibit {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top name size width height up down save style hide} {
+proc show {top name size width height up down save style hide inhibit} {
 
-    ::ui_array::_create $top $name $size $width $height $up $down $save $style $hide
+    ::ui_array::_create $top $name $size $width $height $up $down $save $style $hide $inhibit
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top name size width height up down save style hide} {
+proc _create {top name size width height up down save style hide inhibit} {
 
     variable arrayName
     variable arraySize
@@ -64,6 +66,7 @@ proc _create {top name size width height up down save style hide} {
     variable arraySave
     variable arrayDraw
     variable arrayHide
+    variable arrayInhibit
         
     toplevel $top -class PdDialog
     wm title $top [_ "Array"]
@@ -82,6 +85,7 @@ proc _create {top name size width height up down save style hide} {
     set arraySave($top)         $save
     set arrayDraw($top)         $style
     set arrayHide($top)         $hide
+    set arrayInhibit($top)      $inhibit
     
     set arrayName(${top}.old)   [::dollarToHash $name]
     set arraySize(${top}.old)   $size
@@ -130,6 +134,12 @@ proc _create {top name size width height up down save style hide} {
                                                         -variable ::ui_array::arraySave($top) \
                                                         -takefocus 0
 
+    ttk::label $top.f.properties.inhibitLabel       {*}[::styleLabel] \
+                                                        -text [_ "Ignore Mouse"]
+    ttk::checkbutton $top.f.properties.inhibit      {*}[::styleCheckButton] \
+                                                        -variable ::ui_array::arrayInhibit($top) \
+                                                        -takefocus 0
+    
     ttk::label $top.f.properties.hideLabel          {*}[::styleLabel] \
                                                         -text [_ "Hide Name"]
     ttk::checkbutton $top.f.properties.hide         {*}[::styleCheckButton] \
@@ -164,10 +174,12 @@ proc _create {top name size width height up down save style hide} {
     grid $top.f.properties.height                   -row 3 -column 1 -sticky ew
     grid $top.f.properties.saveLabel                -row 4 -column 0 -sticky ew
     grid $top.f.properties.save                     -row 4 -column 1 -sticky ew
-    grid $top.f.properties.hideLabel                -row 5 -column 0 -sticky ew
-    grid $top.f.properties.hide                     -row 5 -column 1 -sticky ew
-    grid $top.f.properties.drawLabel                -row 6 -column 0 -sticky ew
-    grid $top.f.properties.draw                     -row 6 -column 1 -sticky ew
+    grid $top.f.properties.inhibitLabel             -row 5 -column 0 -sticky ew
+    grid $top.f.properties.inhibit                  -row 5 -column 1 -sticky ew
+    grid $top.f.properties.hideLabel                -row 6 -column 0 -sticky ew
+    grid $top.f.properties.hide                     -row 6 -column 1 -sticky ew
+    grid $top.f.properties.drawLabel                -row 7 -column 0 -sticky ew
+    grid $top.f.properties.draw                     -row 7 -column 1 -sticky ew
     
     grid $top.f.bounds.upLabel                      -row 0 -column 0 -sticky ew
     grid $top.f.bounds.up                           -row 0 -column 1 -sticky ew
@@ -203,6 +215,7 @@ proc closed {top} {
     variable arraySave
     variable arrayDraw
     variable arrayHide
+    variable arrayInhibit
         
     ::ui_array::_apply $top
     
@@ -215,6 +228,7 @@ proc closed {top} {
     unset arraySave($top)
     unset arrayDraw($top)
     unset arrayHide($top)
+    unset arrayInhibit($top)
     
     unset arrayName(${top}.old)
     unset arraySize(${top}.old)
@@ -240,6 +254,7 @@ proc _apply {top} {
     variable arraySave
     variable arrayDraw
     variable arrayHide
+    variable arrayInhibit
         
     ::ui_array::_forceSize $top
     ::ui_array::_forceBounds $top
@@ -254,7 +269,8 @@ proc _apply {top} {
             $arrayDown($top) \
             $arraySave($top) \
             $arrayDraw($top) \
-            $arrayHide($top)"
+            $arrayHide($top) \
+            $arrayInhibit($top)"
 }
 
 # ------------------------------------------------------------------------------------------------------------

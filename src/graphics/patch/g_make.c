@@ -87,7 +87,15 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     t_float down   = atom_getFloatAtIndex (5, argc, argv);
     int save       = (int)atom_getFloatAtIndex (6, argc, argv);
     int style      = (int)atom_getFloatAtIndex (7, argc, argv);
-    int flags      = (save + (2 * style));
+    int hide       = (int)atom_getFloatAtIndex (8, argc, argv);
+    int inhibit    = (int)atom_getFloatAtIndex (9, argc, argv);
+    
+    // GARRAY_FLAG_SAVE
+    // GARRAY_FLAG_PLOT
+    // GARRAY_FLAG_HIDE
+    // GARRAY_FLAG_INHIBIT
+    
+    int flags      = (save + (2 * style) + (8 * hide) + (16 * inhibit));
     
     t_float n = PD_MAX (1, size);
     
