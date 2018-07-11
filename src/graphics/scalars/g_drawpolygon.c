@@ -148,16 +148,9 @@ static void drawpolygon_motion (void *z, t_float deltaX, t_float deltaY, t_float
         gpointer_setFloatByDescriptor (&drawpolygon_gpointer, fd + 1, positionY);
     }
     
-    PD_ASSERT (gpointer_isScalar (&drawpolygon_gpointer));
-    
     gpointer_draw (&drawpolygon_gpointer);
     
-    template_notify (gpointer_getTemplate (&drawpolygon_gpointer),
-        gpointer_getView (&drawpolygon_gpointer),
-        gpointer_getScalar (&drawpolygon_gpointer),
-        sym_change,
-        0,
-        NULL);
+    gpointer_notify (&drawpolygon_gpointer, sym_change, 0, NULL);
     //
     }
 }
@@ -340,7 +333,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
             glist_setMotion (glist, z, (t_motionfn)drawpolygon_motion, m->m_x, m->m_y);
         }
     
-        return CURSOR_OVER;
+        return (gpointer_isScalar (gp) ? CURSOR_OVER : CURSOR_ELEMENT_1);
     }
     //
     }

@@ -74,12 +74,14 @@ void glist_updateCursor (t_glist *glist, int type)
             "hand2",                // CURSOR_OVER
             "circle",               // CURSOR_CONNECT
             "sb_h_double_arrow",    // CURSOR_RESIZE_X
-            "sb_v_double_arrow"     // CURSOR_RESIZE_Y
+            "sb_v_double_arrow",    // CURSOR_RESIZE_Y
+            "right_ptr",            // CURSOR_ELEMENT_1
+            "center_ptr"            // CURSOR_ELEMENT_2
         };
     
     if (type == CURSOR_CLICK) { type = CURSOR_NOTHING; }
     
-    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_RESIZE_Y);   // CURSOR_RESIZE_Y
+    type = PD_CLAMP (type, CURSOR_NOTHING, CURSOR_ELEMENT_2);   // CURSOR_ELEMENT_2
     
     PD_ASSERT (glist_hasWindow (glist));
     

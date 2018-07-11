@@ -11,7 +11,7 @@ Remark:
 
 Build:
 
-    On macOS install ActiveTcl first.
+    On macOS install ActiveTcl first < https://www.activestate.com/activetcl >.
     Download this repository.
     Open a terminal and go to the "Spaghettis/build.sh" script.
     Run the "./build.sh" command.

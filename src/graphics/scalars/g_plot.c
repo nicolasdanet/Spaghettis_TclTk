@@ -352,14 +352,7 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
 
         if (!isArray) {
 
-            PD_ASSERT (gpointer_isScalar (&plot_gpointer));
-            
-            template_notify (gpointer_getTemplate (&plot_gpointer), 
-                gpointer_getView (&plot_gpointer), 
-                gpointer_getScalar (&plot_gpointer),
-                sym_change,
-                0,
-                NULL);
+            gpointer_notify (&plot_gpointer, sym_change, 0, NULL);
             
         } else {
         
@@ -716,6 +709,36 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static int plot_behaviorMouseRecursive (t_plot *x,
+    t_glist *view,
+    t_array *array,
+    int i,
+    t_float relativeX,
+    t_float relativeY,
+    t_mouse *m)
+{
+    t_gobj *y = NULL;
+    
+    int k = 0;
+    
+    for (y = view->gl_graphics; y; y = y->g_next) {
+    
+        t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
+     
+        if (behavior) {
+     
+            t_gpointer gp; gpointer_init (&gp);
+            gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
+            k = (*behavior->w_fnPainterMouse) (y, &gp, relativeX, relativeY, m);
+            gpointer_unset (&gp);
+        }
+        
+        if (k) { break; }
+    }
+
+    return k;
+}
+
 static void plot_behaviorMouseThickness (t_plot *x, t_plotproperties *p, int deltaY, int deltaL, int deltaH)
 {
     plot_thickness = PLOT_THICKNESS_NONE;
@@ -780,6 +803,37 @@ static int plot_behaviorMouseMatch (t_plot *x,
     return (plot_thickness ? CURSOR_RESIZE_Y : CURSOR_OVER);
 }
 
+static int plot_behaviorMouseGrabRecursive (t_plot *x, t_plotproperties *p, t_mouse *m)
+{
+    t_glist *view = template_getInstanceViewIfPainters (array_getTemplate (p->p_array));
+    
+    if (view) {
+    //
+    int i;
+    
+    for (i = 0; i < array_getSize (p->p_array); i += p->p_step) {
+    //
+    t_plotpixels c;
+    
+    plot_getPixelsAtIndex (p,
+        plot_relativeX,
+        plot_relativeY,
+        i,
+        gpointer_getView (&plot_gpointer),
+        plot_width,
+        &c);
+    
+    int k = plot_behaviorMouseRecursive (x, view, p->p_array, i, c.p_x, c.p_y, m);
+    
+    if (k) { return k; }
+    //
+    }
+    //
+    }
+    
+    return 0;
+}
+
 static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
 {
     int d = PD_INT_MAX;
@@ -818,9 +872,9 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
     //
     }
     
-    if (d > PLOT_HANDLE_SIZE) { return 0; }
+    if (d <= PLOT_HANDLE_SIZE) { return plot_behaviorMouseMatch (x, p, best, deltaY, deltaL, deltaH, m); }
     else {
-        return plot_behaviorMouseMatch (x, p, best, deltaY, deltaL, deltaH, m); 
+        return plot_behaviorMouseGrabRecursive (x, p, m);
     }
 }
 
