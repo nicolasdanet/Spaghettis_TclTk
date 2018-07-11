@@ -354,6 +354,28 @@ void gpointer_draw (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void gpointer_notify (t_gpointer *gp, t_symbol *s, int argc, t_atom *argv)
+{
+    t_template *x = gpointer_getTemplate (gp);
+    t_atom *a = NULL;
+    int i, n = argc + 1;
+    t_gpointer copy; gpointer_init (&copy);
+    
+    PD_ATOMS_ALLOCA (a, n);
+    
+    gpointer_setByCopy (&copy, gp);
+    SET_POINTER (a, &copy);
+    for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
+    if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
+    gpointer_unset (&copy);
+    
+    PD_ATOMS_FREEA (a, n);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_symbol *gpointer_representation (t_gpointer *gp)
 {
     t_symbol *s = sym_invalid;

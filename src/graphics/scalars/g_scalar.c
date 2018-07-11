@@ -118,6 +118,28 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void scalar_notifyProceed (t_template *x,
+    t_glist *owner,
+    t_scalar *scalar,
+    t_symbol *s,
+    int argc,
+    t_atom *argv)
+{
+    t_atom *a = NULL;
+    int i, n = argc + 1;
+    t_gpointer gp; gpointer_init (&gp);
+    
+    PD_ATOMS_ALLOCA (a, n);
+    
+    gpointer_setAsScalar (&gp, owner, scalar);
+    SET_POINTER (a, &gp);
+    for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
+    if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
+    gpointer_unset (&gp);
+    
+    PD_ATOMS_FREEA (a, n);
+}
+
 static void scalar_notifyClicked (t_scalar *x, 
     t_glist *glist,
     t_template *tmpl,
@@ -127,7 +149,7 @@ static void scalar_notifyClicked (t_scalar *x,
     t_atom t[2];
     SET_FLOAT (t + 0, positionX);
     SET_FLOAT (t + 1, positionY);
-    template_notify (tmpl, glist, x, sym_click, 2, t);
+    scalar_notifyProceed (tmpl, glist, x, sym_click, 2, t);
 }
     
 static void scalar_notifyDisplaced (t_scalar *x, 
@@ -139,7 +161,7 @@ static void scalar_notifyDisplaced (t_scalar *x,
     t_atom t[2];
     SET_FLOAT (t + 0, deltaX);
     SET_FLOAT (t + 1, deltaY);
-    template_notify (tmpl, glist, x, sym_displace, 2, t);
+    scalar_notifyProceed (tmpl, glist, x, sym_displace, 2, t);
 }
 
 static void scalar_notifySelected (t_scalar *x, 
@@ -147,9 +169,9 @@ static void scalar_notifySelected (t_scalar *x,
     t_template *tmpl,
     int isSelected)
 {
-    if (isSelected) { template_notify (tmpl, glist, x, sym_select, 0, NULL); }
+    if (isSelected) { scalar_notifyProceed (tmpl, glist, x, sym_select, 0, NULL); }
     else {
-        template_notify (tmpl, glist, x, sym_deselect, 0, NULL);
+        scalar_notifyProceed (tmpl, glist, x, sym_deselect, 0, NULL);
     }
 }
 

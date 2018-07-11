@@ -72,6 +72,8 @@ void        gpointer_erase                      (t_gpointer *gp);
 void        gpointer_draw                       (t_gpointer *gp);
 void        gpointer_redraw                     (t_gpointer *gp);
 
+void        gpointer_notify                     (t_gpointer *gp, t_symbol *s, int argc, t_atom *argv);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

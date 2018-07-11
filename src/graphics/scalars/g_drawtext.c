@@ -117,16 +117,9 @@ static void drawtext_motion (void *z, t_float deltaX, t_float deltaY, t_float mo
     
     gpointer_setFloat (&drawtext_gpointer, x->x_fieldName, drawtext_cumulativeY);
     
-    PD_ASSERT (gpointer_isScalar (&drawtext_gpointer));
-    
     gpointer_draw (&drawtext_gpointer);
     
-    template_notify (gpointer_getTemplate (&drawtext_gpointer), 
-        gpointer_getView (&drawtext_gpointer), 
-        gpointer_getScalar (&drawtext_gpointer),
-        sym_change,
-        0,
-        NULL);
+    gpointer_notify (&drawtext_gpointer, sym_change, 0, NULL);
     //
     }
 }
@@ -249,7 +242,7 @@ static int drawtext_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_f
         glist_setMotion (gpointer_getView (gp), z, (t_motionfn)drawtext_motion, a, b);
     }
     
-    return CURSOR_OVER;
+    return (gpointer_isScalar (gp) ? CURSOR_OVER : CURSOR_ELEMENT_2);
     //
     }
     //

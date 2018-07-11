@@ -39,7 +39,9 @@ enum {
     CURSOR_OVER         = 2,
     CURSOR_CONNECT      = 3,
     CURSOR_RESIZE_X     = 4,
-    CURSOR_RESIZE_Y     = 5
+    CURSOR_RESIZE_Y     = 5,
+    CURSOR_ELEMENT_1    = 6,
+    CURSOR_ELEMENT_2    = 7
     };
 
 enum {

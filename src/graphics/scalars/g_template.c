@@ -214,28 +214,6 @@ int template_fieldIsArrayAndValid (t_template *x, t_symbol *fieldName)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void template_notify (t_template *x,
-    t_glist *owner,
-    t_scalar *scalar,
-    t_symbol *s,
-    int argc,
-    t_atom *argv)
-{
-    t_atom *a = NULL;
-    int i, n = argc + 1;
-    t_gpointer gp; gpointer_init (&gp);
-    
-    PD_ATOMS_ALLOCA (a, n);
-    
-    gpointer_setAsScalar (&gp, owner, scalar);
-    SET_POINTER (a, &gp);
-    for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
-    if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
-    gpointer_unset (&gp);
-    
-    PD_ATOMS_FREEA (a, n);
-}
-
 static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *argv)
 {
     #if PD_WITH_DEBUG
@@ -276,6 +254,8 @@ static t_glist *template_getInstanceView (t_template *x)
     
     if (!x->tp_instance) { return NULL; } else { return struct_getView (x->tp_instance); }
 }
+
+/* Return the instance view if it contains  at least one painter. */
 
 t_glist *template_getInstanceViewIfPainters (t_template *x)
 {

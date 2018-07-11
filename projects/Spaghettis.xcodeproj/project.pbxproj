@@ -1643,9 +1643,9 @@
 				37D642F21D4793A800071C3C /* g_setsize.c */,
 				37D642BB1D47924100071C3C /* g_append.c */,
 				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
-				379C1B711D37934500C4D92C /* g_plot.c */,
 				379C1B3F1D3790C200C4D92C /* g_drawtext.c */,
 				1713835720F0BC660001245E /* g_drawcircle.c */,
+				379C1B711D37934500C4D92C /* g_plot.c */,
 				17E2A05720E11D610031D4AD /* g_draw.c */,
 			);
 			path = scalars;

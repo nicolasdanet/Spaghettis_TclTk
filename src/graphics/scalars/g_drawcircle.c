@@ -23,6 +23,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 #define DRAWCIRCLE_TINY         24
 #define DRAWCIRCLE_HANDLE       0.3
@@ -137,12 +138,7 @@ static void drawcircle_motion (void *z, t_float deltaX, t_float deltaY, t_float 
 
     gpointer_draw (&drawcircle_gpointer);
     
-    template_notify (gpointer_getTemplate (&drawcircle_gpointer),
-        gpointer_getView (&drawcircle_gpointer),
-        gpointer_getScalar (&drawcircle_gpointer),
-        sym_change,
-        0,
-        NULL);
+    gpointer_notify (&drawcircle_gpointer, sym_change, 0, NULL);
     //
     }
 }
