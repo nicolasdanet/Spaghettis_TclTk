@@ -86,7 +86,6 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 static void gatom_drawJob (t_gobj *z, t_glist *glist)
 {
@@ -271,7 +270,7 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
     object_serializeWidth (cast_object (x), b);
 }
 
-static void gatom_functionProperties (t_gobj *z, t_glist *owner)
+static void gatom_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_gatom *x  = (t_gatom *)z;
     t_error err = PD_ERROR_NONE;

@@ -337,7 +337,7 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
-static void toggle_functionProperties (t_gobj *z, t_glist *owner)
+static void toggle_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_toggle *x = (t_toggle *)z;
     t_error err = PD_ERROR_NONE;

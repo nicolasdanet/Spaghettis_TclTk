@@ -182,6 +182,7 @@ t_symbol *sym__properties;
 t_symbol *sym__quit;
 t_symbol *sym__savepreferences;
 t_symbol *sym__savetofile;
+t_symbol *sym__scalardialog;
 t_symbol *sym__selectall;
 t_symbol *sym__signoff;
 t_symbol *sym__snap;
@@ -898,6 +899,7 @@ void symbols_initialize (void)
     sym__quit                                   = gensym ("_quit");
     sym__savepreferences                        = gensym ("_savepreferences");
     sym__savetofile                             = gensym ("_savetofile");
+    sym__scalardialog                           = gensym ("_scalardialog");
     sym__selectall                              = gensym ("_selectall");
     sym__signoff                                = gensym ("_signoff");
     sym__snap                                   = gensym ("_snap");

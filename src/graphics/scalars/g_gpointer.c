@@ -154,6 +154,9 @@ void gpointer_setAsScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
 {
     gpointer_unset (gp);
     
+    PD_ASSERT (glist);
+    PD_ASSERT (!scalar || (scalar->sc_owner == glist));
+    
     gp->gp_un.gp_scalar     = scalar;
     gp->gp_refer            = glist_getMaster (glist);
     gp->gp_uniqueIdentifier = glist_getIdentifier (glist);
@@ -376,7 +379,7 @@ void gpointer_notify (t_gpointer *gp, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *gpointer_representation (t_gpointer *gp)
+t_symbol *gpointer_getRepresentation (t_gpointer *gp)
 {
     t_symbol *s = sym_invalid;
     
@@ -388,7 +391,10 @@ t_symbol *gpointer_representation (t_gpointer *gp)
     return symbol_addPrefix (s, sym___arrobe__);
 }
 
-t_error gpointer_addFieldToString (t_gpointer *gp, t_symbol *fieldName, char *dest, int size)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *dest, int size)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -414,6 +420,63 @@ t_error gpointer_addFieldToString (t_gpointer *gp, t_symbol *fieldName, char *de
     }
     
     return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
+{
+    t_template *tmpl = gpointer_getTemplate (gp);
+    
+    int i;
+    
+    t_symbol *s = symbol_stripTemplateIdentifier (gpointer_getTemplateIdentifier (gp));
+    
+    heapstring_addSprintf (h, "%s", s->s_name);
+ 
+    for (i = 0; i < template_getSize (tmpl); i++) {
+    //
+    t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
+    
+    if (template_fieldIsFloat (tmpl, fieldName)) {
+        heapstring_addSprintf (h, " {%s}", fieldName->s_name);
+        heapstring_addSprintf (h, " {%g}", gpointer_getFloat (gp, fieldName));
+        
+    } else if (template_fieldIsSymbol (tmpl, fieldName)) {
+        heapstring_addSprintf (h, " {%s}", fieldName->s_name);
+        heapstring_addSprintf (h, " {%s}", symbol_dollarToHash (gpointer_getSymbol (gp, fieldName))->s_name);
+    }
+    //
+    }
+}
+
+void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv)
+{
+    t_template *tmpl = gpointer_getTemplate (gp);
+    
+    int i;
+    int k = 0;
+    
+    for (i = 0; i < argc; i += 2) {
+    //
+    t_symbol *fieldName = atom_getSymbolAtIndex (i + 0, argc, argv);
+    
+    if (template_fieldIsFloat (tmpl, fieldName)) {
+        t_float f = atom_getFloatAtIndex (i + 1, argc, argv);
+        k |= (gpointer_getFloat (gp, fieldName) != f);
+        gpointer_setFloat (gp, fieldName, f);
+        
+    } else if (template_fieldIsSymbol (tmpl, fieldName)) {
+        t_symbol *s = symbol_hashToDollar (atom_getSymbolAtIndex (i + 1, argc, argv));
+        k |= (gpointer_getSymbol (gp, fieldName) != s);
+        gpointer_setSymbol (gp, fieldName, s);
+    }
+    //
+    }
+    
+    if (k) { gpointer_redraw (gp); gpointer_notify (gp, sym_change, 0, NULL); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

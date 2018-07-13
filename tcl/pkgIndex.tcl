@@ -18,6 +18,7 @@ package ifneeded ui_menu 1.0            [list source [file join $dir ui_menu.tcl
 package ifneeded ui_midi 1.0            [list source [file join $dir ui_midi.tcl]]
 package ifneeded ui_patch 1.0           [list source [file join $dir ui_patch.tcl]]
 package ifneeded ui_path 1.0            [list source [file join $dir ui_path.tcl]]
+package ifneeded ui_scalar 1.0          [list source [file join $dir ui_scalar.tcl]]
 package ifneeded ui_text 1.0            [list source [file join $dir ui_text.tcl]]
 
 # ------------------------------------------------------------------------------------------------------------

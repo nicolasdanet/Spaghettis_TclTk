@@ -491,7 +491,7 @@ static void vu_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
-static void vu_functionProperties (t_gobj *z, t_glist *owner)
+static void vu_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_vu *x = (t_vu *)z;
     t_error err = PD_ERROR_NONE;

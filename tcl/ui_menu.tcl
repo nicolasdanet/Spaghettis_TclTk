@@ -165,8 +165,12 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasO
     
     set xpopup [expr {int([winfo rootx $top.c] + $xcanvas - [$top.c canvasx 0])}]
     set ypopup [expr {int([winfo rooty $top.c] + $ycanvas - [$top.c canvasy 0])}]
-        
-    tk_popup .popup $xpopup $ypopup
+    
+    if {[tk windowingsystem] eq "aqua"} {
+        tk_popup .popup $xpopup $ypopup 0
+    } else {
+        tk_popup .popup $xpopup $ypopup
+    }
 
     }
 }
@@ -450,6 +454,10 @@ proc _tools {m} {
         -command { ::ui_interface::pdsend "pd scan" }
 }
 
+# POPUP_PROPERTIES
+# POPUP_OPEN
+# POPUP_HELP
+    
 proc _popup {m} {
 
     $m add command \

@@ -74,6 +74,17 @@ void rectangle_setCopy (t_rectangle *r, t_rectangle *toCopy)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Use floats to avoid overflow. */
+
+t_float rectangle_getArea (t_rectangle *r)
+{
+    return ((t_float)rectangle_getWidth (r) * (t_float)rectangle_getHeight (r));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 int rectangle_areEquals (t_rectangle *r1, t_rectangle *r2)
 {
     if (r1->rect_isNothing         != r2->rect_isNothing)    { return 0; }

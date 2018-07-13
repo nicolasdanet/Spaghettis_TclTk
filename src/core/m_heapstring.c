@@ -44,7 +44,7 @@ char *heapstring_getRaw (t_heapstring *x)
 
 int heapstring_getSize (t_heapstring *x)
 {
-    return PD_MAX (0, (int)x->hs_size);
+    int size = (int)x->hs_size; PD_ASSERT (size >= 0); return size;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -75,6 +75,11 @@ void heapstring_removeIfContainsAtEnd (t_heapstring *x, char c)
     if (x->hs_raw[x->hs_size - 1] == c) { x->hs_raw[x->hs_size - 1] = 0; x->hs_size--; }
     //
     }
+}
+
+void heapstring_removeIfContains (t_heapstring *x, char c)
+{
+    string_removeCharacter (x->hs_raw, c); x->hs_size = strlen (x->hs_raw);
 }
 
 // -----------------------------------------------------------------------------------------------------------

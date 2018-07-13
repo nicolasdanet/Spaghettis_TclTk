@@ -108,6 +108,7 @@ int         string_indexOfFirstOccurrenceFrom           (const char *s, const ch
 int         string_indexOfFirstOccurrenceFromEnd        (const char *s, const char *chars);
 void        string_replaceCharacter                     (char *s, char toBeReplaced, char c);
 void        string_removeCharacter                      (char *s, char toBeRemoved);
+void        string_removeCharacterAtEnd                 (char *s, char toBeRemoved);
 
 void        string_getNumberOfColumnsAndLines           (const char *s, int *columns, int *lines);
 

@@ -107,7 +107,7 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
 static void pointer_rewind (t_pointer *x)
 {
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
-        gpointer_setAsScalar (&x->x_gpointer, gpointer_getParentForScalar (&x->x_gpointer), NULL);
+        gpointer_setAsScalar (&x->x_gpointer, gpointer_getView (&x->x_gpointer), NULL);
     } else {
         error_invalid (&s_pointer, &s_pointer);
     }
@@ -126,7 +126,7 @@ static void pointer_nextProceed (t_pointer *x, int flag)
 
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
-    t_glist *glist = gpointer_getParentForScalar (&x->x_gpointer);
+    t_glist *glist = gpointer_getView (&x->x_gpointer);
 
     if (!wantSelected || glist_isOnScreen (glist)) {
 

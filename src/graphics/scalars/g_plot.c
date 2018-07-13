@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *plot_class;                            /* Shared. */
+t_class *plot_class;                                    /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -953,6 +953,100 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
     }
     
     return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int plot_hitElement (t_gobj *z,
+    t_gpointer *gp,
+    t_float baseX,
+    t_float baseY,
+    t_mouse *m,
+    t_symbol **s,
+    t_gpointer *e)
+{
+    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getView (gp);
+    
+    t_plotproperties p;
+    
+    PD_ASSERT (!glist_isArray (glist));
+    
+    if (!plot_fetchProperties (x, gp, &p) && (p.p_visible != 0)) {
+    //
+    t_glist *view = template_getInstanceViewIfPainters (array_getTemplate (p.p_array));
+    
+    if (view) {
+    //
+    int i, k = -1;
+    double f = PD_FLT_MAX;
+    int t, d = PD_INT_MAX;
+    
+    /* First match plot points. */
+    
+    for (i = 0; i < array_getSize (p.p_array); i += p.p_step) {
+
+        t_plotpixels c;
+        
+        plot_getPixelsAtIndex (&p,
+            plot_getRelativeX (&p, baseX),
+            plot_getRelativeY (&p, baseY),
+            i,
+            glist,
+            p.p_width,
+            &c);
+        
+        t = (int)math_euclideanDistance (c.p_pixelX, c.p_pixelY, m->m_x, m->m_y);
+        
+        if (t <= PLOT_HANDLE_SIZE && t < d) {
+            *s = field_getVariableName (&x->x_array);
+            gpointer_setAsWord (e, p.p_array, array_getElementAtIndex (p.p_array, i));
+            k = i;
+            d = t;
+        }
+    }
+    
+    /* Then match area of element drawn. */
+    
+    if (k < 0) {
+    //
+    for (i = 0; i < array_getSize (p.p_array); i += p.p_step) {
+
+        t_rectangle r; rectangle_setNothing (&r);
+    
+        t_plotpixels c;
+        
+        plot_getPixelsAtIndex (&p,
+            plot_getRelativeX (&p, baseX),
+            plot_getRelativeY (&p, baseY),
+            i,
+            glist,
+            p.p_width,
+            &c);
+        
+        plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, &r);
+        
+        if (rectangle_containsPoint (&r, m->m_x, m->m_y)) {
+            double g = rectangle_getArea (&r);
+            if (g < f) {
+                *s = field_getVariableName (&x->x_array);
+                gpointer_setAsWord (e, p.p_array, array_getElementAtIndex (p.p_array, i));
+                k = i;
+                f = g;
+            }
+        }
+    }
+    //
+    }
+    
+    return k;
+    //
+    }
+    //
+    }
+    
+    return -1;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -560,7 +560,7 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
-static void slider_functionProperties (t_gobj *z, t_glist *owner)
+static void slider_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_slider *x = (t_slider *)z;
     t_error err = PD_ERROR_NONE;
