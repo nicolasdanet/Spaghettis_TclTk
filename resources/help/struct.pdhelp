@@ -1,4 +1,4 @@
-#N canvas 542 364 391 292 12;
+#N canvas 542 368 391 292 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 struct;
@@ -18,11 +18,9 @@
 #X restore 36 156 pd \$0-element;
 #X obj 264 252 array;
 #X obj 312 252 text;
-#N canvas 716 578 429 146 \$0-another 0;
-#X obj 36 96 struct \$0-another float x float y symbol s text z;
-#X obj 36 24 draw text z;
-#X f 11;
-#X obj 36 60 draw text -color 800 -y -30 -- s;
+#N canvas 693 577 379 111 \$0-another 0;
+#X obj 36 24 draw text -color 800 -y -30 -- s;
+#X obj 36 60 struct \$0-another float x float y symbol s;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 204 pd \$0-another;
 #X text 12 120 Only the beside painters are used for rendering.;

@@ -69,7 +69,7 @@ void canvas_sendToBack              (t_glist *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void canvas_functionProperties (t_gobj *, t_glist *);
+static void canvas_functionProperties (t_gobj *, t_glist *, t_mouse *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -242,15 +242,17 @@ static void canvas_map (t_glist *glist, t_float f)
 
 static void canvas_properties (t_glist *glist)
 {
+    t_mouse m; mouse_init (&m);
+    
     if (glist_objectGetNumberOfSelected (glist) > 0) {
         t_selection *s = NULL;
         for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
             t_gobj *y = selection_getObject (s);
             if (class_hasPropertiesFunction (pd_class (y))) {
-                (*class_getPropertiesFunction (pd_class (y))) (y, glist);
+                (*class_getPropertiesFunction (pd_class (y))) (y, glist, &m);
             }
         }
-    } else { canvas_functionProperties (cast_gobj (glist), NULL); }
+    } else { canvas_functionProperties (cast_gobj (glist), NULL, &m); }
 }
 
 static void canvas_help (t_glist *glist)
@@ -296,6 +298,12 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     
     PD_ASSERT (argc == 3);
     
+    t_mouse m; mouse_init (&m);
+    
+    m.m_x = a;
+    m.m_y = b;
+    m.m_clickedRight = 1;
+    
     for (i = n - 1; i >= 0; i--) {
     //
     t_gobj *y = glist_objectGetAt (glist, i);
@@ -306,7 +314,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     //
     if (k == POPUP_PROPERTIES) {
         if (class_hasPropertiesFunction (pd_class (y))) {
-            (*class_getPropertiesFunction (pd_class (y))) (y, glist); return;
+            (*class_getPropertiesFunction (pd_class (y))) (y, glist, &m); return;
         }
     } 
     if (k == POPUP_OPEN) {
@@ -322,7 +330,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     //
     }
     
-    if (k == POPUP_PROPERTIES) { canvas_functionProperties (cast_gobj (glist), NULL); }
+    if (k == POPUP_PROPERTIES) { canvas_functionProperties (cast_gobj (glist), NULL, &m); }
 }
 
 static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -396,7 +404,7 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b)
     }
 }
 
-static void canvas_functionProperties (t_gobj *x, t_glist *dummy)
+static void canvas_functionProperties (t_gobj *x, t_glist *dummy, t_mouse *m)
 {
     t_glist *glist = cast_glist (x);
     

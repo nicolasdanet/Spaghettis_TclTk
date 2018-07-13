@@ -46,7 +46,7 @@ static void print_symbol (t_print *x, t_symbol *s)
 
 static void print_pointer (t_print *x, t_gpointer *gp)
 {
-    t_symbol *t = gpointer_representation (gp);
+    t_symbol *t = gpointer_getRepresentation (gp);
     
     if (!gpointer_isValid (gp)) { post ("%s: %s", x->x_name->s_name, t->s_name); }      // --
     else {

@@ -124,6 +124,8 @@ t_error string_clear (char *dest, size_t size)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#if PD_WITH_DEADCODE
+
 static t_error string_escapeCharacter (char *dest, size_t size, char c)
 {
     t_error err = PD_ERROR_NONE;
@@ -158,6 +160,8 @@ t_error string_escapeOccurrence (char *dest, size_t size, const char *chars)
     
     return err;
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -325,6 +329,11 @@ void string_removeCharacter (char *s, char toBeRemoved)
     while (*r) { *w = *r; r++; w += (*w != toBeRemoved); }
     
     *w = 0;
+}
+
+void string_removeCharacterAtEnd (char *s, char toBeRemoved)
+{
+    size_t n = strlen (s); if (n && (s[n - 1] == toBeRemoved)) { s[n - 1] = 0; }
 }
 
 // -----------------------------------------------------------------------------------------------------------

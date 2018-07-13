@@ -613,7 +613,7 @@ static void dial_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
-static void dial_functionProperties (t_gobj *z, t_glist *owner)
+static void dial_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_dial *x = (t_dial *)z;
     t_error err = PD_ERROR_NONE;

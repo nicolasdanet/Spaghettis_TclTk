@@ -27,7 +27,7 @@ typedef void (*t_pointermethod)             (t_pd *x, t_gpointer *gp);
 // MARK: -
 
 typedef void (*t_savefn)                    (t_gobj *x, t_buffer *b);
-typedef void (*t_propertiesfn)              (t_gobj *x, t_glist *glist);
+typedef void (*t_propertiesfn)              (t_gobj *x, t_glist *glist, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

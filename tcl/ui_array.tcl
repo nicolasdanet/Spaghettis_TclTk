@@ -87,7 +87,7 @@ proc _create {top name size width height up down save style hide inhibit} {
     set arrayHide($top)         $hide
     set arrayInhibit($top)      $inhibit
     
-    set arrayName(${top}.old)   [::dollarToHash $name]
+    set arrayName(${top}.old)   [::hashToDollar $name]
     set arraySize(${top}.old)   $size
     set arrayWidth(${top}.old)  $width
     set arrayHeight(${top}.old) $height

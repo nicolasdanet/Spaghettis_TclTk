@@ -500,7 +500,7 @@ static void glist_mouseOverRun (t_glist *glist, int a, int b, int m, int clicked
     
     if (gobj_hit (y, glist, a, b, 0, &r)) {
     
-        t_mouse t;
+        t_mouse t; mouse_init (&t);
         
         t.m_x       = a;
         t.m_y       = b;

@@ -22,8 +22,34 @@ typedef struct _mouse {
     int     m_alt;
     int     m_dbl;
     int     m_clicked;
-    t_atom  m_atoms[7];
+    int     m_clickedRight;
+    t_atom  m_atoms[8];
     } t_mouse;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void mouse_init (t_mouse *m)
+{
+    m->m_x              = 0;
+    m->m_y              = 0;
+    m->m_shift          = 0;
+    m->m_ctrl           = 0;
+    m->m_alt            = 0;
+    m->m_dbl            = 0;
+    m->m_clicked        = 0;
+    m->m_clickedRight   = 0;
+    
+    SET_FLOAT (m->m_atoms + 0, 0);
+    SET_FLOAT (m->m_atoms + 1, 0);
+    SET_FLOAT (m->m_atoms + 2, 0);
+    SET_FLOAT (m->m_atoms + 3, 0);
+    SET_FLOAT (m->m_atoms + 4, 0);
+    SET_FLOAT (m->m_atoms + 5, 0);
+    SET_FLOAT (m->m_atoms + 6, 0);
+    SET_FLOAT (m->m_atoms + 7, 0);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -31,7 +57,7 @@ typedef struct _mouse {
 
 static inline int mouse_argc (t_mouse *m)
 {
-    return 7;
+    return 8;
 }
 
 static inline t_atom *mouse_argv (t_mouse *m)
@@ -43,6 +69,7 @@ static inline t_atom *mouse_argv (t_mouse *m)
     SET_FLOAT (m->m_atoms + 4, m->m_alt);
     SET_FLOAT (m->m_atoms + 5, m->m_dbl);
     SET_FLOAT (m->m_atoms + 6, m->m_clicked);
+    SET_FLOAT (m->m_atoms + 7, m->m_clickedRight);
     
     return m->m_atoms;
 }
@@ -226,6 +253,8 @@ int     rectangle_containsX                     (t_rectangle *r, int x);
 int     rectangle_containsY                     (t_rectangle *r, int y);
 int     rectangle_containsPoint                 (t_rectangle *r, int x, int y);
 int     rectangle_containsRectangle             (t_rectangle *r, t_rectangle *isContained);
+
+t_float rectangle_getArea                       (t_rectangle *r);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -452,6 +481,7 @@ t_error     heapstring_append                   (t_heapstring *x, const char *sr
 t_error     heapstring_addSprintf               (t_heapstring *x, const char *format, ...);
 
 void        heapstring_removeIfContainsAtEnd    (t_heapstring *x, char c);
+void        heapstring_removeIfContains         (t_heapstring *x, char c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -540,7 +540,7 @@ static void radio_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
-static void radio_functionProperties (t_gobj *z, t_glist *owner)
+static void radio_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_radio *x = (t_radio *)z;
     t_error err = PD_ERROR_NONE;

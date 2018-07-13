@@ -72,6 +72,7 @@ proc packCategoryNext {}        { return "-side top -fill both -expand 1 -pady {
 
 proc styleMinimumSize {}        { return "300 150" }
 proc styleMinimumSizePatch {}   { return "300 75"  }
+proc styleMinimumSizeScalar {}  { return "150 75"  }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

@@ -49,6 +49,12 @@ static int  scalar_behaviorMouse                (t_gobj *, t_glist *, t_mouse *)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int plot_hitElement (t_gobj *, t_gpointer *, t_float, t_float, t_mouse *, t_symbol **, t_gpointer *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static t_widgetbehavior scalar_widgetBehavior = /* Shared. */
     {
@@ -118,60 +124,37 @@ static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelec
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void scalar_notifyProceed (t_template *x,
-    t_glist *owner,
-    t_scalar *scalar,
-    t_symbol *s,
-    int argc,
-    t_atom *argv)
+static void scalar_notifyProceed (t_scalar *scalar, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *a = NULL;
-    int i, n = argc + 1;
     t_gpointer gp; gpointer_init (&gp);
     
-    PD_ATOMS_ALLOCA (a, n);
-    
-    gpointer_setAsScalar (&gp, owner, scalar);
-    SET_POINTER (a, &gp);
-    for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
-    if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
+    gpointer_setAsScalar (&gp, scalar->sc_owner, scalar);
+    gpointer_notify (&gp, s, argc, argv);
     gpointer_unset (&gp);
-    
-    PD_ATOMS_FREEA (a, n);
 }
 
-static void scalar_notifyClicked (t_scalar *x, 
-    t_glist *glist,
-    t_template *tmpl,
-    t_float positionX,
-    t_float positionY)
+static void scalar_notifyClicked (t_scalar *x, t_float positionX, t_float positionY)
 {
     t_atom t[2];
     SET_FLOAT (t + 0, positionX);
     SET_FLOAT (t + 1, positionY);
-    scalar_notifyProceed (tmpl, glist, x, sym_click, 2, t);
+    scalar_notifyProceed (x, sym_click, 2, t);
 }
     
-static void scalar_notifyDisplaced (t_scalar *x, 
-    t_glist *glist,
-    t_template *tmpl,
-    t_float deltaX,
-    t_float deltaY)
+static void scalar_notifyDisplaced (t_scalar *x, t_float deltaX, t_float deltaY)
 {
     t_atom t[2];
     SET_FLOAT (t + 0, deltaX);
     SET_FLOAT (t + 1, deltaY);
-    scalar_notifyProceed (tmpl, glist, x, sym_displace, 2, t);
+    scalar_notifyProceed (x, sym_displace, 2, t);
 }
 
-static void scalar_notifySelected (t_scalar *x, 
-    t_glist *glist,
-    t_template *tmpl,
-    int isSelected)
+static void scalar_notifySelected (t_scalar *x, int isSelected)
 {
-    if (isSelected) { scalar_notifyProceed (tmpl, glist, x, sym_select, 0, NULL); }
-    else {
-        scalar_notifyProceed (tmpl, glist, x, sym_deselect, 0, NULL);
+    if (isSelected) {
+        scalar_notifyProceed (x, sym_select,   0, NULL);
+    } else {
+        scalar_notifyProceed (x, sym_deselect, 0, NULL);
     }
 }
 
@@ -191,10 +174,6 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 void scalar_snap (t_scalar *x, t_glist *glist)
 {
     t_template *tmpl = scalar_getTemplate (x);
-    
-    if (!tmpl) { PD_BUG; }
-    else {
-    //
     int deltaX = 0;
     int deltaY = 0;
     
@@ -211,8 +190,6 @@ void scalar_snap (t_scalar *x, t_glist *glist)
     if (deltaX || deltaY) {
         scalar_behaviorDisplaced (cast_gobj (x), glist, deltaX, deltaY);
     }
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -222,8 +199,7 @@ void scalar_snap (t_scalar *x, t_glist *glist)
 static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_scalar *x = cast_scalar (z);
-    t_template *tmpl = scalar_getTemplate (x);
-    t_glist *view = template_getInstanceViewIfPainters (tmpl);
+    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
 
@@ -268,12 +244,8 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
 static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_scalar *x = cast_scalar (z);
-    
     t_template *tmpl = scalar_getTemplate (x);
     
-    if (!tmpl) { PD_BUG; }
-    else {
-    //
     if (template_fieldIsFloat (tmpl, sym_x)) {
 
         t_float f = word_getFloat (x->sc_element, tmpl, sym_x);
@@ -290,22 +262,13 @@ static void scalar_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int
     
     scalar_redraw (x, glist);
     glist_redrawRequired (glist);
-    scalar_notifyDisplaced (x, glist, tmpl, (t_float)deltaX, (t_float)deltaY);
-    //
-    }
+    scalar_notifyDisplaced (x, (t_float)deltaX, (t_float)deltaY);
 }
 
 static void scalar_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
-    t_scalar *x = cast_scalar (z);
-    
-    t_template *tmpl = scalar_getTemplate (x);
-    
-    if (!tmpl) { PD_BUG; }
-    else {
-        scalar_drawSelectRectangle (x, glist, isSelected);
-        scalar_notifySelected (x, glist, tmpl, isSelected);
-    }
+    scalar_drawSelectRectangle (cast_scalar (z), glist, isSelected);
+    scalar_notifySelected (cast_scalar (z), isSelected);
 }
 
 static void scalar_behaviorActivated (t_gobj *z, t_glist *glist, int isActivated)
@@ -319,9 +282,7 @@ static void scalar_behaviorDeleted (t_gobj *z, t_glist *glist)
 static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_scalar *x = cast_scalar (z);
-    
-    t_template *tmpl = scalar_getTemplate (x);
-    t_glist *owner = template_getInstanceViewIfPainters (tmpl);
+    t_glist *owner = template_getInstanceViewIfPainters (scalar_getTemplate (x));
     t_float baseX  = scalar_getFloat (x, sym_x);
     t_float baseY  = scalar_getFloat (x, sym_y);
 
@@ -361,9 +322,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                 t_gpointer gp; gpointer_init (&gp);
                 
                 gpointer_setAsScalar (&gp, glist, x);
-                
                 (*behavior->w_fnPainterVisibilityChanged) (y, &gp, baseX, baseY, isVisible);
-                
                 gpointer_unset (&gp);
             }
         }
@@ -378,8 +337,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_scalar *x = cast_scalar (z);
-    t_template *tmpl = scalar_getTemplate (x);
-    t_glist *view = template_getInstanceViewIfPainters (tmpl);
+    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
     
     if (!x->sc_disable && view) {
     //
@@ -387,7 +345,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     t_float baseY = scalar_getFloat (x, sym_y);
     t_gobj *y = NULL;
         
-    if (m->m_clicked) { scalar_notifyClicked (x, glist, tmpl, baseX, baseY); }
+    if (m->m_clicked) { scalar_notifyClicked (x, baseX, baseY); }
             
     for (y = view->gl_graphics; y; y = y->g_next) {
     //
@@ -398,9 +356,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
         t_gpointer gp; gpointer_init (&gp);
         
         gpointer_setAsScalar (&gp, glist, x);
-        
         int k = (*behavior->w_fnPainterMouse) (y, &gp, baseX, baseY, m);
-        
         gpointer_unset (&gp);
         
         if (k) {
@@ -513,7 +469,7 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
 }
 
 /* Note that scalars are NOT saved with patch. */
-/* This function is required for copy and paste behavior. */
+/* This function is required only for copy and paste behavior. */
 
 static void scalar_functionSave (t_gobj *z, t_buffer *b)
 {
@@ -527,6 +483,120 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
     
     buffer_free (t);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static int scalar_functionPropertiesFetchIfPlotted (t_scalar *x,
+    t_glist *glist,
+    t_mouse *m,
+    t_symbol **s,
+    t_gpointer *e)
+{
+    int i = -1;
+    
+    if (m->m_clickedRight && template_containsArray (scalar_getTemplate (x))) {
+    //
+    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+
+    if (view) {
+    //
+    t_gobj *y = NULL;
+    
+    for (y = view->gl_graphics; y; y = y->g_next) {
+    //
+    if (pd_class (y) == plot_class) {
+    //
+    t_float baseX = scalar_getFloat (x, sym_x);
+    t_float baseY = scalar_getFloat (x, sym_y);
+    
+    t_gpointer gp; gpointer_init (&gp);
+
+    gpointer_setAsScalar (&gp, glist, x);
+    i = plot_hitElement (y, &gp, baseX, baseY, m, s, e);
+    gpointer_unset (&gp);
+    
+    if (i >= 0) { break; }
+    //
+    }
+    //
+    }
+    //
+    }
+    //
+    }
+    
+    return i;
+}
+
+void scalar_functionProperties (t_gobj *z, t_glist *glist, t_mouse *m)
+{
+    t_scalar *x = cast_scalar (z);
+    t_gpointer gp; gpointer_init (&gp);
+    t_symbol *s = sym_invalid;
+    int i = scalar_functionPropertiesFetchIfPlotted (x, glist, m, &s, &gp);
+    t_heapstring *h = heapstring_new (0);
+    
+    if (i >= 0) { heapstring_addSprintf (h, "::ui_scalar::show %%s element %d %s ", i, s->s_name); }
+    else {
+    //
+    heapstring_addSprintf (h, "::ui_scalar::show %%s scalar %d %s ", i, s->s_name);
+    
+    gpointer_setAsScalar (&gp, glist, x);
+    //
+    }
+    
+    if (gpointer_isValid (&gp)) {
+    //
+    gpointer_getPropertiesAsString (&gp, h); heapstring_add (h, "\n");
+    
+    stub_new (cast_pd (x), (void *)x, heapstring_getRaw (h));
+    //
+    }
+    
+    heapstring_free (h); gpointer_unset (&gp);
+}
+
+static void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc > 5) {
+    //
+    t_symbol *type = atom_getSymbol (argv + 0);
+    int index = atom_getFloat (argv + 1);
+    t_symbol *field = atom_getSymbol (argv + 2);
+    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (atom_getSymbol (argv + 3));
+    
+    argc -= 4;
+    argv += 4;
+    
+    {
+        t_gpointer gp; gpointer_init (&gp);
+    
+        if (type == sym_scalar) {
+            PD_ASSERT (templateIdentifier == x->sc_templateIdentifier);
+            gpointer_setAsScalar (&gp, x->sc_owner, x);
+            
+        } else if (type == sym_element) {
+            if (scalar_containsTemplate (x, templateIdentifier)) {
+            if (scalar_hasField (x, field)) {
+            if (scalar_fieldIsArrayAndValid (x, field)) {
+                t_array *array = scalar_getArray (x, field);
+                if (index < array_getSize (array)) {
+                    gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, index));
+                }
+            }
+            }
+            }
+        }
+    
+        if (gpointer_isValid (&gp)) { gpointer_setProperties (&gp, argc, argv); }
+    
+        gpointer_unset (&gp);
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -565,6 +635,25 @@ int scalar_containsTemplate (t_scalar *x, t_symbol *templateIdentifier)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int scalar_hasField (t_scalar *x, t_symbol *field)
+{
+    return template_hasField (scalar_getTemplate (x), field);
+}
+
+int scalar_fieldIsFloat (t_scalar *x, t_symbol *fieldName)
+{
+    return template_fieldIsFloat (scalar_getTemplate (x), fieldName);
+}
+
+int scalar_fieldIsArrayAndValid (t_scalar *x, t_symbol *field)
+{
+    return template_fieldIsArrayAndValid (scalar_getTemplate (x), field);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_array *scalar_getArray (t_scalar *x, t_symbol *fieldName)
 {
     return word_getArray (x->sc_element, scalar_getTemplate (x), fieldName);
@@ -578,15 +667,6 @@ t_float scalar_getFloat (t_scalar *x, t_symbol *fieldName)
 void scalar_setFloat (t_scalar *x, t_symbol *fieldName, t_float f)
 {
     word_setFloat (x->sc_element, scalar_getTemplate (x), fieldName, f);  
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int scalar_fieldIsFloat (t_scalar *x, t_symbol *fieldName)
-{
-    return template_fieldIsFloat (scalar_getTemplate (x), fieldName);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -633,10 +713,11 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
         
         x = (t_scalar *)pd_new (scalar_class);
         
+        x->sc_owner = owner;
         x->sc_templateIdentifier = templateIdentifier;
         x->sc_element = (t_word *)PD_MEMORY_GET (template_getSize (tmpl) * sizeof (t_word));
         
-        gpointer_setAsScalar (&gp, owner, x);
+        gpointer_setAsScalar (&gp, x->sc_owner, x);
         word_init (x->sc_element, tmpl, &gp);
         gpointer_unset (&gp);
     }
@@ -647,6 +728,8 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
 static void scalar_free (t_scalar *x)
 {
     gui_jobRemove ((void *)x);
+    
+    stub_destroyWithKey ((void *)x);
     
     word_free (x->sc_element, scalar_getTemplate (x));
 
@@ -667,9 +750,12 @@ void scalar_setup (void)
         sizeof (t_scalar),
         CLASS_GRAPHIC,
         A_NULL);
-        
+    
+    class_addMethod (c, (t_method)scalar_fromDialog, sym__scalardialog, A_GIMME, A_NULL);
+    
     class_setWidgetBehavior (c, &scalar_widgetBehavior);
     class_setSaveFunction (c, scalar_functionSave);
+    class_setPropertiesFunction (c, scalar_functionProperties);
     
     scalar_class = c;
 }

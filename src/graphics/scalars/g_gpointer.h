@@ -30,8 +30,6 @@ void        gpointer_setAsWord                  (t_gpointer *gp, t_array *owner,
 
 t_scalar    *gpointer_getScalar                 (t_gpointer *gp);
 t_word      *gpointer_getWord                   (t_gpointer *gp);
-t_glist     *gpointer_getParentForScalar        (t_gpointer *gp);
-t_array     *gpointer_getParentForWord          (t_gpointer *gp);
 
 void        gpointer_setByCopy                  (t_gpointer *gp, t_gpointer *toCopy);
 void        gpointer_unset                      (t_gpointer *gp);
@@ -78,9 +76,11 @@ void        gpointer_notify                     (t_gpointer *gp, t_symbol *s, in
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *gpointer_representation            (t_gpointer *gp);
+t_symbol    *gpointer_getRepresentation         (t_gpointer *gp);
 
-t_error     gpointer_addFieldToString           (t_gpointer *gp, t_symbol *field, char *dest, int size);
+t_error     gpointer_getFieldAsString           (t_gpointer *gp, t_symbol *field, char *dest, int size);
+void        gpointer_getPropertiesAsString      (t_gpointer *gp, t_heapstring *h);
+void        gpointer_setProperties              (t_gpointer *gp, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

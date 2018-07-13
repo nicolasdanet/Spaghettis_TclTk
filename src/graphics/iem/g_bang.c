@@ -348,7 +348,7 @@ static void bng_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
-static void bng_functionProperties (t_gobj *z, t_glist *owner)
+static void bng_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_bng *x = (t_bng *)z;
     t_error err = PD_ERROR_NONE;

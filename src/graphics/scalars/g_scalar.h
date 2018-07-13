@@ -178,7 +178,9 @@ t_symbol    *scalar_getTemplateIdentifier       (t_scalar *x);
 t_array     *scalar_getArray                    (t_scalar *x, t_symbol *field);
 
 int         scalar_containsTemplate             (t_scalar *x, t_symbol *templateIdentifier);
+int         scalar_hasField                     (t_scalar *x, t_symbol *field);
 int         scalar_fieldIsFloat                 (t_scalar *x, t_symbol *field);
+int         scalar_fieldIsArrayAndValid         (t_scalar *x, t_symbol *field);
 t_float     scalar_getFloat                     (t_scalar *x, t_symbol *field);
 void        scalar_setFloat                     (t_scalar *x, t_symbol *field, t_float f);
 
@@ -187,6 +189,7 @@ void        scalar_enable                       (t_scalar *x);
 
 void        scalar_serialize                    (t_scalar *x, t_buffer *b);
 void        scalar_deserialize                  (t_scalar *x, t_glist *glist, int argc, t_atom *argv);
+void        scalar_properties                   (t_scalar *x, t_glist *glist, int a, int b);
 void        scalar_redraw                       (t_scalar *x, t_glist *glist);
 void        scalar_snap                         (t_scalar *x, t_glist *glist);
 

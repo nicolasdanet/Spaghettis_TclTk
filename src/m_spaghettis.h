@@ -667,6 +667,7 @@ typedef struct _gobj {
 typedef struct _scalar {                        
     t_gobj          sc_g;                       /* MUST be the first. */
     int             sc_disable;
+    t_glist         *sc_owner;
     t_symbol        *sc_templateIdentifier;
     t_word          *sc_element;
     } t_scalar;

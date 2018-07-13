@@ -53,6 +53,7 @@ package require ui_menu
 package require ui_midi
 package require ui_patch
 package require ui_path
+package require ui_scalar
 package require ui_text
 
 # ------------------------------------------------------------------------------------------------------------

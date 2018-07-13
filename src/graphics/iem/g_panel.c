@@ -243,7 +243,7 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
-static void panel_functionProperties (t_gobj *z, t_glist *owner)
+static void panel_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_panel *x = (t_panel *)z;
     t_error err = PD_ERROR_NONE;

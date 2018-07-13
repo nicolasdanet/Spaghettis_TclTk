@@ -85,7 +85,7 @@ void textbuffer_update (t_textbuffer *x)
     //
     int size;
     char *text = NULL;
-    const char *tag  = proxy_getTagAsString (x->tb_proxy);
+    const char *tag = proxy_getTagAsString (x->tb_proxy);
     int i = 0;
     
     buffer_toStringUnzeroed (x->tb_buffer, &text, &size);
