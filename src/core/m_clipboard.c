@@ -80,6 +80,7 @@ void clipboard_paste (t_glist *glist)
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     int isDirty = 0;
+    int onlyScalars = 1;
     
     glist_deselectAll (glist);
     
@@ -99,10 +100,11 @@ void clipboard_paste (t_glist *glist)
         
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
         y = selection_getObject (s); gobj_displaced (y, glist, n, n);
-        if (gobj_isCanvas (y)) { glist_loadbang (cast_glist (y)); }
+        if (gobj_isCanvas (y))  { glist_loadbang (cast_glist (y)); }
+        if (!gobj_isScalar (y)) { onlyScalars = 0; }
     }
     
-    if (isDirty) { glist_setDirty (glist, 1); }
+    if (!onlyScalars && isDirty) { glist_setDirty (glist, 1); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

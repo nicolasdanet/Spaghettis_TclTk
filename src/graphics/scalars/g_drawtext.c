@@ -67,15 +67,14 @@ void drawtext_release (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_error drawtext_getContents (t_drawtext *x, t_gpointer *gp, char *dest, int size, int *m, int *n)
+static t_error drawtext_getContents (t_drawtext *x, t_gpointer *gp, char *dest, int size)
 {
-    if (gpointer_hasField (gp, x->x_fieldName)) {
-        if (!gpointer_fieldIsArray (gp, x->x_fieldName)) {
-            t_error err = string_copy (dest, size, x->x_label->s_name);
-            err |= gpointer_getFieldAsString (gp, x->x_fieldName, dest, size);
-            if (m && n) { string_getNumberOfColumnsAndLines (dest, m, n); }
-            return err;
-        }
+    if (gpointer_hasField (gp, x->x_fieldName) && !gpointer_fieldIsArray (gp, x->x_fieldName)) {
+    //
+    t_error err = string_copy (dest, size, x->x_label->s_name);
+    err |= gpointer_getFieldAsString (gp, x->x_fieldName, dest, size);
+    return err;
+    //
     }
     
     return PD_ERROR;
@@ -140,7 +139,6 @@ static void drawtext_behaviorGetRectangle (t_gobj *z,
     t_glist *glist = gpointer_getView (gp);
     
     char t[PD_STRING] = { 0 };
-    int m, n;
         
     t_float valueX      = baseX + gpointer_getFloatByDescriptor (gp, &x->x_positionX);
     t_float valueY      = baseY + gpointer_getFloatByDescriptor (gp, &x->x_positionY);
@@ -148,8 +146,10 @@ static void drawtext_behaviorGetRectangle (t_gobj *z,
     int pixelY          = glist_valueToPixelY (glist, valueY);
     int fontSize        = glist_getFontSize (glist);
     
-    if (!drawtext_getContents (x, gp, t, PD_STRING, &m, &n)) {
+    if (!drawtext_getContents (x, gp, t, PD_STRING)) {
     
+        int m = (int)strlen (t);
+        int n = 1;
         int a = pixelX;
         int b = pixelY;
         int c = (int)(pixelX + (m * font_getHostFontWidth (fontSize)));
@@ -192,7 +192,7 @@ static void drawtext_behaviorVisibilityChanged (t_gobj *z,
     int pixelX      = glist_valueToPixelX (glist, valueX);
     int pixelY      = glist_valueToPixelY (glist, valueY);
     
-    drawtext_getContents (x, gp, t, PD_STRING, NULL, NULL);
+    drawtext_getContents (x, gp, t, PD_STRING);
     
     gui_vAdd ("%s.c create text %d %d"
                     " -anchor nw"

@@ -26,7 +26,6 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
     switch (type) {
         case DATA_FLOAT  : WORD_FLOAT (w)  = 0.0;                                       break;
         case DATA_SYMBOL : WORD_SYMBOL (w) = &s_symbol;                                 break;
-        case DATA_TEXT   : WORD_BUFFER (w) = buffer_new();                              break;
         case DATA_ARRAY  : WORD_ARRAY (w)  = array_new (v->ds_templateIdentifier, gp);  break;
     }
     //
@@ -42,8 +41,7 @@ void word_free (t_word *w, t_template *tmpl)
     t_dataslot *v = template_getSlots (tmpl);
     
     for (i = 0; i < template_getSize (tmpl); i++) {
-        if (v->ds_type == DATA_ARRAY)     { array_free (WORD_ARRAY (w + i)); }
-        else if (v->ds_type == DATA_TEXT) { buffer_free (WORD_BUFFER (w + i)); }
+        if (v->ds_type == DATA_ARRAY) { array_free (WORD_ARRAY (w + i)); }
         v++;
     }
     //
@@ -78,19 +76,6 @@ t_symbol *word_getSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName)
     }
 
     return &s_;
-}
-
-t_buffer *word_getText (t_word *w, t_template *tmpl, t_symbol *fieldName)
-{
-    int i, type; t_symbol *dummy = NULL;
-    
-    if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_TEXT) {
-            return *(t_buffer **)(w + i);
-        }
-    }
-
-    return NULL;
 }
 
 t_array *word_getArray (t_word *w, t_template *tmpl, t_symbol *fieldName)
@@ -132,20 +117,6 @@ void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol 
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
         if (type == DATA_SYMBOL) { 
             *(t_symbol **)(w + i) = s;
-        }
-    }
-}
-
-void word_setText (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b)
-{
-    int i, type; t_symbol *dummy = NULL;
-    
-    PD_ASSERT (b);
-    PD_ASSERT (template_fieldIsText (tmpl, fieldName));
-    
-    if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_TEXT) {
-            t_buffer *x = *(t_buffer **)(w + i); buffer_clear (x); buffer_appendBuffer (x, b);
         }
     }
 }
@@ -199,55 +170,6 @@ void word_setFloatByDescriptor (t_word *w, t_template *tmpl, t_fielddescriptor *
     } else {
         PD_BUG;
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* Edge case in which the buffer is replaced by an outside one. */
-/* Requires extra care. */
-
-t_error word_setInternalBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName, t_buffer *b)
-{
-    t_error err = PD_ERROR;
-    
-    if (b && template_fieldIsText (tmpl, fieldName)) {
-    //
-    int i, type;
-    t_symbol *dummy = NULL;
-    
-    if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_TEXT) {
-            t_buffer *x = *(t_buffer **)(w + i); buffer_free (x); *(t_buffer **)(w + i) = b;
-            err = PD_ERROR_NONE;
-        }
-    }
-    //
-    }
-    
-    return err;
-}
-
-t_error word_unsetInternalBuffer (t_word *w, t_template *tmpl, t_symbol *fieldName)
-{
-    t_error err = PD_ERROR;
-    
-    if (template_fieldIsText (tmpl, fieldName)) {
-    //
-    int i, type;
-    t_symbol *dummy = NULL;
-    
-    if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
-        if (type == DATA_TEXT) {
-            *(t_buffer **)(w + i) = buffer_new();
-            err = PD_ERROR_NONE;
-        }
-    }
-    //
-    }
-    
-    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

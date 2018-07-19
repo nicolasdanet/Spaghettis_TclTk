@@ -19,6 +19,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#if PD_WITH_LEGACY
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *texttolist_class;           /* Shared. */
 static t_class *textfromlist_class;         /* Shared. */
 
@@ -50,11 +55,7 @@ void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
         
         if (argc) { warning_unusedArguments (sym_text__space__tolist, argc, argv); }
         
-        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
-            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
-        } else {
-            inlet_newSymbol (cast_object (x),  TEXTCLIENT_GETNAME    (&x->x_textclient));
-        }
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_NAME (&x->x_textclient));
     
     } else {
         
@@ -91,11 +92,7 @@ void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
     
         if (argc) { warning_unusedArguments (sym_text__space__fromlist, argc, argv); }
         
-        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
-            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
-        } else {
-            inlet_newSymbol (cast_object (x),  TEXTCLIENT_GETNAME    (&x->x_textclient));
-        }
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_NAME (&x->x_textclient));
         
     } else {
     
@@ -133,7 +130,7 @@ void textlist_setup (void)
     
     c = class_new (sym_text__space__tolist,
             (t_newmethod)texttolist_new,
-            (t_method)textclient_free,
+            NULL,
             sizeof (t_texttolist),
             CLASS_DEFAULT,
             A_GIMME,
@@ -146,7 +143,7 @@ void textlist_setup (void)
     
     c = class_new (sym_text__space__fromlist,
             (t_newmethod)textfromlist_new,
-            (t_method)textclient_free,
+            NULL,
             sizeof (t_textfromlist),
             CLASS_DEFAULT,
             A_GIMME,
@@ -165,6 +162,23 @@ void textlist_destroy (void)
     class_free (texttolist_class);
     class_free (textfromlist_class);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#else
+
+void textlist_setup (void)
+{
+
+}
+
+void textlist_destroy (void)
+{
+
+}
+
+#endif // PD_WITH_LEGACY
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

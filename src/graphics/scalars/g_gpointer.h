@@ -25,8 +25,9 @@ static inline void gpointer_init (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        gpointer_setAsScalar                (t_gpointer *gp, t_glist *owner, t_scalar *scalar);
-void        gpointer_setAsWord                  (t_gpointer *gp, t_array *owner, t_word *w);
+void        gpointer_setAsNull                  (t_gpointer *gp, t_glist  *owner);
+void        gpointer_setAsScalar                (t_gpointer *gp, t_scalar *scalar);
+void        gpointer_setAsWord                  (t_gpointer *gp, t_array  *owner, t_word *w);
 
 t_scalar    *gpointer_getScalar                 (t_gpointer *gp);
 t_word      *gpointer_getWord                   (t_gpointer *gp);
@@ -79,7 +80,7 @@ void        gpointer_notify                     (t_gpointer *gp, t_symbol *s, in
 t_symbol    *gpointer_getRepresentation         (t_gpointer *gp);
 
 t_error     gpointer_getFieldAsString           (t_gpointer *gp, t_symbol *field, char *dest, int size);
-void        gpointer_getPropertiesAsString      (t_gpointer *gp, t_heapstring *h);
+int         gpointer_getPropertiesAsString      (t_gpointer *gp, t_heapstring *h);
 void        gpointer_setProperties              (t_gpointer *gp, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -99,11 +100,6 @@ static inline int gpointer_fieldIsFloat (t_gpointer *gp, t_symbol *fieldName)
 static inline int gpointer_fieldIsSymbol (t_gpointer *gp, t_symbol *fieldName)
 {
     return template_fieldIsSymbol (gpointer_getTemplate (gp), fieldName);
-}
-
-static inline int gpointer_fieldIsText (t_gpointer *gp, t_symbol *fieldName)
-{
-    return template_fieldIsText (gpointer_getTemplate (gp), fieldName);
 }
 
 static inline int gpointer_fieldIsArray (t_gpointer *gp, t_symbol *fieldName)
@@ -128,11 +124,6 @@ static inline t_float gpointer_getFloat (t_gpointer *gp, t_symbol *fieldName)
 static inline t_symbol *gpointer_getSymbol (t_gpointer *gp, t_symbol *fieldName)
 {
     return word_getSymbol (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
-}
-
-static inline t_buffer *gpointer_getText (t_gpointer *gp, t_symbol *fieldName)
-{
-    return word_getText (gpointer_getElement (gp), gpointer_getTemplate (gp), fieldName);
 }
 
 static inline t_array *gpointer_getArray (t_gpointer *gp, t_symbol *fieldName)

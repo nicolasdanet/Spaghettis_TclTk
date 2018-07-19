@@ -98,7 +98,7 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
 {
     t_glist *glist = cast_glist (symbol_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
     
-    if (glist && !glist_isArray (glist)) { gpointer_setAsScalar (&x->x_gpointer, glist, NULL); }
+    if (glist && !glist_isArray (glist)) { gpointer_setAsNull (&x->x_gpointer, glist); }
     else { 
         error_invalid (&s_pointer, &s_pointer);
     }
@@ -107,7 +107,7 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
 static void pointer_rewind (t_pointer *x)
 {
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
-        gpointer_setAsScalar (&x->x_gpointer, gpointer_getView (&x->x_gpointer), NULL);
+        gpointer_setAsNull (&x->x_gpointer, gpointer_getView (&x->x_gpointer));
     } else {
         error_invalid (&s_pointer, &s_pointer);
     }
@@ -146,7 +146,7 @@ static void pointer_nextProceed (t_pointer *x, int flag)
         
         if (!z) { gpointer_unset (&x->x_gpointer); outlet_bang (x->x_outletRight); }
         else {
-            gpointer_setAsScalar (&x->x_gpointer, glist, cast_scalar (z));
+            gpointer_setAsScalar (&x->x_gpointer, cast_scalar (z));
             pointer_bang (x);
         }
         

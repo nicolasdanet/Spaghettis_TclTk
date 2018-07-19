@@ -1,7 +1,7 @@
-#N canvas 563 59 441 587 12;
+#N canvas 563 65 441 587 12;
 #X obj 84 540 list;
 #X obj 36 132 text get;
-#N canvas 671 133 446 558 get 0;
+#N canvas 748 131 446 558 get 0;
 #X obj 36 348 print;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 84 uzi 8;
@@ -68,7 +68,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 444 pd size;
 #X obj 36 156 text set;
-#N canvas 523 146 405 331 set 0;
+#N canvas 523 146 403 336 set 0;
 #X obj 36 108 text set \$0-ionesco;
 #X msg 36 72 One hundred daleks;
 #X floatatom 36 180 5 1 20 1 - - -;
@@ -182,7 +182,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 468 pd search;
 #X obj 36 276 text sequence;
-#N canvas 589 139 511 379 sequence 0;
+#N canvas 639 161 511 407 sequence 0;
 #X msg 96 144 args 1 2 fuzz;
 #X obj 96 120 loadbang;
 #X msg 36 96 step;
@@ -225,7 +225,7 @@
 #X connect 13 0 8 0;
 #X connect 14 0 8 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 36 288 pd global;
+#X restore 36 312 pd global;
 #N canvas 371 180 528 288 wait 0;
 #X msg 36 120 bang;
 #X msg 36 144 stop;
@@ -250,7 +250,7 @@
 #X connect 8 0 5 0;
 #X connect 9 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 36 312 pd wait;
+#X restore 36 336 pd wait;
 #X text 12 12 Sequencing messages (dollar substitution allowed).;
 #N canvas 636 273 554 286 leading 0;
 #X msg 36 120 bang;
@@ -276,7 +276,8 @@
 #X connect 10 1 3 0;
 #X connect 10 2 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 36 336 pd leading;
+#X restore 36 360 pd leading;
+#X text 12 276 Various modes are available.;
 #X connect 0 0 8 0;
 #X connect 1 0 0 0;
 #X connect 2 0 8 0;
@@ -303,14 +304,14 @@
 #A set Bérenger \, venant de la gauche \; Bonjour \, Jean. \; Jean \; Toujours en retard \, évidemment !;
 #X obj 204 492 text define -keep \$0-camus;
 #A set ANNENKOV \; Il a fallu changer d'appartement \, une fois de plus. \; STEPAN \; Je sais. \; DORA \; Et là-bas \, Stepan ? \; STEPAN \; Là-bas ? \; DORA \; Le bagne ? \; STEPAN \; On s'en évade. \;;
-#N canvas 666 507 347 156 define 0;
+#N canvas 681 307 300 164 define 0;
 #X obj 36 84 text;
-#X obj 84 120 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X msg 36 48 read text.txt;
-#X text 12 12 Right inlet bangs if interactively modified.;
-#X f 44;
-#X connect 0 1 1 0;
-#X connect 2 0 0 0;
+#X text 12 12 Report if interactively modified.;
+#X f 33;
+#X obj 36 120 print;
+#X connect 0 0 3 0;
+#X connect 1 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 348 pd define;
 #X obj 132 540 qlist;

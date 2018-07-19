@@ -19,50 +19,21 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class             *textdefine_class;                  /* Shared. */
+t_class *textdefine_class;                              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _textdefine {
     t_textbuffer    x_textbuffer;                       /* Must be the first. */
-    t_gpointer      x_gpointer;
     int             x_keep;
     t_symbol        *x_name;
-    t_scalar        *x_scalar;
-    t_outlet        *x_outletLeft;
-    t_outlet        *x_outletRight;
+    t_outlet        *x_outlet;
     } t_textdefine;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-t_error scalar_setInternalBuffer    (t_scalar *, t_symbol *, t_buffer *);
-t_error scalar_unsetInternalBuffer  (t_scalar *, t_symbol *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void textdefine_initialize (void)
-{
-    static const char *textTemplateFile =   /* Static. */
-        "#N canvas 0 22 450 300 12;\n"
-        "#X obj 43 31 struct text float x float y text t;\n";
-
-    instance_loadInvisible (sym__texttemplate, textTemplateFile); 
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void textdefine_bang (t_textdefine *x)
-{
-    gpointer_setAsScalar (&x->x_gpointer, textbuffer_getView (&x->x_textbuffer), x->x_scalar);
-    outlet_pointer (x->x_outletLeft, &x->x_gpointer);
-}
 
 void textdefine_set (t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -82,7 +53,7 @@ static void textdefine_clear (t_textdefine *x)
 
 static void textdefine_modified (t_textdefine *x)
 {
-    outlet_symbol (x->x_outletRight, sym_updated);
+    outlet_symbol (x->x_outlet, sym_updated);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -126,7 +97,6 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     t_textdefine *x = (t_textdefine *)pd_new (textdefine_class);
 
     textbuffer_init (&x->x_textbuffer);
-    gpointer_init (&x->x_gpointer);
     
     x->x_keep = 0;
     x->x_name = &s_;
@@ -161,15 +131,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
-    x->x_scalar = scalar_new (instance_contextGetCurrent(), sym___TEMPLATE__text);
-    
-    {
-        t_error err = scalar_setInternalBuffer (x->x_scalar, sym_t, textbuffer_getBuffer (&x->x_textbuffer));
-        PD_UNUSED (err); PD_ASSERT (!err);
-    }
-
-    x->x_outletLeft  = outlet_newPointer (cast_object (x));
-    x->x_outletRight = outlet_newSymbol (cast_object (x));
+    x->x_outlet = outlet_newSymbol (cast_object (x));
     
     return x;
 }
@@ -191,12 +153,17 @@ static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     else if (t == sym_insert)           { newest = (t_pd *)textinsert_new (s,   argc - 1, argv + 1); }
     else if (t == sym_delete)           { newest = (t_pd *)textdelete_new (s,   argc - 1, argv + 1); }
     else if (t == sym_size)             { newest = (t_pd *)textsize_new (s,     argc - 1, argv + 1); }
-    else if (t == sym_tolist)           { newest = (t_pd *)texttolist_new (s,   argc - 1, argv + 1); }
-    else if (t == sym_fromlist)         { newest = (t_pd *)textfromlist_new (s, argc - 1, argv + 1); }
     else if (t == sym_search)           { newest = (t_pd *)textsearch_new (s,   argc - 1, argv + 1); }
     else if (t == sym_sequence)         { newest = (t_pd *)textsequence_new (s, argc - 1, argv + 1); }
     else {
-        error_unexpected (sym_text, t);
+        #if PD_WITH_LEGACY
+        
+        if (t == sym_tolist)            { newest = (t_pd *)texttolist_new (s,   argc - 1, argv + 1); }
+        else if (t == sym_fromlist)     { newest = (t_pd *)textfromlist_new (s, argc - 1, argv + 1); }
+
+        #endif
+        
+        if (!newest) { error_unexpected (sym_text, t); }
     }
     //
     }
@@ -210,13 +177,6 @@ static void textdefine_free (t_textdefine *x)
 {
     if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
     
-    {
-        t_error err = scalar_unsetInternalBuffer (x->x_scalar, sym_t);
-        PD_UNUSED (err); PD_ASSERT (!err);
-    }
-    
-    pd_free (cast_pd (x->x_scalar));
-    gpointer_unset (&x->x_gpointer);
     textbuffer_free (&x->x_textbuffer);
 }
 
@@ -238,7 +198,6 @@ void textdefine_setup (void)
     
     class_addCreator ((t_newmethod)textdefine_makeObject, sym_text, A_GIMME, A_NULL);
         
-    class_addBang (c, (t_method)textdefine_bang);
     class_addClick (c, (t_method)textbuffer_click);
     
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);

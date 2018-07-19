@@ -399,11 +399,7 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
         
         x->x_outletEnd = outlet_newBang (cast_object (x));
         
-        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
-            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
-        } else {
-            inlet_newSymbol (cast_object (x),  TEXTCLIENT_GETNAME    (&x->x_textclient));
-        }
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_NAME (&x->x_textclient));
         
     } else {
     
@@ -417,8 +413,6 @@ static void textsequence_free (t_textsequence *x)
 {
     if (x->x_argv)  { PD_MEMORY_FREE (x->x_argv); }
     if (x->x_clock) { clock_free (x->x_clock); }
-    
-    textclient_free (&x->x_textclient);
 }
 
 // -----------------------------------------------------------------------------------------------------------

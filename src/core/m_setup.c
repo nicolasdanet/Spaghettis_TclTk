@@ -24,7 +24,6 @@ void instance_initialize        (void);
 void interface_initialize       (void);
 void monitor_initialize         (void);
 void rsqrt_tilde_initialize     (void);
-void textdefine_initialize      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -1046,7 +1045,6 @@ void setup_initialize (void)
     /* At last instantiate the invisible patches required. */
     
     garray_initialize();
-    textdefine_initialize();
 }
 
 void setup_release (void)
