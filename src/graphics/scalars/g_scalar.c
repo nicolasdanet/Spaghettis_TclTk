@@ -32,13 +32,6 @@ t_class *scalar_class;                  /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_error word_setInternalBuffer                  (t_word *, t_template *, t_symbol *, t_buffer *);
-t_error word_unsetInternalBuffer                (t_word *, t_template *, t_symbol *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void scalar_behaviorGetRectangle         (t_gobj *, t_glist *, t_rectangle *);
 static void scalar_behaviorDisplaced            (t_gobj *, t_glist *, int, int);
 static void scalar_behaviorSelected             (t_gobj *, t_glist *, int);
@@ -128,7 +121,7 @@ static void scalar_notifyProceed (t_scalar *scalar, t_symbol *s, int argc, t_ato
 {
     t_gpointer gp; gpointer_init (&gp);
     
-    gpointer_setAsScalar (&gp, scalar->sc_owner, scalar);
+    gpointer_setAsScalar (&gp, scalar);
     gpointer_notify (&gp, s, argc, argv);
     gpointer_unset (&gp);
 }
@@ -218,7 +211,7 @@ static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle 
         t_rectangle t;
         t_gpointer gp; gpointer_init (&gp);
         
-        gpointer_setAsScalar (&gp, glist, x);
+        gpointer_setAsScalar (&gp, x);
         (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &t);
         gpointer_unset (&gp);
         
@@ -321,7 +314,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                 
                 t_gpointer gp; gpointer_init (&gp);
                 
-                gpointer_setAsScalar (&gp, glist, x);
+                gpointer_setAsScalar (&gp, x);
                 (*behavior->w_fnPainterVisibilityChanged) (y, &gp, baseX, baseY, isVisible);
                 gpointer_unset (&gp);
             }
@@ -355,7 +348,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
         
         t_gpointer gp; gpointer_init (&gp);
         
-        gpointer_setAsScalar (&gp, glist, x);
+        gpointer_setAsScalar (&gp, x);
         int k = (*behavior->w_fnPainterMouse) (y, &gp, baseX, baseY, m);
         gpointer_unset (&gp);
         
@@ -407,10 +400,6 @@ void scalar_serialize (t_scalar *x, t_buffer *b)
         if (template_fieldIsArray (tmpl, fieldName)) {
             array_serialize (word_getArray (x->sc_element, tmpl, fieldName), b);
             buffer_appendSemicolon (b);
-            
-        } else if (template_fieldIsText (tmpl, fieldName)) {
-            buffer_serialize (b, word_getText (x->sc_element, tmpl, fieldName));
-            buffer_appendSemicolon (b);
         }
     }
 }
@@ -452,13 +441,6 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     
     if (template_fieldIsArray (tmpl, fieldName)) {
         array_deserialize (word_getArray (x->sc_element, tmpl, fieldName), iter);
-
-    } else if (template_fieldIsText (tmpl, fieldName)) {
-        t_buffer *t = buffer_new();
-        count = iterator_next (iter, &atoms);
-        buffer_deserialize (t, count, atoms);
-        word_setText (x->sc_element, tmpl, fieldName, t);
-        buffer_free (t);
     }
     //
     }
@@ -514,7 +496,7 @@ static int scalar_functionPropertiesFetchIfPlotted (t_scalar *x,
     
     t_gpointer gp; gpointer_init (&gp);
 
-    gpointer_setAsScalar (&gp, glist, x);
+    gpointer_setAsScalar (&gp, x);
     i = plot_hitElement (y, &gp, baseX, baseY, m, s, e);
     gpointer_unset (&gp);
     
@@ -544,15 +526,19 @@ void scalar_functionProperties (t_gobj *z, t_glist *glist, t_mouse *m)
     //
     heapstring_addSprintf (h, "::ui_scalar::show %%s scalar %d %s ", i, s->s_name);
     
-    gpointer_setAsScalar (&gp, glist, x);
+    gpointer_setAsScalar (&gp, x);
     //
     }
     
     if (gpointer_isValid (&gp)) {
     //
-    gpointer_getPropertiesAsString (&gp, h); heapstring_add (h, "\n");
-    
-    stub_new (cast_pd (x), (void *)x, heapstring_getRaw (h));
+    if (gpointer_getPropertiesAsString (&gp, h)) {
+    //
+    heapstring_add (h, "\n"); stub_new (cast_pd (x), (void *)x, heapstring_getRaw (h));
+    //
+    } else {
+        PD_BUG;
+    }
     //
     }
     
@@ -576,7 +562,7 @@ static void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
     
         if (type == sym_scalar) {
             PD_ASSERT (templateIdentifier == x->sc_templateIdentifier);
-            gpointer_setAsScalar (&gp, x->sc_owner, x);
+            gpointer_setAsScalar (&gp, x);
             
         } else if (type == sym_element) {
             if (scalar_containsTemplate (x, templateIdentifier)) {
@@ -673,20 +659,6 @@ void scalar_setFloat (t_scalar *x, t_symbol *fieldName, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error scalar_setInternalBuffer (t_scalar *x, t_symbol *fieldName, t_buffer *b)
-{
-    return word_setInternalBuffer (x->sc_element, scalar_getTemplate (x), fieldName, b);
-}
-
-t_error scalar_unsetInternalBuffer (t_scalar *x, t_symbol *fieldName)
-{
-    return word_unsetInternalBuffer (x->sc_element, scalar_getTemplate (x), fieldName);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void scalar_disable (t_scalar *x)
 {
     x->sc_disable = 1;
@@ -717,7 +689,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
         x->sc_templateIdentifier = templateIdentifier;
         x->sc_element = (t_word *)PD_MEMORY_GET (template_getSize (tmpl) * sizeof (t_word));
         
-        gpointer_setAsScalar (&gp, x->sc_owner, x);
+        gpointer_setAsScalar (&gp, x);
         word_init (x->sc_element, tmpl, &gp);
         gpointer_unset (&gp);
     }

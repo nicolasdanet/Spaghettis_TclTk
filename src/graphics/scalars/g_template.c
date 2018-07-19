@@ -178,15 +178,6 @@ int template_fieldIsSymbol (t_template *x, t_symbol *fieldName)
     return 0;
 }
 
-int template_fieldIsText (t_template *x, t_symbol *fieldName)
-{
-    int i, type; t_symbol *dummy = NULL;
-    
-    if (template_getRaw (x, fieldName, &i, &type, &dummy)) { return (type == DATA_TEXT); }
-    
-    return 0;
-}
-
 int template_fieldIsArray (t_template *x, t_symbol *fieldName)
 {
     int i, type; t_symbol *dummy = NULL;
@@ -330,7 +321,6 @@ static t_error template_newParse (t_template *x, int *ac, t_atom **av)
         
         if (type == &s_float)        { k = DATA_FLOAT;  }
         else if (type == &s_symbol)  { k = DATA_SYMBOL; }
-        else if (type == sym_text)   { k = DATA_TEXT;   }
         else if (type == sym_array)  {
             if (argc >= 3 && IS_SYMBOL (argv + 2)) {
                 templateIdentifier = symbol_makeTemplateIdentifier (GET_SYMBOL (argv + 2));

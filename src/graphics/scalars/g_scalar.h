@@ -44,8 +44,7 @@
 
 #define DATA_FLOAT          0
 #define DATA_SYMBOL         1
-#define DATA_TEXT           2
-#define DATA_ARRAY          3
+#define DATA_ARRAY          2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -108,12 +107,10 @@ void        word_free                           (t_word *w, t_template *tmpl);
 
 t_float     word_getFloat                       (t_word *w, t_template *tmpl, t_symbol *field);
 t_symbol    *word_getSymbol                     (t_word *w, t_template *tmpl, t_symbol *field);
-t_buffer    *word_getText                       (t_word *w, t_template *tmpl, t_symbol *field);
 t_array     *word_getArray                      (t_word *w, t_template *tmpl, t_symbol *field);
 
 void        word_setFloat                       (t_word *w, t_template *tmpl, t_symbol *field, t_float f);
 void        word_setSymbol                      (t_word *w, t_template *tmpl, t_symbol *field, t_symbol *s);
-void        word_setText                        (t_word *w, t_template *tmpl, t_symbol *field, t_buffer *b);
 
 t_float     word_getFloatByDescriptor           (t_word *w, t_template *tmpl, t_fielddescriptor *fd);
 void        word_setFloatByDescriptor           (t_word *w,

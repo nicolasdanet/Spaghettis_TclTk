@@ -157,13 +157,11 @@ void canvas_closeProceed (t_glist *glist)
     t_symbol *filename  = environment_getFileName (e);
     t_symbol *directory = environment_getDirectory (e);
     
-    if (filename != sym__texttemplate) {            /* Invisible patches. */
-    if (filename != sym__floatarraytemplate) {
+    if (filename != sym__floatarraytemplate) {  /* Invisible patches. */
     if (filename != sym__floattemplate) {
     //
     recentfiles_add (filename, directory, 1);
     //
-    }
     }
     }
     

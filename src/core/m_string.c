@@ -217,6 +217,8 @@ int string_contains (const char *s, const char *isContained)
     return (strstr (s, isContained) != NULL);
 }
 
+#if PD_WITH_DEADCODE
+
 void string_getNumberOfColumnsAndLines (const char *s, int *numberOfColumns, int *numberOfLines)
 {
     const char *end = NULL;
@@ -240,6 +242,8 @@ void string_getNumberOfColumnsAndLines (const char *s, int *numberOfColumns, int
     *numberOfColumns = m;
     *numberOfLines   = n;
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

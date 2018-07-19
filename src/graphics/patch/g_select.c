@@ -270,8 +270,9 @@ void glist_objectRemoveSelected (t_glist *glist)
     t_gobj *t1 = NULL;
     t_gobj *t2 = NULL;
     
-    int dspState = 0;
+    int dspState     = 0;
     int dspSuspended = 0;
+    int onlyScalars  = 1;
     
     for (t1 = glist->gl_graphics; t1; t1 = t2) {
     //
@@ -280,13 +281,16 @@ void glist_objectRemoveSelected (t_glist *glist)
     if (glist_objectIsSelected (glist, t1)) {
         if (!dspSuspended) { 
             if (class_hasDSP (pd_class (t1))) { dspState = dsp_suspend(); dspSuspended = 1; }
-        } 
+        }
+        if (!gobj_isScalar (t1)) {
+            onlyScalars = 0;
+        }
         glist_objectRemove (glist, t1); 
     }
     //
     }
 
-    glist_setDirty (glist, 1);
+    if (!onlyScalars) { glist_setDirty (glist, 1); }
     
     if (dspSuspended) { dsp_resume (dspState); }
 }
@@ -297,7 +301,7 @@ void glist_objectSnapSelected (t_glist *glist)
     
     int sortInlets  = 0;
     int sortOutlets = 0;
-    int isDirty = 0;
+    int isDirty     = 0;
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
     //
@@ -330,7 +334,8 @@ void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
     
     int sortInlets  = 0;
     int sortOutlets = 0;
-    int isDirty = 0;
+    int isDirty     = 0;
+    int onlyScalars = 1;
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
     //
@@ -340,19 +345,23 @@ void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
     sortInlets  |= (pd_class (t) == vinlet_class);
     sortOutlets |= (pd_class (t) == voutlet_class);
     isDirty = 1;
+    
+    if (!gobj_isScalar (t)) { onlyScalars = 0; }
     //
     }
     
     if (sortInlets)  { glist_inletSort (glist);   }
     if (sortOutlets) { glist_outletSort (glist);  }
-    if (isDirty)     { glist_setDirty (glist, 1); }
+    
+    if (!onlyScalars && isDirty) { glist_setDirty (glist, 1); }
 }
 
 void glist_objectMoveSelected (t_glist *glist, int backward)
 {
     t_selection *y = NULL;
     
-    int isDirty = 0;
+    int isDirty     = 0;
+    int onlyScalars = 1;
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
     //
@@ -363,11 +372,13 @@ void glist_objectMoveSelected (t_glist *glist, int backward)
         glist_objectMoveAtLast (glist, t);
     }
     
+    if (!gobj_isScalar (t)) { onlyScalars = 0; }
+    
     isDirty = 1;
     //
     }
     
-    if (isDirty) { glist_setDirty (glist, 1); glist_redraw (glist); }
+    if (!onlyScalars && isDirty) { glist_setDirty (glist, 1); glist_redraw (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

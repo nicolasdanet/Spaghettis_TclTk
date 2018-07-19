@@ -107,12 +107,8 @@ void *textget_new (t_symbol *s, int argc, t_atom *argv)
         if (argc && IS_FLOAT (argv)) { x->x_fieldCount = GET_FLOAT (argv); argc--; argv++; }
 
         if (argc) { warning_unusedArguments (sym_text__space__get, argc, argv); }
-         
-        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
-            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
-        } else {
-            inlet_newSymbol (cast_object (x),  TEXTCLIENT_GETNAME    (&x->x_textclient));
-        }
+        
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_NAME (&x->x_textclient));
         
     } else {
     
@@ -132,7 +128,7 @@ void textget_setup (void)
     
     c = class_new (sym_text__space__get,
             (t_newmethod)textget_new,
-            (t_method)textclient_free,
+            NULL,
             sizeof (t_textget),
             CLASS_DEFAULT,
             A_GIMME,

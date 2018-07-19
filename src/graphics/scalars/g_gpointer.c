@@ -148,18 +148,32 @@ t_gpointer *gpointer_getEmpty (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Point to a scalar. */
+/* Point to head of glist. */
 
-void gpointer_setAsScalar (t_gpointer *gp, t_glist *glist, t_scalar *scalar)
+void gpointer_setAsNull (t_gpointer *gp, t_glist *glist)
 {
     gpointer_unset (gp);
     
     PD_ASSERT (glist);
-    PD_ASSERT (!scalar || (scalar->sc_owner == glist));
     
-    gp->gp_un.gp_scalar     = scalar;
+    gp->gp_un.gp_scalar     = NULL;
     gp->gp_refer            = glist_getMaster (glist);
     gp->gp_uniqueIdentifier = glist_getIdentifier (glist);
+
+    gmaster_increment (gp->gp_refer);
+}
+
+/* Point to a scalar. */
+
+void gpointer_setAsScalar (t_gpointer *gp, t_scalar *scalar)
+{
+    gpointer_unset (gp);
+    
+    PD_ASSERT (scalar);
+    
+    gp->gp_un.gp_scalar     = scalar;
+    gp->gp_refer            = glist_getMaster (scalar->sc_owner);
+    gp->gp_uniqueIdentifier = glist_getIdentifier (scalar->sc_owner);
 
     gmaster_increment (gp->gp_refer);
 }
@@ -391,9 +405,6 @@ t_symbol *gpointer_getRepresentation (t_gpointer *gp)
     return symbol_addPrefix (s, sym___arrobe__);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *dest, int size)
 {
     t_error err = PD_ERROR_NONE;
@@ -401,22 +412,13 @@ t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *de
     PD_ASSERT (size > 0);
     
     if (gpointer_fieldIsFloat (gp, fieldName)) {
-        t_atom a;
-        SET_FLOAT (&a, gpointer_getFloat (gp, fieldName));
-        err = string_addAtom (dest, size, &a);
+        err = string_addSprintf (dest, size, "%g", gpointer_getFloat (gp, fieldName));
         
     } else if (gpointer_fieldIsSymbol (gp, fieldName)) {
-        t_atom a;
-        SET_SYMBOL (&a, gpointer_getSymbol (gp, fieldName));
-        err = string_addAtom (dest, size, &a);
-            
-    } else if (gpointer_fieldIsText (gp, fieldName)) {
-        char *t = buffer_toString (gpointer_getText (gp, fieldName));
-        err = string_add (dest, size, t);
-        PD_MEMORY_FREE (t);
+        err = string_addSprintf (dest, size, "%s", gpointer_getSymbol (gp, fieldName)->s_name);
         
     } else {
-        err = PD_ERROR; PD_BUG;     /* Not implemented yet. */
+        err = PD_ERROR; PD_BUG;     // -- TODO: Implement?
     }
     
     return err;
@@ -426,11 +428,11 @@ t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *de
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
+int gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
-    int i;
+    int i, k = 0;
     
     t_symbol *s = symbol_stripTemplateIdentifier (gpointer_getTemplateIdentifier (gp));
     
@@ -443,13 +445,17 @@ void gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
     if (template_fieldIsFloat (tmpl, fieldName)) {
         heapstring_addSprintf (h, " {%s}", fieldName->s_name);
         heapstring_addSprintf (h, " {%g}", gpointer_getFloat (gp, fieldName));
+        k++;
         
     } else if (template_fieldIsSymbol (tmpl, fieldName)) {
         heapstring_addSprintf (h, " {%s}", fieldName->s_name);
         heapstring_addSprintf (h, " {%s}", symbol_dollarToHash (gpointer_getSymbol (gp, fieldName))->s_name);
+        k++;
     }
     //
     }
+    
+    return k;
 }
 
 void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv)
@@ -472,6 +478,9 @@ void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv)
         t_symbol *s = symbol_hashToDollar (atom_getSymbolAtIndex (i + 1, argc, argv));
         k |= (gpointer_getSymbol (gp, fieldName) != s);
         gpointer_setSymbol (gp, fieldName, s);
+        
+    } else {
+        PD_BUG;
     }
     //
     }

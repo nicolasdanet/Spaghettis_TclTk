@@ -70,7 +70,7 @@ static void append_float (t_append *x, t_float f)
         cast_gobj (scalar),
         cast_gobj (gpointer_getScalar (&x->x_gpointer)));
         
-    gpointer_setAsScalar (&x->x_gpointer, gpointer_getView (&x->x_gpointer), scalar);
+    gpointer_setAsScalar (&x->x_gpointer, scalar);
     
     outlet_pointer (x->x_outlet, &x->x_gpointer);
     //

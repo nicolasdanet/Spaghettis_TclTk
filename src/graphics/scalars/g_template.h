@@ -77,7 +77,6 @@ t_glist     *template_getInstanceViewIfPainters     (t_template *x);
 
 int         template_fieldIsFloat                   (t_template *x, t_symbol *field);
 int         template_fieldIsSymbol                  (t_template *x, t_symbol *field);
-int         template_fieldIsText                    (t_template *x, t_symbol *field);
 int         template_fieldIsArray                   (t_template *x, t_symbol *field);
 int         template_fieldIsArrayAndValid           (t_template *x, t_symbol *field);
 
@@ -119,7 +118,6 @@ static inline int template_isPrivate (t_symbol *templateIdentifier)
 {
     if (templateIdentifier == sym___TEMPLATE__float__dash__array) { return 1; }
     else if (templateIdentifier == sym___TEMPLATE__float)         { return 1; }
-    else if (templateIdentifier == sym___TEMPLATE__text)          { return 1; }
     else {
         return 0;
     }

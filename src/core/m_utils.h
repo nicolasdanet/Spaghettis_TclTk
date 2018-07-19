@@ -110,8 +110,6 @@ void        string_replaceCharacter                     (char *s, char toBeRepla
 void        string_removeCharacter                      (char *s, char toBeRemoved);
 void        string_removeCharacterAtEnd                 (char *s, char toBeRemoved);
 
-void        string_getNumberOfColumnsAndLines           (const char *s, int *columns, int *lines);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

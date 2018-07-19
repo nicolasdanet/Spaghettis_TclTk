@@ -65,11 +65,7 @@ void *textdelete_new (t_symbol *s, int argc, t_atom *argv)
     
         if (argc) { warning_unusedArguments (sym_text__space__delete, argc, argv); }
         
-        if (TEXTCLIENT_ASPOINTER (&x->x_textclient)) {
-            inlet_newPointer (cast_object (x), TEXTCLIENT_GETPOINTER (&x->x_textclient));
-        } else {
-            inlet_newSymbol (cast_object (x),  TEXTCLIENT_GETNAME    (&x->x_textclient));
-        }
+        inlet_newSymbol (cast_object (x), TEXTCLIENT_NAME (&x->x_textclient));
     
     } else {
         
@@ -89,7 +85,7 @@ void textdelete_setup (void)
     
     c = class_new (sym_text__space__delete,
             (t_newmethod)textdelete_new,
-            (t_method)textclient_free,
+            NULL,
             sizeof (t_textdelete),
             CLASS_DEFAULT,
             A_GIMME,

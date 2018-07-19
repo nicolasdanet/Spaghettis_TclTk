@@ -23,10 +23,7 @@ typedef struct _textbuffer {
 
 typedef struct _textclient {
     t_object        tc_obj;                         /* Must be the first. */
-    t_gpointer      tc_gpointer;
     t_symbol        *tc_name;
-    t_symbol        *tc_templateIdentifier;
-    t_symbol        *tc_fieldName;
     } t_textclient;
 
 typedef struct _qlist {
@@ -47,9 +44,7 @@ typedef struct _qlist {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define TEXTCLIENT_ASPOINTER(x)             ((x)->tc_templateIdentifier)
-#define TEXTCLIENT_GETPOINTER(x)            &((x)->tc_gpointer)
-#define TEXTCLIENT_GETNAME(x)               &((x)->tc_name)
+#define TEXTCLIENT_NAME(x)                  &((x)->tc_name)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -73,7 +68,6 @@ t_buffer    *textbuffer_getBuffer           (t_textbuffer *x);
 // MARK: -
 
 t_error     textclient_init                 (t_textclient *x, int *argc, t_atom **argv);
-void        textclient_free                 (t_textclient *x);
 void        textclient_update               (t_textclient *x);
 
 t_glist     *textclient_fetchView           (t_textclient *x);
