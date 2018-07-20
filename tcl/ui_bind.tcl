@@ -68,6 +68,7 @@ proc initialize {} {
     event add <<SendBack>>                  <Shift-$mod-Key-B>
     event add <<SaveAs>>                    <Shift-$mod-Key-S>
     event delete <<Paste>>                  <$mod-Key-y>
+    event delete <<Cut>>                    <$mod-Key-w>
     
     }
     
