@@ -304,6 +304,12 @@ proc create {top type
 
 proc closed {top} {
     
+    ::ui_iem::_apply $top
+    ::cancel $top
+}
+
+proc released {top} {
+
     variable iemType
     variable iemWidth
     variable iemWidthMinimum
@@ -323,8 +329,6 @@ proc closed {top} {
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemSteady
-    
-    ::ui_iem::_apply $top
     
     unset iemType($top)
     unset iemWidth($top)
@@ -353,8 +357,6 @@ proc closed {top} {
     unset iemExtra(${top}.old)
     unset iemSend(${top}.old)
     unset iemReceive(${top}.old)
-
-    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------

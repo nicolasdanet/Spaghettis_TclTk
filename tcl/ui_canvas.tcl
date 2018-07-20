@@ -173,6 +173,12 @@ proc _create {top x y width height isGOP scaleX scaleY} {
 
 proc closed {top} {
 
+    ::ui_canvas::_apply $top
+    ::cancel $top
+}
+
+proc released {top} {
+
     variable canvasX
     variable canvasY
     variable canvasWidth
@@ -180,8 +186,6 @@ proc closed {top} {
     variable canvasGOP
     variable canvasScaleX
     variable canvasScaleY
-    
-    ::ui_canvas::_apply $top
     
     unset canvasX($top)
     unset canvasY($top)
@@ -197,8 +201,6 @@ proc closed {top} {
     unset canvasHeight(${top}.old)
     unset canvasScaleX(${top}.old)
     unset canvasScaleY(${top}.old)
-    
-    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------

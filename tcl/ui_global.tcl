@@ -126,12 +126,44 @@ proc ifAqua {a b} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Get namespace for dialog windows.
+
+proc getNamespace {top} {
+
+    switch -- [wm title $top] {
+        "Array"         { return "::ui_array"   }
+        "Atom"          { return "::ui_atom"    }
+        "Audio"         { return "::ui_audio"   }
+        "Bang"          { return "::ui_iem"     }
+        "Dial"          { return "::ui_iem"     }
+        "Element"       { return "::ui_scalar"  }
+        "MIDI"          { return "::ui_midi"    }
+        "Patch"         { return "::ui_canvas"  }
+        "Panel"         { return "::ui_iem"     }
+        "Path"          { return "::ui_path"    }
+        "Radio Button"  { return "::ui_iem"     }
+        "Slider"        { return "::ui_iem"     }
+        "Scalar"        { return "::ui_scalar"  }
+        "Text"          { return "::ui_text"    }
+        "Toggle"        { return "::ui_iem"     }
+        "VU"            { return "::ui_iem"     }
+    }
+    
+    return ""
+}
+
 proc cancel {w} {
 
     set top [winfo toplevel $w]
     set class [winfo class $top]
     
-    if {$class eq "PdDialog" || $class eq "PdText"} { destroy $top; ::ui_interface::pdsend "$top _signoff" }
+    if {$class eq "PdDialog"} {
+        set command [format "%s::released" [getNamespace $top]]; $command $top
+    }
+    
+    if {$class eq "PdDialog" || $class eq "PdText"} {
+        destroy $top; ::ui_interface::pdsend "$top _signoff"
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------

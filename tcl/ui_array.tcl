@@ -205,7 +205,13 @@ proc _create {top name size width height up down save style hide inhibit} {
 }
 
 proc closed {top} {
-    
+
+    ::ui_array::_apply $top
+    ::cancel $top
+}
+
+proc released {top} {
+
     variable arrayName
     variable arraySize
     variable arrayWidth
@@ -216,8 +222,6 @@ proc closed {top} {
     variable arrayDraw
     variable arrayHide
     variable arrayInhibit
-        
-    ::ui_array::_apply $top
     
     unset arrayName($top)
     unset arraySize($top)
@@ -236,8 +240,6 @@ proc closed {top} {
     unset arrayHeight(${top}.old)
     unset arrayUp(${top}.old)
     unset arrayDown(${top}.old)
-    
-    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
