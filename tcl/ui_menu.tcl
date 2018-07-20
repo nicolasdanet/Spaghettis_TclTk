@@ -618,23 +618,9 @@ proc _close {} {
         "PdPatch" { 
             ::ui_interface::pdsend "$top close"
         }
-        "PdDialog|PdText|PdTool" { 
-            switch -- [::getTitle $top] {
-                "Array"         { ::ui_array::closed  $top }
-                "Atom"          { ::ui_atom::closed   $top }
-                "Audio"         { ::ui_audio::closed  $top }
-                "Bang"          { ::ui_iem::closed    $top }
-                "Patch"         { ::ui_canvas::closed $top }
-                "MIDI"          { ::ui_midi::closed   $top }
-                "Dial"          { ::ui_iem::closed    $top }
-                "Panel"         { ::ui_iem::closed    $top }
-                "Path"          { ::ui_path::closed   $top }
-                "Slider"        { ::ui_iem::closed    $top }
-                "Radio Button"  { ::ui_iem::closed    $top }
-                "Text"          { ::ui_text::closed   $top }
-                "Toggle"        { ::ui_iem::closed    $top }
-                "VU"            { ::ui_iem::closed    $top }
-            }
+        "PdDialog|PdText|PdTool" {
+            set command [format "%s::closed" [getNamespace $top]]
+            $command $top
         }
     }
 }

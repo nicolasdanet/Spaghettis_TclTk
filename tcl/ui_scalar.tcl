@@ -120,6 +120,12 @@ proc _create {top type index field template} {
 }
 
 proc closed {top} {
+    
+    ::ui_scalar::_apply $top
+    ::cancel $top
+}
+
+proc released {top} {
 
     variable scalarType
     variable scalarIndex
@@ -128,8 +134,6 @@ proc closed {top} {
     variable scalarKeys
     variable scalarValues
     
-    ::ui_scalar::_apply $top
-
     foreach key $scalarKeys($top) { unset scalarValues($top$key) }
     
     unset scalarType($top)
@@ -137,8 +141,6 @@ proc closed {top} {
     unset scalarArray($top)
     unset scalarTemplate($top)
     unset scalarKeys($top)
-    
-    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------

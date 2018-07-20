@@ -162,6 +162,12 @@ proc _create {top width low high type value send receive} {
 
 proc closed {top} {
 
+    ::ui_atom::_apply $top
+    ::cancel $top
+}
+
+proc released {top} {
+
     variable atomWidth
     variable atomLow
     variable atomHigh
@@ -169,8 +175,6 @@ proc closed {top} {
     variable atomValue
     variable atomSend
     variable atomReceive
-    
-    ::ui_atom::_apply $top
     
     unset atomWidth($top)
     unset atomLow($top)
@@ -184,8 +188,6 @@ proc closed {top} {
     unset atomLow(${top}.old)
     unset atomHigh(${top}.old)
     unset atomValue(${top}.old)
-
-    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
