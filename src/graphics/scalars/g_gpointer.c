@@ -462,25 +462,32 @@ void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
-    int i;
     int k = 0;
     
-    for (i = 0; i < argc; i += 2) {
+    while (argc > 1 && (atom_getSymbol (argv) == sym_field)) {
     //
-    t_symbol *fieldName = atom_getSymbolAtIndex (i + 0, argc, argv);
+    t_symbol *fieldName = atom_getSymbol (argv + 1);
     
-    if (template_fieldIsFloat (tmpl, fieldName)) {
-        t_float f = atom_getFloatAtIndex (i + 1, argc, argv);
-        k |= (gpointer_getFloat (gp, fieldName) != f);
-        gpointer_setFloat (gp, fieldName, f);
-        
-    } else if (template_fieldIsSymbol (tmpl, fieldName)) {
-        t_symbol *s = symbol_hashToDollar (atom_getSymbolAtIndex (i + 1, argc, argv));
-        k |= (gpointer_getSymbol (gp, fieldName) != s);
-        gpointer_setSymbol (gp, fieldName, s);
-        
-    } else {
-        PD_BUG;
+    argc -= 2; argv += 2;
+    
+    {
+        int hasValue = (argc > 1 && (atom_getSymbol (argv) == sym_value));
+    
+        if (template_fieldIsFloat (tmpl, fieldName)) {
+            t_float f = hasValue ? atom_getFloat (argv + 1) : 0.0;
+            k |= (gpointer_getFloat (gp, fieldName) != f);
+            gpointer_setFloat (gp, fieldName, f);
+            
+        } else if (template_fieldIsSymbol (tmpl, fieldName)) {
+            t_symbol *s = hasValue ? symbol_hashToDollar (atom_getSymbol (argv + 1)) : &s_;
+            k |= (gpointer_getSymbol (gp, fieldName) != s);
+            gpointer_setSymbol (gp, fieldName, s);
+            
+        } else {
+            PD_BUG;
+        }
+    
+        if (hasValue) { argc -= 2; argv += 2; }
     }
     //
     }

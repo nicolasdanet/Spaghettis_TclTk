@@ -163,9 +163,13 @@ proc _apply {top} {
     
     foreach key $scalarKeys($top) {
     
-    lappend command $key
-    lappend command [::sanitized [::dollarToHash $scalarValues($top$key)]]
-    
+        lappend command "field"
+        lappend command $key
+        
+        if {$scalarValues($top$key) ne ""} {
+            lappend command "value"
+            lappend command [::sanitized [::dollarToHash $scalarValues($top$key)]]
+        }
     }
     
     ::ui_interface::pdsend $command
