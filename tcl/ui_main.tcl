@@ -116,6 +116,8 @@ set var(searchPath)                 {}
 set var(tcpHost)                    ""
 set var(tcpPort)                    0
 
+set var(templates)                  {}
+
 set var(windowFocused)              .
 set var(windowStagger)              0
 

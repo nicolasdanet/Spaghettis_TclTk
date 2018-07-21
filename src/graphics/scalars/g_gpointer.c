@@ -432,25 +432,28 @@ int gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
-    int i, k = 0;
+    int i, k = template_getSize (tmpl);
     
     t_symbol *s = symbol_stripTemplateIdentifier (gpointer_getTemplateIdentifier (gp));
     
     heapstring_addSprintf (h, "%s", s->s_name);
  
-    for (i = 0; i < template_getSize (tmpl); i++) {
+    for (i = 0; i < k; i++) {
     //
     t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
     
     if (template_fieldIsFloat (tmpl, fieldName)) {
-        heapstring_addSprintf (h, " {%s}", fieldName->s_name);
-        heapstring_addSprintf (h, " {%g}", gpointer_getFloat (gp, fieldName));
-        k++;
-        
+        heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                       // --
+        heapstring_addSprintf (h, " {%g}", gpointer_getFloat (gp, fieldName));                       // --
+    
     } else if (template_fieldIsSymbol (tmpl, fieldName)) {
-        heapstring_addSprintf (h, " {%s}", fieldName->s_name);
-        heapstring_addSprintf (h, " {%s}", symbol_dollarToHash (gpointer_getSymbol (gp, fieldName))->s_name);
-        k++;
+        t_symbol *t = symbol_dollarToHash (gpointer_getSymbol (gp, fieldName));
+        heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                      // --
+        heapstring_addSprintf (h, " {%s}", t->s_name);                                              // --
+        
+    } else if (template_fieldIsArray (tmpl, fieldName)) {
+        heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                      // --
+        heapstring_addSprintf (h, " {%d}", array_getSize (gpointer_getArray (gp, fieldName)));      // --
     }
     //
     }
@@ -458,7 +461,7 @@ int gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
     return k;
 }
 
-void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv)
+void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int created)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
@@ -483,8 +486,19 @@ void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv)
             k |= (gpointer_getSymbol (gp, fieldName) != s);
             gpointer_setSymbol (gp, fieldName, s);
             
-        } else {
-            PD_BUG;
+        } else if (template_fieldIsArray (tmpl, fieldName)) {
+            int n = (int)(hasValue ? atom_getFloat (argv + 1) : 0.0);
+            t_array *array = gpointer_getArray (gp, fieldName);
+            int size = array_getSize (array);
+            n = PD_MAX (1, n);
+            if (size != n) {
+                array_resizeAndRedraw (array, gpointer_getView (gp), n);
+                if (!created && (size < n)) { array_notify (array, size, sym_change, 0, NULL); }
+                k = 1;
+            }
+            if (created) {
+                array_notify (array, 0, sym_change, 0, NULL);
+            }
         }
     
         if (hasValue) { argc -= 2; argv += 2; }
@@ -492,7 +506,7 @@ void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv)
     //
     }
     
-    if (k) { gpointer_redraw (gp); gpointer_notify (gp, sym_change, 0, NULL); }
+    if (created || k) { gpointer_redraw (gp); gpointer_notify (gp, sym_change, 0, NULL); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

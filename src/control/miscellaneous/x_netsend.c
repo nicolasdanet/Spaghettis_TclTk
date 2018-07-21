@@ -57,7 +57,7 @@ static void netsend_socketOptions (t_netsend *x, int fd)
 
 static void netsend_socketClose (t_netsend *x)
 {
-    if (x->ns_fd >= 0) { sys_closeSocket (x->ns_fd); x->ns_fd = -1; post ("netsend: closed"); }
+    if (x->ns_fd >= 0) { sys_closeSocket (x->ns_fd); x->ns_fd = -1; post ("netsend: closed"); }     // --
 }
 
 // -----------------------------------------------------------------------------------------------------------

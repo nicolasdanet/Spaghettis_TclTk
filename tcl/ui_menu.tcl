@@ -151,8 +151,10 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasO
     
     if {$hasObject} {
         .popup entryconfigure [_ "Add Object"]          -state normal
+        .popup entryconfigure [_ "Add Scalar"]          -state normal
     } else {
         .popup entryconfigure [_ "Add Object"]          -state disabled
+        .popup entryconfigure [_ "Add Scalar"]          -state disabled
     }
     
     if {$hasOrder} {
@@ -197,6 +199,41 @@ proc updateRecent {} {
     $m add command \
         -label [_ "Clear Menu"] \
         -command { ::ui_file::clearRecent }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# Template cascade must be labeled .popup.scalar in the initializing functions.
+
+proc _updateTemplates {} {
+
+    set m .popup.scalar
+    
+    $m delete 0 end
+    
+    foreach item $::var(templates) {
+        $m add command -label $item -command [list ::ui_menu::_handle "_scalar $item"]
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc appendTemplate {id} {
+
+    lappend ::var(templates) $id
+    
+    ::ui_menu::_updateTemplates
+}
+
+proc removeTemplate {id} {
+
+    set index [lsearch -exact $::var(templates) $id]
+    
+    set ::var(templates) [lreplace $::var(templates) $index $index]
+    
+    ::ui_menu::_updateTemplates
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -457,7 +494,74 @@ proc _tools {m} {
 # POPUP_PROPERTIES
 # POPUP_OPEN
 # POPUP_HELP
+
+proc _popupObject {m} {
+
+    $m.object add command \
+        -label [_ "Object"] \
+        -command { ::ui_menu::_handleDirty obj }
+    $m.object add command \
+        -label [_ "Message"] \
+        -command { ::ui_menu::_handleDirty msg }
+    $m.object add command \
+        -label [_ "Atom"] \
+        -command { ::ui_menu::_handleDirty floatatom }
+    $m.object add command \
+        -label [_ "Symbol"] \
+        -command { ::ui_menu::_handleDirty symbolatom }
+    $m.object add command \
+        -label [_ "Comment"] \
+        -command { ::ui_menu::_handleDirty comment }
+    $m.object add separator
     
+    $m.object add command \
+        -label [_ "Bang"] \
+        -command { ::ui_menu::_handleDirty bng }
+    $m.object add command \
+        -label [_ "Toggle"] \
+        -command { ::ui_menu::_handleDirty tgl }
+    $m.object add command \
+        -label [_ "Dial"] \
+        -command { ::ui_menu::_handleDirty nbx }
+    $m.object add command \
+        -label [_ "Array"] \
+        -command { ::ui_menu::_handle _array }
+    $m.object add separator
+    
+    $m.object add command \
+        -label [_ "VU"] \
+        -command { ::ui_menu::_handleDirty vu }
+    $m.object add command \
+        -label [_ "Panel"] \
+        -command { ::ui_menu::_handleDirty cnv }
+    $m.object add separator
+    
+    menu $m.object.vertical
+    
+    $m.object.vertical add command \
+        -label [_ "Slider"] \
+        -command { ::ui_menu::_handleDirty vslider }
+    $m.object.vertical add command \
+        -label [_ "Radio Button"] \
+        -command { ::ui_menu::_handleDirty vradio }
+    
+    menu $m.object.horizontal
+    
+    $m.object.horizontal add command \
+        -label [_ "Slider"] \
+        -command { ::ui_menu::_handleDirty hslider }
+    $m.object.horizontal add command \
+        -label [_ "Radio Button"] \
+        -command { ::ui_menu::_handleDirty hradio }
+        
+    $m.object add cascade \
+        -label [_ "Vertical"] \
+        -menu $m.object.vertical
+    $m.object add cascade \
+        -label [_ "Horizontal"] \
+        -menu $m.object.horizontal
+}
+
 proc _popup {m} {
 
     $m add command \
@@ -471,75 +575,17 @@ proc _popup {m} {
         -command { ::ui_menu::_doPopup $::var(windowFocused) 2 }
     $m add separator
     
-    menu $m.object
-    
-        $m.object add command \
-            -label [_ "Object"] \
-            -command { ::ui_menu::_handleDirty obj }
-        $m.object add command \
-            -label [_ "Message"] \
-            -command { ::ui_menu::_handleDirty msg }
-        $m.object add command \
-            -label [_ "Atom"] \
-            -command { ::ui_menu::_handleDirty floatatom }
-        $m.object add command \
-            -label [_ "Symbol"] \
-            -command { ::ui_menu::_handleDirty symbolatom }
-        $m.object add command \
-            -label [_ "Comment"] \
-            -command { ::ui_menu::_handleDirty comment }
-        $m.object add separator
-        
-        $m.object add command \
-            -label [_ "Bang"] \
-            -command { ::ui_menu::_handleDirty bng }
-        $m.object add command \
-            -label [_ "Toggle"] \
-            -command { ::ui_menu::_handleDirty tgl }
-        $m.object add command \
-            -label [_ "Dial"] \
-            -command { ::ui_menu::_handleDirty nbx }
-        $m.object add command \
-            -label [_ "Array"] \
-            -command { ::ui_menu::_handle _array }
-        $m.object add separator
-        
-        $m.object add command \
-            -label [_ "VU"] \
-            -command { ::ui_menu::_handleDirty vu }
-        $m.object add command \
-            -label [_ "Panel"] \
-            -command { ::ui_menu::_handleDirty cnv }
-        $m.object add separator
-        
-        menu $m.object.vertical
-        
-        $m.object.vertical add command \
-            -label [_ "Slider"] \
-            -command { ::ui_menu::_handleDirty vslider }
-        $m.object.vertical add command \
-            -label [_ "Radio Button"] \
-            -command { ::ui_menu::_handleDirty vradio }
-        
-        menu $m.object.horizontal
-            
-        $m.object.horizontal add command \
-            -label [_ "Slider"] \
-            -command { ::ui_menu::_handleDirty hslider }
-        $m.object.horizontal add command \
-            -label [_ "Radio Button"] \
-            -command { ::ui_menu::_handleDirty hradio }
-            
-        $m.object add cascade \
-            -label [_ "Vertical"] \
-            -menu $m.object.vertical
-        $m.object add cascade \
-            -label [_ "Horizontal"] \
-            -menu $m.object.horizontal
+    menu $m.object; _popupObject $m
+    menu $m.scalar; ::ui_menu::_updateTemplates
     
     $m add cascade \
         -label [_ "Add Object"] \
         -menu $m.object
+    $m add separator
+    
+    $m add cascade \
+        -label [_ "Add Scalar"] \
+        -menu $m.scalar
     $m add separator
     
     $m add command \

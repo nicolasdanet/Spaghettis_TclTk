@@ -126,12 +126,18 @@ static void scalar_notifyProceed (t_scalar *scalar, t_symbol *s, int argc, t_ato
     gpointer_unset (&gp);
 }
 
-static void scalar_notifyClicked (t_scalar *x, t_float positionX, t_float positionY)
+static void scalar_notifyClicked (t_scalar *x,
+    t_float positionX,
+    t_float positionY,
+    t_float mouseX,
+    t_float mouseY)
 {
-    t_atom t[2];
+    t_atom t[4];
     SET_FLOAT (t + 0, positionX);
     SET_FLOAT (t + 1, positionY);
-    scalar_notifyProceed (x, sym_click, 2, t);
+    SET_FLOAT (t + 2, mouseX);
+    SET_FLOAT (t + 3, mouseY);
+    scalar_notifyProceed (x, sym_click, 4, t);
 }
     
 static void scalar_notifyDisplaced (t_scalar *x, t_float deltaX, t_float deltaY)
@@ -338,7 +344,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     t_float baseY = scalar_getFloat (x, sym_y);
     t_gobj *y = NULL;
         
-    if (m->m_clicked) { scalar_notifyClicked (x, baseX, baseY); }
+    if (m->m_clicked) { scalar_notifyClicked (x, baseX, baseY, (t_float)m->m_x, (t_float)m->m_y); }
             
     for (y = view->gl_graphics; y; y = y->g_next) {
     //
@@ -545,7 +551,7 @@ void scalar_functionProperties (t_gobj *z, t_glist *glist, t_mouse *m)
     heapstring_free (h); gpointer_unset (&gp);
 }
 
-static void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
+void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc > 5) {
     //
@@ -577,7 +583,7 @@ static void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
             }
         }
     
-        if (gpointer_isValid (&gp)) { gpointer_setProperties (&gp, argc, argv); }
+        if (gpointer_isValid (&gp)) { gpointer_setProperties (&gp, argc, argv, (s != sym__scalardialog)); }
     
         gpointer_unset (&gp);
     }

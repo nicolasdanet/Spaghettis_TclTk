@@ -75,6 +75,12 @@ static void canvas_functionProperties (t_gobj *, t_glist *, t_mouse *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void scalar_fromDialog (t_scalar *, t_symbol *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 enum {
     POPUP_PROPERTIES    = 0,
     POPUP_OPEN          = 1,
@@ -284,6 +290,37 @@ static void canvas_requireArrayDialog (t_glist *glist)
     stub_new (cast_pd (glist), (void *)glist, t);
 }
 
+static void canvas_requireScalarDialog (t_glist *glist, t_symbol *s)
+{
+    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (s);
+    
+    if (template_isValid (template_findByIdentifier (templateIdentifier))) {
+    //
+    t_scalar *dummy = scalar_new (glist, templateIdentifier);
+    t_heapstring *h = heapstring_new (0);
+    t_gpointer gp; gpointer_init (&gp);
+    
+    heapstring_add (h, "::ui_scalar::show %s scalar -1 invalid ");
+    
+    gpointer_setAsScalar (&gp, dummy);
+    
+    PD_ASSERT (gpointer_isValid (&gp));
+    
+    if (gpointer_getPropertiesAsString (&gp, h)) {
+    //
+    heapstring_add (h, "\n"); stub_new (cast_pd (glist), (void *)glist, heapstring_getRaw (h));
+    //
+    } else {
+        PD_BUG;
+    }
+    
+    heapstring_free (h); gpointer_unset (&gp);
+    
+    pd_free (cast_pd (dummy));
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -338,6 +375,23 @@ static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     PD_ASSERT (argc == 10);
     
     canvas_makeArrayFromDialog (glist, s, argc, argv);
+}
+
+static void canvas_fromScalarDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc > 3) {
+    //
+    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (atom_getSymbol (argv + 3));
+    
+    if (template_isValid (template_findByIdentifier (templateIdentifier))) {
+    //
+    t_scalar *scalar = scalar_new (glist, templateIdentifier);
+    glist_objectAdd (glist, cast_gobj (scalar));
+    scalar_fromDialog (scalar, NULL, argc, argv);
+    //
+    }
+    //
+    }
 }
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -558,8 +612,11 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_help,                  sym__help,              A_NULL);
     
     class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,             A_NULL);
+    class_addMethod (c, (t_method)canvas_requireScalarDialog,   sym__scalar,            A_SYMBOL, A_NULL);
+    
     class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_fromScalarDialog,      sym__scalardialog,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromDialog,            sym__canvasdialog,      A_GIMME, A_NULL);
    
     #if PD_WITH_LEGACY

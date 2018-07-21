@@ -297,6 +297,36 @@ void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void template_addMenu (t_template *x)
+{
+    t_symbol *t = symbol_stripTemplateIdentifier (x->tp_templateIdentifier);
+
+    if (!template_isPrivate (x->tp_templateIdentifier)) {
+    if (template_fieldIsFloat (x, sym_x)) {
+    if (template_fieldIsFloat (x, sym_y)) {
+        gui_vAdd ("::ui_menu::appendTemplate {%s}\n", t->s_name);   // --
+    }
+    }
+    }
+}
+
+static void template_removeMenu (t_template *x)
+{
+    t_symbol *t = symbol_stripTemplateIdentifier (x->tp_templateIdentifier);
+
+    if (!template_isPrivate (x->tp_templateIdentifier)) {
+    if (template_fieldIsFloat (x, sym_x)) {
+    if (template_fieldIsFloat (x, sym_y)) {
+        gui_vAdd ("::ui_menu::removeTemplate {%s}\n", t->s_name);   // --
+    }
+    }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_error template_newParse (t_template *x, int *ac, t_atom **av)
 {
     int argc = *ac; t_atom *argv = *av;
@@ -310,14 +340,6 @@ static t_error template_newParse (t_template *x, int *ac, t_atom **av)
         t_symbol *templateIdentifier = &s_;
         
         int k = -1;
-        
-        #if PD_WITH_LEGACY
-        
-        if (type == &s_list) {
-            type = sym_text; 
-        }
-            
-        #endif
         
         if (type == &s_float)        { k = DATA_FLOAT;  }
         else if (type == &s_symbol)  { k = DATA_SYMBOL; }
@@ -372,6 +394,7 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     PD_ASSERT (symbol_stripTemplateIdentifier (templateIdentifier) != &s_);
         
     x->tp_size               = 0;
+    x->tp_error              = PD_ERROR_NONE;
     x->tp_slots              = (t_dataslot *)PD_MEMORY_GET (0);
     x->tp_templateIdentifier = templateIdentifier;
     x->tp_instance           = NULL;
@@ -381,15 +404,17 @@ t_template *template_new (t_symbol *templateIdentifier, int argc, t_atom *argv)
     if (template_newParse (x, &argc, &argv)) {      /* It may consume arguments. */
     //
     error_invalidArguments (symbol_stripTemplateIdentifier (templateIdentifier), argc, argv);
-    pd_free (cast_pd (x)); x = NULL;
+    x->tp_error = PD_ERROR; pd_free (cast_pd (x)); x = NULL;
     //
-    }
+    } else { template_addMenu (x); }
     
     return x;
 }
 
 void template_free (t_template *x)
 {
+    if (x->tp_error == PD_ERROR_NONE) { template_removeMenu (x); }
+    
     pd_unbind (cast_pd (x), x->tp_templateIdentifier);
     
     PD_MEMORY_FREE (x->tp_slots);

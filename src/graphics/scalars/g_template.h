@@ -22,12 +22,14 @@ typedef struct _dataslot {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 struct _template {
     t_pd        tp_pd;                              /* MUST be the first. */
+    t_error     tp_error;
     int         tp_size;    
     t_dataslot  *tp_slots;   
-    t_symbol    *tp_templateIdentifier; 
+    t_symbol    *tp_templateIdentifier;
     t_struct    *tp_instance;
     };
     

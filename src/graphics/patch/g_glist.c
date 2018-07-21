@@ -565,16 +565,9 @@ void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
     if (template_isValid (template_findByIdentifier (templateIdentifier))) {
     //
     t_scalar *scalar = scalar_new (glist, templateIdentifier);
-    
-    PD_ASSERT (scalar);
-    
-    if (scalar) {
-    //
     glist_objectAdd (glist, cast_gobj (scalar));
     scalar_deserialize (scalar, glist, argc - 1, argv + 1);
     if (glist_isOnScreen (glist)) { gobj_visibilityChanged (cast_gobj (scalar), glist, 1); }
-    //
-    }
     //
     }
     //

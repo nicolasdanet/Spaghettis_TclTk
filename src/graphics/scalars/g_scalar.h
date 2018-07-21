@@ -164,6 +164,8 @@ void        array_resizeAndRedraw               (t_array *x, t_glist *glist, int
 void        array_serialize                     (t_array *x, t_buffer *b);
 void        array_deserialize                   (t_array *x, t_iterator *iter);
 
+void        array_notify                        (t_array *x, int start, t_symbol *s, int argc, t_atom *argv);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
