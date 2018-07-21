@@ -38,7 +38,7 @@ static int buffer_parseIsMalformed (const char *s, int size)
     else {
         int i;
         for (i = 0; i < size; i++) {
-            if (s[i] == 0 || s[i] == '{' || s[i] == '}') { return 1; }
+            if (s[i] == 0 || s[i] == '{' || s[i] == '}') { return 1; }      // --
         }
     }
     
@@ -225,8 +225,8 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)     /* Caller ac
     
     /* Sanitize for TCL script. */
     
-    heapstring_removeIfContains (h, '{');
-    heapstring_removeIfContains (h, '}');
+    heapstring_removeIfContains (h, '{');   // --
+    heapstring_removeIfContains (h, '}');   // --
     
     /* Cosmetic. */
     
