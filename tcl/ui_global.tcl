@@ -152,7 +152,7 @@ proc getNamespace {top} {
     return ""
 }
 
-proc cancel {w} {
+proc cancel {w {signoff 1}} {
 
     set top [winfo toplevel $w]
     set class [winfo class $top]
@@ -162,8 +162,16 @@ proc cancel {w} {
     }
     
     if {$class eq "PdDialog" || $class eq "PdText"} {
-        destroy $top; ::ui_interface::pdsend "$top _signoff"
+    
+        destroy $top
+        
+        if {$signoff == 1} { ::ui_interface::pdsend "$top _signoff" }
     }
+}
+
+proc remove {w} {
+    
+    ::cancel $w 0
 }
 
 # ------------------------------------------------------------------------------------------------------------
