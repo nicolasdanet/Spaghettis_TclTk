@@ -58,7 +58,7 @@ void stub_destroyWithKey (void *key)
     
     for (t = stub_list; t; t = t->x_next) {
         if (t->x_key == key) {
-            gui_vAdd ("destroy " PD_GUISTUB "%lx\n", t);
+            gui_vAdd ("::remove " PD_GUISTUB "%lx\n", t);
             t->x_owner = NULL;
             stub_removeFromList (t);
             pd_free (cast_pd (t));
