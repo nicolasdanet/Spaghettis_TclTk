@@ -73,6 +73,8 @@ t_symbol    *template_getFieldAtIndex               (t_template *x, int n);
 t_template  *template_getTemplateIfArrayAtIndex     (t_template *x, int n);   
 t_glist     *template_getInstanceViewIfPainters     (t_template *x);
 
+t_constructor *template_getInstanceConstructorIfAny (t_template *x, t_symbol *field);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -92,6 +94,15 @@ t_glist     *struct_getView                         (t_struct *x);
 // -----------------------------------------------------------------------------------------------------------
 
 void        struct_notify                           (t_struct *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_symbol    *constructor_getField                   (t_constructor *x);
+t_symbol    *constructor_evaluateAsSymbol           (t_constructor *x);
+
+t_float     constructor_evaluateAsFloat             (t_constructor *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -140,6 +140,7 @@
 #include "graphics/scalars/g_gpointer.c"
 #include "graphics/scalars/g_template.c"
 #include "graphics/scalars/g_struct.c"
+#include "graphics/scalars/g_constructor.c"
 #include "graphics/scalars/g_scalar.c"
 #include "graphics/scalars/g_paint.c"
 #include "graphics/scalars/g_pointer.c"
@@ -217,6 +218,7 @@
 #include "control/math/x_random.c"
 #include "control/math/x_clip.c"
 #include "control/math/x_expr.c"
+#include "control/math/x_functions.c"
 
 #include "control/time/x_metro.c"
 #include "control/time/x_delay.c"

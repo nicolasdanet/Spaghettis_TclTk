@@ -261,6 +261,7 @@ extern t_symbol *sym_concept;
 extern t_symbol *sym_connect;
 extern t_symbol *sym_console;
 extern t_symbol *sym_constant;
+extern t_symbol *sym_constructor;
 extern t_symbol *sym_coords;
 extern t_symbol *sym_cos;
 extern t_symbol *sym_cos__tilde__;

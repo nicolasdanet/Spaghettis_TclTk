@@ -57,6 +57,8 @@ static void get_pointer (t_get *x, t_gpointer *gp)
     } else { error_invalid (sym_get, &s_pointer); }
 }
 
+#if PD_WITH_LEGACY
+
 static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_get); }
@@ -65,6 +67,8 @@ static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)
         x->x_fields[0].gv_fieldName = fieldName;
     }
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -110,7 +114,11 @@ void get_setup (void)
             
     class_addPointer (c, (t_method)get_pointer); 
     
+    #if PD_WITH_LEGACY
+    
     class_addMethod (c, (t_method)get_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
+    
+    #endif
     
     get_class = c;
 }
