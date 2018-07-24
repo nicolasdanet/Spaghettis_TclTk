@@ -686,7 +686,7 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
     t_template *tmpl = template_findByIdentifier (templateIdentifier);
 
     if (template_isValid (tmpl)) {
-
+    
         t_gpointer gp; gpointer_init (&gp);
         
         x = (t_scalar *)pd_new (scalar_class);
@@ -696,7 +696,9 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
         x->sc_element = (t_word *)PD_MEMORY_GET (template_getSize (tmpl) * sizeof (t_word));
         
         gpointer_setAsScalar (&gp, x);
+        
         word_init (x->sc_element, tmpl, &gp);
+        
         gpointer_unset (&gp);
     }
     

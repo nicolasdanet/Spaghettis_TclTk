@@ -102,6 +102,7 @@ extern t_class *block_class;
 extern t_class *canvas_class;
 extern t_class *catch_tilde_class;
 extern t_class *concept_class;
+extern t_class *constructor_class;
 extern t_class *delwrite_tilde_class;
 extern t_class *floatinlet_class;
 extern t_class *garray_class;

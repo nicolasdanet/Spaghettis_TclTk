@@ -261,6 +261,7 @@ t_symbol *sym_concept;
 t_symbol *sym_connect;
 t_symbol *sym_console;
 t_symbol *sym_constant;
+t_symbol *sym_constructor;
 t_symbol *sym_coords;
 t_symbol *sym_cos;
 t_symbol *sym_cos__tilde__;
@@ -977,6 +978,7 @@ void symbols_initialize (void)
     sym_connect                                 = gensym ("connect");
     sym_console                                 = gensym ("console");
     sym_constant                                = gensym ("constant");
+    sym_constructor                             = gensym ("constructor");
     sym_coords                                  = gensym ("coords");
     sym_cos                                     = gensym ("cos");
     sym_cos__tilde__                            = gensym ("cos~");

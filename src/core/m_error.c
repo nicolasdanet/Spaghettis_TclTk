@@ -109,10 +109,14 @@ void error_sendReceiveLoop (t_symbol *s)
     post_error (PD_TRANSLATE ("%s: send/receive loop"), s->s_name);
 }
 
+#if PD_WITH_LEGACY
+
 void error_canNotSetMultipleFields (t_symbol *s)
 {
     post_error (PD_TRANSLATE ("%s: can't set multiple fields"), s->s_name);
 }
+
+#endif
 
 void error_alreadyExists (t_symbol *s)
 {

@@ -92,6 +92,8 @@ static void set_symbol (t_set *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#if PD_WITH_LEGACY
+
 static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_set); }
@@ -106,6 +108,8 @@ static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
         }
     }
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -191,7 +195,11 @@ void set_setup (void)
     class_addFloat (c, (t_method)set_float); 
     class_addSymbol (c, (t_method)set_symbol); 
 
+    #if PD_WITH_LEGACY
+    
     class_addMethod (c, (t_method)set_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
+    
+    #endif
     
     set_class = c;
 }

@@ -246,7 +246,7 @@ static t_glist *template_getInstanceView (t_template *x)
     if (!x->tp_instance) { return NULL; } else { return struct_getView (x->tp_instance); }
 }
 
-/* Return the instance view if it contains  at least one painter. */
+/* Return the instance view if it contains at least one painter. */
 
 t_glist *template_getInstanceViewIfPainters (t_template *x)
 {
@@ -263,7 +263,28 @@ t_glist *template_getInstanceViewIfPainters (t_template *x)
     
     return NULL;
 }
- 
+
+/* Return the instance default contructor for a given field. */
+
+t_constructor *template_getInstanceConstructorIfAny (t_template *x, t_symbol *field)
+{
+    t_glist *view = template_getInstanceView (x);
+    
+    if (view) {
+    
+        t_gobj *y = NULL;
+        
+        for (y = view->gl_graphics; y; y = y->g_next) {
+            if (pd_class (y) == constructor_class) {
+                t_constructor *ctor = (t_constructor *)y;
+                if (constructor_getField (ctor) == field) { return ctor; }
+            }
+        }
+    }
+    
+    return NULL;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

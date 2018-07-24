@@ -38,7 +38,7 @@ typedef struct _append {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void append_float (t_append *x, t_float f)
+static void append_proceed (t_append *x, t_float f, int setFields)
 {
     t_template *tmpl = template_findByIdentifier (x->x_templateIdentifier);
     
@@ -52,18 +52,21 @@ static void append_float (t_append *x, t_float f)
     if (!scalar) { error_invalid (sym_append, sym_template); }
     else {
     //
-    int i;
+    if (setFields) {
     
-    x->x_fields[0].gv_f = f;
+        int i;
         
-    for (i = 0; i < x->x_fieldsSize; i++) {
-    //
-    if (scalar_fieldIsFloat (scalar, x->x_fields[i].gv_fieldName)) {
-        scalar_setFloat (scalar, x->x_fields[i].gv_fieldName, x->x_fields[i].gv_f);
-    } else {
-        error_mismatch (sym_append, sym_type);
-    }
-    //
+        x->x_fields[0].gv_f = f;
+        
+        for (i = 0; i < x->x_fieldsSize; i++) {
+        //
+        if (scalar_fieldIsFloat (scalar, x->x_fields[i].gv_fieldName)) {
+            scalar_setFloat (scalar, x->x_fields[i].gv_fieldName, x->x_fields[i].gv_f);
+        } else if (x->x_fields[i].gv_fieldName != &s_) {
+            error_mismatch (sym_append, sym_type);
+        }
+        //
+        }
     }
     
     glist_objectAddNext (gpointer_getView (&x->x_gpointer),
@@ -81,6 +84,22 @@ static void append_float (t_append *x, t_float f)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void append_bang (t_append *x)
+{
+    append_proceed (x, 0.0, 0);
+}
+
+static void append_float (t_append *x, t_float f)
+{
+    append_proceed (x, f, 1);
+}
+
+#if PD_WITH_LEGACY
+
 static void append_set (t_append *x, t_symbol *templateName, t_symbol *fieldName)
 {
     if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_append); }
@@ -90,6 +109,8 @@ static void append_set (t_append *x, t_symbol *templateName, t_symbol *fieldName
         x->x_fields[0].gv_f         = 0.0;
     }
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -140,10 +161,15 @@ void append_setup (void)
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-            
+    
+    class_addBang (c, (t_method)append_bang);
     class_addFloat (c, (t_method)append_float); 
     
+    #if PD_WITH_LEGACY
+    
     class_addMethod (c, (t_method)append_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL);
+    
+    #endif
     
     append_class = c;
 }

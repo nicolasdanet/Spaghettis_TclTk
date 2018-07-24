@@ -21,12 +21,15 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
     
     for (i = 0; i < template_getSize (tmpl); i++, v++, w++) {
     //
-    int type = v->ds_type;
-    
-    switch (type) {
-        case DATA_FLOAT  : WORD_FLOAT (w)  = 0.0;                                       break;
-        case DATA_SYMBOL : WORD_SYMBOL (w) = &s_symbol;                                 break;
-        case DATA_ARRAY  : WORD_ARRAY (w)  = array_new (v->ds_templateIdentifier, gp);  break;
+    t_constructor *ctor = template_getInstanceConstructorIfAny (tmpl, v->ds_fieldName);
+        
+    switch (v->ds_type) {
+        case DATA_FLOAT  :  WORD_FLOAT (w)  = constructor_evaluateAsFloat (ctor);   break;
+        case DATA_SYMBOL :  WORD_SYMBOL (w) = constructor_evaluateAsSymbol (ctor);  break;
+        case DATA_ARRAY  :  int n = constructor_evaluateAsFloat (ctor);
+                            WORD_ARRAY (w) = array_new (v->ds_templateIdentifier, gp);
+                            if (n > 1) { array_resize (WORD_ARRAY (w), n); }
+                            break;
     }
     //
     }

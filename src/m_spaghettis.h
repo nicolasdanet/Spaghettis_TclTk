@@ -561,6 +561,7 @@ struct _array;
 struct _box;
 struct _class;
 struct _clock;
+struct _constructor;
 struct _dspcontext;
 struct _fielddescriptor;
 struct _garray;
@@ -590,6 +591,7 @@ struct _widgetbehavior;
 #define t_box                       struct _box
 #define t_class                     struct _class
 #define t_clock                     struct _clock
+#define t_constructor               struct _constructor
 #define t_dspcontext                struct _dspcontext
 #define t_fielddescriptor           struct _fielddescriptor
 #define t_garray                    struct _garray
