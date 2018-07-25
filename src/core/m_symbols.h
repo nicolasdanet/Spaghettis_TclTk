@@ -328,6 +328,7 @@ extern t_symbol *sym_f;
 extern t_symbol *sym_false;
 extern t_symbol *sym_fft__tilde__;
 extern t_symbol *sym_field;
+extern t_symbol *sym_fields;
 extern t_symbol *sym_filledcurve;
 extern t_symbol *sym_filledpolygon;
 extern t_symbol *sym_flashtime;

@@ -38,7 +38,7 @@ typedef struct _append {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void append_proceed (t_append *x, t_float f, int setFields)
+static t_error append_proceed (t_append *x, t_float f, int setFields)
 {
     t_template *tmpl = template_findByIdentifier (x->x_templateIdentifier);
     
@@ -75,13 +75,15 @@ static void append_proceed (t_append *x, t_float f, int setFields)
         
     gpointer_setAsScalar (&x->x_gpointer, scalar);
     
-    outlet_pointer (x->x_outlet, &x->x_gpointer);
+    return PD_ERROR_NONE;
     //
     }
     //
     } else { error_invalid (sym_append, &s_pointer); }
     //
     }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -90,13 +92,29 @@ static void append_proceed (t_append *x, t_float f, int setFields)
 
 static void append_bang (t_append *x)
 {
-    append_proceed (x, 0.0, 0);
+    if (!append_proceed (x, 0, 0)) { outlet_pointer (x->x_outlet, &x->x_gpointer); }
 }
 
 static void append_float (t_append *x, t_float f)
 {
-    append_proceed (x, f, 1);
+    if (!append_proceed (x, f, 1)) { outlet_pointer (x->x_outlet, &x->x_gpointer); }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void append_fields (t_append *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (!append_proceed (x, 0, 0)) {
+    //
+    gpointer_setFields (&x->x_gpointer, argc, argv); outlet_pointer (x->x_outlet, &x->x_gpointer);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #if PD_WITH_LEGACY
 
@@ -163,8 +181,10 @@ void append_setup (void)
             A_NULL);
     
     class_addBang (c, (t_method)append_bang);
-    class_addFloat (c, (t_method)append_float); 
+    class_addFloat (c, (t_method)append_float);
     
+    class_addMethod (c, (t_method)append_fields, sym_fields, A_GIMME, A_NULL);
+
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)append_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL);
