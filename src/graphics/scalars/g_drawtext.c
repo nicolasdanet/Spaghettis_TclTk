@@ -69,7 +69,7 @@ void drawtext_release (void)
 
 static t_error drawtext_getContents (t_drawtext *x, t_gpointer *gp, char *dest, int size)
 {
-    if (gpointer_hasField (gp, x->x_fieldName) && !gpointer_fieldIsArray (gp, x->x_fieldName)) {
+    if (gpointer_hasField (gp, x->x_fieldName)) {
     //
     t_error err = string_copy (dest, size, x->x_label->s_name);
     err |= gpointer_getFieldAsString (gp, x->x_fieldName, dest, size);

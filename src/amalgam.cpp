@@ -150,6 +150,7 @@
 #include "graphics/scalars/g_getsize.c"
 #include "graphics/scalars/g_setsize.c"
 #include "graphics/scalars/g_append.c"
+#include "graphics/scalars/g_fields.c"
 #include "graphics/scalars/g_drawpolygon.c"
 #include "graphics/scalars/g_drawtext.c"
 #include "graphics/scalars/g_drawcircle.c"

@@ -306,7 +306,7 @@ static void canvas_requireScalarDialog (t_glist *glist, t_symbol *s)
     
     PD_ASSERT (gpointer_isValid (&gp));
     
-    if (gpointer_getPropertiesAsString (&gp, h)) {
+    if (gpointer_getProperties (&gp, h)) {
     //
     heapstring_add (h, "\n"); stub_new (cast_pd (glist), (void *)glist, heapstring_getRaw (h));
     //

@@ -46,6 +46,7 @@
 		17C25F54205E579A00C4339A /* x_micamap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C25F53205E579A00C4339A /* x_micamap.c */; };
 		17C3797C202062F6009B00A6 /* x_blocksize.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C3797B202062F6009B00A6 /* x_blocksize.c */; };
 		17C5194A1F23195900113504 /* x_uzi.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C519491F23195900113504 /* x_uzi.c */; };
+		17C7D2E12108D67600D676CB /* g_fields.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C7D2E02108D67600D676CB /* g_fields.c */; };
 		17C9CEC81FCD57740089E9D2 /* d_rmag.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9CEC71FCD57740089E9D2 /* d_rmag.c */; };
 		17C9FE2F1FE00B7A007066EC /* s_atomic_posix.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE1C1FE00B78007066EC /* s_atomic_posix.c */; };
 		17C9FE301FE00B7A007066EC /* s_MT_64.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C9FE221FE00B78007066EC /* s_MT_64.c */; };
@@ -484,6 +485,7 @@
 		17C4741620FB9D2A00339303 /* ui_scalar.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ui_scalar.tcl; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		17C519491F23195900113504 /* x_uzi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_uzi.c; sourceTree = "<group>"; };
 		17C7712220148CF400584EE6 /* d_cos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d_cos.h; sourceTree = "<group>"; };
+		17C7D2E02108D67600D676CB /* g_fields.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_fields.c; sourceTree = "<group>"; };
 		17C9CEC71FCD57740089E9D2 /* d_rmag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = d_rmag.c; sourceTree = "<group>"; };
 		17C9FE1B1FE00B77007066EC /* s_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = s_time.h; sourceTree = "<group>"; };
 		17C9FE1C1FE00B78007066EC /* s_atomic_posix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = s_atomic_posix.c; sourceTree = "<group>"; };
@@ -1652,6 +1654,7 @@
 				37D6430D1D47944400071C3C /* g_getsize.c */,
 				37D642F21D4793A800071C3C /* g_setsize.c */,
 				37D642BB1D47924100071C3C /* g_append.c */,
+				17C7D2E02108D67600D676CB /* g_fields.c */,
 				379C1BAF1D37954000C4D92C /* g_drawpolygon.c */,
 				379C1B3F1D3790C200C4D92C /* g_drawtext.c */,
 				1713835720F0BC660001245E /* g_drawcircle.c */,
@@ -2034,6 +2037,7 @@
 				378972631C4F716800263434 /* x_print.c in Sources */,
 				378972641C4F716800263434 /* x_list.c in Sources */,
 				17C15CEA1F8E4EF8000695B7 /* x_arguments.c in Sources */,
+				17C7D2E12108D67600D676CB /* g_fields.c in Sources */,
 				378972691C4F716800263434 /* x_text.c in Sources */,
 				37E0BC371C53E0B700114412 /* m_pathlist.c in Sources */,
 				37D287111C54F1D70041C5C2 /* s_font.c in Sources */,

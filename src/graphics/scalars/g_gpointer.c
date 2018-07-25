@@ -417,8 +417,8 @@ t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *de
     } else if (gpointer_fieldIsSymbol (gp, fieldName)) {
         err = string_addSprintf (dest, size, "%s", gpointer_getSymbol (gp, fieldName)->s_name);
         
-    } else {
-        err = PD_ERROR; PD_BUG;     // -- TODO: Implement?
+    } else if (gpointer_fieldIsArray (gp, fieldName)) {
+        err = string_addSprintf (dest, size, "%d", array_getSize (gpointer_getArray (gp, fieldName)));
     }
     
     return err;
@@ -428,7 +428,7 @@ t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *de
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
+int gpointer_getProperties (t_gpointer *gp, t_heapstring *h)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
@@ -442,17 +442,16 @@ int gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
     //
     t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
     
+    heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                          // --
+
     if (template_fieldIsFloat (tmpl, fieldName)) {
-        heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                       // --
-        heapstring_addSprintf (h, " {%g}", gpointer_getFloat (gp, fieldName));                       // --
+        heapstring_addSprintf (h, " {%g}", gpointer_getFloat (gp, fieldName));                      // --
     
     } else if (template_fieldIsSymbol (tmpl, fieldName)) {
         t_symbol *t = symbol_dollarToHash (gpointer_getSymbol (gp, fieldName));
-        heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                      // --
         heapstring_addSprintf (h, " {%s}", t->s_name);                                              // --
         
     } else if (template_fieldIsArray (tmpl, fieldName)) {
-        heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                      // --
         heapstring_addSprintf (h, " {%d}", array_getSize (gpointer_getArray (gp, fieldName)));      // --
     }
     //
@@ -525,6 +524,8 @@ void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int flag)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Fields getter and setter as key/value pairs. */
+
 void gpointer_setFields (t_gpointer *gp, int argc, t_atom *argv)
 {
     if (argc > 1) {
@@ -546,6 +547,39 @@ void gpointer_setFields (t_gpointer *gp, int argc, t_atom *argv)
     PD_ATOMS_FREEA (t, n);
     //
     }
+}
+
+t_error gpointer_getFields (t_gpointer *gp, t_buffer *b)
+{
+    if (gpointer_isValid (gp)) {
+    //
+    t_template *tmpl = gpointer_getTemplate (gp);
+    
+    int i, k = template_getSize (tmpl);
+    
+    for (i = 0; i < k; i++) {
+    //
+    t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
+    
+    buffer_appendSymbol (b, fieldName);
+
+    if (template_fieldIsFloat (tmpl, fieldName)) {
+        buffer_appendFloat (b, gpointer_getFloat (gp, fieldName));
+    
+    } else if (template_fieldIsSymbol (tmpl, fieldName)) {
+        buffer_appendSymbol (b, gpointer_getSymbol (gp, fieldName));
+        
+    } else if (template_fieldIsArray (tmpl, fieldName)) {
+        buffer_appendFloat (b, array_getSize (gpointer_getArray (gp, fieldName)));
+    }
+    //
+    }
+    
+    return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------

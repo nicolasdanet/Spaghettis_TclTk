@@ -538,7 +538,7 @@ void scalar_functionProperties (t_gobj *z, t_glist *glist, t_mouse *m)
     
     if (gpointer_isValid (&gp)) {
     //
-    if (gpointer_getPropertiesAsString (&gp, h)) {
+    if (gpointer_getProperties (&gp, h)) {
     //
     heapstring_add (h, "\n"); stub_new (cast_pd (x), (void *)x, heapstring_getRaw (h));
     //
