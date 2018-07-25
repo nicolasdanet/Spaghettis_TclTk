@@ -88,14 +88,16 @@ void        gpointer_notify                     (t_gpointer *gp, t_symbol *s, in
 t_symbol    *gpointer_getRepresentation         (t_gpointer *gp);
 
 t_error     gpointer_getFieldAsString           (t_gpointer *gp, t_symbol *field, char *dest, int size);
-int         gpointer_getPropertiesAsString      (t_gpointer *gp, t_heapstring *h);
-void        gpointer_setProperties              (t_gpointer *gp, int argc, t_atom *argv, int flag);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int         gpointer_getProperties              (t_gpointer *gp, t_heapstring *h);
+void        gpointer_setProperties              (t_gpointer *gp, int argc, t_atom *argv, int flag);
+
 void        gpointer_setFields                  (t_gpointer *gp, int argc, t_atom *argv);
+t_error     gpointer_getFields                  (t_gpointer *gp, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
