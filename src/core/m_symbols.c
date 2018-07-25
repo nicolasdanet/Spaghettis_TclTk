@@ -328,6 +328,7 @@ t_symbol *sym_f;
 t_symbol *sym_false;
 t_symbol *sym_fft__tilde__;
 t_symbol *sym_field;
+t_symbol *sym_fields;
 t_symbol *sym_filledcurve;
 t_symbol *sym_filledpolygon;
 t_symbol *sym_flashtime;
@@ -1045,6 +1046,7 @@ void symbols_initialize (void)
     sym_false                                   = gensym ("false");
     sym_fft__tilde__                            = gensym ("fft~");
     sym_field                                   = gensym ("field");
+    sym_fields                                  = gensym ("fields");
     sym_filledcurve                             = gensym ("filledcurve");
     sym_filledpolygon                           = gensym ("filledpolygon");
     sym_flashtime                               = gensym ("flashtime");

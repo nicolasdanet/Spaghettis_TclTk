@@ -134,6 +134,11 @@ int atom_typesAreEquals (t_atom *a, t_atom *b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void atom_copyAtom (t_atom *src, t_atom *dest)
+{
+    atom_copyAtoms (src, 1, dest, 1);
+}
+
 void atom_copyAtoms (t_atom *src, int m, t_atom *dest, int n)
 {
     int size = PD_MIN (m, n); int i; for (i = 0; i < size; i++) { dest[i] = src[i]; }

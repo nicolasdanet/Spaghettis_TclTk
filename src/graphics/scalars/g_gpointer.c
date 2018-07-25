@@ -461,11 +461,17 @@ int gpointer_getPropertiesAsString (t_gpointer *gp, t_heapstring *h)
     return k;
 }
 
-void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int created)
+/* Change notifications are sent only for interactive modifications. */
+
+void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int flag)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
     int k = 0;
+    
+    int changed = (flag == GPOINTER_NOTIFY_CHANGED);
+    int always  = (flag == GPOINTER_NOTIFY_ALWAYS);
+    int never   = (flag == GPOINTER_NOTIFY_NEVER);
     
     while (argc > 1 && (atom_getSymbol (argv) == sym_field)) {
     //
@@ -474,39 +480,72 @@ void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int created
     argc -= 2; argv += 2;
     
     {
-        int hasValue = (argc > 1 && (atom_getSymbol (argv) == sym_value));
-    
-        if (template_fieldIsFloat (tmpl, fieldName)) {
-            t_float f = hasValue ? atom_getFloat (argv + 1) : 0.0;
-            k |= (gpointer_getFloat (gp, fieldName) != f);
-            gpointer_setFloat (gp, fieldName, f);
-            
-        } else if (template_fieldIsSymbol (tmpl, fieldName)) {
-            t_symbol *s = hasValue ? symbol_hashToDollar (atom_getSymbol (argv + 1)) : &s_;
-            k |= (gpointer_getSymbol (gp, fieldName) != s);
-            gpointer_setSymbol (gp, fieldName, s);
-            
-        } else if (template_fieldIsArray (tmpl, fieldName)) {
-            int n = (int)(hasValue ? atom_getFloat (argv + 1) : 0.0);
-            t_array *array = gpointer_getArray (gp, fieldName);
-            int size = array_getSize (array);
-            n = PD_MAX (1, n);
-            if (size != n) {
-                array_resizeAndRedraw (array, gpointer_getView (gp), n);
-                if (!created && (size < n)) { array_notify (array, size, sym_change, 0, NULL); }
-                k = 1;
-            }
-            if (created) {
-                array_notify (array, 0, sym_change, 0, NULL);
-            }
+    //
+    int hasValue = (argc > 1 && (atom_getSymbol (argv) == sym_value));
+
+    if (template_hasField (tmpl, fieldName)) {
+    //
+    if (template_fieldIsFloat (tmpl, fieldName)) {
+        t_float f = hasValue ? atom_getFloat (argv + 1) : 0.0;
+        k |= (gpointer_getFloat (gp, fieldName) != f);
+        gpointer_setFloat (gp, fieldName, f);
+        
+    } else if (template_fieldIsSymbol (tmpl, fieldName)) {
+        t_symbol *s = hasValue ? symbol_hashToDollar (atom_getSymbol (argv + 1)) : &s_;
+        k |= (gpointer_getSymbol (gp, fieldName) != s);
+        gpointer_setSymbol (gp, fieldName, s);
+        
+    } else if (template_fieldIsArrayAndValid (tmpl, fieldName)) {
+        int n = (int)(hasValue ? atom_getFloat (argv + 1) : 0.0);
+        t_array *array = gpointer_getArray (gp, fieldName);
+        int size = array_getSize (array);
+        n = PD_MAX (1, n);
+        if (size != n) {
+            array_resizeAndRedraw (array, gpointer_getView (gp), n);
+            if (changed && (size < n)) { array_notify (array, size, sym_change, 0, NULL); }
+            k = 1;
         }
-    
-        if (hasValue) { argc -= 2; argv += 2; }
+        if (always) {
+            array_notify (array, 0, sym_change, 0, NULL);
+        }
+    }
+    //
+    }
+
+    if (hasValue) { argc -= 2; argv += 2; }
+    //
     }
     //
     }
     
-    if (created || k) { gpointer_redraw (gp); gpointer_notify (gp, sym_change, 0, NULL); }
+    if (always || k) { gpointer_redraw (gp); if (!never) { gpointer_notify (gp, sym_change, 0, NULL); } }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void gpointer_setFields (t_gpointer *gp, int argc, t_atom *argv)
+{
+    if (argc > 1) {
+    //
+    t_atom *t = NULL;
+    int n = argc * 2;
+    int i = 0;
+    int j = 0;
+    
+    PD_ATOMS_ALLOCA (t, n);
+    
+    for (i = 0; i < argc; i += 2, j += 4) {
+        SET_SYMBOL (t + j + 0, sym_field); atom_copyAtom (argv + i + 0, t + j + 1);
+        SET_SYMBOL (t + j + 2, sym_value); atom_copyAtom (argv + i + 1, t + j + 3);
+    }
+    
+    gpointer_setProperties (gp, n, t, GPOINTER_NOTIFY_NEVER);
+    
+    PD_ATOMS_FREEA (t, n);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

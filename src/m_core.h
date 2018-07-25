@@ -36,6 +36,7 @@
 t_symbol    *atom_getSymbolOrDollarSymbol           (t_atom *a);
 t_symbol    *atom_getSymbolOrDollarSymbolAtIndex    (int n, int argc, t_atom *argv);
 
+void        atom_copyAtom                           (t_atom *src, t_atom *dest);
 void        atom_copyAtoms                          (t_atom *src, int m, t_atom *dest, int n);
 int         atom_copyAtomsExpanded                  (t_atom *src, int m, t_atom *dest, int n, t_glist *glist);
 

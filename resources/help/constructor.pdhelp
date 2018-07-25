@@ -1,4 +1,4 @@
-#N canvas 703 331 373 315 12;
+#N canvas 766 196 373 315 12;
 #X obj 144 276 get;
 #X obj 180 276 set;
 #X obj 180 156 pointer;
@@ -6,18 +6,18 @@
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X text 12 276 See also:;
 #X obj -60 12 freeze;
-#N canvas 347 248 335 326 \$0-data 1;
+#N canvas 351 177 335 326 \$0-data 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 228 216 pd \$0-data;
-#N canvas 805 148 501 341 \$0-template 0;
+#N canvas 898 289 501 341 \$0-template 0;
 #X obj 36 288 constructor s bubble;
 #X obj 36 108 struct \$0-template float x float y float r float q symbol s;
 #X obj 36 72 draw circle -color q -width 4 -- r;
-#X obj 36 36 draw text -color q -x (r+5) -y -9 -- s;
 #X obj 36 144 constructor x rand()*300;
 #X obj 36 180 constructor y rand()*300;
 #X obj 36 216 constructor r (rand()*30)+10;
 #X obj 36 252 constructor q 800;
+#X obj 36 36 draw text -x (r+5) -y -9 -- s;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 228 240 pd \$0-template;
 #X msg 180 132 traverse \$0-data \, bang;

@@ -67,9 +67,6 @@ static void set_bang (t_set *x)
     } else { error_invalid (sym_set, &s_pointer); }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static void set_float (t_set *x, t_float f)
 {
     if (x->x_asSymbol) { error_mismatch (sym_set, sym_type); }
@@ -83,7 +80,7 @@ static void set_symbol (t_set *x, t_symbol *s)
 {
     if (!x->x_asSymbol) { error_mismatch (sym_set, sym_type); }
     else {
-        WORD_SYMBOL (&x->x_fields[0].sv_w) = s; 
+        WORD_SYMBOL (&x->x_fields[0].sv_w) = s;
         set_bang (x);
     }
 }
@@ -91,6 +88,18 @@ static void set_symbol (t_set *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static void set_fields (t_set *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (gpointer_isValidInstanceOf (&x->x_gpointer, x->x_templateIdentifier)) {
+    //
+    gpointer_setFields (&x->x_gpointer, argc, argv);
+    //
+    } else { error_invalid (sym_set, &s_pointer); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #if PD_WITH_LEGACY
 
@@ -195,6 +204,8 @@ void set_setup (void)
     class_addFloat (c, (t_method)set_float); 
     class_addSymbol (c, (t_method)set_symbol); 
 
+    class_addMethod (c, (t_method)set_fields, sym_fields, A_GIMME, A_NULL);
+    
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)set_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 

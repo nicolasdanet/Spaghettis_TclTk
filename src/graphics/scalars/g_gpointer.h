@@ -25,6 +25,14 @@ static inline void gpointer_init (t_gpointer *gp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define GPOINTER_NOTIFY_CHANGED     0
+#define GPOINTER_NOTIFY_ALWAYS      1
+#define GPOINTER_NOTIFY_NEVER       2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void        gpointer_setAsNull                  (t_gpointer *gp, t_glist  *owner);
 void        gpointer_setAsScalar                (t_gpointer *gp, t_scalar *scalar);
 void        gpointer_setAsWord                  (t_gpointer *gp, t_array  *owner, t_word *w);
@@ -81,7 +89,13 @@ t_symbol    *gpointer_getRepresentation         (t_gpointer *gp);
 
 t_error     gpointer_getFieldAsString           (t_gpointer *gp, t_symbol *field, char *dest, int size);
 int         gpointer_getPropertiesAsString      (t_gpointer *gp, t_heapstring *h);
-void        gpointer_setProperties              (t_gpointer *gp, int argc, t_atom *argv, int created);
+void        gpointer_setProperties              (t_gpointer *gp, int argc, t_atom *argv, int flag);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void        gpointer_setFields                  (t_gpointer *gp, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
