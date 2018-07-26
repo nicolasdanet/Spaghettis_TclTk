@@ -462,15 +462,13 @@ int gpointer_getProperties (t_gpointer *gp, t_heapstring *h)
 
 /* Change notifications are sent only for interactive modifications. */
 
-void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int flag)
+void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int notify)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
     int k = 0;
     
-    int changed = (flag == GPOINTER_NOTIFY_CHANGED);
-    int always  = (flag == GPOINTER_NOTIFY_ALWAYS);
-    int never   = (flag == GPOINTER_NOTIFY_NEVER);
+    gpointer_erase (gp);
     
     while (argc > 1 && (atom_getSymbol (argv) == sym_field)) {
     //
@@ -500,12 +498,8 @@ void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int flag)
         int size = array_getSize (array);
         n = PD_MAX (1, n);
         if (size != n) {
-            array_resizeAndRedraw (array, gpointer_getView (gp), n);
-            if (changed && (size < n)) { array_notify (array, size, sym_change, 0, NULL); }
+            array_resize (array, n);
             k = 1;
-        }
-        if (always) {
-            array_notify (array, 0, sym_change, 0, NULL);
         }
     }
     //
@@ -517,7 +511,9 @@ void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int flag)
     //
     }
     
-    if (always || k) { gpointer_redraw (gp); if (!never) { gpointer_notify (gp, sym_change, 0, NULL); } }
+    gpointer_draw (gp);
+    
+    if (notify && k) { gpointer_notify (gp, sym_change, 0, NULL); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -542,7 +538,7 @@ void gpointer_setFields (t_gpointer *gp, int argc, t_atom *argv)
         SET_SYMBOL (t + j + 2, sym_value); atom_copyAtom (argv + i + 1, t + j + 3);
     }
     
-    gpointer_setProperties (gp, n, t, GPOINTER_NOTIFY_NEVER);
+    gpointer_setProperties (gp, n, t, 0);
     
     PD_ATOMS_FREEA (t, n);
     //

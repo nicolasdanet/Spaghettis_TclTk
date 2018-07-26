@@ -584,8 +584,7 @@ void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
         }
     
         if (gpointer_isValid (&gp)) {
-            int flag = (s == sym__scalardialog) ? GPOINTER_NOTIFY_CHANGED : GPOINTER_NOTIFY_ALWAYS;
-            gpointer_setProperties (&gp, argc, argv, flag);
+            gpointer_setProperties (&gp, argc, argv, (s == sym__scalardialog) ? 1 : 0);
         }
     
         gpointer_unset (&gp);
