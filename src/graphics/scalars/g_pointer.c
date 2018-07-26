@@ -48,6 +48,12 @@ typedef struct _ptrobj {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void canvas_clear (t_glist *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static int pointer_nextSkip (t_gobj *z, t_glist *glist, int wantSelected)
 {
     if (!gobj_isScalar (z)) { return 1; }
@@ -94,12 +100,31 @@ static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 
 /* Note that functions below do not make sense for non scalars (i.g. element of arrays). */
 
-static void pointer_traverse (t_pointer *x, t_symbol *s)
+static t_glist *pointer_fetch (t_pointer *x, t_symbol *s)
 {
     t_glist *glist = cast_glist (symbol_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
     
-    if (glist && !glist_isArray (glist)) { gpointer_setAsNull (&x->x_gpointer, glist); }
-    else { 
+    if (glist && !glist_isArray (glist)) { return glist; }
+
+    return NULL;
+}
+
+static void pointer_traverse (t_pointer *x, t_symbol *s)
+{
+    t_glist *glist = pointer_fetch (x, s);
+    
+    if (glist) { gpointer_setAsNull (&x->x_gpointer, glist); }
+    else {
+        error_invalid (&s_pointer, &s_pointer);
+    }
+}
+
+static void pointer_clear (t_pointer *x, t_symbol *s)
+{
+    t_glist *glist = pointer_fetch (x, s);
+    
+    if (glist) { canvas_clear (glist); gpointer_setAsNull (&x->x_gpointer, glist); }
+    else {
         error_invalid (&s_pointer, &s_pointer);
     }
 }
@@ -272,7 +297,8 @@ void pointer_setup (void)
     class_addPointer (c, (t_method)pointer_pointer); 
         
     class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,               A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,                 A_NULL); 
+    class_addMethod (c, (t_method)pointer_clear,        sym_clear,                  A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,                 A_NULL);
     class_addMethod (c, (t_method)pointer_next,         sym_next,                   A_NULL);
     class_addMethod (c, (t_method)pointer_nextDelete,   sym_delete,                 A_NULL);
     class_addMethod (c, (t_method)pointer_nextDisable,  sym_disable,                A_NULL);

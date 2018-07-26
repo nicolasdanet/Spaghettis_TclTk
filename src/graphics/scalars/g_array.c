@@ -231,22 +231,6 @@ t_gpointer *array_getTopParent (t_array *x)
     return &a->a_parent;
 }
 
-void array_notify (t_array *x, int start, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    
-    PD_ASSERT (start >= 0);
-    
-    for (i = start; i < array_getSize (x); i++) {
-    //
-    t_gpointer gp; gpointer_init (&gp);
-    gpointer_setAsWord (&gp, x, array_getElementAtIndex (x, i));
-    gpointer_notify (&gp, s, argc, argv);
-    gpointer_unset (&gp);
-    //
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

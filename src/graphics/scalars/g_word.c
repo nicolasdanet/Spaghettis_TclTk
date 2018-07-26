@@ -17,16 +17,19 @@
 void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
 {
     t_dataslot *v = template_getSlots (tmpl);
+    int isPrivate = template_isPrivate (template_getTemplateIdentifier (tmpl));
     int i;
     
     for (i = 0; i < template_getSize (tmpl); i++, v++, w++) {
     //
-    t_constructor *ctor = template_getInstanceConstructorIfAny (tmpl, v->ds_fieldName);
-        
+    t_constructor *ctor = NULL;
+    
+    if (!isPrivate) { ctor = template_getInstanceConstructorIfAny (tmpl, v->ds_fieldName); }
+    
     switch (v->ds_type) {
-        case DATA_FLOAT  :  WORD_FLOAT (w)  = constructor_evaluateAsFloat (ctor);   break;
-        case DATA_SYMBOL :  WORD_SYMBOL (w) = constructor_evaluateAsSymbol (ctor);  break;
-        case DATA_ARRAY  :  int n = constructor_evaluateAsFloat (ctor);
+        case DATA_FLOAT  :  WORD_FLOAT (w)  = ctor ? constructor_evaluateAsFloat (ctor)  : 0.0;       break;
+        case DATA_SYMBOL :  WORD_SYMBOL (w) = ctor ? constructor_evaluateAsSymbol (ctor) : &s_symbol; break;
+        case DATA_ARRAY  :  int n = (int)(ctor ? constructor_evaluateAsFloat (ctor) : 0.0);
                             WORD_ARRAY (w) = array_new (v->ds_templateIdentifier, gp);
                             if (n > 1) { array_resize (WORD_ARRAY (w), n); }
                             break;
