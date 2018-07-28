@@ -392,7 +392,7 @@ static void plot_behaviorGetRectangleRecursive (t_plot *x,
             t_rectangle t;
             
             t_gpointer gp; gpointer_init (&gp);
-            gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
+            gpointer_setAsWord (&gp, array, i);
             (*behavior->w_fnPainterGetRectangle) (y, &gp, relativeX, relativeY, &t);
             gpointer_unset (&gp);
             
@@ -644,7 +644,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
         if (behavior) {
         
             t_gpointer gp; gpointer_init (&gp);
-            gpointer_setAsWord (&gp, p->p_array, array_getElementAtIndex (p->p_array, i));
+            gpointer_setAsWord (&gp, p->p_array, i);
             (*behavior->w_fnPainterVisibilityChanged) (y, &gp, c.p_x, c.p_y, isVisible);
             gpointer_unset (&gp);
         }
@@ -728,7 +728,7 @@ static int plot_behaviorMouseRecursive (t_plot *x,
         if (behavior) {
      
             t_gpointer gp; gpointer_init (&gp);
-            gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, i));
+            gpointer_setAsWord (&gp, array, i);
             k = (*behavior->w_fnPainterMouse) (y, &gp, relativeX, relativeY, m);
             gpointer_unset (&gp);
         }
@@ -942,7 +942,7 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
         plot_fieldArray = &x->x_array;
             
         gpointer_setByCopy (&plot_gpointer, gp);
-        gpointer_setAsWord (&plot_check, p.p_array, array_getElements (p.p_array));
+        gpointer_setAsWord (&plot_check, p.p_array, 0);
         
         /* The garray case is handled differently. */
         
@@ -1001,7 +1001,7 @@ int plot_hitElement (t_gobj *z,
         
         if (t <= PLOT_HANDLE_SIZE && t < d) {
             *s = field_getVariableName (&x->x_array);
-            gpointer_setAsWord (e, p.p_array, array_getElementAtIndex (p.p_array, i));
+            gpointer_setAsWord (e, p.p_array, i);
             k = i;
             d = t;
         }
@@ -1031,7 +1031,7 @@ int plot_hitElement (t_gobj *z,
             double g = rectangle_getArea (&r);
             if (g < f) {
                 *s = field_getVariableName (&x->x_array);
-                gpointer_setAsWord (e, p.p_array, array_getElementAtIndex (p.p_array, i));
+                gpointer_setAsWord (e, p.p_array, i);
                 k = i;
                 f = g;
             }

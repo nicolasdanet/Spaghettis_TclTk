@@ -159,6 +159,7 @@ void gpointer_setAsNull (t_gpointer *gp, t_glist *glist)
     gp->gp_un.gp_scalar     = NULL;
     gp->gp_refer            = glist_getMaster (glist);
     gp->gp_uniqueIdentifier = glist_getIdentifier (glist);
+    gp->gp_index            = 0;
 
     gmaster_increment (gp->gp_refer);
 }
@@ -174,19 +175,25 @@ void gpointer_setAsScalar (t_gpointer *gp, t_scalar *scalar)
     gp->gp_un.gp_scalar     = scalar;
     gp->gp_refer            = glist_getMaster (scalar->sc_owner);
     gp->gp_uniqueIdentifier = glist_getIdentifier (scalar->sc_owner);
-
+    gp->gp_index            = 0;
+    
     gmaster_increment (gp->gp_refer);
 }
 
 /* Point to an element (i.e. a chunk of t_word) from an array. */
 
-void gpointer_setAsWord (t_gpointer *gp, t_array *array, t_word *w)
+void gpointer_setAsWord (t_gpointer *gp, t_array *array, int n)
 {
+    int t = array_getSize (array) - 1;
+    
+    n = PD_CLAMP (n, 0, t);
+    
     gpointer_unset (gp);
     
-    gp->gp_un.gp_w          = w;
+    gp->gp_un.gp_w          = array_getElementAtIndex (array, n);
     gp->gp_refer            = array->a_holder;
     gp->gp_uniqueIdentifier = array->a_uniqueIdentifier;
+    gp->gp_index            = n;
 
     gmaster_increment (gp->gp_refer);
 }
@@ -243,6 +250,11 @@ t_scalar *gpointer_getScalar (t_gpointer *gp)
 t_word *gpointer_getWord (t_gpointer *gp)
 {
     PD_ASSERT (gpointer_isWord (gp)); return (gp->gp_un.gp_w);
+}
+
+int gpointer_getIndex (t_gpointer *gp)
+{
+    PD_ASSERT (gpointer_isWord (gp)); return (gp->gp_index);
 }
 
 t_glist *gpointer_getParentForScalar (t_gpointer *gp)

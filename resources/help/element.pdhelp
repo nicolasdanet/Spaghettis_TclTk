@@ -1,4 +1,4 @@
-#N canvas 779 164 492 365 12;
+#N canvas 780 163 492 365 12;
 #X obj 84 324 pointer;
 #X obj 144 324 getsize;
 #X obj 204 324 setsize;
@@ -72,11 +72,11 @@
 #X floatatom 36 288 5 0 0 1 - - -;
 #X f 5;
 #X text 24 24 element;
-#N canvas 785 340 370 213 again 0;
-#X obj 144 72 pointer;
-#X floatatom 36 48 5 0 7 0 - - -;
+#N canvas 811 289 370 213 again 0;
+#X obj 132 72 pointer;
+#X floatatom 36 48 5 0 16 0 - - -;
 #X f 5;
-#X msg 144 48 traverse \$0-data \, next;
+#X msg 132 48 traverse \$0-data \, next;
 #X floatatom 36 168 5 0 0 1 - - -;
 #X f 5;
 #X obj 36 132 get - y;

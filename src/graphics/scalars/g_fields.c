@@ -30,11 +30,18 @@ typedef struct _fields {
 
 static void fields_pointer (t_fields *x, t_gpointer *gp)
 {
-    t_buffer *b = buffer_new();
+    t_buffer *b   = buffer_new();
+    int isElement = gpointer_isWord (gp);
+    
+    if (isElement) { buffer_appendFloat (b, gpointer_getIndex (gp)); }
     
     if (gpointer_getFields (gp, b)) { error_invalid (sym_fields, &s_pointer); }
     else {
-        outlet_list (x->x_outlet, buffer_getSize (b), buffer_getAtoms (b));
+    //
+    t_symbol *s = isElement ? sym_element : sym_scalar;
+    
+    outlet_anything (x->x_outlet, s, buffer_getSize (b), buffer_getAtoms (b));
+    //
     }
     
     buffer_free (b);
@@ -48,7 +55,7 @@ static void *fields_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_fields *x = (t_fields *)pd_new (fields_class);
     
-    x->x_outlet = outlet_newList (cast_object (x));
+    x->x_outlet = outlet_newAnything (cast_object (x));
     
     return x;
 }

@@ -38,7 +38,7 @@ static void element_float (t_element *x, t_float f)
         if (gpointer_hasField (&x->x_gpointer, x->x_fieldName)) {
             if (gpointer_fieldIsArrayAndValid (&x->x_gpointer, x->x_fieldName)) {
                 t_array *array = gpointer_getArray (&x->x_gpointer, x->x_fieldName);
-                gpointer_setAsWord (&x->x_gpointerWord, array, array_getElementAtIndex (array, (int)f));
+                gpointer_setAsWord (&x->x_gpointerWord, array, (int)f);
                 outlet_pointer (x->x_outlet, &x->x_gpointerWord);
         
     } else { error_invalid (sym_element, x->x_fieldName); }

@@ -665,7 +665,6 @@ t_symbol *sym_Escape;
 t_symbol *sym_JACK;
 t_symbol *sym_Left;
 t_symbol *sym_Patch;
-t_symbol *sym_Scalar;
 t_symbol *sym_Space;
 t_symbol *sym_Return;
 t_symbol *sym_Right;
@@ -1385,7 +1384,6 @@ void symbols_initialize (void)
     sym_Patch                                   = gensym ("Patch");
     sym_Return                                  = gensym ("Return");
     sym_Right                                   = gensym ("Right");
-    sym_Scalar                                  = gensym ("Scalar");
     sym_Space                                   = gensym ("Space");
     sym_Tab                                     = gensym ("Tab");
     sym_Text                                    = gensym ("Text");

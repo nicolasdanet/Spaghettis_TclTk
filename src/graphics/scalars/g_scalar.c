@@ -576,7 +576,7 @@ void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
             if (scalar_fieldIsArrayAndValid (x, field)) {
                 t_array *array = scalar_getArray (x, field);
                 if (index < array_getSize (array)) {
-                    gpointer_setAsWord (&gp, array, array_getElementAtIndex (array, index));
+                    gpointer_setAsWord (&gp, array, index);
                 }
             }
             }
