@@ -667,7 +667,6 @@ extern t_symbol *sym_Left;
 extern t_symbol *sym_Patch;
 extern t_symbol *sym_Return;
 extern t_symbol *sym_Right;
-extern t_symbol *sym_Scalar;
 extern t_symbol *sym_Space;
 extern t_symbol *sym_Tab;
 extern t_symbol *sym_Text;

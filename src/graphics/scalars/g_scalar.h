@@ -65,6 +65,7 @@ struct _gpointer {
     } gp_un;
     t_gmaster               *gp_refer;
     t_unique                gp_uniqueIdentifier;
+    int                     gp_index;
     };
 
 // -----------------------------------------------------------------------------------------------------------

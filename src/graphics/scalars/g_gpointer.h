@@ -19,6 +19,7 @@ static inline void gpointer_init (t_gpointer *gp)
     gp->gp_un.gp_scalar     = NULL;
     gp->gp_refer            = NULL;
     gp->gp_uniqueIdentifier = 0;
+    gp->gp_index            = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -27,10 +28,12 @@ static inline void gpointer_init (t_gpointer *gp)
 
 void        gpointer_setAsNull                  (t_gpointer *gp, t_glist  *owner);
 void        gpointer_setAsScalar                (t_gpointer *gp, t_scalar *scalar);
-void        gpointer_setAsWord                  (t_gpointer *gp, t_array  *owner, t_word *w);
+void        gpointer_setAsWord                  (t_gpointer *gp, t_array  *owner, int n);
 
 t_scalar    *gpointer_getScalar                 (t_gpointer *gp);
 t_word      *gpointer_getWord                   (t_gpointer *gp);
+
+int         gpointer_getIndex                   (t_gpointer *gp);
 
 void        gpointer_setByCopy                  (t_gpointer *gp, t_gpointer *toCopy);
 void        gpointer_unset                      (t_gpointer *gp);
