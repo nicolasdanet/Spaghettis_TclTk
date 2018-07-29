@@ -338,7 +338,7 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
     if (gpointer_hasField (&plot_gpointer, s) && gpointer_fieldIsArrayAndValid (&plot_gpointer, s)) {
 
         t_array *array = gpointer_getArray (&plot_gpointer, s);
-        int isArray = (gpointer_getTemplateIdentifier (&plot_gpointer) == sym___TEMPLATE__float__dash__array);
+        int isArray = (gpointer_getTemplateIdentifier (&plot_gpointer) == sym__TEMPLATE_float__dash__array);
         
         plot_cumulativeX += deltaX * plot_stepX;
         plot_cumulativeY += deltaY * plot_stepY * (plot_thickness ? plot_direction : (t_float)1.0);

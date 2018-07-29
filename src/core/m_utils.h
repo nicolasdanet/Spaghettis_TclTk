@@ -46,7 +46,6 @@ t_symbol    *symbol_replaceDoubleDollar     (t_symbol *s);
 t_symbol    *symbol_decode                  (t_symbol *s);
 t_symbol    *symbol_removeExtension         (t_symbol *s);
 
-t_symbol    *symbol_join                    (t_symbol *s, t_symbol *appended);
 t_symbol    *symbol_addPrefix               (t_symbol *s, t_symbol *prefix);
 t_symbol    *symbol_addSuffix               (t_symbol *s, t_symbol *suffix);
 t_symbol    *symbol_withCopySuffix          (t_symbol *s);

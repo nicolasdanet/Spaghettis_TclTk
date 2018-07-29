@@ -875,7 +875,7 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
 
 t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_float flags)
 {
-    t_template *tmpl = template_findByIdentifier (sym___TEMPLATE__float__dash__array);
+    t_template *tmpl = template_findByIdentifier (sym__TEMPLATE_float__dash__array);
     
     t_garray *x = NULL;
     
@@ -889,7 +889,7 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
     int inhibit = (((int)flags & GARRAY_FLAG_INHIBIT) != 0);
     int n       = (int)PD_MAX (1.0, size);
     
-    x = garray_makeObjectWithScalar (glist, name, sym___TEMPLATE__float__dash__array, save, hide, inhibit);
+    x = garray_makeObjectWithScalar (glist, name, sym__TEMPLATE_float__dash__array, save, hide, inhibit);
 
     array_resize (scalar_getArray (x->x_scalar, sym_z), n);
 

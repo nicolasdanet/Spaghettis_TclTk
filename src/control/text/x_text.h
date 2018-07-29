@@ -56,8 +56,8 @@ void        textbuffer_free                 (t_textbuffer *x);
 void        textbuffer_close                (t_textbuffer *x);
 void        textbuffer_update               (t_textbuffer *x);
 void        textbuffer_click                (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
-void        textbuffer_read                 (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
-void        textbuffer_write                (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
+void        textbuffer_read                 (t_textbuffer *x, t_symbol *s);
+void        textbuffer_write                (t_textbuffer *x, t_symbol *s);
 void        textbuffer_addLine              (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 
 t_glist     *textbuffer_getView             (t_textbuffer *x);

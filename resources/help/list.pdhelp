@@ -205,7 +205,7 @@
 #X msg 168 492 get 2 3;
 #X text 12 336 Get sublists (index \, count).;
 #X msg 156 228 auxiliary compliance outpost;
-#X text 12 12 Append a variable and inspectable list.;
+#X text 12 12 Append an inspectable variable list.;
 #X connect 0 0 8 0;
 #X connect 1 0 8 0;
 #X connect 2 0 8 0;

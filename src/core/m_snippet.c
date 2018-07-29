@@ -15,7 +15,7 @@
 
 void snippet_renameArrays (t_buffer *x, t_glist *glist)
 {
-    t_iterator *iter = iterator_new (buffer_getSize (x), buffer_getAtoms (x));
+    t_iterator *iter = iterator_new (buffer_getSize (x), buffer_getAtoms (x), 0);
     t_atom *atoms = NULL;
     int count;
     
@@ -64,7 +64,7 @@ void snippet_renameArrays (t_buffer *x, t_glist *glist)
 
 void snippet_addOffsetToLines (t_buffer *x, int i)
 {
-    t_iterator *iter = iterator_new (buffer_getSize (x), buffer_getAtoms (x));
+    t_iterator *iter = iterator_new (buffer_getSize (x), buffer_getAtoms (x), 0);
     t_atom *atoms = NULL;
     int count;
     

@@ -43,6 +43,24 @@ t_glist *struct_getView (t_struct *x)
     return x->x_owner;
 }
 
+/* Get unexpanded names (if any) in the object's text buffer. */
+
+t_symbol *struct_getUnexpandedName (t_struct *x)
+{
+    t_buffer *b = object_getBuffer (cast_object (x));
+    
+    if (buffer_getSize (b) > 1) {
+    //
+    t_atom *a = buffer_getAtomAtIndex (b, 1);
+    if (IS_DOLLARSYMBOL (a)) {
+        char t[PD_STRING] = { 0 }; if (!(atom_toString (a, t, PD_STRING))) { return gensym (t); }
+    }
+    //
+    }
+    
+    return NULL;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

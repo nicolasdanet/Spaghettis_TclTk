@@ -35,7 +35,7 @@ typedef struct {
     t_outlet    *to_outlet;
     } t_typedout;
 
-typedef struct _ptrobj {
+typedef struct _pointer {
     t_object    x_obj;                  /* Must be the first. */
     t_gpointer  x_gpointer;
     int         x_outletTypedSize;

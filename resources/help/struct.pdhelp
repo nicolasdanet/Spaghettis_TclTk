@@ -1,10 +1,8 @@
-#N canvas 542 367 391 292 12;
+#N canvas 497 295 391 292 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
 #X text 24 24 struct;
 #X text 12 252 See also:;
-#X obj 288 252 pointer;
-#X obj 228 252 append;
 #N canvas 716 480 467 218 \$0-template 0;
 #X obj 36 60 struct \$0-template float x float y array a \$0-element;
 #X f 54;
@@ -29,4 +27,5 @@
 #X text 12 96 All instances of a template are destroyed with it.;
 #X obj 84 252 draw;
 #X obj 132 252 constructor;
+#X obj 228 252 scalars;
 #X coords 0 0 1 1 250 175 0 0 0;

@@ -40,6 +40,8 @@ struct _template {
 t_template  *template_findByIdentifier              (t_symbol *templateIdentifier);
 t_template  *template_new                           (t_symbol *templateIdentifier, int argc, t_atom *argv);
 
+t_symbol    *template_getUnexpandedName             (t_template *x);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -69,10 +71,9 @@ int         template_getRaw                         (t_template *x,
                                                             int *type,
                                                             t_symbol **templateIdentifier);
 
-t_symbol    *template_getFieldAtIndex               (t_template *x, int n);
-t_template  *template_getTemplateIfArrayAtIndex     (t_template *x, int n);   
-t_glist     *template_getInstanceViewIfPainters     (t_template *x);
+t_symbol      *template_getFieldAtIndex             (t_template *x, int n);
 
+t_glist       *template_getInstanceViewIfPainters   (t_template *x);
 t_constructor *template_getInstanceConstructorIfAny (t_template *x, t_symbol *field);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -89,6 +90,7 @@ int         template_fieldIsArrayAndValid           (t_template *x, t_symbol *fi
 // MARK: -
 
 t_glist     *struct_getView                         (t_struct *x);
+t_symbol    *struct_getUnexpandedName               (t_struct *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -129,8 +131,8 @@ static inline t_symbol *template_getTemplateIdentifier (t_template *x)
 
 static inline int template_isPrivate (t_symbol *templateIdentifier)
 {
-    if (templateIdentifier == sym___TEMPLATE__float__dash__array) { return 1; }
-    else if (templateIdentifier == sym___TEMPLATE__float)         { return 1; }
+    if (templateIdentifier == sym__TEMPLATE_float__dash__array) { return 1; }
+    else if (templateIdentifier == sym__TEMPLATE_float)         { return 1; }
     else {
         return 0;
     }

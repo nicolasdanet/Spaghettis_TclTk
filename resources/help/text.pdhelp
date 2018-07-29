@@ -1,4 +1,4 @@
-#N canvas 563 65 441 587 12;
+#N canvas 483 71 441 587 12;
 #X obj 84 540 list;
 #X obj 36 132 text get;
 #N canvas 748 131 446 558 get 0;
@@ -299,7 +299,6 @@
 #X text 204 252 Search pattern.;
 #X msg 204 420 clear;
 #X msg 204 372 read text.txt;
-#X msg 204 396 write ionesco.txt;
 #X obj 204 468 text define -keep \$0-ionesco;
 #A set Bérenger \, venant de la gauche \; Bonjour \, Jean. \; Jean \; Toujours en retard \, évidemment !;
 #X obj 204 492 text define -keep \$0-camus;
@@ -341,7 +340,8 @@
 #X text 204 228 Get the number of messages.;
 #X obj 300 540 metro;
 #X text 12 312 Below optional -keep flag to save contents with patch.;
-#X connect 20 0 23 0;
-#X connect 21 0 23 0;
-#X connect 22 0 23 0;
+#X msg 204 396 write /tmp/ionesco.txt;
+#X connect 20 0 22 0;
+#X connect 21 0 22 0;
+#X connect 38 0 22 0;
 #X coords 0 0 1 1 250 175 0 0 0;

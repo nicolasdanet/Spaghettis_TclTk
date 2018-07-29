@@ -113,32 +113,16 @@ void textbuffer_update (t_textbuffer *x)
     }
 }
 
-void textbuffer_read (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
+void textbuffer_read (t_textbuffer *x, t_symbol *name)
 {
-    if (argc && IS_SYMBOL (argv)) {
-    //
-    t_symbol *name = GET_SYMBOL (argv);
     if (buffer_fileRead (x->tb_buffer, name, x->tb_owner)) { error_failsToRead (name); }
     textbuffer_update (x);
-    //
-    } else {
-        error_unspecified (sym_text, sym_name);
-    }
 }
 
-void textbuffer_write (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv)
+void textbuffer_write (t_textbuffer *x, t_symbol *name)
 {
-    if (argc && IS_SYMBOL (argv)) {
-    //
-    char t[PD_STRING] = { 0 };
-    t_symbol *name = GET_SYMBOL (argv);
-    const char *directory = environment_getDirectoryAsString (glist_getEnvironment (x->tb_owner));
-    t_error err = path_withDirectoryAndName (t, PD_STRING, directory, name->s_name);
-    if (err || buffer_fileWrite (x->tb_buffer, gensym (t), &s_)) { error_failsToWrite (name); }
-    //
-    } else {
-        error_unspecified (sym_text, sym_name);
-    }
+    t_symbol *directory = environment_getDirectory (glist_getEnvironment (x->tb_owner));
+    if (buffer_fileWrite (x->tb_buffer, name, directory)) { error_failsToWrite (name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

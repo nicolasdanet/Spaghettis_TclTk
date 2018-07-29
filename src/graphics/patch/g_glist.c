@@ -558,18 +558,31 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
 
 void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
 {
-    if (argc > 0 && IS_SYMBOL (argv)) {
+    if (argc > 0) {
     //
-    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (GET_SYMBOL (argv));
+    t_atom *expanded = NULL;
+    
+    PD_ATOMS_ALLOCA (expanded, argc);
+    
+    atom_copyAtomsExpanded (argv, argc, expanded, argc, glist);
+    
+    if (IS_SYMBOL (expanded)) {
+    //
+    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (GET_SYMBOL (expanded));
         
     if (template_isValid (template_findByIdentifier (templateIdentifier))) {
     //
     t_scalar *scalar = scalar_new (glist, templateIdentifier);
+    scalar_deserialize (scalar, glist, argc - 1, expanded + 1);
     glist_objectAdd (glist, cast_gobj (scalar));
-    scalar_deserialize (scalar, glist, argc - 1, argv + 1);
-    if (glist_isOnScreen (glist)) { gobj_visibilityChanged (cast_gobj (scalar), glist, 1); }
+    //
+    } else {
+        error_noSuch (GET_SYMBOL (expanded), sym_template);
+    }
     //
     }
+    
+    PD_ATOMS_FREEA (expanded, argc);
     //
     }
 }

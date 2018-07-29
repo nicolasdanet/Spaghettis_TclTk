@@ -31,7 +31,6 @@ t_symbol *symbol_withAtoms (int argc, t_atom *argv)
     if (argc == 1 && IS_SYMBOL (argv)) { s = GET_SYMBOL (argv); }
     else if (argc) {
         char *t = atom_atomsToString (argc, argv);
-        string_removeCharacter (t, '\\');
         s = gensym (t);
         PD_MEMORY_FREE (t);
     }
@@ -180,28 +179,6 @@ t_symbol *symbol_decode (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *symbol_join (t_symbol *s, t_symbol *appended)
-{
-    PD_ASSERT (s);
-    PD_ASSERT (appended);
-    
-    if (appended != &s_) {
-    //
-    t_error err = PD_ERROR_NONE;
-    char t[PD_STRING] = { 0 };
-    err = string_sprintf (t, PD_STRING, "%s%s", s->s_name, appended->s_name);
-    PD_UNUSED (err); PD_ASSERT (!err);
-    return gensym (t);
-    //
-    }
-    
-    return s;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_symbol *symbol_removeExtension (t_symbol *s)
 {
     PD_ASSERT (s);
@@ -221,13 +198,17 @@ t_symbol *symbol_removeExtension (t_symbol *s)
 
 t_symbol *symbol_addPrefix (t_symbol *s, t_symbol *prefix)
 {
-    t_error err = PD_ERROR_NONE;
-    char t[PD_STRING] = { 0 };
-    PD_ASSERT (s);
-    PD_ASSERT (prefix);
-    err = string_sprintf (t, PD_STRING, "%s%s", prefix->s_name, s->s_name);
-    PD_UNUSED (err); PD_ASSERT (!err);
-    return gensym (t);
+    if (prefix == &s_) { return s; }
+    else if (s == &s_) { return prefix; }
+    else {
+        t_error err = PD_ERROR_NONE;
+        char t[PD_STRING] = { 0 };
+        PD_ASSERT (s);
+        PD_ASSERT (prefix);
+        err = string_sprintf (t, PD_STRING, "%s%s", prefix->s_name, s->s_name);
+        PD_UNUSED (err); PD_ASSERT (!err);
+        return gensym (t);
+    }
 }
 
 t_symbol *symbol_addSuffix (t_symbol *s, t_symbol *suffix)

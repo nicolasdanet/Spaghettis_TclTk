@@ -64,10 +64,10 @@ t_float constructor_evaluateAsFloat (t_constructor *x)
     
     if (!x->x_once) {
     //
-    int err; char *t = buffer_toString (x->x_buffer);
+    int err;
     
-    string_removeCharacter (t, '\\');
-
+    char *t = atom_atomsToString (buffer_getSize (x->x_buffer), buffer_getAtoms (x->x_buffer));
+    
     if ((x->x_expression = te_compile (t, x->x_variables, EXPR_FUNCTIONS, &err)) == NULL) {
         error_invalid (sym_constructor, sym_expression);
     }

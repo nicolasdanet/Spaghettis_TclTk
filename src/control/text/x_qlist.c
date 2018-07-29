@@ -220,10 +220,8 @@ void qlist_read (t_qlist *x, t_symbol *s)
 {
     if (s != &s_) {
     //
-    t_atom a;
-    SET_SYMBOL (&a, s);
     qlist_clear (x);
-    textbuffer_read (&x->ql_textbuffer, sym_read, 1, &a);
+    textbuffer_read (&x->ql_textbuffer, s);
     textbuffer_update (&x->ql_textbuffer);
     //
     }
@@ -231,9 +229,7 @@ void qlist_read (t_qlist *x, t_symbol *s)
 
 void qlist_write (t_qlist *x, t_symbol *s)
 {
-    t_atom a;
-    SET_SYMBOL (&a, s);
-    textbuffer_write (&x->ql_textbuffer, sym_read, 1, &a);
+    textbuffer_write (&x->ql_textbuffer, s);
 }
 
 /* Note that float arguments are always passed at last. */

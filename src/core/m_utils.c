@@ -109,9 +109,9 @@ t_symbol *utils_getFirstAtomOfBuffer (t_buffer *x)
 
 int utils_isNameAllowedForWindow (t_symbol *s)
 {
-    if (s == sym_Array)         { return 0; }
-    else if (s == sym_Patch)    { return 0; }
-    else if (s == sym_Text)     { return 0; }
+    if (s == sym_Array)      { return 0; }
+    else if (s == sym_Patch) { return 0; }
+    else if (s == sym_Text)  { return 0; }
     
     return 1;
 }

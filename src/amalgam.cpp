@@ -45,6 +45,7 @@
 #include "core/m_rectangle.c"
 #include "core/m_bounds.c"
 #include "core/m_iterator.c"
+#include "core/m_slots.c"
 #include "core/m_pathlist.c"
 #include "core/m_heapstring.c"
 #include "core/m_utils.c"
@@ -156,6 +157,7 @@
 #include "graphics/scalars/g_drawcircle.c"
 #include "graphics/scalars/g_plot.c"
 #include "graphics/scalars/g_draw.c"
+#include "graphics/scalars/g_scalars.c"
 
 /* Control. */
 
