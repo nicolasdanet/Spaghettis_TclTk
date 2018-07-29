@@ -415,10 +415,16 @@ static inline char *fileproperties_getName (t_fileproperties *p)
 // MARK: -
 
 typedef struct _iterator {
+    int                     iter_with;
     int                     iter_argc;
     int                     iter_index;
     t_atom                  *iter_argv;
     } t_iterator;
+
+typedef struct _slots {
+    t_iterator              *sl_iter;
+    t_buffer                *sl_buffer;
+    } t_slots;
 
 typedef struct _pathregister {
     int                     pr_allocated;
@@ -443,10 +449,27 @@ typedef struct _heapstring {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_iterator  *iterator_new                       (int argc, t_atom *argv);
+t_iterator  *iterator_new                       (int argc, t_atom *argv, int includeEndInCount);
 
 void        iterator_free                       (t_iterator *x);
+int         iterator_get                        (t_iterator *x);
+void        iterator_skip                       (t_iterator *x, int n);
+void        iterator_set                        (t_iterator *x, int argc, t_atom *argv);
 int         iterator_next                       (t_iterator *x, t_atom **a);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_slots     *slots_new                          (void);
+t_buffer    *slots_getRaw                       (t_slots *x);
+
+void        slots_free                          (t_slots *x);
+int         slots_isEmpty                       (t_slots *x);
+
+void        slots_clear                         (t_slots *x);
+t_error     slots_remove                        (t_slots *x, t_atom *key);
+void        slots_set                           (t_slots *x, t_atom *key, t_buffer *data);
+t_error     slots_get                           (t_slots *x, t_atom *key, t_buffer *data);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

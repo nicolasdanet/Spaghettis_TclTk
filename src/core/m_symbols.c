@@ -34,8 +34,6 @@ t_symbol s_         = { ""          , NULL, NULL };
 
 /* Static. */
 
-t_symbol *sym___TEMPLATE__float;
-t_symbol *sym___TEMPLATE__float__dash__array;
 t_symbol *sym___ampersand__;
 t_symbol *sym___ampersand____ampersand__;
 t_symbol *sym___arrobe__;
@@ -179,6 +177,7 @@ t_symbol *sym__polytouchin;
 t_symbol *sym__popupdialog;
 t_symbol *sym__properties;
 t_symbol *sym__quit;
+t_symbol *sym__restore;
 t_symbol *sym__savepreferences;
 t_symbol *sym__savetofile;
 t_symbol *sym__scalar;
@@ -189,6 +188,9 @@ t_symbol *sym__snap;
 t_symbol *sym__sysexin;
 t_symbol *sym__touchin;
 t_symbol *sym__window;
+t_symbol *sym__SLOT_;
+t_symbol *sym__TEMPLATE_float;
+t_symbol *sym__TEMPLATE_float__dash__array;
 t_symbol *sym_a;
 t_symbol *sym_abs;
 t_symbol *sym_abs__tilde__;
@@ -394,6 +396,7 @@ t_symbol *sym_list__space__trim;
 t_symbol *sym_listen;
 t_symbol *sym_listinlet;
 t_symbol *sym_little;
+t_symbol *sym_load;
 t_symbol *sym_loadbang;
 t_symbol *sym_loader;
 t_symbol *sym_localhost;
@@ -516,6 +519,7 @@ t_symbol *sym_realtime;
 t_symbol *sym_receive;
 t_symbol *sym_receive__tilde__;
 t_symbol *sym_recent;
+t_symbol *sym_remove;
 t_symbol *sym_rename;
 t_symbol *sym_resampling;
 t_symbol *sym_reset;
@@ -542,7 +546,7 @@ t_symbol *sym_save;
 t_symbol *sym_saveas;
 t_symbol *sym_savepanel;
 t_symbol *sym_scalar;
-t_symbol *sym_scalar__space__define;
+t_symbol *sym_scalars;
 t_symbol *sym_scale;
 t_symbol *sym_scan;
 t_symbol *sym_search;
@@ -564,6 +568,7 @@ t_symbol *sym_sinesum;
 t_symbol *sym_single;
 t_symbol *sym_size;
 t_symbol *sym_slider;
+t_symbol *sym_slot;
 t_symbol *sym_snapshot__tilde__;
 t_symbol *sym_soundfiler;
 t_symbol *sym_soundinfo;
@@ -751,8 +756,6 @@ t_symbol *sym_vumeter;
 
 void symbols_initialize (void)
 {
-    sym___TEMPLATE__float                       = symbol_makeTemplateIdentifier (gensym ("float"));
-    sym___TEMPLATE__float__dash__array          = symbol_makeTemplateIdentifier (gensym ("float-array"));
     sym___ampersand__                           = gensym ("&");
     sym___ampersand____ampersand__              = gensym ("&&");
     sym___arrobe__                              = gensym ("@");
@@ -896,6 +899,7 @@ void symbols_initialize (void)
     sym__popupdialog                            = gensym ("_popupdialog");
     sym__properties                             = gensym ("_properties");
     sym__quit                                   = gensym ("_quit");
+    sym__restore                                = gensym ("_restore");
     sym__savepreferences                        = gensym ("_savepreferences");
     sym__savetofile                             = gensym ("_savetofile");
     sym__scalar                                 = gensym ("_scalar");
@@ -906,6 +910,9 @@ void symbols_initialize (void)
     sym__sysexin                                = gensym ("_sysexin");
     sym__touchin                                = gensym ("_touchin");
     sym__window                                 = gensym ("_window");
+    sym__SLOT_                                  = gensym ("_SLOT_");
+    sym__TEMPLATE_float                         = symbol_makeTemplateIdentifier (gensym ("float"));
+    sym__TEMPLATE_float__dash__array            = symbol_makeTemplateIdentifier (gensym ("float-array"));
     sym_a                                       = gensym ("a");
     sym_abs                                     = gensym ("abs");
     sym_abs__tilde__                            = gensym ("abs~");
@@ -1111,6 +1118,7 @@ void symbols_initialize (void)
     sym_listen                                  = gensym ("listen");
     sym_listinlet                               = gensym ("listinlet");
     sym_little                                  = gensym ("little");
+    sym_load                                    = gensym ("load");
     sym_loadbang                                = gensym ("loadbang");
     sym_loader                                  = gensym ("loader");
     sym_localhost                               = gensym ("localhost");
@@ -1233,6 +1241,7 @@ void symbols_initialize (void)
     sym_receive                                 = gensym ("receive");
     sym_receive__tilde__                        = gensym ("receive~");
     sym_recent                                  = gensym ("recent");
+    sym_remove                                  = gensym ("remove");
     sym_rename                                  = gensym ("rename");
     sym_resampling                              = gensym ("resampling");
     sym_reset                                   = gensym ("reset");
@@ -1259,7 +1268,7 @@ void symbols_initialize (void)
     sym_saveas                                  = gensym ("saveas");
     sym_savepanel                               = gensym ("savepanel");
     sym_scalar                                  = gensym ("scalar");
-    sym_scalar__space__define                   = gensym ("scalar define");
+    sym_scalars                                 = gensym ("scalars");
     sym_scale                                   = gensym ("scale");
     sym_scan                                    = gensym ("scan");
     sym_search                                  = gensym ("search");
@@ -1281,6 +1290,7 @@ void symbols_initialize (void)
     sym_single                                  = gensym ("single");
     sym_size                                    = gensym ("size");
     sym_slider                                  = gensym ("slider");
+    sym_slot                                    = gensym ("slot");
     sym_snapshot__tilde__                       = gensym ("snapshot~");
     sym_soundfiler                              = gensym ("soundfiler");
     sym_soundinfo                               = gensym ("soundinfo");

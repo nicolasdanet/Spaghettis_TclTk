@@ -213,27 +213,10 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *templateName = atom_getSymbolAtIndex (0, argc, argv);
-    
-    if (templateName != &s_) {
-    //
-    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (templateName);
-    
-    if (template_findByIdentifier (templateIdentifier)) {
-    //
     t_buffer *t = buffer_new();
-    
     buffer_deserialize (t, argc, argv);
     glist_objectMakeScalar (glist, buffer_getSize (t), buffer_getAtoms (t));
     buffer_free (t);
-    
-    return;
-    //
-    }
-    
-    error_noSuch (templateName, sym_template);
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

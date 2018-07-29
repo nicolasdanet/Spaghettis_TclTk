@@ -143,19 +143,6 @@ int template_getRaw (t_template *x,
     return 0;
 }
 
-t_template *template_getTemplateIfArrayAtIndex (t_template *x, int n)
-{
-    PD_ASSERT (x);
-    PD_ASSERT (n >= 0);
-    PD_ASSERT (x && n < x->tp_size);
-    
-    if (x->tp_slots[n].ds_type == DATA_ARRAY) {
-        return template_findByIdentifier (x->tp_slots[n].ds_templateIdentifier);
-    }
-    
-    return NULL;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -239,6 +226,10 @@ void template_unregisterInstance (t_template *x, t_struct *o)
     pd_free (cast_pd (x));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_glist *template_getInstanceView (t_template *x)
 {
     PD_ASSERT (x);
@@ -283,6 +274,15 @@ t_constructor *template_getInstanceConstructorIfAny (t_template *x, t_symbol *fi
     }
     
     return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_symbol *template_getUnexpandedName (t_template *x)
+{
+    if (!x->tp_instance) { return NULL; } else { return struct_getUnexpandedName (x->tp_instance); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

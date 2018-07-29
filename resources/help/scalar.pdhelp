@@ -46,5 +46,6 @@
 #X text 12 72 An instance of a template with a graphic representation.;
 #X obj 240 324 draw;
 #X obj 144 324 constructor;
+#X obj 288 324 scalars;
 #X connect 9 0 8 0;
 #X coords 0 0 1 1 250 175 0 0 0;

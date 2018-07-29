@@ -377,10 +377,14 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 void scalar_serialize (t_scalar *x, t_buffer *b)
 {
     t_template *tmpl = scalar_getTemplate (x);
+    t_symbol *s = template_getUnexpandedName (tmpl);
     int i;
-        
-    buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->sc_templateIdentifier));
-
+    
+    if (!s) { buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->sc_templateIdentifier)); }
+    else {
+        buffer_appendDollarSymbol (b, s);
+    }
+    
     for (i = 0; i < template_getSize (tmpl); i++) {
     
         t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
@@ -417,7 +421,7 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     if (!template_isValid (tmpl)) { PD_BUG; }
     else {
     //
-    t_iterator *iter = iterator_new (argc, argv);
+    t_iterator *iter = iterator_new (argc, argv, 0);
     t_atom *atoms = NULL;
     int count = iterator_next (iter, &atoms);      
     int i;

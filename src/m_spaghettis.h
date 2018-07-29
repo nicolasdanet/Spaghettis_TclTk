@@ -905,7 +905,6 @@ PD_DLL t_buffer *buffer_new                     (void);
 PD_DLL t_atom   *buffer_getAtoms                (t_buffer *x);
 PD_DLL t_atom   *buffer_getAtomAtIndex          (t_buffer *x, int n);
 PD_DLL t_atom   *buffer_getAtomAtIndexChecked   (t_buffer *x, int n);
-PD_DLL char     *buffer_toString                (t_buffer *x);              /* Caller acquires ownership. */
 
 PD_DLL int      buffer_getSize                  (t_buffer *x);
 PD_DLL void     buffer_free                     (t_buffer *x);

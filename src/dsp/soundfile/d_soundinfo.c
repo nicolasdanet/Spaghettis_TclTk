@@ -53,7 +53,7 @@ static int soundinfo_readHeader (t_soundinfo *x, int argc, t_atom *argv)
     if (!err) {
     //
     int frames = p.ap_dataSizeInBytes / p.ap_bytesPerSample / p.ap_numberOfChannels;
-    t_symbol *name = symbol_join (p.ap_fileName, p.ap_fileExtension);
+    t_symbol *name = symbol_addSuffix (p.ap_fileName, p.ap_fileExtension);
     
     t_atom a;
     

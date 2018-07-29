@@ -258,6 +258,8 @@ char *atom_atomsToString (int argc, t_atom *argv)
     s = buffer_toString (t);
     buffer_free (t);
     
+    string_removeCharacter (s, '\\');
+    
     return s;
 }
 
