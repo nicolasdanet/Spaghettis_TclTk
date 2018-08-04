@@ -265,8 +265,8 @@ static inline t_sample sqrt_fastLUT (t_sample f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* On new machines with recent compiler it is faster. */
-/* With ffast-math SSE instructions are used. */
+/* On new machines with recent compiler native function is faster. */
+/* Actually ffast-math SSE instructions are used. */
 
 static inline t_sample rsqrt_fastSTD (t_sample f)
 {

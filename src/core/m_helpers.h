@@ -249,6 +249,7 @@ void    rectangle_deplace                       (t_rectangle *r, int x, int y);
 void    rectangle_enlarge                       (t_rectangle *r, int n);
 void    rectangle_enlargeHeight                 (t_rectangle *r, int n);
 void    rectangle_enlargeRight                  (t_rectangle *r, int n);
+void    rectangle_enlargeLeft                   (t_rectangle *r, int n);
 int     rectangle_containsX                     (t_rectangle *r, int x);
 int     rectangle_containsY                     (t_rectangle *r, int y);
 int     rectangle_containsPoint                 (t_rectangle *r, int x, int y);
@@ -266,6 +267,16 @@ static inline int rectangle_getTopLeftX (t_rectangle *r)
 }
 
 static inline int rectangle_getTopLeftY (t_rectangle *r)
+{
+    return r->rect_topLeftY;
+}
+
+static inline int rectangle_getTopRightX (t_rectangle *r)
+{
+    return r->rect_bottomRightX;
+}
+
+static inline int rectangle_getTopRightY (t_rectangle *r)
 {
     return r->rect_topLeftY;
 }
