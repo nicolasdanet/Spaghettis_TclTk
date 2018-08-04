@@ -20,6 +20,7 @@ static t_class      *drawtext_class;                        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_float      drawtext_factor;                        /* Static. */
 static t_float      drawtext_cumulativeY;                   /* Static. */
 static t_gpointer   drawtext_gpointer;                      /* Static. */
 
@@ -80,6 +81,43 @@ static t_error drawtext_getContents (t_drawtext *x, t_gpointer *gp, char *dest, 
     return PD_ERROR;
 }
 
+static t_float drawtext_getFactor (t_drawtext *x, t_gpointer *gp, t_rectangle *r, t_mouse *m)
+{
+    double factor = 1.0;
+    
+    if (gpointer_fieldIsFloat (gp, x->x_fieldName)) {
+    //
+    char s[PD_STRING] = { 0 }; t_error err = gpointer_getFieldAsString (gp, x->x_fieldName, s, PD_STRING);
+    
+    if (!err && !string_containsOccurrence (s, "eE")) {
+    //
+    int dot = string_indexOfFirstOccurrenceFromEnd (s, ".");
+    
+    if (dot != -1) {
+    
+        int decimals = (int)strlen (s) - (dot + 1);
+        int h = font_getHostFontWidth (glist_getFontSize (gpointer_getView (gp)));
+        int a = rectangle_getTopRightX (r);
+        int b = rectangle_getTopRightY (r);
+        int c = rectangle_getBottomRightX (r);
+        int d = rectangle_getBottomRightY (r);
+        t_rectangle t; rectangle_set (&t, a, b, c, d);
+        int i, k = -1;
+    
+        for (i = 0; i < decimals; i++) {
+            rectangle_enlargeLeft (&t, h); if (rectangle_containsPoint (&t, m->m_x, m->m_y)) { k = i; break; }
+        }
+        
+        if (k >= 0) { int n = decimals - k; while (n--) { factor *= 0.1; } }
+    }
+    //
+    }
+    //
+    } else { PD_BUG; }
+    
+    return factor;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -107,7 +145,7 @@ static void drawtext_motion (void *z, t_float deltaX, t_float deltaY, t_float mo
 
     if (gpointer_isValid (&drawtext_gpointer)) {
     //
-    drawtext_cumulativeY -= deltaY;
+    drawtext_cumulativeY -= (drawtext_factor * deltaY);
     
     gpointer_erase (&drawtext_gpointer);
     
@@ -233,7 +271,8 @@ static int drawtext_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_f
     if (m->m_clicked) {
     
         drawtext_cumulativeY = gpointer_getFloat (gp, x->x_fieldName);
-
+        drawtext_factor      = drawtext_getFactor (x, gp, &t, m);
+        
         gpointer_setByCopy (&drawtext_gpointer, gp);
         
         glist_setMotion (gpointer_getView (gp), z, (t_motionfn)drawtext_motion, a, b);

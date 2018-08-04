@@ -170,6 +170,20 @@ void rectangle_enlargeRight (t_rectangle *r, int n)
     }
 }
 
+void rectangle_enlargeLeft (t_rectangle *r, int n)
+{
+    if (!rectangle_isNothing (r)) {
+    //
+    int a = r->rect_topLeftX - n;
+    int b = r->rect_topLeftY;
+    int c = r->rect_bottomRightX;
+    int d = r->rect_bottomRightY;
+    
+    rectangle_set (r, a, b, c, d);
+    //
+    }
+}
+
 void rectangle_deplace (t_rectangle *r, int x, int y)
 {
     if (!rectangle_isNothing (r)) {
