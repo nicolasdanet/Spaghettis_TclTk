@@ -36,7 +36,7 @@ static void print_bang (t_print *x)
 
 static void print_float (t_print *x, t_float f)
 {
-    post ("%s: %g", x->x_name->s_name, f);                                              // --
+    post ("%s: %.9g", x->x_name->s_name, f);                                            // --
 }
 
 static void print_symbol (t_print *x, t_symbol *s)

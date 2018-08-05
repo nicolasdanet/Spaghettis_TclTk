@@ -349,7 +349,7 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Toggle"
             " %d %d Size 0 0 $::var(nil)"           // --
-            " %g {Non-Zero Value} 0 $::var(nil)"    // --
+            " %.9g {Non-Zero Value} 0 $::var(nil)"  // --
             " -1 $::var(nil) $::var(nil)"           // --
             " %d"
             " -1 -1 $::var(nil)"                    // --

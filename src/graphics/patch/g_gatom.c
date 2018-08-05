@@ -282,7 +282,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     if (gatom_isFloat (x)) {
     
         err = string_sprintf (t, PD_STRING, 
-                "::ui_atom::show %%s %d %g %g %s %g {%s} {%s}\n",               // --
+                "::ui_atom::show %%s %d %.9g %.9g %s %.9g {%s} {%s}\n",               // --
                 object_getWidth (cast_object (x)),
                 x->a_lowRange,
                 x->a_highRange,
@@ -294,7 +294,7 @@ static void gatom_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     } else {
     
         err = string_sprintf (t, PD_STRING, 
-                "::ui_atom::show %%s %d %g %g %s {%s} {%s} {%s}\n",             // --
+                "::ui_atom::show %%s %d %.9g %.9g %s {%s} {%s} {%s}\n",             // --
                 object_getWidth (cast_object (x)),
                 x->a_lowRange,
                 x->a_highRange,

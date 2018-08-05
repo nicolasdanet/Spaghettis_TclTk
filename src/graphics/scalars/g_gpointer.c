@@ -424,7 +424,7 @@ t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *de
     PD_ASSERT (size > 0);
     
     if (gpointer_fieldIsFloat (gp, fieldName)) {
-        err = string_addSprintf (dest, size, "%g", gpointer_getFloat (gp, fieldName));
+        err = string_addSprintf (dest, size, "%.9g", gpointer_getFloat (gp, fieldName));
         
     } else if (gpointer_fieldIsSymbol (gp, fieldName)) {
         err = string_addSprintf (dest, size, "%s", gpointer_getSymbol (gp, fieldName)->s_name);
@@ -457,7 +457,7 @@ int gpointer_getProperties (t_gpointer *gp, t_heapstring *h)
     heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                          // --
 
     if (template_fieldIsFloat (tmpl, fieldName)) {
-        heapstring_addSprintf (h, " {%g}", gpointer_getFloat (gp, fieldName));                      // --
+        heapstring_addSprintf (h, " {%.9g}", gpointer_getFloat (gp, fieldName));                      // --
     
     } else if (template_fieldIsSymbol (tmpl, fieldName)) {
         t_symbol *t = symbol_dollarToHash (gpointer_getSymbol (gp, fieldName));
