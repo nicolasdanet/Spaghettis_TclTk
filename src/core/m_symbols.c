@@ -187,6 +187,7 @@ t_symbol *sym__signoff;
 t_symbol *sym__snap;
 t_symbol *sym__sysexin;
 t_symbol *sym__touchin;
+t_symbol *sym__valuedialog;
 t_symbol *sym__window;
 t_symbol *sym__SLOT_;
 t_symbol *sym__TEMPLATE_float;
@@ -909,6 +910,7 @@ void symbols_initialize (void)
     sym__snap                                   = gensym ("_snap");
     sym__sysexin                                = gensym ("_sysexin");
     sym__touchin                                = gensym ("_touchin");
+    sym__valuedialog                            = gensym ("_valuedialog");
     sym__window                                 = gensym ("_window");
     sym__SLOT_                                  = gensym ("_SLOT_");
     sym__TEMPLATE_float                         = symbol_makeTemplateIdentifier (gensym ("float"));

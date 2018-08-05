@@ -187,6 +187,7 @@ extern t_symbol *sym__signoff;
 extern t_symbol *sym__snap;
 extern t_symbol *sym__sysexin;
 extern t_symbol *sym__touchin;
+extern t_symbol *sym__valuedialog;
 extern t_symbol *sym__window;
 extern t_symbol *sym__SLOT_;
 extern t_symbol *sym__TEMPLATE_float;

@@ -20,6 +20,7 @@ package ifneeded ui_patch 1.0           [list source [file join $dir ui_patch.tc
 package ifneeded ui_path 1.0            [list source [file join $dir ui_path.tcl]]
 package ifneeded ui_scalar 1.0          [list source [file join $dir ui_scalar.tcl]]
 package ifneeded ui_text 1.0            [list source [file join $dir ui_text.tcl]]
+package ifneeded ui_value 1.0           [list source [file join $dir ui_value.tcl]]
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

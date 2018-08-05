@@ -507,6 +507,7 @@
 		17CB7645205F8ED400F919E4 /* x_micaitem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micaitem.c; sourceTree = "<group>"; };
 		17CB7647205FABE800F919E4 /* x_micainterval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micainterval.c; sourceTree = "<group>"; };
 		17CC052B205D0DEB0097E417 /* x_micaget.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micaget.c; sourceTree = "<group>"; };
+		17D387CF211817790076F41E /* ui_value.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ui_value.tcl; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		17DA55812063832E00570B4E /* x_micasequence.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micasequence.c; sourceTree = "<group>"; };
 		17DB3FE51EFA766700D136DB /* m_inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_inlet.h; sourceTree = "<group>"; };
 		17DB3FE61EFA767200D136DB /* m_outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_outlet.h; sourceTree = "<group>"; };
@@ -1524,6 +1525,7 @@
 				3789718E1C4F712A00263434 /* ui_iem.tcl */,
 				378971831C4F712A00263434 /* ui_array.tcl */,
 				378971841C4F712A00263434 /* ui_atom.tcl */,
+				17D387CF211817790076F41E /* ui_value.tcl */,
 				17C4741620FB9D2A00339303 /* ui_scalar.tcl */,
 				378971871C4F712A00263434 /* ui_canvas.tcl */,
 			);
