@@ -63,7 +63,6 @@ int  text_behaviorMouse             (t_gobj *, t_glist *, t_mouse *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
     {
@@ -86,6 +85,7 @@ static t_widgetbehavior gatom_widgetBehavior =          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void gatom_drawJob (t_gobj *z, t_glist *glist)
 {
@@ -270,43 +270,65 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
     object_serializeWidth (cast_object (x), b);
 }
 
-static void gatom_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
+static void gatom_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_gatom *x  = (t_gatom *)z;
     t_error err = PD_ERROR_NONE;
-    char t[PD_STRING] = { 0 };
-    
-    t_symbol *symSend    = symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedSend));
-    t_symbol *symReceive = symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedReceive));
+    t_heapstring *t = heapstring_new (0);
     
     if (gatom_isFloat (x)) {
-    
-        err = string_sprintf (t, PD_STRING, 
-                "::ui_atom::show %%s %d %.9g %.9g %s %.9g {%s} {%s}\n",               // --
-                object_getWidth (cast_object (x)),
-                x->a_lowRange,
-                x->a_highRange,
-                sym_floatatom->s_name,
-                GET_FLOAT (&x->a_atom),
-                symSend->s_name,
-                symReceive->s_name);
-            
+        err = heapstring_addSprintf (t,
+                "::ui_value::show %%s atom floatatom %.9g\n",       // --
+                GET_FLOAT (&x->a_atom));
+        
     } else {
-    
-        err = string_sprintf (t, PD_STRING, 
-                "::ui_atom::show %%s %d %.9g %.9g %s {%s} {%s} {%s}\n",             // --
-                object_getWidth (cast_object (x)),
-                x->a_lowRange,
-                x->a_highRange,
-                sym_symbolatom->s_name,
-                GET_SYMBOL (&x->a_atom)->s_name,
-                symSend->s_name,
-                symReceive->s_name);
+        err = heapstring_addSprintf (t,
+                "::ui_value::show %%s atom symbolatom {%s}\n",      // --
+                symbol_dollarToHash (GET_SYMBOL (&x->a_atom))->s_name);
     }
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
-    stub_new (cast_pd (x), (void *)x, t);
+    stub_new (cast_pd (x), (void *)x, heapstring_getRaw (t));
+    
+    heapstring_free (t);
+}
+
+static void gatom_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
+{
+    t_gatom *x  = (t_gatom *)z;
+    t_error err = PD_ERROR_NONE;
+    t_heapstring *t = heapstring_new (0);
+    
+    t_symbol *symSend    = symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedSend));
+    t_symbol *symReceive = symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedReceive));
+    
+    err = heapstring_addSprintf (t,
+                "::ui_atom::show %%s %d %.9g %.9g %s {%s} {%s}\n",      // --
+                object_getWidth (cast_object (x)),
+                x->a_lowRange,
+                x->a_highRange,
+                gatom_isFloat (x) ? sym_floatatom->s_name : sym_symbolatom->s_name,
+                symSend->s_name,
+                symReceive->s_name);
+    
+    PD_UNUSED (err); PD_ASSERT (!err);
+    
+    stub_new (cast_pd (x), (void *)x, heapstring_getRaw (t));
+    
+    heapstring_free (t);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void gatom_fromValue (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (gatom_isFloat (x)) { gatom_float (x, atom_getFloatAtIndex (0, argc, argv)); }
+    else {
+        gatom_symbol (x, symbol_hashToDollar (atom_getSymbolAtIndex (0, argc, argv)));
+    }
 }
 
 static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
@@ -319,7 +341,7 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     t_symbol *t4 = x->a_send;
     t_symbol *t5 = x->a_receive;
     
-    PD_ASSERT (argc == 6);
+    PD_ASSERT (argc == 5);
     
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
     
@@ -328,8 +350,8 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     t_float width           = atom_getFloatAtIndex (0, argc, argv);
     t_float lowRange        = atom_getFloatAtIndex (1, argc, argv);
     t_float highRange       = atom_getFloatAtIndex (2, argc, argv);
-    t_symbol *symSend       = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
-    t_symbol *symReceive    = gatom_parse (atom_getSymbolAtIndex (5, argc, argv));
+    t_symbol *symSend       = gatom_parse (atom_getSymbolAtIndex (3, argc, argv));
+    t_symbol *symReceive    = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
 
     if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
     
@@ -344,7 +366,7 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
-    gatom_set (x, NULL, 1, argv + 3);
+    gatom_update (x);
     //
     }
     
@@ -486,12 +508,14 @@ void gatom_setup (void)
     class_addClick (c, (t_method)gatom_click);
         
     class_addMethod (c, (t_method)gatom_set,        sym_set,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_fromValue,  sym__valuedialog,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)gatom_fromDialog, sym__gatomdialog,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)gatom_range,      sym_range,          A_GIMME, A_NULL);
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setSaveFunction (c, gatom_functionSave);
     class_setPropertiesFunction (c, gatom_functionProperties);
+    class_setValueFunction (c, gatom_functionValue);
     
     gatom_class = c;
 }

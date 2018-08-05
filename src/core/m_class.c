@@ -209,6 +209,7 @@ t_class *class_new (t_symbol *s,
     c->c_fnSave             = (type == CLASS_BOX ? class_defaultSave : NULL);
     c->c_fnData             = NULL;
     c->c_fnProperties       = NULL;
+    c->c_fnValue            = NULL;
     c->c_signalOffset       = 0;
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
     c->c_type               = type;
@@ -452,6 +453,8 @@ void class_setHelpDirectory (t_class *c, t_symbol *s)
 {
     c->c_helpDirectory = s;
 }
+
+/* Exported thus not inlined. */
 
 void class_setDataFunction (t_class *c, t_datafn f)
 {

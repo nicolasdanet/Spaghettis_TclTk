@@ -82,9 +82,10 @@ void scalar_fromDialog (t_scalar *, t_symbol *, int, t_atom *);
 // MARK: -
 
 enum {
-    POPUP_PROPERTIES    = 0,
-    POPUP_OPEN          = 1,
-    POPUP_HELP          = 2
+    POPUP_VALUE         = 0,
+    POPUP_PROPERTIES    = 1,
+    POPUP_OPEN          = 2,
+    POPUP_HELP          = 3
     };
     
 // -----------------------------------------------------------------------------------------------------------
@@ -349,11 +350,16 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
     
     if (gobj_hit (y, glist, a, b, 0, &t)) {
     //
+    if (k == POPUP_VALUE) {
+        if (class_hasValueFunction (pd_class (y))) {
+            (*class_getValueFunction (pd_class (y))) (y, glist, &m); return;
+        }
+    }
     if (k == POPUP_PROPERTIES) {
         if (class_hasPropertiesFunction (pd_class (y))) {
             (*class_getPropertiesFunction (pd_class (y))) (y, glist, &m); return;
         }
-    } 
+    }
     if (k == POPUP_OPEN) {
         if (gobj_isCanvas (y)) {
             pd_message (cast_pd (y), sym_open, 0, NULL); return;

@@ -315,6 +315,7 @@ void glist_action (t_glist *glist, int a, int b, int m)
 
 static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
 {
+    int canValue      = (y && class_hasValueFunction (pd_class (y)));
     int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
     int canOpen       = (y && gobj_isCanvas (y));
     int canHelp       = (y != NULL);
@@ -330,12 +331,13 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     
     if (glist_isAbstraction (glist)) { canProperties = 0; }
     
-    gui_vAdd ("::ui_menu::showPopup %s %d %d %d %d %d %d %d\n",
+    gui_vAdd ("::ui_menu::showPopup %s %d %d %d %d %d %d %d %d\n",
                     glist_getTagAsString (glist), 
                     a, 
-                    b, 
-                    canProperties, 
-                    canOpen, 
+                    b,
+                    canValue,
+                    canProperties,
+                    canOpen,
                     canHelp,
                     canObject,
                     canOrder);

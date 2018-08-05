@@ -146,6 +146,7 @@ proc getNamespace {top} {
         "Scalar"        { return "::ui_scalar"  }
         "Text"          { return "::ui_text"    }
         "Toggle"        { return "::ui_iem"     }
+        "Value"         { return "::ui_value"   }
         "VU"            { return "::ui_iem"     }
     }
     

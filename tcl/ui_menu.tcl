@@ -121,7 +121,7 @@ proc configureForText {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasOrder} {
+proc showPopup {top xcanvas ycanvas hasValue hasProperties hasOpen hasHelp hasObject hasOrder} {
 
     variable popupX
     variable popupY
@@ -130,6 +130,12 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen hasHelp hasObject hasO
 
     set popupX $xcanvas
     set popupY $ycanvas
+    
+    if {$hasValue} {
+        .popup entryconfigure [_ "Value"]               -state normal
+    } else {
+        .popup entryconfigure [_ "Value"]               -state disabled
+    }
     
     if {$hasProperties} {
         .popup entryconfigure [_ "Properties"]          -state normal
@@ -242,14 +248,14 @@ proc removeTemplate {id} {
 proc enableCopying {}               { _copying normal }
 proc enableEditing {}               { _editing normal }
 proc enableCopyingAndEditing {}     { _copying normal; _editing normal }
-proc enableMidi  {}                 { .menubar.media entryconfigure [_ "MIDI..."]   -state normal }
-proc enableAudio {}                 { .menubar.media entryconfigure [_ "Audio..."]  -state normal }
+proc enableMidi  {}                 { .menubar.media entryconfigure [_ "MIDI"]  -state normal }
+proc enableAudio {}                 { .menubar.media entryconfigure [_ "Audio"] -state normal }
 
 proc disableCopying {}              { _copying disabled }
 proc disableEditing {}              { _editing disabled }
 proc disableCopyingAndEditing {}    { _copying disabled; _editing disabled }
-proc disableMidi  {}                { .menubar.media entryconfigure [_ "MIDI..."]   -state disabled }
-proc disableAudio {}                { .menubar.media entryconfigure [_ "Audio..."]  -state disabled }
+proc disableMidi  {}                { .menubar.media entryconfigure [_ "MIDI"]  -state disabled }
+proc disableAudio {}                { .menubar.media entryconfigure [_ "Audio"] -state disabled }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -463,10 +469,10 @@ proc _media {m} {
     variable accelerator
     
     $m add command \
-        -label [_ "MIDI..."] \
+        -label [_ "MIDI"] \
         -command { ::ui_interface::pdsend "pd _midiproperties" }
     $m add command \
-        -label [_ "Audio..."] \
+        -label [_ "Audio"] \
         -command { ::ui_interface::pdsend "pd _audioproperties" }
     $m add separator
     
@@ -480,7 +486,7 @@ proc _media {m} {
 proc _tools {m} {
 
     $m add check \
-        -label [_ "Path..."] \
+        -label [_ "Path"] \
         -variable ::var(isPath) \
         -command { 
             if {$::var(isPath)} { ::ui_path::show } else { ::ui_path::hide } 
@@ -490,10 +496,6 @@ proc _tools {m} {
         -label [_ "Rescan"] \
         -command { ::ui_interface::pdsend "pd scan" }
 }
-
-# POPUP_PROPERTIES
-# POPUP_OPEN
-# POPUP_HELP
 
 proc _popupObject {m} {
 
@@ -562,17 +564,25 @@ proc _popupObject {m} {
         -menu $m.object.horizontal
 }
 
+# POPUP_VALUE
+# POPUP_PROPERTIES
+# POPUP_OPEN
+# POPUP_HELP
+
 proc _popup {m} {
 
     $m add command \
-        -label [_ "Properties"] \
+        -label [_ "Value"] \
         -command { ::ui_menu::_doPopup $::var(windowFocused) 0 }
     $m add command \
-        -label [_ "Open"] \
+        -label [_ "Properties"] \
         -command { ::ui_menu::_doPopup $::var(windowFocused) 1 }
     $m add command \
-        -label [_ "Help"]       \
+        -label [_ "Open"] \
         -command { ::ui_menu::_doPopup $::var(windowFocused) 2 }
+    $m add command \
+        -label [_ "Help"]       \
+        -command { ::ui_menu::_doPopup $::var(windowFocused) 3 }
     $m add separator
     
     menu $m.object; _popupObject $m

@@ -28,6 +28,7 @@ typedef void (*t_pointermethod)             (t_pd *x, t_gpointer *gp);
 
 typedef void (*t_savefn)                    (t_gobj *x, t_buffer *b);
 typedef void (*t_propertiesfn)              (t_gobj *x, t_glist *glist, t_mouse *m);
+typedef void (*t_valuefn)                   (t_gobj *x, t_glist *glist, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -101,6 +102,7 @@ struct _class {
     t_savefn                    c_fnSave;
     t_datafn                    c_fnData;
     t_propertiesfn              c_fnProperties;
+    t_valuefn                   c_fnValue;
     t_int                       c_signalOffset;
     int                         c_hasFirstInlet;
     int                         c_hasDSP;
@@ -270,6 +272,11 @@ static inline int class_hasPropertiesFunction (t_class *c)
     return (c->c_fnProperties != NULL);
 }
 
+static inline int class_hasValueFunction (t_class *c)
+{
+    return (c->c_fnValue != NULL);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -299,6 +306,11 @@ static inline t_propertiesfn class_getPropertiesFunction (t_class *c)
     return c->c_fnProperties;
 }
 
+static inline t_valuefn class_getValueFunction (t_class *c)
+{
+    return c->c_fnValue;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -321,6 +333,11 @@ static inline void class_setSaveFunction (t_class *c, t_savefn f)
 static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
 {
     c->c_fnProperties = f;
+}
+
+static inline void class_setValueFunction (t_class *c, t_valuefn f)
+{
+    c->c_fnValue = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
