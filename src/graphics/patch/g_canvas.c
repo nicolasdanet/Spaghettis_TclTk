@@ -480,7 +480,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy, t_mouse *m)
         t_rectangle *r    = glist_getGraphGeometry (glist);
         
         t_error err = string_sprintf (t, PD_STRING, 
-                            "::ui_canvas::show %%s %d %d %d %d %d %g %g\n",
+                            "::ui_canvas::show %%s %d %d %d %d %d %.9g %.9g\n",
                             rectangle_getTopLeftX (r),
                             rectangle_getTopLeftY (r),
                             rectangle_getWidth (r),

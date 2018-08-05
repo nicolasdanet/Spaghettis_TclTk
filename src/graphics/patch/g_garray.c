@@ -598,7 +598,7 @@ static void garray_write (t_garray *x, t_symbol *name)
         t_array *array = garray_getArray (x);
         
         for (i = 0; i < array_getSize (array); i++) {
-            if (fprintf (file, "%g\n", GARRAY_AT (i)) < 1) {
+            if (fprintf (file, "%.9g\n", GARRAY_AT (i)) < 1) {
                 PD_BUG; break;
             }
         }
@@ -737,7 +737,7 @@ void garray_functionProperties (t_garray *x)
     PD_ASSERT (glist_isArray (x->x_owner));
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %d %d %g %g %d %d %d %d\n",
+                "::ui_array::show %%s %s %d %d %d %.9g %.9g %d %d %d %d\n",
                 symbol_dollarToHash (x->x_unexpandedName)->s_name,
                 array_getSize (array),
                 rectangle_getWidth (glist_getGraphGeometry (x->x_owner)),

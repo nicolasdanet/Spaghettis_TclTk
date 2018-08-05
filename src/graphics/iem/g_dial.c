@@ -624,10 +624,10 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Dial"
             " %d %d Digits %d %d Size"
-            " %g {Value Low} %g {Value High}"   // --
+            " %.9g {Value Low} %.9g {Value High}"   // --
             " %d Linear Logarithmic"
             " %d"
-            " %d %d {Steps}"                    // --
+            " %d %d {Steps}"                        // --
             " %s %s"
             " %d %d"
             " -1\n",

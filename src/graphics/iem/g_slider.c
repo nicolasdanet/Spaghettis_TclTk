@@ -571,8 +571,8 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy
 
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Slider"
             " %d %d {Slider Width} %d %d {Slider Height}"               // --
-            " %g {Value %s}"                                            // --
-            " %g {Value %s}"                                            // --
+            " %.9g {Value %s}"                                          // --
+            " %.9g {Value %s}"                                          // --
             " %d Linear Logarithmic"
             " %d"
             " -1 -1 $::var(nil)"                                        // --
