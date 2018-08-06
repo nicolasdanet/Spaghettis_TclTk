@@ -578,6 +578,10 @@ static int dial_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void dial_functionSave (t_gobj *z, t_buffer *b)
 {
     t_dial *x = (t_dial *)z;
@@ -613,6 +617,21 @@ static void dial_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
+static void dial_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
+{
+    t_dial *x = (t_dial *)z;
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    
+    err = string_sprintf (t, PD_STRING,
+            "::ui_value::show %%s dial floatatom %.9g\n",      // --
+            x->x_floatValue);
+
+    PD_UNUSED (err); PD_ASSERT (!err);
+    
+    stub_new (cast_pd (x), (void *)x, t);
+}
+
 static void dial_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_dial *x = (t_dial *)z;
@@ -642,6 +661,15 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     PD_UNUSED (err); PD_ASSERT (!err);
     
     stub_new (cast_pd (x), (void *)x, t);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void dial_fromValue (t_dial *x, t_symbol *s, int argc, t_atom *argv)
+{
+    dial_float (x, atom_getFloatAtIndex (0, argc, argv));
 }
 
 static void dial_fromDialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
@@ -795,6 +823,7 @@ void dial_setup (void)
     class_addLoadbang (c, (t_method)dial_loadbang);
     
     class_addMethod (c, (t_method)dial_initialize,              sym_initialize,         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_fromValue,               sym__valuedialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)dial_fromDialog,              sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)dial_size,                    sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
@@ -828,6 +857,7 @@ void dial_setup (void)
 
     class_setWidgetBehavior (c, &dial_widgetBehavior);
     class_setSaveFunction (c, dial_functionSave);
+    class_setValueFunction (c, dial_functionValue);
     class_setPropertiesFunction (c, dial_functionProperties);
     
     dial_class = c;

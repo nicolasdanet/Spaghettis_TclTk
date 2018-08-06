@@ -514,8 +514,8 @@ void gatom_setup (void)
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setSaveFunction (c, gatom_functionSave);
-    class_setPropertiesFunction (c, gatom_functionProperties);
     class_setValueFunction (c, gatom_functionValue);
+    class_setPropertiesFunction (c, gatom_functionProperties);
     
     gatom_class = c;
 }
