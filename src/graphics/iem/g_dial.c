@@ -578,10 +578,6 @@ static int dial_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void dial_functionSave (t_gobj *z, t_buffer *b)
 {
     t_dial *x = (t_dial *)z;
@@ -662,10 +658,6 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     
     stub_new (cast_pd (x), (void *)x, t);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 static void dial_fromValue (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
