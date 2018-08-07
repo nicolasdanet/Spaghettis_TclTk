@@ -29,6 +29,15 @@ typedef struct _noise_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void noise_seed (t_noise_tilde *x, t_float f)
+{
+    x->x_state = (int)f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_int *noise_tilde_perform (t_int *w)
 {
     int *p = (int *)(w[1]);
@@ -60,13 +69,9 @@ static void noise_tilde_dsp (t_noise_tilde *x, t_signal **sp)
 
 static void *noise_tilde_new (void)
 {
-    static int seed = 307;
-    
     t_noise_tilde *x = (t_noise_tilde *)pd_new (noise_tilde_class);
     
-    seed *= 1319;
-    
-    x->x_state  = seed;
+    x->x_state  = (int)time_makeRandomSeed();
     x->x_outlet = outlet_newSignal (cast_object (x));
     
     return x;
@@ -84,10 +89,12 @@ void noise_tilde_setup (void)
             (t_newmethod)noise_tilde_new,
             NULL,
             sizeof (t_noise_tilde),
-            CLASS_DEFAULT | CLASS_NOINLET,
+            CLASS_DEFAULT,
             A_NULL);
             
     class_addDSP (c, (t_method)noise_tilde_dsp);
+    
+    class_addMethod (c, (t_method)noise_seed, sym_seed, A_FLOAT, A_NULL);
     
     noise_tilde_class = c;
 }
