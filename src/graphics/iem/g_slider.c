@@ -560,6 +560,21 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
+static void slider_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
+{
+    t_slider *x = (t_slider *)z;
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    
+    err = string_sprintf (t, PD_STRING,
+            "::ui_value::show %%s slider floatatom %.9g\n",      // --
+            x->x_floatValue);
+
+    PD_UNUSED (err); PD_ASSERT (!err);
+    
+    stub_new (cast_pd (x), (void *)x, t);
+}
+
 static void slider_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_slider *x = (t_slider *)z;
@@ -591,6 +606,11 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy
     PD_UNUSED (err); PD_ASSERT (!err);
     
     stub_new (cast_pd (x), (void *)x, t);
+}
+
+static void slider_fromValue (t_slider *x, t_symbol *s, int argc, t_atom *argv)
+{
+    slider_float (x, atom_getFloatAtIndex (0, argc, argv));
 }
 
 static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
@@ -754,6 +774,7 @@ void slider_setup (void)
     class_addLoadbang (c, (t_method)slider_loadbang);
     
     class_addMethod (c, (t_method)slider_initialize,            sym_initialize,         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)slider_fromValue,             sym__valuedialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_size,                  sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
@@ -788,6 +809,7 @@ void slider_setup (void)
     class_setWidgetBehavior (c, &slider_widgetBehavior);
     class_setHelpName (c, sym_slider);
     class_setSaveFunction (c, slider_functionSave);
+    class_setValueFunction (c, slider_functionValue);
     class_setPropertiesFunction (c, slider_functionProperties);
     
     slider_class = c;
