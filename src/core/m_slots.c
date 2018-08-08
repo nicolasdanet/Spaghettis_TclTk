@@ -24,6 +24,44 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static int slots_fetch (t_slots *x, t_symbol *name, int *size, int *index)
+{
+    t_atom *atoms  = NULL;
+    int count, k = 0;
+    
+    iterator_set (x->sl_iter, buffer_getSize (x->sl_buffer), buffer_getAtoms (x->sl_buffer));
+    
+    while ((count = iterator_next (x->sl_iter, &atoms))) {
+    //
+    if (count == SLOTS_SIZE) {
+        if (atom_getSymbol (atoms + SLOTS_TAG) == sym__SLOT_) {
+        if (IS_FLOAT (atoms + SLOTS_COUNT)) {
+            int chunk = (int)GET_FLOAT (atoms + SLOTS_COUNT);
+            PD_ASSERT (chunk >= 0);
+            k++; if (index) { (*index) = k; }
+            if (atom_getSymbol (atoms + SLOTS_NAME) == name) {
+                if (size) { (*size) = chunk + SLOTS_SIZE; } return (iterator_get (x->sl_iter) - SLOTS_SIZE);
+            } else {
+                iterator_skip (x->sl_iter, chunk);
+            }
+        }
+        }
+    }
+    //
+    }
+    
+    return -1;
+}
+
+static void slots_append (t_slots *x, t_symbol *name, t_buffer *data)
+{
+    buffer_appendSymbol (x->sl_buffer, sym__SLOT_);
+    buffer_appendSymbol (x->sl_buffer, name);
+    buffer_appendFloat (x->sl_buffer, buffer_getSize (data));
+    buffer_appendSemicolon (x->sl_buffer);
+    buffer_appendBuffer (x->sl_buffer, data);
+}
+
 static t_symbol *slots_name (t_atom *key)
 {
     if (key) {
@@ -38,94 +76,23 @@ static t_symbol *slots_name (t_atom *key)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static int slots_fetch (t_slots *x, t_atom *key)
-{
-    t_atom *atoms = NULL;
-    int count;
-    
-    iterator_set (x->sl_iter, buffer_getSize (x->sl_buffer), buffer_getAtoms (x->sl_buffer));
-    
-    while ((count = iterator_next (x->sl_iter, &atoms))) {
-    //
-    if (count == SLOTS_SIZE) {
-        if (atom_getSymbol (atoms + SLOTS_TAG)  == sym__SLOT_) {
-        if (atom_getSymbol (atoms + SLOTS_NAME) == slots_name (key)) {
-            if (IS_FLOAT (atoms + SLOTS_COUNT)) {
-                PD_ASSERT (IS_SEMICOLON (atoms + SLOTS_SEMICOLON));
-                return (iterator_get (x->sl_iter) - SLOTS_SIZE);
-            }
-        }
-        }
-    }
-    //
-    }
-    
-    return -1;
-}
-
-static void slots_append (t_slots *x, t_atom *key, t_buffer *data)
-{
-    buffer_appendSymbol (x->sl_buffer, sym__SLOT_);
-    buffer_appendSymbol (x->sl_buffer, slots_name (key));
-    buffer_appendFloat (x->sl_buffer, buffer_getSize (data));
-    buffer_appendSemicolon (x->sl_buffer);
-    buffer_appendBuffer (x->sl_buffer, data);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void slots_clear (t_slots *x)
-{
-    buffer_clear (x->sl_buffer);
-}
-
-t_error slots_remove (t_slots *x, t_atom *key)
-{
-    int i = slots_fetch (x, key);
-        
-    if (i >= 0) {
-    //
-    int size = atom_getFloat (buffer_getAtoms (x->sl_buffer) + i + SLOTS_COUNT);
-    
-    PD_ASSERT (size >= 0);
-    
-    size += SLOTS_SIZE;
-    
-    return buffer_extend (x->sl_buffer, i, i + size, 0);
-    //
-    }
-    
-    return PD_ERROR;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void slots_set (t_slots *x, t_atom *key, t_buffer *data)
 {
     slots_remove (x, key);
-    slots_append (x, key, data);
+    slots_append (x, slots_name (key), data);
 }
 
 t_error slots_get (t_slots *x, t_atom *key, t_buffer *data)
 {
-    int i = slots_fetch (x, key);
+    int size; int i = slots_fetch (x, slots_name (key), &size, NULL);
     
     if (i >= 0) {
     //
-    int size = atom_getFloat (buffer_getAtoms (x->sl_buffer) + i + SLOTS_COUNT);
-    
-    PD_ASSERT (size >= 0);
-    
-    i += SLOTS_SIZE;
-    
     if (i + size <= buffer_getSize (x->sl_buffer)) {
     //
-    buffer_append (data, size, buffer_getAtoms (x->sl_buffer) + i);
+    buffer_append (data, size - SLOTS_SIZE, buffer_getAtoms (x->sl_buffer) + i + SLOTS_SIZE);
         
     return PD_ERROR_NONE;
     //
@@ -136,6 +103,18 @@ t_error slots_get (t_slots *x, t_atom *key, t_buffer *data)
     return PD_ERROR;
 }
 
+t_error slots_remove (t_slots *x, t_atom *key)
+{
+    int size; int i = slots_fetch (x, slots_name (key), &size, NULL);
+    
+    if (i < 0) { return PD_ERROR; } else { return buffer_extend (x->sl_buffer, i, i + size, 0); }
+}
+
+void slots_clear (t_slots *x)
+{
+    buffer_clear (x->sl_buffer);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -143,6 +122,15 @@ t_error slots_get (t_slots *x, t_atom *key, t_buffer *data)
 int slots_isEmpty (t_slots *x)
 {
     return (buffer_getSize (x->sl_buffer) == 0);
+}
+
+int slots_getSize (t_slots *x)
+{
+    int k = 0;
+    
+    slots_fetch (x, NULL, NULL, &k);
+    
+    return k;
 }
 
 // -----------------------------------------------------------------------------------------------------------

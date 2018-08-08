@@ -436,6 +436,9 @@ proc _object {m} {
     $m add command \
         -label [_ "Panel"] \
         -command { ::ui_menu::_handleDirty cnv }
+    $m add command \
+        -label [_ "Menu Button"] \
+        -command { ::ui_menu::_handleDirty menubutton }
     $m add separator
     
     menu $m.vertical
@@ -536,6 +539,9 @@ proc _popupObject {m} {
     $m.object add command \
         -label [_ "Panel"] \
         -command { ::ui_menu::_handleDirty cnv }
+    $m.object add command \
+        -label [_ "Menu Button"] \
+        -command { ::ui_menu::_handleDirty menubutton }
     $m.object add separator
     
     menu $m.object.vertical
@@ -630,8 +636,9 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "Bang"]               -state $mode
     .menubar.object entryconfigure [_ "Toggle"]             -state $mode
     .menubar.object entryconfigure [_ "Dial"]               -state $mode
-    .menubar.object entryconfigure [_ "Panel"]              -state $mode
     .menubar.object entryconfigure [_ "VU"]                 -state $mode
+    .menubar.object entryconfigure [_ "Panel"]              -state $mode
+    .menubar.object entryconfigure [_ "Menu Button"]        -state $mode
     .menubar.object entryconfigure [_ "Vertical"]           -state $mode
     .menubar.object entryconfigure [_ "Horizontal"]         -state $mode
 

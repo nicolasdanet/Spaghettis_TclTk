@@ -31,15 +31,7 @@ array set valueValue {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top name type value} {
-    
-    ::ui_value::_create $top $name $type $value
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _create {top name type value} {
+proc show {top name type value args} {
     
     variable valueType
     variable valueValue
@@ -56,36 +48,44 @@ proc _create {top name type value} {
     set valueValue($top)        [::hashToDollar $value]
     set valueValue(${top}.old)  [::hashToDollar $value]
     
-    ttk::frame      $top.f                      {*}[::styleFrame]
-    ttk::labelframe $top.f.properties           {*}[::styleLabelFrame]  -text [_ [string totitle $name]]
+    ttk::frame      $top.f                          {*}[::styleFrame]
+    ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ [string totitle $name]]
     
-    pack $top.f                                 {*}[::packMain]
-    pack $top.f.properties                      {*}[::packCategory]
+    pack $top.f                                     {*}[::packMain]
+    pack $top.f.properties                          {*}[::packCategory]
     
-    if {$type eq "floatatom"} {
+    if {$type eq "float"} {
     
-    ttk::entry $top.f.properties.value          {*}[::styleEntryNumber] \
-                                                    -textvariable ::ui_value::valueValue($top) \
-                                                    -width $::width(large)
-    
+    ttk::entry $top.f.properties.value              {*}[::styleEntryNumber] \
+                                                        -textvariable ::ui_value::valueValue($top) \
+                                                        -width $::width(large)
     }
     
-    if {$type eq "symbolatom"} {
+    if {$type eq "symbol"} {
     
-    ttk::entry $top.f.properties.value          {*}[::styleEntry] \
-                                                    -textvariable ::ui_value::valueValue($top) \
-                                                    -width $::width(large)
-    
+    ttk::entry $top.f.properties.value              {*}[::styleEntry] \
+                                                        -textvariable ::ui_value::valueValue($top) \
+                                                        -width $::width(large)
     }
     
-    grid $top.f.properties.value                -row 0 -column 0 -sticky ew
+    if {$type eq "menu"} {
     
-    grid columnconfigure $top.f.properties      0 -weight 1
+    ::createMenuByIndex $top.f.properties.value     $args ::ui_value::valueValue($top) \
+                                                        -width [::measure $args]
+    }
     
-    focus $top.f.properties.value
+    grid $top.f.properties.value                    -row 0 -column 0 -sticky ew
     
-    after idle "$top.f.properties.value selection range 0 end"
-
+    grid columnconfigure $top.f.properties          0 -weight 1
+    
+    if {$type ne "menu"} {
+    
+        focus $top.f.properties.value
+    
+        after idle "$top.f.properties.value selection range 0 end"
+        
+    }
+    
     wm protocol $top WM_DELETE_WINDOW  "::ui_value::closed $top"
 }
 
@@ -116,12 +116,10 @@ proc _apply {top} {
     
     ::ui_value::_forceValue $top
     
-    if {$valueType($top) eq "floatatom"} {
-        ::ui_interface::pdsend "$top _valuedialog $valueValue($top)"
-    }
-    
-    if {$valueType($top) eq "symbolatom"} {
+    if {$valueType($top) eq "symbol"} {
         ::ui_interface::pdsend "$top _valuedialog [::sanitized [::dollarToHash $valueValue($top)]]"
+    } else {
+        ::ui_interface::pdsend "$top _valuedialog $valueValue($top)"
     }
 }
 
@@ -133,12 +131,10 @@ proc _forceValue {top} {
     variable valueType
     variable valueValue
     
-    if {$valueType($top) eq "floatatom"} {
-        set valueValue($top) [::ifNumber    $valueValue($top)   $valueValue(${top}.old)]
-    }
-    
-    if {$valueType($top) eq "symbolatom"} {
+    if {$valueType($top) eq "symbol"} {
         set valueValue($top) [::ifNotNumber $valueValue($top)   $valueValue(${top}.old)]
+    } else {
+        set valueValue($top) [::ifNumber    $valueValue($top)   $valueValue(${top}.old)]
     }
 }
 

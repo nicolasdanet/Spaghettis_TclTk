@@ -72,7 +72,7 @@ static t_widgetbehavior dial_widgetBehavior =       /* Shared. */
         NULL,
         iemgui_behaviorDeleted,
         iemgui_behaviorVisibilityChanged,
-        dial_behaviorMouse,
+        dial_behaviorMouse
     };
     
 // -----------------------------------------------------------------------------------------------------------
@@ -620,7 +620,7 @@ static void dial_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
     char t[PD_STRING] = { 0 };
     
     err = string_sprintf (t, PD_STRING,
-            "::ui_value::show %%s dial floatatom %.9g\n",      // --
+            "::ui_value::show %%s dial float %.9g\n",      // --
             x->x_floatValue);
 
     PD_UNUSED (err); PD_ASSERT (!err);
@@ -645,6 +645,7 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
             " %d %d {Steps}"                        // --
             " %s %s"
             " %d %d"
+            " -1"
             " -1\n",
             x->x_digitsNumber, 1, x->x_gui.iem_height, IEM_MINIMUM_HEIGHT,
             x->x_minimum, x->x_maximum,

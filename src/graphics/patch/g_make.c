@@ -269,6 +269,11 @@ void canvas_makeRadioHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *
     canvas_makeIemMenu (glist, sym_hradio);
 }
 
+void canvas_makeMenuButton (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    canvas_makeIemMenu (glist, sym_menubutton);
+}
+
 void canvas_makeVu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_makeIemMenu (glist, sym_vu);
