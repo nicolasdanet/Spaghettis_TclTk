@@ -42,6 +42,7 @@ void canvas_makeSliderVertical      (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeSliderHorizontal    (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeRadioVertical       (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeRadioHorizontal     (t_glist *, t_symbol *, int, t_atom *);
+void canvas_makeMenuButton          (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeVu                  (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makePanel               (t_glist *, t_symbol *, int, t_atom *);
 void canvas_makeDial                (t_glist *, t_symbol *, int, t_atom *);
@@ -595,6 +596,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeSliderHorizontal,  sym_hslider,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeRadioVertical,     sym_vradio,             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeRadioHorizontal,   sym_hradio,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeMenuButton,        sym_menubutton,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeVu,                sym_vu,                 A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,                A_GIMME, A_NULL);

@@ -457,7 +457,7 @@ int gpointer_getProperties (t_gpointer *gp, t_heapstring *h)
     heapstring_addSprintf (h, " {%s}", fieldName->s_name);                                          // --
 
     if (template_fieldIsFloat (tmpl, fieldName)) {
-        heapstring_addSprintf (h, " {%.9g}", gpointer_getFloat (gp, fieldName));                      // --
+        heapstring_addSprintf (h, " {%.9g}", gpointer_getFloat (gp, fieldName));                    // --
     
     } else if (template_fieldIsSymbol (tmpl, fieldName)) {
         t_symbol *t = symbol_dollarToHash (gpointer_getSymbol (gp, fieldName));

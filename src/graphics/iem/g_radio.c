@@ -558,6 +558,7 @@ static void radio_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
             " %d 256 {Number Of Buttons}"           // --
             " %s %s"
             " %d %d"
+            " -1"
             " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
             x->x_mode == sym_multiple,

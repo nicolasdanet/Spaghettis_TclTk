@@ -476,6 +476,7 @@ t_buffer    *slots_getRaw                       (t_slots *x);
 
 void        slots_free                          (t_slots *x);
 int         slots_isEmpty                       (t_slots *x);
+int         slots_getSize                       (t_slots *x);
 
 void        slots_clear                         (t_slots *x);
 t_error     slots_remove                        (t_slots *x, t_atom *key);
@@ -513,6 +514,8 @@ int         heapstring_getSize                  (t_heapstring *x);
 t_error     heapstring_add                      (t_heapstring *x, const char *src);
 t_error     heapstring_append                   (t_heapstring *x, const char *src, int n);
 t_error     heapstring_addSprintf               (t_heapstring *x, const char *format, ...);
+
+void        heapstring_clear                    (t_heapstring *x);
 
 void        heapstring_removeIfContainsAtEnd    (t_heapstring *x, char c);
 void        heapstring_removeIfContains         (t_heapstring *x, char c);

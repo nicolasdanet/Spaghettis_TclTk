@@ -509,6 +509,7 @@ static void vu_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
             " -1 -1 $::var(nil)"            // --
             " %s %s"
             " %d %d"
+            " -1"
             " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
             (x->x_gui.iem_height / IEM_VUMETER_STEPS) - 1, IEM_VUMETER_THICKNESS_MINIMUM - 1,

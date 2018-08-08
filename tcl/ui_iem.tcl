@@ -41,6 +41,7 @@ variable  iemReceive
 variable  iemBackgroundColor
 variable  iemFrontColor
 variable  iemSteady
+variable  iemSave
 
 array set iemType               {}
 array set iemWidth              {}
@@ -61,6 +62,7 @@ array set iemReceive            {}
 array set iemBackgroundColor    {}
 array set iemFrontColor         {}
 array set iemSteady             {}
+array set iemSave               {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -73,7 +75,8 @@ proc create {top type
              extra extraMaximum extraLabel
              send receive
              backgroundColor frontColor
-             steady} {
+             steady
+             save} {
     
     variable iemType
     variable iemWidth
@@ -94,6 +97,7 @@ proc create {top type
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemSteady
+    variable iemSave
 
     set iemType($top)               $type
     set iemWidth($top)              $width
@@ -114,6 +118,7 @@ proc create {top type
     set iemBackgroundColor($top)    $backgroundColor
     set iemFrontColor($top)         $frontColor
     set iemSteady($top)             $steady
+    set iemSave($top)               $save
 
     set iemWidth(${top}.old)        $width
     set iemHeight(${top}.old)       $height
@@ -215,6 +220,18 @@ proc create {top type
         grid $top.f.properties.extra                    -row $row       -column 2 -sticky ew
         
         bind $top.f.properties.extra <Return>           { ::nextEntry %W }
+    }
+    
+    if {$save != -1}    {
+    
+        ttk::label $top.f.properties.saveLabel          {*}[::styleLabel] \
+                                                            -text [_ "Save Contents"]
+        ttk::checkbutton $top.f.properties.save         {*}[::styleCheckButton] \
+                                                            -variable ::ui_iem::iemSave($top) \
+                                                            -takefocus 0
+        
+        grid $top.f.properties.saveLabel                -row [incr row] -column 0 -sticky ew
+        grid $top.f.properties.save                     -row $row       -column 2 -sticky ew
     }
     
     if {$loadbang != -1}    {
@@ -329,6 +346,7 @@ proc released {top} {
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemSteady
+    variable iemSave
     
     unset iemType($top)
     unset iemWidth($top)
@@ -349,6 +367,7 @@ proc released {top} {
     unset iemBackgroundColor($top)
     unset iemFrontColor($top)
     unset iemSteady($top)
+    unset iemSave($top)
     
     unset iemWidth(${top}.old)
     unset iemHeight(${top}.old)
@@ -376,6 +395,7 @@ proc _apply {top} {
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemSteady
+    variable iemSave
     
     _forceWidth     $top
     _forceHeight    $top
@@ -395,7 +415,8 @@ proc _apply {top} {
             [::sanitized [::dollarToHash [::withNil $iemReceive($top)]]] \
             $iemBackgroundColor($top) \
             $iemFrontColor($top) \
-            $iemSteady($top)"
+            $iemSteady($top) \
+            $iemSave($top)"
 }
 
 # ------------------------------------------------------------------------------------------------------------

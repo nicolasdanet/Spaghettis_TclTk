@@ -278,12 +278,12 @@ static void gatom_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
     
     if (gatom_isFloat (x)) {
         err = heapstring_addSprintf (t,
-                "::ui_value::show %%s atom floatatom %.9g\n",       // --
+                "::ui_value::show %%s atom float %.9g\n",       // --
                 GET_FLOAT (&x->a_atom));
         
     } else {
         err = heapstring_addSprintf (t,
-                "::ui_value::show %%s atom symbolatom {%s}\n",      // --
+                "::ui_value::show %%s atom symbol {%s}\n",      // --
                 symbol_dollarToHash (GET_SYMBOL (&x->a_atom))->s_name);
     }
     

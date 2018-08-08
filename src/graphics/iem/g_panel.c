@@ -113,7 +113,7 @@ static void panel_drawNew (t_panel *x, t_glist *glist)
                     x);
 }
 
-static void panel_drawSelect (t_panel* x, t_glist *glist)
+static void panel_drawSelect (t_panel *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -123,7 +123,7 @@ static void panel_drawSelect (t_panel* x, t_glist *glist)
                     x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
 }
 
-static void panel_drawErase (t_panel* x, t_glist *glist)
+static void panel_drawErase (t_panel *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -135,7 +135,7 @@ static void panel_drawErase (t_panel* x, t_glist *glist)
                     x);
 }
 
-static void panel_drawConfig (t_panel* x, t_glist *glist)
+static void panel_drawConfig (t_panel *x, t_glist *glist)
 {
     t_glist *view = glist_getView (glist);
 
@@ -260,6 +260,7 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
             " -1 -1 $::var(nil)"                    // --
             " %s %s"
             " %d %d"
+            " -1"
             " -1\n",
             x->x_panelWidth, x->x_panelHeight,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,

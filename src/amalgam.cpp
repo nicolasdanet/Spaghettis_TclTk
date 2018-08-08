@@ -134,6 +134,7 @@
 #include "graphics/iem/g_dial.c"
 #include "graphics/iem/g_vu.c"
 #include "graphics/iem/g_panel.c"
+#include "graphics/iem/g_menubutton.c"
 
 #include "graphics/scalars/g_word.c"
 #include "graphics/scalars/g_field.c"

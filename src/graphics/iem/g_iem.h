@@ -21,7 +21,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define IEM_DIALOG_SIZE                 12
+#define IEM_DIALOG_SIZE                 13
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -59,15 +59,15 @@
 // MARK: -
 
 typedef struct _iemcolors {
-    t_symbol    *c_symColorBackground;
-    t_symbol    *c_symColorForeground;
-    t_symbol    *c_symColorLabel;               /* Unused but kept for compatibility. */
+    t_symbol        *c_symColorBackground;
+    t_symbol        *c_symColorForeground;
+    t_symbol        *c_symColorLabel;               /* Unused but kept for compatibility. */
     } t_iemcolors;
 
 typedef struct _iemnames {
-    t_symbol    *n_unexpandedSend;
-    t_symbol    *n_unexpandedReceive;
-    t_symbol    *n_unexpandedLabel;             /* Unused but kept for compatibility. */
+    t_symbol        *n_unexpandedSend;
+    t_symbol        *n_unexpandedReceive;
+    t_symbol        *n_unexpandedLabel;             /* Unused but kept for compatibility. */
     } t_iemnames;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -80,30 +80,30 @@ typedef void (*t_iemfn) (void *x, t_glist *glist, int mode);
 // MARK: -
 
 typedef struct _iem {
-    t_object    iem_obj;                        /* MUST be the first. */
-    t_glist     *iem_owner;
-    t_iemfn     iem_fnDraw;
-    int         iem_fontStyle;                  /* Unused but kept for compatibility. */
-    int         iem_canSend;
-    int         iem_canReceive;
-    int         iem_loadbang;
-    int         iem_isSelected;
-    int         iem_goThrough;
-    int         iem_width;
-    int         iem_height;
-    int         iem_labelX;                     /* Unused but kept for compatibility. */
-    int         iem_labelY;                     /* Unused but kept for compatibility. */
-    int         iem_fontSize;                   /* Unused but kept for compatibility. */
-    t_color     iem_colorBackground;
-    t_color     iem_colorForeground;
-    t_color     iem_colorLabel;                 /* Unused but kept for compatibility. */
-    int         iem_cacheIndex;
-    t_symbol    *iem_send;
-    t_symbol    *iem_receive;
-    t_symbol    *iem_label;                     /* Unused but kept for compatibility. */
-    t_symbol    *iem_unexpandedSend;
-    t_symbol    *iem_unexpandedReceive;
-    t_symbol    *iem_unexpandedLabel;           /* Unused but kept for compatibility. */
+    t_object        iem_obj;                        /* MUST be the first. */
+    t_glist         *iem_owner;
+    t_iemfn         iem_fnDraw;
+    int             iem_fontStyle;                  /* Unused but kept for compatibility. */
+    int             iem_canSend;
+    int             iem_canReceive;
+    int             iem_loadbang;
+    int             iem_isSelected;
+    int             iem_goThrough;
+    int             iem_width;
+    int             iem_height;
+    int             iem_labelX;                     /* Unused but kept for compatibility. */
+    int             iem_labelY;                     /* Unused but kept for compatibility. */
+    int             iem_fontSize;                   /* Unused but kept for compatibility. */
+    t_color         iem_colorBackground;
+    t_color         iem_colorForeground;
+    t_color         iem_colorLabel;                 /* Unused but kept for compatibility. */
+    int             iem_cacheIndex;
+    t_symbol        *iem_send;
+    t_symbol        *iem_receive;
+    t_symbol        *iem_label;                     /* Unused but kept for compatibility. */
+    t_symbol        *iem_unexpandedSend;
+    t_symbol        *iem_unexpandedReceive;
+    t_symbol        *iem_unexpandedLabel;           /* Unused but kept for compatibility. */
     } t_iem;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -111,77 +111,90 @@ typedef struct _iem {
 // MARK: -
 
 typedef struct _bng {
-    t_iem       x_gui;                          /* MUST be the first. */
-    int         x_flashed;
-    int         x_flashTimeBreak;               /* Unused but kept for compatibility. */
-    int         x_flashTime;
-    t_outlet    *x_outlet;
-    t_clock     *x_clock;
+    t_iem           x_gui;                          /* MUST be the first. */
+    int             x_flashed;
+    int             x_flashTimeBreak;               /* Unused but kept for compatibility. */
+    int             x_flashTime;
+    t_outlet        *x_outlet;
+    t_clock         *x_clock;
     } t_bng;
 
 typedef struct _toggle {
-    t_iem       x_gui;
-    t_float     x_state;
-    t_float     x_nonZero;
-    t_outlet    *x_outlet;
+    t_iem           x_gui;
+    t_float         x_state;
+    t_float         x_nonZero;
+    t_outlet        *x_outlet;
     } t_toggle;
 
 typedef struct _radio {
-    t_iem       x_gui;
-    int         x_isVertical;
-    int         x_changed;                      /* Unused but kept for compatibility. */
-    int         x_numberOfButtons;
-    int64_t     x_state;
-    t_float     x_floatValue;
-    t_symbol    *x_mode;
-    t_outlet    *x_outlet;
+    t_iem           x_gui;
+    int             x_isVertical;
+    int             x_changed;                      /* Unused but kept for compatibility. */
+    int             x_numberOfButtons;
+    int64_t         x_state;
+    t_float         x_floatValue;
+    t_symbol        *x_mode;
+    t_outlet        *x_outlet;
     } t_radio;
 
 typedef struct _slider {
-    t_iem       x_gui;
-    int         x_isVertical;
-    int         x_position;
-    int         x_isLogarithmic;
-    int         x_isSteadyOnClick;
-    double      x_minimum;
-    double      x_maximum;
-    t_float     x_floatValue;
-    t_outlet    *x_outlet;
+    t_iem           x_gui;
+    int             x_isVertical;
+    int             x_position;
+    int             x_isLogarithmic;
+    int             x_isSteadyOnClick;
+    double          x_minimum;
+    double          x_maximum;
+    t_float         x_floatValue;
+    t_outlet        *x_outlet;
     } t_slider;
 
 typedef struct _dial {
-    t_iem       x_gui;
-    char        x_t[IEM_DIGITS_SIZE];
-    int         x_hasKnob;
-    int         x_position;
-    int         x_isLogarithmic;
-    int         x_digitsNumber;
-    int         x_digitsFontSize;
-    int         x_steps;
-    double      x_minimum;
-    double      x_maximum;
-    t_float     x_floatValue;
-    t_outlet    *x_outlet;
+    t_iem           x_gui;
+    char            x_t[IEM_DIGITS_SIZE];
+    int             x_hasKnob;
+    int             x_position;
+    int             x_isLogarithmic;
+    int             x_digitsNumber;
+    int             x_digitsFontSize;
+    int             x_steps;
+    double          x_minimum;
+    double          x_maximum;
+    t_float         x_floatValue;
+    t_outlet        *x_outlet;
     } t_dial;
     
 typedef struct _vu {
-    t_iem       x_gui;
-    int         x_hasScale;                     /* Unused but kept for compatibility. */
-    int         x_thickness;
-    int         x_peak;
-    int         x_decibel;
-    t_float     x_peakValue;
-    t_float     x_decibelValue;
-    t_outlet    *x_outletLeft;
-    t_outlet    *x_outletRight;
+    t_iem           x_gui;
+    int             x_hasScale;                     /* Unused but kept for compatibility. */
+    int             x_thickness;
+    int             x_peak;
+    int             x_decibel;
+    t_float         x_peakValue;
+    t_float         x_decibelValue;
+    t_outlet        *x_outletLeft;
+    t_outlet        *x_outletRight;
     } t_vu;
 
 typedef struct _panel {
-    t_iem       x_gui;
-    t_atom      x_t[2];
-    int         x_panelWidth;
-    int         x_panelHeight;
+    t_iem           x_gui;
+    t_atom          x_t[2];
+    int             x_panelWidth;
+    int             x_panelHeight;
     } t_panel;
+
+typedef struct _menubutton {
+    t_iem           x_gui;
+    int             x_saveWithParent;
+    int             x_isScrollable;
+    int             x_index;
+    t_buffer        *x_cachedBuffer;
+    t_heapstring    *x_cachedString;
+    t_slots         *x_slots;
+    t_outlet        *x_outletLeft;
+    t_outlet        *x_outletMiddle;
+    t_outlet        *x_outletRight;
+    } t_menubutton;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

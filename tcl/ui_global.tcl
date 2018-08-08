@@ -137,6 +137,7 @@ proc getNamespace {top} {
         "Bang"          { return "::ui_iem"     }
         "Dial"          { return "::ui_iem"     }
         "Element"       { return "::ui_scalar"  }
+        "Menu Button"   { return "::ui_iem"     }
         "MIDI"          { return "::ui_midi"    }
         "Patch"         { return "::ui_canvas"  }
         "Panel"         { return "::ui_iem"     }

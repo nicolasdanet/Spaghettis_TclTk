@@ -567,7 +567,7 @@ static void slider_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
     char t[PD_STRING] = { 0 };
     
     err = string_sprintf (t, PD_STRING,
-            "::ui_value::show %%s slider floatatom %.9g\n",      // --
+            "::ui_value::show %%s slider float %.9g\n",      // --
             x->x_floatValue);
 
     PD_UNUSED (err); PD_ASSERT (!err);
@@ -593,7 +593,8 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy
             " -1 -1 $::var(nil)"                                        // --
             " %s %s"
             " %d %d"
-            " %d\n",
+            " %d"
+            " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_MINIMUM_HEIGHT,
             x->x_minimum, x->x_isVertical ? "Bottom" : "Left",
             x->x_maximum, x->x_isVertical ? "Top" : "Right",

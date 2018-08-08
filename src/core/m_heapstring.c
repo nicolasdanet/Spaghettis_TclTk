@@ -144,6 +144,15 @@ t_error heapstring_addSprintf (t_heapstring *x, const char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void heapstring_clear (t_heapstring *x)
+{
+    x->hs_size = 0; x->hs_raw[0] = 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_heapstring *heapstring_new (int size)
 {
     t_heapstring *x = (t_heapstring *)PD_MEMORY_GET (sizeof (t_heapstring));
