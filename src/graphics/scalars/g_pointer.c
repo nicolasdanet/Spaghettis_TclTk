@@ -40,6 +40,7 @@ typedef struct _pointer {
     t_gpointer  x_gpointer;
     int         x_outletTypedSize;
     t_typedout  *x_outletTyped;
+    t_glist     *x_owner;
     t_outlet    *x_outletBeforeRight;
     t_outlet    *x_outletRight;
     } t_pointer;
@@ -102,11 +103,16 @@ static void pointer_pointer (t_pointer *x, t_gpointer *gp)
 
 static t_glist *pointer_fetch (t_pointer *x, t_symbol *s)
 {
+    if (s == &s_) { return x->x_owner; }
+    else {
+    //
     t_glist *glist = cast_glist (symbol_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
     
     if (glist && !glist_isArray (glist)) { return glist; }
-
+    
     return NULL;
+    //
+    }
 }
 
 static void pointer_traverse (t_pointer *x, t_symbol *s)
@@ -115,7 +121,7 @@ static void pointer_traverse (t_pointer *x, t_symbol *s)
     
     if (glist) { gpointer_setAsNull (&x->x_gpointer, glist); }
     else {
-        error_invalid (&s_pointer, &s_pointer);
+        error_invalid (&s_pointer, sym_window);
     }
 }
 
@@ -125,7 +131,7 @@ static void pointer_clear (t_pointer *x, t_symbol *s)
     
     if (glist) { canvas_clear (glist); gpointer_setAsNull (&x->x_gpointer, glist); }
     else {
-        error_invalid (&s_pointer, &s_pointer);
+        error_invalid (&s_pointer, sym_window);
     }
 }
 
@@ -262,6 +268,7 @@ static void *pointer_new (t_symbol *s, int argc, t_atom *argv)
         x->x_outletTyped[i].to_outlet = outlet_newPointer (cast_object (x));
     }
     
+    x->x_owner              = instance_contextGetCurrent();
     x->x_outletBeforeRight  = outlet_newPointer (cast_object (x));
     x->x_outletRight        = outlet_newBang (cast_object (x));
     
@@ -296,8 +303,8 @@ void pointer_setup (void)
     class_addBang (c, (t_method)pointer_bang); 
     class_addPointer (c, (t_method)pointer_pointer); 
         
-    class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,               A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)pointer_clear,        sym_clear,                  A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,               A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)pointer_clear,        sym_clear,                  A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,                 A_NULL);
     class_addMethod (c, (t_method)pointer_next,         sym_next,                   A_NULL);
     class_addMethod (c, (t_method)pointer_nextDelete,   sym_delete,                 A_NULL);

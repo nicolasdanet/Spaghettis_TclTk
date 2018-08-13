@@ -79,12 +79,12 @@
 #X msg 36 420 car starship;
 #X msg 36 444 zoo monkey;
 #X obj 36 492 route p f a zoo;
-#X obj 36 336 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 36 360 text;
 #X msg 36 144 Rosencrantz;
 #X text 12 300 Mixing types and symbol tags is allowed (NOT numbers).;
 #X text 12 12 Routing by the type do NOT slice the input.;
 #X f 43;
+#X obj 36 360 pointer;
+#X msg 36 336 traverse \, bang;
 #X connect 0 0 15 0;
 #X connect 1 0 15 0;
 #X connect 2 0 15 0;
@@ -110,9 +110,9 @@
 #X connect 19 2 13 0;
 #X connect 19 3 10 0;
 #X connect 19 3 16 0;
-#X connect 20 0 21 0;
-#X connect 21 0 19 0;
-#X connect 22 0 15 0;
+#X connect 20 0 15 0;
+#X connect 23 0 19 0;
+#X connect 24 0 23 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 288 240 pd again;
 #N canvas 999 97 310 475 again 0;
