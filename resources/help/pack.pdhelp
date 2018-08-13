@@ -1,4 +1,4 @@
-#N canvas 880 110 316 360 12;
+#N canvas 541 66 316 360 12;
 #X obj 36 288 print;
 #X msg 168 156 symbol cat;
 #X text 12 324 See also;
@@ -22,8 +22,6 @@
 #X obj 36 180 print;
 #X obj 36 144 pack f s p;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 132 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
-#X obj 132 84 text;
 #X obj 36 216 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 288 print;
 #X floatatom 144 216 5 0 0 1 - - -;
@@ -32,14 +30,16 @@
 #X f 14;
 #X text 12 12 It can use default types such as 'f' 's' 'p'.;
 #X f 45;
+#X obj 132 84 pointer;
+#X msg 132 48 traverse \, bang;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
 #X connect 3 0 2 0;
-#X connect 4 0 5 0;
-#X connect 5 0 2 2;
-#X connect 6 0 9 0;
-#X connect 8 0 9 1;
-#X connect 9 0 7 0;
+#X connect 4 0 7 0;
+#X connect 6 0 7 1;
+#X connect 7 0 5 0;
+#X connect 9 0 2 2;
+#X connect 10 0 9 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 228 228 pd more;
 #X text 72 24 pak;
