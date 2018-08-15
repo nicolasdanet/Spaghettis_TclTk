@@ -374,6 +374,9 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     isDirty |= (t1 != x->a_lowRange);
     isDirty |= (t2 != x->a_highRange);
+    
+    if (isDirty && gatom_isFloat (x)) { gatom_set (x, NULL, 1, &x->a_atom); }
+    
     isDirty |= (t3 != object_getWidth (cast_object (x)));
     isDirty |= (t4 != x->a_send);
     isDirty |= (t5 != x->a_receive);
