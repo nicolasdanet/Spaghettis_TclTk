@@ -407,10 +407,6 @@ static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
     x->a_label              = dollar_expandSymbol (x->a_unexpandedLabel, x->a_owner);
             
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
-
-    x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
-    
-    glist_objectAdd (x->a_owner, cast_gobj (x));
 }
 
 static void gatom_makeObjectMenu (t_gatom *x, int argc, t_atom *argv)
@@ -419,15 +415,12 @@ static void gatom_makeObjectMenu (t_gatom *x, int argc, t_atom *argv)
         
     object_setSnappedX (cast_object (x), instance_getDefaultX (x->a_owner));
     object_setSnappedY (cast_object (x), instance_getDefaultY (x->a_owner));
-        
-    x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
-                
-    glist_objectAdd (x->a_owner, cast_gobj (x));
-    glist_objectSelect (x->a_owner, cast_gobj (x));
 }
 
 static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, t_atom *argv)
 {
+    int isMenu  = (argc <= 1);
+    
     t_gatom *x  = (t_gatom *)pd_new (gatom_class);
     
     t_buffer *t = buffer_new();
@@ -460,12 +453,18 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     object_setWidth (cast_object (x),  type == A_FLOAT ? ATOM_WIDTH_FLOAT : ATOM_WIDTH_SYMBOL);
     object_setType (cast_object (x),   TYPE_ATOM);
     
-    if (argc <= 1) { gatom_makeObjectMenu (x, argc, argv); }
+    if (isMenu) { gatom_makeObjectMenu (x, argc, argv); }
     else {
         t_atom a; SET_SYMBOL (&a, &s_symbol);
         gatom_makeObjectFile (x, argc, argv);
         gatom_set (x, NULL, 1, &a);
     }
+    
+    x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
+
+    glist_objectAdd (x->a_owner, cast_gobj (x));
+    
+    if (isMenu) { glist_objectSelect (x->a_owner, cast_gobj (x)); }
 }
 
 void gatom_makeObjectFloat (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
