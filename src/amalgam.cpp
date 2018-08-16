@@ -305,6 +305,8 @@
 #include "control/mica/x_micainterval.c"
 #include "control/mica/x_micaspell.c"
 
+#include "control/tralala/x_tralala.c"
+
 /* DSP. */
 
 #include "dsp/graph/d_dsp.c"
