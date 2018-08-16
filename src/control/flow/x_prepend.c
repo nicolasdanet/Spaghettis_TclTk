@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "../x_atomoutlet.h"
+#include "../list/x_list.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -27,8 +27,7 @@ static t_class *prepend_class;      /* Shared. */
 
 typedef struct _prepend {
     t_object        x_obj;          /* Must be the first. */
-    int             x_size;
-    t_atomoutlet    *x_vector;
+    t_listinlet     x_listinlet;
     t_outlet        *x_outlet;
     } t_prepend;
 
@@ -36,42 +35,41 @@ typedef struct _prepend {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void prepend_free (t_prepend *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void prepend_proceed (t_prepend *x, int argc, t_atom *argv)
 {
-    int n = x->x_size + argc;
+    t_atom *t = NULL;
+    int n = listinlet_getSize (&x->x_listinlet) + argc;
     
     if (n == 0) { outlet_bang (x->x_outlet); }
     else {
     //
-    t_atom *a = NULL;
-    int i;
-        
-    PD_ATOMS_ALLOCA (a, n);
+    t_listinlet cache; listinlet_init (&cache);
     
-    for (i = 0; i < x->x_size; i++) { atomoutlet_copyAtom (x->x_vector + i, a + i); }
+    PD_ATOMS_ALLOCA (t, n);
     
-    atom_copyAtoms (argv, argc, a + x->x_size, argc);
+    atom_copyAtoms (argv, argc, t + listinlet_getSize (&x->x_listinlet), argc);
+    
+    if (!listinlet_hasPointer (&x->x_listinlet)) { listinlet_copyAtomsUnchecked (&x->x_listinlet, t); }
+    else {
+        listinlet_clone (&x->x_listinlet, &cache); listinlet_copyAtomsUnchecked (&cache, t);
+    }
     
     if (n == 1) {
-        if (IS_SYMBOL (a)) { outlet_symbol (x->x_outlet, GET_SYMBOL (a)); }
-        else if (IS_POINTER (a)) { outlet_pointer (x->x_outlet, GET_POINTER (a)); }
+        if (IS_SYMBOL (t)) { outlet_symbol (x->x_outlet, GET_SYMBOL (t)); }
+        else if (IS_POINTER (t)) { outlet_pointer (x->x_outlet, GET_POINTER (t)); }
         else {
-            outlet_float (x->x_outlet, atom_getFloat (a));
+            outlet_float (x->x_outlet, atom_getFloat (t));
         }
     } else {
-        if (IS_SYMBOL (a)) { outlet_anything (x->x_outlet, GET_SYMBOL (a), n - 1, a + 1); }
+        if (IS_SYMBOL (t)) { outlet_anything (x->x_outlet, GET_SYMBOL (t), n - 1, t + 1); }
         else {
-            outlet_list (x->x_outlet, n, a);
+            outlet_list (x->x_outlet, n, t);
         }
     }
     
-    PD_ATOMS_FREEA (a, n);
+    PD_ATOMS_FREEA (t, n);
+    
+    listinlet_clear (&cache);
     //
     }
 }
@@ -116,44 +114,23 @@ static void prepend_anything (t_prepend *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void prepend_set (t_prepend *x, t_symbol *dummy, int argc, t_atom *argv)
-{
-    int i;
-    
-    prepend_free (x);
-    
-    x->x_size   = argc;
-    x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
-
-    for (i = 0; i < x->x_size; i++) {
-        atomoutlet_make (x->x_vector + i, cast_object (x), ATOMOUTLET_NONE, NULL, argv + i);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void *prepend_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_prepend *x = (t_prepend *)pd_new (prepend_class);
 
-    prepend_set (x, s, argc, argv);
+    listinlet_init (&x->x_listinlet);
+    listinlet_listSet (&x->x_listinlet, argc, argv);
     
     x->x_outlet = outlet_newAnything (cast_object (x));
     
-    inlet_new2 (x, sym_set);    // -- TODO: Is that trick a good thing?
-    
+    inlet_new (cast_object (x), cast_pd (&x->x_listinlet), NULL, NULL);
+
     return x;
 }
 
 static void prepend_free (t_prepend *x)
 {
-    int i;
-    
-    for (i = 0; i < x->x_size; i++) { atomoutlet_release (x->x_vector + i); }
-    
-    PD_MEMORY_FREE (x->x_vector);
+    listinlet_clear (&x->x_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -178,8 +155,6 @@ void prepend_setup (void)
     class_addPointer (c, (t_method)prepend_pointer);
     class_addList (c, (t_method)prepend_list);
     class_addAnything (c, (t_method)prepend_anything);
-    
-    class_addMethod (c, (t_method)prepend_set, sym__inlet2, A_GIMME, A_NULL);
 
     prepend_class = c;
 }
