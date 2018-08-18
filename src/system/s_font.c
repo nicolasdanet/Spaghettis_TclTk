@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define FONT_LIST_SIZE  6
+#define FONT_LIST_SIZE  12
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -22,11 +22,8 @@
 
 typedef struct _fontinfo {
     int     fi_size;
-    int     fi_requiredWidth;
-    int     fi_requiredHeight;
-    double  fi_hostSize;
-    double  fi_hostWidth;
-    double  fi_hostHeight;
+    double  fi_width;
+    double  fi_height;
     } t_fontinfo;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -34,25 +31,31 @@ typedef struct _fontinfo {
 
 static t_fontinfo font_fontList[FONT_LIST_SIZE] =       /* Static. */
     {
-        { 8,   6, 10,   8.0,   6.0, 10.0 },
-        { 10,  7, 13,   10.0,  7.0, 13.0 },
-        { 12,  8, 16,   12.0,  8.0, 16.0 },
-        { 16, 12, 20,   16.0, 12.0, 20.0 },
-        { 24, 16, 32,   24.0, 16.0, 32.0 },
-        { 36, 26, 46,   36.0, 26.0, 46.0 }
+        { 6,   3.5,  7.0 },
+        { 8,   5.0,  9.0 },
+        { 9,   5.5, 10.0 },
+        { 10,  6.0, 11.0 },
+        { 11,  6.5, 13.0 },
+        { 12,  7.0, 14.0 },
+        { 14,  8.5, 16.0 },
+        { 16,  9.5, 19.0 },
+        { 18, 11.0, 21.0 },
+        { 20, 12.0, 24.0 },
+        { 24, 14.5, 28.0 },
+        { 36, 22.0, 41.0 }
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_fontinfo *font_getNearest (int fontSize)
+static t_fontinfo *font_getNearest (int n)
 {
     t_fontinfo *info = font_fontList;
     int i;
         
     for (i = 0; i < (FONT_LIST_SIZE - 1); i++, info++) {
-        if (fontSize < (info + 1)->fi_size) { 
+        if (n < (info + 1)->fi_size) {
             return info; 
         }
     }
@@ -64,25 +67,24 @@ static t_fontinfo *font_getNearest (int fontSize)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int font_getHostFontSize (int fontSize)
+int font_getDefaultSize (void)
 {
-    int k = (int)(font_getNearest (fontSize)->fi_hostSize);
-    
-    return PD_MAX (k, 1);
+    return 12;
 }
 
-double font_getHostFontWidth (int fontSize)
+int font_getValidSize (int n)
 {
-    double k = font_getNearest (fontSize)->fi_hostWidth;
-    
-    return PD_MAX (k, 1.0);
+    return font_getNearest (n)->fi_size;
 }
 
-double font_getHostFontHeight (int fontSize)
+double font_getWidth (int n)
 {
-    double k = font_getNearest (fontSize)->fi_hostHeight;
-    
-    return PD_MAX (k, 1.0);
+    return font_getNearest (n)->fi_width;
+}
+
+double font_getHeight (int n)
+{
+    return font_getNearest (n)->fi_height;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -91,35 +93,24 @@ double font_getHostFontHeight (int fontSize)
 
 void font_withHostMeasured (int argc, t_atom *argv)
 {
-    int i, j;
-    int n = argc / 3;
+    int i, n = argc / 3;
     
     PD_ASSERT (n > 0);
     PD_ASSERT (argc == n * 3);
-    
-    for (i = 0; i < FONT_LIST_SIZE; i++) {
+
+    for (i = 0; i < n; i++) {
     //
-    int best = 0;
-    int    required       = font_fontList[i].fi_size;
-    double requiredWidth  = font_fontList[i].fi_requiredWidth;
-    double requiredHeight = font_fontList[i].fi_requiredHeight;
-        
-    for (j = 0; j < n; j++) {
-    //
-    int    k = atom_getFloatAtIndex ((3 * j) + 0, argc, argv);
-    double w = atom_getFloatAtIndex ((3 * j) + 1, argc, argv);
-    double h = atom_getFloatAtIndex ((3 * j) + 2, argc, argv);
+    t_float size     = atom_getFloatAtIndex ((3 * i) + 0, argc, argv);
+    t_float width    = atom_getFloatAtIndex ((3 * i) + 1, argc, argv);
+    t_float height   = atom_getFloatAtIndex ((3 * i) + 2, argc, argv);
     
-    if (k == required) { best = j; break; }                         /* Always prefers exact match. */
-    else if (w <= requiredWidth && h <= requiredHeight) {
-        best = j;
-    }
-    //
-    }
+    t_fontinfo *info = font_getNearest ((int)size);
     
-    font_fontList[i].fi_hostSize   = atom_getFloatAtIndex ((3 * best) + 0, argc, argv);
-    font_fontList[i].fi_hostWidth  = atom_getFloatAtIndex ((3 * best) + 1, argc, argv);
-    font_fontList[i].fi_hostHeight = atom_getFloatAtIndex ((3 * best) + 2, argc, argv);
+    PD_ASSERT (width  > 1.0);
+    PD_ASSERT (height > 1.0);
+    
+    info->fi_width  = width;
+    info->fi_height = height;
     //
     }
 }

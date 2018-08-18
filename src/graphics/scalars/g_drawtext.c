@@ -96,7 +96,7 @@ static t_float drawtext_getFactor (t_drawtext *x, t_gpointer *gp, t_rectangle *r
     if (dot != -1) {
     
         int decimals = (int)strlen (s) - (dot + 1);
-        int h = font_getHostFontWidth (glist_getFontSize (gpointer_getView (gp)));
+        int h = font_getWidth (glist_getFontSize (gpointer_getView (gp)));
         int a = rectangle_getTopRightX (r);
         int b = rectangle_getTopRightY (r);
         int c = rectangle_getBottomRightX (r);
@@ -190,8 +190,8 @@ static void drawtext_behaviorGetRectangle (t_gobj *z,
         int n = 1;
         int a = pixelX;
         int b = pixelY;
-        int c = (int)(pixelX + (m * font_getHostFontWidth (fontSize)));
-        int d = (int)(pixelY + (n * font_getHostFontHeight (fontSize)));
+        int c = (int)(pixelX + (m * font_getWidth (fontSize)));
+        int d = (int)(pixelY + (n * font_getHeight (fontSize)));
         
         rectangle_set (r, a, b, c, d); 
         
@@ -242,7 +242,7 @@ static void drawtext_behaviorVisibilityChanged (t_gobj *z,
                     pixelX,
                     pixelY,
                     color_toEncoded (color)->s_name,
-                    font_getHostFontSize (glist_getFontSize (glist)),
+                    glist_getFontSize (glist),
                     t, 
                     tag);
     //

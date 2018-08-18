@@ -62,12 +62,12 @@ static t_float menubutton_delta;                            /* Static. */
 
 static int menubutton_drawGetWidth (t_menubutton *x, t_glist *glist)
 {
-    return x->x_gui.iem_width * (int)font_getHostFontWidth (glist_getFontSize (glist));
+    return x->x_gui.iem_width * (int)font_getWidth (glist_getFontSize (glist));
 }
 
 static int menubutton_drawGetHeight (t_menubutton *x, t_glist *glist)
 {
-    return (int)font_getHostFontHeight (glist_getFontSize (glist));
+    return (int)font_getHeight (glist_getFontSize (glist));
 }
 
 static t_error menubutton_drawGetContents (t_menubutton *x, int index, int width, t_heapstring *h)
@@ -176,7 +176,7 @@ static void menubutton_drawNew (t_menubutton *x, t_glist *glist)
                     a + IEM_MENUBUTTON_MARGIN_X_LEFT,
                     b + IEM_MENUBUTTON_MARGIN_Y_TOP,
                     x->x_gui.iem_colorForeground,
-                    font_getHostFontSize (glist_getFontSize (glist)),
+                    glist_getFontSize (glist),
                     heapstring_getRaw (x->x_cachedString),
                     x);
 }

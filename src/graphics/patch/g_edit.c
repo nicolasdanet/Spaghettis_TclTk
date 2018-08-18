@@ -204,7 +204,7 @@ static void glist_actionResizeRectangle (t_glist *glist, int a, int b)
 
 static void glist_actionResizeBox (t_glist *glist, t_gobj *y, int width)
 {
-    int w = (int)(width / font_getHostFontWidth (glist_getFontSize (glist)));
+    int w = (int)(width / font_getWidth (glist_getFontSize (glist)));
     
     gobj_visibilityChanged (y, glist, 0);
     object_setWidth (cast_object (y), PD_MAX (1, w));

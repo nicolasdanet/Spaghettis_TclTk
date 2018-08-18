@@ -204,8 +204,8 @@ static void glist_drawArrayName (t_glist *glist)
     {
         int a = rectangle_getTopLeftX (&r);
         int b = rectangle_getTopLeftY (&r);
-        int k = font_getHostFontSize (glist_getFontSize (view));
-        int h = (int)font_getHostFontHeight (glist_getFontSize (view));
+        int k = glist_getFontSize (view);
+        int h = (int)font_getHeight (glist_getFontSize (view));
         int i = 0;
         
         /* Legacy patches can contains multiple arrays. */
