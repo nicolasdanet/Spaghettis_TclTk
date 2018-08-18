@@ -91,8 +91,8 @@ static t_typesethelper *box_typesetAllocate (t_box *x, int a, int b, t_typesethe
     p->p_x                      = a;
     p->p_y                      = b;
     p->p_fontSize               = glist_getFontSize (x->box_owner);
-    p->p_fontWidth              = font_getHostFontWidth (p->p_fontSize);
-    p->p_fontHeight             = font_getHostFontHeight (p->p_fontSize);
+    p->p_fontWidth              = font_getWidth (p->p_fontSize);
+    p->p_fontHeight             = font_getHeight (p->p_fontSize);
     p->p_numberOfCharacters     = u8_charnum (x->box_string, x->box_stringSizeInBytes);
     p->p_widthOfObject          = object_getWidth (x->box_object);
     p->p_selectionStart         = 0;
@@ -337,7 +337,7 @@ static void box_sendCreate (t_box *x, t_typesethelper *p)
                     (int)(glist_getPixelX (x->box_owner, x->box_object) + BOX_MARGIN_LEFT), 
                     (int)(glist_getPixelY (x->box_owner, x->box_object) + BOX_MARGIN_TOP),
                     box_typesetChecked (p),
-                    font_getHostFontSize (p->p_fontSize),
+                    p->p_fontSize,
                     (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
 }
 

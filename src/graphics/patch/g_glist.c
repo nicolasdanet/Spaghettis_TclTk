@@ -43,7 +43,8 @@ static t_glist *glist_new (t_glist *owner,
     x->gl_editor            = editor_new (x);
     x->gl_clock             = clock_new ((void *)x, (t_method)glist_task);
     x->gl_uniqueIdentifier  = utils_unique();
-    x->gl_fontSize          = (owner ? glist_getFontSize (owner) : font_getDefaultFontSize());
+    
+    glist_setFontSize (x , (owner ? glist_getFontSize (owner) : font_getDefaultSize()));
 
     if (bounds) { bounds_setCopy (&x->gl_bounds, bounds);            }
     if (graph)  { rectangle_setCopy (&x->gl_geometryGraph, graph);   }
@@ -298,7 +299,7 @@ void glist_setFrozen (t_glist *glist, int n)
 
 void glist_setFontSize (t_glist *g, int n)
 {
-    if (n > 0) { g->gl_fontSize = font_getHostFontSize (n); }
+    if (n > 0) { g->gl_fontSize = font_getValidSize (n); }
 }
 
 void glist_setMotion (t_glist *glist, t_gobj *y, t_motionfn callback, int a, int b)
