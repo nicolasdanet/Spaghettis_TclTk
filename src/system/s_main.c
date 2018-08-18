@@ -244,15 +244,21 @@ static t_error main_setPaths (t_symbol *root)
     
     err |= string_sprintf (t, PD_STRING, "%s/Library/Application Support/" PD_NAME, home);
     
+    #else
+    
+    err |= string_sprintf (t, PD_STRING, "%s/.config", home);
+    
     if (!err && !path_isFileExistAsDirectory (t)) {
         err |= path_createDirectory (t);
     }
     
-    #else
-    
-    err |= string_sprintf (t, PD_STRING, "%s", home);
+    err |= string_sprintf (t, PD_STRING, "%s/.config/" PD_NAME_LOWERCASE, home);
     
     #endif
+    
+    if (!err && !path_isFileExistAsDirectory (t)) {
+        err |= path_createDirectory (t);
+    }
     
     if (!err) {
         main_directorySupport = gensym (t);
@@ -342,6 +348,8 @@ int main_entry (int argc, char **argv)
     PD_ASSERT (main_directoryHelp    != NULL);
     PD_ASSERT (main_directorySupport != NULL);
     
+    if (!err) {
+    //
     main_version |= main_alreadyExists();
     
     if (main_version) { err |= main_entryVersion (0); }
@@ -374,6 +382,8 @@ int main_entry (int argc, char **argv)
     }
     
     logger_release();
+    //
+    }
     //
     }
     //

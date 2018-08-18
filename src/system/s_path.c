@@ -59,6 +59,8 @@ int path_containsHiddenDirectory (const char *filepath)
     return string_contains (filepath, "/.");
 }
 
+/* Note that it fails in case of missing directory in path. */
+
 t_error path_createDirectory (const char *filepath)
 {
     return (mkdir (filepath, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0);
