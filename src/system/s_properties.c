@@ -34,13 +34,7 @@ t_error properties_loadBegin (void)
 {
     char filepath[PD_STRING] = { 0 };
     
-    t_error err = PD_ERROR_NONE;
-    
-    #if PD_APPLE
-    err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directorySupport->s_name);
-    #else
-    err = string_sprintf (filepath, PD_STRING, "%s/." PD_NAME_LOWERCASE "rc", main_directorySupport->s_name);
-    #endif
+    t_error err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directorySupport->s_name);
 
     if (!err) { err |= !path_isFileExist (filepath); }
     if (!err) {
@@ -88,13 +82,7 @@ t_error properties_saveBegin (void)
 {
     char filepath[PD_STRING] = { 0 };
     
-    t_error err = PD_ERROR_NONE;
-    
-    #if PD_APPLE
-    err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directorySupport->s_name);
-    #else
-    err = string_sprintf (filepath, PD_STRING, "%s/." PD_NAME_LOWERCASE "rc", main_directorySupport->s_name);
-    #endif
+    t_error err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directorySupport->s_name);
     
     if (!err) {
     //

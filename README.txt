@@ -22,7 +22,7 @@ Build:
 Residual:
 
     ~/Library/Application Support/Spaghettis/
-    ~/.spaghettisrc
+    ~/.config/spaghettis/
 
 Credits:
 
