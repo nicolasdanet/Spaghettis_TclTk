@@ -60,7 +60,7 @@ static void textdefine_modified (t_textdefine *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void textdefine_functionSave (t_gobj *z, t_buffer *b)
+static void textdefine_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_textdefine *x = (t_textdefine *)z;
     
@@ -71,13 +71,17 @@ static void textdefine_functionSave (t_gobj *z, t_buffer *b)
     buffer_serialize (b,    object_getBuffer (cast_object (x)));
     buffer_appendSemicolon (b);
     object_serializeWidth (cast_object (x), b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
 }
 
-static t_error textdefine_functionData (t_gobj *z, t_buffer *b)
+static t_error textdefine_functionData (t_gobj *z, t_buffer *b, int flags)
 {
     t_textdefine *x = (t_textdefine *)z;
     
-    if (x->x_keep) {
+    if ((flags & SAVE_DEEP) || x->x_keep) {
     //
     buffer_appendSymbol (b, sym_set);
     buffer_serialize (b, textbuffer_getBuffer (&x->x_textbuffer));

@@ -149,7 +149,12 @@ void    gobj_deleted                (t_gobj *x, t_glist *owner);
 void    gobj_visibilityChanged      (t_gobj *x, t_glist *owner, int isVisible);
 int     gobj_mouse                  (t_gobj *x, t_glist *owner, t_mouse *m);
 
-void    gobj_save                   (t_gobj *x, t_buffer *buffer);
+t_id    gobj_getUnique              (t_gobj *x);
+void    gobj_setUnique              (t_gobj *x, t_id u);
+void    gobj_changeUnique           (t_gobj *x, t_id u);
+void    gobj_serializeUnique        (t_gobj *x, t_symbol *s, t_buffer *b);
+
+void    gobj_save                   (t_gobj *x, t_buffer *buffer, int flags);
 int     gobj_hit                    (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r);
                                                             
 int     gobj_isVisible              (t_gobj *x, t_glist *owner);
@@ -199,8 +204,8 @@ void    cord_make                   (t_cord *x, t_outconnect *connection,
 t_outconnect    *traverser_next     (t_traverser *t);
 
 void    traverser_start             (t_traverser *t, t_glist *glist);
-void    traverser_disconnect        (t_traverser *t);
-int     traverser_isItLineBetween   (t_traverser *t, t_object *src, int m, t_object *dest, int n);
+t_error traverser_disconnect        (t_traverser *t, t_glist *glist);
+int     traverser_isLineBetween     (t_traverser *t, t_object *src, int m, t_object *dest, int n);
                                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -48,7 +48,7 @@ struct _garray {
     t_glist     *x_owner;
     t_symbol    *x_unexpandedName;
     t_symbol    *x_name;
-    t_rand48    x_redrawn;
+    t_id        x_redrawn;
     int         x_isUsedInDSP;
     int         x_saveWithParent;
     int         x_hideName;
@@ -441,15 +441,10 @@ void garray_redraw (t_garray *x)
 
 void garray_setNextTag (t_garray *x)
 {
-    static int once = 0;            /* Static. */
-    static t_rand48 seed = 0;       /* Static. */
-    
-    if (!once) { seed = (t_rand48)time_makeRandomSeed(); once = 1; }
-    
-    PD_RAND48_NEXT (seed); x->x_redrawn = seed;
+    x->x_redrawn = utils_unique();
 }
 
-t_rand48 garray_getTag (t_garray *x)
+t_id garray_getTag (t_garray *x)
 {
     return x->x_redrawn;
 }
@@ -685,7 +680,7 @@ static int garray_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void garray_functionSave (t_gobj *z, t_buffer *b)
+static void garray_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_garray *x = (t_garray *)z;
     int style = scalar_getFloat (x->x_scalar, sym_style);    
@@ -697,22 +692,26 @@ static void garray_functionSave (t_gobj *z, t_buffer *b)
     // GARRAY_FLAG_HIDE
     // GARRAY_FLAG_INHIBIT
 
-    int flags = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName) + (16 * x->x_inhibit);
+    int t = x->x_saveWithParent + (2 * style) + (8 * x->x_hideName) + (16 * x->x_inhibit);
 
     buffer_appendSymbol (b, sym___hash__X);
     buffer_appendSymbol (b, sym_array);
     buffer_appendSymbol (b, x->x_unexpandedName);
     buffer_appendFloat (b,  n);
     buffer_appendSymbol (b, &s_float);
-    buffer_appendFloat (b,  flags);
+    buffer_appendFloat (b,  t);
     buffer_appendSemicolon (b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
 }
 
-static t_error garray_functionData (t_gobj *z, t_buffer *b)
+static t_error garray_functionData (t_gobj *z, t_buffer *b, int flags)
 {
     t_garray *x = (t_garray *)z;
 
-    if (x->x_saveWithParent) {
+    if ((flags & SAVE_DEEP) || x->x_saveWithParent) {
     //
     t_array *array = garray_getArray (x);
     int i, n = array_getSize (array);
@@ -724,6 +723,28 @@ static t_error garray_functionData (t_gobj *z, t_buffer *b)
     }
     
     return PD_ERROR;
+}
+
+/* Fake dialog message from interpreter. */
+
+static void garray_functionUndo (t_gobj *z, t_buffer *b)
+{
+    t_garray *x = (t_garray *)z;
+    int style = scalar_getFloat (x->x_scalar, sym_style);
+    t_array *array = garray_getArray (x);
+    t_bounds *bounds = glist_getBounds (x->x_owner);
+    
+    buffer_appendSymbol (b, sym__arraydialog);
+    buffer_appendSymbol (b, symbol_dollarToHash (x->x_unexpandedName));
+    buffer_appendFloat (b,  array_getSize (array));
+    buffer_appendFloat (b,  rectangle_getWidth (glist_getGraphGeometry (x->x_owner)));
+    buffer_appendFloat (b,  rectangle_getHeight (glist_getGraphGeometry (x->x_owner)));
+    buffer_appendFloat (b,  bounds_getTop (bounds));
+    buffer_appendFloat (b,  bounds_getBottom (bounds));
+    buffer_appendFloat (b,  x->x_saveWithParent);
+    buffer_appendFloat (b,  PD_CLAMP (style, PLOT_POLYGONS, PLOT_CURVES));
+    buffer_appendFloat (b,  x->x_hideName);
+    buffer_appendFloat (b,  x->x_inhibit);
 }
 
 void garray_functionProperties (t_garray *x)
@@ -758,6 +779,9 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty = 0;
     
+    t_glist *parent = glist_getParent (x->x_owner);
+    int undoable    = glist_undoIsOk (parent);
+    
     PD_ASSERT (argc == 10);
     
     t_symbol *t1 = x->x_name;
@@ -769,6 +793,11 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     t_bounds t7;
     t_rectangle t8;
 
+    t_undosnippet *s1 = NULL;
+    t_undosnippet *s2 = NULL;
+    
+    if (undoable) { s1 = undosnippet_newProperties (cast_gobj (x), x->x_owner); }
+    
     bounds_setCopy (&t7, glist_getBounds (x->x_owner));
     rectangle_setCopy (&t8, glist_getGraphGeometry (x->x_owner));
     
@@ -823,6 +852,8 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
     
+    if (undoable) { s2 = undosnippet_newProperties (cast_gobj (x), x->x_owner); }
+    
     isDirty |= (t1 != x->x_name);
     isDirty |= (t2 != x->x_saveWithParent);
     isDirty |= (t3 != x->x_hideName);
@@ -832,7 +863,26 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= !bounds_areEquals (&t7, glist_getBounds (x->x_owner));
     isDirty |= !rectangle_areEquals (&t8, glist_getGraphGeometry (x->x_owner));
     
-    if (isDirty) { glist_setDirty (x->x_owner, 1); }
+    if (isDirty) { glist_setDirty (parent, 1); }
+    
+    if (undoable) {
+    //
+    if (isDirty) {
+        glist_undoAppend (parent, undoproperties_new (cast_gobj (x), s1, s2));
+        glist_undoAppendSeparator (parent);
+        
+    } else {
+        undosnippet_free (s1);
+        undosnippet_free (s2);
+    }
+    
+    s1 = NULL;
+    s2 = NULL;
+    //
+    }
+    
+    PD_ASSERT (s1 == NULL);
+    PD_ASSERT (s2 == NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -956,6 +1006,7 @@ void garray_setup (void)
     class_setWidgetBehavior (c, &garray_widgetBehavior);
     class_setSaveFunction (c, garray_functionSave);
     class_setDataFunction (c, garray_functionData);
+    class_setUndoFunction (c, garray_functionUndo);
     
     garray_class = c;
 }

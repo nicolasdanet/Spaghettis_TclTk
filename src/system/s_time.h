@@ -51,7 +51,7 @@ void        stamp_set                   (t_stamp *stamp);
 void        stamp_addNanoseconds        (t_stamp *stamp, t_nano ns);
 t_error     stamp_elapsedNanoseconds    (const t_stamp *t0, const t_stamp *t1, t_nano *elapsed);
 
-int         stamp_isTag                 (t_symbol *s);
+int         stamp_isTagElement          (t_symbol *s);
 t_error     stamp_setAsTags             (int argc, t_atom *argv, t_stamp *stamp);
 t_error     stamp_getWithTags           (int argc, t_atom *argv, t_stamp *stamp);
 

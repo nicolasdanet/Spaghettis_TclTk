@@ -128,7 +128,7 @@ void concept_setup (void)
             NULL,
             (t_method)concept_free,
             sizeof (t_concept),
-            CLASS_NOBOX,
+            CLASS_INVISIBLE,
             A_NULL);
     
     concept_class = c;

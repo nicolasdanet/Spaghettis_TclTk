@@ -180,9 +180,9 @@ void glist_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
     t_glist *x = cast_glist (z);
 
-    glist_objectRemoveAll (x);
+    text_behaviorDeleted (z, glist);    /* MUST be before call below. */
     
-    text_behaviorDeleted (z, glist);
+    glist_undoDisable (x); glist_objectRemoveAll (x);
 }
 
 void glist_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)

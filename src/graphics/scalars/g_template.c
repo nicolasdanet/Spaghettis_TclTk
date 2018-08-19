@@ -453,7 +453,7 @@ void template_setup (void)
         NULL, 
         (t_method)template_free,
         sizeof (t_template),
-        CLASS_NOBOX,
+        CLASS_INVISIBLE,
         A_NULL);
     
     class_addAnything (c, (t_method)template_anything);

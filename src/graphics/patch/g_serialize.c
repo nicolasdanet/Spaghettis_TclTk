@@ -48,11 +48,15 @@ static void glist_serializeHeader (t_glist *glist, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
-static void glist_serializeObjects (t_glist *glist, t_buffer *b)
+static void glist_serializeObjects (t_glist *glist, t_buffer *b, int flags)
 {
     t_gobj *y = NULL;
     
-    for (y = glist->gl_graphics; y; y = y->g_next) { if (!gobj_isScalar (y)) { gobj_save (y, b); } }
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    if ((flags & SAVE_DEEP) || !gobj_isScalar (y)) { gobj_save (y, b, flags); }
+    //
+    }
 }
 
 static void glist_serializeLines (t_glist *glist, t_buffer *b)
@@ -75,7 +79,12 @@ static void glist_serializeLines (t_glist *glist, t_buffer *b)
     }
 }
 
-/* For compatibility with legacy, top left coordinates must be serialized last. */
+static void glist_serializeTag (t_glist *glist, t_buffer *b, int flags)
+{
+    if (flags & SAVE_ID) { gobj_serializeUnique (cast_gobj (glist), sym__tagcanvas, b); }
+}
+
+/* For compatibility with legacy, top left coordinates must be serialized at last. */
 
 static void glist_serializeGraph (t_glist *glist, t_buffer *b)
 {
@@ -118,11 +127,12 @@ static void glist_serializeFooter (t_glist *glist, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void glist_serialize (t_glist *glist, t_buffer *b)
+void glist_serialize (t_glist *glist, t_buffer *b, int flags)
 {
     glist_serializeHeader (glist, b);
-    glist_serializeObjects (glist, b);
+    glist_serializeObjects (glist, b, flags);
     glist_serializeLines (glist, b);
+    glist_serializeTag (glist, b, flags);
     glist_serializeGraph (glist, b);
     glist_serializeFooter (glist, b);
 }

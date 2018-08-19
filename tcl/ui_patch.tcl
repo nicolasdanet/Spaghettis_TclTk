@@ -91,6 +91,25 @@ proc closed {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc askForUndoAndRedo {top} {
+
+    ::ui_interface::pdsend "$top _menu"
+}
+
+proc setUndoAndRedo {top undo redo} {
+
+    variable patchIsEditMode
+    
+    if {$top eq $::var(windowFocused)} {
+    
+        ::ui_menu::setUndo $undo $patchIsEditMode($top)
+        ::ui_menu::setRedo $redo $patchIsEditMode($top)
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc setTitle {top path name dirty} {
 
     variable patchTitle
@@ -115,11 +134,11 @@ proc getTitle {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Refresh if no state provided.
-
 proc setEditMode {top {state {}}} {
 
     variable patchIsEditMode
+    
+    # Refresh if no state provided.
     
     if {[llength [info level 0]] == 2} { set state $patchIsEditMode($top) }
     

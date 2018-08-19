@@ -79,6 +79,7 @@ void instance_stackPopPatch (t_glist *glist, int visible)
     glist_inletSort (glist); glist_outletSort (glist);
     
     glist_loadEnd (glist);
+    glist_undoEnable (glist);
     
     if (visible) { glist_windowOpen (glist); }
 }

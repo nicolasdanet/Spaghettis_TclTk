@@ -129,7 +129,7 @@ static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 /* Default save function for all boxes object. */
 
-static void class_defaultSave (t_gobj *z, t_buffer *b)
+static void class_defaultSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_object *x = cast_object (z);
     
@@ -148,6 +148,10 @@ static void class_defaultSave (t_gobj *z, t_buffer *b)
     buffer_serialize (b, object_getBuffer (x));
     buffer_appendSemicolon (b);
     object_serializeWidth (x, b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -170,7 +174,7 @@ t_class *class_new (t_symbol *s,
     t_atomtype *vp = args;
     int count = 0;
     t_class *c = NULL;
-    int type = flags & (CLASS_ABSTRACT | CLASS_NOBOX | CLASS_GRAPHIC | CLASS_BOX);
+    int type = flags & (CLASS_ABSTRACT | CLASS_INVISIBLE | CLASS_GRAPHIC | CLASS_BOX);
     if (!type) { type = CLASS_BOX; }
     
     *vp = type1;
@@ -452,13 +456,6 @@ void class_setHelpName (t_class *c, t_symbol *s)
 void class_setHelpDirectory (t_class *c, t_symbol *s)
 {
     c->c_helpDirectory = s;
-}
-
-/* Exported thus not inlined. */
-
-void class_setDataFunction (t_class *c, t_datafn f)
-{
-    c->c_fnData = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

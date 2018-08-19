@@ -28,6 +28,8 @@
 #include "core/m_outlet.h"
 #include "core/m_error.h"
 #include "core/m_utils.h"
+#include "core/m_unique.h"
+#include "undo/m_undo.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -120,6 +122,7 @@ extern t_class *symbolinlet_class;
 extern t_class *template_class;
 extern t_class *text_class;
 extern t_class *textdefine_class;
+extern t_class *undomotion_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
 

@@ -103,7 +103,7 @@ void proxy_setup (void)
             NULL,
             (t_method)proxy_free,
             sizeof (t_proxy), 
-            CLASS_NOBOX,
+            CLASS_INVISIBLE,
             A_NULL);
         
     class_addAnything (c, (t_method)proxy_anything);

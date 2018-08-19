@@ -29,7 +29,7 @@ int     object_setSnappedY                  (t_object *x, int n);
 
 t_outconnect    *object_connect             (t_object *src, int m, t_object *dest, int n);
 
-void    object_disconnect                   (t_object *src, int m, t_object *dest, int n);
+t_error object_disconnect                   (t_object *src, int m, t_object *dest, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -64,6 +64,7 @@ int object_isViewedAsBox (t_object *x);
 
 /* A badly created box object. */
 
+int obj_isDummy (t_gobj *x);
 int object_isDummy (t_object *x);
 
 // -----------------------------------------------------------------------------------------------------------

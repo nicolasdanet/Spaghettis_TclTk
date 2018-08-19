@@ -141,12 +141,23 @@ t_outconnect *traverser_next (t_traverser *t)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void traverser_disconnect (t_traverser *t)
+t_error traverser_disconnect (t_traverser *t, t_glist *glist)
 {
-    object_disconnect (t->tr_srcObject, t->tr_srcIndexOfOutlet, t->tr_destObject, t->tr_destIndexOfInlet);
+    t_object *src  = t->tr_srcObject;
+    t_object *dest = t->tr_destObject;
+    int m = t->tr_srcIndexOfOutlet;
+    int n = t->tr_destIndexOfInlet;
+    
+    t_error err = object_disconnect (src, m, dest, n);
+    
+    if (!err && glist) {
+        if (glist_undoIsOk (glist)) { glist_undoAppend (glist, undodisconnect_new (src, m, dest, n)); }
+    }
+    
+    return err;
 }
 
-int traverser_isItLineBetween (t_traverser *t, t_object *src, int m, t_object *dest, int n)
+int traverser_isLineBetween (t_traverser *t, t_object *src, int m, t_object *dest, int n)
 {
     if (t->tr_srcObject == src && t->tr_destObject == dest) {
     //

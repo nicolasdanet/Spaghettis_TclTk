@@ -124,7 +124,7 @@ int glist_deselectAll (t_glist *glist)
     t_selection *s = NULL;
     
     while ((s = editor_getSelection (glist_getEditor (glist)))) {
-        k |= glist_objectDeselect (glist, selection_getObject (s));
+        k |= glist_objectDeselect (glist, selection_getObject (s), 1);
     }
 
     if (editor_hasSelectedLine (glist_getEditor (glist))) { 
@@ -153,7 +153,7 @@ void glist_objectSelect (t_glist *glist, t_gobj *y)
 /* Return 1 if an object has been recreated. */
 /* Lines are cached to reconnect automatically the new object. */
 
-int glist_objectDeselect (t_glist *glist, t_gobj *y)
+int glist_objectDeselect (t_glist *glist, t_gobj *y, int withUndo)
 {
     int dspSuspended = 0;
     
@@ -187,7 +187,10 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y)
         if (t) { glist_lineCheck (glist, t); glist_updateLinesForObject (glist, t); }
         editor_boxSelect (glist_getEditor (glist), NULL);
         glist_redrawRequired (glist);
+        glist_setDirty (glist, 1);
     }
+    
+    if (withUndo && glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
     
     if (dspSuspended) { dsp_resume (dspSuspended); }
     
@@ -204,7 +207,7 @@ void glist_objectSelectIfNotSelected (t_glist *glist, t_gobj *y)
 
 int glist_objectDeselectIfSelected (t_glist *glist, t_gobj *y)
 {
-    if (glist_objectIsSelected (glist, y)) { return glist_objectDeselect (glist, y); }
+    if (glist_objectIsSelected (glist, y)) { return glist_objectDeselect (glist, y, 1); }
     
     return 0;
 }
@@ -227,7 +230,7 @@ int glist_objectIsSelected (t_glist *glist, t_gobj *y)
 
 void glist_objectSwapSelected (t_glist *glist, t_gobj *y)
 {
-    if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
+    if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y, 1); }
     else { 
         glist_objectSelect (glist, y);
     }
@@ -293,67 +296,92 @@ void glist_objectRemoveSelected (t_glist *glist)
     if (!onlyScalars) { glist_setDirty (glist, 1); }
     
     if (dspSuspended) { dsp_resume (dspState); }
+    
+    if (glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
 }
 
-void glist_objectSnapSelected (t_glist *glist)
+void glist_objectDisplaceProceed (t_glist *glist, t_gobj *object, int deltaX, int deltaY)
+{
+    gobj_displaced (object, glist, deltaX, deltaY);
+    
+    if (pd_class (object) == vinlet_class)  { glist_inletSort (glist);   }
+    if (pd_class (object) == voutlet_class) { glist_outletSort (glist);  }
+    if (!gobj_isScalar (object))            { glist_setDirty (glist, 1); }
+    
+    if (glist_undoIsOk (glist)) { glist_undoAppend (glist, undomotion_new (object, deltaX, deltaY)); }
+}
+
+void glist_objectSnapSelected (t_glist *glist, int withSnapUndo)
 {
     t_selection *y = NULL;
     
-    int sortInlets  = 0;
-    int sortOutlets = 0;
-    int isDirty     = 0;
+    int hasSnapUndo = !withSnapUndo;
+    int undoable = glist_undoIsOk (glist);
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
     //
     t_gobj *t = selection_getObject (y);
     
-    if (gobj_isScalar (t)) { scalar_snap (cast_scalar (t), glist); }
-    else {
-
-        int m = snap_getOffset (object_getX (cast_object (t)));
-        int n = snap_getOffset (object_getY (cast_object (t)));
+    int deltaX = 0;
+    int deltaY = 0;
+    
+    if (gobj_isScalar (t)) {
+    
+        t_scalar *x = cast_scalar (t);
         
-        if (m || n) {
-            gobj_displaced (t, glist, m, n);
-            sortInlets  |= (pd_class (t) == vinlet_class);
-            sortOutlets |= (pd_class (t) == voutlet_class);
-            isDirty = 1;
+        if (scalar_fieldIsFloat (x, sym_x)) {
+            deltaX = snap_getOffset ((int)(scalar_getFloat (x, sym_x) / glist_getValueForOnePixelX (glist)));
         }
+ 
+        if (scalar_fieldIsFloat (x, sym_y)) {
+            deltaY = snap_getOffset ((int)(scalar_getFloat (x, sym_y) / glist_getValueForOnePixelY (glist)));
+        }
+    
+    } else {
+        deltaX = snap_getOffset (object_getX (cast_object (t)));
+        deltaY = snap_getOffset (object_getY (cast_object (t)));
+    }
+    
+    if (deltaX || deltaY) {
+        if (undoable && !hasSnapUndo) { glist_undoAppend (glist, undosnap_new()); }
+        glist_objectDisplaceProceed (glist, t, deltaX, deltaY);
+        hasSnapUndo = 1;
     }
     //
     }
-    
-    if (sortInlets)  { glist_inletSort (glist);   }
-    if (sortOutlets) { glist_outletSort (glist);  }
-    if (isDirty)     { glist_setDirty (glist, 1); }
 }
 
 void glist_objectDisplaceSelected (t_glist *glist, int deltaX, int deltaY)
 {
+    if (deltaX || deltaY) {
+    //
     t_selection *y = NULL;
-    
-    int sortInlets  = 0;
-    int sortOutlets = 0;
-    int isDirty     = 0;
-    int onlyScalars = 1;
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
     //
-    t_gobj *t = selection_getObject (y);
-    
-    gobj_displaced (t, glist, deltaX, deltaY);
-    sortInlets  |= (pd_class (t) == vinlet_class);
-    sortOutlets |= (pd_class (t) == voutlet_class);
-    isDirty = 1;
-    
-    if (!gobj_isScalar (t)) { onlyScalars = 0; }
+    glist_objectDisplaceProceed (glist, selection_getObject (y), deltaX, deltaY);
+    //
+    }
+    //
+    }
+}
+
+t_error glist_objectDisplaceByUnique (t_id u, int deltaX, int deltaY)
+{
+    if (deltaX || deltaY) {
+    //
+    t_gobj *object = instance_registerGetObject (u);
+    t_glist *glist = instance_registerGetOwner (u);
+
+    if (object && glist) {
+    //
+    glist_objectDisplaceProceed (glist, object, deltaX, deltaY); return PD_ERROR_NONE;
+    //
+    }
     //
     }
     
-    if (sortInlets)  { glist_inletSort (glist);   }
-    if (sortOutlets) { glist_outletSort (glist);  }
-    
-    if (!onlyScalars && isDirty) { glist_setDirty (glist, 1); }
+    return PD_ERROR;
 }
 
 void glist_objectMoveSelected (t_glist *glist, int backward)
@@ -362,11 +390,18 @@ void glist_objectMoveSelected (t_glist *glist, int backward)
     
     int isDirty     = 0;
     int onlyScalars = 1;
+    int undoable    = glist_undoIsOk (glist);
     
     for (y = editor_getSelection (glist_getEditor (glist)); y; y = selection_getNext (y)) {
     //
     t_gobj *t = selection_getObject (y);
-    
+
+    if (undoable) {
+        glist_undoAppend (glist, backward
+            ? undoback_new (t, undosnippet_new (t, glist))
+            : undofront_new (t, undosnippet_new (t, glist)));
+    }
+
     if (backward) { glist_objectMoveAtFirst (glist, t); }
     else {
         glist_objectMoveAtLast (glist, t);
@@ -378,7 +413,11 @@ void glist_objectMoveSelected (t_glist *glist, int backward)
     //
     }
     
-    if (!onlyScalars && isDirty) { glist_setDirty (glist, 1); glist_redraw (glist); }
+    if (isDirty) { glist_redrawRequired (glist); }
+    
+    if (isDirty && !onlyScalars) { glist_setDirty (glist, 1); }
+
+    if (isDirty && glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

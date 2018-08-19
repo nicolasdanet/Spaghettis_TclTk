@@ -440,14 +440,14 @@ typedef struct _slots {
 typedef struct _pathregister {
     int                     pr_allocated;
     int                     pr_size;
-    t_unique                *pr_hashes;
+    uint64_t                *pr_hashes;
     } t_pathregister;
 
 typedef struct _pathlist {
     struct _pathlist        *pl_next;
     struct _pathregister    *pl_register;
     char                    *pl_string;
-    t_unique                pl_hash;
+    uint64_t                pl_hash;
     } t_pathlist;
 
 typedef struct _heapstring {
@@ -470,6 +470,7 @@ int         iterator_next                       (t_iterator *x, t_atom **a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_slots     *slots_new                          (void);
 t_buffer    *slots_getRaw                       (t_slots *x);
@@ -519,6 +520,38 @@ void        heapstring_clear                    (t_heapstring *x);
 
 void        heapstring_removeIfContainsAtEnd    (t_heapstring *x, char c);
 void        heapstring_removeIfContains         (t_heapstring *x, char c);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+typedef struct _registerelement {
+    t_id                    re_id;
+    t_id                    re_owner;
+    t_gobj                  *re_object;
+    } t_registerelement;
+
+typedef struct _register {
+    size_t                  r_allocated;
+    size_t                  r_size;
+    t_rand48                r_state;
+    t_registerelement       *r_raw;
+    } t_register;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_register  *register_new                       (void);
+
+void        register_free                       (t_register *x);
+void        register_add                        (t_register *x, t_id u, t_gobj *o, t_glist *owner);
+t_error     register_remove                     (t_register *x, t_id u);
+void        register_rename                     (t_register *x, t_id u, t_id newUnique);
+int         register_contains                   (t_register *x, t_id u);
+
+t_gobj      *register_getObject                 (t_register *x, t_id u);
+t_glist     *register_getOwner                  (t_register *x, t_id u);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

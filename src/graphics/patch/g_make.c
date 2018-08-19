@@ -142,6 +142,8 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     }
     
     glist_setDirty (glist, 1);
+    
+    if (glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
 }
 
 void canvas_makeFloatAtom (t_glist *glist, t_symbol *s, int argc, t_atom *argv)

@@ -125,11 +125,11 @@ void editor_selectionDeplace (t_editor *x)
     
     if (snap_hasSnapToGrid()) {
     //
-    if (drag_hasMovedOnce (editor_getDrag (x))) { glist_objectSnapSelected (x->e_owner); }
+    if (drag_hasMovedOnce (editor_getDrag (x))) { glist_objectSnapSelected (x->e_owner, 0); }
     //
     }
     
-    if (deltaX || deltaY) { glist_objectDisplaceSelected (x->e_owner, deltaX, deltaY); }
+    glist_objectDisplaceSelected (x->e_owner, deltaX, deltaY);
         
     drag_close (editor_getDrag (x));
 }

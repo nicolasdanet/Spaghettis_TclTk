@@ -15,7 +15,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define GLIST_REDRAW_DELAY              250.0
+#define GLIST_DELAY_REDRAW              281.0
+#define GLIST_DELAY_UNDO                107.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -36,6 +37,28 @@ void glist_updateTitle (t_glist *glist)
                     environment_getDirectoryAsString (glist_getEnvironment (glist)),
                     glist_getName (glist)->s_name,
                     glist_getDirty (glist));
+    //
+    }
+}
+
+void glist_updateUndo (t_glist *glist)
+{
+    if (glist_hasWindow (glist)) {
+    //
+    if (glist_undoHasSeparatorAtLast (glist)) {
+    
+        t_undomanager *undo = glist_getUndoManager (glist);
+        t_symbol *undoLabel = undomanager_getUndoLabel (undo);
+        t_symbol *redoLabel = undomanager_getRedoLabel (undo);
+        
+        gui_vAdd ("::ui_patch::setUndoAndRedo %s {%s} {%s}\n",      // --
+                    glist_getTagAsString (glist),
+                    undoLabel->s_name,
+                    redoLabel->s_name);
+        
+    } else {
+        clock_delay (glist->gl_clockUndo, GLIST_DELAY_UNDO);        /* Do it later. */
+    }
     //
     }
 }
@@ -523,6 +546,7 @@ void glist_windowEdit (t_glist *glist, int isEditMode)
     
     if (glist_isOnScreen (glist)) {
         gui_vAdd ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), hasEditMode);
+        if (hasEditMode) { gui_vAdd ("::ui_patch::askForUndoAndRedo %s\n", glist_getTagAsString (glist)); }
     }
 }
 
@@ -651,12 +675,12 @@ void glist_windowClose (t_glist *glist)
 
 void glist_redrawRequired (t_glist *glist)
 {
-    clock_delay (glist->gl_clock, GLIST_REDRAW_DELAY);
+    clock_delay (glist->gl_clockRedraw, GLIST_DELAY_REDRAW);
 }
 
 void glist_redraw (t_glist *glist)
 {
-    clock_unset (glist->gl_clock);
+    clock_unset (glist->gl_clockRedraw);
     
     if (glist_isOnScreen (glist)) {
     //

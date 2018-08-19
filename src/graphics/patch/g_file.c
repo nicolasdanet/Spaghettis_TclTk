@@ -48,7 +48,7 @@ static void canvas_saveProceed (t_glist *glist, t_symbol *name, t_symbol *direct
 {
     t_buffer *b = buffer_new();
     
-    glist_serialize (glist, b);
+    glist_serialize (glist, b, SAVE_DEFAULT);
     
     if (buffer_fileWrite (b, name, directory)) { error_failsToWrite (name); }
     else {

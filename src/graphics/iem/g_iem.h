@@ -233,6 +233,7 @@ void    iemgui_behaviorDeleted              (t_gobj *z, t_glist *glist);
 
 void    iemgui_serialize                    (t_iem *iem, t_iemnames *n, t_iemcolors *c);
 int     iemgui_fromDialog                   (t_iem *iem, int argc, t_atom *argv);
+void    iemgui_dirty                        (t_iem *iem, int isDirty, int isUndoable, t_undosnippet *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

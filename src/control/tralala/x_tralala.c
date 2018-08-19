@@ -119,7 +119,7 @@ static void tralala_restore (t_tralala *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static t_error tralala_data (t_gobj *z, t_buffer *b)
+static t_error tralala_data (t_gobj *z, t_buffer *b, int flags)
 {
     t_tralala *x = (t_tralala *)z;
     

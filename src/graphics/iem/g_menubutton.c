@@ -367,7 +367,7 @@ static void menubutton_motion (t_menubutton *x, t_float deltaX, t_float deltaY, 
     menubutton_delta += deltaY;
     
     if (menubutton_delta < -IEM_MENUBUTTON_DELTA) { menubutton_delta = 0.0; menubutton_previous (x); }
-    if (menubutton_delta >  IEM_MENUBUTTON_DELTA) { menubutton_delta = 0.0; menubutton_next (x); }
+    if (menubutton_delta > IEM_MENUBUTTON_DELTA)  { menubutton_delta = 0.0; menubutton_next (x); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -429,7 +429,7 @@ static int menubutton_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
-static void menubutton_functionSave (t_gobj *z, t_buffer *b)
+static void menubutton_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_menubutton *x = (t_menubutton *)z;
     t_iemnames names;
@@ -452,8 +452,28 @@ static void menubutton_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSymbol (b, colors.c_symColorBackground);
     buffer_appendSymbol (b, colors.c_symColorForeground);
     buffer_appendSymbol (b, colors.c_symColorLabel);
-    buffer_appendFloat (b,  x->x_gui.iem_loadbang ? x->x_index : 0.0);
+    buffer_appendFloat (b,  ((flags & SAVE_DEEP) || x->x_gui.iem_loadbang) ? x->x_index : 0.0);
     buffer_appendSemicolon (b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
+}
+
+static t_error menubutton_functionData (t_gobj *z, t_buffer *b, int flags)
+{
+    t_menubutton *x = (t_menubutton *)z;
+    
+    if ((flags & SAVE_DEEP) || x->x_saveWithParent) {
+    //
+    buffer_appendSymbol (b, sym__restore);
+    buffer_serialize (b, slots_getRaw (x->x_slots));
+    
+    return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
 }
 
 static void menubutton_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -484,6 +504,30 @@ static void menubutton_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
     stub_new (cast_pd (x), (void *)x, heapstring_getRaw (x->x_cachedString));
 }
 
+static void menubutton_functionUndo (t_gobj *z, t_buffer *b)
+{
+    t_menubutton *x = (t_menubutton *)z;
+    
+    t_iemnames names;
+
+    iemgui_serializeNames (cast_iem (z), &names);
+    
+    buffer_appendSymbol (b, sym__iemdialog);
+    buffer_appendFloat (b,  x->x_gui.iem_width);                /* Width. */
+    buffer_appendFloat (b,  -1.0);                              /* Height. */
+    buffer_appendFloat (b,  -1.0);                              /* Option1. */
+    buffer_appendFloat (b,  -1.0);                              /* Option2. */
+    buffer_appendFloat (b,  x->x_isScrollable);                 /* Check. */
+    buffer_appendFloat (b,  x->x_gui.iem_loadbang);             /* Loadbang. */
+    buffer_appendFloat (b,  -1.0);                              /* Extra. */
+    buffer_appendSymbol (b, names.n_unexpandedSend);            /* Send. */
+    buffer_appendSymbol (b, names.n_unexpandedReceive);         /* Receive. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorBackground);      /* Background color. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorForeground);      /* Foreground color. */
+    buffer_appendFloat (b,  -1.0);                              /* Steady. */
+    buffer_appendFloat (b,  x->x_saveWithParent);               /* Save. */
+}
+
 static void menubutton_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 {
     t_menubutton *x = (t_menubutton *)z;
@@ -493,12 +537,12 @@ static void menubutton_functionProperties (t_gobj *z, t_glist *owner, t_mouse *d
 
     iemgui_serializeNames (cast_iem (z), &names);
     
-    err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s {Menu Button}"
-            " %d %d Width 0 0 $::var(nil)"          // --
-            " -1 $::var(nil) -1 $::var(nil)"        // --
-            " %d Hold Scroll"                       // --
+    err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s {Menu Button}"    // --
+            " %d %d Width -1 -1 $::var(nil)"                                    // --
+            " -1 $::var(nil) -1 $::var(nil)"                                    // --
+            " %d Hold Scroll"                                                   // --
             " %d"
-            " -1 -1 $::var(nil)"                    // --
+            " -1 -1 $::var(nil)"                                                // --
             " %s %s"
             " %d %d"
             " -1"
@@ -515,22 +559,6 @@ static void menubutton_functionProperties (t_gobj *z, t_glist *owner, t_mouse *d
     stub_new (cast_pd (x), (void *)x, t);
 }
 
-static t_error menubutton_functionData (t_gobj *z, t_buffer *b)
-{
-    t_menubutton *x = (t_menubutton *)z;
-    
-    if (x->x_saveWithParent) {
-    //
-    buffer_appendSymbol (b, sym__restore);
-    buffer_serialize (b, slots_getRaw (x->x_slots));
-    
-    return PD_ERROR_NONE;
-    //
-    }
-    
-    return PD_ERROR;
-}
-
 static void menubutton_fromValue (t_menubutton *x, t_symbol *s, int argc, t_atom *argv)
 {
     menubutton_float (x, atom_getFloatAtIndex (0, argc, argv));
@@ -538,7 +566,8 @@ static void menubutton_fromValue (t_menubutton *x, t_symbol *s, int argc, t_atom
 
 static void menubutton_fromDialog (t_menubutton *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int isDirty = 0;
+    int isDirty  = 0;
+    int undoable = glist_undoIsOk (cast_iem (x)->iem_owner);
     
     int t0 = x->x_gui.iem_width;
     int t1 = x->x_saveWithParent;
@@ -546,6 +575,10 @@ static void menubutton_fromDialog (t_menubutton *x, t_symbol *s, int argc, t_ato
     
     PD_ASSERT (argc == IEM_DIALOG_SIZE);
     
+    t_undosnippet *snippet = NULL;
+    
+    if (undoable) { snippet = undosnippet_newProperties (cast_gobj (x), cast_iem (x)->iem_owner); }
+
     {
     //
     int width          = (int)atom_getFloatAtIndex (0,  argc, argv);
@@ -564,7 +597,7 @@ static void menubutton_fromDialog (t_menubutton *x, t_symbol *s, int argc, t_ato
     isDirty |= (t1 != x->x_saveWithParent);
     isDirty |= (t2 != x->x_isScrollable);
 
-    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
+    iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -704,9 +737,10 @@ void menubutton_setup (void)
 
     class_setWidgetBehavior (c, &menubutton_widgetBehavior);
     class_setSaveFunction (c, menubutton_functionSave);
-    class_setValueFunction (c, menubutton_functionValue);
-    class_setPropertiesFunction (c, menubutton_functionProperties);
     class_setDataFunction (c, menubutton_functionData);
+    class_setValueFunction (c, menubutton_functionValue);
+    class_setUndoFunction (c, menubutton_functionUndo);
+    class_setPropertiesFunction (c, menubutton_functionProperties);
     
     menubutton_class = c;
 }

@@ -48,11 +48,40 @@
 #include "core/m_slots.c"
 #include "core/m_pathlist.c"
 #include "core/m_heapstring.c"
+#include "core/m_register.c"
 #include "core/m_utils.c"
 #include "core/m_symbol.c"
 #include "core/m_color.c"
 #include "core/m_math.c"
 #include "core/m_string.c"
+
+/* Undo. */
+
+#include "undo/m_undosnippet.c"
+#include "undo/m_undoaction.c"
+#include "undo/m_undomanager.c"
+#include "undo/m_undocollapse.c"
+#include "undo/m_undoseparator.c"
+#include "undo/m_undoadd.c"
+#include "undo/m_undoremove.c"
+#include "undo/m_undocut.c"
+#include "undo/m_undopaste.c"
+#include "undo/m_undoduplicate.c"
+#include "undo/m_undosnap.c"
+#include "undo/m_undoencapsulate.c"
+#include "undo/m_undodeencapsulate.c"
+#include "undo/m_undoconnect.c"
+#include "undo/m_undodisconnect.c"
+#include "undo/m_undocreate.c"
+#include "undo/m_undodelete.c"
+#include "undo/m_undomotion.c"
+#include "undo/m_undoproperties.c"
+#include "undo/m_undoresizebox.c"
+#include "undo/m_undoresizegraph.c"
+#include "undo/m_undofront.c"
+#include "undo/m_undoback.c"
+#include "undo/m_undotyping.c"
+
 
 /* System. */
 

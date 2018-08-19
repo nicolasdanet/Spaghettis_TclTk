@@ -525,7 +525,7 @@ static int slider_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
-static void slider_functionSave (t_gobj *z, t_buffer *b)
+static void slider_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_slider *x = (t_slider *)z;
     
@@ -557,7 +557,12 @@ static void slider_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSymbol (b, colors.c_symColorLabel);
     buffer_appendFloat (b,  x->x_position);
     buffer_appendFloat (b,  x->x_isSteadyOnClick);
+    if (flags && SAVE_DEEP) { buffer_appendFloat (b, 1.0); }
     buffer_appendSemicolon (b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
 }
 
 static void slider_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -573,6 +578,30 @@ static void slider_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
     PD_UNUSED (err); PD_ASSERT (!err);
     
     stub_new (cast_pd (x), (void *)x, t);
+}
+
+static void slider_functionUndo (t_gobj *z, t_buffer *b)
+{
+    t_slider *x = (t_slider *)z;
+    
+    t_iemnames names;
+
+    iemgui_serializeNames (cast_iem (z), &names);
+    
+    buffer_appendSymbol (b, sym__iemdialog);
+    buffer_appendFloat (b,  x->x_gui.iem_width);                /* Width. */
+    buffer_appendFloat (b,  x->x_gui.iem_height);               /* Height. */
+    buffer_appendFloat (b,  x->x_minimum);                      /* Option1. */
+    buffer_appendFloat (b,  x->x_maximum);                      /* Option2. */
+    buffer_appendFloat (b,  x->x_isLogarithmic);                /* Check. */
+    buffer_appendFloat (b,  x->x_gui.iem_loadbang);             /* Loadbang. */
+    buffer_appendFloat (b,  -1.0);                              /* Extra. */
+    buffer_appendSymbol (b, names.n_unexpandedSend);            /* Send. */
+    buffer_appendSymbol (b, names.n_unexpandedReceive);         /* Receive. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorBackground);      /* Background color. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorForeground);      /* Foreground color. */
+    buffer_appendFloat (b,  x->x_isSteadyOnClick);              /* Steady. */
+    buffer_appendFloat (b,  -1.0);                              /* Save. */
 }
 
 static void slider_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -616,7 +645,8 @@ static void slider_fromValue (t_slider *x, t_symbol *s, int argc, t_atom *argv)
 
 static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int isDirty = 0;
+    int isDirty  = 0;
+    int undoable = glist_undoIsOk (cast_iem (x)->iem_owner);
     
     PD_ASSERT (argc == IEM_DIALOG_SIZE);
     
@@ -626,7 +656,11 @@ static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     int t3    = x->x_gui.iem_height;
     double t4 = x->x_minimum;
     double t5 = x->x_maximum;
-        
+    
+    t_undosnippet *snippet = NULL;
+    
+    if (undoable) { snippet = undosnippet_newProperties (cast_gobj (x), cast_iem (x)->iem_owner); }
+
     {
     //
     int width         = (int)atom_getFloatAtIndex (0, argc, argv);
@@ -656,7 +690,7 @@ static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t4 != x->x_minimum);
     isDirty |= (t5 != x->x_maximum);
     
-    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
+    iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -687,6 +721,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     double minimum      = 0.0;
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
     t_float position    = 0.0;
+    int deep            = 0;
 
     if (argc < 17) { iemgui_deserializeDefault (cast_iem (x)); }
     else {
@@ -700,8 +735,9 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     labelY          = (int)atom_getFloatAtIndex (10, argc, argv);
     labelFontSize   = (int)atom_getFloatAtIndex (12, argc, argv);
     position        = atom_getFloatAtIndex (16, argc, argv);
+    deep            = (argc > 18);
     
-    if (argc == 18) { isSteady = (int)atom_getFloatAtIndex (17, argc, argv); }
+    if (argc > 17) { isSteady = (int)atom_getFloatAtIndex (17, argc, argv); }
     
     iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (5, argc, argv));
     iemgui_deserializeNames (cast_iem (x), 6, argv);
@@ -725,7 +761,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
     
-    if (x->x_gui.iem_loadbang) { x->x_position = (int)position; }
+    if (deep || x->x_gui.iem_loadbang) { x->x_position = (int)position; }
     else {
         x->x_position = 0;
     }
@@ -811,6 +847,7 @@ void slider_setup (void)
     class_setHelpName (c, sym_slider);
     class_setSaveFunction (c, slider_functionSave);
     class_setValueFunction (c, slider_functionValue);
+    class_setUndoFunction (c, slider_functionUndo);
     class_setPropertiesFunction (c, slider_functionProperties);
     
     slider_class = c;

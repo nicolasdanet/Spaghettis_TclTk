@@ -47,11 +47,11 @@ typedef struct _oscformat {
 
 static char oscformat_getTypeFromSymbol (t_symbol *s)
 {
-    if (stamp_isTag (s))     { return 't'; }
-    else if (s == sym_true)  { return 'T'; }
-    else if (s == sym_false) { return 'F'; }
-    else if (s == sym_null)  { return 'N'; }
-    else if (s == &s_bang)   { return 'I'; }
+    if (stamp_isTagElement (s)) { return 't'; }
+    else if (s == sym_true)     { return 'T'; }
+    else if (s == sym_false)    { return 'F'; }
+    else if (s == sym_null)     { return 'N'; }
+    else if (s == &s_bang)      { return 'I'; }
     else {
         return 's';
     }

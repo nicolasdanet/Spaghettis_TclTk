@@ -98,18 +98,46 @@ int gobj_mouse (t_gobj *x, t_glist *owner, t_mouse *m)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void gobj_save (t_gobj *x, t_buffer *buffer)
+t_id gobj_getUnique (t_gobj *x)
 {
-    if (class_hasSaveFunction (pd_class (x))) { (*(class_getSaveFunction (pd_class (x)))) (x, buffer); }
+    return x->g_id;
+}
+
+void gobj_setUnique (t_gobj *x, t_id u)
+{
+    x->g_id = u;
+}
+
+void gobj_changeUnique (t_gobj *x, t_id u)
+{
+    instance_registerRename (x, u); gobj_setUnique (x, u);
+}
+
+void gobj_serializeUnique (t_gobj *x, t_symbol *s, t_buffer *b)
+{
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, s);
+    utils_appendUnique (b, gobj_getUnique (x));
+    buffer_appendSemicolon (b);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void gobj_save (t_gobj *x, t_buffer *b, int flags)
+{
+    if (class_hasSaveFunction (pd_class (x))) { (*(class_getSaveFunction (pd_class (x)))) (x, b, flags); }
+    
     if (class_hasDataFunction (pd_class (x))) {
     //
     t_buffer *t = buffer_new();
-    t_error err = (*(class_getDataFunction (pd_class (x)))) (x, t);
+    t_error err = (*(class_getDataFunction (pd_class (x)))) (x, t, flags);
 
     if (!err) {
-        buffer_appendSymbol (buffer, sym___hash__A);
-        buffer_appendBuffer (buffer, t);
-        buffer_appendSemicolon (buffer);
+        buffer_appendSymbol (b, sym___hash__A);
+        buffer_appendBuffer (b, t);
+        buffer_appendSemicolon (b);
     }
     
     buffer_free (t);
