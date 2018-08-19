@@ -76,6 +76,8 @@ proc configureForConsole {} {
     .menubar.file entryconfigure [_ "Save As..."]           -state disabled
     .menubar.file entryconfigure [_ "Close"]                -state disabled
     
+    .menubar.edit entryconfigure 0                          -state disabled
+    .menubar.edit entryconfigure 1                          -state disabled
     .menubar.edit entryconfigure [_ "Cut"]                  -state disabled
     .menubar.edit entryconfigure [_ "Copy"]                 -state normal
     .menubar.edit entryconfigure [_ "Paste"]                -state disabled
@@ -132,9 +134,9 @@ proc showPopup {top xcanvas ycanvas hasValue hasProperties hasOpen hasHelp hasOb
     set popupY $ycanvas
     
     if {$hasValue} {
-        .popup entryconfigure [_ "Value"]               -state normal
+        .popup entryconfigure [_ "Values"]              -state normal
     } else {
-        .popup entryconfigure [_ "Value"]               -state disabled
+        .popup entryconfigure [_ "Values"]              -state disabled
     }
     
     if {$hasProperties} {
@@ -181,6 +183,43 @@ proc showPopup {top xcanvas ycanvas hasValue hasProperties hasOpen hasHelp hasOb
     }
 
     }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc setUndo {content check} {
+
+    set label [_ "Undo"]
+    
+    if {$content ne $::var(nil)} {
+        set label [_ [format "Undo %s" [string totitle $content]]]
+        if {$check} { .menubar.edit entryconfigure 0 -state normal }
+    } else {
+        if {$check} { .menubar.edit entryconfigure 0 -state disabled }
+    }
+    
+    .menubar.edit entryconfigure 0 -label $label
+}
+
+proc setRedo {content check} {
+
+    set label [_ "Redo"]
+    
+    if {$content ne $::var(nil)} {
+        set label [_ [format "Redo %s" [string totitle $content]]]
+        if {$check} { .menubar.edit entryconfigure 1 -state normal }
+    } else {
+        if {$check} { .menubar.edit entryconfigure 1 -state disabled }
+    }
+    
+    .menubar.edit entryconfigure 1 -label $label
+}
+
+proc resetUndoAndRedo {} {
+    
+    .menubar.edit entryconfigure 0 -label [_ "Undo"]
+    .menubar.edit entryconfigure 1 -label [_ "Redo"]
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -321,6 +360,16 @@ proc _edit {m} {
     variable accelerator
     
     $m add command \
+        -label [_ "Undo"] \
+        -accelerator "${accelerator}+Z" \
+        -command { ::ui_menu::_handle _undo }
+    $m add command \
+        -label [_ "Redo"] \
+        -accelerator "Shift+${accelerator}+Z" \
+        -command { ::ui_menu::_handle _redo }
+    $m add separator
+        
+    $m add command \
         -label [_ "Cut"] \
         -accelerator "${accelerator}+X" \
         -command { ::ui_menu::_handle _cut }
@@ -393,11 +442,11 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::ui_menu::_handleDirty obj }
+        -command { ::ui_menu::_handle obj }
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::ui_menu::_handleDirty msg }
+        -command { ::ui_menu::_handle msg }
     $m add command \
         -label [_ "Atom"] \
         -accelerator "${accelerator}+3" \
@@ -409,7 +458,7 @@ proc _object {m} {
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::ui_menu::_handleDirty comment }
+        -command { ::ui_menu::_handle comment }
     $m add separator
     
     $m add command \
@@ -504,10 +553,10 @@ proc _popupObject {m} {
 
     $m.object add command \
         -label [_ "Object"] \
-        -command { ::ui_menu::_handleDirty obj }
+        -command { ::ui_menu::_handle obj }
     $m.object add command \
         -label [_ "Message"] \
-        -command { ::ui_menu::_handleDirty msg }
+        -command { ::ui_menu::_handle msg }
     $m.object add command \
         -label [_ "Atom"] \
         -command { ::ui_menu::_handleDirty floatatom }
@@ -516,7 +565,7 @@ proc _popupObject {m} {
         -command { ::ui_menu::_handleDirty symbolatom }
     $m.object add command \
         -label [_ "Comment"] \
-        -command { ::ui_menu::_handleDirty comment }
+        -command { ::ui_menu::_handle comment }
     $m.object add separator
     
     $m.object add command \
@@ -578,7 +627,7 @@ proc _popupObject {m} {
 proc _popup {m} {
 
     $m add command \
-        -label [_ "Value"] \
+        -label [_ "Values"] \
         -command { ::ui_menu::_doPopup $::var(windowFocused) 0 }
     $m add command \
         -label [_ "Properties"] \
@@ -617,11 +666,13 @@ proc _popup {m} {
 
 proc _copying {mode} {
 
-    .menubar.edit entryconfigure [_ "Cut"]              -state $mode
-    .menubar.edit entryconfigure [_ "Copy"]             -state $mode
-    .menubar.edit entryconfigure [_ "Paste"]            -state $mode
-    .menubar.edit entryconfigure [_ "Duplicate"]        -state $mode
-    .menubar.edit entryconfigure [_ "Select All"]       -state $mode
+    .menubar.edit entryconfigure 0                          -state $mode
+    .menubar.edit entryconfigure 1                          -state $mode
+    .menubar.edit entryconfigure [_ "Cut"]                  -state $mode
+    .menubar.edit entryconfigure [_ "Copy"]                 -state $mode
+    .menubar.edit entryconfigure [_ "Paste"]                -state $mode
+    .menubar.edit entryconfigure [_ "Duplicate"]            -state $mode
+    .menubar.edit entryconfigure [_ "Select All"]           -state $mode
 
 }
 

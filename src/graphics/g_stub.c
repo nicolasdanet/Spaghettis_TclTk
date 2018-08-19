@@ -156,7 +156,7 @@ void stub_setup (void)
             NULL, 
             (t_method)stub_free,
             sizeof (t_stub),
-            CLASS_NOBOX, 
+            CLASS_INVISIBLE, 
             A_NULL);
         
     class_addAnything (c, (t_method)stub_anything);

@@ -88,8 +88,8 @@ t_error     gpointer_getFieldAsString           (t_gpointer *gp, t_symbol *field
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         gpointer_getProperties              (t_gpointer *gp, t_heapstring *h);
-void        gpointer_setProperties              (t_gpointer *gp, int argc, t_atom *argv, int notify);
+int         gpointer_getValues                  (t_gpointer *gp, t_heapstring *h);
+void        gpointer_setValues                  (t_gpointer *gp, int argc, t_atom *argv, int notify);
 
 void        gpointer_setFields                  (t_gpointer *gp, int argc, t_atom *argv);
 t_error     gpointer_getFields                  (t_gpointer *gp, t_buffer *b);

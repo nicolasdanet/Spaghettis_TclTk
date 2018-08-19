@@ -51,11 +51,11 @@ typedef struct _position {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _pdinstance {
+typedef struct _pdinstance {
     t_stack         pd_stack;
     t_environment   pd_environment;
     t_position      pd_locate;
-    t_unique        pd_pollingCount;
+    uint64_t        pd_pollingCount;
     int             pd_overflowCount;
     int             pd_dspChainIdentifier;
     int             pd_dspChainSize;
@@ -72,14 +72,15 @@ struct _pdinstance {
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
-    };
+    t_register      *pd_register;
+    } t_pdinstance;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define INSTANCE_STACK          1024    /* Arbitrary. */
-#define INSTANCE_OVERFLOW       1000    /* Arbitrary. */
+#define INSTANCE_STACK          1024        /* Arbitrary. */
+#define INSTANCE_OVERFLOW       1000        /* Arbitrary. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -130,6 +131,19 @@ static inline t_pd *instance_getBoundX (void)
 void    instance_rootsAdd                       (t_glist *glist);
 void    instance_rootsRemove                    (t_glist *glist);
 void    instance_rootsFreeAll                   (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void    instance_registerAdd                    (t_gobj *o, t_glist *owner);
+t_error instance_registerRemove                 (t_gobj *o);
+void    instance_registerRename                 (t_gobj *o, t_id newUnique);
+
+int     instance_registerContains               (t_id u);
+
+t_gobj  *instance_registerGetObject             (t_id u);
+t_glist *instance_registerGetOwner              (t_id u);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

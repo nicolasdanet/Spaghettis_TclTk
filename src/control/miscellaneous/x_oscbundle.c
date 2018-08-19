@@ -111,7 +111,7 @@ static void oscbundle_parseStampThenCloseBundle (t_oscbundle *x, t_symbol *s, in
 {
     t_error err = PD_ERROR;
     
-    PD_ASSERT (stamp_isTag (s));
+    PD_ASSERT (stamp_isTagElement (s));
     
     if (argc == STAMP_TAGS_SIZE - 1) {
     //
@@ -141,7 +141,7 @@ static void oscbundle_list (t_oscbundle *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (stamp_isTag (t)) { oscbundle_parseStampThenCloseBundle (x, t, argc - 1, argv + 1); }
+    if (stamp_isTagElement (t)) { oscbundle_parseStampThenCloseBundle (x, t, argc - 1, argv + 1); }
     else {
         oscbundle_appendMessage (x, s, argc, argv);
     }
@@ -149,7 +149,7 @@ static void oscbundle_list (t_oscbundle *x, t_symbol *s, int argc, t_atom *argv)
 
 static void oscbundle_anything (t_oscbundle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (stamp_isTag (s)) { oscbundle_parseStampThenCloseBundle (x, s, argc, argv); }
+    if (stamp_isTagElement (s)) { oscbundle_parseStampThenCloseBundle (x, s, argc, argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

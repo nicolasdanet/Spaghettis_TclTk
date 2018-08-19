@@ -136,8 +136,9 @@ static void glist_makeLineProceed (t_glist *glist, int a, int b, int end)
     //
     if (!end) { glist_updateCursor (glist, CURSOR_CONNECT); }
     else {
-        t_cord t; cord_make (&t, object_connect (o1, k1, o2, k2), o1, k1, o2, k2, glist);
-        glist_drawLine (glist, &t);
+        t_error err = glist_objectConnect (glist, o1, k1, o2, k2);
+        PD_ASSERT (!err); PD_UNUSED (err);
+        if (glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
         glist_setDirty (glist, 1);
     }
     
@@ -202,22 +203,28 @@ static void glist_actionResizeRectangle (t_glist *glist, int a, int b)
     }
 }
 
-static void glist_actionResizeBox (t_glist *glist, t_gobj *y, int width)
+static void glist_actionResizeBoxProceed (t_glist *glist, t_gobj *y, int n)
 {
-    int w = (int)(width / font_getWidth (glist_getFontSize (glist)));
+    int m = object_getWidth (cast_object (y));
     
     gobj_visibilityChanged (y, glist, 0);
-    object_setWidth (cast_object (y), PD_MAX (1, w));
+    object_setWidth (cast_object (y), n);
     gobj_visibilityChanged (y, glist, 1);
     glist_updateLinesForObject (glist, cast_object (y));
     glist_setDirty (glist, 1);
+    
+    if (glist_undoIsOk (glist)) { glist_undoAppend (glist, undoresizebox_new (y, m, n)); }
 }
 
-static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
+static void glist_actionResizeBox (t_glist *glist, t_gobj *y, int width)
 {
-    if (!gobj_isCanvas (y)) { PD_BUG; }
-    else {
-    //
+    int n = (int)(width / font_getWidth (glist_getFontSize (glist)));
+    
+    glist_actionResizeBoxProceed (glist, y, PD_MAX (1, n));
+}
+
+static void glist_actionResizeGraphProceed (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
+{
     t_rectangle *r = glist_getGraphGeometry (cast_glist (y));
     
     int w = rectangle_getWidth (r) + deltaX;
@@ -233,7 +240,15 @@ static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int 
     glist_updateLinesForObject (glist, cast_object (y));
     glist_setDirty (glist, 1);
     glist_redrawRequired (glist);
-    //
+    
+    if (glist_undoIsOk (glist)) { glist_undoAppend (glist, undoresizegraph_new (y, deltaX, deltaY)); }
+}
+
+static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
+{
+    if (!gobj_isCanvas (y)) { PD_BUG; }
+    else {
+        glist_actionResizeGraphProceed (glist, y, deltaX, deltaY);
     }
 }
 
@@ -307,6 +322,52 @@ void glist_action (t_glist *glist, int a, int b, int m)
     }
     
     drag_setEnd (editor_getDrag (e), a, b);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error glist_resizeBoxByUnique (t_id u, int n)
+{
+    if (n >= 0) {
+    //
+    t_gobj *object = instance_registerGetObject (u);
+    t_glist *glist = instance_registerGetOwner (u);
+
+    if (object && glist) {
+    //
+    if (cast_objectIfConnectable (object) && object_isViewedAsBox (cast_object (object))) {
+        glist_actionResizeBoxProceed (glist, object, n);
+        return PD_ERROR_NONE;
+    }
+    //
+    }
+    //
+    }
+    
+    return PD_ERROR;
+}
+
+t_error glist_resizeGraphByUnique (t_id u, int deltaX, int deltaY)
+{
+    if (deltaX || deltaY) {
+    //
+    t_gobj *object = instance_registerGetObject (u);
+    t_glist *glist = instance_registerGetOwner (u);
+
+    if (object && glist) {
+    //
+    if (gobj_isCanvas (object)) {
+        glist_actionResizeGraphProceed (glist, object, deltaX, deltaY);
+        return PD_ERROR_NONE;
+    }
+    //
+    }
+    //
+    }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------

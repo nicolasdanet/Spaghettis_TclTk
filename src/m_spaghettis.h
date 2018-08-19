@@ -480,7 +480,7 @@
 
 #define CLASS_DEFAULT               0
 #define CLASS_ABSTRACT              1
-#define CLASS_NOBOX                 2
+#define CLASS_INVISIBLE             2
 #define CLASS_GRAPHIC               3
 #define CLASS_BOX                   4
 
@@ -514,12 +514,12 @@ typedef double                      t_systime;
     typedef unsigned int            t_keycode;          // uint32_t
     typedef unsigned long           t_rand48;           // uint64_t
     typedef unsigned long           t_seed;             // uint64_t
-    typedef unsigned long           t_unique;           // uint64_t
+    typedef unsigned long           t_id;               // uint64_t
 #else
     typedef unsigned long           t_keycode;
     typedef unsigned long long      t_rand48;
     typedef unsigned long long      t_seed;
-    typedef unsigned long long      t_unique;
+    typedef unsigned long long      t_id;
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -563,29 +563,20 @@ struct _class;
 struct _clock;
 struct _constructor;
 struct _dspcontext;
-struct _fielddescriptor;
 struct _garray;
 struct _gatom;
 struct _glist;
 struct _gmaster;
 struct _gpointer;
-struct _proxy;
 struct _inlet;
-struct _iterator;
-struct _listinletelement;
-struct _message;
 struct _outconnect;
 struct _outlet;
-struct _painterbehavior;
-struct _pdinstance;
 struct _receiver;
 struct _ringbuffer;
-struct _signal;
 struct _struct;
 struct _template;
 struct _vinlet;
 struct _voutlet;
-struct _widgetbehavior;
 
 #define t_array                     struct _array
 #define t_box                       struct _box
@@ -593,28 +584,20 @@ struct _widgetbehavior;
 #define t_clock                     struct _clock
 #define t_constructor               struct _constructor
 #define t_dspcontext                struct _dspcontext
-#define t_fielddescriptor           struct _fielddescriptor
 #define t_garray                    struct _garray
 #define t_gatom                     struct _gatom
 #define t_glist                     struct _glist
 #define t_gmaster                   struct _gmaster
 #define t_gpointer                  struct _gpointer
-#define t_proxy                     struct _proxy
 #define t_inlet                     struct _inlet
-#define t_listinletelement          struct _listinletelement
-#define t_message                   struct _message
 #define t_outconnect                struct _outconnect
 #define t_outlet                    struct _outlet
-#define t_painterbehavior           struct _painterbehavior
-#define t_pdinstance                struct _pdinstance
 #define t_receiver                  struct _receiver
 #define t_ringbuffer                struct _ringbuffer
-#define t_signal                    struct _signal
 #define t_struct                    struct _struct
 #define t_template                  struct _template
 #define t_vinlet                    struct _vinlet
 #define t_voutlet                   struct _voutlet
-#define t_widgetbehavior            struct _widgetbehavior
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -660,6 +643,7 @@ typedef t_class *t_pd;
 
 typedef struct _gobj {
     t_pd            g_pd;                       /* MUST be the first. */
+    t_id            g_id;
     struct _gobj    *g_next;
     } t_gobj;
 
@@ -700,7 +684,6 @@ typedef struct _object {
 typedef void    (*t_method)     (void *);
 typedef void    *(*t_newmethod) (void);
 typedef t_int   *(*t_perform)   (t_int *);
-typedef t_error (*t_datafn)     (t_gobj *, t_buffer *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -734,7 +717,7 @@ typedef t_error (*t_datafn)     (t_gobj *, t_buffer *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _signal {
+typedef struct _signal {
     t_float         s_sampleRate;
     int             s_vectorSize;
     int             s_overlap;
@@ -742,7 +725,7 @@ struct _signal {
     t_sample        *s_vector;
     t_sample        *s_unused;
     struct _signal  *s_next;
-    };
+    } t_signal;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -850,8 +833,6 @@ PD_DLL void     class_addAnything               (t_class *c, t_method fn);
 
 PD_DLL void     class_setHelpName               (t_class *c, t_symbol *s);
 PD_DLL void     class_setHelpDirectory          (t_class *c, t_symbol *s);
-
-PD_DLL void     class_setDataFunction           (t_class *c, t_datafn f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

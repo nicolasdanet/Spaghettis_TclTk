@@ -133,14 +133,10 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     else {
     //
     box_create (text);
-        
-    /* Edge cases when the width is changed in dialog for instance. */
-        
-    if (object_isAtom (x)) { box_update (text); }
     
-    /* Ditto pasting large text for instance. */
+    /* Required in various cases (width is changed in dialog and/or undo for instance). */
     
-    if (object_isComment (x)) { box_update (text); }
+    box_update (text);
     //
     }
     //

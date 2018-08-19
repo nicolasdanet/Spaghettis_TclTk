@@ -145,7 +145,9 @@ proc initialize {} {
     bind PdPatch    <Unmap>                 { ::ui_bind::_unmapped %W }
 
     bind all <Escape>                       { ::cancel %W }
-     
+    
+    bind all <<Undo>>                       { .menubar.edit     invoke 0                }
+    bind all <<Redo>>                       { .menubar.edit     invoke 1                }
     bind all <<Cut>>                        { .menubar.edit     invoke "Cut"            }
     bind all <<Copy>>                       { .menubar.edit     invoke "Copy"           }
     bind all <<Paste>>                      { .menubar.edit     invoke "Paste"          }
@@ -241,20 +243,24 @@ proc _focusIn {top} {
         "Spaghettis"        {
             ::ui_menu::configureForConsole
             ::ui_menu::disableEditing
+            ::ui_menu::resetUndoAndRedo
             set ::var(isEditMode) 0
         }
         "PdPatch"           {
             ::ui_menu::configureForPatch
             ::ui_patch::setEditMode $top
+            ::ui_patch::askForUndoAndRedo $top
         }
         "PdText"            {
             ::ui_menu::configureForText
             ::ui_menu::disableEditing
+            ::ui_menu::resetUndoAndRedo
             set ::var(isEditMode) 0
         }
         "PdTool|PdDialog"   { 
             ::ui_menu::configureForDialog
             ::ui_menu::disableEditing
+            ::ui_menu::resetUndoAndRedo
             set ::var(isEditMode) 0
         }
     }

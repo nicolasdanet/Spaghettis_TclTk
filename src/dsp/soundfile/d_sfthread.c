@@ -202,7 +202,7 @@ void sfthread_setup (void)
             NULL,
             (t_method)sfthread_free,
             sizeof (t_sfthread),
-            CLASS_NOBOX,
+            CLASS_INVISIBLE,
             A_NULL);
     
     class_addAutorelease (c, (t_method)sfthread_autorelease);

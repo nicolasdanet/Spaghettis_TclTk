@@ -15,7 +15,6 @@
 // MARK: -
 
 t_error     utils_version                   (char *dest, size_t size);
-t_unique    utils_unique                    (void);
 
 void        utils_anythingToList            (t_pd *x, t_listmethod fn, t_symbol *s, int argc, t_atom *argv);
 
@@ -25,6 +24,14 @@ t_symbol    *utils_getFirstAtomOfObject     (t_object *x);
 t_symbol    *utils_getFirstAtomOfBuffer     (t_buffer *x);
 
 int         utils_isNameAllowedForWindow    (t_symbol *s);
+
+t_id        utils_unique                    (void);
+t_error     utils_uniqueWithAtoms           (int argc, t_atom *argv, t_id *u);
+void        utils_appendUnique              (t_buffer *b, t_id u);
+
+int         utils_uInt64IsElement           (t_symbol *s);
+t_error     utils_uInt64Serialize           (int argc, t_atom *argv, uint64_t *n);
+t_error     utils_uInt64Deserialize         (int argc, t_atom *argv, uint64_t *n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -94,7 +101,7 @@ t_error     string_clear                                (char *dest, size_t size
 
 t_error     string_escapeOccurrence                     (char *dest, size_t size, const char *chars);
 
-t_unique    string_hash                                 (const char *s);
+uint64_t    string_hash                                 (const char *s);
 
 int         string_startWith                            (const char *s, const char *isStart);
 int         string_endWith                              (const char *s, const char *isEnd);

@@ -169,9 +169,9 @@ t_error string_escapeOccurrence (char *dest, size_t size, const char *chars)
 
 /* < http://www.cse.yorku.ca/~oz/hash.html > */
 
-t_unique string_hash (const char *s)
+uint64_t string_hash (const char *s)
 {
-    t_unique hash = 5381;
+    uint64_t hash = 5381;
     int c;
     
     while ((c = *s++)) { hash = ((hash << 5) + hash) + c; }

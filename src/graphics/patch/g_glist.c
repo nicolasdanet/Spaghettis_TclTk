@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void glist_task (t_glist *glist)
+static void glist_taskRedraw (t_glist *glist)
 {
     glist_redraw (glist);
 }
@@ -39,9 +39,11 @@ static t_glist *glist_new (t_glist *owner,
     x->gl_holder            = gmaster_createWithGlist (x);
     x->gl_parent            = owner;
     x->gl_environment       = instance_environmentFetchIfAny();
+    x->gl_undomanager       = undomanager_new();
     x->gl_name              = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_editor            = editor_new (x);
-    x->gl_clock             = clock_new ((void *)x, (t_method)glist_task);
+    x->gl_clockRedraw       = clock_new ((void *)x, (t_method)glist_taskRedraw);
+    x->gl_clockUndo         = clock_new ((void *)x, (t_method)glist_updateUndo);
     x->gl_uniqueIdentifier  = utils_unique();
     
     glist_setFontSize (x , (owner ? glist_getFontSize (owner) : font_getDefaultSize()));
@@ -65,10 +67,13 @@ void glist_free (t_glist *glist)
     
     glist_unbind (glist);
     
-    clock_free (glist->gl_clock);
+    clock_free (glist->gl_clockRedraw);
+    clock_free (glist->gl_clockUndo);
     editor_free (glist_getEditor (glist));
     environment_free (glist->gl_environment);
     gmaster_reset (glist_getMaster (glist));
+    
+    undomanager_free (glist->gl_undomanager);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -222,6 +227,11 @@ int glist_isWindowable (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_glist *glist_getRoot (t_glist *glist)
+{
+    if (glist_isRoot (glist)) { return glist; } else { return glist_getRoot (glist_getParent (glist)); }
+}
+
 t_glist *glist_getTop (t_glist *glist)
 {
     if (glist_isTop (glist)) { return glist; } else { return glist_getTop (glist_getParent (glist)); }
@@ -230,6 +240,11 @@ t_glist *glist_getTop (t_glist *glist)
 t_environment *glist_getEnvironment (t_glist *glist)
 {
     return (glist_getTop (glist)->gl_environment);
+}
+
+t_undomanager *glist_getUndoManager (t_glist *glist)
+{
+    return glist->gl_undomanager;
 }
 
 t_glist *glist_getView (t_glist *glist)
@@ -275,11 +290,11 @@ void glist_setName (t_glist *glist, t_symbol *name)
 
 void glist_setDirty (t_glist *glist, int n)
 {
-    int isDirty = (n != 0);
-        
-    t_glist *y = glist_getTop (glist);
+    int isDirty       = (n != 0);
+    t_glist *y        = glist_getTop (glist);
+    int isAbstraction = glist_isAbstraction (y);
     
-    if (!glist_isAbstraction (y)) {
+    if (!isAbstraction) {
     //
     if (y->gl_isDirty != isDirty) {
     //
@@ -337,6 +352,15 @@ void glist_setGraphGeometry (t_glist *glist, t_rectangle *r, t_bounds *bounds, i
 void glist_setWindowGeometry (t_glist *glist, t_rectangle *r)
 {
     rectangle_setCopy (glist_getWindowGeometry (glist), r);
+}
+
+void glist_setUnique (t_glist *glist, int argc, t_atom *argv)
+{
+    t_id u; t_error err = utils_uniqueWithAtoms (argc, argv, &u);
+    
+    PD_ASSERT (!err); PD_UNUSED (err);
+    
+    gobj_changeUnique (cast_gobj (glist), u);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -498,6 +522,57 @@ int glist_fileOpen (t_glist *glist, const char *name, const char *extension, t_f
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int glist_undoIsOk (t_glist *glist)
+{
+    if (glist_isAbstraction (glist) || glist_isArray (glist)) { return 0; }
+
+    return (glist_hasUndo (glist) && undomanager_isNotRecursive (glist_getUndoManager (glist)));
+}
+
+int glist_undoHasSeparatorAtLast (t_glist *glist)
+{
+    return (undomanager_hasSeparatorAtLast (glist_getUndoManager (glist)));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void glist_undoAppendSeparator (t_glist *glist)
+{
+    if (!glist_undoHasSeparatorAtLast (glist)) {
+    //
+    undomanager_appendSeparator (glist_getUndoManager (glist));
+    
+    glist_updateUndo (glist);
+    //
+    }
+}
+
+static void glist_undoAppendProceed (t_glist *glist, t_undoaction *a, int scheduled)
+{
+    t_undomanager *undo = glist_getUndoManager (glist);
+    
+    undomanager_append (undo, a);
+    
+    if (scheduled) { undomanager_appendSeparatorLater (undo); }
+    
+    glist_updateUndo (glist);
+}
+
+void glist_undoAppendUnscheduled (t_glist *glist, t_undoaction *a)
+{
+    glist_undoAppendProceed (glist, a, 0);
+}
+
+void glist_undoAppend (t_glist *glist, t_undoaction *a)
+{
+    glist_undoAppendProceed (glist, a, 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_buffer *t)
 {
     instance_setNewestObject (NULL);
@@ -588,6 +663,24 @@ void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
     }
 }
 
+void glist_objectSetUniqueOfLast (t_glist *glist, int argc, t_atom *argv)
+{
+    if (glist->gl_graphics) {
+    //
+    t_gobj *g1 = NULL;
+    t_gobj *g2 = NULL;
+    
+    t_id u; t_error err = utils_uniqueWithAtoms (argc, argv, &u);
+    
+    PD_ASSERT (!err); PD_UNUSED (err);
+    
+    for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
+    
+    gobj_changeUnique (g1, u);
+    //
+    }
+}
+
 void glist_objectSetWidthOfLast (t_glist *glist, int w)
 {
     if (glist->gl_graphics) {
@@ -629,6 +722,8 @@ static void glist_objectAddProceed (t_glist *glist, t_gobj *y, t_gobj *first, in
     }
     //
     }
+    
+    instance_registerAdd (y, glist);
 }
 
 void glist_objectAddNext (t_glist *glist, t_gobj *y, t_gobj *first)
@@ -638,6 +733,15 @@ void glist_objectAddNext (t_glist *glist, t_gobj *y, t_gobj *first)
     if (needToRepaint) { paint_erase(); }
     
     glist_objectAddProceed (glist, y, first, 0);
+    
+    if (glist_undoIsOk (glist)) {
+        t_undosnippet *snippet = undosnippet_newSave (y, glist);
+        if (glist_undoHasSeparatorAtLast (glist)) { glist_undoAppend (glist, undoadd_new()); }
+        if (obj_isDummy (y)) { glist_undoAppendUnscheduled (glist, undocreate_new (y, snippet)); }
+        else {
+            glist_undoAppend (glist, undocreate_new (y, snippet));
+        }
+    }
     
     if (cast_objectIfConnectable (y)) { editor_boxAdd (glist_getEditor (glist), cast_object (y)); }
     if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
@@ -655,6 +759,8 @@ void glist_objectAdd (t_glist *glist, t_gobj *y)
 
 static void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
 {
+    instance_registerRemove (y);
+    
     if (glist->gl_graphics == y) { glist->gl_graphics = y->g_next; }
     else {
         t_gobj *t = NULL;
@@ -668,23 +774,37 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
 {
     int needToRebuild = class_hasDSP (pd_class (y));
     int needToRepaint = class_hasPainterBehavior (pd_class (y)) || (pd_class (y) == struct_class);
+    int undoable      = glist_undoIsOk (glist);
     
     glist_deleteBegin (glist);
     
     editor_motionUnset (glist_getEditor (glist), y);
     
-    if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y); }
+    if (glist_objectIsSelected (glist, y)) { glist_objectDeselect (glist, y, 0); }
     if (needToRepaint) { paint_erase(); }
     if (glist_isOnScreen (glist)) { gobj_visibilityChanged (y, glist, 0); }
     if (gobj_isCanvas (y)) { glist_closebang (cast_glist (y)); }
     
     {
         t_box *box = NULL;
-        
+    
         if (cast_objectIfConnectable (y)) { box = box_fetch (glist, cast_object (y)); }
+    
+        if (undoable && glist_undoHasSeparatorAtLast (glist)) {
+            glist_undoAppend (glist, undoremove_new());
+        }
+    
+        {
+            t_undosnippet *snippet = NULL;
         
-        gobj_deleted (y, glist); 
-        glist_objectRemoveProceed (glist, y); 
+            if (undoable) { snippet = undosnippet_newSave (y, glist); }     /* MUST be before call below. */
+        
+            gobj_deleted (y, glist);
+    
+            if (undoable) { glist_undoAppend (glist, undodelete_new (y, snippet)); }
+        }
+    
+        glist_objectRemoveProceed (glist, y);
         pd_free (cast_pd (y));
 
         if (box) {
@@ -698,6 +818,20 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
     glist->gl_uniqueIdentifier = utils_unique();    /* Invalidate all pointers. */
     
     glist_deleteEnd (glist);
+}
+
+t_error glist_objectRemoveByUnique (t_id u)
+{
+    t_gobj *object = instance_registerGetObject (u);
+    t_glist *glist = instance_registerGetOwner (u);
+
+    if (object && glist) {
+    //
+    glist_objectRemove (glist, object); return PD_ERROR_NONE;
+    //
+    }
+
+    return PD_ERROR;
 }
 
 /* If needed the DSP is suspended to avoid multiple rebuilds. */
@@ -785,6 +919,11 @@ int glist_objectGetNumberOf (t_glist *glist)
     return glist_objectGetIndexOf (glist, NULL);
 }
 
+int glist_objectMoveGetPosition (t_glist *glist, t_gobj *y)
+{
+    return glist_objectGetIndexOf (glist, y);
+}
+
 void glist_objectMoveAtFirst (t_glist *glist, t_gobj *y)
 {
     glist_objectRemoveProceed (glist, y);
@@ -795,6 +934,62 @@ void glist_objectMoveAtLast (t_glist *glist, t_gobj *y)
 {
     glist_objectRemoveProceed (glist, y);
     glist_objectAddProceed (glist, y, NULL, 0);
+}
+
+void glist_objectMoveAt (t_glist *glist, t_gobj *y, int n)
+{
+    if (n < 1) { glist_objectMoveAtFirst (glist, y); }
+    else {
+    //
+    glist_objectRemoveProceed (glist, y);
+    glist_objectAddProceed (glist, y, glist_objectGetAt (glist, (n - 1)), 0);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_error glist_objectMoveAtFirstByUnique (t_id u)
+{
+    t_gobj *object = instance_registerGetObject (u);
+    t_glist *glist = instance_registerGetOwner (u);
+
+    if (object && glist) {
+    //
+    glist_objectMoveAtFirst (glist, object); glist_redrawRequired (glist); return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
+}
+
+t_error glist_objectMoveAtLastByUnique (t_id u)
+{
+    t_gobj *object = instance_registerGetObject (u);
+    t_glist *glist = instance_registerGetOwner (u);
+
+    if (object && glist) {
+    //
+    glist_objectMoveAtLast (glist, object); glist_redrawRequired (glist); return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
+}
+
+t_error glist_objectMoveAtByUnique (t_id u, int n)
+{
+    t_gobj *object = instance_registerGetObject (u);
+    t_glist *glist = instance_registerGetOwner (u);
+
+    if (object && glist) {
+    //
+    glist_objectMoveAt (glist, object, n); glist_redrawRequired (glist); return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -814,7 +1009,9 @@ void glist_objectDeleteLines (t_glist *glist, t_object *o)
     int n = (traverser_getDestination (&t) == o);
     
     if (m || n) {
-        glist_eraseLine (glist, traverser_getCord (&t)); traverser_disconnect (&t);
+    //
+    glist_eraseLine (glist, traverser_getCord (&t)); traverser_disconnect (&t, glist);
+    //
     }
     //
     }
@@ -832,8 +1029,10 @@ static void glist_objectDeleteLinesByInlets (t_glist *glist, t_object *o, t_inle
     int m = (traverser_getSource (&t) == o && traverser_getOutlet (&t) == outlet);
     int n = (traverser_getDestination (&t) == o && traverser_getInlet (&t) == inlet);
     
-    if (m || n) { 
-        glist_eraseLine (glist, traverser_getCord (&t)); traverser_disconnect (&t); 
+    if (m || n) {
+    //
+    glist_eraseLine (glist, traverser_getCord (&t)); traverser_disconnect (&t, glist);
+    //
     }
     //
     }
@@ -847,6 +1046,30 @@ void glist_objectDeleteLinesByInlet (t_glist *glist, t_object *o, t_inlet *inlet
 void glist_objectDeleteLinesByOutlet (t_glist *glist, t_object *o, t_outlet *outlet)
 {
     glist_objectDeleteLinesByInlets (glist, o, NULL, outlet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error glist_objectConnect (t_glist *glist, t_object *src, int m, t_object *dest, int n)
+{
+    t_outconnect *connection = NULL;
+
+    if ((connection = object_connect (src, m, dest, n))) {
+    //
+    if (glist_isOnScreen (glist)) {
+        t_cord t; cord_make (&t, connection, src, m, dest, n, glist);
+        glist_drawLine (glist, &t);
+    }
+    
+    if (glist_undoIsOk (glist)) { glist_undoAppend (glist, undoconnect_new (src, m, dest, n)); }
+
+    return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -948,6 +1171,10 @@ void glist_inletSort (t_glist *glist)
     //
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
 {
@@ -1079,7 +1306,7 @@ int glist_lineExist (t_glist *glist, t_object *o, int m, t_object *i, int n)
     traverser_start (&t, glist);
     
     while ((connection = traverser_next (&t))) { 
-        if (traverser_isItLineBetween (&t, o, m, i, n)) { 
+        if (traverser_isLineBetween (&t, o, m, i, n)) {
             return 1; 
         } 
     }
@@ -1093,8 +1320,8 @@ t_error glist_lineConnect (t_glist *glist,
     int indexOfObjectIn,
     int indexOfInlet)
 {
-    t_gobj *src  = glist_objectGetAt (glist, indexOfObjectOut);
-    t_gobj *dest = glist_objectGetAt (glist, indexOfObjectIn);
+    t_gobj *src          = glist_objectGetAt (glist, indexOfObjectOut);
+    t_gobj *dest         = glist_objectGetAt (glist, indexOfObjectIn);
     t_object *srcObject  = cast_objectIfConnectable (src);
     t_object *destObject = cast_objectIfConnectable (dest);
     
@@ -1102,9 +1329,9 @@ t_error glist_lineConnect (t_glist *glist,
     //
     int m = indexOfOutlet;
     int n = indexOfInlet;
-    t_outconnect *connection = NULL;
     
-    /* Creates dummy outlets and inlets (failure at object creation). */
+    /* Creates dummy outlets and inlets. */
+    /* It is required in case of failure at object creation. */
     
     if (object_isDummy (srcObject)) {
         while (m >= object_getNumberOfOutlets (srcObject)) {
@@ -1118,14 +1345,31 @@ t_error glist_lineConnect (t_glist *glist,
         }
     }
 
-    if ((connection = object_connect (srcObject, m, destObject, n))) {
+    return glist_objectConnect (glist, srcObject, m, destObject, n);
     //
-    if (glist_isOnScreen (glist)) {
-        t_cord t; cord_make (&t, connection, srcObject, m, destObject, n, glist);
-        glist_drawLine (glist, &t);
     }
     
-    return PD_ERROR_NONE;
+    return PD_ERROR;
+}
+
+t_error glist_lineConnectByUnique (t_id u, int indexOfOutlet, t_id v, int indexOfInlet)
+{
+    t_gobj *src          = instance_registerGetObject (u);
+    t_gobj *dest         = instance_registerGetObject (v);
+
+    if (src && dest) {
+    //
+    t_object *srcObject  = cast_objectIfConnectable (src);
+    t_object *destObject = cast_objectIfConnectable (dest);
+    
+    if (srcObject && destObject) {
+    //
+    t_glist *srcOwner    = instance_registerGetOwner (u);
+    t_glist *destOwner   = instance_registerGetOwner (v);
+    
+    if (srcOwner && (srcOwner == destOwner)) {
+        return glist_objectConnect (srcOwner, srcObject, indexOfOutlet, destObject, indexOfInlet);
+    }
     //
     }
     //
@@ -1155,10 +1399,50 @@ t_error glist_lineDisconnect (t_glist *glist,
 
             if (m == indexOfObjectOut && n == indexOfObjectIn) {
                 glist_eraseLine (glist, traverser_getCord (&t));
-                traverser_disconnect (&t);
+                traverser_disconnect (&t, glist);
                 return PD_ERROR_NONE;
             }
         }
+    }
+    //
+    }
+    
+    return PD_ERROR;
+}
+
+t_error glist_lineDisconnectByUnique (t_id u, int indexOfOutlet, t_id v, int indexOfInlet)
+{
+    t_glist *srcOwner  = instance_registerGetOwner (u);
+    t_glist *destOwner = instance_registerGetOwner (v);
+    
+    if (srcOwner && (srcOwner == destOwner)) {
+    //
+    t_gobj *src  = instance_registerGetObject (u);
+    t_gobj *dest = instance_registerGetObject (v);
+    
+    if (src && dest) {
+    //
+    t_outconnect *connection = NULL;
+    t_traverser t;
+    
+    traverser_start (&t, srcOwner);
+    
+    while ((connection = traverser_next (&t))) {
+    //
+    if (indexOfOutlet == traverser_getIndexOfOutlet (&t)) {
+    if (indexOfInlet  == traverser_getIndexOfInlet (&t)) {
+    if (src           == cast_gobj (traverser_getSource (&t))) {
+    if (dest          == cast_gobj (traverser_getDestination (&t))) {
+    //
+    glist_eraseLine (srcOwner, traverser_getCord (&t)); return traverser_disconnect (&t, srcOwner);
+    //
+    }
+    }
+    }
+    }
+    //
+    }
+    //
     }
     //
     }
@@ -1171,6 +1455,7 @@ void glist_lineDeleteSelected (t_glist *glist)
     if (editor_hasSelectedLine (glist_getEditor (glist))) {
         editor_selectedLineDisconnect (glist_getEditor (glist));
         glist_setDirty (glist, 1);
+        if (glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
     }
 }
 
@@ -1193,7 +1478,7 @@ void glist_lineCheck (t_glist *glist, t_object *o)
         int n = traverser_getIndexOfInlet (&t);
         
         if (object_isSignalOutlet (o1, m) && !object_isSignalInlet (o2, n)) {
-            traverser_disconnect (&t); error_failed (sym_connect);
+            traverser_disconnect (&t, NULL); error_failed (sym_connect);
         }
     }
     }

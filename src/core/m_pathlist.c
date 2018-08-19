@@ -32,7 +32,7 @@ static t_pathregister *pathregister_new (void)
     
     x->pr_size      = 0;
     x->pr_allocated = PATHREGISTER_DEFAULT;
-    x->pr_hashes    = (t_unique *)PD_MEMORY_GET (sizeof (t_unique) * x->pr_allocated);
+    x->pr_hashes    = (uint64_t *)PD_MEMORY_GET (sizeof (uint64_t) * x->pr_allocated);
     
     return x;
 }
@@ -48,13 +48,13 @@ static int pathregister_size (t_pathregister *x)
     return x->pr_size;
 }
 
-static void pathregister_add (t_pathregister *x, t_unique hash)
+static void pathregister_add (t_pathregister *x, uint64_t hash)
 {
     if (x->pr_size >= x->pr_allocated) {
     //
-    size_t oldSize = sizeof (t_unique) * x->pr_allocated;
-    size_t newSize = sizeof (t_unique) * x->pr_allocated * 2;
-    x->pr_hashes = (t_unique *)PD_MEMORY_RESIZE (x->pr_hashes, oldSize, newSize);
+    size_t oldSize = sizeof (uint64_t) * x->pr_allocated;
+    size_t newSize = sizeof (uint64_t) * x->pr_allocated * 2;
+    x->pr_hashes = (uint64_t *)PD_MEMORY_RESIZE (x->pr_hashes, oldSize, newSize);
     x->pr_allocated *= 2;
     //
     }
@@ -62,7 +62,7 @@ static void pathregister_add (t_pathregister *x, t_unique hash)
     x->pr_hashes[x->pr_size] = hash; x->pr_size++;
 }
 
-static void pathregister_remove (t_pathregister *x, t_unique hash)
+static void pathregister_remove (t_pathregister *x, uint64_t hash)
 {
     if (x->pr_size) {
     //
@@ -82,7 +82,7 @@ static void pathregister_remove (t_pathregister *x, t_unique hash)
     }
 }
 
-static int pathregister_contains (t_pathregister *x, t_unique hash)
+static int pathregister_contains (t_pathregister *x, uint64_t hash)
 {
     int i, k = 0;
     
@@ -100,7 +100,7 @@ t_pathlist *pathlist_newAppend (t_pathlist *x, t_pathlist **duplicates, const ch
     if (*s) {
     //
     int k = -1;
-    t_unique hash   = string_hash (s);
+    uint64_t hash   = string_hash (s);
     t_pathlist *l1  = x;
     t_pathlist *l2  = NULL;
     

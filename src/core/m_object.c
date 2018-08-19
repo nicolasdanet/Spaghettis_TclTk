@@ -16,6 +16,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int obj_isDummy (t_gobj *x)
+{
+    return object_isDummy (cast_object (x));
+}
+
 int object_isDummy (t_object *x)
 {
     return (pd_class (x) == text_class && object_isObject (x));
@@ -27,9 +32,20 @@ int object_isDummy (t_object *x)
 
 t_object *object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
 {
+    int undoable = glist_undoIsOk (glist);
+    
+    t_undosnippet *s1 = NULL;
+    t_undosnippet *s2 = NULL;
+    
     char *s = NULL; int size;
-
+    
     box_getText (z, &s, &size);
+    
+    if (undoable && (object_isMessage (x) || object_isComment (x))) {
+    //
+    s1 = undosnippet_newCopy (cast_gobj (x), glist);
+    //
+    }
     
     if (!object_isObject (x)) { buffer_withStringUnzeroed (object_getBuffer (x), s, size); }
     else {
@@ -79,7 +95,19 @@ t_object *object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
     //
     }
     
+    if (object_isMessage (x) || object_isComment (x)) {
+    //
     if (object_isMessage (x)) { message_dirty ((t_message *)x); box_retext (z); }
+    
+    if (undoable) {
+    //
+    s2 = undosnippet_newCopy (cast_gobj (x), glist);
+    
+    glist_undoAppend (glist, undotyping_new (cast_gobj (x), s1, s2));
+    //
+    }
+    //
+    }
     
     return x;
 }
@@ -181,17 +209,19 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
         }
     }
 
-    oc = outlet_addConnection (o, receiver);
+    oc = outlet_addConnection (o, receiver);            /* Can be NULL if connection already exists. */
     
-    if (outlet_isSignal (o)) { dsp_update(); }
+    if (oc && outlet_isSignal (o)) { dsp_update(); }
     //
     }
     
     return oc;
 }
 
-void object_disconnect (t_object *src, int m, t_object *dest, int n)
+t_error object_disconnect (t_object *src, int m, t_object *dest, int n)
 {
+    t_error err = PD_ERROR;
+    
     t_outlet *o = NULL;
     
     PD_ASSERT (m >= 0);
@@ -207,17 +237,19 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     
     if (receiver == NULL) {
         t_inlet *i = NULL; for (i = dest->te_inlets; i && n; i = inlet_getNext (i), n--) { }
-        if (i == NULL) { return; }
+        if (i == NULL) { return PD_ERROR; }
         else {
             receiver = cast_pd (i);
         }
     }
 
-    outlet_removeConnection (o, receiver);
+    err = outlet_removeConnection (o, receiver);
     
-    if (outlet_isSignal (o)) { dsp_update(); }
+    if (!err && outlet_isSignal (o)) { dsp_update(); }
     //
     }
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

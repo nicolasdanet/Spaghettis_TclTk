@@ -170,31 +170,6 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void scalar_snap (t_scalar *x, t_glist *glist)
-{
-    t_template *tmpl = scalar_getTemplate (x);
-    int deltaX = 0;
-    int deltaY = 0;
-    
-    if (template_fieldIsFloat (tmpl, sym_x)) {
-        t_float f = word_getFloat (x->sc_element, tmpl, sym_x);
-        deltaX = snap_getOffset ((int)(f / glist_getValueForOnePixelX (glist)));
-    }
-    
-    if (template_fieldIsFloat (tmpl, sym_y)) {
-        t_float f = word_getFloat (x->sc_element, tmpl, sym_y);
-        deltaY = snap_getOffset ((int)(f / glist_getValueForOnePixelY (glist)));
-    }
-    
-    if (deltaX || deltaY) {
-        scalar_behaviorDisplaced (cast_gobj (x), glist, deltaX, deltaY);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_scalar *x = cast_scalar (z);
@@ -460,10 +435,11 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     }
 }
 
-/* Note that scalars are NOT saved with patch. */
+/* Note that scalars are usually NOT saved with patch. */
 /* This function is required only for copy and paste behavior. */
+/* It is required for undo and redo also. */
 
-static void scalar_functionSave (t_gobj *z, t_buffer *b)
+static void scalar_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_scalar *x = cast_scalar (z);
     t_buffer *t = buffer_new();
@@ -474,6 +450,10 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
     buffer_serialize (b, t);
     buffer_appendSemicolon (b);
     
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
+    
     buffer_free (t);
 }
 
@@ -481,7 +461,7 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int scalar_functionPropertiesFetchIfPlotted (t_scalar *x,
+static int scalar_functionValueFetchIfPlotted (t_scalar *x,
     t_glist *glist,
     t_mouse *m,
     t_symbol **s,
@@ -523,12 +503,12 @@ static int scalar_functionPropertiesFetchIfPlotted (t_scalar *x,
     return i;
 }
 
-void scalar_functionProperties (t_gobj *z, t_glist *glist, t_mouse *m)
+void scalar_functionValue (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_scalar *x = cast_scalar (z);
     t_gpointer gp; gpointer_init (&gp);
     t_symbol *s = sym_invalid;
-    int i = scalar_functionPropertiesFetchIfPlotted (x, glist, m, &s, &gp);
+    int i = scalar_functionValueFetchIfPlotted (x, glist, m, &s, &gp);
     t_heapstring *h = heapstring_new (0);
     
     if (i >= 0) { heapstring_addSprintf (h, "::ui_scalar::show %%s element %d %s ", i, s->s_name); }
@@ -542,7 +522,7 @@ void scalar_functionProperties (t_gobj *z, t_glist *glist, t_mouse *m)
     
     if (gpointer_isValid (&gp)) {
     //
-    if (gpointer_getProperties (&gp, h)) {
+    if (gpointer_getValues (&gp, h)) {
     //
     heapstring_add (h, "\n"); stub_new (cast_pd (x), (void *)x, heapstring_getRaw (h));
     //
@@ -555,7 +535,7 @@ void scalar_functionProperties (t_gobj *z, t_glist *glist, t_mouse *m)
     heapstring_free (h); gpointer_unset (&gp);
 }
 
-void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
+void scalar_fromValue (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc > 5) {
     //
@@ -588,7 +568,7 @@ void scalar_fromDialog (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
         }
     
         if (gpointer_isValid (&gp)) {
-            gpointer_setProperties (&gp, argc, argv, (s == sym__scalardialog) ? 1 : 0);
+            gpointer_setValues (&gp, argc, argv, (s == sym__scalardialog) ? 1 : 0);
         }
     
         gpointer_unset (&gp);
@@ -737,11 +717,11 @@ void scalar_setup (void)
         CLASS_GRAPHIC,
         A_NULL);
     
-    class_addMethod (c, (t_method)scalar_fromDialog, sym__scalardialog, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)scalar_fromValue, sym__scalardialog, A_GIMME, A_NULL);
     
     class_setWidgetBehavior (c, &scalar_widgetBehavior);
     class_setSaveFunction (c, scalar_functionSave);
-    class_setPropertiesFunction (c, scalar_functionProperties);
+    class_setValueFunction (c, scalar_functionValue);
     
     scalar_class = c;
 }

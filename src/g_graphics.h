@@ -39,14 +39,15 @@ void    stub_destroyWithKey     (void *key);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-struct _proxy {
-    t_object    x_obj;          /* Must be the first. */
+typedef struct _proxy {
+    t_pd        x_pd;           /* Must be the first. */
     t_pd        *x_owner;
     t_symbol    *x_bound;
-    };
+    } t_proxy;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_proxy *proxy_new      (t_pd *owner);
 
@@ -74,6 +75,7 @@ static inline const char *proxy_getTagAsString (t_proxy *x)
 #include "graphics/patch/g_patch.h"
 #include "graphics/patch/g_editor.h"
 #include "graphics/patch/g_glist.h"
+#include "graphics/patch/g_unique.h"
 #include "graphics/patch/g_objects.h"
 #include "graphics/iem/g_iem.h"
 #include "graphics/scalars/g_scalar.h"

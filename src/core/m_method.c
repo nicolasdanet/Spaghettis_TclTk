@@ -277,5 +277,15 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     error_invalidArguments (s, argc, argv);
 }
 
+t_error pd_messageByUnique (t_id u, t_symbol *s, int argc, t_atom *argv)
+{
+    t_gobj *object = instance_registerGetObject (u);
+
+    if (object) { pd_message (cast_pd (object), s, argc, argv); return PD_ERROR_NONE; }
+    else {
+        return PD_ERROR;
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -317,7 +317,7 @@ static int bng_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
-static void bng_functionSave (t_gobj *z, t_buffer *b)
+static void bng_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_bng *x = (t_bng *)z;
     
@@ -346,6 +346,36 @@ static void bng_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSymbol (b, colors.c_symColorForeground);
     buffer_appendSymbol (b, colors.c_symColorLabel);
     buffer_appendSemicolon (b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
+}
+
+/* Fake dialog message from interpreter. */
+
+static void bng_functionUndo (t_gobj *z, t_buffer *b)
+{
+    t_bng *x = (t_bng *)z;
+    
+    t_iemnames names;
+
+    iemgui_serializeNames (cast_iem (z), &names);
+    
+    buffer_appendSymbol (b, sym__iemdialog);
+    buffer_appendFloat (b,  x->x_gui.iem_width);                /* Width. */
+    buffer_appendFloat (b,  -1.0);                              /* Height. */
+    buffer_appendFloat (b,  x->x_flashTime);                    /* Option1. */
+    buffer_appendFloat (b,  -1.0);                              /* Option2. */
+    buffer_appendFloat (b,  -1.0);                              /* Check. */
+    buffer_appendFloat (b,  x->x_gui.iem_loadbang);             /* Loadbang. */
+    buffer_appendFloat (b,  -1.0);                              /* Extra. */
+    buffer_appendSymbol (b, names.n_unexpandedSend);            /* Send. */
+    buffer_appendSymbol (b, names.n_unexpandedReceive);         /* Receive. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorBackground);      /* Background color. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorForeground);      /* Foreground color. */
+    buffer_appendFloat (b,  -1.0);                              /* Steady. */
+    buffer_appendFloat (b,  -1.0);                              /* Save. */
 }
 
 static void bng_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -359,11 +389,11 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Bang"
-            " %d %d Size 0 0 $::var(nil)"           // --
-            " %d {Flash Time} -1 $::var(nil)"       // --
-            " -1 $::var(nil) $::var(nil)"           // --
+            " %d %d Size -1 -1 $::var(nil)"                     // --
+            " %d {Flash Time} -1 $::var(nil)"                   // --
+            " -1 $::var(nil) $::var(nil)"                       // --
             " %d"
-            " -1 -1 $::var(nil)"                    // --
+            " -1 -1 $::var(nil)"                                // --
             " %s %s"
             " %d %d"
             " -1"
@@ -381,12 +411,17 @@ static void bng_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 
 static void bng_fromDialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int isDirty = 0;
+    int isDirty  = 0;
+    int undoable = glist_undoIsOk (cast_iem (x)->iem_owner);
+    
+    PD_ASSERT (argc == IEM_DIALOG_SIZE);
     
     int t0 = x->x_gui.iem_width;
     int t1 = x->x_flashTime;
     
-    PD_ASSERT (argc == IEM_DIALOG_SIZE);
+    t_undosnippet *snippet = NULL;
+    
+    if (undoable) { snippet = undosnippet_newProperties (cast_gobj (x), cast_iem (x)->iem_owner); }
     
     {
     //
@@ -404,7 +439,7 @@ static void bng_fromDialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t0 != x->x_gui.iem_width);
     isDirty |= (t1 != x->x_flashTime);
     
-    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
+    iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -521,6 +556,7 @@ void bng_setup (void)
     
     class_setWidgetBehavior (c, &bng_widgetBehavior);
     class_setSaveFunction (c, bng_functionSave);
+    class_setUndoFunction (c, bng_functionUndo);
     class_setPropertiesFunction (c, bng_functionProperties);
     
     bng_class = c;

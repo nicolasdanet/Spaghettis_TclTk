@@ -306,7 +306,7 @@ static int toggle_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
-static void toggle_functionSave (t_gobj *z, t_buffer *b)
+static void toggle_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_toggle *x = (t_toggle *)z;
     
@@ -334,7 +334,38 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSymbol (b, colors.c_symColorLabel);
     buffer_appendFloat (b,  x->x_state);
     buffer_appendFloat (b,  x->x_nonZero);
+    if (flags & SAVE_DEEP) { buffer_appendFloat (b, 1.0); }
     buffer_appendSemicolon (b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
+}
+
+/* Fake dialog message from interpreter. */
+
+static void toggle_functionUndo (t_gobj *z, t_buffer *b)
+{
+    t_toggle *x = (t_toggle *)z;
+    
+    t_iemnames names;
+
+    iemgui_serializeNames (cast_iem (z), &names);
+    
+    buffer_appendSymbol (b, sym__iemdialog);
+    buffer_appendFloat (b,  x->x_gui.iem_width);                /* Width. */
+    buffer_appendFloat (b,  -1.0);                              /* Height. */
+    buffer_appendFloat (b,  x->x_nonZero);                      /* Option1. */
+    buffer_appendFloat (b,  -1.0);                              /* Option2. */
+    buffer_appendFloat (b,  -1.0);                              /* Check. */
+    buffer_appendFloat (b,  x->x_gui.iem_loadbang);             /* Loadbang. */
+    buffer_appendFloat (b,  -1.0);                              /* Extra. */
+    buffer_appendSymbol (b, names.n_unexpandedSend);            /* Send. */
+    buffer_appendSymbol (b, names.n_unexpandedReceive);         /* Receive. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorBackground);      /* Background color. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorForeground);      /* Foreground color. */
+    buffer_appendFloat (b,  -1.0);                              /* Steady. */
+    buffer_appendFloat (b,  -1.0);                              /* Save. */
 }
 
 static void toggle_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -348,11 +379,11 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy
     
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Toggle"
-            " %d %d Size 0 0 $::var(nil)"           // --
-            " %.9g {Non-Zero Value} 0 $::var(nil)"  // --
-            " -1 $::var(nil) $::var(nil)"           // --
+            " %d %d Size -1 -1 $::var(nil)"                     // --
+            " %.9g {Non-Zero Value} -1 $::var(nil)"             // --
+            " -1 $::var(nil) $::var(nil)"                       // --
             " %d"
-            " -1 -1 $::var(nil)"                    // --
+            " -1 -1 $::var(nil)"                                // --
             " %s %s"
             " %d %d"
             " -1"
@@ -370,12 +401,17 @@ static void toggle_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy
 
 static void toggle_fromDialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int isDirty = 0;
+    int isDirty  = 0;
+    int undoable = glist_undoIsOk (cast_iem (x)->iem_owner);
     
     PD_ASSERT (argc == IEM_DIALOG_SIZE);
     
     int t0     = x->x_gui.iem_width;
     t_float t1 = x->x_nonZero;
+    
+    t_undosnippet *snippet = NULL;
+    
+    if (undoable) { snippet = undosnippet_newProperties (cast_gobj (x), cast_iem (x)->iem_owner); }
     
     {
     //
@@ -398,7 +434,7 @@ static void toggle_fromDialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t0 != x->x_gui.iem_width);
     isDirty |= (t1 != x->x_nonZero);
     
-    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
+    iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -415,6 +451,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONT;
     t_float state       = 0.0;
     t_float nonZero     = (t_float)1.0;
+    int deep            = 0;
 
     if (argc < 13) { iemgui_deserializeDefault (cast_iem (x)); }
     else {
@@ -424,7 +461,8 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     labelY          = (int)atom_getFloatAtIndex (6, argc,  argv);
     labelFontSize   = (int)atom_getFloatAtIndex (8, argc,  argv);
     state           = (t_float)atom_getFloatAtIndex (12, argc, argv);
-    nonZero         = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
+    nonZero         = (argc > 13) ? atom_getFloatAtIndex (13, argc, argv) : (t_float)1.0;
+    deep            = (argc > 14);
     
     iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (1, argc, argv));
     iemgui_deserializeNames (cast_iem (x), 2, argv);
@@ -449,7 +487,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
         
     x->x_nonZero = (nonZero != 0.0) ? nonZero : (t_float)1.0;
     
-    if (x->x_gui.iem_loadbang) { x->x_state = (state != 0.0) ? nonZero : 0.0; }
+    if (deep || x->x_gui.iem_loadbang) { x->x_state = (state != 0.0) ? nonZero : 0.0; }
     else {
         x->x_state = 0.0;
     }
@@ -515,6 +553,7 @@ void toggle_setup (void)
     
     class_setWidgetBehavior (c, &toggle_widgetBehavior);
     class_setSaveFunction (c, toggle_functionSave);
+    class_setUndoFunction (c, toggle_functionUndo);
     class_setPropertiesFunction (c, toggle_functionProperties);
     
     toggle_class = c;

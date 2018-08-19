@@ -9,6 +9,7 @@
 #include "../m_spaghettis.h"
 #include "../m_core.h"
 #include "../s_system.h"
+#include "../g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -25,6 +26,8 @@ t_pd *pd_new (t_class *c)
     x = (t_pd *)PD_MEMORY_GET (class_getInstanceSize (c));
     
     *x = c;
+    
+    if (!class_isInvisible (c)) { gobj_setUnique (cast_gobj (x), utils_unique()); }
     
     return x;
 }

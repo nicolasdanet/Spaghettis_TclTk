@@ -14,10 +14,10 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _listinletelement {
+typedef struct _listinletelement {
     t_atom              le_atom;
     t_gpointer          le_gpointer;
-    };
+    } t_listinletelement;
 
 typedef struct _listinlet {
     t_pd                li_pd;          /* MUST be the first. */

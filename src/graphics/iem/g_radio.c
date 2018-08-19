@@ -505,7 +505,7 @@ static int radio_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 
 /* To keep compatibility with legacy the multiple mode is saved only if activated. */
 
-static void radio_functionSave (t_gobj *z, t_buffer *b)
+static void radio_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_radio *x = (t_radio *)z;
     
@@ -537,7 +537,53 @@ static void radio_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSymbol (b, colors.c_symColorForeground);
     buffer_appendSymbol (b, colors.c_symColorLabel);
     buffer_appendFloat (b,  x->x_floatValue);
+    if (flags && SAVE_DEEP) { buffer_appendFloat (b, 1.0); }
     buffer_appendSemicolon (b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
+}
+
+static void radio_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
+{
+    t_radio *x = (t_radio *)z;
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    
+    err = string_sprintf (t, PD_STRING,
+            "::ui_value::show %%s radio float %.9g\n",      // --
+            x->x_floatValue);
+
+    PD_UNUSED (err); PD_ASSERT (!err);
+    
+    stub_new (cast_pd (x), (void *)x, t);
+}
+
+/* Fake dialog message from interpreter. */
+
+static void radio_functionUndo (t_gobj *z, t_buffer *b)
+{
+    t_radio *x = (t_radio *)z;
+    
+    t_iemnames names;
+
+    iemgui_serializeNames (cast_iem (z), &names);
+    
+    buffer_appendSymbol (b, sym__iemdialog);
+    buffer_appendFloat (b,  x->x_gui.iem_width);                /* Width. */
+    buffer_appendFloat (b,  -1.0);                              /* Height. */
+    buffer_appendFloat (b,  -1.0);                              /* Option1. */
+    buffer_appendFloat (b,  -1.0);                              /* Option2. */
+    buffer_appendFloat (b,  (x->x_mode == sym_multiple));       /* Check. */
+    buffer_appendFloat (b,  x->x_gui.iem_loadbang);             /* Loadbang. */
+    buffer_appendFloat (b,  x->x_numberOfButtons);              /* Extra. */
+    buffer_appendSymbol (b, names.n_unexpandedSend);            /* Send. */
+    buffer_appendSymbol (b, names.n_unexpandedReceive);         /* Receive. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorBackground);      /* Background color. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorForeground);      /* Foreground color. */
+    buffer_appendFloat (b,  -1.0);                              /* Steady. */
+    buffer_appendFloat (b,  -1.0);                              /* Save. */
 }
 
 static void radio_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -550,12 +596,12 @@ static void radio_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     iemgui_serializeNames (cast_iem (z), &names);
 
     err = string_sprintf (t, PD_STRING,
-            "::ui_iem::create %%s {Radio Button}"   // --
-            " %d %d Size 0 0 $::var(nil)"           // --
-            " 0 $::var(nil) 0 $::var(nil)"          // --
-            " %d Single Multiple"                   // --
+            "::ui_iem::create %%s {Radio Button}"               // --
+            " %d %d Size -1 -1 $::var(nil)"                     // --
+            " -1 $::var(nil) -1 $::var(nil)"                    // --
+            " %d Single Multiple"                               // --
             " %d"
-            " %d 256 {Number Of Buttons}"           // --
+            " %d 256 {Number Of Buttons}"                       // --
             " %s %s"
             " %d %d"
             " -1"
@@ -572,15 +618,26 @@ static void radio_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     stub_new (cast_pd (x), (void *)x, t);
 }
 
+static void radio_fromValue (t_radio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    radio_float (x, atom_getFloatAtIndex (0, argc, argv));
+}
+
 static void radio_fromDialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int isDirty = 0;
+    int isDirty  = 0;
+    int undoable = glist_undoIsOk (cast_iem (x)->iem_owner);
     
     PD_ASSERT (argc == IEM_DIALOG_SIZE);
     
     int t0 = x->x_gui.iem_width;
     int t1 = x->x_numberOfButtons;
+    t_symbol *t2 = x->x_mode;
     
+    t_undosnippet *snippet = NULL;
+    
+    if (undoable) { snippet = undosnippet_newProperties (cast_gobj (x), cast_iem (x)->iem_owner); }
+
     {
     //
     int size            = (int)atom_getFloatAtIndex (0, argc, argv);
@@ -602,8 +659,9 @@ static void radio_fromDialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
     
     isDirty |= (t0 != x->x_gui.iem_width);
     isDirty |= (t1 != x->x_numberOfButtons);
+    isDirty |= (t2 != x->x_mode);
     
-    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
+    iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -626,8 +684,9 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     int numberOfButtons = IEM_RADIO_BUTTONS_DEFAULT;
     t_float floatValue  = 0.0;
     t_symbol *mode      = NULL;
+    int deep            = 0;
     
-    if (argc != 15) { iemgui_deserializeDefault (cast_iem (x)); }
+    if (argc < 15) { iemgui_deserializeDefault (cast_iem (x)); }
     else {
     //
     size            = (int)atom_getFloatAtIndex (0, argc,  argv);
@@ -638,6 +697,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     labelFontSize   = (int)atom_getFloatAtIndex (10, argc, argv);
     floatValue      = atom_getFloatAtIndex (14, argc, argv);
     mode            = atom_getSymbolAtIndex (1, argc, argv);
+    deep            = (argc > 15);
     
     iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (2, argc, argv));
     iemgui_deserializeNames (cast_iem (x), 4, argv);
@@ -662,10 +722,10 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
         
     x->x_changed = (changed != 0);
     x->x_numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_RADIO_BUTTONS_MAXIMUM);
-    x->x_floatValue = floatValue;
+    x->x_floatValue = (deep || x->x_gui.iem_loadbang) ? floatValue : 0;
     x->x_mode = (mode == sym_multiple) ? sym_multiple : sym_single;
     
-    radio_setState (x, (int64_t)(x->x_gui.iem_loadbang ? floatValue : 0));
+    radio_setState (x, (int64_t)(x->x_floatValue));
     
     x->x_outlet = outlet_newFloat (cast_object (x));
     //
@@ -705,6 +765,7 @@ void radio_setup (void)
     class_addLoadbang (c, (t_method)radio_loadbang);
     
     class_addMethod (c, (t_method)radio_initialize,             sym_initialize,         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)radio_fromValue,              sym__valuedialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)radio_fromDialog,             sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)radio_size,                   sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
@@ -735,6 +796,8 @@ void radio_setup (void)
     class_setWidgetBehavior (c, &radio_widgetBehavior);
     class_setHelpName (c, sym_radio);
     class_setSaveFunction (c, radio_functionSave);
+    class_setValueFunction (c, radio_functionValue);
+    class_setUndoFunction (c, radio_functionUndo);
     class_setPropertiesFunction (c, radio_functionProperties);
     
     radio_class = c;

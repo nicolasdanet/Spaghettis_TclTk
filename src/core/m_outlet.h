@@ -50,7 +50,7 @@ struct _outlet {
 
 t_outconnect    *outlet_addConnection   (t_outlet *x, t_pd *receiver);
 
-void    outlet_removeConnection         (t_outlet *x, t_pd *receiver);
+t_error outlet_removeConnection         (t_outlet *x, t_pd *receiver);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

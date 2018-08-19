@@ -250,7 +250,7 @@ static void gatom_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVi
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void gatom_functionSave (t_gobj *z, t_buffer *b)
+static void gatom_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_gatom *x = (t_gatom *)z;
     
@@ -265,9 +265,14 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedLabel)));
     buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedReceive)));
     buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedSend)));
+    if (flags & SAVE_DEEP) { buffer_appendAtom (b, &x->a_atom); }
     buffer_appendSemicolon (b);
     
     object_serializeWidth (cast_object (x), b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
 }
 
 static void gatom_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -292,6 +297,20 @@ static void gatom_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
     stub_new (cast_pd (x), (void *)x, heapstring_getRaw (t));
     
     heapstring_free (t);
+}
+
+/* Fake dialog message from interpreter. */
+
+static void gatom_functionUndo (t_gobj *z, t_buffer *b)
+{
+    t_gatom *x = (t_gatom *)z;
+    
+    buffer_appendSymbol (b, sym__gatomdialog);
+    buffer_appendFloat (b,  object_getWidth (cast_object (x)));
+    buffer_appendFloat (b,  x->a_lowRange);
+    buffer_appendFloat (b,  x->a_highRange);
+    buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedSend)));
+    buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsNil (x->a_unexpandedReceive)));
 }
 
 static void gatom_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -334,6 +353,7 @@ static void gatom_fromValue (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty  = 0;
+    int undoable = glist_undoIsOk (x->a_owner);
     
     t_float t1   = x->a_lowRange;
     t_float t2   = x->a_highRange;
@@ -343,6 +363,11 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     PD_ASSERT (argc == 5);
     
+    t_undosnippet *s1 = NULL;
+    t_undosnippet *s2 = NULL;
+    
+    if (undoable) { s1 = undosnippet_newProperties (cast_gobj (x), x->a_owner); }
+
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 0);
     
     {
@@ -372,6 +397,8 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     gobj_visibilityChanged (cast_gobj (x), x->a_owner, 1);
     
+    if (undoable) { s2 = undosnippet_newProperties (cast_gobj (x), x->a_owner); }
+    
     isDirty |= (t1 != x->a_lowRange);
     isDirty |= (t2 != x->a_highRange);
     
@@ -382,6 +409,25 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t5 != x->a_receive);
     
     if (isDirty) { glist_setDirty (x->a_owner, 1); }
+    
+    if (undoable) {
+    //
+    if (isDirty) {
+        glist_undoAppend (x->a_owner, undoproperties_new (cast_gobj (x), s1, s2));
+        glist_undoAppendSeparator (x->a_owner);
+        
+    } else {
+        undosnippet_free (s1);
+        undosnippet_free (s2);
+    }
+    
+    s1 = NULL;
+    s2 = NULL;
+    //
+    }
+    
+    PD_ASSERT (s1 == NULL);
+    PD_ASSERT (s2 == NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -392,7 +438,7 @@ static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
 {
     int width    = (int)atom_getFloatAtIndex (2, argc, argv);
     int position = (int)atom_getFloatAtIndex (5, argc, argv);
-    
+
     width        = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
     
     object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
@@ -410,6 +456,11 @@ static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
     x->a_label              = dollar_expandSymbol (x->a_unexpandedLabel, x->a_owner);
             
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
+    
+    if (argc > 9) { gatom_set (x, NULL, 1, argv + 9); }
+    else {
+        t_atom a; SET_SYMBOL (&a, &s_symbol); gatom_set (x, NULL, 1, &a);
+    }
 }
 
 static void gatom_makeObjectMenu (t_gatom *x, int argc, t_atom *argv)
@@ -458,9 +509,7 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     
     if (isMenu) { gatom_makeObjectMenu (x, argc, argv); }
     else {
-        t_atom a; SET_SYMBOL (&a, &s_symbol);
         gatom_makeObjectFile (x, argc, argv);
-        gatom_set (x, NULL, 1, &a);
     }
     
     x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
@@ -517,6 +566,7 @@ void gatom_setup (void)
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setSaveFunction (c, gatom_functionSave);
     class_setValueFunction (c, gatom_functionValue);
+    class_setUndoFunction (c, gatom_functionUndo);
     class_setPropertiesFunction (c, gatom_functionProperties);
     
     gatom_class = c;

@@ -15,10 +15,26 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Assumed below that connection to a receiver is unique. */
+static int outlet_connectionAlreadyExist (t_outlet *x, t_pd *receiver)
+{
+    t_outconnect *oc = x->o_connections;
+
+    while (oc) {
+    //
+    if (oc->oc_receiver == receiver) { return 1; } oc = oc->oc_next;
+    //
+    }
+
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_outconnect *outlet_addConnection (t_outlet *x, t_pd *receiver)
 {
+    if (!outlet_connectionAlreadyExist (x, receiver)) {
+    //
     t_outconnect *oc1 = NULL;
     t_outconnect *oc2 = NULL;
     
@@ -32,9 +48,13 @@ t_outconnect *outlet_addConnection (t_outlet *x, t_pd *receiver)
     }
     
     return oc1;
+    //
+    }
+    
+    return NULL;
 }
 
-void outlet_removeConnection (t_outlet *x, t_pd *receiver)
+t_error outlet_removeConnection (t_outlet *x, t_pd *receiver)
 {
     t_outconnect *oc1 = NULL;
     t_outconnect *oc2 = NULL;
@@ -42,17 +62,19 @@ void outlet_removeConnection (t_outlet *x, t_pd *receiver)
     if ((oc1 = x->o_connections)) {
 
         if (oc1->oc_receiver == receiver) {
-            x->o_connections = oc1->oc_next; PD_MEMORY_FREE (oc1); return;
+            x->o_connections = oc1->oc_next; PD_MEMORY_FREE (oc1); return PD_ERROR_NONE;
             
         } else {
             while ((oc2 = oc1->oc_next)) {
                 if (oc2->oc_receiver != receiver) { oc1 = oc2; }
                 else {
-                    oc1->oc_next = oc2->oc_next; PD_MEMORY_FREE (oc2); return;
+                    oc1->oc_next = oc2->oc_next; PD_MEMORY_FREE (oc2); return PD_ERROR_NONE;
                 }
             }
         }
     }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------

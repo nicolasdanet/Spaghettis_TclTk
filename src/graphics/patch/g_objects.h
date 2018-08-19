@@ -23,14 +23,14 @@ typedef struct _messageresponder {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _message {
+typedef struct _message {
     t_object            m_obj;              /* MUST be the first. */
     t_messageresponder  m_responder;
     int                 m_dirty;
     t_buffer            *m_eval;
     t_glist             *m_owner;
     t_clock             *m_clock;
-    };
+    } t_message;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ void        garray_setDataAtIndex           (t_garray *x, int i, t_float f);
 t_float     garray_getDataAtIndex           (t_garray *x, int i);
 void        garray_setDataFromIndex         (t_garray *x, int i, t_float f);
 t_float     garray_getAmplitude             (t_garray *x);
-t_rand48    garray_getTag                   (t_garray *x);
+t_id        garray_getTag                   (t_garray *x);
 void        garray_setNextTag               (t_garray *x);
 void        garray_setAsUsedInDSP           (t_garray *x);
 void        garray_setSaveWithParent        (t_garray *x, int savedWithParent);

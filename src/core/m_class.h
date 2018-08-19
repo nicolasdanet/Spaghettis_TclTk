@@ -26,9 +26,21 @@ typedef void (*t_pointermethod)             (t_pd *x, t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef void (*t_savefn)                    (t_gobj *x, t_buffer *b);
-typedef void (*t_propertiesfn)              (t_gobj *x, t_glist *glist, t_mouse *m);
-typedef void (*t_valuefn)                   (t_gobj *x, t_glist *glist, t_mouse *m);
+enum {
+    SAVE_DEFAULT    = 0,
+    SAVE_DEEP       = 1,
+    SAVE_ID         = 2
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+typedef void    (*t_savefn)                 (t_gobj *x, t_buffer *b, int flags);
+typedef t_error (*t_datafn)                 (t_gobj *x, t_buffer *b, int flags);
+typedef void    (*t_undofn)                 (t_gobj *x, t_buffer *b);
+typedef void    (*t_propertiesfn)           (t_gobj *x, t_glist *glist, t_mouse *m);
+typedef void    (*t_valuefn)                (t_gobj *x, t_glist *glist, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -54,7 +66,7 @@ typedef int  (*t_paintermousefn)            (t_gobj *x, t_gpointer *gp, t_float 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _widgetbehavior {
+typedef struct _widgetbehavior {
     t_getrectanglefn            w_fnGetRectangle;
     t_displacedfn               w_fnDisplaced;
     t_selectedfn                w_fnSelected;
@@ -62,13 +74,13 @@ struct _widgetbehavior {
     t_deletedfn                 w_fnDeleted;
     t_visibilityfn              w_fnVisibilityChanged;
     t_mousefn                   w_fnMouse;
-    };
+    } t_widgetbehavior;
     
-struct _painterbehavior {
+typedef struct _painterbehavior {
     t_paintergetrectanglefn     w_fnPainterGetRectangle;
     t_paintervisibilityfn       w_fnPainterVisibilityChanged;
     t_paintermousefn            w_fnPainterMouse;
-    };
+    } t_painterbehavior;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -101,6 +113,7 @@ struct _class {
     t_painterbehavior           *c_behaviorPainter;
     t_savefn                    c_fnSave;
     t_datafn                    c_fnData;
+    t_undofn                    c_fnUndo;
     t_propertiesfn              c_fnProperties;
     t_valuefn                   c_fnValue;
     t_int                       c_signalOffset;
@@ -140,6 +153,11 @@ static inline int class_isBox (t_class *c)
 static inline int class_isAbstract (t_class *c)
 {
     return (c->c_type == CLASS_ABSTRACT);
+}
+
+static inline int class_isInvisible (t_class *c)
+{
+    return (c->c_type == CLASS_INVISIBLE);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -267,6 +285,11 @@ static inline int class_hasDataFunction (t_class *c)
     return (c->c_fnData != NULL);
 }
 
+static inline int class_hasUndoFunction (t_class *c)
+{
+    return (c->c_fnUndo != NULL);
+}
+
 static inline int class_hasPropertiesFunction (t_class *c)
 {
     return (c->c_fnProperties != NULL);
@@ -301,6 +324,11 @@ static inline t_datafn class_getDataFunction (t_class *c)
     return c->c_fnData;
 }
 
+static inline t_undofn class_getUndoFunction (t_class *c)
+{
+    return c->c_fnUndo;
+}
+
 static inline t_propertiesfn class_getPropertiesFunction (t_class *c)
 {
     return c->c_fnProperties;
@@ -328,6 +356,16 @@ static inline void class_setPainterBehavior (t_class *c, t_painterbehavior *pw)
 static inline void class_setSaveFunction (t_class *c, t_savefn f)
 {
     c->c_fnSave = f;
+}
+
+static inline void class_setDataFunction (t_class *c, t_datafn f)
+{
+    c->c_fnData = f;
+}
+
+static inline void class_setUndoFunction (t_class *c, t_undofn f)
+{
+    c->c_fnUndo = f;
 }
 
 static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)

@@ -64,7 +64,7 @@ struct _gpointer {
         t_word              *gp_w;
     } gp_un;
     t_gmaster               *gp_refer;
-    t_unique                gp_uniqueIdentifier;
+    t_id                    gp_uniqueIdentifier;
     int                     gp_index;
     };
 
@@ -78,7 +78,7 @@ struct _array {
     t_word                  *a_elements;
     t_symbol                *a_templateIdentifier;
     t_gmaster               *a_holder;
-    t_unique                a_uniqueIdentifier;
+    t_id                    a_uniqueIdentifier;
     t_gpointer              a_parent;
     };
 
@@ -86,7 +86,7 @@ struct _array {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _fielddescriptor {
+typedef struct _fielddescriptor {
     int                     fd_type;
     t_float                 fd_offset;
     int                     fd_isVariable;
@@ -95,7 +95,7 @@ struct _fielddescriptor {
         t_float             fd_float;
         t_symbol            *fd_variableName;
     } fd_un;
-};
+    } t_fielddescriptor;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -189,7 +189,6 @@ void        scalar_serialize                    (t_scalar *x, t_buffer *b);
 void        scalar_deserialize                  (t_scalar *x, t_glist *glist, int argc, t_atom *argv);
 void        scalar_properties                   (t_scalar *x, t_glist *glist, int a, int b);
 void        scalar_redraw                       (t_scalar *x, t_glist *glist);
-void        scalar_snap                         (t_scalar *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -15,6 +15,21 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void canvas_undo (t_glist *glist)
+{
+    if (glist_undoIsOk (glist)) { undomanager_undo (glist_getUndoManager (glist)); glist_updateUndo (glist); }
+}
+
+void canvas_redo (t_glist *glist)
+{
+    if (glist_undoIsOk (glist)) { undomanager_redo (glist_getUndoManager (glist)); glist_updateUndo (glist); }
+}
+
+void canvas_update (t_glist *glist)
+{
+    glist_updateUndo (glist);
+}
+
 void canvas_copy (t_glist *glist)
 {
     if (glist_hasEditMode (glist)) {
@@ -46,6 +61,7 @@ void canvas_cut (t_glist *glist)
         box_key (editor_getSelectedBox (glist_getEditor (glist)), (t_keycode)127, sym_Delete);
     
     } else {
+        if (glist_undoIsOk (glist)) { glist_undoAppend (glist, undocut_new()); }
         glist_objectRemoveSelected (glist);
     }
     //
@@ -61,7 +77,7 @@ void canvas_paste (t_glist *glist)
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
         gui_vAdd ("::ui_bind::pasteText %s\n", glist_getTagAsString (glist));
     } else {
-        clipboard_paste (glist);
+        clipboard_paste (glist, 0);
     }
     //
     }
@@ -73,7 +89,7 @@ void canvas_duplicate (t_glist *glist)
     //
     glist_cancelEditingBox (glist);
     canvas_copy (glist);
-    clipboard_paste (glist);
+    clipboard_paste (glist, 1);
     //
     }
 }
@@ -100,7 +116,7 @@ void canvas_selectAll (t_glist *glist)
 void canvas_snap (t_glist *glist)
 {
     glist_cancelEditingBox (glist);
-    glist_objectSnapSelected (glist);
+    glist_objectSnapSelected (glist, 1);
 }
 
 void canvas_bringToFront (t_glist *glist)

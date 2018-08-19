@@ -57,6 +57,9 @@ void canvas_save                    (t_glist *, t_float);
 void canvas_saveAs                  (t_glist *, t_float);
 void canvas_saveToFile              (t_glist *, t_symbol *, int, t_atom *);
 
+void canvas_undo                    (t_glist *);
+void canvas_redo                    (t_glist *);
+void canvas_update                  (t_glist *);
 void canvas_cut                     (t_glist *);
 void canvas_copy                    (t_glist *);
 void canvas_paste                   (t_glist *);
@@ -76,7 +79,7 @@ static void canvas_functionProperties (t_gobj *, t_glist *, t_mouse *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void scalar_fromDialog (t_scalar *, t_symbol *, int, t_atom *);
+void scalar_fromValue (t_scalar *, t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -110,7 +113,13 @@ static void canvas_loadbang (t_glist *glist)
 
 void canvas_clear (t_glist *glist)
 {
+    int undoable = glist_undoIsOk (glist);
+    
+    if (undoable) { glist_undoAppendSeparator (glist); }
+    
     glist_objectRemoveAllScalars (glist);
+    
+    if (undoable) { glist_undoAppendSeparator (glist); }
 }
 
 static void canvas_editmode (t_glist *glist, t_float f)
@@ -120,7 +129,13 @@ static void canvas_editmode (t_glist *glist, t_float f)
 
 static void canvas_dirty (t_glist *glist, t_float f)
 {
-    if (glist_isEditable (glist)) { glist_setDirty (glist, (int)f); }
+    if (glist_isEditable (glist)) {
+    //
+    glist_setDirty (glist, (int)f);
+    
+    if (glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -192,6 +207,16 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     glist_objectSetWidthOfLast (glist, (int)atom_getFloatAtIndex (0, argc, argv));
+}
+
+static void canvas_tagcanvas (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    glist_setUnique (glist, argc, argv);
+}
+
+static void canvas_tagobject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    glist_objectSetUniqueOfLast (glist, argc, argv);
 }
 
 static void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -308,7 +333,7 @@ static void canvas_requireScalarDialog (t_glist *glist, t_symbol *s)
     
     PD_ASSERT (gpointer_isValid (&gp));
     
-    if (gpointer_getProperties (&gp, h)) {
+    if (gpointer_getValues (&gp, h)) {
     //
     heapstring_add (h, "\n"); stub_new (cast_pd (glist), (void *)glist, heapstring_getRaw (h));
     //
@@ -394,7 +419,7 @@ static void canvas_fromScalarDialog (t_glist *glist, t_symbol *s, int argc, t_at
     //
     t_scalar *scalar = scalar_new (glist, templateIdentifier);
     glist_objectAdd (glist, cast_gobj (scalar));
-    scalar_fromDialog (scalar, NULL, argc, argv);
+    scalar_fromValue (scalar, NULL, argc, argv);
     //
     }
     //
@@ -403,8 +428,15 @@ static void canvas_fromScalarDialog (t_glist *glist, t_symbol *s, int argc, t_at
 
 static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    int isDirty = 0;
+    t_glist *manager = glist_hasWindow (glist) ? glist : glist_getParent (glist);
+    int undoable     = glist_undoIsOk (manager);
+    int isDirty      = 0;
     t_rectangle t1; t_bounds t2; int t3;
+    
+    t_undosnippet *s1 = NULL;
+    t_undosnippet *s2 = NULL;
+    
+    if (undoable) { s1 = undosnippet_newProperties (cast_gobj (glist), glist_getParent (glist)); }
     
     rectangle_setCopy (&t1, glist_getGraphGeometry (glist)); 
     bounds_setCopy (&t2, glist_getBounds (glist));
@@ -412,6 +444,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     PD_ASSERT (argc == 7);
     PD_ASSERT (!glist_isArray (glist));
+    PD_ASSERT (manager != NULL);
     
     {
     //
@@ -438,31 +471,76 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     //
     }
     
+    if (undoable) { s2 = undosnippet_newProperties (cast_gobj (glist), glist_getParent (glist)); }
+    
     isDirty |= !rectangle_areEquals (&t1, glist_getGraphGeometry (glist));
     isDirty |= !bounds_areEquals (&t2, glist_getBounds (glist)); 
     isDirty |= (t3 != glist_isGraphOnParent (glist));
     
     if (isDirty) { glist_setDirty (glist, 1); }
+    
+    if (undoable) {
+    //
+    if (isDirty) {
+        glist_undoAppend (manager, undoproperties_new (cast_gobj (glist), s1, s2));
+        glist_undoAppendSeparator (manager);
+        
+    } else {
+        undosnippet_free (s1);
+        undosnippet_free (s2);
+    }
+    
+    s1 = NULL;
+    s2 = NULL;
+    //
+    }
+    
+    PD_ASSERT (s1 == NULL);
+    PD_ASSERT (s2 == NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void canvas_functionSave (t_gobj *x, t_buffer *b)
+static void canvas_functionSave (t_gobj *x, t_buffer *b, int flags)
 {
     int saveContents = !(glist_isAbstraction (cast_glist (x)));
     
-    if (saveContents) { glist_serialize (cast_glist (x), b); }
+    if (saveContents) { glist_serialize (cast_glist (x), b, flags); }
     else {
         buffer_appendSymbol (b, sym___hash__X);
         buffer_appendSymbol (b, sym_obj);
-        buffer_appendFloat (b, object_getX (cast_object (x)));
-        buffer_appendFloat (b, object_getY (cast_object (x)));
-        buffer_serialize (b, object_getBuffer (cast_object (x)));
+        buffer_appendFloat (b,  object_getX (cast_object (x)));
+        buffer_appendFloat (b,  object_getY (cast_object (x)));
+        buffer_serialize (b,    object_getBuffer (cast_object (x)));
         buffer_appendSemicolon (b);
         object_serializeWidth (cast_object (x), b);
+        
+        if (flags & SAVE_ID) {
+            gobj_serializeUnique (x, sym__tagobject, b);
+        }
     }
+}
+
+/* Fake dialog message from interpreter. */
+
+static void canvas_functionUndo (t_gobj *x, t_buffer *b)
+{
+    t_glist *glist   = cast_glist (x);
+    t_bounds *bounds = glist_getBounds (glist);
+    t_rectangle *r   = glist_getGraphGeometry (glist);
+    
+    PD_ASSERT (!glist_isArray (glist));
+    
+    buffer_appendSymbol (b, sym__canvasdialog);
+    buffer_appendFloat (b,  rectangle_getTopLeftX (r));
+    buffer_appendFloat (b,  rectangle_getTopLeftY (r));
+    buffer_appendFloat (b,  rectangle_getWidth (r));
+    buffer_appendFloat (b,  rectangle_getHeight (r));
+    buffer_appendFloat (b,  glist_isGraphOnParent (glist));
+    buffer_appendFloat (b,  bounds_getRight (bounds));
+    buffer_appendFloat (b,  bounds_getBottom (bounds));
 }
 
 static void canvas_functionProperties (t_gobj *x, t_glist *dummy, t_mouse *m)
@@ -529,6 +607,8 @@ void canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_free (t_glist *glist)
 {
+    glist_undoDisable (glist);
+    
     if (glist_hasView (glist) && glist_hasWindow (glist)) { glist_windowClose (glist); } 
     
     stub_destroyWithKey ((void *)glist);
@@ -601,6 +681,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makePanel,             sym_cnv,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,                A_GIMME, A_NULL);
     
+    class_addMethod (c, (t_method)canvas_tagcanvas,             sym__tagcanvas,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_tagobject,             sym__tagobject,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_motion,                sym__motion,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseDown,             sym__mousedown,         A_GIMME, A_NULL);
@@ -608,6 +690,9 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_window,                sym__window,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_map,                   sym__map,               A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_undo,                  sym__undo,              A_NULL);
+    class_addMethod (c, (t_method)canvas_redo,                  sym__redo,              A_NULL);
+    class_addMethod (c, (t_method)canvas_update,                sym__menu,              A_NULL);
     class_addMethod (c, (t_method)canvas_cut,                   sym__cut,               A_NULL);
     class_addMethod (c, (t_method)canvas_copy,                  sym__copy,              A_NULL);
     class_addMethod (c, (t_method)canvas_paste,                 sym__paste,             A_NULL);
@@ -644,8 +729,9 @@ void canvas_setup (void)
     
     class_setWidgetBehavior (c, &glist_widgetbehavior);
     class_setSaveFunction (c, canvas_functionSave);
+    class_setUndoFunction (c, canvas_functionUndo);
     class_setPropertiesFunction (c, canvas_functionProperties);
-
+    
     class_setHelpName (c, sym_pd);
     
     canvas_class = c;

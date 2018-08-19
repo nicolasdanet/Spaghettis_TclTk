@@ -215,7 +215,7 @@ static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *
     rectangle_set (r, a, b, c, d);
 }
 
-static void panel_functionSave (t_gobj *z, t_buffer *b)
+static void panel_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_panel *x = (t_panel *)z;
     t_iemnames names;
@@ -241,6 +241,34 @@ static void panel_functionSave (t_gobj *z, t_buffer *b)
     buffer_appendSymbol (b, colors.c_symColorBackground);
     buffer_appendSymbol (b, colors.c_symColorLabel);
     buffer_appendSemicolon (b);
+    
+    if (flags & SAVE_ID) {
+        gobj_serializeUnique (z, sym__tagobject, b);
+    }
+}
+
+static void panel_functionUndo (t_gobj *z, t_buffer *b)
+{
+    t_panel *x = (t_panel *)z;
+    
+    t_iemnames names;
+
+    iemgui_serializeNames (cast_iem (z), &names);
+    
+    buffer_appendSymbol (b, sym__iemdialog);
+    buffer_appendFloat (b,  -1.0);                              /* Width. */
+    buffer_appendFloat (b,  -1.0);                              /* Height. */
+    buffer_appendFloat (b,  x->x_panelWidth);                   /* Option1. */
+    buffer_appendFloat (b,  x->x_panelHeight);                  /* Option2. */
+    buffer_appendFloat (b,  -1.0);                              /* Check. */
+    buffer_appendFloat (b,  -1.0);                              /* Loadbang. */
+    buffer_appendFloat (b,  -1.0);                              /* Extra. */
+    buffer_appendSymbol (b, names.n_unexpandedSend);            /* Send. */
+    buffer_appendSymbol (b, names.n_unexpandedReceive);         /* Receive. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorBackground);      /* Background color. */
+    buffer_appendFloat (b,  x->x_gui.iem_colorForeground);      /* Foreground color. */
+    buffer_appendFloat (b,  -1.0);                              /* Steady. */
+    buffer_appendFloat (b,  -1.0);                              /* Save. */
 }
 
 static void panel_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -253,11 +281,11 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     iemgui_serializeNames (cast_iem (z), &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Panel"
-            " 0 0 $::var(nil) 0 0 $::var(nil)"      // --
-            " %d {Panel Width} %d {Panel Height}"   // --
-            " -1 $::var(nil) $::var(nil)"           // --
+            " -1 -1 $::var(nil) -1 -1 $::var(nil)"              // --
+            " %d {Panel Width} %d {Panel Height}"               // --
+            " -1 $::var(nil) $::var(nil)"                       // --
             " -1"
-            " -1 -1 $::var(nil)"                    // --
+            " -1 -1 $::var(nil)"                                // --
             " %s %s"
             " %d %d"
             " -1"
@@ -273,13 +301,18 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
 
 static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int isDirty = 0;
+    int isDirty  = 0;
+    int undoable = glist_undoIsOk (cast_iem (x)->iem_owner);
     
     PD_ASSERT (argc == IEM_DIALOG_SIZE);
     
     int t0 = x->x_panelWidth;
     int t1 = x->x_panelHeight;
     
+    t_undosnippet *snippet = NULL;
+    
+    if (undoable) { snippet = undosnippet_newProperties (cast_gobj (x), cast_iem (x)->iem_owner); }
+
     {
     //
     int panelWidth  = (int)atom_getFloatAtIndex (2, argc, argv);
@@ -295,7 +328,7 @@ static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t0 != x->x_panelWidth);
     isDirty |= (t1 != x->x_panelHeight);
     
-    if (isDirty) { iemgui_boxChanged ((void *)x); glist_setDirty (cast_iem (x)->iem_owner, 1); }
+    iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -403,6 +436,7 @@ void panel_setup (void)
     
     class_setWidgetBehavior (c, &panel_widgetBehavior);
     class_setSaveFunction (c, panel_functionSave);
+    class_setUndoFunction (c, panel_functionUndo);
     class_setPropertiesFunction (c, panel_functionProperties);
     
     panel_class = c;

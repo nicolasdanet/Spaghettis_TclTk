@@ -30,16 +30,19 @@ struct _glist {
     t_glist             *gl_parent;
     t_glist             *gl_next;
     t_environment       *gl_environment;
+    t_undomanager       *gl_undomanager;
     t_symbol            *gl_name;
     t_editor            *gl_editor;
-    t_clock             *gl_clock;
-    t_unique            gl_uniqueIdentifier;
+    t_clock             *gl_clockRedraw;
+    t_clock             *gl_clockUndo;
+    t_id                gl_uniqueIdentifier;
     t_bounds            gl_bounds;
     t_rectangle         gl_geometryGraph;
     t_rectangle         gl_geometryWindow;
     int                 gl_fontSize;
     int                 gl_hasBeenCloseBanged;
     int                 gl_hasWindow;
+    int                 gl_hasUndo;
     int                 gl_isMapped;
     int                 gl_isDirty;
     int                 gl_isFrozen;
@@ -79,8 +82,10 @@ void            glist_free                  (t_glist *g);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_glist         *glist_getRoot              (t_glist *g);
 t_glist         *glist_getTop               (t_glist *g);
 t_environment   *glist_getEnvironment       (t_glist *g);
+t_undomanager   *glist_getUndoManager       (t_glist *g);
 t_glist         *glist_getView              (t_glist *g);
 t_garray        *glist_getArray             (t_glist *g);
 
@@ -115,7 +120,7 @@ void    glist_closebang                     (t_glist *g);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void    glist_serialize                     (t_glist *g, t_buffer *b);
+void    glist_serialize                     (t_glist *g, t_buffer *b, int flags);
 void    glist_rename                        (t_glist *g, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -135,12 +140,13 @@ void    glist_setMotion                     (t_glist *g, t_gobj *y, t_motionfn f
 void    glist_setBounds                     (t_glist *g, t_bounds *bounds);
 void    glist_setGraphGeometry              (t_glist *g, t_rectangle *r, t_bounds *bounds, int isGOP);
 void    glist_setWindowGeometry             (t_glist *g, t_rectangle *r);
+void    glist_setUnique                     (t_glist *g, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    glist_cancelEditingBox              (t_glist *glist);
+void    glist_cancelEditingBox              (t_glist *g);
 
 void    glist_key                           (t_glist *g, t_keycode n, t_symbol *s);
 
@@ -148,8 +154,19 @@ void    glist_key                           (t_glist *g, t_keycode n, t_symbol *
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int     glist_undoIsOk                      (t_glist *g);
+int     glist_undoHasSeparatorAtLast        (t_glist *g);
+void    glist_undoAppendSeparator           (t_glist *g);
+void    glist_undoAppendUnscheduled         (t_glist *g, t_undoaction *a);
+void    glist_undoAppend                    (t_glist *g, t_undoaction *a);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void    glist_objectMake                    (t_glist *g, int a, int b, int w, int selected, t_buffer *t);
 void    glist_objectMakeScalar              (t_glist *g, int argc, t_atom *argv);
+void    glist_objectSetUniqueOfLast         (t_glist *g, int argc, t_atom *argv);
 void    glist_objectSetWidthOfLast          (t_glist *g, int w);
 void    glist_objectAddNext                 (t_glist *g, t_gobj *y, t_gobj *first);
 void    glist_objectAdd                     (t_glist *g, t_gobj *y);
@@ -158,20 +175,24 @@ void    glist_objectRemoveAllByTemplate     (t_glist *g, t_template *tmpl);
 void    glist_objectRemoveAllScalars        (t_glist *g);
 void    glist_objectRemoveAll               (t_glist *g);
 
+t_error glist_objectConnect                 (t_glist *g, t_object *src, int m, t_object *dest, int n);
+
 void    glist_objectSelect                  (t_glist *g, t_gobj *y);
 void    glist_objectSelectIfNotSelected     (t_glist *g, t_gobj *y);
-int     glist_objectDeselect                (t_glist *g, t_gobj *y);
+int     glist_objectDeselect                (t_glist *g, t_gobj *y, int withUndo);
 int     glist_objectDeselectIfSelected      (t_glist *g, t_gobj *y);
 int     glist_objectIsSelected              (t_glist *g, t_gobj *y);
 void    glist_objectSwapSelected            (t_glist *g, t_gobj *y);
 void    glist_objectMoveAtFirst             (t_glist *g, t_gobj *y);
 void    glist_objectMoveAtLast              (t_glist *g, t_gobj *y);
+int     glist_objectMoveGetPosition         (t_glist *g, t_gobj *y);
+void    glist_objectMoveAt                  (t_glist *g, t_gobj *y, int n);
 int     glist_objectGetIndexOf              (t_glist *g, t_gobj *y);
 int     glist_objectGetIndexAmongSelected   (t_glist *g, t_gobj *y);
 int     glist_objectGetNumberOf             (t_glist *g);
 int     glist_objectGetNumberOfSelected     (t_glist *g);
 void    glist_objectRemoveSelected          (t_glist *g);
-void    glist_objectSnapSelected            (t_glist *g);
+void    glist_objectSnapSelected            (t_glist *g, int withSnapUndo);
 void    glist_objectMoveSelected            (t_glist *g, int backward);
 void    glist_objectDisplaceSelected        (t_glist *g, int deltaX, int deltaY);
 void    glist_objectDeleteLines             (t_glist *g, t_object *o);
@@ -203,13 +224,13 @@ void        glist_outletSort                (t_glist *g);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    glist_lineSelect                    (t_glist *g, t_traverser *t);
-void    glist_lineDeselect                  (t_glist *g);
-void    glist_lineDeleteSelected            (t_glist *g);
-int     glist_lineExist                     (t_glist *g, t_object *o, int m, t_object *i, int n);
-void    glist_lineCheck                     (t_glist *g, t_object *o);
-t_error glist_lineConnect                   (t_glist *g, int m, int i, int n, int j);
-t_error glist_lineDisconnect                (t_glist *g, int m, int i, int n, int j);
+void        glist_lineSelect                (t_glist *g, t_traverser *t);
+void        glist_lineDeselect              (t_glist *g);
+void        glist_lineDeleteSelected        (t_glist *g);
+int         glist_lineExist                 (t_glist *g, t_object *o, int m, t_object *i, int n);
+void        glist_lineCheck                 (t_glist *g, t_object *o);
+t_error     glist_lineConnect               (t_glist *g, int m, int i, int n, int j);
+t_error     glist_lineDisconnect            (t_glist *g, int m, int i, int n, int j);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -229,6 +250,7 @@ int     glist_deselectAll                   (t_glist *g);
 // MARK: -
 
 void    glist_updateTitle                   (t_glist *g);
+void    glist_updateUndo                    (t_glist *g);
 void    glist_updateWindow                  (t_glist *g);
 void    glist_updateLinesForObject          (t_glist *g, t_object *o);
 void    glist_updateLineSelected            (t_glist *g, int isSelected);
@@ -358,6 +380,16 @@ static inline void glist_deleteEnd (t_glist *g)
     g->gl_isDeleting = 0;
 }
 
+static inline void glist_undoEnable (t_glist *g)
+{
+    g->gl_hasUndo = 1;
+}
+
+static inline void glist_undoDisable (t_glist *g)
+{
+    g->gl_hasUndo = 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -402,7 +434,7 @@ static inline t_gmaster *glist_getMaster (t_glist *g)
     return g->gl_holder;
 }
 
-static inline t_unique glist_getIdentifier (t_glist *g)
+static inline t_id glist_getIdentifier (t_glist *g)
 {
     return g->gl_uniqueIdentifier;
 }
@@ -449,6 +481,11 @@ static inline int glist_hasWindow (t_glist *g)
 static inline int glist_hasEditMode (t_glist *g)
 {
     return g->gl_isEditing;
+}
+
+static inline int glist_hasUndo (t_glist *g)
+{
+    return g->gl_hasUndo;
 }
 
 // -----------------------------------------------------------------------------------------------------------

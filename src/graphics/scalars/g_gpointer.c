@@ -440,7 +440,7 @@ t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *de
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int gpointer_getProperties (t_gpointer *gp, t_heapstring *h)
+int gpointer_getValues (t_gpointer *gp, t_heapstring *h)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
@@ -474,7 +474,7 @@ int gpointer_getProperties (t_gpointer *gp, t_heapstring *h)
 
 /* Change notifications are sent only for interactive modifications. */
 
-void gpointer_setProperties (t_gpointer *gp, int argc, t_atom *argv, int notify)
+void gpointer_setValues (t_gpointer *gp, int argc, t_atom *argv, int notify)
 {
     t_template *tmpl = gpointer_getTemplate (gp);
     
@@ -550,7 +550,7 @@ void gpointer_setFields (t_gpointer *gp, int argc, t_atom *argv)
         SET_SYMBOL (t + j + 2, sym_value); atom_copyAtom (argv + i + 1, t + j + 3);
     }
     
-    gpointer_setProperties (gp, n, t, 0);
+    gpointer_setValues (gp, n, t, 0);
     
     PD_ATOMS_FREEA (t, n);
     //

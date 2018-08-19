@@ -98,19 +98,25 @@ static uint64_t time_makeSeed (void)
 
 t_seed time_makeRandomSeed (void)
 {
-    static uint64_t seed = 0;           /* Static. */
+    static int      once = 0;
+    static uint64_t seed = 0;   /* Static. */
+    static uint64_t base = 0;   /* Static. */
     
-    seed ^= utils_unique();
+    if (!once) {
+        
+        #if PD_WINDOWS
+            base = _getpid();
+        #else
+            base = getpid();
+        #endif
+    
+        once = 1;
+    }
+    
+    seed ^= base;
     
     PD_RAND48_NEXT (seed);
-    
-    #if PD_WINDOWS
-        seed ^= _getpid();
-    #else
-        seed ^= getpid();
-    #endif
-    
-    PD_RAND48_NEXT (seed);
+    PD_RAND48_NEXT (base);
     
     seed ^= time_makeSeed();
     
@@ -264,99 +270,19 @@ t_error stamp_elapsedNanoseconds (const t_stamp *t0, const t_stamp *t1, t_nano *
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_symbol *stamp_4BitsToTag (unsigned char b)
+int stamp_isTagElement (t_symbol *s)
 {
-    switch (b) {
-        case 0  : return sym___arrobe__0;
-        case 1  : return sym___arrobe__1;
-        case 2  : return sym___arrobe__2;
-        case 3  : return sym___arrobe__3;
-        case 4  : return sym___arrobe__4;
-        case 5  : return sym___arrobe__5;
-        case 6  : return sym___arrobe__6;
-        case 7  : return sym___arrobe__7;
-        case 8  : return sym___arrobe__8;
-        case 9  : return sym___arrobe__9;
-        case 10 : return sym___arrobe__a;
-        case 11 : return sym___arrobe__b;
-        case 12 : return sym___arrobe__c;
-        case 13 : return sym___arrobe__d;
-        case 14 : return sym___arrobe__e;
-        default : return sym___arrobe__f;
-    }
-}
-
-static unsigned char stamp_tagTo4Bits (t_symbol *s)
-{
-    if (s == sym___arrobe__0)       { return 0x00; }
-    else if (s == sym___arrobe__1)  { return 0x01; }
-    else if (s == sym___arrobe__2)  { return 0x02; }
-    else if (s == sym___arrobe__3)  { return 0x03; }
-    else if (s == sym___arrobe__4)  { return 0x04; }
-    else if (s == sym___arrobe__5)  { return 0x05; }
-    else if (s == sym___arrobe__6)  { return 0x06; }
-    else if (s == sym___arrobe__7)  { return 0x07; }
-    else if (s == sym___arrobe__8)  { return 0x08; }
-    else if (s == sym___arrobe__9)  { return 0x09; }
-    else if (s == sym___arrobe__a)  { return 0x0a; }
-    else if (s == sym___arrobe__b)  { return 0x0b; }
-    else if (s == sym___arrobe__c)  { return 0x0c; }
-    else if (s == sym___arrobe__d)  { return 0x0d; }
-    else if (s == sym___arrobe__e)  { return 0x0e; }
-    else if (s == sym___arrobe__f)  { return 0x0f; }
-    
-    return 0xff;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int stamp_isTag (t_symbol *s)
-{
-    return (stamp_tagTo4Bits (s) != 0xff);
+    return utils_uInt64IsElement (s);
 }
 
 t_error stamp_setAsTags (int argc, t_atom *argv, t_stamp *stamp)
 {
-    if (argc >= STAMP_TAGS_SIZE) {
-    //
-    int i;
-    
-    for (i = 0; i < STAMP_TAGS_SIZE; i++) {
-    //
-    unsigned char t = ((*stamp) >> (i * 4)) & 0x0f;
-    SET_SYMBOL (argv + (STAMP_TAGS_SIZE - 1 - i), stamp_4BitsToTag (t));
-    //
-    }
-    
-    return PD_ERROR_NONE;
-    //
-    }
-    
-    return PD_ERROR;
+    return utils_uInt64Serialize (argc, argv, stamp);
 }
 
 t_error stamp_getWithTags (int argc, t_atom *argv, t_stamp *stamp)
 {
-    if (argc >= STAMP_TAGS_SIZE) {
-    //
-    t_error err = PD_ERROR_NONE;
-    uint64_t t = 0;
-    int i;
-    
-    for (i = 0; i < STAMP_TAGS_SIZE; i++) {
-    //
-    unsigned char b = stamp_tagTo4Bits (atom_getSymbol (argv + i));
-    err |= (b == 0xff); t |= b; if (i != (STAMP_TAGS_SIZE - 1)) { t <<= 4; }
-    //
-    }
-    
-    if (!err) { (*stamp) = t; return PD_ERROR_NONE; }
-    //
-    }
-    
-    (*stamp) = 0; return PD_ERROR;
+    return utils_uInt64Deserialize (argc, argv, stamp);
 }
 
 // -----------------------------------------------------------------------------------------------------------

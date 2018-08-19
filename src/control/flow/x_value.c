@@ -122,7 +122,7 @@ void value_setup (void)
                                 NULL,
                                 NULL,
                                 sizeof (t_valuecommon),
-                                CLASS_NOBOX,
+                                CLASS_INVISIBLE,
                                 A_NULL);
     
     value_class = class_new (sym_value,

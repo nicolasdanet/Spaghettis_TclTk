@@ -38,7 +38,9 @@ void clipboard_copy (t_glist *glist)
     clipboard_count = 0;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (glist_objectIsSelected (glist, y)) { gobj_save (y, b); }
+    //
+    if (glist_objectIsSelected (glist, y)) { gobj_save (y, b, SAVE_DEEP); }
+    //
     }
     
     traverser_start (&t, glist);
@@ -71,7 +73,7 @@ void clipboard_copy (t_glist *glist)
     }
 }
 
-void clipboard_paste (t_glist *glist)
+void clipboard_paste (t_glist *glist, int isDuplicate)
 {
     t_gobj *y = NULL;
     t_selection *s = NULL;
@@ -80,10 +82,13 @@ void clipboard_paste (t_glist *glist)
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     int isDirty = 0;
-    int onlyScalars = 1;
     
     glist_deselectAll (glist);
     
+    if (glist_undoIsOk (glist)) {
+        glist_undoAppend (glist, isDuplicate ? undoduplicate_new() : undopaste_new());
+    }
+
     snippet_addOffsetToLines (clipboard_buffer, alreadyThere);
     snippet_renameArrays (clipboard_buffer, glist);
     
@@ -99,12 +104,13 @@ void clipboard_paste (t_glist *glist)
     dsp_resume (state);
         
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
-        y = selection_getObject (s); gobj_displaced (y, glist, n, n);
+        y = selection_getObject (s);
+        glist_objectDisplaceByUnique (gobj_getUnique (y), n, n);
         if (gobj_isCanvas (y))  { glist_loadbang (cast_glist (y)); }
-        if (!gobj_isScalar (y)) { onlyScalars = 0; }
     }
     
-    if (!onlyScalars && isDirty) { glist_setDirty (glist, 1); }
+    if (isDirty) { glist_setDirty (glist, 1); }
+    if (isDirty && glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

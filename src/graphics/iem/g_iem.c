@@ -461,5 +461,29 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     return isDirty;
 }
 
+void iemgui_dirty (t_iem *iem, int isDirty, int isUndoable, t_undosnippet *s1)
+{
+    if (isDirty) { iemgui_boxChanged ((void *)iem); glist_setDirty (iem->iem_owner, 1); }
+    
+    if (isUndoable) {
+    //
+    PD_ASSERT (s1);
+    
+    if (isDirty) {
+        t_undosnippet *s2 = undosnippet_newProperties (cast_gobj (iem), iem->iem_owner);
+        glist_undoAppend (iem->iem_owner, undoproperties_new (cast_gobj (iem), s1, s2));
+        glist_undoAppendSeparator (iem->iem_owner);
+        
+    } else {
+        undosnippet_free (s1);
+    }
+    
+    s1 = NULL;
+    //
+    }
+    
+    PD_ASSERT (s1 == NULL);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -137,7 +137,7 @@ void bindlist_setup (void)
             NULL,
             (t_method)bindlist_free,
             sizeof (t_bindlist),
-            CLASS_NOBOX,
+            CLASS_INVISIBLE,
             A_NULL);
     
     class_addBang (c, (t_method)bindlist_bang);

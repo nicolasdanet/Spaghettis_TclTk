@@ -46,10 +46,14 @@ t_glist *instance_contextGetCurrent (void)
 void instance_rootsAdd (t_glist *glist)
 {
     glist_setNext (glist, instance_get()->pd_roots); instance_get()->pd_roots = glist;
+    
+    instance_registerAdd (cast_gobj (glist), NULL);
 }
 
 void instance_rootsRemove (t_glist *glist)
 {
+    instance_registerRemove (cast_gobj (glist));
+    
     if (glist == instance_get()->pd_roots) { instance_get()->pd_roots = glist_getNext (glist); }
     else {
         t_glist *z = NULL;
@@ -74,6 +78,44 @@ void instance_rootsFreeAll (void)
             }   
         }
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void instance_registerAdd (t_gobj *o, t_glist *owner)
+{
+    register_add (instance_get()->pd_register, gobj_getUnique (o), o, owner);
+}
+
+t_error instance_registerRemove (t_gobj *o)
+{
+    t_error err = register_remove (instance_get()->pd_register, gobj_getUnique (o));
+    
+    PD_ASSERT (!err); PD_UNUSED (err);
+    
+    return err;
+}
+
+void instance_registerRename (t_gobj *o, t_id newUnique)
+{
+    register_rename (instance_get()->pd_register, gobj_getUnique (o), newUnique);
+}
+
+int instance_registerContains (t_id u)
+{
+    return register_contains (instance_get()->pd_register, u);
+}
+
+t_gobj *instance_registerGetObject (t_id u)
+{
+    return register_getObject (instance_get()->pd_register, u);
+}
+
+t_glist *instance_registerGetOwner (t_id u)
+{
+    return register_getOwner (instance_get()->pd_register, u);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -357,6 +399,8 @@ static t_pdinstance *instance_new()
     x->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     x->pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     
+    x->pd_register    = register_new();
+    
     class_addAnything (x->pd_objectMaker, (t_method)instance_factory);
         
     class_addMethod (x->pd_canvasMaker, (t_method)canvas_new, sym_canvas, A_GIMME, A_NULL);
@@ -378,6 +422,8 @@ static void instance_free (t_pdinstance *x)
     PD_ASSERT (x->pd_roots          == NULL);
     PD_ASSERT (x->pd_polling        == NULL);
     PD_ASSERT (x->pd_autorelease    == NULL);
+    
+    register_free (x->pd_register);
     
     class_free (x->pd_canvasMaker);
     class_free (x->pd_objectMaker);

@@ -336,28 +336,28 @@ void inlet_setup (void)
                             NULL,
                             NULL,
                             sizeof (t_inlet),
-                            CLASS_NOBOX,
+                            CLASS_INVISIBLE,
                             A_NULL);
     
     floatinlet_class = class_new (sym_floatinlet,
                             NULL,
                             NULL,
                             sizeof (t_inlet),
-                            CLASS_NOBOX,
+                            CLASS_INVISIBLE,
                             A_NULL);
     
     symbolinlet_class = class_new (sym_symbolinlet, 
                             NULL,
                             NULL,
                             sizeof (t_inlet),
-                            CLASS_NOBOX,
+                            CLASS_INVISIBLE,
                             A_NULL);
     
     pointerinlet_class = class_new (sym_pointerinlet,
                             NULL,
                             NULL,
                             sizeof (t_inlet),
-                            CLASS_NOBOX,
+                            CLASS_INVISIBLE,
                             A_NULL);
     
     class_addBang (inlet_class,             (t_method)inlet_bang);

@@ -15,7 +15,7 @@
 // MARK: -
 
 typedef struct _sfthread {
-    t_object            sft_obj;                /* Must be the first. */
+    t_pd                sft_pd;                /* Must be the first. */
     t_audioproperties   sft_properties;
     int                 sft_type;
     int                 sft_fileDescriptor;
