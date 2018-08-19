@@ -273,6 +273,7 @@ void        leak_release                            (void);
 // MARK: -
 
 int         font_getDefaultSize                     (void);
+void        font_setDefaultSize                     (int n);
 int         font_getValidSize                       (int n);
 double      font_getWidth                           (int fontSize);
 double      font_getHeight                          (int fontSize);
