@@ -41,6 +41,10 @@ void preferences_load (void)
         if (sscanf (v, "%d", &t) == 1) { snap_setSnapToGrid ((t != 0)); }
     }
     
+    if (properties_getKey ("GridSize", v, PD_STRING)) {
+        if (sscanf (v, "%d", &t) == 1) { snap_setStep (t); }
+    }
+    
     if (properties_getKey ("FontDefaultSize", v, PD_STRING)) {
         if (sscanf (v, "%d", &t) == 1) { font_setDefaultSize (t); }
     }
@@ -162,6 +166,9 @@ void preferences_save (void)
     
     string_sprintf (v, PD_STRING, "%d", snap_hasSnapToGrid());
     properties_setKey ("SnapToGrid", v);
+    
+    string_sprintf (v, PD_STRING, "%d", snap_getStep());
+    properties_setKey ("GridSize", v);
     
     string_sprintf (v, PD_STRING, "%d", font_getDefaultSize());
     properties_setKey ("FontDefaultSize", v);
