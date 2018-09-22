@@ -814,8 +814,6 @@ void slider_setup (void)
     class_addMethod (c, (t_method)slider_fromValue,             sym__valuedialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_fromDialog,            sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_size,                  sym_size,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_range,                 sym_range,              A_GIMME, A_NULL);
