@@ -296,6 +296,8 @@ void iemgui_setForegroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
     if (glist_isOnScreen (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
+#if PD_WITH_LEGACY
+
 void iemgui_setPosition (void *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_iem *iem = cast_iem (x);
@@ -326,6 +328,8 @@ void iemgui_movePosition (void *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
 }
+
+#endif // PD_WITH_LEGACY
 
 void iemgui_boxChanged (void *x)
 {

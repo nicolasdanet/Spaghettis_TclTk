@@ -188,6 +188,8 @@ static void panel_size (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+#if PD_WITH_LEGACY
+
 static void panel_getPosition (t_panel *x)
 {
     if (x->x_gui.iem_canSend && symbol_hasThing (x->x_gui.iem_send)) {
@@ -198,6 +200,8 @@ static void panel_getPosition (t_panel *x)
         pd_list (symbol_getThing (x->x_gui.iem_send), 2, x->x_t);
     }
 }
+
+#endif // PD_WITH_LEGACY
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -411,11 +415,8 @@ void panel_setup (void)
         
     class_addMethod (c, (t_method)panel_fromDialog,             sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_size,                   sym_size,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_getPosition,            sym_getposition,        A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
 

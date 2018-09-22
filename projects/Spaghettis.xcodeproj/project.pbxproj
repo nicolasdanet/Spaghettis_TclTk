@@ -2503,6 +2503,7 @@
 		1DEB928608733DD80010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2542,6 +2543,7 @@
 		1DEB928708733DD80010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2592,6 +2594,7 @@
 		379A42D41BA427B900C1CED0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				PRODUCT_NAME = spaghettissnd;
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -2606,6 +2609,7 @@
 		379A42D51BA427B900C1CED0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				PRODUCT_NAME = spaghettissnd;
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -2620,6 +2624,7 @@
 		379A42EF1BA428D000C1CED0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				PRODUCT_NAME = spaghettisrcv;
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -2634,6 +2639,7 @@
 		379A42F01BA428D000C1CED0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				PRODUCT_NAME = spaghettisrcv;
 				WARNING_CFLAGS = (
 					"-Wall",

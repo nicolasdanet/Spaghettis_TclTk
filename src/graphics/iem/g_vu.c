@@ -672,8 +672,6 @@ void vu_setup (void)
     class_addMethod (c, (t_method)vu_floatPeak,                 sym__inlet2,            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)vu_fromDialog,                sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vu_size,                      sym_size,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_movePosition,          sym_move,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setPosition,           sym_position,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
