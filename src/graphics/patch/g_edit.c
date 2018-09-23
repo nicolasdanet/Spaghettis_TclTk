@@ -376,11 +376,12 @@ t_error glist_resizeGraphByUnique (t_id u, int deltaX, int deltaY)
 
 static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
 {
+    int editMode      = glist_hasEditMode (glist);
     int canValue      = (y && class_hasValueFunction (pd_class (y)));
-    int canProperties = (!y || (y && class_hasPropertiesFunction (pd_class (y))));
+    int canProperties = editMode && (!y || (y && class_hasPropertiesFunction (pd_class (y))));
     int canOpen       = (y && gobj_isCanvas (y));
     int canHelp       = (y != NULL);
-    int canObject     = (glist_hasEditMode (glist));
+    int canObject     = editMode;
     int canOrder      = (glist_objectGetNumberOfSelected (glist) != 0);
     
     if (y && gobj_isCanvas (y)) {
