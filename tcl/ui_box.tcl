@@ -33,7 +33,7 @@ proc newText {c tag x y text fontSize color} {
 
 proc setText {c tag text} {
 
-    # On macOS with ActiveTcl 8.6.6 the cursor isn't properly erased while deleting.
+    # On macOS with ActiveTcl 8.6.7 the cursor isn't properly erased while deleting.
     # A workaround is to add a space to the text in the box.
     
     $c itemconfig $tag -text "$text "

@@ -25,7 +25,7 @@ t_class *delwrite_tilde_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleRate, int blockSize)
+static void delwrite_tilde_delayLineUpdate (t_delwrite_tilde *x, t_float sampleRate, int blockSize)
 {
     int n = (int)(PD_MILLISECONDS_TO_SECONDS (x->dw_delayLineInMilliseconds) * sampleRate);
     
@@ -44,6 +44,19 @@ static void delwrite_tilde_updateDelayLine (t_delwrite_tilde *x, t_float sampleR
     x->dw_space.c_vector = (t_sample *)PD_MEMORY_RESIZE (x->dw_space.c_vector, oldSize, newSize);
     x->dw_space.c_size   = n;
     x->dw_space.c_phase  = DELAY_EXTRA_SAMPLES;
+    //
+    }
+}
+
+static void delwrite_tilde_delayLineClear (t_delwrite_tilde *x)
+{
+    int n = x->dw_space.c_size;
+    
+    if (n > 0) {
+    //
+    size_t size = sizeof (t_sample) * (n + DELAY_EXTRA_SAMPLES);
+    
+    memset (x->dw_space.c_vector, 0, size);
     //
     }
 }
@@ -106,9 +119,18 @@ static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
 {
     x->dw_buildIdentifier = instance_getDspChainIdentifier();
     
-    delwrite_tilde_updateDelayLine (x, sp[0]->s_sampleRate, sp[0]->s_vectorSize);
+    delwrite_tilde_delayLineUpdate (x, sp[0]->s_sampleRate, sp[0]->s_vectorSize);
     
     dsp_add (delwrite_tilde_perform, 3, &x->dw_space, sp[0]->s_vector, sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void delwrite_tilde_clear (t_delwrite_tilde *x)
+{
+    delwrite_tilde_delayLineClear (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -157,6 +179,8 @@ void delwrite_tilde_setup (void)
     
     class_addDSP (c, (t_method)delwrite_tilde_dsp);
     
+    class_addMethod (c, (t_method)delwrite_tilde_clear, sym_clear, A_NULL);
+
     delwrite_tilde_class = c;
 }
 
