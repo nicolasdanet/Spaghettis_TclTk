@@ -47,7 +47,7 @@
 #X connect 16 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 108 pd trigonometric;
-#N canvas 886 270 300 236 transcendental 0;
+#N canvas 699 305 305 235 transcendental 0;
 #X floatatom 36 132 0 0 0 0 - - -;
 #X obj 36 108 log;
 #X obj 36 156 exp;
@@ -57,11 +57,16 @@
 #X text 12 12 Exponential and natural logarithm.;
 #X floatatom 36 192 5 0 0 1 - - -;
 #X f 5;
+#X obj 168 108 log 10;
+#X msg 168 48 10 \, 100 \, 1000;
+#X obj 168 192 print;
 #X connect 0 0 2 0;
 #X connect 1 0 0 0;
 #X connect 2 0 6 0;
 #X connect 3 0 1 0;
 #X connect 4 0 1 0;
+#X connect 7 0 9 0;
+#X connect 8 0 7 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 132 pd transcendental;
 #N canvas 669 213 398 306 power 0;
@@ -108,7 +113,7 @@
 #X f 5;
 #X floatatom 156 144 5 0 0 1 - - -;
 #X f 5;
-#X obj 324 24 hslider 128 15 -10 10 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 5700 0;
+#X obj 324 24 hslider 128 15 -10 10 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 0;
 #X floatatom 324 48 6 0 0 1 - - -;
 #X f 6;
 #X obj 324 108 wrap;
@@ -184,7 +189,7 @@
 #X text 12 12 Integer division with remainder.;
 #X obj 228 156 mod 360;
 #X obj 168 156 % 360;
-#X obj 36 48 hslider 128 15 -90 90 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 10900 0;
+#X obj 36 48 hslider 128 15 -90 90 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 0;
 #X floatatom 168 192 5 0 0 1 - - -;
 #X f 5;
 #X floatatom 228 192 5 0 0 1 - - -;

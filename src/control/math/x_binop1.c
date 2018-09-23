@@ -24,6 +24,7 @@ static t_class *binopSubtract_class;        /* Shared. */
 static t_class *binopMultiply_class;        /* Shared. */
 static t_class *binopDivide_class;          /* Shared. */
 static t_class *binopPower_class;           /* Shared. */
+static t_class *binopLog_class;             /* Shared. */
 static t_class *binopMaximum_class;         /* Shared. */
 static t_class *binopMinimum_class;         /* Shared. */
 
@@ -141,6 +142,29 @@ static void binopPower_float (t_binop *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void *binopLog_new (t_float f)
+{
+    return binop_new (binopLog_class, f);
+}
+
+static void binopLog_bang (t_binop *x)
+{
+    t_float f = -1000.0;
+    
+    if (x->bo_f1 > 0.0) { f = (x->bo_f2 <= 0.0) ? log (x->bo_f1) : (log (x->bo_f1) / log (x->bo_f2)); }
+    
+    outlet_float (x->bo_outlet, f);
+}
+
+static void binopLog_float (t_binop *x, t_float f)
+{
+    x->bo_f1 = f; binopLog_bang (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *binopMaximum_new (t_float f)
 {
     return binop_new (binopMaximum_class, f);
@@ -220,7 +244,15 @@ void binop1_setup (void)
                             CLASS_DEFAULT,
                             A_DEFFLOAT,
                             A_NULL);
-                            
+    
+    binopLog_class = class_new (sym_log,
+                            (t_newmethod)binopLog_new,
+                            NULL,
+                            sizeof (t_binop),
+                            CLASS_DEFAULT,
+                            A_DEFFLOAT,
+                            A_NULL);
+    
     binopMaximum_class = class_new (sym_max,
                             (t_newmethod)binopMaximum_new,
                             NULL,
@@ -242,6 +274,7 @@ void binop1_setup (void)
     class_addBang (binopMultiply_class,     (t_method)binopMultiply_bang);
     class_addBang (binopDivide_class,       (t_method)binopDivide_bang);
     class_addBang (binopPower_class,        (t_method)binopPower_bang);
+    class_addBang (binopLog_class,          (t_method)binopLog_bang);
     class_addBang (binopMaximum_class,      (t_method)binopMaximum_bang);
     class_addBang (binopMinimum_class,      (t_method)binopMinimum_bang);
         
@@ -250,6 +283,7 @@ void binop1_setup (void)
     class_addFloat (binopMultiply_class,    (t_method)binopMultiply_float);
     class_addFloat (binopDivide_class,      (t_method)binopDivide_float);
     class_addFloat (binopPower_class,       (t_method)binopPower_float);
+    class_addFloat (binopLog_class,         (t_method)binopLog_float);
     class_addFloat (binopMaximum_class,     (t_method)binopMaximum_float);
     class_addFloat (binopMinimum_class,     (t_method)binopMinimum_float);
         
@@ -258,6 +292,7 @@ void binop1_setup (void)
     class_setHelpName (binopMultiply_class, sym_arithmetic);
     class_setHelpName (binopDivide_class,   sym_arithmetic);
     class_setHelpName (binopPower_class,    sym_math);
+    class_setHelpName (binopLog_class,      sym_math);
     class_setHelpName (binopMaximum_class,  sym_math);
     class_setHelpName (binopMinimum_class,  sym_math);
 }
@@ -269,6 +304,7 @@ void binop1_destroy (void)
     class_free (binopMultiply_class);
     class_free (binopDivide_class);
     class_free (binopPower_class);
+    class_free (binopLog_class);
     class_free (binopMaximum_class);
     class_free (binopMinimum_class);
 }

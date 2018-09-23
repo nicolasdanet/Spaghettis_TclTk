@@ -16,7 +16,6 @@
 static t_class *sin_class;          /* Shared. */
 static t_class *cos_class;          /* Shared. */
 static t_class *tan_class;          /* Shared. */
-static t_class *log_class;          /* Shared. */
 static t_class *exp_class;          /* Shared. */
 static t_class *abs_class;          /* Shared. */
 static t_class *sqrt_class;         /* Shared. */
@@ -108,29 +107,6 @@ static void tan_bang (t_math *x)
 static void tan_float (t_math *x, t_float f)
 {
     x->x_f = f; tan_bang (x);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void *log_new (void)
-{
-    t_math *x = (t_math *)pd_new (log_class);
-    
-    x->x_outlet = outlet_newFloat (cast_object (x));
-    
-    return x;
-}
-
-static void log_bang (t_math *x)
-{
-    outlet_float (x->x_outlet, (t_float)(x->x_f > 0.0 ? log (x->x_f) : -1000.0));
-}
-
-static void log_float (t_math *x, t_float f)
-{
-    x->x_f = f; log_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -274,14 +250,7 @@ void math_setup (void)
                     sizeof (t_math),
                     CLASS_DEFAULT,
                     A_NULL);
-                    
-    log_class = class_new (sym_log,
-                    (t_newmethod)log_new,
-                    NULL,
-                    sizeof (t_math),
-                    CLASS_DEFAULT,
-                    A_NULL);
-                    
+    
     exp_class = class_new (sym_exp,
                     (t_newmethod)exp_new,
                     NULL,
@@ -320,7 +289,6 @@ void math_setup (void)
     class_addBang (sin_class,       (t_method)sin_bang);
     class_addBang (cos_class,       (t_method)cos_bang);
     class_addBang (tan_class,       (t_method)tan_bang);
-    class_addBang (log_class,       (t_method)log_bang);
     class_addBang (exp_class,       (t_method)exp_bang);
     class_addBang (abs_class,       (t_method)abs_bang);
     class_addBang (wrap_class,      (t_method)wrap_bang);
@@ -330,7 +298,6 @@ void math_setup (void)
     class_addFloat (sin_class,      (t_method)sin_float);  
     class_addFloat (cos_class,      (t_method)cos_float);
     class_addFloat (tan_class,      (t_method)tan_float);
-    class_addFloat (log_class,      (t_method)log_float);
     class_addFloat (exp_class,      (t_method)exp_float);
     class_addFloat (abs_class,      (t_method)abs_float); 
     class_addFloat (wrap_class,     (t_method)wrap_float);    
@@ -340,7 +307,6 @@ void math_setup (void)
     class_setHelpName (sin_class,   sym_math);
     class_setHelpName (cos_class,   sym_math);
     class_setHelpName (tan_class,   sym_math);
-    class_setHelpName (log_class,   sym_math);
     class_setHelpName (exp_class,   sym_math);
     class_setHelpName (abs_class,   sym_math);
     class_setHelpName (sqrt_class,  sym_math);
@@ -353,7 +319,6 @@ void math_destroy (void)
     class_free (sin_class);
     class_free (cos_class);
     class_free (tan_class);
-    class_free (log_class);
     class_free (exp_class);
     class_free (abs_class);
     class_free (sqrt_class);
