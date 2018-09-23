@@ -45,10 +45,12 @@ t_int *pow_tilde_perform (t_int *w)
     t_sample f = *in1++;
     t_sample g = *in2++;
 
-    if (f >= 0.0) { *out++ = (t_sample)pow (f, g); }
-    else {
-        *out++ = 0.0;
-    }
+    /* Avoid divide by zero with negative power. */
+    /* Avoid root of negative numbers with fractional power. */
+    
+    int err = (f == (t_sample)0.0 && g < (t_sample)0.0) || (f < (t_sample)0.0 && !PD_FLOAT32_IS_INTEGER (g));
+
+    if (err) { *out++ = 0.0; } else { *out++ = (t_sample)pow (f, g); }
     //
     }
     

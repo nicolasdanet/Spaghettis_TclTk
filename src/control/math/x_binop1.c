@@ -130,7 +130,16 @@ static void *binopPower_new (t_float f)
 
 static void binopPower_bang (t_binop *x)
 {
-    outlet_float (x->bo_outlet, (x->bo_f1 > 0.0 ? pow (x->bo_f1, x->bo_f2) : 0.0));
+    /* Avoid divide by zero with negative power. */
+    /* Avoid root of negative numbers with fractional power. */
+    
+    int err = (x->bo_f1 == 0.0 && x->bo_f2 < 0.0) || (x->bo_f1 < 0.0 && !PD_FLOAT64_IS_INTEGER (x->bo_f2));
+    
+    if (err) {
+        outlet_float (x->bo_outlet, 0.0);
+    } else {
+        outlet_float (x->bo_outlet, pow (x->bo_f1, x->bo_f2));
+    }
 }
 
 static void binopPower_float (t_binop *x, t_float f)
