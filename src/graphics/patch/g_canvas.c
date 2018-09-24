@@ -79,6 +79,13 @@ static void canvas_functionProperties (t_gobj *, t_glist *, t_mouse *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void glist_objectAddNextProceed (t_glist *, t_gobj *, t_gobj *);
+void glist_objectAddUndoProceed (t_glist *, t_gobj *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void scalar_fromValue (t_scalar *, t_symbol *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -418,8 +425,9 @@ static void canvas_fromScalarDialog (t_glist *glist, t_symbol *s, int argc, t_at
     if (template_isValid (template_findByIdentifier (templateIdentifier))) {
     //
     t_scalar *scalar = scalar_new (glist, templateIdentifier);
-    glist_objectAdd (glist, cast_gobj (scalar));
+    glist_objectAddNextProceed (glist, cast_gobj (scalar), NULL);
     scalar_fromValue (scalar, NULL, argc, argv);
+    glist_objectAddUndoProceed (glist, cast_gobj (scalar));
     //
     }
     //
