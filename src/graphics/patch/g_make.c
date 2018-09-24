@@ -15,6 +15,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void glist_objectAddNextProceed (t_glist *, t_gobj *, t_gobj *);
+void glist_objectAddUndoProceed (t_glist *, t_gobj *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void canvas_makeObjectFile (t_glist *glist, int argc, t_atom *argv)
 {
     int a = (int)atom_getFloat (argv + 0);
@@ -135,9 +142,11 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     object_setWidth (cast_object (x), 0);
     object_setType (cast_object (x), TYPE_OBJECT);
     
-    glist_objectAdd (glist, cast_gobj (x));
+    glist_objectAddNextProceed (glist, cast_gobj (x), NULL);
     
     garray_makeObject (x, symbol_hashToDollar (name), n, flags);
+    
+    glist_objectAddUndoProceed (glist, cast_gobj (x));      /* Must be called at last. */
     //
     }
     
