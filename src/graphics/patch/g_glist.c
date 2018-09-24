@@ -726,7 +726,7 @@ static void glist_objectAddProceed (t_glist *glist, t_gobj *y, t_gobj *first, in
     instance_registerAdd (y, glist);
 }
 
-void glist_objectAddNext (t_glist *glist, t_gobj *y, t_gobj *first)
+void glist_objectAddNextProceed (t_glist *glist, t_gobj *y, t_gobj *first)
 {
     int needToRepaint = class_hasPainterBehavior (pd_class (y));
     
@@ -734,6 +734,14 @@ void glist_objectAddNext (t_glist *glist, t_gobj *y, t_gobj *first)
     
     glist_objectAddProceed (glist, y, first, 0);
     
+    if (cast_objectIfConnectable (y)) { editor_boxAdd (glist_getEditor (glist), cast_object (y)); }
+    if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
+    
+    if (needToRepaint) { paint_draw(); }
+}
+
+void glist_objectAddUndoProceed (t_glist *glist, t_gobj *y)
+{
     if (glist_undoIsOk (glist)) {
         t_undosnippet *snippet = undosnippet_newSave (y, glist);
         if (glist_undoHasSeparatorAtLast (glist)) { glist_undoAppend (glist, undoadd_new()); }
@@ -742,16 +750,18 @@ void glist_objectAddNext (t_glist *glist, t_gobj *y, t_gobj *first)
             glist_undoAppend (glist, undocreate_new (y, snippet));
         }
     }
-    
-    if (cast_objectIfConnectable (y)) { editor_boxAdd (glist_getEditor (glist), cast_object (y)); }
-    if (glist_isOnScreen (glist_getView (glist))) { gobj_visibilityChanged (y, glist, 1); }
-    
-    if (needToRepaint) { paint_draw(); }
+}
+
+void glist_objectAddNext (t_glist *glist, t_gobj *y, t_gobj *first)
+{
+    glist_objectAddNextProceed (glist, y, first);
+    glist_objectAddUndoProceed (glist, y);
 }
 
 void glist_objectAdd (t_glist *glist, t_gobj *y)
 {
-    glist_objectAddNext (glist, y, NULL);
+    glist_objectAddNextProceed (glist, y, NULL);
+    glist_objectAddUndoProceed (glist, y);
 }
 
 // -----------------------------------------------------------------------------------------------------------
