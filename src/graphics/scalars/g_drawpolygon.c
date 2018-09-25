@@ -188,7 +188,7 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     int a = glist_valueToPixelX (glist, valueX);
     int b = glist_valueToPixelY (glist, valueY);
     
-    rectangle_addPoint (r, a, b);
+    rectangle_add (r, a, b);
     //
     }
     //

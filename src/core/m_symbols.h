@@ -184,6 +184,7 @@ extern t_symbol *sym__savepreferences;
 extern t_symbol *sym__savetofile;
 extern t_symbol *sym__scalar;
 extern t_symbol *sym__scalardialog;
+extern t_symbol *sym__scroll;
 extern t_symbol *sym__selectall;
 extern t_symbol *sym__signoff;
 extern t_symbol *sym__snap;

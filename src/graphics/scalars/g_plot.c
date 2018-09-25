@@ -434,8 +434,8 @@ static void plot_behaviorGetRectangle (t_gobj *z,
             p.p_width, 
             &c);
         
-        rectangle_addPoint (r, c.p_pixelX, c.p_pixelY - c.p_pixelW);
-        rectangle_addPoint (r, c.p_pixelX, c.p_pixelY + c.p_pixelW);
+        rectangle_add (r, c.p_pixelX, c.p_pixelY - c.p_pixelW);
+        rectangle_add (r, c.p_pixelX, c.p_pixelY + c.p_pixelW);
         
         if (view) { plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, r); }
     }
@@ -1027,7 +1027,7 @@ int plot_hitElement (t_gobj *z,
         
         plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, &r);
         
-        if (rectangle_containsPoint (&r, m->m_x, m->m_y)) {
+        if (rectangle_contains (&r, m->m_x, m->m_y)) {
             double g = rectangle_getArea (&r);
             if (g < f) {
                 *s = field_getVariableName (&x->x_array);

@@ -105,7 +105,7 @@ static t_float drawtext_getFactor (t_drawtext *x, t_gpointer *gp, t_rectangle *r
         int i, k = -1;
     
         for (i = 0; i < decimals; i++) {
-            rectangle_enlargeLeft (&t, h); if (rectangle_containsPoint (&t, m->m_x, m->m_y)) { k = i; break; }
+            rectangle_enlargeLeft (&t, h); if (rectangle_contains (&t, m->m_x, m->m_y)) { k = i; break; }
         }
         
         if (k >= 0) { int n = decimals - k; while (n--) { factor *= 0.1; } }
@@ -264,7 +264,7 @@ static int drawtext_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_f
 
     if (!rectangle_isNothing (&t)) {
     //
-    if (rectangle_containsPoint (&t, a, b)) {
+    if (rectangle_contains (&t, a, b)) {
     //
     if (gpointer_fieldIsFloat (gp, x->x_fieldName)) {
     //

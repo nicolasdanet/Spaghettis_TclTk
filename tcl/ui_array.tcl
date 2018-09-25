@@ -32,6 +32,7 @@ variable  arraySave
 variable  arrayDraw
 variable  arrayHide
 variable  arrayInhibit
+variable  arrayIsMenu
 
 array set arrayName    {}
 array set arraySize    {}
@@ -43,19 +44,20 @@ array set arraySave    {}
 array set arrayDraw    {}
 array set arrayHide    {}
 array set arrayInhibit {}
+array set arrayIsMenu  {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top name size width height up down save style hide inhibit} {
+proc show {top name size width height up down save style hide inhibit isMenu} {
 
-    ::ui_array::_create $top $name $size $width $height $up $down $save $style $hide $inhibit
+    ::ui_array::_create $top $name $size $width $height $up $down $save $style $hide $inhibit $isMenu
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top name size width height up down save style hide inhibit} {
+proc _create {top name size width height up down save style hide inhibit isMenu} {
 
     variable arrayName
     variable arraySize
@@ -67,6 +69,7 @@ proc _create {top name size width height up down save style hide inhibit} {
     variable arrayDraw
     variable arrayHide
     variable arrayInhibit
+    variable arrayIsMenu
         
     toplevel $top -class PdDialog
     wm title $top [_ "Array"]
@@ -86,6 +89,7 @@ proc _create {top name size width height up down save style hide inhibit} {
     set arrayDraw($top)         $style
     set arrayHide($top)         $hide
     set arrayInhibit($top)      $inhibit
+    set arrayIsMenu($top)       $isMenu
     
     set arrayName(${top}.old)   [::hashToDollar $name]
     set arraySize(${top}.old)   $size
@@ -222,6 +226,7 @@ proc released {top} {
     variable arrayDraw
     variable arrayHide
     variable arrayInhibit
+    variable arrayIsMenu
     
     unset arrayName($top)
     unset arraySize($top)
@@ -233,6 +238,7 @@ proc released {top} {
     unset arrayDraw($top)
     unset arrayHide($top)
     unset arrayInhibit($top)
+    unset arrayIsMenu($top)
     
     unset arrayName(${top}.old)
     unset arraySize(${top}.old)
@@ -257,6 +263,7 @@ proc _apply {top} {
     variable arrayDraw
     variable arrayHide
     variable arrayInhibit
+    variable arrayIsMenu
         
     ::ui_array::_forceSize $top
     ::ui_array::_forceBounds $top
@@ -272,7 +279,8 @@ proc _apply {top} {
             $arraySave($top) \
             $arrayDraw($top) \
             $arrayHide($top) \
-            $arrayInhibit($top)"
+            $arrayInhibit($top) \
+            $arrayIsMenu($top)"
 }
 
 # ------------------------------------------------------------------------------------------------------------

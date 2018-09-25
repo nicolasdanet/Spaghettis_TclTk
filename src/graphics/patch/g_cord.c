@@ -73,7 +73,7 @@ int cord_hit (t_cord *x, int positionX, int positionY)
     
     rectangle_set (&r, a, b, c, d); rectangle_enlarge (&r, CORD_GRIP_SIZE / 2);
     
-    if (rectangle_containsPoint (&r, positionX, positionY)) {
+    if (rectangle_contains (&r, positionX, positionY)) {
     //
     /* Area of the triangle (with extremities of the line and mouse as vertices). */
     

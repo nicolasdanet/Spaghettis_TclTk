@@ -155,8 +155,12 @@ proc setEditMode {top {state {}}} {
 
 proc scroll {c axis amount} {
     
+    set top [winfo toplevel $c]
+    
     if {$axis eq "x"} { $c xview scroll [expr {-($amount)}] units }
     if {$axis eq "y"} { $c yview scroll [expr {-($amount)}] units }
+    
+    ::ui_interface::pdsend "$top _scroll [$c canvasx 0] [$c canvasy 0]"
 }
 
 # ------------------------------------------------------------------------------------------------------------

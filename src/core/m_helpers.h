@@ -218,6 +218,38 @@ static inline int drag_getMoveY (t_drag *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+typedef struct _point {
+    int pt_x;
+    int pt_y;
+    } t_point;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void point_set (t_point *pt, int x, int y)
+{
+    pt->pt_x = x; pt->pt_y = y;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline int point_getX (t_point *p)
+{
+    return p->pt_x;
+}
+
+static inline int point_getY (t_point *p)
+{
+    return p->pt_y;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 typedef struct _rectangle {
     int rect_topLeftX;
     int rect_topLeftY;
@@ -244,7 +276,7 @@ int     rectangle_areEquals                     (t_rectangle *r1, t_rectangle *r
 int     rectangle_overlap                       (t_rectangle *r1, t_rectangle *r2);
 
 void    rectangle_addRectangle                  (t_rectangle *r, t_rectangle *toAdd);
-void    rectangle_addPoint                      (t_rectangle *r, int x, int y);
+void    rectangle_add                           (t_rectangle *r, int x, int y);
 void    rectangle_deplace                       (t_rectangle *r, int x, int y);
 void    rectangle_enlarge                       (t_rectangle *r, int n);
 void    rectangle_enlargeHeight                 (t_rectangle *r, int n);
@@ -252,7 +284,7 @@ void    rectangle_enlargeRight                  (t_rectangle *r, int n);
 void    rectangle_enlargeLeft                   (t_rectangle *r, int n);
 int     rectangle_containsX                     (t_rectangle *r, int x);
 int     rectangle_containsY                     (t_rectangle *r, int y);
-int     rectangle_containsPoint                 (t_rectangle *r, int x, int y);
+int     rectangle_contains                      (t_rectangle *r, int x, int y);
 int     rectangle_containsRectangle             (t_rectangle *r, t_rectangle *isContained);
 
 t_float rectangle_getArea                       (t_rectangle *r);

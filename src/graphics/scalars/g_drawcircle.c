@@ -286,7 +286,7 @@ static int drawcircle_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
 
     if (!rectangle_isNothing (&t)) {
     //
-    if (rectangle_containsPoint (&t, a, b)) {
+    if (rectangle_contains (&t, a, b)) {
     //
     int w = rectangle_getWidth (&t);
     int h = rectangle_getHeight (&t);
