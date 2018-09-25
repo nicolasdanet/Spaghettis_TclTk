@@ -758,7 +758,7 @@ void garray_functionProperties (t_garray *x)
     PD_ASSERT (glist_isArray (x->x_owner));
     
     err |= string_sprintf (t, PD_STRING,
-                "::ui_array::show %%s %s %d %d %d %.9g %.9g %d %d %d %d\n",
+                "::ui_array::show %%s %s %d %d %d %.9g %.9g %d %d %d %d 0\n",
                 symbol_dollarToHash (x->x_unexpandedName)->s_name,
                 array_getSize (array),
                 rectangle_getWidth (glist_getGraphGeometry (x->x_owner)),
@@ -782,7 +782,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     t_glist *parent = glist_getParent (x->x_owner);
     int undoable    = glist_undoIsOk (parent);
     
-    PD_ASSERT (argc == 10);
+    PD_ASSERT (argc == 11);
     
     t_symbol *t1 = x->x_name;
     int t2       = x->x_saveWithParent;
@@ -813,6 +813,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     int style      = (int)atom_getFloatAtIndex (7, argc, argv);
     int hide       = (int)atom_getFloatAtIndex (8, argc, argv);
     int inhibit    = (int)atom_getFloatAtIndex (9, argc, argv);
+    //int isMenu   = (int)atom_getFloatAtIndex (10, argc, argv);
     
     PD_ASSERT (size > 0);
     

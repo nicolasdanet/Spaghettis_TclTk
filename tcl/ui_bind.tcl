@@ -164,15 +164,15 @@ proc initialize {} {
     bind all <<SaveAs>>                     { .menubar.file     invoke "Save As..."     }
     bind all <<Close>>                      { .menubar.file     invoke "Close"          }
     
-    bind all <<NewObject>>                  { .menubar.object   invoke "Object"         }
-    bind all <<NewMessage>>                 { .menubar.object   invoke "Message"        }
-    bind all <<NewAtom>>                    { .menubar.object   invoke "Atom"           }
-    bind all <<NewSymbol>>                  { .menubar.object   invoke "Symbol"         }
-    bind all <<NewComment>>                 { .menubar.object   invoke "Comment"        }
-    bind all <<NewBang>>                    { .menubar.object   invoke "Bang"           }
-    bind all <<NewToggle>>                  { .menubar.object   invoke "Toggle"         }
-    bind all <<NewDial>>                    { .menubar.object   invoke "Dial"           }
-    bind all <<NewArray>>                   { .menubar.object   invoke "Array"          }
+    bind all <<NewObject>>                  { .popup.object     invoke "Object"         }
+    bind all <<NewMessage>>                 { .popup.object     invoke "Message"        }
+    bind all <<NewAtom>>                    { .popup.object     invoke "Atom"           }
+    bind all <<NewSymbol>>                  { .popup.object     invoke "Symbol"         }
+    bind all <<NewComment>>                 { .popup.object     invoke "Comment"        }
+    bind all <<NewBang>>                    { .popup.object     invoke "Bang"           }
+    bind all <<NewToggle>>                  { .popup.object     invoke "Toggle"         }
+    bind all <<NewDial>>                    { .popup.object     invoke "Dial"           }
+    bind all <<NewArray>>                   { .popup.object     invoke "Array"          }
     
     bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"        }
     

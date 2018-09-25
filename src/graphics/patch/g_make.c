@@ -34,7 +34,7 @@ static void canvas_makeObjectFile (t_glist *glist, int argc, t_atom *argv)
     glist_objectMake (glist, a, b, 0, 0, t);
 }
 
-static void canvas_makeObjectMenu (t_glist *glist)
+static void canvas_makeObjectMenu (t_glist *glist, int argc, t_atom *argv)
 {
     if (glist_isOnScreen (glist)) {
     //
@@ -42,6 +42,15 @@ static void canvas_makeObjectMenu (t_glist *glist)
     int b = instance_getDefaultY (glist);
     
     t_buffer *t = buffer_new();
+    
+    if (atom_getSymbolAtIndex (0, argc, argv) == sym_menu) {
+    //
+    t_point pt = glist_getPositionForNewObject (glist);
+    
+    a = point_getX (&pt);
+    b = point_getY (&pt);
+    //
+    }
     
     glist_deselectAll (glist); 
     
@@ -54,7 +63,7 @@ void canvas_makeObject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc >= 2) { canvas_makeObjectFile (glist, argc, argv); }
     else {
-        canvas_makeObjectMenu (glist);
+        canvas_makeObjectMenu (glist, argc, argv);
     }
 }
 
@@ -96,6 +105,7 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     int style      = (int)atom_getFloatAtIndex (7, argc, argv);
     int hide       = (int)atom_getFloatAtIndex (8, argc, argv);
     int inhibit    = (int)atom_getFloatAtIndex (9, argc, argv);
+    int isMenu     = (int)atom_getFloatAtIndex (10, argc, argv);
     
     // GARRAY_FLAG_SAVE
     // GARRAY_FLAG_PLOT
@@ -113,6 +123,15 @@ void canvas_makeArrayFromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *
     t_rectangle graph;
     
     t_buffer *t = buffer_new(); buffer_appendSymbol (t, sym_graph);
+    
+    if (isMenu) {
+    //
+    t_point pt = glist_getPositionForNewObject (glist);
+    
+    a = point_getX (&pt);
+    b = point_getY (&pt);
+    //
+    }
     
     bounds_set (&bounds, 0, up, n, down);
     rectangle_set (&graph, 0, 0, width, height);
@@ -188,7 +207,7 @@ static void canvas_makeCommentFile (t_glist *glist, int argc, t_atom *argv)
     glist_objectAdd (glist, cast_gobj (x));
 }
 
-void canvas_makeCommentMenu (t_glist *glist)
+void canvas_makeCommentMenu (t_glist *glist, int argc, t_atom *argv)
 {
     if (glist_isOnScreen (glist)) {
     //
@@ -199,6 +218,15 @@ void canvas_makeCommentMenu (t_glist *glist)
     
     t_buffer *t = buffer_new();
 
+    if (atom_getSymbolAtIndex (0, argc, argv) == sym_menu) {
+    //
+    t_point pt = glist_getPositionForNewObject (glist);
+    
+    a = point_getX (&pt);
+    b = point_getY (&pt);
+    //
+    }
+    
     buffer_appendSymbol (t, sym_comment);
     
     object_setBuffer (x, t);
@@ -218,7 +246,7 @@ void canvas_makeComment (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc >= 2) { canvas_makeCommentFile (glist, argc, argv); }
     else {
-        canvas_makeCommentMenu (glist);
+        canvas_makeCommentMenu (glist, argc, argv);
     }
 }
 
@@ -234,7 +262,7 @@ void canvas_makeScalar (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void canvas_makeIemMenu (t_glist *glist, t_symbol *name)
+static void canvas_makeIemMenu (t_glist *glist, t_symbol *name, int argc, t_atom *argv)
 {
     if (glist_isOnScreen (glist)) {
     //
@@ -242,6 +270,15 @@ static void canvas_makeIemMenu (t_glist *glist, t_symbol *name)
     int b = instance_getDefaultY (glist);
     
     t_buffer *t = buffer_new();
+        
+    if (atom_getSymbolAtIndex (0, argc, argv) == sym_menu) {
+    //
+    t_point pt = glist_getPositionForNewObject (glist);
+    
+    a = point_getX (&pt);
+    b = point_getY (&pt);
+    //
+    }
     
     glist_deselectAll (glist); buffer_appendSymbol (t, name); 
     
@@ -250,54 +287,58 @@ static void canvas_makeIemMenu (t_glist *glist, t_symbol *name)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void canvas_makeBang (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_bng);
+    canvas_makeIemMenu (glist, sym_bng, argc, argv);
 }
 
 void canvas_makeToggle (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_tgl);
+    canvas_makeIemMenu (glist, sym_tgl, argc, argv);
 }
 
 void canvas_makeSliderVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_vslider);
+    canvas_makeIemMenu (glist, sym_vslider, argc, argv);
 }
 
 void canvas_makeSliderHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_hslider);
+    canvas_makeIemMenu (glist, sym_hslider, argc, argv);
 }
 
 void canvas_makeRadioVertical (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_vradio);
+    canvas_makeIemMenu (glist, sym_vradio, argc, argv);
 }
 
 void canvas_makeRadioHorizontal (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_hradio);
+    canvas_makeIemMenu (glist, sym_hradio, argc, argv);
 }
 
 void canvas_makeMenuButton (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_menubutton);
+    canvas_makeIemMenu (glist, sym_menubutton, argc, argv);
 }
 
 void canvas_makeVu (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_vu);
+    canvas_makeIemMenu (glist, sym_vu, argc, argv);
 }
 
 void canvas_makePanel (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_cnv);
+    canvas_makeIemMenu (glist, sym_cnv, argc, argv);
 }
 
 void canvas_makeDial (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_makeIemMenu (glist, sym_nbx);
+    canvas_makeIemMenu (glist, sym_nbx, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------

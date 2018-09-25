@@ -39,6 +39,9 @@ struct _glist {
     t_bounds            gl_bounds;
     t_rectangle         gl_geometryGraph;
     t_rectangle         gl_geometryWindow;
+    t_rectangle         gl_geometryPatch;
+    int                 gl_scrollX;
+    int                 gl_scrollY;
     int                 gl_fontSize;
     int                 gl_hasBeenCloseBanged;
     int                 gl_hasWindow;
@@ -356,6 +359,12 @@ static inline void glist_setOpenedAtLoad (t_glist *g, int n)
     g->gl_isOpenedAtLoad = n;
 }
 
+static inline void glist_setScroll (t_glist *g, int a, int b)
+{
+    g->gl_scrollX = a;
+    g->gl_scrollY = b;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -429,6 +438,18 @@ static inline t_rectangle *glist_getWindowGeometry (t_glist *g)
     return &g->gl_geometryWindow;
 }
 
+t_rectangle *glist_getPatchGeometry (t_glist *g);
+
+static inline int glist_getScrollX (t_glist *g)
+{
+    return g->gl_scrollX;
+}
+
+static inline int glist_getScrollY (t_glist *g)
+{
+    return g->gl_scrollY;
+}
+
 static inline t_gmaster *glist_getMaster (t_glist *g)
 {
     return g->gl_holder;
@@ -458,6 +479,8 @@ static inline const char *glist_getTagAsString (t_glist *g)
 {
     return editor_getTagAsString (glist_getEditor (g));
 }
+
+t_point glist_getPositionForNewObject (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -224,7 +224,7 @@ int editor_graphHit (t_editor *x, int a, int b)
 {
     t_rectangle *r = glist_getGraphGeometry (x->e_owner);
     
-    return rectangle_containsPoint (r, a, b);
+    return rectangle_contains (r, a, b);
 }
 
 int editor_graphHitRightSide (t_editor *x, int a, int b)
@@ -236,7 +236,7 @@ int editor_graphHitRightSide (t_editor *x, int a, int b)
     
     rectangle_enlargeRight (&t1, -EDIT_GRIP_SIZE); rectangle_enlargeRight (&t2, EDIT_GRIP_SIZE);
     
-    return (rectangle_containsPoint (&t2, a, b) && !rectangle_containsPoint (&t1, a, b));
+    return (rectangle_contains (&t2, a, b) && !rectangle_contains (&t1, a, b));
 }
 
 void editor_graphDeplace (t_editor *x, int a, int b)

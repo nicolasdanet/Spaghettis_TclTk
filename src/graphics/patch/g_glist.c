@@ -264,8 +264,31 @@ t_garray *glist_getArray (t_glist *glist)
     }
 }
 
+t_rectangle *glist_getPatchGeometry (t_glist *glist)
+{
+    int w = rectangle_getWidth (glist_getWindowGeometry (glist));
+    int h = rectangle_getHeight (glist_getWindowGeometry (glist));
+    int a = glist_getScrollX (glist);
+    int b = glist_getScrollY (glist);
+    
+    rectangle_setByWidthAndHeight (&glist->gl_geometryPatch, 0, 0, w, h);
+    rectangle_deplace (&glist->gl_geometryPatch, a, b);
+    
+    return &glist->gl_geometryPatch;
+}
+
+t_point glist_getPositionForNewObject (t_glist *glist)
+{
+    t_rectangle *r = glist_getPatchGeometry (glist);
+    int a = rectangle_getTopLeftX (r) + (rectangle_getWidth (r)  / 4.0);
+    int b = rectangle_getTopLeftY (r) + (rectangle_getHeight (r) / 4.0);
+    
+    t_point pt; point_set (&pt, a, b); return pt;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void glist_setName (t_glist *glist, t_symbol *name)
 {

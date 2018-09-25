@@ -271,6 +271,18 @@ static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+static void canvas_scroll (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) {
+    //
+    int a = (int)atom_getFloatAtIndex (0, argc, argv);
+    int b = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    glist_setScroll (glist, a, b);
+    //
+    }
+}
+
 static void canvas_map (t_glist *glist, t_float f)
 {
     glist_windowMapped (glist, (f != 0.0));
@@ -306,18 +318,21 @@ static void canvas_help (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void canvas_requireArrayDialog (t_glist *glist)
+static void canvas_requireArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     char t[PD_STRING] = { 0 };
     
     int width  = GLIST_WIDTH / 2;
     int height = GLIST_HEIGHT / 2;
     
+    int menu   = (atom_getSymbolAtIndex (0, argc, argv) == sym_menu);
+    
     t_error err = string_sprintf (t, PD_STRING, 
-                        "::ui_array::show %%s %s 100 %d %d 1 -1 0 1 0 0\n",
+                        "::ui_array::show %%s %s 100 %d %d 1 -1 0 1 0 0 %d\n",
                         utils_getUnusedBindName (garray_class, sym_array)->s_name,
                         width,
-                        height);
+                        height,
+                        menu);
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
@@ -411,7 +426,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
 
 static void canvas_fromArrayDialog (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (argc == 10);
+    PD_ASSERT (argc == 11);
     
     canvas_makeArrayFromDialog (glist, s, argc, argv);
 }
@@ -696,6 +711,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_mouseDown,             sym__mousedown,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseUp,               sym__mouseup,           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_window,                sym__window,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_scroll,                sym__scroll,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_map,                   sym__map,               A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_saveToFile,            sym__savetofile,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_undo,                  sym__undo,              A_NULL);
@@ -712,8 +728,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_properties,            sym__properties,        A_NULL);
     class_addMethod (c, (t_method)canvas_help,                  sym__help,              A_NULL);
     
-    class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,             A_NULL);
     class_addMethod (c, (t_method)canvas_requireScalarDialog,   sym__scalar,            A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym__array,             A_GIMME,  A_NULL);
     
     class_addMethod (c, (t_method)canvas_fromPopupDialog,       sym__popupdialog,       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromArrayDialog,       sym__arraydialog,       A_GIMME, A_NULL);

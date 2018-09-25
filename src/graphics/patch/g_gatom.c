@@ -465,10 +465,22 @@ static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
 
 static void gatom_makeObjectMenu (t_gatom *x, int argc, t_atom *argv)
 {
+    int a = instance_getDefaultX (x->a_owner);
+    int b = instance_getDefaultY (x->a_owner);
+    
     glist_deselectAll (x->a_owner);
-        
-    object_setSnappedX (cast_object (x), instance_getDefaultX (x->a_owner));
-    object_setSnappedY (cast_object (x), instance_getDefaultY (x->a_owner));
+    
+    if (atom_getSymbolAtIndex (0, argc, argv) == sym_menu) {
+    //
+    t_point pt = glist_getPositionForNewObject (x->a_owner);
+    
+    a = point_getX (&pt);
+    b = point_getY (&pt);
+    //
+    }
+    
+    object_setSnappedX (cast_object (x), a);
+    object_setSnappedY (cast_object (x), b);
 }
 
 static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, t_atom *argv)

@@ -442,71 +442,71 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::ui_menu::_handle obj }
+        -command { ::ui_menu::_handle "obj menu" }
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::ui_menu::_handle msg }
+        -command { ::ui_menu::_handle "msg menu" }
     $m add command \
         -label [_ "Atom"] \
         -accelerator "${accelerator}+3" \
-        -command { ::ui_menu::_handleDirty floatatom }
+        -command { ::ui_menu::_handleDirty "floatatom menu" }
     $m add command \
         -label [_ "Symbol"] \
         -accelerator "${accelerator}+4" \
-        -command { ::ui_menu::_handleDirty symbolatom }
+        -command { ::ui_menu::_handleDirty "symbolatom menu" }
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::ui_menu::_handle comment }
+        -command { ::ui_menu::_handle "comment menu" }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
         -accelerator "${accelerator}+6" \
-        -command { ::ui_menu::_handleDirty bng }
+        -command { ::ui_menu::_handleDirty "bng menu" }
     $m add command \
         -label [_ "Toggle"] \
         -accelerator "${accelerator}+7" \
-        -command { ::ui_menu::_handleDirty tgl }
+        -command { ::ui_menu::_handleDirty "tgl menu" }
     $m add command \
         -label [_ "Dial"] \
         -accelerator "${accelerator}+8" \
-        -command { ::ui_menu::_handleDirty nbx }
+        -command { ::ui_menu::_handleDirty "nbx menu" }
     $m add command \
         -label [_ "Array"] \
         -accelerator "${accelerator}+9" \
-        -command { ::ui_menu::_handle _array }
+        -command { ::ui_menu::_handle "_array menu" }
     $m add separator
     
     $m add command \
         -label [_ "VU"] \
-        -command { ::ui_menu::_handleDirty vu }
+        -command { ::ui_menu::_handleDirty "vu menu" }
     $m add command \
         -label [_ "Panel"] \
-        -command { ::ui_menu::_handleDirty cnv }
+        -command { ::ui_menu::_handleDirty "cnv menu" }
     $m add command \
         -label [_ "Menu Button"] \
-        -command { ::ui_menu::_handleDirty menubutton }
+        -command { ::ui_menu::_handleDirty "menubutton menu" }
     $m add separator
     
     menu $m.vertical
     
     $m.vertical add command \
         -label [_ "Slider"] \
-        -command { ::ui_menu::_handleDirty vslider }
+        -command { ::ui_menu::_handleDirty "vslider menu" }
     $m.vertical add command \
         -label [_ "Radio Button"] \
-        -command { ::ui_menu::_handleDirty vradio }
+        -command { ::ui_menu::_handleDirty "vradio menu" }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
-        -command { ::ui_menu::_handleDirty hslider }
+        -command { ::ui_menu::_handleDirty "hslider menu" }
     $m.horizontal add command \
         -label [_ "Radio Button"] \
-        -command { ::ui_menu::_handleDirty hradio }
+        -command { ::ui_menu::_handleDirty "hradio menu" }
         
     $m add cascade \
         -label [_ "Vertical"] \

@@ -303,11 +303,23 @@ static void message_makeObjectMenu (t_message *x, int argc, t_atom *argv)
 {
     if (glist_isOnScreen (x->m_owner)) {
     //
+    int a = instance_getDefaultX (x->m_owner);
+    int b = instance_getDefaultY (x->m_owner);
+    
     glist_deselectAll (x->m_owner);
 
+    if (atom_getSymbolAtIndex (0, argc, argv) == sym_menu) {
+    //
+    t_point pt = glist_getPositionForNewObject (x->m_owner);
+    
+    a = point_getX (&pt);
+    b = point_getY (&pt);
+    //
+    }
+    
     object_setBuffer (cast_object (x), buffer_new());
-    object_setSnappedX (cast_object (x), instance_getDefaultX (x->m_owner));
-    object_setSnappedY (cast_object (x), instance_getDefaultY (x->m_owner));
+    object_setSnappedX (cast_object (x), a);
+    object_setSnappedY (cast_object (x), b);
     object_setWidth (cast_object (x), 0);
     object_setType (cast_object (x), TYPE_MESSAGE);
     

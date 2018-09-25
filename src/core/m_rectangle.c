@@ -216,7 +216,7 @@ void rectangle_addRectangle (t_rectangle *r, t_rectangle *toAdd)
     }
 }
 
-void rectangle_addPoint (t_rectangle *r, int x, int y)
+void rectangle_add (t_rectangle *r, int x, int y)
 {
     t_rectangle t; rectangle_set (&t, x, y, x, y);
     
@@ -245,7 +245,7 @@ int rectangle_containsY (t_rectangle *r, int y)
     return 1;
 }
 
-int rectangle_containsPoint (t_rectangle *r, int x, int y)
+int rectangle_contains (t_rectangle *r, int x, int y)
 {
     if (!rectangle_containsX (r, x))        { return 0; }
     else if (!rectangle_containsY (r, y))   { return 0; }
@@ -255,9 +255,9 @@ int rectangle_containsPoint (t_rectangle *r, int x, int y)
 
 int rectangle_containsRectangle (t_rectangle *r, t_rectangle *c)
 {
-    if (rectangle_isNothing (r) || rectangle_isNothing (c))                            { return 0; }
-    else if (!rectangle_containsPoint (r, c->rect_topLeftX,     c->rect_topLeftY))     { return 0; }
-    else if (!rectangle_containsPoint (r, c->rect_bottomRightX, c->rect_bottomRightY)) { return 0; }
+    if (rectangle_isNothing (r) || rectangle_isNothing (c))                       { return 0; }
+    else if (!rectangle_contains (r, c->rect_topLeftX,     c->rect_topLeftY))     { return 0; }
+    else if (!rectangle_contains (r, c->rect_bottomRightX, c->rect_bottomRightY)) { return 0; }
     
     return 1;
 }
