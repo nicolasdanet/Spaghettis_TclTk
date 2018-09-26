@@ -157,6 +157,7 @@ void    gobj_serializeUnique        (t_gobj *x, t_symbol *s, t_buffer *b);
 void    gobj_save                   (t_gobj *x, t_buffer *buffer, int flags);
 int     gobj_hit                    (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r);
                                                             
+int     gobj_isViewable             (t_gobj *x, t_glist *owner);
 int     gobj_isVisible              (t_gobj *x, t_glist *owner);
 void    gobj_help                   (t_gobj *x);
 
