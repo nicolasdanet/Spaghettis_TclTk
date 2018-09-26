@@ -143,6 +143,7 @@ void    glist_setMotion                     (t_glist *g, t_gobj *y, t_motionfn f
 void    glist_setBounds                     (t_glist *g, t_bounds *bounds);
 void    glist_setGraphGeometry              (t_glist *g, t_rectangle *r, t_bounds *bounds, int isGOP);
 void    glist_setWindowGeometry             (t_glist *g, t_rectangle *r);
+void    glist_setScroll                     (t_glist *g, int a, int b);
 void    glist_setUnique                     (t_glist *g, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -359,12 +360,6 @@ static inline void glist_setOpenedAtLoad (t_glist *g, int n)
     g->gl_isOpenedAtLoad = n;
 }
 
-static inline void glist_setScroll (t_glist *g, int a, int b)
-{
-    g->gl_scrollX = a;
-    g->gl_scrollY = b;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -438,7 +433,10 @@ static inline t_rectangle *glist_getWindowGeometry (t_glist *g)
     return &g->gl_geometryWindow;
 }
 
-t_rectangle *glist_getPatchGeometry (t_glist *g);
+static inline t_rectangle *glist_getPatchGeometry (t_glist *g)
+{
+    return &g->gl_geometryPatch;
+}
 
 static inline int glist_getScrollX (t_glist *g)
 {

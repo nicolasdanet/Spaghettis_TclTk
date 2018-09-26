@@ -15,11 +15,46 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 static int clipboard_count;                 /* Static. */
 
 static t_buffer *clipboard_buffer;          /* Static. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Displace selection to mouse position if all objects are outside the window. */
+
+static void clipboard_displaceSelection (t_glist *glist)
+{
+    t_selection *s = NULL;
+    t_rectangle r;
+    
+    rectangle_setNothing (&r);
+    
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
+    //
+    t_rectangle t; gobj_getRectangle (selection_getObject (s), glist, &t); rectangle_addRectangle (&r, &t);
+    //
+    }
+    
+    if (!rectangle_isNothing (&r)) {
+    //
+    int a = instance_getDefaultX (glist);
+    int b = instance_getDefaultY (glist);
+    int m = rectangle_getMiddleX (&r);
+    int n = rectangle_getMiddleY (&r);
+    int deltaX = a - m;
+    int deltaY = b - n;
+
+    for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
+    //
+    glist_objectDisplaceByUnique (gobj_getUnique (selection_getObject (s)), deltaX, deltaY);
+    //
+    }
+    //
+    }
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -82,6 +117,7 @@ void clipboard_paste (t_glist *glist, int isDuplicate)
     int state = dsp_suspend();
     int alreadyThere = glist_objectGetNumberOf (glist);
     int isDirty = 0;
+    int isVisible = 0;
     
     glist_deselectAll (glist);
     
@@ -102,12 +138,15 @@ void clipboard_paste (t_glist *glist, int isDuplicate)
     }
     
     dsp_resume (state);
-        
+    
     for (s = editor_getSelection (glist_getEditor (glist)); s; s = selection_getNext (s)) {
         y = selection_getObject (s);
         glist_objectDisplaceByUnique (gobj_getUnique (y), n, n);
-        if (gobj_isCanvas (y))  { glist_loadbang (cast_glist (y)); }
+        isVisible |= gobj_isVisible (y, glist);
+        if (gobj_isCanvas (y)) { glist_loadbang (cast_glist (y)); }
     }
+    
+    if (!isVisible) { clipboard_displaceSelection (glist); }
     
     if (isDirty) { glist_setDirty (glist, 1); }
     if (isDirty && glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }

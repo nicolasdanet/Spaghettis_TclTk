@@ -52,6 +52,8 @@ static t_glist *glist_new (t_glist *owner,
     if (graph)  { rectangle_setCopy (&x->gl_geometryGraph, graph);   }
     if (window) { rectangle_setCopy (&x->gl_geometryWindow, window); }
     
+    rectangle_setNothing (&x->gl_geometryPatch);
+    
     glist_bind (x);
     
     if (glist_isRoot (x)) { instance_rootsAdd (x); }
@@ -264,19 +266,6 @@ t_garray *glist_getArray (t_glist *glist)
     }
 }
 
-t_rectangle *glist_getPatchGeometry (t_glist *glist)
-{
-    int w = rectangle_getWidth (glist_getWindowGeometry (glist));
-    int h = rectangle_getHeight (glist_getWindowGeometry (glist));
-    int a = glist_getScrollX (glist);
-    int b = glist_getScrollY (glist);
-    
-    rectangle_setByWidthAndHeight (&glist->gl_geometryPatch, 0, 0, w, h);
-    rectangle_deplace (&glist->gl_geometryPatch, a, b);
-    
-    return &glist->gl_geometryPatch;
-}
-
 t_point glist_getPositionForNewObject (t_glist *glist)
 {
     t_rectangle *r = glist_getPatchGeometry (glist);
@@ -284,6 +273,20 @@ t_point glist_getPositionForNewObject (t_glist *glist)
     int b = rectangle_getTopLeftY (r) + (rectangle_getHeight (r) / 4.0);
     
     t_point pt; point_set (&pt, a, b); return pt;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void glist_updatePatchGeometry (t_glist *glist)
+{
+    int w = rectangle_getWidth (glist_getWindowGeometry (glist));
+    int h = rectangle_getHeight (glist_getWindowGeometry (glist));
+    int a = glist_getScrollX (glist);
+    int b = glist_getScrollY (glist);
+    
+    rectangle_setByWidthAndHeight (&glist->gl_geometryPatch, a, b, w, h);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -374,7 +377,12 @@ void glist_setGraphGeometry (t_glist *glist, t_rectangle *r, t_bounds *bounds, i
 
 void glist_setWindowGeometry (t_glist *glist, t_rectangle *r)
 {
-    rectangle_setCopy (glist_getWindowGeometry (glist), r);
+    rectangle_setCopy (glist_getWindowGeometry (glist), r); glist_updatePatchGeometry (glist);
+}
+
+void glist_setScroll (t_glist *glist, int a, int b)
+{
+    glist->gl_scrollX = a; glist->gl_scrollY = b; glist_updatePatchGeometry (glist);
 }
 
 void glist_setUnique (t_glist *glist, int argc, t_atom *argv)

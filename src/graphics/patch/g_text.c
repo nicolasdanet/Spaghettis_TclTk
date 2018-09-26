@@ -99,7 +99,7 @@ void text_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
     
     box_select (text, isSelected);
     
-    if (gobj_isVisible (z, glist)) {
+    if (gobj_isViewable (z, glist)) {
     //
     gui_vAdd ("%s.c itemconfigure %sBORDER -fill #%06x\n",
                     glist_getTagAsString (glist), 
@@ -125,7 +125,7 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_object *x = cast_object (z);
     
-    if (gobj_isVisible (z, glist)) {
+    if (gobj_isViewable (z, glist)) {
     //
     t_box *text = box_fetch (glist, x);
     

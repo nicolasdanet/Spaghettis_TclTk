@@ -144,7 +144,7 @@ static void garray_drawJob (t_gobj *z, t_glist *glist)
     
     PD_ASSERT (glist == x->x_owner);
     
-    if (glist_isOnScreen (x->x_owner) && gobj_isVisible (z, x->x_owner)) {
+    if (glist_isOnScreen (x->x_owner) && gobj_isViewable (z, x->x_owner)) {
     //
     garray_behaviorVisibilityChanged (z, x->x_owner, 0); 
     garray_behaviorVisibilityChanged (z, x->x_owner, 1);

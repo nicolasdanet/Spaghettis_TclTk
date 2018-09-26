@@ -76,7 +76,7 @@ void gobj_visibilityChanged (t_gobj *x, t_glist *owner, int isVisible)
 {
     if (class_hasWidgetBehavior (pd_class (x))) {
         if (class_getWidgetBehavior (pd_class (x))->w_fnVisibilityChanged) {
-            if (gobj_isVisible (x, owner)) {
+            if (gobj_isViewable (x, owner)) {
                 (*(class_getWidgetBehavior (pd_class (x))->w_fnVisibilityChanged)) (x, owner, isVisible);
             }
         }
@@ -151,7 +151,7 @@ void gobj_save (t_gobj *x, t_buffer *b, int flags)
 
 int gobj_hit (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r)
 {
-    if (gobj_isVisible (x, owner)) {
+    if (gobj_isViewable (x, owner)) {
     //
     t_rectangle t1, t2;
     
@@ -171,7 +171,7 @@ int gobj_hit (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r)
 
 /* Always true if NOT a GOP. */
 
-int gobj_isVisible (t_gobj *x, t_glist *owner)
+int gobj_isViewable (t_gobj *x, t_glist *owner)
 {
     if (glist_hasParent (owner) && !glist_isWindowable (owner)) {
     //
@@ -179,7 +179,7 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
             
     /* Is parent visible? */
     
-    if (!gobj_isVisible (cast_gobj (owner), glist_getParent (owner))) { return 0; }
+    if (!gobj_isViewable (cast_gobj (owner), glist_getParent (owner))) { return 0; }
     
     if (pd_class (x) == garray_class) { return 1; }                 /* Always true. */
     if (gobj_isScalar (x) && glist_isArray (owner)) { return 1; }   /* Ditto. */
@@ -213,6 +213,19 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     }
 
     return 1;
+}
+
+int gobj_isVisible (t_gobj *x, t_glist *owner)
+{
+    if (glist_hasWindow (owner)) {
+    //
+    t_rectangle t; gobj_getRectangle (x, owner, &t);
+    
+    return rectangle_containsRectangle (glist_getPatchGeometry (owner), &t);
+    //
+    }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
