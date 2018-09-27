@@ -1173,10 +1173,16 @@ void glist_inletSort (t_glist *glist)
     
     /* Fetch all inlets into a list. */
     
-    t_gobj **inlets = (t_gobj **)PD_MEMORY_GET (numberOfInlets * sizeof (t_gobj *));
-    t_gobj **t = inlets;
+    t_gobj **inlets    = (t_gobj **)PD_MEMORY_GET (numberOfInlets * sizeof (t_gobj *));
+    t_rectangle *boxes = (t_rectangle *)PD_MEMORY_GET (numberOfInlets * sizeof (t_rectangle));
+    t_gobj **t         = inlets;
+    t_rectangle *b     = boxes;
     
-    for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == vinlet_class) { *t++ = y; } }
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    if (pd_class (y) == vinlet_class) { *t = y; gobj_getRectangle (y, glist, b); t++; b++; }
+    //
+    }
     
     /* Take the most right inlet and put it first. */
     /* Remove it from the list. */
@@ -1188,13 +1194,9 @@ void glist_inletSort (t_glist *glist)
     int maximumX = -PD_INT_MAX;
     t_gobj **mostRightInlet = NULL;
     
-    for (t = inlets; j--; t++) {
-        if (*t) {
-            t_rectangle r;
-            gobj_getRectangle (*t, glist, &r);
-            if (rectangle_getTopLeftX (&r) > maximumX) {
-                maximumX = rectangle_getTopLeftX (&r); mostRightInlet = t; 
-            }
+    for (t = inlets, b = boxes ; j--; t++, b++) {
+        if (*t && rectangle_getTopLeftX (b) > maximumX) {
+            maximumX = rectangle_getTopLeftX (b); mostRightInlet = t;
         }
     }
     
@@ -1205,6 +1207,7 @@ void glist_inletSort (t_glist *glist)
     }
     
     PD_MEMORY_FREE (inlets);
+    PD_MEMORY_FREE (boxes);
     
     if (glist_isParentOnScreen (glist)) {
         glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
