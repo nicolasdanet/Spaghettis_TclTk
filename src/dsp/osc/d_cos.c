@@ -35,6 +35,8 @@ typedef struct _cost_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#if 0
+
 void cos_tilde_initialize (void)
 {
     if (!cos_tilde_table) {
@@ -49,6 +51,34 @@ void cos_tilde_initialize (void)
         cos_tilde_table[i] = (t_float)cos (phase);
         phase += phaseIncrement;
     }
+    //
+    }
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* < https://github.com/pure-data/pure-data/pull/106 > */
+
+void cos_tilde_initialize (void)
+{
+    if (!cos_tilde_table) {
+    //
+    double phase = 0.0;
+    double phaseIncrement = PD_TWO_PI / COSINE_TABLE_SIZE;
+    int i;
+        
+    t_float *p = cos_tilde_table = (t_float *)PD_MEMORY_GET (sizeof (t_float) * (COSINE_TABLE_SIZE + 1));
+    
+    for (i = COSINE_TABLE_SIZE / 4; i--; p++, phase += phaseIncrement) { *p = (t_float)cos (phase); }
+    
+    *p++ = (t_float)0.0;
+    
+    for (i = COSINE_TABLE_SIZE / 4; i--; p++) { *p = -cos_tilde_table[i]; }
+    for (i = COSINE_TABLE_SIZE / 2; i--; p++) { *p =  cos_tilde_table[i]; }     // --
     //
     }
 }
