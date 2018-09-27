@@ -1206,8 +1206,8 @@ void glist_inletSort (t_glist *glist)
     //
     }
     
-    PD_MEMORY_FREE (inlets);
     PD_MEMORY_FREE (boxes);
+    PD_MEMORY_FREE (inlets);
     
     if (glist_isParentOnScreen (glist)) {
         glist_updateLinesForObject (glist_getParent (glist), cast_object (glist));
@@ -1276,10 +1276,16 @@ void glist_outletSort (t_glist *glist)
     
     /* Fetch all outlets into a list. */
     
-    t_gobj **outlets = (t_gobj **)PD_MEMORY_GET (numberOfOutlets * sizeof (t_gobj *));
-    t_gobj **t = outlets;
+    t_gobj **outlets   = (t_gobj **)PD_MEMORY_GET (numberOfOutlets * sizeof (t_gobj *));
+    t_rectangle *boxes = (t_rectangle *)PD_MEMORY_GET (numberOfOutlets * sizeof (t_rectangle));
+    t_gobj **t         = outlets;
+    t_rectangle *b     = boxes;
         
-    for (y = glist->gl_graphics; y; y = y->g_next) { if (pd_class (y) == voutlet_class) { *t++ = y; } }
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+    //
+    if (pd_class (y) == voutlet_class) { *t = y; gobj_getRectangle (y, glist, b); t++; b++;}
+    //
+    }
     
     /* Take the most right outlet and put it first. */
     /* Remove it from the list. */
@@ -1291,13 +1297,9 @@ void glist_outletSort (t_glist *glist)
     int maximumX = -PD_INT_MAX;
     t_gobj **mostRightOutlet = NULL;
     
-    for (t = outlets; j--; t++) {
-        if (*t) {
-            t_rectangle r;
-            gobj_getRectangle (*t, glist, &r);
-            if (rectangle_getTopLeftX (&r) > maximumX) {
-                maximumX = rectangle_getTopLeftX (&r); mostRightOutlet = t; 
-            }
+    for (t = outlets, b = boxes; j--; t++, b++) {
+        if (*t && rectangle_getTopLeftX (b) > maximumX) {
+            maximumX = rectangle_getTopLeftX (b); mostRightOutlet = t;
         }
     }
     
@@ -1307,6 +1309,7 @@ void glist_outletSort (t_glist *glist)
     //
     }
     
+    PD_MEMORY_FREE (boxes);
     PD_MEMORY_FREE (outlets);
     
     if (glist_isParentOnScreen (glist)) {
