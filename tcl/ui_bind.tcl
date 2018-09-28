@@ -148,9 +148,9 @@ proc initialize {} {
     
     bind all <<Undo>>                       { .menubar.edit     invoke 0                }
     bind all <<Redo>>                       { .menubar.edit     invoke 1                }
-    bind all <<Cut>>                        { .menubar.edit     invoke "Cut"            }
-    bind all <<Copy>>                       { .menubar.edit     invoke "Copy"           }
-    bind all <<Paste>>                      { .menubar.edit     invoke "Paste"          }
+    bind all <<Cut>>                        { .menubar.edit     invoke "Cut"            ; break }
+    bind all <<Copy>>                       { .menubar.edit     invoke "Copy"           ; break }
+    bind all <<Paste>>                      { .menubar.edit     invoke "Paste"          ; break }
     bind all <<Duplicate>>                  { .menubar.edit     invoke "Duplicate"      }
     bind all <<SelectAll>>                  { .menubar.edit     invoke "Select All"     }
     bind all <<EditMode>>                   { .menubar.edit     invoke "Edit Mode"      }
@@ -242,7 +242,6 @@ proc _focusIn {top} {
     switch -regexp -- [winfo class $top] {
         "Spaghettis"        {
             ::ui_menu::configureForConsole
-            ::ui_menu::disableEditing
             ::ui_menu::resetUndoAndRedo
             set ::var(isEditMode) 0
         }
@@ -253,13 +252,11 @@ proc _focusIn {top} {
         }
         "PdText"            {
             ::ui_menu::configureForText
-            ::ui_menu::disableEditing
             ::ui_menu::resetUndoAndRedo
             set ::var(isEditMode) 0
         }
         "PdTool|PdDialog"   { 
             ::ui_menu::configureForDialog
-            ::ui_menu::disableEditing
             ::ui_menu::resetUndoAndRedo
             set ::var(isEditMode) 0
         }

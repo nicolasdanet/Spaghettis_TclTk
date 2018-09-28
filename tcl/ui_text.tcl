@@ -73,9 +73,10 @@ proc _create {top} {
     
     pack $top.text  -side left -fill both -expand 1
     
-    bind $top.text  <<SelectAll>>       "::ui_text::_selectAll $top"
     bind $top.text  <<Modified>>        "::ui_text::_modified $top"
     bind $top.text  <<Save>>            "::ui_text::_save $top"
+    
+    bindtags $top.text [lreverse [bindtags $top.text]]
     
     wm protocol $top WM_DELETE_WINDOW   "::ui_text::closed $top"
         
@@ -94,6 +95,21 @@ proc closed {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Forward actions from menu bar.
+
+proc menu {top message} {
+
+    switch -- $message {
+        "_cut"          { tk_textCut   $top.text }
+        "_copy"         { tk_textCopy  $top.text }
+        "_paste"        { tk_textPaste $top.text }
+        "_selectall"    { $top.text tag add sel 1.0 end }
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc _format {x} {
     
     return [string map {"," " \\, " ";" " \\; " "$" "\\$" "{" "" "}" "" "\\" ""} $x]
@@ -101,11 +117,6 @@ proc _format {x} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-proc _selectAll {top} {
-
-    $top.text tag add sel 1.0 end
-}
 
 proc _modified {top} {
 

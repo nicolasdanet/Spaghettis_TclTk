@@ -61,6 +61,21 @@ proc clear {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Forward actions from menu bar.
+
+proc menu {message} {
+
+    switch -- $message {
+        "_cut"          { tk_textCut   .console.text }
+        "_copy"         { tk_textCopy  .console.text }
+        "_paste"        { tk_textPaste .console.text }
+        "_selectall"    { .console.text tag add sel 1.0 end }
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc _create {} {
 
     toplevel .console -class Spaghettis
@@ -83,9 +98,9 @@ proc _create {} {
     pack .console.text                  -side right -fill both  -expand 1
     pack .console.scroll                -side right -fill y     -before .console.text
     
-    bind .console <<SelectAll>> ".console.text tag add sel 1.0 end"
-    
     wm protocol .console WM_DELETE_WINDOW   { ::ui_console::closed }
+    
+    bindtags .console.text [lreverse [bindtags .console.text]]
     
     # Set the color layout. 
     
