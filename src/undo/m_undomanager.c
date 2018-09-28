@@ -93,12 +93,8 @@ void undomanager_appendSeparator (t_undomanager *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void undomanager_append (t_undomanager *x, t_undoaction *a)
+static void undomanager_appendProceed (t_undomanager *x, t_undoaction *a)
 {
-    clock_unset (x->um_clock);
-    
-    if (undomanager_isNotRecursive (x)) {
-    //
     t_undoaction *t = x->um_tail;
     
     a->ua_next      = NULL;
@@ -114,8 +110,16 @@ void undomanager_append (t_undomanager *x, t_undoaction *a)
     }
     
     x->um_count++;
-    //
-    } else { undoaction_releaseAllFrom (a, NULL); }
+}
+
+void undomanager_append (t_undomanager *x, t_undoaction *a)
+{
+    clock_unset (x->um_clock);
+    
+    if (!instance_undoIsRecursive()) { undomanager_appendProceed (x, a); }
+    else {
+        undoaction_releaseAllFrom (a, NULL);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -126,9 +130,9 @@ void undomanager_undo (t_undomanager *x)
 {
     clock_unset (x->um_clock);
     
-    if (undomanager_isNotRecursive (x)) {
+    if (!instance_undoIsRecursive()) {
     //
-    x->um_recursive = 1;
+    instance_undoSetRecursive();
 
     {
     //
@@ -147,7 +151,7 @@ void undomanager_undo (t_undomanager *x)
     //
     }
     
-    x->um_recursive = 0;
+    instance_undoUnsetRecursive();
     //
     }
 }
@@ -156,9 +160,9 @@ void undomanager_redo (t_undomanager *x)
 {
     clock_unset (x->um_clock);
     
-    if (undomanager_isNotRecursive (x)) {
+    if (!instance_undoIsRecursive()) {
     //
-    x->um_recursive = 1;
+    instance_undoSetRecursive();
 
     {
     //
@@ -177,7 +181,7 @@ void undomanager_redo (t_undomanager *x)
     //
     }
     
-    x->um_recursive = 0;
+    instance_undoUnsetRecursive();
     //
     }
 }
@@ -192,7 +196,7 @@ t_undomanager *undomanager_new (void)
     
     x->um_clock = clock_new ((void *)x, (t_method)undomanager_task);
 
-    undomanager_appendSeparator (x);
+    undomanager_appendProceed (x, undoseparator_new());
     
     return x;
 }

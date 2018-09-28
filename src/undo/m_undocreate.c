@@ -33,7 +33,7 @@ void undocreate_undo (t_undocreate *z, t_symbol *s, int argc, t_atom *argv)
 {
     t_undoaction *x = (t_undoaction *)z;
     
-    glist_objectRemoveByUnique (undoaction_getUnique (x));
+    undosnippet_update (z->x_snippet); glist_objectRemoveByUnique (undoaction_getUnique (x));
 }
 
 void undocreate_redo (t_undocreate *z, t_symbol *s, int argc, t_atom *argv)

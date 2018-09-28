@@ -215,6 +215,8 @@ int gobj_isViewable (t_gobj *x, t_glist *owner)
     return 1;
 }
 
+#if PD_WITH_DEADCODE
+
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
     if (glist_hasWindow (owner)) {
@@ -227,6 +229,8 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     
     return 0;
 }
+
+#endif // PD_WITH_DEADCODE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

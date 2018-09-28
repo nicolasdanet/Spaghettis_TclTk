@@ -229,6 +229,24 @@ proc resetUndoAndRedo {} {
     .menubar.edit entryconfigure 1 -label [_ "Redo"]
 }
 
+proc setEncapsulate {check} {
+
+    if {$check} {
+        .menubar.edit entryconfigure "Encapsulate" -state normal
+    } else {
+        .menubar.edit entryconfigure "Encapsulate" -state disabled
+    }
+}
+
+proc setDeencapsulate {check} {
+
+    if {$check} {
+        .menubar.edit entryconfigure "De-encapsulate" -state normal
+    } else {
+        .menubar.edit entryconfigure "De-encapsulate" -state disabled
+    }
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -331,6 +349,9 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "Vertical"]           -state $mode
     .menubar.object entryconfigure [_ "Horizontal"]         -state $mode
 
+    .menubar.edit entryconfigure [_ "Encapsulate"]          -state $mode
+    .menubar.edit entryconfigure [_ "De-encapsulate"]       -state $mode
+    
     .menubar.arrange entryconfigure [_ "Bring to Front"]    -state $mode
     .menubar.arrange entryconfigure [_ "Send to Back"]      -state $mode
     .menubar.arrange entryconfigure [_ "Snap"]              -state $mode
@@ -421,8 +442,6 @@ proc _edit {m} {
         -label [_ "Paste"] \
         -accelerator "${accelerator}+V" \
         -command { ::ui_menu::_handle _paste }
-    $m add separator
-    
     $m add command \
         -label [_ "Duplicate"] \
         -accelerator "${accelerator}+D" \
@@ -433,6 +452,14 @@ proc _edit {m} {
         -command { ::ui_menu::_handle _selectall }
     $m add separator
 
+    $m add command \
+        -label [_ "Encapsulate"] \
+        -command { ::ui_menu::_handle _encapsulate }
+    $m add command \
+        -label [_ "De-encapsulate"] \
+        -command { ::ui_menu::_handle _deencapsulate }
+    $m add separator
+    
     $m add check \
         -label [_ "Edit Mode"] \
         -accelerator "${accelerator}+E" \

@@ -122,12 +122,12 @@ t_error searchpath_scan (void)
 
 static void searchpath_reportWrite (int f, const char *prefix, const char *s)
 {
-    ssize_t w;  /* Avoid unused return warning. */
+    ssize_t w = 0;      /* Avoid unused return warning. */
     
-    w = write (f, prefix, strlen (prefix));
-    w = write (f, " ", 1);
-    w = write (f, s, strlen (s));
-    w = write (f, "\n", 1);
+    w += write (f, prefix, strlen (prefix));
+    w += write (f, " ", 1);
+    w += write (f, s, strlen (s));
+    w += write (f, "\n", 1);
 
     (void)w;
 }

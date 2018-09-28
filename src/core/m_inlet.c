@@ -78,6 +78,16 @@ void inlet_moveFirst (t_inlet *x)
     }
 }
 
+int inlet_getIndex (t_inlet *x)
+{
+    t_inlet *i = NULL;
+    int n = 0;
+    
+    for (i = x->i_owner->te_inlets; i && i != x; i = i->i_next) { n++; }
+    
+    return n;
+}
+
 int inlet_getIndexAsSignal (t_inlet *x)
 {
     t_inlet *i = NULL;

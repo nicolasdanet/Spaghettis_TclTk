@@ -108,6 +108,16 @@ void outlet_moveFirst (t_outlet *x)
     }
 }
 
+int outlet_getIndex (t_outlet *x)
+{
+    t_outlet *o = NULL;
+    int n = 0;
+    
+    for (o = x->o_owner->te_outlets; o && o != x; o = o->o_next) { n++; }
+
+    return n;
+}
+
 int outlet_getIndexAsSignal (t_outlet *x)
 {
     t_outlet *o = NULL;

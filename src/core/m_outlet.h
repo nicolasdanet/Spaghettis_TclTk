@@ -65,6 +65,7 @@ t_outlet *outlet_new                    (t_object *owner, t_symbol *s);
 void    outlet_free                     (t_outlet *x);
 void    outlet_moveFirst                (t_outlet *x);
 int     outlet_isSignal                 (t_outlet *x);
+int     outlet_getIndex                 (t_outlet *x);
 int     outlet_getIndexAsSignal         (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------

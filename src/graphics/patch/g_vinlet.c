@@ -26,6 +26,11 @@ int vinlet_isSignal (t_vinlet *x)
     return (x->vi_buffer != NULL);
 }
 
+int vinlet_getIndex (t_vinlet *x)
+{
+    return inlet_getIndex (vinlet_getInlet (cast_pd (x)));
+}
+
 t_inlet *vinlet_getInlet (t_pd *x)
 {
     PD_ASSERT (pd_class (x) == vinlet_class); return (((t_vinlet *)x)->vi_inlet);

@@ -198,10 +198,10 @@ static void undomanager_collapseSize (t_undomanager *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if 0
-
 static void undomanager_collapsePost (t_undomanager *x)
 {
+    #if 0
+    
     t_undoaction *t = x->um_tail;
     t_undoaction *a = NULL;
     
@@ -228,9 +228,9 @@ static void undomanager_collapsePost (t_undomanager *x)
     }
     //
     }
+    
+    #endif
 }
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -242,7 +242,7 @@ void undomanager_collapse (t_undomanager *x)
     
     undomanager_collapseMotionAndResize (x);
     undomanager_collapseCreation (x);
-    // undomanager_collapsePost (x);
+    undomanager_collapsePost (x);
     undomanager_collapseSize (x);
 }
 
