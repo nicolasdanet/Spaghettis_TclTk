@@ -78,16 +78,15 @@ proc configureForConsole {} {
     
     .menubar.edit entryconfigure 0                          -state disabled
     .menubar.edit entryconfigure 1                          -state disabled
-    .menubar.edit entryconfigure [_ "Cut"]                  -state disabled
+    .menubar.edit entryconfigure [_ "Cut"]                  -state normal
     .menubar.edit entryconfigure [_ "Copy"]                 -state normal
-    .menubar.edit entryconfigure [_ "Paste"]                -state disabled
+    .menubar.edit entryconfigure [_ "Paste"]                -state normal
     .menubar.edit entryconfigure [_ "Duplicate"]            -state disabled
     .menubar.edit entryconfigure [_ "Select All"]           -state normal
+    
     .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
 
-    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state disabled
-    .menubar.arrange entryconfigure [_ "Send to Back"]      -state disabled
-    .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
+    _editing disabled
 }
 
 proc configureForDialog {} {
@@ -96,13 +95,17 @@ proc configureForDialog {} {
     .menubar.file entryconfigure [_ "Save As..."]           -state disabled
     .menubar.file entryconfigure [_ "Close"]                -state normal
     
-    _copying disabled
+    .menubar.edit entryconfigure 0                          -state disabled
+    .menubar.edit entryconfigure 1                          -state disabled
+    .menubar.edit entryconfigure [_ "Cut"]                  -state disabled
+    .menubar.edit entryconfigure [_ "Copy"]                 -state disabled
+    .menubar.edit entryconfigure [_ "Paste"]                -state disabled
+    .menubar.edit entryconfigure [_ "Duplicate"]            -state disabled
+    .menubar.edit entryconfigure [_ "Select All"]           -state disabled
 
     .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
 
-    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state disabled
-    .menubar.arrange entryconfigure [_ "Send to Back"]      -state disabled
-    .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
+    _editing disabled
 }
 
 proc configureForText {} {
@@ -111,13 +114,17 @@ proc configureForText {} {
     .menubar.file entryconfigure [_ "Save As..."]           -state disabled
     .menubar.file entryconfigure [_ "Close"]                -state normal
     
-    _copying normal
+    .menubar.edit entryconfigure 0                          -state disabled
+    .menubar.edit entryconfigure 1                          -state disabled
+    .menubar.edit entryconfigure [_ "Cut"]                  -state normal
+    .menubar.edit entryconfigure [_ "Copy"]                 -state normal
+    .menubar.edit entryconfigure [_ "Paste"]                -state normal
+    .menubar.edit entryconfigure [_ "Duplicate"]            -state disabled
+    .menubar.edit entryconfigure [_ "Select All"]           -state normal
 
     .menubar.edit entryconfigure [_ "Edit Mode"]            -state disabled
 
-    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state disabled
-    .menubar.arrange entryconfigure [_ "Send to Back"]      -state disabled
-    .menubar.arrange entryconfigure [_ "Snap"]              -state disabled
+    _editing disabled
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -284,17 +291,50 @@ proc removeTemplate {id} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc enableCopying {}               { _copying normal }
-proc enableEditing {}               { _editing normal }
 proc enableCopyingAndEditing {}     { _copying normal; _editing normal }
 proc enableMidi  {}                 { .menubar.media entryconfigure [_ "MIDI"]  -state normal }
 proc enableAudio {}                 { .menubar.media entryconfigure [_ "Audio"] -state normal }
 
-proc disableCopying {}              { _copying disabled }
-proc disableEditing {}              { _editing disabled }
 proc disableCopyingAndEditing {}    { _copying disabled; _editing disabled }
 proc disableMidi  {}                { .menubar.media entryconfigure [_ "MIDI"]  -state disabled }
 proc disableAudio {}                { .menubar.media entryconfigure [_ "Audio"] -state disabled }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _copying {mode} {
+
+    .menubar.edit entryconfigure 0                          -state $mode
+    .menubar.edit entryconfigure 1                          -state $mode
+    .menubar.edit entryconfigure [_ "Cut"]                  -state $mode
+    .menubar.edit entryconfigure [_ "Copy"]                 -state $mode
+    .menubar.edit entryconfigure [_ "Paste"]                -state $mode
+    .menubar.edit entryconfigure [_ "Duplicate"]            -state $mode
+    .menubar.edit entryconfigure [_ "Select All"]           -state $mode
+
+}
+
+proc _editing {mode} {
+    
+    .menubar.object entryconfigure [_ "Object"]             -state $mode
+    .menubar.object entryconfigure [_ "Message"]            -state $mode
+    .menubar.object entryconfigure [_ "Atom"]               -state $mode
+    .menubar.object entryconfigure [_ "Symbol"]             -state $mode
+    .menubar.object entryconfigure [_ "Comment"]            -state $mode
+    .menubar.object entryconfigure [_ "Array"]              -state $mode
+    .menubar.object entryconfigure [_ "Bang"]               -state $mode
+    .menubar.object entryconfigure [_ "Toggle"]             -state $mode
+    .menubar.object entryconfigure [_ "Dial"]               -state $mode
+    .menubar.object entryconfigure [_ "VU"]                 -state $mode
+    .menubar.object entryconfigure [_ "Panel"]              -state $mode
+    .menubar.object entryconfigure [_ "Menu Button"]        -state $mode
+    .menubar.object entryconfigure [_ "Vertical"]           -state $mode
+    .menubar.object entryconfigure [_ "Horizontal"]         -state $mode
+
+    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state $mode
+    .menubar.arrange entryconfigure [_ "Send to Back"]      -state $mode
+    .menubar.arrange entryconfigure [_ "Snap"]              -state $mode
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -664,48 +704,15 @@ proc _popup {m} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _copying {mode} {
-
-    .menubar.edit entryconfigure 0                          -state $mode
-    .menubar.edit entryconfigure 1                          -state $mode
-    .menubar.edit entryconfigure [_ "Cut"]                  -state $mode
-    .menubar.edit entryconfigure [_ "Copy"]                 -state $mode
-    .menubar.edit entryconfigure [_ "Paste"]                -state $mode
-    .menubar.edit entryconfigure [_ "Duplicate"]            -state $mode
-    .menubar.edit entryconfigure [_ "Select All"]           -state $mode
-
-}
-
-proc _editing {mode} {
-    
-    .menubar.object entryconfigure [_ "Object"]             -state $mode
-    .menubar.object entryconfigure [_ "Message"]            -state $mode
-    .menubar.object entryconfigure [_ "Atom"]               -state $mode
-    .menubar.object entryconfigure [_ "Symbol"]             -state $mode
-    .menubar.object entryconfigure [_ "Comment"]            -state $mode
-    .menubar.object entryconfigure [_ "Array"]              -state $mode
-    .menubar.object entryconfigure [_ "Bang"]               -state $mode
-    .menubar.object entryconfigure [_ "Toggle"]             -state $mode
-    .menubar.object entryconfigure [_ "Dial"]               -state $mode
-    .menubar.object entryconfigure [_ "VU"]                 -state $mode
-    .menubar.object entryconfigure [_ "Panel"]              -state $mode
-    .menubar.object entryconfigure [_ "Menu Button"]        -state $mode
-    .menubar.object entryconfigure [_ "Vertical"]           -state $mode
-    .menubar.object entryconfigure [_ "Horizontal"]         -state $mode
-
-    .menubar.arrange entryconfigure [_ "Bring to Front"]    -state $mode
-    .menubar.arrange entryconfigure [_ "Send to Back"]      -state $mode
-    .menubar.arrange entryconfigure [_ "Snap"]              -state $mode
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc _handle {message} {
 
     set top [winfo toplevel $::var(windowFocused)]
     
-    if {[winfo class $top] eq "PdPatch"} { ::ui_interface::pdsend "$top $message" }
+    switch -- [winfo class $top] {
+        "PdPatch"       { ::ui_interface::pdsend "$top $message" }
+        "PdText"        { ::ui_text::menu $top $message }
+        "Spaghettis"    { ::ui_console::menu $message   }
+    }
 }
 
 # Force the dirty bit also.
