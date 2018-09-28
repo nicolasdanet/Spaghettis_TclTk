@@ -21,10 +21,19 @@ void clipboard_paste                    (t_glist *glist, int isDuplicate);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void encapsulate_encapsulate            (t_glist *glist);
+void encapsulate_deencapsulate          (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void snippet_renameArrays               (t_buffer *x, t_glist *glist);
 
 void snippet_addOffsetToLines           (t_buffer *x, int i);
 void snippet_substractOffsetToLines     (t_buffer *x, int i);
+
+void snippet_disposeObjects             (t_buffer *x, int offset);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

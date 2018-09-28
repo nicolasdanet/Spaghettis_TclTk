@@ -53,7 +53,6 @@ typedef struct _undoaction {
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _undomanager {
-    int                 um_recursive;
     int                 um_count;
     t_clock             *um_clock;
     t_undoaction        *um_head;
@@ -109,15 +108,6 @@ t_symbol    *undomanager_getRedoLabel       (t_undomanager *x);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline int undomanager_isNotRecursive (t_undomanager *x)
-{
-    return (x->um_recursive == 0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 typedef struct _undosnippet {
     t_id        us_object;
     t_id        us_owner;
@@ -136,6 +126,7 @@ t_undosnippet   *undosnippet_new            (t_gobj *gobj, t_glist *owner);
 
 void            undosnippet_free            (t_undosnippet *x);
 void            undosnippet_load            (t_undosnippet *x);
+void            undosnippet_update          (t_undosnippet *x);
 void            undosnippet_paste           (t_undosnippet *x);
 void            undosnippet_message         (t_undosnippet *x);
 

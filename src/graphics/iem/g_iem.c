@@ -366,7 +366,7 @@ void iemgui_behaviorDisplaced (t_gobj *z, t_glist *glist, int deltaX, int deltaY
     object_setSnappedX (cast_object (x), object_getX (cast_object (x)) + deltaX);
     object_setSnappedY (cast_object (x), object_getY (cast_object (x)) + deltaY);
     
-    (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_MOVE);
+    if (glist_isOnScreen (x->iem_owner)) { (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_MOVE); }
     
     glist_updateLinesForObject (glist, cast_object (z));
 }
@@ -377,7 +377,7 @@ void iemgui_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 
     x->iem_isSelected = isSelected;
     
-    (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_SELECT);
+    if (glist_isOnScreen (x->iem_owner)) { (*x->iem_fnDraw) ((void *)z, glist, IEM_DRAW_SELECT); }
 }
 
 void iemgui_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)

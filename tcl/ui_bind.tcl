@@ -248,7 +248,7 @@ proc _focusIn {top} {
         "PdPatch"           {
             ::ui_menu::configureForPatch
             ::ui_patch::setEditMode $top
-            ::ui_patch::askForUndoAndRedo $top
+            ::ui_patch::askForUpdateMenu $top
         }
         "PdText"            {
             ::ui_menu::configureForText

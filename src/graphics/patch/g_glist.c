@@ -266,13 +266,26 @@ t_garray *glist_getArray (t_glist *glist)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_point glist_getPositionForNewObject (t_glist *glist)
 {
     t_rectangle *r = glist_getPatchGeometry (glist);
-    int a = rectangle_getTopLeftX (r) + (rectangle_getWidth (r)  / 4.0);
-    int b = rectangle_getTopLeftY (r) + (rectangle_getHeight (r) / 4.0);
+    int a = rectangle_isNothing (r) ? 0 : rectangle_getTopLeftX (r) + (rectangle_getWidth (r)  / 4.0);
+    int b = rectangle_isNothing (r) ? 0 : rectangle_getTopLeftY (r) + (rectangle_getHeight (r) / 4.0);
     
-    t_point pt; point_set (&pt, a, b); return pt;
+    return point_make (a, b);
+}
+
+t_point glist_getPositionMiddle (t_glist *glist)
+{
+    t_rectangle *r = glist_getPatchGeometry (glist);
+    int a = rectangle_isNothing (r) ? 0 : rectangle_getMiddleX (r);
+    int b = rectangle_isNothing (r) ? 0 : rectangle_getMiddleY (r);
+    
+    return point_make (a, b);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -557,12 +570,19 @@ int glist_undoIsOk (t_glist *glist)
 {
     if (glist_isAbstraction (glist) || glist_isArray (glist)) { return 0; }
 
-    return (glist_hasUndo (glist) && undomanager_isNotRecursive (glist_getUndoManager (glist)));
+    return (glist_hasUndo (glist) && !instance_undoIsRecursive());
 }
 
 int glist_undoHasSeparatorAtLast (t_glist *glist)
 {
     return (undomanager_hasSeparatorAtLast (glist_getUndoManager (glist)));
+}
+
+/* Raw function to use with care. */
+
+t_undomanager *glist_undoReplaceManager (t_glist *glist, t_undomanager *undo)
+{
+    t_undomanager *t = glist->gl_undomanager; glist->gl_undomanager = undo; return t;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -898,18 +918,21 @@ void glist_objectRemoveAll (t_glist *glist)
 
 void glist_objectRemoveAllByTemplate (t_glist *glist, t_template *tmpl)
 {
-    t_gobj *y = NULL;
+    t_gobj *t1 = NULL;
+    t_gobj *t2 = NULL;
 
-    for (y = glist->gl_graphics; y; y = y->g_next) {
+    for (t1 = glist->gl_graphics; t1; t1 = t2) {
     //
-    if (gobj_isScalar (y)) {
-        if (scalar_containsTemplate (cast_scalar (y), template_getTemplateIdentifier (tmpl))) {
-            glist_objectRemove (glist, y);
+    t2 = t1->g_next;
+    
+    if (gobj_isScalar (t1)) {
+        if (scalar_containsTemplate (cast_scalar (t1), template_getTemplateIdentifier (tmpl))) {
+            glist_objectRemove (glist, t1);
         }
     }
     
-    if (gobj_isCanvas (y)) {
-        glist_objectRemoveAllByTemplate (cast_glist (y), tmpl);
+    if (gobj_isCanvas (t1)) {
+        glist_objectRemoveAllByTemplate (cast_glist (t1), tmpl);
     }
     //
     }
@@ -917,12 +940,29 @@ void glist_objectRemoveAllByTemplate (t_glist *glist, t_template *tmpl)
 
 void glist_objectRemoveAllScalars (t_glist *glist)
 {
-    t_gobj *y = NULL;
+    t_gobj *t1 = NULL;
+    t_gobj *t2 = NULL;
+
+    for (t1 = glist->gl_graphics; t1; t1 = t2) {
+    //
+    t2 = t1->g_next;
     
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (gobj_isScalar (y)) {
-            glist_objectRemove (glist, y);
-        }
+    if (gobj_isScalar (t1)) { glist_objectRemove (glist, t1); }
+    //
+    }
+}
+
+void glist_objectRemoveInletsAndOutlets (t_glist *glist)
+{
+    t_gobj *t1 = NULL;
+    t_gobj *t2 = NULL;
+
+    for (t1 = glist->gl_graphics; t1; t1 = t2) {
+    //
+    t2 = t1->g_next;
+    
+    if (pd_class (t1) == vinlet_class || pd_class (t1) == voutlet_class) { glist_objectRemove (glist, t1); }
+    //
     }
 }
 
@@ -1027,6 +1067,20 @@ t_error glist_objectMoveAtByUnique (t_id u, int n)
     if (object && glist) {
     //
     glist_objectMoveAt (glist, object, n); glist_redrawRequired (glist); return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
+}
+
+t_error glist_objectGetIndexOfByUnique (t_id u, int *n)
+{
+    t_gobj *object = instance_registerGetObject (u);
+    t_glist *glist = instance_registerGetOwner (u);
+
+    if (object && glist) {
+    //
+    (*n) = glist_objectGetIndexOf (glist, object); return PD_ERROR_NONE;
     //
     }
     
@@ -1194,7 +1248,7 @@ void glist_inletSort (t_glist *glist)
     int maximumX = -PD_INT_MAX;
     t_gobj **mostRightInlet = NULL;
     
-    for (t = inlets, b = boxes ; j--; t++, b++) {
+    for (t = inlets, b = boxes; j--; t++, b++) {
         if (*t && rectangle_getTopLeftX (b) > maximumX) {
             maximumX = rectangle_getTopLeftX (b); mostRightInlet = t;
         }
@@ -1283,7 +1337,7 @@ void glist_outletSort (t_glist *glist)
         
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    if (pd_class (y) == voutlet_class) { *t = y; gobj_getRectangle (y, glist, b); t++; b++;}
+    if (pd_class (y) == voutlet_class) { *t = y; gobj_getRectangle (y, glist, b); t++; b++; }
     //
     }
     

@@ -178,6 +178,7 @@ void    glist_objectRemove                  (t_glist *g, t_gobj *y);
 void    glist_objectRemoveAllByTemplate     (t_glist *g, t_template *tmpl);
 void    glist_objectRemoveAllScalars        (t_glist *g);
 void    glist_objectRemoveAll               (t_glist *g);
+void    glist_objectRemoveInletsAndOutlets  (t_glist *g);
 
 t_error glist_objectConnect                 (t_glist *g, t_object *src, int m, t_object *dest, int n);
 
@@ -203,7 +204,10 @@ void    glist_objectDeleteLines             (t_glist *g, t_object *o);
 void    glist_objectDeleteLinesByInlet      (t_glist *g, t_object *o, t_inlet *inlet);
 void    glist_objectDeleteLinesByOutlet     (t_glist *g, t_object *o, t_outlet *outlet);
 
-t_gobj  *glist_objectGetAt                  (t_glist *g, int n);
+t_rectangle glist_objectGetBoundingBox              (t_glist *g);
+t_rectangle glist_objectGetBoundingBoxOfSelected    (t_glist *g);
+
+t_gobj      *glist_objectGetAt                      (t_glist *g, int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -255,6 +259,7 @@ int     glist_deselectAll                   (t_glist *g);
 
 void    glist_updateTitle                   (t_glist *g);
 void    glist_updateUndo                    (t_glist *g);
+void    glist_updateEncapsulate             (t_glist *g);
 void    glist_updateWindow                  (t_glist *g);
 void    glist_updateLinesForObject          (t_glist *g, t_object *o);
 void    glist_updateLineSelected            (t_glist *g, int isSelected);
@@ -320,6 +325,9 @@ t_float glist_getValueForOnePixelX          (t_glist *g);
 t_float glist_getValueForOnePixelY          (t_glist *g);
 
 void    glist_getRectangleOnParent          (t_glist *g, t_rectangle *r);
+
+t_point glist_getPositionForNewObject       (t_glist *g);
+t_point glist_getPositionMiddle             (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -477,8 +485,6 @@ static inline const char *glist_getTagAsString (t_glist *g)
 {
     return editor_getTagAsString (glist_getEditor (g));
 }
-
-t_point glist_getPositionForNewObject (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

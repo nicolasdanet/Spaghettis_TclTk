@@ -26,6 +26,11 @@ int voutlet_isSignal (t_voutlet *x)
     return (x->vo_buffer != NULL);
 }
 
+int voutlet_getIndex (t_voutlet *x)
+{
+    return outlet_getIndex (voutlet_getOutlet (cast_pd (x)));
+}
+
 t_outlet *voutlet_getOutlet (t_pd *x)
 {
     PD_ASSERT (pd_class (x) == voutlet_class); return (((t_voutlet *)x)->vo_outlet);

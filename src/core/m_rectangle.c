@@ -253,6 +253,11 @@ int rectangle_contains (t_rectangle *r, int x, int y)
     return 1;
 }
 
+int rectangle_containsPoint (t_rectangle *r, t_point *pt)
+{
+    return (rectangle_containsX (r, point_getX (pt)) && rectangle_containsY (r, point_getY (pt)));
+}
+
 int rectangle_containsRectangle (t_rectangle *r, t_rectangle *c)
 {
     if (rectangle_isNothing (r) || rectangle_isNothing (c))                       { return 0; }

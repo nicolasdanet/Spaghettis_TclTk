@@ -316,6 +316,8 @@ void instance_destroyAllScalarsByTemplate (t_template *tmpl)
     
     PD_ASSERT (tmpl);
     
+    instance_undoUnsetRecursive();  /* Edge cases when de-encapsulating templates for scalars. */
+    
     while (glist) {
 
         if (!template_isPrivate (template_getTemplateIdentifier (tmpl))) {
@@ -324,6 +326,8 @@ void instance_destroyAllScalarsByTemplate (t_template *tmpl)
     
         glist = glist_getNext (glist);
     }
+    
+    instance_undoSetRecursive();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -341,14 +345,22 @@ int instance_getDefaultX (t_glist *glist)
 {
     t_glist *t = instance_get()->pd_locate.p_glist;
     
-    return ((t == glist) ? instance_get()->pd_locate.p_x : 40);
+    if (t == glist) { return instance_get()->pd_locate.p_x; }
+    else {
+        t_point pt = glist_getPositionMiddle (glist);
+        return point_getX (&pt);
+    }
 }
 
 int instance_getDefaultY (t_glist *glist)
 {
     t_glist *t = instance_get()->pd_locate.p_glist;
     
-    return ((t == glist) ? instance_get()->pd_locate.p_y : 40);
+    if (t == glist) { return instance_get()->pd_locate.p_y; }
+    else {
+        t_point pt = glist_getPositionMiddle (glist);
+        return point_getY (&pt);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

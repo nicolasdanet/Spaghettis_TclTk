@@ -61,6 +61,7 @@ typedef struct _pdinstance {
     int             pd_dspChainSize;
     t_phase         pd_dspPhase;
     int             pd_loadingExternal;
+    int             pd_undoIsRecursive;
     t_symbol        *pd_loadingAbstraction;
     t_int           *pd_dspChain;
     t_dspcontext    *pd_ugenContext;
@@ -325,6 +326,25 @@ static inline void instance_incrementDspChainIdentifier (void)
 static inline void instance_setNewestObject (t_pd *x)
 {
     instance_get()->pd_newest = x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline int instance_undoIsRecursive (void)
+{
+    return (instance_get()->pd_undoIsRecursive > 0);
+}
+
+static inline void instance_undoSetRecursive (void)
+{
+    instance_get()->pd_undoIsRecursive++;
+}
+
+static inline void instance_undoUnsetRecursive (void)
+{
+    instance_get()->pd_undoIsRecursive--;
 }
 
 // -----------------------------------------------------------------------------------------------------------

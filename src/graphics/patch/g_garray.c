@@ -813,7 +813,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     int style      = (int)atom_getFloatAtIndex (7, argc, argv);
     int hide       = (int)atom_getFloatAtIndex (8, argc, argv);
     int inhibit    = (int)atom_getFloatAtIndex (9, argc, argv);
-    //int isMenu   = (int)atom_getFloatAtIndex (10, argc, argv);
+    // int isMenu  = (int)atom_getFloatAtIndex (10, argc, argv);
     
     PD_ASSERT (size > 0);
     

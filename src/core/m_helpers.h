@@ -232,6 +232,11 @@ static inline void point_set (t_point *pt, int x, int y)
     pt->pt_x = x; pt->pt_y = y;
 }
 
+static inline t_point point_make (int x, int y)
+{
+    t_point pt; point_set (&pt, x, y); return pt;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -245,6 +250,12 @@ static inline int point_getY (t_point *p)
 {
     return p->pt_y;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_float point_euclideanDistance (t_point *a, t_point *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -285,6 +296,7 @@ void    rectangle_enlargeLeft                   (t_rectangle *r, int n);
 int     rectangle_containsX                     (t_rectangle *r, int x);
 int     rectangle_containsY                     (t_rectangle *r, int y);
 int     rectangle_contains                      (t_rectangle *r, int x, int y);
+int     rectangle_containsPoint                 (t_rectangle *r, t_point *pt);
 int     rectangle_containsRectangle             (t_rectangle *r, t_rectangle *isContained);
 
 t_float rectangle_getArea                       (t_rectangle *r);

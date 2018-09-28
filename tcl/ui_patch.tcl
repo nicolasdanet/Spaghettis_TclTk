@@ -91,7 +91,7 @@ proc closed {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc askForUndoAndRedo {top} {
+proc askForUpdateMenu {top} {
 
     ::ui_interface::pdsend "$top _menu"
 }
@@ -104,6 +104,15 @@ proc setUndoAndRedo {top undo redo} {
     
         ::ui_menu::setUndo $undo $patchIsEditMode($top)
         ::ui_menu::setRedo $redo $patchIsEditMode($top)
+    }
+}
+
+proc setEncapsulateAndDeencapsulate {top encapsulate deencapsulate} {
+
+    if {$top eq $::var(windowFocused)} {
+    
+        ::ui_menu::setEncapsulate   $encapsulate
+        ::ui_menu::setDeencapsulate $deencapsulate
     }
 }
 

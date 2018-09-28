@@ -88,6 +88,9 @@ t_outlet    *voutlet_getOutlet              (t_pd *x);
 int         vinlet_isSignal                 (t_vinlet *x);
 int         voutlet_isSignal                (t_voutlet *x);
 
+int         vinlet_getIndex                 (t_vinlet *x);
+int         voutlet_getIndex                (t_voutlet *x);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

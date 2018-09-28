@@ -64,6 +64,8 @@ void canvas_cut                     (t_glist *);
 void canvas_copy                    (t_glist *);
 void canvas_paste                   (t_glist *);
 void canvas_duplicate               (t_glist *);
+void canvas_encapsulate             (t_glist *);
+void canvas_deencapsulate           (t_glist *);
 void canvas_selectAll               (t_glist *);
 void canvas_snap                    (t_glist *);
 void canvas_bringToFront            (t_glist *);
@@ -607,7 +609,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy, t_mouse *m)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *canvas_newSubpatch (t_symbol *s)
+void *canvas_newSubpatch (t_symbol *s)
 {
     return glist_newPatchPop (s, NULL, NULL, NULL, 0, 1, 0, 0);
 }
@@ -693,6 +695,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeSymbolAtom,        sym_symbolatom,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeComment,           sym_comment,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeScalar,            sym_scalar,             A_GIMME, A_NULL);
+    
     class_addMethod (c, (t_method)canvas_makeBang,              sym_bng,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeToggle,            sym_tgl,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeSliderVertical,    sym_vslider,            A_GIMME, A_NULL);
@@ -721,6 +724,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_copy,                  sym__copy,              A_NULL);
     class_addMethod (c, (t_method)canvas_paste,                 sym__paste,             A_NULL);
     class_addMethod (c, (t_method)canvas_duplicate,             sym__duplicate,         A_NULL);
+    class_addMethod (c, (t_method)canvas_encapsulate,           sym__encapsulate,       A_NULL);
+    class_addMethod (c, (t_method)canvas_deencapsulate,         sym__deencapsulate,     A_NULL);
     class_addMethod (c, (t_method)canvas_selectAll,             sym__selectall,         A_NULL);
     class_addMethod (c, (t_method)canvas_snap,                  sym__snap,              A_NULL);
     class_addMethod (c, (t_method)canvas_bringToFront,          sym__front,             A_NULL);

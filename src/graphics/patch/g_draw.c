@@ -63,6 +63,31 @@ void glist_updateUndo (t_glist *glist)
     }
 }
 
+void glist_updateEncapsulate (t_glist *glist)
+{
+    int hasEncapsulate   = 0;
+    int hasDeencapsulate = 0;
+    
+    int n = glist_objectGetNumberOfSelected (glist);
+    
+    hasEncapsulate = (n != 0);
+    
+    if (n == 1) {
+    //
+    t_gobj *y = selection_getObject (editor_getSelection (glist_getEditor (glist)));
+    
+    if (gobj_isCanvas (y) && glist_isSubpatch (cast_glist (y)) && !glist_isArray (cast_glist (y))) {
+        hasDeencapsulate = 1;
+    }
+    //
+    }
+    
+    gui_vAdd ("::ui_patch::setEncapsulateAndDeencapsulate %s %d %d\n",      // --
+                    glist_getTagAsString (glist),
+                    hasEncapsulate,
+                    hasDeencapsulate);
+}
+
 void glist_updateWindow (t_glist *glist)
 {
     if (glist_isWindowable (glist) && glist_isOnScreen (glist)) {
@@ -77,7 +102,9 @@ void glist_updateWindow (t_glist *glist)
 /* The rectangle drawn onto the parent. */
 
 void glist_updateRectangleOnParent (t_glist *glist)
-{   
+{
+    if (glist_isParentOnScreen (glist)) {
+    //
     int isSelected = glist_isSelected (glist);
     int hasWindow  = glist_hasWindow (glist);
     int color      = hasWindow ? COLOR_OPENED : (isSelected ? COLOR_SELECTED : COLOR_NORMAL);
@@ -88,6 +115,8 @@ void glist_updateRectangleOnParent (t_glist *glist)
                     glist_getTagAsString (view),
                     glist,
                     color);
+    //
+    }
 }
 
 /* The dashed rectangle drawn to show the area. */
@@ -545,8 +574,11 @@ void glist_windowEdit (t_glist *glist, int isEditMode)
     }
     
     if (glist_isOnScreen (glist)) {
-        gui_vAdd ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), hasEditMode);
-        if (hasEditMode) { gui_vAdd ("::ui_patch::askForUndoAndRedo %s\n", glist_getTagAsString (glist)); }
+    //
+    gui_vAdd ("::ui_patch::setEditMode %s %d\n", glist_getTagAsString (glist), hasEditMode);
+    
+    if (hasEditMode) { gui_vAdd ("::ui_patch::askForUpdateMenu %s\n", glist_getTagAsString (glist)); }
+    //
     }
 }
 

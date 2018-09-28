@@ -27,7 +27,7 @@ void canvas_redo (t_glist *glist)
 
 void canvas_update (t_glist *glist)
 {
-    glist_updateUndo (glist);
+    glist_updateUndo (glist); glist_updateEncapsulate (glist);
 }
 
 void canvas_copy (t_glist *glist)
@@ -90,6 +90,22 @@ void canvas_duplicate (t_glist *glist)
     glist_cancelEditingBox (glist);
     canvas_copy (glist);
     clipboard_paste (glist, 1);
+    //
+    }
+}
+
+void canvas_encapsulate (t_glist *glist)
+{
+    if (glist_hasEditMode (glist)) { encapsulate_encapsulate (glist); }
+}
+
+void canvas_deencapsulate (t_glist *glist)
+{
+    if (glist_hasEditMode (glist) && (glist_objectGetNumberOfSelected (glist) == 1)) {
+    //
+    t_gobj *y = selection_getObject (editor_getSelection (glist_getEditor (glist)));
+    
+    if (gobj_isCanvas (y) && !glist_isArray (cast_glist (y))) { encapsulate_deencapsulate (cast_glist (y)); }
     //
     }
 }
