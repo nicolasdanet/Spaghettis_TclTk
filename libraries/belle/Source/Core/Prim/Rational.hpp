@@ -41,12 +41,8 @@ public:
         
         if (g < 1) { n_ = d_ = 0; }
         else {
-            while (g != 1) {    // -- TODO: Is that loop necessary?
-                n_ = n_ / g;
-                d_ = d_ / g;
-                g = Math::GCD (n_, d_);
-                if (g < 1) { n_ = d_ = 0; break; }      /* Avoid clang analyzer to moan. */
-            }
+            n_ = n_ / g;
+            d_ = d_ / g;
         }
         //
         }
