@@ -411,9 +411,7 @@ static void canvas_fromPopupDialog (t_glist *glist, t_symbol *s, int argc, t_ato
         }
     }
     if (k == POPUP_OPEN) {
-        if (gobj_isCanvas (y)) {
-            pd_message (cast_pd (y), sym_open, 0, NULL); return;
-        }
+        pd_message (cast_pd (y), gobj_isCanvas (y) ? sym_open : sym__open, 0, NULL); return;
     }
     if (k == POPUP_HELP) {
         gobj_help (y); return;
