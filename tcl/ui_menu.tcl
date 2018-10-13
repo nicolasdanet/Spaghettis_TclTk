@@ -114,8 +114,8 @@ proc configureForText {} {
     .menubar.file entryconfigure [_ "Save As..."]           -state disabled
     .menubar.file entryconfigure [_ "Close"]                -state normal
     
-    .menubar.edit entryconfigure 0                          -state disabled
-    .menubar.edit entryconfigure 1                          -state disabled
+    .menubar.edit entryconfigure 0                          -state normal
+    .menubar.edit entryconfigure 1                          -state normal
     .menubar.edit entryconfigure [_ "Cut"]                  -state normal
     .menubar.edit entryconfigure [_ "Copy"]                 -state normal
     .menubar.edit entryconfigure [_ "Paste"]                -state normal
