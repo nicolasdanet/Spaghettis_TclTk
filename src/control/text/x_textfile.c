@@ -112,7 +112,8 @@ void textfile_setup (void)
     
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
     class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
-    
+    class_addMethod (c, (t_method)textbuffer_click,     sym__open,      A_GIMME, A_NULL);
+
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)qlist_append,         sym_add2,       A_GIMME, A_NULL);

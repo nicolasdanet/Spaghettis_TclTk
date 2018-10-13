@@ -172,6 +172,7 @@ extern t_symbol *sym__motion;
 extern t_symbol *sym__mousedown;
 extern t_symbol *sym__mouseup;
 extern t_symbol *sym__notein;
+extern t_symbol *sym__open;
 extern t_symbol *sym__paste;
 extern t_symbol *sym__path;
 extern t_symbol *sym__pgmin;

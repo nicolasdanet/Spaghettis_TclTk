@@ -172,6 +172,7 @@ t_symbol *sym__motion;
 t_symbol *sym__mousedown;
 t_symbol *sym__mouseup;
 t_symbol *sym__notein;
+t_symbol *sym__open;
 t_symbol *sym__paste;
 t_symbol *sym__path;
 t_symbol *sym__pgmin;
@@ -943,6 +944,7 @@ void symbols_initialize (void)
     sym__mousedown                              = gensym ("_mousedown");
     sym__mouseup                                = gensym ("_mouseup");
     sym__notein                                 = gensym ("_notein");
+    sym__open                                   = gensym ("_open");
     sym__paste                                  = gensym ("_paste");
     sym__path                                   = gensym ("_path");
     sym__pgmin                                  = gensym ("_pgmin");

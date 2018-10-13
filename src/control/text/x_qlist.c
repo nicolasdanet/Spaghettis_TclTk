@@ -295,7 +295,7 @@ void qlist_setup (void)
     
     class_addBang (c, (t_method)qlist_bang);
     class_addClick (c, (t_method)textbuffer_click);
-        
+    
     class_addMethod (c, (t_method)qlist_rewind,         sym_rewind,     A_NULL);
     class_addMethod (c, (t_method)qlist_clear,          sym_clear,      A_NULL);
     class_addMethod (c, (t_method)qlist_set,            sym_set,        A_GIMME, A_NULL);
@@ -309,6 +309,7 @@ void qlist_setup (void)
     
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
     class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textbuffer_click,     sym__open,      A_GIMME, A_NULL);
 
     #if PD_WITH_LEGACY
     

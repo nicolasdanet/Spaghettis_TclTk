@@ -206,13 +206,14 @@ void textdefine_setup (void)
     
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
     class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textbuffer_click,     sym__open,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textbuffer_write,     sym_write,      A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)textbuffer_read,      sym_read,       A_SYMBOL, A_NULL);
     
     class_addMethod (c, (t_method)textdefine_set,       sym_set,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textdefine_clear,     sym_clear,      A_NULL);
     class_addMethod (c, (t_method)textdefine_modified,  sym__modified,  A_NULL);
-    
+
     class_setSaveFunction (c, textdefine_functionSave);
     class_setDataFunction (c, textdefine_functionData);
     class_setHelpName (c, sym_text);
