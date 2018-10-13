@@ -146,8 +146,8 @@ proc initialize {} {
 
     bind all <Escape>                       { ::cancel %W }
     
-    bind all <<Undo>>                       { .menubar.edit     invoke 0                }
-    bind all <<Redo>>                       { .menubar.edit     invoke 1                }
+    bind all <<Undo>>                       { .menubar.edit     invoke 0                ; break }
+    bind all <<Redo>>                       { .menubar.edit     invoke 1                ; break }
     bind all <<Cut>>                        { .menubar.edit     invoke "Cut"            ; break }
     bind all <<Copy>>                       { .menubar.edit     invoke "Copy"           ; break }
     bind all <<Paste>>                      { .menubar.edit     invoke "Paste"          ; break }

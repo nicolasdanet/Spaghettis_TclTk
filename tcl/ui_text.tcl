@@ -69,7 +69,8 @@ proc _create {top} {
     
     text $top.text  -font [::styleFontText] \
                     -borderwidth 0 \
-                    -highlightthickness 0
+                    -highlightthickness 0 \
+                    -undo 1
     
     pack $top.text  -side left -fill both -expand 1
     
@@ -104,6 +105,8 @@ proc menu {top message} {
         "_copy"         { tk_textCopy  $top.text }
         "_paste"        { tk_textPaste $top.text }
         "_selectall"    { $top.text tag add sel 1.0 end }
+        "_undo"         { catch { $top.text edit undo } }
+        "_redo"         { catch { $top.text edit redo } }
     }
 }
 
