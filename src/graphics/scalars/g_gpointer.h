@@ -80,7 +80,12 @@ void        gpointer_notify                     (t_gpointer *gp, t_symbol *s, in
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *gpointer_getRepresentation         (t_gpointer *gp);
+t_symbol    *gpointer_asRepresentation          (t_gpointer *gp);
+t_gpointer  *gpointer_fromRepresentation        (t_symbol *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_error     gpointer_getFieldAsString           (t_gpointer *gp, t_symbol *field, char *dest, int size);
 

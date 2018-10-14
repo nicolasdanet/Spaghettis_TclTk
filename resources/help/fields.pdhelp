@@ -27,7 +27,6 @@
 #X obj 240 132 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 192 fields;
 #X obj 36 240 print;
-#X text 24 24 Fields;
 #X obj 84 276 get;
 #N canvas 707 359 374 358 \$0-element 0;
 #X obj 36 60 draw polygon -fill -- -5 0 0 5 5 0 0 -5;
@@ -54,6 +53,7 @@
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 240 240 pd \$0-template;
 #X text 12 72 Get values for any scalar.;
+#X text 24 24 fields;
 #X connect 1 0 9 0;
 #X connect 6 0 1 0;
 #X connect 8 0 7 0;

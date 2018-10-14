@@ -40,7 +40,7 @@ typedef struct _pipe {
     t_object                x_obj;                  /* Must be the first. */
     t_float                 x_delay;
     int                     x_size;
-    t_float                 x_unit;
+    t_float                 x_unitValue;
     t_symbol                *x_unitName;
     t_atomoutlet            *x_vector;
     t_pipecallback          *x_callbacks;
@@ -50,7 +50,7 @@ typedef struct _pipe {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error clock_parseUnit (t_float,  t_symbol *, t_float *, int *);
+t_error clock_parseUnit (t_float, t_symbol *, t_float *, int *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -98,8 +98,8 @@ static void callback_new (t_pipe *x, int argc, t_atom *argv)
     h->h_owner      = x;
     h->h_next       = x->x_callbacks;
     
-    if (x->x_unitName != &s_) {
-        t_error err = clock_setUnitParsed (h->h_clock, x->x_unit, x->x_unitName);
+    if (x->x_unitName) {
+        t_error err = clock_setUnitParsed (h->h_clock, x->x_unitValue, x->x_unitName);
         PD_UNUSED (err); PD_ASSERT (!err);
     }
     
@@ -217,7 +217,40 @@ static void pipe_clear (t_pipe *x)
 
 static void pipe_unit (t_pipe *x, t_symbol *unitName, t_float f)
 {
-    if (pipe_unitIsValid (f, unitName, 1)) { x->x_unit = f; x->x_unitName = unitName; }
+    if (pipe_unitIsValid (f, unitName, 1)) { x->x_unitValue = f; x->x_unitName = unitName; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *pipe_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_pipe *x   = (t_pipe *)z;
+    t_buffer *b = buffer_new();
+    
+    if (x->x_unitName) {
+        buffer_appendSymbol (b, sym_unit);
+        buffer_appendFloat (b,  x->x_unitValue);
+        buffer_appendSymbol (b, x->x_unitName);
+        buffer_appendComma (b);
+    }
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_delay);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void pipe_restore (t_pipe *x, t_float f)
+{
+    x->x_delay = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -229,17 +262,17 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     t_pipe *x = (t_pipe *)pd_new (pipe_class);
     int i;
     
-    x->x_delay    = 0.0;
-    x->x_unit     = 0.0;
-    x->x_unitName = &s_;
+    x->x_delay      = 0.0;
+    x->x_unitValue  = 0.0;
+    x->x_unitName   = NULL;
     
     if (argc > 2) {
     //
     t_float f = atom_getFloat (argv + (argc - 2));
     t_symbol *unitName = atom_getSymbol (argv + (argc - 1));
     if (pipe_unitIsValid (f, unitName, 0)) {
-        x->x_unit     = f;
-        x->x_unitName = unitName;
+        x->x_unitValue  = f;
+        x->x_unitName   = unitName;
         argc -= 2;
     }
     //
@@ -302,10 +335,14 @@ void pipe_setup (void)
     class_addList (c, (t_method)pipe_list);
     class_addAnything (c, (t_method)pipe_anything);
     
-    class_addMethod (c, (t_method)pipe_flush,   sym_flush,  A_NULL);
-    class_addMethod (c, (t_method)pipe_clear,   sym_clear,  A_NULL);
-    class_addMethod (c, (t_method)pipe_unit,    sym_unit,   A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)pipe_flush,   sym_flush,      A_NULL);
+    class_addMethod (c, (t_method)pipe_clear,   sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)pipe_unit,    sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
 
+    class_addMethod (c, (t_method)pipe_restore, sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, pipe_functionData);
+    
     pipe_class = c;
 }
 

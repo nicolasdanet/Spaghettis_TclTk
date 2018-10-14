@@ -48,6 +48,27 @@ static void sig_tilde_dsp (t_sig_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *sig_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_sig_tilde *x = (t_sig_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *sig_tilde_new (t_float f)
 {
     t_sig_tilde *x = (t_sig_tilde *)pd_new (sig_tilde_class);
@@ -77,6 +98,8 @@ void sig_tilde_setup (void)
     class_addDSP (c, (t_method)sig_tilde_dsp);
     class_addFloat (c, (t_method)sig_tilde_float);
     
+    class_setDataFunction (c, sig_tilde_functionData);
+
     sig_tilde_class = c;
 }
 

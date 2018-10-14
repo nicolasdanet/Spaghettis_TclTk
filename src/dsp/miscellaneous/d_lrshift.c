@@ -95,6 +95,32 @@ static void lrshift_tilde_dsp (t_lrshift_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_buffer *lrshift_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_lrshift_tilde *x = (t_lrshift_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void lrshift_tilde_signals (t_lrshift_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *lrshift_tilde_new (t_float f)
 {
     t_lrshift_tilde *x = (t_lrshift_tilde *)pd_new (lrshift_tilde_class);
@@ -124,7 +150,11 @@ void lrshift_tilde_setup (void)
     CLASS_SIGNAL (c, t_lrshift_tilde, x_f);
     
     class_addDSP (c, (t_method)lrshift_tilde_dsp);
-        
+    
+    class_addMethod (c, (t_method)lrshift_tilde_signals, sym__signals, A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, lrshift_tilde_functionData);
+    
     lrshift_tilde_class = c;
 }
 

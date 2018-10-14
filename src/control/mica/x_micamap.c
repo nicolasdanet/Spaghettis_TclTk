@@ -29,9 +29,8 @@ static t_class *micamap_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _micamap {
-    t_object    x_obj;                  /* Must be the first. */
+    t_micabase  x_base;                 /* Must be the first. */
     t_symbol    *x_parsed;
-    t_symbol    *x_tag;
     t_outlet    *x_outlet;
     } t_micamap;
 
@@ -41,7 +40,7 @@ typedef struct _micamap {
 
 static void micamap_bang (t_micamap *x)
 {
-    outlet_symbol (x->x_outlet, x->x_tag);
+    outlet_symbol (x->x_outlet, ((t_micabase *)x)->x_tag);
 }
 
 static void micamap_list (t_micamap *x, t_symbol *s, int argc, t_atom *argv)
@@ -69,7 +68,7 @@ static void micamap_list (t_micamap *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    x->x_tag = concept_tag (t);
+    ((t_micabase *)x)->x_tag = concept_tag (t);
     
     micamap_bang (x);
 }
@@ -87,8 +86,8 @@ void *micamap_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micamap *x = (t_micamap *)pd_new (micamap_class);
     
+    ((t_micabase *)x)->x_tag = concept_tag (mica::Undefined);
     x->x_parsed = NULL;
-    x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newSymbol (cast_object (x));
     
     if (argc) {
@@ -122,6 +121,9 @@ void micamap_setup (void)
     class_addList (c, (t_method)micamap_list);
     class_addAnything (c, (t_method)micamap_anything);
     
+    class_addMethod (c, (t_method)micabase_restore, sym__restore, A_SYMBOL, A_NULL);
+
+    class_setDataFunction (c, micabase_functionData);
     class_setHelpName (c, sym_mica);
     
     micamap_class = c;

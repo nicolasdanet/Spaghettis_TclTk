@@ -83,6 +83,27 @@ static void receive_set (t_receive *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *receive_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_receive *x = (t_receive *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendSymbol (b, x->x_name);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *receive_new (t_symbol *s)
 {
     t_receive *x = (t_receive *)pd_new (receive_class);
@@ -131,6 +152,8 @@ void receive_setup (void)
     
     class_addMethod (c, (t_method)receive_set, sym__inlet2, A_GIMME, A_NULL);
     
+    class_setDataFunction (c, receive_functionData);
+
     receive_class = c;
 }
 

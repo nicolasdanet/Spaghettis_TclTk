@@ -170,6 +170,35 @@ static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *tabwrite_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_tabwrite_tilde *x = (t_tabwrite_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_name);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void tabwrite_tilde_signals (t_tabwrite_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *tabwrite_tilde_new (t_symbol *s, t_float f)
 {
     t_tabwrite_tilde *x = (t_tabwrite_tilde *)pd_new (tabwrite_tilde_class);
@@ -214,10 +243,13 @@ void tabwrite_tilde_setup (void)
     class_addBang (c, (t_method)tabwrite_tilde_bang);
     class_addPolling (c, (t_method)tabwrite_tilde_polling);
         
-    class_addMethod (c, (t_method)tabwrite_tilde_set,   sym_set,    A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)tabwrite_tilde_start, sym_start,  A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)tabwrite_tilde_stop,  sym_stop,   A_NULL);
-    
+    class_addMethod (c, (t_method)tabwrite_tilde_set,       sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_start,     sym_start,      A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_stop,      sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_signals,   sym__signals,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, tabwrite_tilde_functionData);
+
     tabwrite_tilde_class = c;
 }
 

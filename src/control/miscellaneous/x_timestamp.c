@@ -104,6 +104,32 @@ static void timestamp_elapsed (t_timestamp *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *timestamp_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_timestamp *x = (t_timestamp *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_mode);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void timestamp_restore (t_timestamp *x, t_float f)
+{
+    int n = (int)f; x->x_mode = PD_CLAMP (n, TIMESTAMP_IMMEDIATELY, TIMESTAMP_ELAPSED);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *timestamp_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_timestamp *x = (t_timestamp *)pd_new (timestamp_class);
@@ -158,9 +184,12 @@ void timestamp_setup (void)
     class_addList (c, (t_method)timestamp_list);
     class_addAnything (c, (t_method)timestamp_anything);
     
-    class_addMethod (c, (t_method)timestamp_discard, sym_discard, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)timestamp_elapsed, sym_elapsed, A_FLOAT, A_NULL);
-    
+    class_addMethod (c, (t_method)timestamp_discard, sym_discard,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)timestamp_elapsed, sym_elapsed,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)timestamp_restore, sym__restore,  A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, timestamp_functionData);
+
     timestamp_class = c;
 }
 

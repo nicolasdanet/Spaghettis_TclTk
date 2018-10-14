@@ -80,7 +80,7 @@ void canvas_makeMessage (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 void canvas_makeArray (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    PD_ASSERT (argc < 3 || atom_getSymbolAtIndex (2, argc, argv) == sym_float);
+    PD_ASSERT (argc < 3 || atom_getSymbolAtIndex (2, argc, argv) == &s_float);
     
     if (argc > 1) {
     //

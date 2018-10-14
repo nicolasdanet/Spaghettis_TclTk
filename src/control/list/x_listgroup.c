@@ -136,6 +136,36 @@ static void listgroup_clear (t_listgroup *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *listgroup_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_listgroup *x = (t_listgroup *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_group);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, &s_list);
+    listinlet_listGet (&x->x_listinlet, b);
+    buffer_invalidatePointers (b);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void listgroup_restore (t_listgroup *x, t_float f)
+{
+    x->x_group = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *listgroup_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listgroup *x = (t_listgroup *)pd_new (listgroup_class);
@@ -181,8 +211,10 @@ void listgroup_setup (void)
     class_addList (c, (t_method)listgroup_list);
     class_addAnything (c, (t_method)listgroup_anything);
     
-    class_addMethod (c, (t_method)listgroup_clear, sym_clear, A_NULL);
-    
+    class_addMethod (c, (t_method)listgroup_clear,      sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)listgroup_restore,    sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, listgroup_functionData);
     class_setHelpName (c, &s_list);
     
     listgroup_class = c;

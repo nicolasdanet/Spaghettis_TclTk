@@ -27,20 +27,28 @@ typedef void (*t_pointermethod)             (t_pd *x, t_gpointer *gp);
 // MARK: -
 
 enum {
-    SAVE_DEFAULT    = 0,
-    SAVE_DEEP       = 1,
-    SAVE_ID         = 2
+    SAVE_DEFAULT        = 0,
+    SAVE_COPY           = 1,
+    SAVE_UNDO           = 2,
+    SAVE_ENCAPSULATE    = 4
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef void    (*t_savefn)                 (t_gobj *x, t_buffer *b, int flags);
-typedef t_error (*t_datafn)                 (t_gobj *x, t_buffer *b, int flags);
-typedef void    (*t_undofn)                 (t_gobj *x, t_buffer *b);
-typedef void    (*t_propertiesfn)           (t_gobj *x, t_glist *glist, t_mouse *m);
-typedef void    (*t_valuefn)                (t_gobj *x, t_glist *glist, t_mouse *m);
+#define SAVED_DEEP(flags)   (flags & SAVE_UNDO || flags & SAVE_ENCAPSULATE)
+#define SAVED_UNDO(flags)   (flags & SAVE_UNDO)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+typedef void        (*t_savefn)             (t_gobj *x, t_buffer *b, int flags);
+typedef t_buffer    *(*t_datafn)            (t_gobj *x, int flags);
+typedef void        (*t_undofn)             (t_gobj *x, t_buffer *b);
+typedef void        (*t_propertiesfn)       (t_gobj *x, t_glist *glist, t_mouse *m);
+typedef void        (*t_valuefn)            (t_gobj *x, t_glist *glist, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -42,6 +42,32 @@ static void touchout_float (t_touchout *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *touchout_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_touchout *x = (t_touchout *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_channel);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void touchout_restore (t_touchout *x, t_float f)
+{
+    x->x_channel = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *touchout_new (t_float channel)
 {
     t_touchout *x = (t_touchout *)pd_new (touchout_class);
@@ -71,6 +97,9 @@ void touchout_setup (void)
             
     class_addFloat (c, (t_method)touchout_float);
     
+    class_addMethod (c, (t_method)touchout_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, touchout_functionData);
     class_setHelpName (c, sym_pgmout);
     
     touchout_class = c;

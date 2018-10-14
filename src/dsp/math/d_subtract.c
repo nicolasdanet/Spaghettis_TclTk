@@ -14,24 +14,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_math.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *subtract_tilde_class;               /* Shared. */
 static t_class *subtractScalar_tilde_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _subtract_tilde {
-    t_object    x_obj;                              /* Must be the first. */
-    t_float     x_f;
-    t_outlet    *x_outlet;
-    } t_subtract_tilde;
-
-typedef struct _subtractscalar_tilde {
-    t_object    x_obj;                              /* Must be the first. */
-    t_float     x_f;
-    t_float     x_scalar;
-    t_outlet    *x_outlet;
-    } t_subtractscalar_tilde;
+typedef struct _binop_tilde t_subtract_tilde;
+typedef struct _binopscalar_tilde t_subtractscalar_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -111,7 +106,28 @@ void subtract_tilde_setup (void)
         
     class_addDSP (subtract_tilde_class, (t_method)subtract_tilde_dsp);
     class_addDSP (subtractScalar_tilde_class, (t_method)subtractScalar_tilde_dsp);
-        
+    
+    class_addMethod (subtract_tilde_class,
+        (t_method)binop_tilde_signals,
+        sym__signals,
+        A_GIMME,
+        A_NULL);
+    
+    class_addMethod (subtractScalar_tilde_class,
+        (t_method)binopScalar_tilde_signals,
+        sym__signals,
+        A_FLOAT,
+        A_NULL);
+    
+    class_addMethod (subtractScalar_tilde_class,
+        (t_method)binopScalar_tilde_restore,
+        sym__restore,
+        A_FLOAT,
+        A_NULL);
+
+    class_setDataFunction (subtract_tilde_class, binop_tilde_functionData);
+    class_setDataFunction (subtractScalar_tilde_class, binopScalar_tilde_functionData);
+    
     class_setHelpName (subtract_tilde_class, sym_arithmetic__tilde__);
     class_setHelpName (subtractScalar_tilde_class, sym_arithmetic__tilde__);
 }

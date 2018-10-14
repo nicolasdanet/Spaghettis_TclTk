@@ -198,15 +198,14 @@ void qlist_clear (t_qlist *x)
 void qlist_set (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     qlist_clear (x);
-    qlist_add (x, s, argc, argv);
+    buffer_deserialize (textbuffer_getBuffer (&x->ql_textbuffer), argc, argv);
+    textbuffer_update (&x->ql_textbuffer);
 }
 
 void qlist_add (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom a;
-    SET_SEMICOLON (&a);
     buffer_append (textbuffer_getBuffer (&x->ql_textbuffer), argc, argv);
-    buffer_appendAtom (textbuffer_getBuffer (&x->ql_textbuffer), &a);
+    buffer_appendSemicolon (textbuffer_getBuffer (&x->ql_textbuffer));
     textbuffer_update (&x->ql_textbuffer);
 }
 
@@ -215,6 +214,10 @@ void qlist_append (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
     buffer_append (textbuffer_getBuffer (&x->ql_textbuffer), argc, argv);
     textbuffer_update (&x->ql_textbuffer);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void qlist_read (t_qlist *x, t_symbol *s)
 {
@@ -238,14 +241,44 @@ static void qlist_unit (t_qlist *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_setUnitParsed (x->ql_clock, f, (unitName == &s_ ? sym_millisecond : unitName));
     
-    if (err) {
-        error_invalid (sym_qlist, sym_unit); 
+    if (err) { error_invalid (sym_qlist, sym_unit); }
+    else {
+        x->ql_unitName  = unitName;
+        x->ql_unitValue = f;
     }
 }
 
 void qlist_modified (t_qlist *x)
 {
     outlet_bang (x->ql_outletRight);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_buffer *qlist_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_qlist *x  = (t_qlist *)z;
+    t_buffer *b = buffer_new();
+    
+    if (x->ql_unitName) {
+        buffer_appendSymbol (b, sym_unit);
+        buffer_appendFloat (b,  x->ql_unitValue);
+        buffer_appendSymbol (b, x->ql_unitName);
+        buffer_appendComma (b);
+    }
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_serialize (b, textbuffer_getBuffer (&x->ql_textbuffer));
+    
+    return b;
+    //
+    }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -317,6 +350,8 @@ void qlist_setup (void)
     class_addMethod (c, (t_method)qlist_unit,           sym_tempo,      A_FLOAT, A_DEFSYMBOL, A_NULL);
    
     #endif
+    
+    class_setDataFunction (c, qlist_functionData);
     
     qlist_class = c;
 }

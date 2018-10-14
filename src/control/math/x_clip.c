@@ -47,6 +47,34 @@ static void clip_float (t_clip *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *clip_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_clip *x   = (t_clip *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_f2);
+    buffer_appendFloat (b, x->x_f3);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void clip_restore (t_clip *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_f2 = atom_getFloatAtIndex (0, argc, argv);
+    x->x_f3 = atom_getFloatAtIndex (1, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *clip_new (t_float f2, t_float f3)
 {
     t_clip *x = (t_clip *)pd_new (clip_class);
@@ -81,6 +109,9 @@ void clip_setup (void)
     class_addBang (c, (t_method)clip_bang);
     class_addFloat (c, (t_method)clip_float); 
     
+    class_addMethod (c, (t_method)clip_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, clip_functionData);
     class_setHelpName (c, sym_math);
     
     clip_class = c;

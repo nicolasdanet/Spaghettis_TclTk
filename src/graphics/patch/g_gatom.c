@@ -265,14 +265,12 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedLabel)));
     buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedReceive)));
     buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedSend)));
-    if (flags & SAVE_DEEP) { buffer_appendAtom (b, &x->a_atom); }
+    if (SAVED_DEEP (flags)) { buffer_appendAtom (b, &x->a_atom); }
     buffer_appendSemicolon (b);
     
     object_serializeWidth (cast_object (x), b);
     
-    if (flags & SAVE_ID) {
-        gobj_serializeUnique (z, sym__tagobject, b);
-    }
+    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
 }
 
 static void gatom_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)

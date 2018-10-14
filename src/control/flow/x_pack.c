@@ -91,6 +91,31 @@ static void pack_anything (t_pack *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *pack_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_pack *x   = (t_pack *)z;
+    t_buffer *b = buffer_new();
+    int i;
+    
+    buffer_appendSymbol (b, &s_list);
+    
+    for (i = 0; i < x->x_size; i++) { buffer_appendAtom (b, atomoutlet_getAtom (x->x_vector + i)); }
+    
+    buffer_invalidatePointers (b);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *pack_newProceed (t_symbol *s, int argc, t_atom *argv)
 {
     t_pack *x = (t_pack *)pd_new (pack_class);
@@ -159,6 +184,8 @@ void pack_setup (void)
     class_addList (c, (t_method)pack_list);
     class_addAnything (c, (t_method)pack_anything);
     
+    class_setDataFunction (c, pack_functionData);
+
     pack_class = c;
 }
 

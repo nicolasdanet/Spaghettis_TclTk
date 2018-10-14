@@ -31,6 +31,8 @@ typedef struct _metro {
     double      x_delay;
     int         x_reentrantStart;
     int         x_reentrantStop;
+    t_float     x_unitValue;
+    t_symbol    *x_unitName;
     t_outlet    *x_outlet;
     t_clock     *x_clock;
     } t_metro;
@@ -103,9 +105,39 @@ static void metro_unit (t_metro *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
-    if (err) {
-        error_invalid (sym_metro, sym_unit); 
+    if (err) { error_invalid (sym_metro, sym_unit); }
+    else {
+        x->x_unitValue = f;
+        x->x_unitName  = unitName;
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *metro_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_metro *x  = (t_metro *)z;
+    t_buffer *b = buffer_new();
+    
+    if (x->x_unitName) {
+        buffer_appendSymbol (b, sym_unit);
+        buffer_appendFloat (b,  x->x_unitValue);
+        buffer_appendSymbol (b, x->x_unitName);
+        buffer_appendComma (b);
+    }
+    
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendFloat (b,  x->x_delay);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -170,7 +202,9 @@ void metro_setup (void)
     class_addMethod (c, (t_method)metro_unit,       sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
     
     #endif
-        
+    
+    class_setDataFunction (c, metro_functionData);
+
     metro_class = c;
 }
 

@@ -14,6 +14,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_filters.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Complex one-pole filter. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -29,28 +34,16 @@ static t_class *cpole_tilde_class;              /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _cpole_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    t_sample    x_real;
-    t_sample    x_imaginary;
-    t_outlet    *x_outletLeft;
-    t_outlet    *x_outletRight;
-    } t_cpole_tilde;
+typedef struct _complex_raw_tilde t_cpole_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void cpole_tilde_set (t_cpole_tilde *x, t_float real, t_float imaginary)
-{
-    x->x_real       = real;
-    x->x_imaginary  = imaginary;
-}
-
 static void cpole_tilde_clear (t_cpole_tilde *x)
 {
-    cpole_tilde_set (x, 0.0, 0.0);
+    x->x_real      = 0.0;
+    x->x_imaginary = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -121,6 +114,42 @@ static void cpole_tilde_dsp (t_cpole_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_buffer *complex_raw_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    struct _complex_raw_tilde *x = (struct _complex_raw_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  (t_float)x->x_real);
+    buffer_appendFloat (b,  (t_float)x->x_imaginary);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    object_getSignalValues (cast_object (x), b, 4);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void complex_raw_restore (struct _complex_raw_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_real      = (t_sample)atom_getFloatAtIndex (0, argc, argv);
+    x->x_imaginary = (t_sample)atom_getFloatAtIndex (1, argc, argv);;
+}
+
+void complex_raw_signals (struct _complex_raw_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (cast_object (x), argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *cpole_tilde_new (t_float real, t_float imaginary)
 {
     t_cpole_tilde *x = (t_cpole_tilde *)pd_new (cpole_tilde_class);
@@ -157,8 +186,11 @@ void cpole_tilde_setup (void)
     
     class_addDSP (c, (t_method)cpole_tilde_dsp);
         
-    class_addMethod (c, (t_method)cpole_tilde_set,      sym_set,    A_DEFFLOAT, A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)cpole_tilde_clear,    sym_clear,  A_NULL);
+    class_addMethod (c, (t_method)cpole_tilde_clear,    sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)complex_raw_restore,  sym__restore,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)complex_raw_signals,  sym__signals,   A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, complex_raw_functionData);
     
     cpole_tilde_class = c;
 }

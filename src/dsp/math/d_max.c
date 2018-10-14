@@ -14,24 +14,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_math.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *max_tilde_class;                /* Shared. */
 static t_class *maxScalar_tilde_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _max_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    t_outlet    *x_outlet;
-    } t_max_tilde;
-
-typedef struct _maxscalar_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    t_float     x_scalar;
-    t_outlet    *x_outlet;
-    } t_maxscalar_tilde;
+typedef struct _binop_tilde t_max_tilde;
+typedef struct _binopscalar_tilde t_maxscalar_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -111,6 +106,27 @@ void max_tilde_setup (void)
         
     class_addDSP (max_tilde_class, (t_method)max_tilde_dsp);
     class_addDSP (maxScalar_tilde_class, (t_method)maxScalar_tilde_dsp);
+    
+    class_addMethod (max_tilde_class,
+        (t_method)binop_tilde_signals,
+        sym__signals,
+        A_GIMME,
+        A_NULL);
+    
+    class_addMethod (maxScalar_tilde_class,
+        (t_method)binopScalar_tilde_signals,
+        sym__signals,
+        A_FLOAT,
+        A_NULL);
+    
+    class_addMethod (maxScalar_tilde_class,
+        (t_method)binopScalar_tilde_restore,
+        sym__restore,
+        A_FLOAT,
+        A_NULL);
+
+    class_setDataFunction (max_tilde_class, binop_tilde_functionData);
+    class_setDataFunction (maxScalar_tilde_class, binopScalar_tilde_functionData);
     
     class_setHelpName (max_tilde_class, sym_math__tilde__);
     class_setHelpName (maxScalar_tilde_class, sym_math__tilde__);

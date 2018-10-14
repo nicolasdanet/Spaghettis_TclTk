@@ -77,6 +77,35 @@ static void throw_tilde_dsp (t_throw_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *throw_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_throw_tilde *x = (t_throw_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_name);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b,  x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void throw_tilde_signals (t_throw_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *throw_tilde_new (t_symbol *s)
 {
     t_throw_tilde *x = (t_throw_tilde *)pd_new (throw_tilde_class);
@@ -108,8 +137,10 @@ void throw_tilde_setup (void)
     
     class_addDSP (c, (t_method)throw_tilde_dsp);
     
-    class_addMethod (c, (t_method)throw_tilde_set, sym_set, A_SYMBOL, A_NULL);
-        
+    class_addMethod (c, (t_method)throw_tilde_set,      sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)throw_tilde_signals,  sym__signals,   A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, throw_tilde_functionData);
     throw_tilde_class = c;
 }
 

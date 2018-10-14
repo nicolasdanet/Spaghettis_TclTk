@@ -32,6 +32,7 @@ typedef struct _listinlet {
 
 void    listinlet_init                  (t_listinlet *x);
 void    listinlet_clear                 (t_listinlet *x);
+void    listinlet_listGet               (t_listinlet *x, t_buffer *b);
 void    listinlet_listSet               (t_listinlet *x, int argc, t_atom *argv);
 void    listinlet_listAppend            (t_listinlet *x, int argc, t_atom *argv);
 void    listinlet_listPrepend           (t_listinlet *x, int argc, t_atom *argv);

@@ -97,6 +97,32 @@ static void select1_anything (t_select1 *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *select1_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_select1 *x = (t_select1 *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendAtom (b, &x->x_atom);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void select1_restore (t_select1 *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 1) { x->x_atom = *argv; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void select2_float (t_select2 *x, t_float f)
 {
     int i, k = 0;
@@ -226,14 +252,18 @@ void select_setup (void)
     class_addCreator ((t_newmethod)select_new, sym_select,  A_GIMME, A_NULL);
     class_addCreator ((t_newmethod)select_new, sym_sel,     A_GIMME, A_NULL);
     
-    class_addFloat (select1_class, (t_method)select1_float);
-    class_addSymbol (select1_class, (t_method)select1_symbol);
-    class_addList (select1_class, (t_method)select1_list);
-    class_addAnything (select1_class, (t_method)select1_anything);
+    class_addFloat (select1_class,          (t_method)select1_float);
+    class_addSymbol (select1_class,         (t_method)select1_symbol);
+    class_addList (select1_class,           (t_method)select1_list);
+    class_addAnything (select1_class,       (t_method)select1_anything);
     
-    class_addFloat (select2_class, (t_method)select2_float);
-    class_addSymbol (select2_class, (t_method)select2_symbol);
-    class_addAnything (select2_class, (t_method)select2_anything);
+    class_addMethod (select1_class,         (t_method)select1_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (select1_class,   select1_functionData);
+    
+    class_addFloat (select2_class,          (t_method)select2_float);
+    class_addSymbol (select2_class,         (t_method)select2_symbol);
+    class_addAnything (select2_class,       (t_method)select2_anything);
 }
 
 void select_destroy (void)

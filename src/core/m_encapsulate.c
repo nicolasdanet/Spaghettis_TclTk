@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 void            *canvas_newSubpatch                 (t_symbol *);
-t_buffer        *clipboard_copyProceed              (t_glist *, int);
+t_buffer        *clipboard_copyProceed              (t_glist *, int, int);
 t_undomanager   *glist_undoReplaceManager           (t_glist *, t_undomanager *);
 
 void            canvas_selectAll                    (t_glist *);
@@ -614,7 +614,7 @@ void encapsulate_encapsulate (t_glist *glist)
     
     {
         t_rectangle r = glist_objectGetBoundingBoxOfSelected (glist);
-        t_buffer *b   = clipboard_copyProceed (glist, 0);
+        t_buffer *b   = clipboard_copyProceed (glist, 0, 1);
         int state     = dsp_suspend();
         t_point pt    = point_make (rectangle_getMiddleX (&r), rectangle_getMiddleY (&r));
     

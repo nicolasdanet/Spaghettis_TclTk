@@ -36,9 +36,8 @@ static t_class *micaitem_class;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _micaitem {
-    t_object    x_obj;                  /* Must be the first. */
+    t_micabase  x_base;                 /* Must be the first. */
     t_symbol    *x_parsed;
-    t_symbol    *x_tag;
     t_outlet    *x_outlet;
     } t_micaitem;
 
@@ -48,7 +47,7 @@ typedef struct _micaitem {
 
 static void micaitem_bang (t_micaitem *x)
 {
-    outlet_symbol (x->x_outlet, x->x_tag);
+    outlet_symbol (x->x_outlet, ((t_micabase *)x)->x_tag);
 }
 
 static void micaitem_list (t_micaitem *x, t_symbol *s, int argc, t_atom *argv)
@@ -76,7 +75,7 @@ static void micaitem_list (t_micaitem *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
 
-    x->x_tag = concept_tag (t);
+    ((t_micabase *)x)->x_tag = concept_tag (t);
     
     micaitem_bang (x);
 }
@@ -94,8 +93,8 @@ void *micaitem_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaitem *x = (t_micaitem *)pd_new (micaitem_class);
     
+    ((t_micabase *)x)->x_tag = concept_tag (mica::Undefined);
     x->x_parsed = NULL;
-    x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newSymbol (cast_object (x));
     
     if (argc) {
@@ -129,6 +128,9 @@ void micaitem_setup (void)
     class_addList (c, (t_method)micaitem_list);
     class_addAnything (c, (t_method)micaitem_anything);
     
+    class_addMethod (c, (t_method)micabase_restore, sym__restore, A_SYMBOL, A_NULL);
+
+    class_setDataFunction (c, micabase_functionData);
     class_setHelpName (c, sym_mica);
     
     micaitem_class = c;

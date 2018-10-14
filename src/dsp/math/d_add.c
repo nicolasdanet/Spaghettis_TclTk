@@ -14,24 +14,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_math.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *add_tilde_class;            /* Shared. */
 static t_class *addScalar_tilde_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _add_tilde {
-    t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    t_outlet    *x_outlet;
-    } t_add_tilde;
-
-typedef struct _addscalar_tilde {
-    t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    t_float     x_scalar;
-    t_outlet    *x_outlet;
-    } t_addscalar_tilde;
+typedef struct _binop_tilde t_add_tilde;
+typedef struct _binopscalar_tilde t_addscalar_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -45,6 +40,66 @@ static void add_tilde_dsp (t_add_tilde *x, t_signal **sp)
 static void addScalar_tilde_dsp (t_addscalar_tilde *x, t_signal **sp)
 {
     dsp_addPlusScalarPerform (sp[0]->s_vector, &x->x_scalar, sp[1]->s_vector, sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_buffer *binop_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    struct _binop_tilde *x = (struct _binop_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    object_getSignalValues (cast_object (x), b, 2);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void binop_tilde_signals (struct _binop_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (cast_object (x), argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_buffer *binopScalar_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    struct _binopscalar_tilde *x = (struct _binopscalar_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  x->x_scalar);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b,  x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void binopScalar_tilde_restore (struct _binopscalar_tilde *x, t_float f)
+{
+    x->x_scalar = f;
+}
+
+void binopScalar_tilde_signals (struct _binopscalar_tilde *x, t_float f)
+{
+    x->x_f = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -114,6 +169,27 @@ void add_tilde_setup (void)
             
     class_addDSP (add_tilde_class, (t_method)add_tilde_dsp);
     class_addDSP (addScalar_tilde_class, (t_method)addScalar_tilde_dsp);
+    
+    class_addMethod (add_tilde_class,
+        (t_method)binop_tilde_signals,
+        sym__signals,
+        A_GIMME,
+        A_NULL);
+    
+    class_addMethod (addScalar_tilde_class,
+        (t_method)binopScalar_tilde_signals,
+        sym__signals,
+        A_FLOAT,
+        A_NULL);
+    
+    class_addMethod (addScalar_tilde_class,
+        (t_method)binopScalar_tilde_restore,
+        sym__restore,
+        A_FLOAT,
+        A_NULL);
+
+    class_setDataFunction (add_tilde_class, binop_tilde_functionData);
+    class_setDataFunction (addScalar_tilde_class, binopScalar_tilde_functionData);
     
     class_setHelpName (add_tilde_class, sym_arithmetic__tilde__);
     class_setHelpName (addScalar_tilde_class, sym_arithmetic__tilde__);

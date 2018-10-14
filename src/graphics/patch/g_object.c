@@ -131,16 +131,14 @@ void gobj_save (t_gobj *x, t_buffer *b, int flags)
     
     if (class_hasDataFunction (pd_class (x))) {
     //
-    t_buffer *t = buffer_new();
-    t_error err = (*(class_getDataFunction (pd_class (x)))) (x, t, flags);
+    t_buffer *t = (*(class_getDataFunction (pd_class (x)))) (x, flags);
 
-    if (!err) {
+    if (t) {
         buffer_appendSymbol (b, sym___hash__A);
         buffer_appendBuffer (b, t);
         buffer_appendSemicolon (b);
+        buffer_free (t);
     }
-    
-    buffer_free (t);
     //
     }
 }

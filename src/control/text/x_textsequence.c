@@ -39,6 +39,8 @@ typedef struct _textsequence {
     int                 x_waitCount;
     int                 x_isAutomatic;
     int                 x_isLooping;
+    t_float             x_unitValue;
+    t_symbol            *x_unitName;
     int                 x_argc;
     t_atom              *x_argv;
     t_symbol            *x_sendTo;
@@ -319,6 +321,8 @@ static void textsequence_arguments (t_textsequence *x, t_symbol *s, int argc, t_
     x->x_argv = (t_atom *)PD_MEMORY_RESIZE (x->x_argv, oldSize, newSize);
     
     for (i = 0; i < argc; i++) { x->x_argv[i] = argv[i]; }
+    
+    atom_invalidatePointers (x->x_argc, x->x_argv);
 }
 
 /* Note that float arguments are always passed at last. */
@@ -327,9 +331,47 @@ static void textsequence_unit (t_textsequence *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
-    if (err) { 
-        error_invalid (sym_text__space__sequence, sym_unit);
+    if (err) { error_invalid (sym_text__space__sequence, sym_unit); }
+    else {
+        x->x_unitName  = unitName;
+        x->x_unitValue = f;
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *textsequence_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_textsequence *x = (t_textsequence *)z;
+        
+    if (x->x_unitName || x->x_argc) {
+    //
+    t_buffer *b = buffer_new();
+    
+    if (x->x_unitName) {
+        buffer_appendSymbol (b, sym_unit);
+        buffer_appendFloat (b,  x->x_unitValue);
+        buffer_appendSymbol (b, x->x_unitName);
+    }
+    
+    if (x->x_unitName && x->x_argc) { buffer_appendComma (b); }
+    
+    if (x->x_argc) {
+        buffer_appendSymbol (b, sym_arguments);
+        buffer_append (b, x->x_argc, x->x_argv);
+    }
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -412,7 +454,7 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
 static void textsequence_free (t_textsequence *x)
 {
     if (x->x_argv)  { PD_MEMORY_FREE (x->x_argv); }
-    if (x->x_clock) { clock_free (x->x_clock); }
+    if (x->x_clock) { clock_free (x->x_clock);    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -451,6 +493,7 @@ void textsequence_setup (void)
         
     #endif 
 
+    class_setDataFunction (c, textsequence_functionData);
     class_setHelpName (c, sym_text);
     
     textsequence_class = c;

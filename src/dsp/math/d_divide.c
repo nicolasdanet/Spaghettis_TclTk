@@ -14,24 +14,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_math.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *divide_tilde_class;             /* Shared. */
 static t_class *divideScalar_tilde_class;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _divide_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    t_outlet    *x_outlet;
-    } t_divide_tilde;
-
-typedef struct _dividescalar_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    t_float     x_scalar;
-    t_outlet    *x_outlet;
-    } t_dividescalar_tilde;
+typedef struct _binop_tilde t_divide_tilde;
+typedef struct _binopscalar_tilde t_dividescalar_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -111,6 +106,27 @@ void divide_tilde_setup (void)
         
     class_addDSP (divide_tilde_class, (t_method)divide_tilde_dsp);
     class_addDSP (divideScalar_tilde_class, (t_method)divideScalar_tilde_dsp);
+    
+    class_addMethod (divide_tilde_class,
+        (t_method)binop_tilde_signals,
+        sym__signals,
+        A_GIMME,
+        A_NULL);
+    
+    class_addMethod (divideScalar_tilde_class,
+        (t_method)binopScalar_tilde_signals,
+        sym__signals,
+        A_FLOAT,
+        A_NULL);
+    
+    class_addMethod (divideScalar_tilde_class,
+        (t_method)binopScalar_tilde_restore,
+        sym__restore,
+        A_FLOAT,
+        A_NULL);
+
+    class_setDataFunction (divide_tilde_class, binop_tilde_functionData);
+    class_setDataFunction (divideScalar_tilde_class, binopScalar_tilde_functionData);
     
     class_setHelpName (divide_tilde_class, sym_arithmetic__tilde__);
     class_setHelpName (divideScalar_tilde_class, sym_arithmetic__tilde__);

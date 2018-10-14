@@ -479,6 +479,7 @@
 		17110F492125CDAE0050FC67 /* tll_items.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tll_items.c; sourceTree = "<group>"; };
 		1713835720F0BC660001245E /* g_drawcircle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_drawcircle.c; sourceTree = "<group>"; };
 		171741431FCEB5240083B19B /* d_greater.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = d_greater.c; sourceTree = "<group>"; };
+		171A10CA218210DD00CEA331 /* d_math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = d_math.h; sourceTree = "<group>"; };
 		171C4FE22152A084002F9376 /* m_unique.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m_unique.h; sourceTree = "<group>"; };
 		171F2EA51FCC70DB00E3E53E /* d_mag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = d_mag.c; sourceTree = "<group>"; };
 		17241D921FD6D9BD009C91D2 /* x_tabreceive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_tabreceive.c; sourceTree = "<group>"; };
@@ -499,6 +500,7 @@
 		174D8A0A1F0BBCD000C94065 /* x_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x_list.h; sourceTree = "<group>"; };
 		174D8A0B1F0BBE2E00C94065 /* x_atomoutlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x_atomoutlet.h; sourceTree = "<group>"; };
 		174D8A0C1F0BC09C00C94065 /* x_binop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x_binop.h; sourceTree = "<group>"; };
+		1759F80C2185A23C00EABDA5 /* d_filters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = d_filters.h; sourceTree = "<group>"; };
 		176439391FCEEE0800D771E7 /* d_less.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = d_less.c; sourceTree = "<group>"; };
 		176D2C271F06A9860023E38E /* g_objects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = g_objects.h; sourceTree = "<group>"; };
 		177169881EFD1212003CD374 /* m_autorelease.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_autorelease.c; sourceTree = "<group>"; };
@@ -1612,6 +1614,18 @@
 		377C79961DF08AD0008195B0 /* math */ = {
 			isa = PBXGroup;
 			children = (
+				171A10CA218210DD00CEA331 /* d_math.h */,
+				378EB3B81DF411A900E39778 /* d_abs.c */,
+				378EB4D21DF4180F00E39778 /* d_wrap.c */,
+				378EB4F21DF418AF00E39778 /* d_sqrt.c */,
+				378EB5191DF419A400E39778 /* d_rsqrt.c */,
+				378EB3F81DF4135700E39778 /* d_exp.c */,
+				378EB4C01DF4178F00E39778 /* d_mtof.c */,
+				378EB4AD1DF4170900E39778 /* d_ftom.c */,
+				378EB48D1DF4166E00E39778 /* d_dbtorms.c */,
+				378EB47A1DF415DF00E39778 /* d_rmstodb.c */,
+				378EB4521DF4152D00E39778 /* d_dbtopow.c */,
+				378EB4401DF4149500E39778 /* d_powtodb.c */,
 				373B403C1DF1736900568C3A /* d_add.c */,
 				373B403B1DF1736900568C3A /* d_subtract.c */,
 				373B40131DF1729F00568C3A /* d_multiply.c */,
@@ -1620,20 +1634,9 @@
 				176439391FCEEE0800D771E7 /* d_less.c */,
 				373B3FCC1DF170CA00568C3A /* d_max.c */,
 				377C79EC1DF1560E008195B0 /* d_min.c */,
-				378971B91C4F716700263434 /* d_clip.c */,
-				378EB3B81DF411A900E39778 /* d_abs.c */,
-				378EB4D21DF4180F00E39778 /* d_wrap.c */,
-				378EB4F21DF418AF00E39778 /* d_sqrt.c */,
-				378EB5191DF419A400E39778 /* d_rsqrt.c */,
-				378EB4181DF413EA00E39778 /* d_pow.c */,
-				378EB3F81DF4135700E39778 /* d_exp.c */,
 				378EB3DA1DF4129900E39778 /* d_log.c */,
-				378EB4C01DF4178F00E39778 /* d_mtof.c */,
-				378EB4AD1DF4170900E39778 /* d_ftom.c */,
-				378EB48D1DF4166E00E39778 /* d_dbtorms.c */,
-				378EB47A1DF415DF00E39778 /* d_rmstodb.c */,
-				378EB4521DF4152D00E39778 /* d_dbtopow.c */,
-				378EB4401DF4149500E39778 /* d_powtodb.c */,
+				378EB4181DF413EA00E39778 /* d_pow.c */,
+				378971B91C4F716700263434 /* d_clip.c */,
 			);
 			path = math;
 			sourceTree = "<group>";
@@ -1914,6 +1917,7 @@
 		37E4DA031DEC6BB500190484 /* filters */ = {
 			isa = PBXGroup;
 			children = (
+				1759F80C2185A23C00EABDA5 /* d_filters.h */,
 				3741A8EA1DE845EA00B32300 /* d_vcf.c */,
 				378971B71C4F716700263434 /* d_hip.c */,
 				375253041E23CE1E00863F79 /* d_lop.c */,

@@ -61,6 +61,32 @@ static void send_anything (t_send *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *send_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_send *x   = (t_send *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, x->x_name);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void send_restore (t_send *x, t_symbol *s)
+{
+    x->x_name = s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *send_new (t_symbol *s)
 {
     t_send *x = (t_send *)pd_new (send_class);
@@ -97,6 +123,10 @@ void send_setup (void)
     class_addList (c, (t_method)send_list);
     class_addAnything (c, (t_method)send_anything);
     
+    class_addMethod (c, (t_method)send_restore, sym__restore, A_SYMBOL, A_NULL);
+
+    class_setDataFunction (c, send_functionData);
+
     send_class = c;
 }
 

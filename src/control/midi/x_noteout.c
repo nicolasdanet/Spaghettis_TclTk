@@ -43,6 +43,34 @@ static void noteout_float (t_noteout *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *noteout_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_noteout *x = (t_noteout *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_velocity);
+    buffer_appendFloat (b, x->x_channel);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void noteout_restore (t_noteout *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_velocity = atom_getFloatAtIndex (0, argc, argv);
+    x->x_channel  = atom_getFloatAtIndex (1, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *noteout_new (t_float channel)
 {
     t_noteout *x = (t_noteout *)pd_new (noteout_class);
@@ -73,6 +101,10 @@ void noteout_setup (void)
             A_NULL);
         
     class_addFloat (c, (t_method)noteout_float);
+    
+    class_addMethod (c, (t_method)noteout_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, noteout_functionData);
     
     noteout_class = c;
 }

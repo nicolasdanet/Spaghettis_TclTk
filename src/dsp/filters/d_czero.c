@@ -14,6 +14,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_filters.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Complex one-zero filter. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -29,28 +34,16 @@ static t_class *czero_tilde_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _czero_tilde {
-    t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    t_sample    x_real;
-    t_sample    x_imaginary;
-    t_outlet    *x_outletLeft;
-    t_outlet    *x_outletRight;
-    } t_czero_tilde;
+typedef struct _complex_raw_tilde t_czero_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void czero_tilde_set (t_czero_tilde *x, t_float real, t_float imaginary)
-{
-    x->x_real       = real;
-    x->x_imaginary  = imaginary;
-}
-
 static void czero_tilde_clear (t_czero_tilde *x)
 {
-    czero_tilde_set (x, 0.0, 0.0);
+    x->x_real      = 0.0;
+    x->x_imaginary = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -157,9 +150,12 @@ void czero_tilde_setup (void)
     
     class_addDSP (c, (t_method)czero_tilde_dsp);
         
-    class_addMethod (c, (t_method)czero_tilde_set,      sym_set,    A_DEFFLOAT, A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)czero_tilde_clear,    sym_clear,  A_NULL);
-        
+    class_addMethod (c, (t_method)czero_tilde_clear,    sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)complex_raw_restore,  sym__restore,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)complex_raw_signals,  sym__signals,   A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, complex_raw_functionData);
+    
     czero_tilde_class = c;
 }
 

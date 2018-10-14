@@ -84,6 +84,35 @@ static void phasor_tilde_dsp (t_phasor_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *phasor_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_phasor_tilde *x = (t_phasor_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendFloat (b, x->x_phase);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void phasor_tilde_signals (t_phasor_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *phasor_tilde_new (t_float f)
 {
     t_phasor_tilde *x = (t_phasor_tilde *)pd_new (phasor_tilde_class);
@@ -116,7 +145,10 @@ void phasor_tilde_setup (void)
     
     class_addDSP (c, (t_method)phasor_tilde_dsp);
     
-    class_addMethod (c, (t_method)phasor_tilde_phase, sym__inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)phasor_tilde_phase,   sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)phasor_tilde_signals, sym__signals,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, phasor_tilde_functionData);
     
     phasor_tilde_class = c;
 }

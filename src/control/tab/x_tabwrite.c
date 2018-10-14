@@ -49,6 +49,35 @@ static void tabwrite_set (t_tabwrite *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *tabwrite_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_tabwrite *x = (t_tabwrite *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_name);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_index);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void tabwrite_restore (t_tabwrite *x, t_float f)
+{
+    x->x_index = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *tabwrite_new (t_symbol *s)
 {
     t_tabwrite *x = (t_tabwrite *)pd_new (tabwrite_class);
@@ -78,8 +107,11 @@ void tabwrite_setup (void)
             
     class_addFloat (c, (t_method)tabwrite_float);
     
-    class_addMethod (c, (t_method)tabwrite_set, sym_set, A_SYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)tabwrite_set,     sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabwrite_restore, sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, tabwrite_functionData);
+
     tabwrite_class = c;
 }
 

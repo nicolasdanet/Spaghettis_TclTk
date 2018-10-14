@@ -87,6 +87,34 @@ static void textget_float (t_textget *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *textget_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_textget *x = (t_textget *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_fieldStart);
+    buffer_appendFloat (b, x->x_fieldCount);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void textget_restore (t_textget *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_fieldStart = atom_getFloatAtIndex (0, argc, argv);
+    x->x_fieldCount = atom_getFloatAtIndex (1, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *textget_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textget *x = (t_textget *)pd_new (textget_class);
@@ -136,6 +164,9 @@ void textget_setup (void)
             
     class_addFloat (c, (t_method)textget_float);
     
+    class_addMethod (c, (t_method)textget_restore, sym__restore, A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, textget_functionData);
     class_setHelpName (c, sym_text);
     
     textget_class = c;

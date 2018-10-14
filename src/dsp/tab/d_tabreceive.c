@@ -80,6 +80,27 @@ static void tabreceive_tilde_dsp (t_tabreceive_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *tabreceive_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_tabreceive_tilde *x = (t_tabreceive_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_name);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *tabreceive_tilde_new (t_symbol *s)
 {
     t_tabreceive_tilde *x = (t_tabreceive_tilde *)pd_new (tabreceive_tilde_class);
@@ -109,7 +130,9 @@ void tabreceive_tilde_setup (void)
     class_addDSP (c, (t_method)tabreceive_tilde_dsp);
     
     class_addMethod (c, (t_method)tabreceive_tilde_set, sym_set, A_SYMBOL, A_NULL);
-        
+    
+    class_setDataFunction (c, tabreceive_tilde_functionData);
+
     tabreceive_tilde_class = c;
 }
 

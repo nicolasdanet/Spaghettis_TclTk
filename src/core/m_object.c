@@ -382,6 +382,10 @@ void object_serializeWidth (t_object *x, t_buffer *b)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_float *object_getSignalAtIndex (t_object *x, int m)
 {
     t_inlet *i = NULL;
@@ -400,6 +404,40 @@ t_float *object_getSignalAtIndex (t_object *x, int m)
     }
     
     return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_float object_getSignalValueAtIndex (t_object *x, int m)
+{
+    t_float *t = object_getSignalAtIndex (x, m);
+    
+    if (t) { return (*t); }
+    
+    PD_BUG; return 0.0;
+}
+
+void object_getSignalValues (t_object *x, t_buffer *b, int n)
+{
+    int i;
+    
+    for (i = 0; i < n; i++) { buffer_appendFloat (b, object_getSignalValueAtIndex (x, i)); }
+}
+
+static void object_setSignalValueAtIndex (t_object *x, int m, t_float f)
+{
+    t_float *t = object_getSignalAtIndex (x, m);
+    
+    if (t) { (*t) = f; } else { PD_BUG; }
+}
+
+void object_setSignalValues (t_object *x, int argc, t_atom *argv)
+{
+    int i;
+    
+    for (i = 0; i < argc; i++) { object_setSignalValueAtIndex (x, i, atom_getFloatAtIndex (i, argc, argv)); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

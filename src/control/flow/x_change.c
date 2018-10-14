@@ -47,6 +47,32 @@ static void change_set (t_change *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *change_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_change *x = (t_change *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void change_restore (t_change *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *change_new (t_float f)
 {
     t_change *x = (t_change *)pd_new (change_class);
@@ -76,8 +102,11 @@ void change_setup (void)
     class_addBang (c, (t_method)change_bang);
     class_addFloat (c, (t_method)change_float);
     
-    class_addMethod (c, (t_method)change_set, sym_set, A_DEFFLOAT, A_NULL);
-        
+    class_addMethod (c, (t_method)change_set,       sym_set,        A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)change_restore,   sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, change_functionData);
+    
     change_class = c;
 }
 

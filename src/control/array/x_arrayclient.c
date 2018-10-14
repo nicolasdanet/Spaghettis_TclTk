@@ -83,6 +83,20 @@ void arrayclient_free (t_arrayclient *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol *arrayclient_getName (t_arrayclient *x)
+{
+    return (x->ac_name ? x->ac_name : &s_);
+}
+
+void arrayclient_setName (t_arrayclient *x, t_symbol *s)
+{
+    if (s && s != &s_) { x->ac_name = s; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_array *arrayclient_fetchArray (t_arrayclient *x)
 {
     if (x->ac_name) {

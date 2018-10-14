@@ -29,9 +29,8 @@ static t_class *micaindex_class;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _micaindex {
-    t_object    x_obj;                  /* Must be the first. */
+    t_micabase  x_base;                 /* Must be the first. */
     t_symbol    *x_parsed;
-    t_symbol    *x_tag;
     t_outlet    *x_outlet;
     } t_micaindex;
 
@@ -41,7 +40,7 @@ typedef struct _micaindex {
 
 static void micaindex_bang (t_micaindex *x)
 {
-    outlet_symbol (x->x_outlet, x->x_tag);
+    outlet_symbol (x->x_outlet, ((t_micabase *)x)->x_tag);
 }
 
 static void micaindex_list (t_micaindex *x, t_symbol *s, int argc, t_atom *argv)
@@ -69,7 +68,7 @@ static void micaindex_list (t_micaindex *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
 
-    x->x_tag = concept_tag (t);
+    ((t_micabase *)x)->x_tag = concept_tag (t);
     
     micaindex_bang (x);
 }
@@ -87,8 +86,8 @@ void *micaindex_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaindex *x = (t_micaindex *)pd_new (micaindex_class);
     
+    ((t_micabase *)x)->x_tag = concept_tag (mica::Undefined);
     x->x_parsed = NULL;
-    x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newSymbol (cast_object (x));
     
     if (argc) {
@@ -122,6 +121,9 @@ void micaindex_setup (void)
     class_addList (c, (t_method)micaindex_list);
     class_addAnything (c, (t_method)micaindex_anything);
     
+    class_addMethod (c, (t_method)micabase_restore, sym__restore, A_SYMBOL, A_NULL);
+
+    class_setDataFunction (c, micabase_functionData);
     class_setHelpName (c, sym_mica);
     
     micaindex_class = c;

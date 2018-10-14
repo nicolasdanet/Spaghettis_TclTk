@@ -118,6 +118,32 @@ static void env_tilde_dsp (t_env_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *env_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_env_tilde *x = (t_env_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void env_tilde_signals (t_env_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *env_tilde_new (t_float f1, t_float f2)
 {
     t_env_tilde *x = (t_env_tilde *)pd_new (env_tilde_class);
@@ -180,6 +206,10 @@ void env_tilde_setup (void)
     CLASS_SIGNAL (c, t_env_tilde, x_f);
     
     class_addDSP (c, (t_method)env_tilde_dsp);
+    
+    class_addMethod (c, (t_method)env_tilde_signals, sym__signals, A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, env_tilde_functionData);
     
     env_tilde_class = c;
 }

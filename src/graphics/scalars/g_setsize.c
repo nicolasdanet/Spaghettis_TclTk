@@ -53,6 +53,28 @@ static void setsize_set (t_setsize *x, t_symbol *templateName, t_symbol *fieldNa
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *setsize_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_setsize *x = (t_setsize *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->x_templateIdentifier));
+    buffer_appendSymbol (b, x->x_fieldName);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *setsize_new (t_symbol *templateName, t_symbol *fieldName)
 {
     t_setsize *x = (t_setsize *)pd_new (setsize_class);
@@ -93,6 +115,8 @@ void setsize_setup (void)
     
     class_addMethod (c, (t_method)setsize_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
     
+    class_setDataFunction (c, setsize_functionData);
+
     setsize_class = c;
 }
 

@@ -1,7 +1,7 @@
-#N canvas 637 192 300 352 12;
+#N canvas 600 193 300 352 12;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 0 0 10 #cccccc #000000;
 #X obj -60 12 freeze;
-#X obj 36 264 tgl 15 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000 1 1;
+#X obj 36 264 tgl 15 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000 0 1;
 #X obj 36 228 soundinfo;
 #X msg 36 108 read bell.aiff;
 #X msg 36 156 read you.aiff;
@@ -19,7 +19,7 @@
 #X f 63;
 #X text 12 60 Mu-law \, A-law and such are NOT handled.;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 168 228 pd more;
+#X restore 192 228 pd more;
 #X msg 36 180 read Rubrique-à-brac.aiff;
 #X text 12 72 Get sound files info.;
 #X connect 3 0 2 0;

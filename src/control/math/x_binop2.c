@@ -193,26 +193,40 @@ void binop2_setup (void)
                                 A_DEFFLOAT,
                                 A_NULL);
                                 
-    class_addBang (binopEquals_class,               (t_method)binopEquals_bang);
-    class_addBang (binopNotEquals_class,            (t_method)binopNotEquals_bang);
-    class_addBang (binopGreater_class,              (t_method)binopGreater_bang);
-    class_addBang (binopLess_class,                 (t_method)binopLess_bang);
-    class_addBang (binopGreaterEquals_class,        (t_method)binopGreaterEquals_bang);
-    class_addBang (binopLessEquals_class,           (t_method)binopLessEquals_bang);
+    class_addBang (binopEquals_class,           (t_method)binopEquals_bang);
+    class_addBang (binopNotEquals_class,        (t_method)binopNotEquals_bang);
+    class_addBang (binopGreater_class,          (t_method)binopGreater_bang);
+    class_addBang (binopLess_class,             (t_method)binopLess_bang);
+    class_addBang (binopGreaterEquals_class,    (t_method)binopGreaterEquals_bang);
+    class_addBang (binopLessEquals_class,       (t_method)binopLessEquals_bang);
         
-    class_addFloat (binopEquals_class,              (t_method)binopEquals_float);
-    class_addFloat (binopNotEquals_class,           (t_method)binopNotEquals_float);
-    class_addFloat (binopGreater_class,             (t_method)binopGreater_float);
-    class_addFloat (binopLess_class,                (t_method)binopLess_float);
-    class_addFloat (binopGreaterEquals_class,       (t_method)binopGreaterEquals_float);
-    class_addFloat (binopLessEquals_class,          (t_method)binopLessEquals_float);
+    class_addFloat (binopEquals_class,          (t_method)binopEquals_float);
+    class_addFloat (binopNotEquals_class,       (t_method)binopNotEquals_float);
+    class_addFloat (binopGreater_class,         (t_method)binopGreater_float);
+    class_addFloat (binopLess_class,            (t_method)binopLess_float);
+    class_addFloat (binopGreaterEquals_class,   (t_method)binopGreaterEquals_float);
+    class_addFloat (binopLessEquals_class,      (t_method)binopLessEquals_float);
     
-    class_setHelpName (binopEquals_class,           sym_logical);
-    class_setHelpName (binopNotEquals_class,        sym_logical);
-    class_setHelpName (binopGreater_class,          sym_logical);
-    class_setHelpName (binopLess_class,             sym_logical);
-    class_setHelpName (binopGreaterEquals_class,    sym_logical);
-    class_setHelpName (binopLessEquals_class,       sym_logical);
+    class_addMethod (binopEquals_class,         (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopNotEquals_class,      (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopGreater_class,        (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopLess_class,           (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopGreaterEquals_class,  (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopLessEquals_class,     (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    
+    class_setDataFunction (binopEquals_class,           binop_functionData);
+    class_setDataFunction (binopNotEquals_class,        binop_functionData);
+    class_setDataFunction (binopGreater_class,          binop_functionData);
+    class_setDataFunction (binopLess_class,             binop_functionData);
+    class_setDataFunction (binopGreaterEquals_class,    binop_functionData);
+    class_setDataFunction (binopLessEquals_class,       binop_functionData);
+    
+    class_setHelpName (binopEquals_class,               sym_logical);
+    class_setHelpName (binopNotEquals_class,            sym_logical);
+    class_setHelpName (binopGreater_class,              sym_logical);
+    class_setHelpName (binopLess_class,                 sym_logical);
+    class_setHelpName (binopGreaterEquals_class,        sym_logical);
+    class_setHelpName (binopLessEquals_class,           sym_logical);
 }
 
 void binop2_destroy (void)

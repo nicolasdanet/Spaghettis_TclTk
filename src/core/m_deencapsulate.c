@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 t_undomanager   *glist_undoReplaceManager   (t_glist *, t_undomanager *);
-t_buffer        *clipboard_copyProceed      (t_glist *, int);
+t_buffer        *clipboard_copyProceed      (t_glist *, int, int);
 
 int             clipboard_pasteProceed      (t_glist *, t_buffer *, t_point *, int);
 
@@ -300,7 +300,7 @@ void encapsulate_deencapsulate (t_glist *glist)
         connecthelper_fetchIndexes (inChild);
         connecthelper_fetchIndexes (outChild);
         r1 = glist_objectGetBoundingBox (glist);
-        b  = clipboard_copyProceed (glist, 1);
+        b  = clipboard_copyProceed (glist, 1, 1);
         gobj_getRectangle (cast_gobj (glist), parent, &r2);
         glist_objectRemove (parent, cast_gobj (glist));
         n = glist_objectGetNumberOf (parent);

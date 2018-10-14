@@ -93,6 +93,43 @@ static void tabread4_tilde_dsp (t_tabread4_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *tabread4_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_tabread4_tilde *x = (t_tabread4_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_name);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  x->x_onset);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b,  x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void tabread4_tilde_restore (t_tabread4_tilde *x, t_float f)
+{
+    x->x_onset = f;
+}
+
+static void tabread4_tilde_signals (t_tabread4_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *tabread4_tilde_new (t_symbol *s)
 {
     t_tabread4_tilde *x = (t_tabread4_tilde *)pd_new (tabread4_tilde_class);
@@ -125,7 +162,11 @@ void tabread4_tilde_setup (void)
     
     class_addDSP (c, (t_method)tabread4_tilde_dsp);
     
-    class_addMethod (c, (t_method)tabread4_tilde_set, sym_set, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabread4_tilde_set,       sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabread4_tilde_restore,   sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)tabread4_tilde_signals,   sym__signals,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, tabread4_tilde_functionData);
     
     tabread4_tilde_class = c;
 }

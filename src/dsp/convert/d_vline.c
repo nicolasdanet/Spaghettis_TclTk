@@ -254,6 +254,27 @@ static void vline_tilde_dsp (t_vline_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *vline_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_vline_tilde *x = (t_vline_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b, x->x_target);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *vline_tilde_new (void)
 {
     t_vline_tilde *x = (t_vline_tilde *)pd_new (vline_tilde_class);
@@ -301,6 +322,8 @@ void vline_tilde_setup (void)
     
     class_addMethod (c, (t_method)vline_tilde_stop, sym_stop, A_NULL);
     
+    class_setDataFunction (c, vline_tilde_functionData);
+
     vline_tilde_class = c;
 }
 

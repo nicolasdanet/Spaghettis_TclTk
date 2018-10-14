@@ -126,6 +126,33 @@ static void liststore_anything (t_liststore *x, t_symbol *s, int argc, t_atom *a
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *liststore_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_liststore *x = (t_liststore *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    listinlet_listGet (&x->x_listinlet, b);
+    buffer_invalidatePointers (b);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void liststore_restore (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
+{
+    listinlet_listSet (&x->x_listinlet, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *liststore_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_liststore *x = (t_liststore *)pd_new (liststore_class);
@@ -169,6 +196,9 @@ void liststore_setup (void)
     class_addMethod (c, (t_method)liststore_prepend,    sym_prepend,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)liststore_get,        sym_get,        A_GIMME, A_NULL);
     
+    class_addMethod (c, (t_method)liststore_restore,    sym__restore,   A_GIMME, A_NULL);
+
+    class_setDataFunction (c, liststore_functionData);
     class_setHelpName (c, &s_list);
     
     liststore_class = c;

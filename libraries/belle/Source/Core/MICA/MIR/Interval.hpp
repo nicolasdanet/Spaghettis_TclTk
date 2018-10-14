@@ -369,7 +369,9 @@ private:
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-private:
+/* Public for convenience. */
+
+public:
     Concept first() const
     {
         return a_;

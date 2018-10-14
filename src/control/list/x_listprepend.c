@@ -71,6 +71,33 @@ static void listprepend_anything (t_listprepend *x, t_symbol *s, int argc, t_ato
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *listprepend_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_listprepend *x = (t_listprepend *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    listinlet_listGet (&x->x_listinlet, b);
+    buffer_invalidatePointers (b);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void listprepend_restore (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
+{
+    listinlet_listSet (&x->x_listinlet, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *listprepend_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listprepend *x = (t_listprepend *)pd_new (listprepend_class);
@@ -109,6 +136,9 @@ void listprepend_setup (void)
     class_addList (c, (t_method)listprepend_list);
     class_addAnything (c, (t_method)listprepend_anything);
     
+    class_addMethod (c, (t_method)listprepend_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, listprepend_functionData);
     class_setHelpName (c, &s_list);
     
     listprepend_class = c;

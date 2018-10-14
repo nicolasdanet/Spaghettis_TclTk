@@ -20,13 +20,13 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *dac_tilde_class;         /* Shared. */
+static t_class  *dac_tilde_class;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _dac_tilde {
-    t_object    x_obj;              /* Must be the first. */
+    t_object    x_obj;                  /* Must be the first. */
     t_float     x_f;
     int         x_size;
     int         *x_vector;
@@ -36,13 +36,16 @@ typedef struct _dac_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void dac_tilde_set (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
+static void dac_tilde_setProceed (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i, k = PD_MIN (argc, x->x_size);
     
     for (i = 0; i < k; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
-    
-    dsp_update();
+}
+
+static void dac_tilde_set (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    dac_tilde_setProceed (x, s, argc, argv); dsp_update();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -80,6 +83,36 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
     }
     
     if (err) { error_invalid (sym_dac__tilde__, sym_signal); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+// -- TODO: For now doesn't restore signal values. Is that needed?
+
+static t_buffer *dac_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_dac_tilde *x = (t_dac_tilde *)z;
+    t_buffer *b = buffer_new();
+    int i;
+    
+    buffer_appendSymbol (b, sym__restore);
+    
+    for (i = 0; i < x->x_size; i++) { buffer_appendFloat (b, x->x_vector[i]); }
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void dac_tilde_restore (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    dac_tilde_setProceed (x, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -129,8 +162,10 @@ void dac_tilde_setup (void)
     
     class_addDSP (c, (t_method)dac_tilde_dsp);
     
-    class_addMethod (c, (t_method)dac_tilde_set, sym_set, A_GIMME, A_NULL);
-    
+    class_addMethod (c, (t_method)dac_tilde_set,        sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dac_tilde_restore,    sym__restore,   A_GIMME, A_NULL);
+
+    class_setDataFunction (c, dac_tilde_functionData);
     class_setHelpName (c, sym_audio);
     
     dac_tilde_class = c;

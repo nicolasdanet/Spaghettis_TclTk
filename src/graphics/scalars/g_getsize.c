@@ -53,6 +53,28 @@ static void getsize_set (t_getsize *x, t_symbol *templateName, t_symbol *fieldNa
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *getsize_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_getsize *x = (t_getsize *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->x_templateIdentifier));
+    buffer_appendSymbol (b, x->x_fieldName);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *getsize_new (t_symbol *templateName, t_symbol *fieldName)
 {
     t_getsize *x = (t_getsize *)pd_new (getsize_class);
@@ -85,6 +107,8 @@ void getsize_setup (void)
     
     class_addMethod (c, (t_method)getsize_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL);
     
+    class_setDataFunction (c, getsize_functionData);
+
     getsize_class = c;
 }
 

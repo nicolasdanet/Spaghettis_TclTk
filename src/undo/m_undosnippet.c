@@ -47,7 +47,7 @@ t_undosnippet *undosnippet_newSave (t_gobj *gobj, t_glist *owner)
 {
     t_undosnippet *x = undosnippet_newProceed (gobj, owner);
     
-    gobj_save (gobj, x->us_buffer, SAVE_DEEP | SAVE_ID);
+    gobj_save (gobj, x->us_buffer, SAVE_UNDO);
     
     return x;
 }
@@ -132,7 +132,7 @@ void undosnippet_update (t_undosnippet *x)
 {
     t_gobj *t = instance_registerGetObject (x->us_object);
     
-    if (t) { buffer_clear (x->us_buffer); gobj_save (t, x->us_buffer, SAVE_DEEP | SAVE_ID); }
+    if (t) { buffer_clear (x->us_buffer); gobj_save (t, x->us_buffer, SAVE_UNDO); }
 }
 
 /* MUST have been created with undosnippet_newProperties. */

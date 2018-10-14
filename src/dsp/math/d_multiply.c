@@ -14,24 +14,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_math.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *multiply_tilde_class;               /* Shared. */
 static t_class *multiplyScalar_tilde_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _multiply_tilde {
-    t_object    x_obj;                              /* Must be the first. */
-    t_float     x_f;
-    t_outlet    *x_outlet;
-    } t_multiply_tilde;
-
-typedef struct _multiplyscalar_tilde {
-    t_object    x_obj;                              /* Must be the first. */
-    t_float     x_f;
-    t_float     x_scalar;
-    t_outlet    *x_outlet;
-    } t_multiplyscalar_tilde;
+typedef struct _binop_tilde t_multiply_tilde;
+typedef struct _binopscalar_tilde t_multiplyscalar_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -111,7 +106,28 @@ void multiply_tilde_setup (void)
         
     class_addDSP (multiply_tilde_class, (t_method)multiply_tilde_dsp);
     class_addDSP (multiplyScalar_tilde_class, (t_method)multiplyScalar_tilde_dsp);
-        
+    
+    class_addMethod (multiply_tilde_class,
+        (t_method)binop_tilde_signals,
+        sym__signals,
+        A_GIMME,
+        A_NULL);
+    
+    class_addMethod (multiplyScalar_tilde_class,
+        (t_method)binopScalar_tilde_signals,
+        sym__signals,
+        A_FLOAT,
+        A_NULL);
+    
+    class_addMethod (multiplyScalar_tilde_class,
+        (t_method)binopScalar_tilde_restore,
+        sym__restore,
+        A_FLOAT,
+        A_NULL);
+
+    class_setDataFunction (multiply_tilde_class, binop_tilde_functionData);
+    class_setDataFunction (multiplyScalar_tilde_class, binopScalar_tilde_functionData);
+    
     class_setHelpName (multiply_tilde_class, sym_arithmetic__tilde__);
     class_setHelpName (multiplyScalar_tilde_class, sym_arithmetic__tilde__);
 }

@@ -191,7 +191,10 @@ void buffer_withStringUnzeroed (t_buffer *x, const char *s, int size)
             }
             
         } else {
-            buffer_appendSymbol (x, gensym (buffer));
+            t_symbol *t     = gensym (buffer);
+            t_gpointer *gp  = gpointer_fromRepresentation (t);
+            
+            if (gp) { buffer_appendPointer (x, gp); } else { buffer_appendSymbol (x, t); }
         }
     }
     //
@@ -279,6 +282,11 @@ void buffer_reparse (t_buffer *x)
     buffer_withStringUnzeroed (x, s, size);
     
     PD_MEMORY_FREE (s);
+}
+
+void buffer_invalidatePointers (t_buffer *x)
+{
+    atom_invalidatePointers (buffer_getSize (x), buffer_getAtoms (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------

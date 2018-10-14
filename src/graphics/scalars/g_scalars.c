@@ -176,20 +176,22 @@ static void scalars_write (t_scalars *x, t_symbol *name)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_error scalars_functionData (t_gobj *z, t_buffer *b, int flags)
+static t_buffer *scalars_functionData (t_gobj *z, int flags)
 {
     t_scalars *x = (t_scalars *)z;
     
-    if ((flags & SAVE_DEEP) || x->x_keep) {
+    if (SAVED_DEEP (flags) || x->x_keep) {
     //
+    t_buffer *b = buffer_new();
+    
     buffer_appendSymbol (b, sym__restore);
     buffer_serialize (b, slots_getRaw (x->x_slots));
     
-    return PD_ERROR_NONE;
+    return b;
     //
     }
     
-    return PD_ERROR;
+    return NULL;
 }
 
 static void scalars_restore (t_scalars *x, t_symbol *s, int argc, t_atom *argv)

@@ -137,6 +137,32 @@ static void delwrite_tilde_clear (t_delwrite_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *delwrite_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_delwrite_tilde *x = (t_delwrite_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->dw_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void delwrite_tilde_signals (t_delwrite_tilde *x, t_float f)
+{
+    x->dw_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *delwrite_tilde_new (t_symbol *s, t_float milliseconds)
 {
     t_delwrite_tilde *x = (t_delwrite_tilde *)pd_new (delwrite_tilde_class);
@@ -179,8 +205,11 @@ void delwrite_tilde_setup (void)
     
     class_addDSP (c, (t_method)delwrite_tilde_dsp);
     
-    class_addMethod (c, (t_method)delwrite_tilde_clear, sym_clear, A_NULL);
+    class_addMethod (c, (t_method)delwrite_tilde_clear,     sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)delwrite_tilde_signals,   sym__signals,   A_FLOAT, A_NULL);
 
+    class_setDataFunction (c, delwrite_tilde_functionData);
+    
     delwrite_tilde_class = c;
 }
 

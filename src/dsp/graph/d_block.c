@@ -167,6 +167,8 @@ static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
 {
     int oldState = dsp_suspend();
     
+    buffer_clear (x->bk_cache); buffer_append (x->bk_cache, argc, argv);
+    
     block_setProceed (x, s, argc, argv);
     
     dsp_resume (oldState);
@@ -235,6 +237,43 @@ t_int *block_performEpilogue (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *block_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_block *x = (t_block *)z;
+    
+    if (buffer_getSize (x->bk_cache)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_append (b, buffer_getSize (x->bk_cache), buffer_getAtoms (x->bk_cache));
+    
+    if (x->bk_switchable) {
+        buffer_appendComma (b);
+        buffer_appendSymbol (b, &s_float);
+        buffer_appendFloat (b, x->bk_switchedOn);
+    }
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
+}
+
+static void block_restore (t_block *x, t_symbol *s, int argc, t_atom *argv)
+{
+    block_setProceed (x, s, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *block_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_block *x = (t_block *)pd_new (block_class);
@@ -244,6 +283,7 @@ static void *block_new (t_symbol *s, int argc, t_atom *argv)
     x->bk_frequency  = 1;
     x->bk_switchable = 0;
     x->bk_switchedOn = 1;
+    x->bk_cache      = buffer_new();
     
     block_setProceed (x, s, argc, argv);
     
@@ -260,6 +300,11 @@ static void *block_newSwitch (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
+static void block_free (t_block *x)
+{
+    buffer_free (x->bk_cache);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -270,7 +315,7 @@ void block_tilde_setup (void)
     
     c = class_new (sym_block__tilde__,
             (t_newmethod)block_new,
-            NULL,
+            (t_method)block_free,
             sizeof (t_block),
             CLASS_DEFAULT, 
             A_GIMME,
@@ -281,8 +326,11 @@ void block_tilde_setup (void)
     class_addDSP (c, (t_method)block_dsp);
     class_addFloat (c, (t_method)block_float);
     
-    class_addMethod (c, (t_method)block_set, sym_set, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)block_set,        sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)block_restore,    sym__restore,   A_GIMME, A_NULL);
     
+    class_setDataFunction (c, block_functionData);
+
     block_class = c;
 }
 

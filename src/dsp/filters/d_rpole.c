@@ -14,6 +14,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_filters.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Real one-pole filter. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -29,25 +34,15 @@ static t_class *rpole_tilde_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _rpole_tilde {
-    t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    t_sample    x_real;
-    t_outlet    *x_outlet;
-    } t_rpole_tilde;
+typedef struct _real_raw_tilde t_rpole_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void rpole_tilde_set (t_rpole_tilde *x, t_float f)
-{
-    x->x_real = f;
-}
-
 static void rpole_tilde_clear (t_rpole_tilde *x)
 {
-    rpole_tilde_set (x, 0.0);
+    x->x_real = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,6 +92,40 @@ static void rpole_tilde_dsp (t_rpole_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_buffer *real_raw_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    struct _real_raw_tilde *x = (struct _real_raw_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  (t_float)x->x_real);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    object_getSignalValues (cast_object (x), b, 2);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void real_raw_restore (struct _real_raw_tilde *x, t_float f)
+{
+    x->x_real = (t_sample)f;
+}
+
+void real_raw_signals (struct _real_raw_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (cast_object (x), argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *rpole_tilde_new (t_float f)
 {
     t_rpole_tilde *x = (t_rpole_tilde *)pd_new (rpole_tilde_class);
@@ -128,9 +157,12 @@ void rpole_tilde_setup (void)
     
     class_addDSP (c, (t_method)rpole_tilde_dsp);
         
-    class_addMethod (c, (t_method)rpole_tilde_set,      sym_set,    A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)rpole_tilde_clear,    sym_clear,  A_NULL);
-        
+    class_addMethod (c, (t_method)rpole_tilde_clear,    sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)real_raw_restore,     sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)real_raw_signals,     sym__signals,   A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, real_raw_functionData);
+    
     rpole_tilde_class = c;
 }
 

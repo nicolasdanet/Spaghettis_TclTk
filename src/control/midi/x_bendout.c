@@ -42,6 +42,32 @@ static void bendout_float (t_bendout *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *bendout_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_bendout *x = (t_bendout *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_channel);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void bendout_restore (t_bendout *x, t_float f)
+{
+    x->x_channel = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *bendout_new (t_float channel)
 {
     t_bendout *x = (t_bendout *)pd_new (bendout_class);
@@ -71,6 +97,9 @@ void bendout_setup (void)
             
     class_addFloat (c, (t_method)bendout_float);
     
+    class_addMethod (c, (t_method)bendout_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, bendout_functionData);
     class_setHelpName (c, sym_pgmout);
     
     bendout_class = c;

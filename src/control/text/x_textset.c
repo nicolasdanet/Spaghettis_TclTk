@@ -84,7 +84,7 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
     
-    for (i = 0; i < count; i++) { buffer_setAtIndex (b, start + i, atom_substituteIfPointer (argv + i)); }
+    for (i = 0; i < count; i++) { buffer_setAtIndex (b, start + i, argv + i); }
     
     textclient_update (&x->x_textclient);
     //
@@ -96,6 +96,34 @@ static void textset_list (t_textset *x, t_symbol *s, int argc, t_atom *argv)
 static void textset_anything (t_textset *x, t_symbol *s, int argc, t_atom *argv)
 {
     utils_anythingToList (cast_pd (x), (t_listmethod)textset_list, s, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *textset_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_textset *x = (t_textset *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_line);
+    buffer_appendFloat (b, x->x_field);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void textset_restore (t_textset *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_line  = atom_getFloatAtIndex (0, argc, argv);
+    x->x_field = atom_getFloatAtIndex (1, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -150,6 +178,9 @@ void textset_setup (void)
     class_addList (c, (t_method)textset_list);
     class_addAnything (c, (t_method)textset_anything);
     
+    class_addMethod (c, (t_method)textset_restore, sym__restore, A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, textset_functionData);
     class_setHelpName (c, sym_text);
     
     textset_class = c;

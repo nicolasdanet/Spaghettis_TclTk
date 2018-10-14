@@ -35,13 +35,16 @@ typedef struct _adc_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void adc_tilde_set (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
+static void adc_tilde_setProceed (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i, k = PD_MIN (argc, x->x_size);
     
     for (i = 0; i < k; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
-    
-    dsp_update();
+}
+
+static void adc_tilde_set (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    adc_tilde_setProceed (x, s, argc, argv); dsp_update();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -80,6 +83,34 @@ static void adc_tilde_dsp (t_adc_tilde *x, t_signal **sp)
     }
     
     if (err) { error_invalid (sym_adc__tilde__, sym_signal); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *adc_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_adc_tilde *x = (t_adc_tilde *)z;
+    t_buffer *b = buffer_new();
+    int i;
+    
+    buffer_appendSymbol (b, sym__restore);
+    
+    for (i = 0; i < x->x_size; i++) { buffer_appendFloat (b, x->x_vector[i]); }
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void adc_tilde_restore (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    adc_tilde_setProceed (x, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -129,8 +160,10 @@ void adc_tilde_setup (void)
             
     class_addDSP (c, (t_method)adc_tilde_dsp);
     
-    class_addMethod (c, (t_method)adc_tilde_set, sym_set, A_GIMME, A_NULL);
-    
+    class_addMethod (c, (t_method)adc_tilde_set,        sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)adc_tilde_restore,    sym__restore,   A_GIMME, A_NULL);
+
+    class_setDataFunction (c, adc_tilde_functionData);
     class_setHelpName (c, sym_audio);
     
     adc_tilde_class = c;

@@ -35,15 +35,29 @@ typedef struct _textdefine {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void textdefine_clear (t_textdefine *x)
+{
+    buffer_clear (textbuffer_getBuffer (&x->x_textbuffer));
+    textbuffer_update (&x->x_textbuffer);
+}
+
 void textdefine_set (t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
 {
+    buffer_clear (textbuffer_getBuffer (&x->x_textbuffer));
     buffer_deserialize (textbuffer_getBuffer (&x->x_textbuffer), argc, argv);
     textbuffer_update (&x->x_textbuffer);
 }
 
-static void textdefine_clear (t_textdefine *x)
+void textdefine_add (t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_clear (textbuffer_getBuffer (&x->x_textbuffer));
+    buffer_append (textbuffer_getBuffer (&x->x_textbuffer), argc, argv);
+    buffer_appendSemicolon (textbuffer_getBuffer (&x->x_textbuffer));
+    textbuffer_update (&x->x_textbuffer);
+}
+
+void textdefine_append (t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
+{
+    buffer_append (textbuffer_getBuffer (&x->x_textbuffer), argc, argv);
     textbuffer_update (&x->x_textbuffer);
 }
 
@@ -60,36 +74,22 @@ static void textdefine_modified (t_textdefine *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void textdefine_functionSave (t_gobj *z, t_buffer *b, int flags)
+static t_buffer *textdefine_functionData (t_gobj *z, int flags)
 {
     t_textdefine *x = (t_textdefine *)z;
     
-    buffer_appendSymbol (b, sym___hash__X);
-    buffer_appendSymbol (b, sym_obj);
-    buffer_appendFloat (b,  object_getX (cast_object (x)));
-    buffer_appendFloat (b,  object_getY (cast_object (x)));
-    buffer_serialize (b,    object_getBuffer (cast_object (x)));
-    buffer_appendSemicolon (b);
-    object_serializeWidth (cast_object (x), b);
-    
-    if (flags & SAVE_ID) {
-        gobj_serializeUnique (z, sym__tagobject, b);
-    }
-}
-
-static t_error textdefine_functionData (t_gobj *z, t_buffer *b, int flags)
-{
-    t_textdefine *x = (t_textdefine *)z;
-    
-    if ((flags & SAVE_DEEP) || x->x_keep) {
+    if (SAVED_DEEP (flags) || x->x_keep) {
     //
+    t_buffer *b = buffer_new();
+    
     buffer_appendSymbol (b, sym_set);
     buffer_serialize (b, textbuffer_getBuffer (&x->x_textbuffer));
-    return PD_ERROR_NONE;
+    
+    return b;
     //
     }
     
-    return PD_ERROR;
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -210,11 +210,12 @@ void textdefine_setup (void)
     class_addMethod (c, (t_method)textbuffer_write,     sym_write,      A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)textbuffer_read,      sym_read,       A_SYMBOL, A_NULL);
     
-    class_addMethod (c, (t_method)textdefine_set,       sym_set,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textdefine_clear,     sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)textdefine_set,       sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textdefine_set,       sym_add,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textdefine_set,       sym_append,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textdefine_modified,  sym__modified,  A_NULL);
 
-    class_setSaveFunction (c, textdefine_functionSave);
     class_setDataFunction (c, textdefine_functionData);
     class_setHelpName (c, sym_text);
 

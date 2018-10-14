@@ -42,6 +42,32 @@ static void pgmout_float (t_pgmout *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *pgmout_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_pgmout *x = (t_pgmout *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_channel);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void pgmout_restore (t_pgmout *x, t_float f)
+{
+    x->x_channel = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *pgmout_new (t_float channel)
 {
     t_pgmout *x = (t_pgmout *)pd_new (pgmout_class);
@@ -70,6 +96,10 @@ void pgmout_setup (void)
             A_NULL);
             
     class_addFloat (c, (t_method)pgmout_float);
+    
+    class_addMethod (c, (t_method)pgmout_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, pgmout_functionData);
     
     pgmout_class = c;
 }

@@ -82,6 +82,27 @@ static void receive_tilde_dsp (t_receive_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *receive_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_receive_tilde *x = (t_receive_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_name);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *receive_tilde_new (t_symbol *s)
 {
     t_receive_tilde *x = (t_receive_tilde *)pd_new (receive_tilde_class);
@@ -115,6 +136,7 @@ void receive_tilde_setup (void)
     
     class_addMethod (c, (t_method)receive_tilde_set, sym_set, A_SYMBOL, A_NULL);
     
+    class_setDataFunction (c, receive_tilde_functionData);
     class_setHelpName (c, sym_send__tilde__);
     
     receive_tilde_class = c;

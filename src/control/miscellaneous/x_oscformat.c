@@ -37,6 +37,7 @@ static t_class *oscformat_class;        /* Shared. */
 typedef struct _oscformat {
     t_object    x_obj;                  /* Must be the first. */
     char        *x_path;
+    t_buffer    *x_pathBuffer;
     t_symbol    *x_format;
     t_outlet    *x_outlet;
     } t_oscformat;
@@ -373,7 +374,13 @@ static void oscformat_set (t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
     
     if (err) { error_invalid (sym_oscformat, sym_path); }
     else {
-        err = string_copy (x->x_path, PD_STRING, t); PD_UNUSED (err); PD_ASSERT (!err);
+    //
+    err = string_copy (x->x_path, PD_STRING, t);
+        
+    PD_UNUSED (err); PD_ASSERT (!err);
+        
+    buffer_clear (x->x_pathBuffer); buffer_append (x->x_pathBuffer, argc, argv);
+    //
     }
 }
 
@@ -392,13 +399,45 @@ static void oscformat_format (t_oscformat *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *oscformat_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_oscformat *x = (t_oscformat *)z;
+    t_buffer *b = buffer_new();
+    int n = buffer_getSize (x->x_pathBuffer);
+    
+    if (n) {
+        buffer_appendSymbol (b, sym_set);
+        buffer_append (b, n, buffer_getAtoms (x->x_pathBuffer));
+    }
+    
+    if (n && x->x_format) { buffer_appendComma (b); }
+    
+    if (x->x_format) {
+        buffer_appendSymbol (b, sym_format);
+        buffer_appendSymbol (b, x->x_format);
+    }
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *oscformat_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_oscformat *x = (t_oscformat *)pd_new (oscformat_class);
     
-    x->x_path   = (char *)PD_MEMORY_GET (PD_STRING);
-    x->x_format = &s_;
-    x->x_outlet = outlet_newList (cast_object (x));
+    x->x_path       = (char *)PD_MEMORY_GET (PD_STRING);
+    x->x_pathBuffer = buffer_new();
+    x->x_format     = &s_;
+    x->x_outlet     = outlet_newList (cast_object (x));
     
     while (argc > 0) {
     //
@@ -430,7 +469,7 @@ static void *oscformat_new (t_symbol *s, int argc, t_atom *argv)
 
 static void oscformat_free (t_oscformat *x)
 {
-    PD_MEMORY_FREE (x->x_path);
+    buffer_free (x->x_pathBuffer); PD_MEMORY_FREE (x->x_path);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -455,6 +494,8 @@ void oscformat_setup (void)
     
     class_addMethod (c, (t_method)oscformat_set,    sym_set,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)oscformat_format, sym_format, A_DEFSYMBOL, A_NULL);
+
+    class_setDataFunction (c, oscformat_functionData);
 
     oscformat_class = c;
 }

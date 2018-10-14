@@ -70,6 +70,27 @@ static void counter_float (t_counter *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *counter_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_counter *x = (t_counter *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendFloat (b, x->x_count);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *counter_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_counter *x = (t_counter *)pd_new (counter_class);
@@ -107,6 +128,8 @@ void counter_setup (void)
     class_addMethod (c, (t_method)counter_reset,    sym_reset,  A_NULL);
     class_addMethod (c, (t_method)counter_set,      sym_set,    A_DEFFLOAT, A_NULL);
     
+    class_setDataFunction (c, counter_functionData);
+
     counter_class = c;
 }
 

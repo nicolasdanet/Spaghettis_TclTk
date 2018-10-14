@@ -36,8 +36,7 @@ static t_class *micainfo_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _micainfo {
-    t_object    x_obj;                  /* Must be the first. */
-    t_symbol    *x_tag;
+    t_micabase  x_base;                 /* Must be the first. */
     t_outlet    *x_outlet;
     } t_micainfo;
 
@@ -56,7 +55,7 @@ static void micainfo_out (t_micainfo *x, t_symbol *s, int n)
 
 static void micainfo_bang (t_micainfo *x)
 {
-    mica::Concept t (concept_fetch (x->x_tag));
+    mica::Concept t (concept_fetch (((t_micabase *)x)->x_tag));
     
     micainfo_out (x, sym_undefined,     t.isUndefined());
     micainfo_out (x, sym_number,        t.isNumber());
@@ -70,7 +69,7 @@ static void micainfo_bang (t_micainfo *x)
 
 static void micainfo_symbol (t_micainfo *x, t_symbol *s)
 {
-    x->x_tag = s; micainfo_bang (x);
+    ((t_micabase *)x)->x_tag = s; micainfo_bang (x);
 }
 
 static void micainfo_list (t_micainfo *x, t_symbol *s, int argc, t_atom *argv)
@@ -91,7 +90,7 @@ void *micainfo_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micainfo *x = (t_micainfo *)pd_new (micainfo_class);
     
-    x->x_tag    = concept_tag (mica::Undefined);
+    ((t_micabase *)x)->x_tag = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newAnything (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
@@ -120,6 +119,9 @@ void micainfo_setup (void)
     class_addList (c, (t_method)micainfo_list);
     class_addAnything (c, (t_method)micainfo_anything);
     
+    class_addMethod (c, (t_method)micabase_restore, sym__restore, A_SYMBOL, A_NULL);
+
+    class_setDataFunction (c, micabase_functionData);
     class_setHelpName (c, sym_mica);
     
     micainfo_class = c;

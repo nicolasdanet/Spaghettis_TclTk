@@ -80,17 +80,18 @@ static void clipboard_displaceSelection (t_glist *glist, t_point *pt, int moveSc
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_buffer *clipboard_copyProceed (t_glist *glist, int copyAll)
+t_buffer *clipboard_copyProceed (t_glist *glist, int copyAll, int isEncapsulate)
 {
     t_buffer *b = buffer_new();
 
     t_gobj *y = NULL;
     t_outconnect *connection = NULL;
     t_traverser t;
+    int flags = isEncapsulate ? SAVE_ENCAPSULATE : SAVE_COPY;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
     //
-    if (copyAll || glist_objectIsSelected (glist, y)) { gobj_save (y, b, SAVE_DEEP); }
+    if (copyAll || glist_objectIsSelected (glist, y)) { gobj_save (y, b, flags); }
     //
     }
     
@@ -127,7 +128,7 @@ void clipboard_copy (t_glist *glist)
 {
     if (editor_hasSelection (glist_getEditor (glist))) {
     //
-    t_buffer *b = clipboard_copyProceed (glist, 0);
+    t_buffer *b = clipboard_copyProceed (glist, 0, 0);
     
     buffer_free (clipboard_buffer);
     

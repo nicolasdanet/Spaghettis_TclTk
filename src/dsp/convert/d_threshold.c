@@ -124,6 +124,43 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *threshold_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_threshold_tilde *x = (t_threshold_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendFloat (b, x->x_high);
+    buffer_appendFloat (b, x->x_deadTimeHigh);
+    buffer_appendFloat (b, x->x_low);
+    buffer_appendFloat (b, x->x_deadTimeLow);
+    
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendFloat (b, x->x_state);
+    
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void threshold_tilde_signals (t_threshold_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *threshold_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_threshold_tilde *x = (t_threshold_tilde *)pd_new (threshold_tilde_class);
@@ -164,9 +201,12 @@ void threshold_tilde_setup (void)
     
     class_addDSP (c, (t_method)threshold_tilde_dsp);
         
-    class_addMethod (c, (t_method)threshold_tilde_state, sym__inlet2,   A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)threshold_tilde_set,   sym_set,       A_GIMME, A_NULL);
-        
+    class_addMethod (c, (t_method)threshold_tilde_state,    sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)threshold_tilde_set,      sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)threshold_tilde_signals,  sym__signals,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, threshold_tilde_functionData);
+    
     threshold_tilde_class = c;
 }
 

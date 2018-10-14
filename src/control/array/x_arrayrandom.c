@@ -46,7 +46,7 @@ static void arrayrandom_bang (t_arrayrandom *x)
 
 static void arrayrandom_float (t_arrayrandom *x, t_float f)
 {
-    arrayrange_setFirst (&x->x_arrayrange, f); arrayrandom_bang (x);
+    arrayrange_setOnset (&x->x_arrayrange, f); arrayrandom_bang (x);
 }
 
 static void arrayrandom_seed (t_arrayrandom *x, t_float f)
@@ -93,8 +93,10 @@ void arrayrandom_setup (void)
     class_addBang (c, (t_method)arrayrandom_bang);
     class_addFloat (c, (t_method)arrayrandom_float);
     
-    class_addMethod (c, (t_method)arrayrandom_seed, sym_seed, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)arrayrandom_seed,     sym_seed,       A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)arrayrange_restore,   sym__restore,   A_GIMME, A_NULL);
 
+    class_setDataFunction (c, arrayrange_functionData);
     class_setHelpName (c, sym_array);
     
     arrayrandom_class = c;

@@ -19,16 +19,6 @@
 #X f 48;
 #X text 12 72 Two-Pole Two-Zero filter (Direct Form II with additions only).;
 #X f 63;
-#X obj 156 324 r \$0-biquad;
-#N canvas 837 336 307 170 more 0;
-#X msg 36 72 set 0 0;
-#X msg 36 48 clear;
-#X obj 36 120 s \$0-biquad;
-#X text 12 12 Clear the internal states.;
-#X connect 0 0 2 0;
-#X connect 1 0 2 0;
-#X coords 0 0 1 1 250 175 0 0 0;
-#X restore 276 324 pd more;
 #X text 12 192 WARNING: coefficients are not constrained. Bad ones could cause DAMAGES to your hardware.;
 #X f 89;
 #X text 12 132 w[n] = x[n] + a1 * w[n-1] + a2 * w[n-2];
@@ -40,5 +30,4 @@
 #X connect 6 0 5 0;
 #X connect 7 0 8 0;
 #X connect 8 0 6 0;
-#X connect 15 0 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;
