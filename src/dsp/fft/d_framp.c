@@ -140,6 +140,32 @@ static void framp_tilde_dsp (t_framp_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_buffer *framp_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_framp_tilde *x = (t_framp_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    object_getSignalValues (cast_object (x), b, 2);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void framp_tilde_signals (t_framp_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (cast_object (x), argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *framp_tilde_new (void)
 {
     t_framp_tilde *x = (t_framp_tilde *)pd_new (framp_tilde_class);
@@ -170,7 +196,11 @@ void framp_tilde_setup (void)
     CLASS_SIGNAL (c, t_framp_tilde, x_f);
     
     class_addDSP (c, (t_method)framp_tilde_dsp);
-        
+    
+    class_addMethod (c, (t_method)framp_tilde_signals, sym__signals, A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, framp_tilde_functionData);
+    
     framp_tilde_class = c;
 }
 

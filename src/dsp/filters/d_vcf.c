@@ -49,9 +49,20 @@ typedef struct _vcf_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void vcf_tilde_restore (t_vcf_tilde *, t_symbol *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void vcf_tilde_qFactor (t_vcf_tilde *x, t_float f)
 {
     x->x_space.c_q = (t_sample)PD_MAX (0.0, f);
+}
+
+static void vcf_tilde_clear (t_vcf_tilde *x)
+{
+    vcf_tilde_restore (x, sym_clear, 0, NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -141,6 +152,45 @@ static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *vcf_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_vcf_tilde *x = (t_vcf_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_q);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_real);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_imaginary);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    object_getSignalValues (cast_object (x), b, 2);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void vcf_tilde_restore (t_vcf_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_space.c_real      = (t_sample)atom_getFloatAtIndex (0, argc, argv);
+    x->x_space.c_imaginary = (t_sample)atom_getFloatAtIndex (1, argc, argv);
+}
+
+static void vcf_tilde_signals (t_vcf_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (cast_object (x), argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *vcf_tilde_new (t_float f)
 {
     t_vcf_tilde *x = (t_vcf_tilde *)pd_new (vcf_tilde_class);
@@ -160,7 +210,6 @@ static void *vcf_tilde_new (t_float f)
 
     return x;
 }
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -182,8 +231,13 @@ void vcf_tilde_setup (void)
     
     class_addDSP (c, (t_method)vcf_tilde_dsp);
     
-    class_addMethod (c, (t_method)vcf_tilde_qFactor, sym__inlet2, A_FLOAT, A_NULL);
-        
+    class_addMethod (c, (t_method)vcf_tilde_qFactor,    sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vcf_tilde_clear,      sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)vcf_tilde_restore,    sym__restore,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vcf_tilde_signals,    sym__signals,   A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, vcf_tilde_functionData);
+    
     vcf_tilde_class = c;
 }
 

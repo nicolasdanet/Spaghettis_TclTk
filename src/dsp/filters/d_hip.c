@@ -112,6 +112,43 @@ static void hip_tilde_dsp (t_hip_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *hip_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_hip_tilde *x = (t_hip_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendFloat (b,  x->x_frequency);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_real);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b,  x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void hip_tilde_restore (t_hip_tilde *x, t_float f)
+{
+    x->x_space.c_real = (t_sample)f;
+}
+
+static void hip_tilde_signals (t_hip_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *hip_tilde_new (t_float f)
 {
     t_hip_tilde *x = (t_hip_tilde *)pd_new (hip_tilde_class);
@@ -147,6 +184,10 @@ void hip_tilde_setup (void)
     
     class_addMethod (c, (t_method)hip_tilde_frequency,  sym__inlet2,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hip_tilde_clear,      sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)hip_tilde_restore,    sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)hip_tilde_signals,    sym__signals,   A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, hip_tilde_functionData);
     
     hip_tilde_class = c;
 }

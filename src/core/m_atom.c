@@ -230,7 +230,7 @@ t_error atom_toString (t_atom *a, char *dest, int size)
         case A_SEMICOLON    : err = string_copy (dest,  (size_t)size, ";");                     break;
         case A_COMMA        : err = string_copy (dest,  (size_t)size, ",");                     break;
         case A_POINTER      :
-            err = string_copy (dest, (size_t)size, gpointer_getRepresentation (GET_POINTER (a))->s_name);
+            err = string_copy (dest, (size_t)size, gpointer_asRepresentation (GET_POINTER (a))->s_name);
             break;
         default             : err = string_copy (dest,  (size_t)size, "?"); PD_BUG;
     }
@@ -241,13 +241,6 @@ t_error atom_toString (t_atom *a, char *dest, int size)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-t_atom *atom_substituteIfPointer (t_atom *a)
-{
-    if (IS_POINTER (a)) { SET_SYMBOL (a, &s_pointer); } 
-    
-    return a;
-}
 
 char *atom_atomsToString (int argc, t_atom *argv)
 {
@@ -261,6 +254,21 @@ char *atom_atomsToString (int argc, t_atom *argv)
     string_removeCharacter (s, '\\');
     
     return s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void atom_invalidatePointers (int argc, t_atom *argv)
+{
+    int i;
+    
+    for (i = 0; i < argc; i++) {
+    //
+    if (IS_POINTER (argv + i)) { t_gpointer *gp = gpointer_getEmpty(); SET_POINTER (argv + i, gp); }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

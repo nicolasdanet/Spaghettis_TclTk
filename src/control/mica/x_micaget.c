@@ -36,8 +36,7 @@ static t_class *micaget_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _micaget {
-    t_object    x_obj;                  /* Must be the first. */
-    t_symbol    *x_tag;
+    t_micabase  x_base;                 /* Must be the first. */
     t_buffer    *x_cache;
     t_outlet    *x_outlet;
     } t_micaget;
@@ -48,7 +47,7 @@ typedef struct _micaget {
 
 static void micaget_bang (t_micaget *x)
 {
-    mica::Concept t (concept_fetch (x->x_tag));
+    mica::Concept t (concept_fetch (((t_micabase *)x)->x_tag));
     
     buffer_clear (x->x_cache);
     
@@ -66,7 +65,7 @@ static void micaget_bang (t_micaget *x)
 
 static void micaget_symbol (t_micaget *x, t_symbol *s)
 {
-    x->x_tag = s; micaget_bang (x);
+    ((t_micabase *)x)->x_tag = s; micaget_bang (x);
 }
 
 static void micaget_list (t_micaget *x, t_symbol *s, int argc, t_atom *argv)
@@ -87,7 +86,7 @@ void *micaget_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaget *x = (t_micaget *)pd_new (micaget_class);
     
-    x->x_tag    = concept_tag (mica::Undefined);
+    ((t_micabase *)x)->x_tag = concept_tag (mica::Undefined);
     x->x_cache  = buffer_new();
     x->x_outlet = outlet_newList (cast_object (x));
     
@@ -122,6 +121,9 @@ void micaget_setup (void)
     class_addList (c, (t_method)micaget_list);
     class_addAnything (c, (t_method)micaget_anything);
     
+    class_addMethod (c, (t_method)micabase_restore, sym__restore, A_SYMBOL, A_NULL);
+
+    class_setDataFunction (c, micabase_functionData);
     class_setHelpName (c, sym_mica);
     
     micaget_class = c;

@@ -14,24 +14,19 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_math.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *less_tilde_class;               /* Shared. */
 static t_class *lessScalar_tilde_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _less_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    t_outlet    *x_outlet;
-    } t_less_tilde;
-
-typedef struct _lessscalar_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    t_float     x_scalar;
-    t_outlet    *x_outlet;
-    } t_lessscalar_tilde;
+typedef struct _binop_tilde t_less_tilde;
+typedef struct _binopscalar_tilde t_lessscalar_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -114,6 +109,27 @@ void less_tilde_setup (void)
             
     class_addDSP (less_tilde_class, (t_method)less_tilde_dsp);
     class_addDSP (lessScalar_tilde_class, (t_method)lessScalar_tilde_dsp);
+    
+    class_addMethod (less_tilde_class,
+        (t_method)binop_tilde_signals,
+        sym__signals,
+        A_GIMME,
+        A_NULL);
+    
+    class_addMethod (lessScalar_tilde_class,
+        (t_method)binopScalar_tilde_signals,
+        sym__signals,
+        A_FLOAT,
+        A_NULL);
+    
+    class_addMethod (lessScalar_tilde_class,
+        (t_method)binopScalar_tilde_restore,
+        sym__restore,
+        A_FLOAT,
+        A_NULL);
+
+    class_setDataFunction (less_tilde_class, binop_tilde_functionData);
+    class_setDataFunction (lessScalar_tilde_class, binopScalar_tilde_functionData);
     
     class_setHelpName (less_tilde_class, sym_logical__tilde__);
     class_setHelpName (lessScalar_tilde_class, sym_logical__tilde__);

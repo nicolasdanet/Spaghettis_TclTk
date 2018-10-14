@@ -293,6 +293,32 @@ static int drawtext_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_f
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *drawtext_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_drawtext *x = (t_drawtext *)z;
+        
+    if (field_isFloatConstant (&x->x_isVisible)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b, field_getFloatConstant (&x->x_isVisible));
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_drawtext *x = (t_drawtext *)pd_new (drawtext_class);
@@ -363,6 +389,8 @@ void drawtext_setup (void)
     
     class_setPainterBehavior (c, &drawtext_painterBehavior);
     
+    class_setDataFunction (c, drawtext_functionData);
+
     drawtext_class = c;
 }
 

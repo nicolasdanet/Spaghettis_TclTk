@@ -51,13 +51,38 @@ static void arraysize_float (t_arraysize *x, t_float f)
     //
     int n = PD_MAX (1, (int)f);
     
-    if (ARRAYCLIENT_ASPOINTER (&x->x_arrayclient)) {
+    if (ARRAYCLIENT_HAS_POINTER (&x->x_arrayclient)) {
         array_resizeAndRedraw (a, arrayclient_fetchView (&x->x_arrayclient), n);
     } else {
         garray_resize (arrayclient_fetchOwnerIfName (&x->x_arrayclient), (t_float)n);
     }
     //
     } else { error_undefined (sym_array__space__size, sym_array); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *arraysize_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, arrayclient_getName ((t_arrayclient *)z));
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void arraysize_restore (t_arraysize *x, t_symbol *s, int argc, t_atom *argv)
+{
+    arrayclient_setName ((t_arrayclient *)x, atom_getSymbolAtIndex (0, argc, argv));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -76,10 +101,10 @@ void *arraysize_new (t_symbol *s, int argc, t_atom *argv)
         
         if (argc) { warning_unusedArguments (sym_array__space__size, argc, argv); }
         
-        if (ARRAYCLIENT_ASPOINTER (&x->x_arrayclient)) {
-            inlet_newPointer (cast_object (x), ARRAYCLIENT_GETPOINTER (&x->x_arrayclient));
+        if (ARRAYCLIENT_HAS_POINTER (&x->x_arrayclient)) {
+            inlet_newPointer (cast_object (x), ARRAYCLIENT_ADDRESS_POINTER (&x->x_arrayclient));
         } else {
-            inlet_newSymbol (cast_object (x),  ARRAYCLIENT_GETNAME    (&x->x_arrayclient));
+            inlet_newSymbol (cast_object (x),  ARRAYCLIENT_ADDRESS_NAME    (&x->x_arrayclient));
         }
      
         x->x_outlet = outlet_newFloat (cast_object (x));
@@ -112,6 +137,9 @@ void arraysize_setup (void)
     class_addBang (c, (t_method)arraysize_bang);
     class_addFloat (c, (t_method)arraysize_float);
     
+    class_addMethod (c, (t_method)arraysize_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, arraysize_functionData);
     class_setHelpName (c, sym_array);
     
     arraysize_class = c;

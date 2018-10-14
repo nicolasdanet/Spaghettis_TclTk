@@ -29,6 +29,32 @@ typedef struct _atan2 {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *atan2_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_atan2 *x  = (t_atan2 *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_f2);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void atan2_restore (t_atan2 *x, t_float f)
+{
+    x->x_f2 = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *atan2_new (void)
 {
     t_atan2 *x = (t_atan2 *)pd_new (atan2_class);
@@ -68,7 +94,10 @@ void atan2_setup (void)
     class_addBang (c, (t_method)atan2_bang);
     class_addFloat (c, (t_method)atan2_float);
     
-    class_setHelpName (c, sym_sqrt);
+    class_addMethod (c, (t_method)atan2_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, atan2_functionData);
+    class_setHelpName (c, sym_math);
     
     atan2_class = c;
 }

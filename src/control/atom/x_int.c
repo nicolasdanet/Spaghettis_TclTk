@@ -38,9 +38,42 @@ static void int_float (t_intobject *x, t_float f)
     x->x_f = f; int_bang (x);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WITH_LEGACY
+
 static void int_send (t_intobject *x, t_symbol *s)
 {
     if (symbol_hasThing (s)) { int i = (int)x->x_f; pd_float (symbol_getThing (s), (t_float)i); }
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *int_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_intobject *x = (t_intobject *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void int_restore (t_intobject *x, t_float f)
+{
+    x->x_f = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -80,8 +113,16 @@ void int_setup (void)
     class_addBang (c, (t_method)int_bang);
     class_addFloat (c, (t_method)int_float);
     
+    class_addMethod (c, (t_method)int_restore, sym__restore, A_FLOAT, A_NULL);
+
+    #if PD_WITH_LEGACY
+    
     class_addMethod (c, (t_method)int_send, sym_send, A_SYMBOL, A_NULL);
     
+    #endif
+    
+    class_setDataFunction (c, int_functionData);
+
     int_class = c;
 }
 

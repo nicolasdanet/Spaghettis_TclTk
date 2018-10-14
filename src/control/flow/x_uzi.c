@@ -72,6 +72,32 @@ static void uzi_stop (t_uzi *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *uzi_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_uzi *x    = (t_uzi *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_count);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void uzi_restore (t_uzi *x, t_float f)
+{
+    x->x_count = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *uzi_new (t_float f)
 {
     t_uzi *x = (t_uzi *)pd_new (uzi_class);
@@ -103,7 +129,10 @@ void uzi_setup (void)
     class_addBang (c, (t_method)uzi_bang);
     class_addFloat (c, (t_method)uzi_float);
     
-    class_addMethod (c, (t_method)uzi_stop, sym_stop, A_NULL);
+    class_addMethod (c, (t_method)uzi_stop,     sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)uzi_restore,  sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, uzi_functionData);
     
     uzi_class = c;
 }

@@ -211,6 +211,43 @@ static void route_anything (t_route *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *route_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_route *x = (t_route *)z;
+    
+    if (x->x_size == 1) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendAtom (b, atomoutlet_getAtom (x->x_vector));
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
+}
+
+static void route_restore (t_route *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (x->x_size == 1 && argc == 1) {
+    //
+    t_error err = atomoutlet_setAtom (x->x_vector, argv);
+    
+    PD_ASSERT (!err); PD_UNUSED (err);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *route_newProceed (int argc, t_atom *argv)
 {
     t_route *x = (t_route *)pd_new (route_class);
@@ -229,7 +266,7 @@ static void *route_newProceed (int argc, t_atom *argv)
             atomoutlet_makeSymbol (x->x_vector + i, cast_object (x), create, &s_anything, t);
         } else {
             t_float t = atom_getFloat (argv + i);
-            atomoutlet_makeFloat (x->x_vector + i, cast_object (x), create, &s_anything, t);
+            atomoutlet_makeFloat (x->x_vector + i,  cast_object (x), create, &s_anything, t);
         }
     }
     
@@ -273,6 +310,10 @@ void route_setup (void)
             
     class_addList (c, (t_method)route_list);
     class_addAnything (c, (t_method)route_anything);
+    
+    class_addMethod (c, (t_method)route_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, route_functionData);
     
     route_class = c;
 }

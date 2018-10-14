@@ -154,6 +154,34 @@ static void poly_clear (t_poly *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+// -- TODO: save contents also?
+
+static t_buffer *poly_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_poly *x = (t_poly *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_velocity);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void poly_restore (t_poly *x, t_float f)
+{
+    x->x_velocity = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *poly_new (t_float voices, t_float steal)
 {
     t_poly *x = (t_poly *)pd_new (poly_class);
@@ -198,9 +226,12 @@ void poly_setup (void)
         
     class_addFloat (c, (t_method)poly_float);
     
-    class_addMethod (c, (t_method)poly_stop,    sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)poly_stop,    sym_flush,  A_NULL);
-    class_addMethod (c, (t_method)poly_clear,   sym_clear,  A_NULL);
+    class_addMethod (c, (t_method)poly_stop,    sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)poly_stop,    sym_flush,      A_NULL);
+    class_addMethod (c, (t_method)poly_clear,   sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)poly_restore, sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, poly_functionData);
     
     poly_class = c;
 }

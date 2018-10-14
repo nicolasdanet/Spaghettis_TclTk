@@ -56,6 +56,28 @@ static void element_set (t_element *x, t_symbol *templateName, t_symbol *fieldNa
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *element_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_element *x = (t_element *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->x_templateIdentifier));
+    buffer_appendSymbol (b, x->x_fieldName);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *element_new (t_symbol *templateName, t_symbol *fieldName)
 {
     t_element *x = (t_element *)pd_new (element_class);
@@ -98,6 +120,8 @@ void element_setup (void)
     class_addFloat (c, (t_method)element_float);
      
     class_addMethod (c, (t_method)element_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
+    
+    class_setDataFunction (c, element_functionData);
     
     element_class = c;
 }

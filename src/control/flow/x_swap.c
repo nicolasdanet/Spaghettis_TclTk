@@ -45,6 +45,34 @@ static void swap_float (t_swap *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *swap_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_swap *x   = (t_swap *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_f1);
+    buffer_appendFloat (b, x->x_f2);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void swap_restore (t_swap *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_f1 = atom_getFloatAtIndex (0, argc, argv);
+    x->x_f2 = atom_getFloatAtIndex (1, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *swap_new (t_float f)
 {
     t_swap *x = (t_swap *)pd_new (swap_class);
@@ -79,6 +107,10 @@ void swap_setup (void)
     
     class_addBang (c, (t_method)swap_bang);
     class_addFloat (c, (t_method)swap_float);
+    
+    class_addMethod (c, (t_method)swap_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, swap_functionData);
     
     swap_class = c;
 }

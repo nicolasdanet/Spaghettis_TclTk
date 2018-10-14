@@ -23,6 +23,8 @@ static t_class *delay_class;        /* Shared. */
 typedef struct _delay {
     t_object    x_obj;              /* Must be the first. */
     double      x_delay;
+    t_float     x_unitValue;
+    t_symbol    *x_unitName;
     t_outlet    *x_outlet;
     t_clock     *x_clock;
     } t_delay;
@@ -72,9 +74,39 @@ static void delay_unit (t_delay *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_setUnitParsed (x->x_clock, f, unitName);
     
-    if (err) {
-        error_invalid (sym_delay, sym_unit); 
+    if (err) { error_invalid (sym_delay, sym_unit); }
+    else {
+        x->x_unitValue = f;
+        x->x_unitName  = unitName;
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *delay_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_delay *x  = (t_delay *)z;
+    t_buffer *b = buffer_new();
+    
+    if (x->x_unitName) {
+        buffer_appendSymbol (b, sym_unit);
+        buffer_appendFloat (b,  x->x_unitValue);
+        buffer_appendSymbol (b, x->x_unitName);
+        buffer_appendComma (b);
+    }
+    
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendFloat (b,  x->x_delay);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -139,6 +171,8 @@ void delay_setup (void)
         
     #endif
     
+    class_setDataFunction (c, delay_functionData);
+
     delay_class = c;
 }
 

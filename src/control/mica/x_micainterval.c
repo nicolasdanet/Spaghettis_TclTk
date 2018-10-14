@@ -46,6 +46,12 @@ typedef struct _micainterval {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void micainterval_restore (t_micainterval *, t_symbol *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void micainterval_bang (t_micainterval *x)
 {
     outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getName()));
@@ -53,22 +59,7 @@ static void micainterval_bang (t_micainterval *x)
 
 static void micainterval_list (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) {
-    //
-    mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
-    mica::Concept b (concept_fetch (atom_getSymbolAtIndex (1, argc, argv)));
-    
-    if (!mica::index (mica::ChromaticPitches, a).isUndefined()) {
-    if (!mica::index (mica::ChromaticPitches, b).isUndefined()) {
-    //
-    x->x_interval = mica::MIR::Interval::withNotes (a, b);
-    //
-    }
-    }
-    //
-    }
-    
-    micainterval_bang (x);
+    micainterval_restore (x, s, argc, argv); micainterval_bang (x);
 }
 
 static void micainterval_anything (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
@@ -136,6 +127,46 @@ static void micainterval_quality (t_micainterval *x)
 static void micainterval_direction (t_micainterval *x)
 {
     outlet_symbol (x->x_outlet, concept_tag (x->x_interval.getDirection()));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *micainterval_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_micainterval *x = (t_micainterval *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, concept_tag (x->x_interval.first()));
+    buffer_appendSymbol (b, concept_tag (x->x_interval.last()));
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void micainterval_restore (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) {
+    //
+    mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
+    mica::Concept b (concept_fetch (atom_getSymbolAtIndex (1, argc, argv)));
+    
+    if (!mica::index (mica::ChromaticPitches, a).isUndefined()) {
+    if (!mica::index (mica::ChromaticPitches, b).isUndefined()) {
+    //
+    x->x_interval = mica::MIR::Interval::withNotes (a, b);
+    //
+    }
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -227,6 +258,9 @@ void micainterval_setup (void)
     class_addMethod (c, (t_method)micainterval_quality,   sym_quality,   A_NULL);
     class_addMethod (c, (t_method)micainterval_direction, sym_direction, A_NULL);
     
+    class_addMethod (c, (t_method)micainterval_restore,   sym__restore,  A_GIMME, A_NULL);
+
+    class_setDataFunction (c, micainterval_functionData);
     class_setHelpName (c, sym_mica);
     
     micainterval_class = c;

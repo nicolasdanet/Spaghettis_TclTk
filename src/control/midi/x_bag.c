@@ -123,6 +123,34 @@ static void bag_clear (t_bag *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+// -- TODO: save contents also?
+
+static t_buffer *bag_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_bag *x = (t_bag *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_velocity);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void bag_restore (t_bag *x, t_float f)
+{
+    x->x_velocity = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *bag_new (t_float f)
 {
     t_bag *x = (t_bag *)pd_new (bag_class);
@@ -160,8 +188,11 @@ void bag_setup (void)
     class_addBang (c, (t_method)bag_bang);
     class_addFloat (c, (t_method)bag_float);
     
-    class_addMethod (c, (t_method)bag_flush,    sym_flush,  A_NULL);
-    class_addMethod (c, (t_method)bag_clear,    sym_clear,  A_NULL);
+    class_addMethod (c, (t_method)bag_flush,    sym_flush,      A_NULL);
+    class_addMethod (c, (t_method)bag_clear,    sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)bag_restore,  sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, bag_functionData);
     
     bag_class = c;
 }

@@ -116,6 +116,32 @@ static void cos_tilde_dsp (t_cos_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *cos_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_cos_tilde *x = (t_cos_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void cos_tilde_signals (t_cos_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *cos_tilde_new (void)
 {
     t_cos_tilde *x = (t_cos_tilde *)pd_new (cos_tilde_class);
@@ -143,6 +169,10 @@ void cos_tilde_setup (void)
     CLASS_SIGNAL (c, t_cos_tilde, x_f);
     
     class_addDSP (c, (t_method)cos_tilde_dsp);
+    
+    class_addMethod (c, (t_method)cos_tilde_signals, sym__signals, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, cos_tilde_functionData);
     
     cos_tilde_class = c;
 }

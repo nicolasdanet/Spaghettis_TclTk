@@ -31,6 +31,17 @@ static void listinlet_list (t_listinlet *, t_symbol *, int, t_atom *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Properly set pointers after memory resizing. */
+
+static void listinlet_cacheRestore (t_listinlet *x, int i)
+{
+    if (IS_POINTER (&x->li_vector[i].le_atom)) {
+    //
+    SET_POINTER (&x->li_vector[i].le_atom, &x->li_vector[i].le_gpointer);
+    //
+    }
+}
+
 static void listinlet_cacheIfPointer (t_listinlet *x, int i, t_atom *a)
 {
     if (!IS_POINTER (a)) { gpointer_unset (&x->li_vector[i].le_gpointer); }
@@ -76,6 +87,11 @@ void listinlet_listSet (t_listinlet *x, int argc, t_atom *argv)
     }
 }
 
+void listinlet_listGet (t_listinlet *x, t_buffer *b)
+{
+    int i; for (i = 0; i < x->li_size; i++) { buffer_appendAtom (b, &x->li_vector[i].le_atom); }
+}
+
 void listinlet_listAppend (t_listinlet *x, int argc, t_atom *argv)
 {
     if (argc) {
@@ -86,7 +102,9 @@ void listinlet_listAppend (t_listinlet *x, int argc, t_atom *argv)
     
     x->li_vector = (t_listinletelement *)PD_MEMORY_RESIZE (x->li_vector, oldSize, newSize);
     x->li_size   = t + argc;
-        
+    
+    for (i = 0; i < t; i++) { listinlet_cacheRestore (x, i); }
+    
     for (i = 0; i < argc; i++) {
     //
     x->li_vector[t + i].le_atom = argv[i];
@@ -107,6 +125,8 @@ void listinlet_listPrepend (t_listinlet *x, int argc, t_atom *argv)
     
     x->li_vector = (t_listinletelement *)PD_MEMORY_RESIZE (x->li_vector, oldSize, newSize);
     x->li_size   = t + argc;
+    
+    for (i = 0; i < t; i++) { listinlet_cacheRestore (x, i); }
     
     for (i = t - 1; i >= 0; i--) {
     //

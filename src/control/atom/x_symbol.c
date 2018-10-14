@@ -47,6 +47,32 @@ static void symbol_anything (t_symbolobject *x, t_symbol *s, int argc, t_atom *a
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *symbol_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_symbolobject *x = (t_symbolobject *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, x->x_s);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void symbol_restore (t_symbolobject *x, t_symbol *s)
+{
+    x->x_s = s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* Called by the t_symbolmethod of the object maker class. */
 
 static void *symbol_new (t_pd *dummy, t_symbol *s)
@@ -82,6 +108,10 @@ void symbol_setup (void)
     class_addBang (c, (t_method)symbol_bang);
     class_addSymbol (c, (t_method)symbol_symbol);
     class_addAnything (c, (t_method)symbol_anything);
+    
+    class_addMethod (c, (t_method)symbol_restore, sym__restore, A_SYMBOL, A_NULL);
+
+    class_setDataFunction (c, symbol_functionData);
     
     symbol_class = c;
 }

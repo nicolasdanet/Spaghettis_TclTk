@@ -58,20 +58,11 @@ static void biquad_tilde_list (t_biquad_tilde *x, t_symbol *s, int argc, t_atom 
     t_float b1 = atom_getFloatAtIndex (3, argc, argv);
     t_float b2 = atom_getFloatAtIndex (4, argc, argv);
     
-    x->x_space.c_a1 = a1;
-    x->x_space.c_a2 = a2;
-    x->x_space.c_b0 = b0;
-    x->x_space.c_b1 = b1;
-    x->x_space.c_b2 = b2;
-}
-
-static void biquad_tilde_set (t_biquad_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_float real1 = atom_getFloatAtIndex (0, argc, argv);
-    t_float real2 = atom_getFloatAtIndex (1, argc, argv);
-    
-    x->x_space.c_real1 = real1;
-    x->x_space.c_real2 = real2;
+    x->x_space.c_a1 = (t_sample)a1;
+    x->x_space.c_a2 = (t_sample)a2;
+    x->x_space.c_b0 = (t_sample)b0;
+    x->x_space.c_b1 = (t_sample)b1;
+    x->x_space.c_b2 = (t_sample)b2;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -124,6 +115,49 @@ static void biquad_tilde_dsp (t_biquad_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *biquad_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_biquad_tilde *x = (t_biquad_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_list);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_a1);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_a2);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_b0);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_b1);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_b2);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_real1);
+    buffer_appendFloat (b,  (t_float)x->x_space.c_real2);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b,  x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void biquad_tilde_restore (t_biquad_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_space.c_real1 = (t_sample)atom_getFloatAtIndex (0, argc, argv);
+    x->x_space.c_real2 = (t_sample)atom_getFloatAtIndex (1, argc, argv);
+}
+
+static void biquad_tilde_signals (t_biquad_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *biquad_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_biquad_tilde *x = (t_biquad_tilde *)pd_new (biquad_tilde_class);
@@ -156,8 +190,11 @@ void biquad_tilde_setup (void)
     class_addDSP (c, (t_method)biquad_tilde_dsp);
     class_addList (c, (t_method)biquad_tilde_list);
     
-    class_addMethod (c, (t_method)biquad_tilde_set, sym_set,    A_GIMME, NULL);
-    class_addMethod (c, (t_method)biquad_tilde_set, sym_clear,  A_GIMME, NULL);
+    class_addMethod (c, (t_method)biquad_tilde_restore, sym_clear,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)biquad_tilde_restore, sym__restore,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)biquad_tilde_signals, sym__signals,   A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, biquad_tilde_functionData);
     
     biquad_tilde_class = c;
 }

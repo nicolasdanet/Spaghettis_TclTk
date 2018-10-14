@@ -14,6 +14,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_filters.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Real one-zero filter. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -29,25 +34,15 @@ static t_class *rzero_tilde_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _rzero_tilde {
-    t_object    x_obj;                  /* Must be the first. */
-    t_float     x_f;
-    t_sample    x_real;
-    t_outlet    *x_outlet;
-    } t_rzero_tilde;
+typedef struct _real_raw_tilde t_rzero_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void rzero_tilde_set (t_rzero_tilde *x, t_float f)
-{
-    x->x_real = f;
-}
-
 static void rzero_tilde_clear (t_rzero_tilde *x)
 {
-    rzero_tilde_set (x, 0.0);
+    x->x_real = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -127,8 +122,11 @@ void zero_tilde_setup (void)
     
     class_addDSP (c, (t_method)rzero_tilde_dsp);
         
-    class_addMethod (c, (t_method)rzero_tilde_set,      sym_set,    A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)rzero_tilde_clear,    sym_clear,  A_NULL);
+    class_addMethod (c, (t_method)rzero_tilde_clear,    sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)real_raw_restore,     sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)real_raw_signals,     sym__signals,   A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, real_raw_functionData);
     
     rzero_tilde_class = c;
 }

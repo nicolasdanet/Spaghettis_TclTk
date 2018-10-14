@@ -95,6 +95,32 @@ static void rfft_tilde_dsp (t_rfft_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *rfft_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_rfft_tilde *x = (t_rfft_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void rfft_tilde_signals (t_rfft_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *rfft_tilde_new (void)
 {
     t_rfft_tilde *x = (t_rfft_tilde *)pd_new (rfft_tilde_class);
@@ -128,6 +154,10 @@ void rfft_tilde_setup (void)
     CLASS_SIGNAL (c, t_rfft_tilde, x_f);
     
     class_addDSP (c, (t_method)rfft_tilde_dsp);
+    
+    class_addMethod (c, (t_method)rfft_tilde_signals, sym__signals, A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, rfft_tilde_functionData);
     
     rfft_tilde_class = c;
 }

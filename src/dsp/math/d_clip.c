@@ -65,6 +65,42 @@ static void clip_tilde_dsp (t_clip_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_buffer *clip_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_clip_tilde *x = (t_clip_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  x->x_low);
+    buffer_appendFloat (b,  x->x_high);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b,  x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void clip_tilde_restore (t_clip_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_low  = atom_getFloatAtIndex (0, argc, argv);
+    x->x_high = atom_getFloatAtIndex (1, argc, argv);
+}
+
+void clip_tilde_signals (t_clip_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *clip_tilde_new (t_float low, t_float high)
 {
     t_clip_tilde *x = (t_clip_tilde *)pd_new (clip_tilde_class);
@@ -99,6 +135,11 @@ void clip_tilde_setup (void)
     CLASS_SIGNAL (c, t_clip_tilde, x_f);
     
     class_addDSP (c, (t_method)clip_tilde_dsp);
+    
+    class_addMethod (c, (t_method)clip_tilde_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)clip_tilde_signals, sym__signals, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, clip_tilde_functionData);
     
     class_setHelpName (c, sym_math__tilde__);
     

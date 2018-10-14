@@ -32,6 +32,8 @@ typedef struct _qlist {
     int             ql_waitCount;
     int             ql_flagRewound;
     int             ql_flagReentrant;
+    t_float         ql_unitValue;
+    t_symbol        *ql_unitName;
     t_pd            *ql_target;
     t_glist         *ql_owner;
     t_outlet        *ql_outletLeft;
@@ -99,6 +101,8 @@ void        qlist_append                    (t_qlist *x, t_symbol *s, int argc, 
 void        qlist_read                      (t_qlist *x, t_symbol *name);
 void        qlist_write                     (t_qlist *x, t_symbol *name);
 void        qlist_modified                  (t_qlist *x);
+
+t_buffer    *qlist_functionData             (t_gobj *z, int flags);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

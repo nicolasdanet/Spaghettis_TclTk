@@ -71,6 +71,33 @@ static void listappend_anything (t_listappend *x, t_symbol *s, int argc, t_atom 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *listappend_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_listappend *x = (t_listappend *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    listinlet_listGet (&x->x_listinlet, b);
+    buffer_invalidatePointers (b);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void listappend_restore (t_listappend *x, t_symbol *s, int argc, t_atom *argv)
+{
+    listinlet_listSet (&x->x_listinlet, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *listappend_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listappend *x = (t_listappend *)pd_new (listappend_class);
@@ -109,6 +136,9 @@ void listappend_setup (void)
     class_addList (c, (t_method)listappend_list);
     class_addAnything (c, (t_method)listappend_anything);
     
+    class_addMethod (c, (t_method)listappend_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, listappend_functionData);
     class_setHelpName (c, &s_list);
     
     listappend_class = c;

@@ -37,7 +37,7 @@ static void bang_bang (t_bang *x)
 
 /* Called by the t_bangmethod of the object maker class. */
 
-static void *bang_newBySlot (t_pd *dummy)
+static void *bang_newByTyped (t_pd *dummy)
 {
     t_bang *x = (t_bang *)pd_new (bang_class);
     
@@ -50,7 +50,7 @@ static void *bang_newBySlot (t_pd *dummy)
 
 static void *bang_newByRegular (void)
 {
-    return bang_newBySlot (NULL);
+    return bang_newByTyped (NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ void bang_setup (void)
     t_class *c = NULL;
     
     c = class_new (&s_bang,
-            (t_newmethod)bang_newBySlot,
+            (t_newmethod)bang_newByTyped,
             NULL,
             sizeof (t_bang),
             CLASS_DEFAULT,

@@ -108,6 +108,32 @@ static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *vd_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_vd_tilde *x = (t_vd_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void vd_tilde_signals (t_vd_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *vd_tilde_new (t_symbol *s)
 {
     t_vd_tilde *x = (t_vd_tilde *)pd_new (vd_tilde_class);
@@ -139,6 +165,10 @@ void vd_tilde_setup (void)
     CLASS_SIGNAL (c, t_vd_tilde, x_f);
     
     class_addDSP (c, (t_method)vd_tilde_dsp);
+    
+    class_addMethod (c, (t_method)vd_tilde_signals, sym__signals, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, vd_tilde_functionData);
     
     vd_tilde_class = c;
 }

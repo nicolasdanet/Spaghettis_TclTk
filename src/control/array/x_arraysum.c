@@ -51,7 +51,7 @@ static void arraysum_bang (t_arraysum *x)
 
 static void arraysum_float (t_arraysum *x, t_float f)
 {
-    arrayrange_setFirst (&x->x_arrayrange, f); arraysum_bang (x);
+    arrayrange_setOnset (&x->x_arrayrange, f); arraysum_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -90,6 +90,9 @@ void arraysum_setup (void)
     class_addBang (c, (t_method)arraysum_bang);
     class_addFloat (c, (t_method)arraysum_float);
     
+    class_addMethod (c, (t_method)arrayrange_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, arrayrange_functionData);
     class_setHelpName (c, sym_array);
     
     arraysum_class = c;

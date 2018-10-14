@@ -1053,6 +1053,32 @@ int plot_hitElement (t_gobj *z,
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *plot_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_plot *x = (t_plot *)z;
+        
+    if (field_isFloatConstant (&x->x_isVisible)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b, field_getFloatConstant (&x->x_isVisible));
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *plot_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new (plot_class);
@@ -1140,7 +1166,9 @@ void plot_setup (void)
     class_addFloat (c, (t_method)plot_float);
     
     class_setPainterBehavior (c, &plot_painterBehavior);
-        
+    
+    class_setDataFunction (c, plot_functionData);
+
     plot_class = c;
 }
 

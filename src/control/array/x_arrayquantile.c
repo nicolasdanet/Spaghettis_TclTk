@@ -76,6 +76,9 @@ void arrayquantile_setup (void)
             
     class_addFloat (c, (t_method)arrayquantile_float);
     
+    class_addMethod (c, (t_method)arrayrange_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, arrayrange_functionData);
     class_setHelpName (c, sym_array);
     
     arrayquantile_class = c;

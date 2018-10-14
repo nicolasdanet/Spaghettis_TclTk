@@ -43,6 +43,34 @@ static void polytouchout_float (t_polytouchout *x, t_float n)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *polytouchout_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_polytouchout *x = (t_polytouchout *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_pitch);
+    buffer_appendFloat (b, x->x_channel);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void polytouchout_restore (t_polytouchout *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_pitch   = atom_getFloatAtIndex (0, argc, argv);
+    x->x_channel = atom_getFloatAtIndex (1, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *polytouchout_new (t_float channel)
 {
     t_polytouchout *x = (t_polytouchout *)pd_new (polytouchout_class);
@@ -74,6 +102,9 @@ void polytouchout_setup (void)
             
     class_addFloat (c, (t_method)polytouchout_float);
     
+    class_addMethod (c, (t_method)polytouchout_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, polytouchout_functionData);
     class_setHelpName (c, sym_pgmout);
     
     polytouchout_class = c;

@@ -59,7 +59,7 @@ static void arraymin_bang (t_arraymin *x)
 
 static void arraymin_float (t_arraymin *x, t_float f)
 {
-    arrayrange_setFirst (&x->x_arrayrange, f); arraymin_bang (x);
+    arrayrange_setOnset (&x->x_arrayrange, f); arraymin_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -101,6 +101,9 @@ void arraymin_setup (void)
     class_addBang (c, (t_method)arraymin_bang);
     class_addFloat (c, (t_method)arraymin_float);
 
+    class_addMethod (c, (t_method)arrayrange_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, arrayrange_functionData);
     class_setHelpName (c, sym_array);
     
     arraymin_class = c;

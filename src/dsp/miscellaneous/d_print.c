@@ -133,6 +133,32 @@ static void print_tilde_dsp (t_print_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_buffer *print_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_print_tilde *x = (t_print_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void print_tilde_signals (t_print_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *print_tilde_new (t_symbol *s)
 {
     t_print_tilde *x = (t_print_tilde *)pd_new (print_tilde_class);
@@ -172,7 +198,10 @@ void print_tilde_setup (void)
     class_addBang (c, (t_method)print_tilde_bang);
     class_addPolling (c, (t_method)print_tilde_polling);
     
-    class_addMethod (c, (t_method)print_tilde_count, sym_count, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)print_tilde_count,    sym_count,      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)print_tilde_signals,  sym__signals,   A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, print_tilde_functionData);
     
     print_tilde_class = c;
 }

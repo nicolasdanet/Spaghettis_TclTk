@@ -42,6 +42,32 @@ static void midiout_float (t_midiout *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *midiout_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_midiout *x = (t_midiout *)z;
+    t_buffer *b  = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_port);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void midiout_restore (t_midiout *x, t_float f)
+{
+    x->x_port = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *midiout_new (t_float port)
 {
     t_midiout *x = (t_midiout *)pd_new (midiout_class);
@@ -70,6 +96,10 @@ void midiout_setup (void)
             A_NULL);
         
     class_addFloat (c, (t_method)midiout_float);
+    
+    class_addMethod (c, (t_method)midiout_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, midiout_functionData);
     
     midiout_class = c;
 }

@@ -57,7 +57,7 @@ static void arrayget_bang (t_arrayget *x)
 
 static void arrayget_float (t_arrayget *x, t_float f)
 {
-    arrayrange_setFirst (&x->x_arrayrange, f); arrayget_bang (x);
+    arrayrange_setOnset (&x->x_arrayrange, f); arrayget_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -96,6 +96,9 @@ void arrayget_setup (void)
     class_addBang (c, (t_method)arrayget_bang);
     class_addFloat (c, (t_method)arrayget_float);
     
+    class_addMethod (c, (t_method)arrayrange_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, arrayrange_functionData);
     class_setHelpName (c, sym_array);
     
     arrayget_class = c;

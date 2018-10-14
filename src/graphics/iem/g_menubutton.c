@@ -452,28 +452,28 @@ static void menubutton_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendSymbol (b, colors.c_symColorBackground);
     buffer_appendSymbol (b, colors.c_symColorForeground);
     buffer_appendSymbol (b, colors.c_symColorLabel);
-    buffer_appendFloat (b,  ((flags & SAVE_DEEP) || x->x_gui.iem_loadbang) ? x->x_index : 0.0);
+    buffer_appendFloat (b,  (SAVED_DEEP (flags) || x->x_gui.iem_loadbang) ? x->x_index : 0.0);
     buffer_appendSemicolon (b);
     
-    if (flags & SAVE_ID) {
-        gobj_serializeUnique (z, sym__tagobject, b);
-    }
+    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
 }
 
-static t_error menubutton_functionData (t_gobj *z, t_buffer *b, int flags)
+static t_buffer *menubutton_functionData (t_gobj *z, int flags)
 {
     t_menubutton *x = (t_menubutton *)z;
-    
-    if ((flags & SAVE_DEEP) || x->x_saveWithParent) {
+
+    if (SAVED_DEEP (flags) || x->x_saveWithParent) {
     //
+    t_buffer *b = buffer_new();
+    
     buffer_appendSymbol (b, sym__restore);
     buffer_serialize (b, slots_getRaw (x->x_slots));
     
-    return PD_ERROR_NONE;
+    return b;
     //
     }
     
-    return PD_ERROR;
+    return NULL;
 }
 
 static void menubutton_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)

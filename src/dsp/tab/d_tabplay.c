@@ -120,6 +120,27 @@ static void tabplay_tilde_dsp (t_tabplay_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *tabplay_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_tabplay_tilde *x = (t_tabplay_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_name);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *tabplay_tilde_new (t_symbol *s)
 {
     t_tabplay_tilde *x = (t_tabplay_tilde *)pd_new (tabplay_tilde_class);
@@ -160,6 +181,8 @@ void tabplay_tilde_setup (void)
         
     class_addMethod (c, (t_method)tabplay_tilde_set,    sym_set,    A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)tabplay_tilde_stop,   sym_stop,   A_NULL);
+    
+    class_setDataFunction (c, tabplay_tilde_functionData);
     
     tabplay_tilde_class = c;
 }

@@ -62,6 +62,27 @@ static void tabread4_set (t_tabread4 *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *tabread4_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_tabread4 *x = (t_tabread4 *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_name);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *tabread4_new (t_symbol *s)
 {
     t_tabread4 *x = (t_tabread4 *)pd_new (tabread4_class);
@@ -92,6 +113,8 @@ void tabread4_setup (void)
     
     class_addMethod (c, (t_method)tabread4_set, sym_set, A_SYMBOL, A_NULL);
     
+    class_setDataFunction (c, tabread4_functionData);
+
     tabread4_class = c;
 }
 

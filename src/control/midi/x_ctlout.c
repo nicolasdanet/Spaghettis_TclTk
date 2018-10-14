@@ -43,6 +43,34 @@ static void ctlout_float (t_ctlout *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *ctlout_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_ctlout *x = (t_ctlout *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_control);
+    buffer_appendFloat (b, x->x_channel);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void ctlout_restore (t_ctlout *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_control = atom_getFloatAtIndex (0, argc, argv);
+    x->x_channel = atom_getFloatAtIndex (1, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *ctlout_new (t_float control, t_float channel)
 {
     t_ctlout *x = (t_ctlout *)pd_new (ctlout_class);
@@ -74,6 +102,10 @@ void ctlout_setup (void)
             A_NULL);
             
     class_addFloat (c, (t_method)ctlout_float);
+    
+    class_addMethod (c, (t_method)ctlout_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, ctlout_functionData);
     
     ctlout_class = c;
 }

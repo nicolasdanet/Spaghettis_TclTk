@@ -41,6 +41,32 @@ static void stripnote_float (t_stripnote *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *stripnote_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_stripnote *x = (t_stripnote *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_velocity);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void stripnote_restore (t_stripnote *x, t_float f)
+{
+    x->x_velocity = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *stripnote_new (void)
 {
     t_stripnote *x = (t_stripnote *)pd_new (stripnote_class);
@@ -69,6 +95,10 @@ void stripnote_setup (void)
             A_NULL);
             
     class_addFloat (c, (t_method)stripnote_float);
+    
+    class_addMethod (c, (t_method)stripnote_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, stripnote_functionData);
     
     stripnote_class = c;
 }

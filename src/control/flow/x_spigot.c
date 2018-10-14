@@ -63,6 +63,32 @@ static void spigot_anything (t_spigot *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *spigot_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_spigot *x = (t_spigot *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_state);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void spigot_restore (t_spigot *x, t_float f)
+{
+    x->x_state = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *spigot_new (t_float f)
 {
     t_spigot *x = (t_spigot *)pd_new (spigot_class);
@@ -97,6 +123,10 @@ void spigot_setup (void)
     class_addPointer (c, (t_method)spigot_pointer);
     class_addList (c, (t_method)spigot_list);
     class_addAnything (c, (t_method)spigot_anything);
+    
+    class_addMethod (c, (t_method)spigot_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, spigot_functionData);
     
     spigot_class = c;
 }

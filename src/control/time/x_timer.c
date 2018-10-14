@@ -25,6 +25,8 @@ typedef struct _timer {
     t_systime   x_start;
     t_float     x_unit;
     int         x_isSamples;        /* Samples or milliseconds. */
+    int         x_unitValue;
+    t_symbol    *x_unitName;
     t_outlet    *x_outlet;
     } t_timer;
 
@@ -54,9 +56,38 @@ static void timer_unit (t_timer *x, t_symbol *unitName, t_float f)
 {
     t_error err = clock_parseUnit (f, unitName, &x->x_unit, &x->x_isSamples);
     
-    if (err) {
-        error_invalid (sym_timer, sym_unit); 
+    if (err) { error_invalid (sym_timer, sym_unit); }
+    else {
+        x->x_unitValue = f;
+        x->x_unitName  = unitName;
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *timer_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_timer *x = (t_timer *)z;
+
+    if (x->x_unitName) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_unit);
+    buffer_appendFloat (b,  x->x_unitValue);
+    buffer_appendSymbol (b, x->x_unitName);
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -110,6 +141,8 @@ void timer_setup (void)
     class_addMethod (c, (t_method)timer_unit,           sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
         
     #endif
+    
+    class_setDataFunction (c, timer_functionData);
     
     timer_class = c;
 }

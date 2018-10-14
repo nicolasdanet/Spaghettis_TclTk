@@ -303,35 +303,55 @@ void binop3_setup (void)
                                     A_DEFFLOAT,
                                     A_NULL);
                                     
-    class_addBang (binopBitwiseAnd_class,           (t_method)binopBitwiseAnd_bang);
-    class_addBang (binopLogicalAnd_class,           (t_method)binopLogicalAnd_bang);
-    class_addBang (binopBitwiseOr_class,            (t_method)binopBitwiseOr_bang);
-    class_addBang (binopLogicalOr_class,            (t_method)binopLogicalOr_bang);
-    class_addBang (binopShiftLeft_class,            (t_method)binopShiftLeft_bang);
-    class_addBang (binopShiftRight_class,           (t_method)binopShiftRight_bang);  
-    class_addBang (binopModulo_class,               (t_method)binopModulo_bang);
-    class_addBang (binopIntegerModulo_class,        (t_method)binopIntegerModulo_bang);
-    class_addBang (binopIntegerDivide_class,        (t_method)binopIntegerDivide_bang);
+    class_addBang (binopBitwiseAnd_class,       (t_method)binopBitwiseAnd_bang);
+    class_addBang (binopLogicalAnd_class,       (t_method)binopLogicalAnd_bang);
+    class_addBang (binopBitwiseOr_class,        (t_method)binopBitwiseOr_bang);
+    class_addBang (binopLogicalOr_class,        (t_method)binopLogicalOr_bang);
+    class_addBang (binopShiftLeft_class,        (t_method)binopShiftLeft_bang);
+    class_addBang (binopShiftRight_class,       (t_method)binopShiftRight_bang);
+    class_addBang (binopModulo_class,           (t_method)binopModulo_bang);
+    class_addBang (binopIntegerModulo_class,    (t_method)binopIntegerModulo_bang);
+    class_addBang (binopIntegerDivide_class,    (t_method)binopIntegerDivide_bang);
         
-    class_addFloat (binopBitwiseAnd_class,          (t_method)binopBitwiseAnd_float);
-    class_addFloat (binopLogicalAnd_class,          (t_method)binopLogicalAnd_float);
-    class_addFloat (binopBitwiseOr_class,           (t_method)binopBitwiseOr_float);
-    class_addFloat (binopLogicalOr_class,           (t_method)binopLogicalOr_float);
-    class_addFloat (binopShiftLeft_class,           (t_method)binopShiftLeft_float);
-    class_addFloat (binopShiftRight_class,          (t_method)binopShiftRight_float);
-    class_addFloat (binopModulo_class,              (t_method)binopModulo_float);
-    class_addFloat (binopIntegerModulo_class,       (t_method)binopIntegerModulo_float);
-    class_addFloat (binopIntegerDivide_class,       (t_method)binopIntegerDivide_float);
-        
-    class_setHelpName (binopBitwiseAnd_class,       sym_bitwise);
-    class_setHelpName (binopLogicalAnd_class,       sym_logical);
-    class_setHelpName (binopBitwiseOr_class,        sym_bitwise);
-    class_setHelpName (binopLogicalOr_class,        sym_logical);
-    class_setHelpName (binopShiftLeft_class,        sym_bitwise);
-    class_setHelpName (binopShiftRight_class,       sym_bitwise);
-    class_setHelpName (binopModulo_class,           sym_math);
-    class_setHelpName (binopIntegerModulo_class,    sym_math);
-    class_setHelpName (binopIntegerDivide_class,    sym_math);
+    class_addFloat (binopBitwiseAnd_class,      (t_method)binopBitwiseAnd_float);
+    class_addFloat (binopLogicalAnd_class,      (t_method)binopLogicalAnd_float);
+    class_addFloat (binopBitwiseOr_class,       (t_method)binopBitwiseOr_float);
+    class_addFloat (binopLogicalOr_class,       (t_method)binopLogicalOr_float);
+    class_addFloat (binopShiftLeft_class,       (t_method)binopShiftLeft_float);
+    class_addFloat (binopShiftRight_class,      (t_method)binopShiftRight_float);
+    class_addFloat (binopModulo_class,          (t_method)binopModulo_float);
+    class_addFloat (binopIntegerModulo_class,   (t_method)binopIntegerModulo_float);
+    class_addFloat (binopIntegerDivide_class,   (t_method)binopIntegerDivide_float);
+    
+    class_addMethod (binopBitwiseAnd_class,     (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopLogicalAnd_class,     (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopBitwiseOr_class,      (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopLogicalOr_class,      (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopShiftLeft_class,      (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopShiftRight_class,     (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopModulo_class,         (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopIntegerModulo_class,  (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopIntegerDivide_class,  (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (binopBitwiseAnd_class,       binop_functionData);
+    class_setDataFunction (binopLogicalAnd_class,       binop_functionData);
+    class_setDataFunction (binopBitwiseOr_class,        binop_functionData);
+    class_setDataFunction (binopLogicalOr_class,        binop_functionData);
+    class_setDataFunction (binopShiftLeft_class,        binop_functionData);
+    class_setDataFunction (binopShiftRight_class,       binop_functionData);
+    class_setDataFunction (binopModulo_class,           binop_functionData);
+    class_setDataFunction (binopIntegerModulo_class,    binop_functionData);
+    class_setDataFunction (binopIntegerDivide_class,    binop_functionData);
+
+    class_setHelpName (binopBitwiseAnd_class,           sym_bitwise);
+    class_setHelpName (binopLogicalAnd_class,           sym_logical);
+    class_setHelpName (binopBitwiseOr_class,            sym_bitwise);
+    class_setHelpName (binopLogicalOr_class,            sym_logical);
+    class_setHelpName (binopShiftLeft_class,            sym_bitwise);
+    class_setHelpName (binopShiftRight_class,           sym_bitwise);
+    class_setHelpName (binopModulo_class,               sym_math);
+    class_setHelpName (binopIntegerModulo_class,        sym_math);
+    class_setHelpName (binopIntegerDivide_class,        sym_math);
 }
 
 void binop3_destroy (void)

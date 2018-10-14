@@ -72,6 +72,35 @@ static void snapshot_tilde_dsp (t_snapshot_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *snapshot_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_snapshot_tilde *x = (t_snapshot_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendFloat (b, x->x_value);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void snapshot_tilde_signals (t_snapshot_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *snapshot_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_snapshot_tilde *x = (t_snapshot_tilde *)pd_new (snapshot_tilde_class);
@@ -118,7 +147,10 @@ void snapshot_tilde_setup (void)
     class_addBang (c, (t_method)snapshot_tilde_bang);
     class_addPolling (c, (t_method)snapshot_tilde_polling);
     
-    class_addMethod (c, (t_method)snapshot_tilde_set, sym_set, A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)snapshot_tilde_set,       sym_set,        A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)snapshot_tilde_signals,   sym__signals,   A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, snapshot_tilde_functionData);
 
     snapshot_tilde_class = c;
 }

@@ -702,27 +702,27 @@ static void garray_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  t);
     buffer_appendSemicolon (b);
     
-    if (flags & SAVE_ID) {
-        gobj_serializeUnique (z, sym__tagobject, b);
-    }
+    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
 }
 
-static t_error garray_functionData (t_gobj *z, t_buffer *b, int flags)
+static t_buffer *garray_functionData (t_gobj *z, int flags)
 {
     t_garray *x = (t_garray *)z;
 
-    if ((flags & SAVE_DEEP) || x->x_saveWithParent) {
+    if (SAVED_DEEP (flags) || x->x_saveWithParent) {
     //
+    t_buffer *b = buffer_new();
     t_array *array = garray_getArray (x);
     int i, n = array_getSize (array);
     
     buffer_appendFloat (b, 0);
     for (i = 0; i < n; i++) { buffer_appendFloat (b, GARRAY_AT (i)); }
-    return PD_ERROR_NONE;
+    
+    return b;
     //
     }
     
-    return PD_ERROR;
+    return NULL;
 }
 
 /* Fake dialog message from interpreter. */

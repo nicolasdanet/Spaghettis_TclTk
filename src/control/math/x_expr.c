@@ -172,6 +172,34 @@ static void vexpr_list (t_expr *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *expr_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_expr *x   = (t_expr *)z;
+    t_buffer *b = buffer_new();
+    int i;
+    
+    buffer_appendSymbol (b, sym__restore);
+    
+    for (i = 0; i < EXPR_VARIABLES; i++) { buffer_appendFloat (b, x->x_f[i]); }
+        
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void expr_restore (t_expr *x, t_symbol *s, int argc, t_atom *argv)
+{
+    int i; for (i = 0; i < EXPR_VARIABLES; i++) { x->x_f[i] = atom_getFloatAtIndex (i, argc, argv); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *expr_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_expr *x = (t_expr *)pd_new ((s == sym_expr) ? expr_class : vexpr_class);
@@ -236,12 +264,19 @@ void expr_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addBang (expr_class, (t_method)expr_bang);
-    class_addFloat (expr_class, (t_method)expr_float);
+    class_addBang (expr_class,      (t_method)expr_bang);
+    class_addBang (vexpr_class,     (t_method)vexpr_bang);
+
+    class_addFloat (expr_class,     (t_method)expr_float);
+    class_addFloat (vexpr_class,    (t_method)vexpr_float);
     
-    class_addBang (vexpr_class, (t_method)vexpr_bang);
-    class_addFloat (vexpr_class, (t_method)vexpr_float);
-    class_addList (vexpr_class, (t_method)vexpr_list);
+    class_addList (vexpr_class,     (t_method)vexpr_list);
+    
+    class_addMethod (expr_class,    (t_method)expr_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (vexpr_class,   (t_method)expr_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (expr_class,      expr_functionData);
+    class_setDataFunction (vexpr_class,     expr_functionData);
     
     class_setHelpName (vexpr_class, sym_expr);
 }

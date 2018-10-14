@@ -63,6 +63,15 @@ void valuecommon_release (t_symbol *s)
     if (!x->x_referenceCount) { pd_unbind (cast_pd (x), s); pd_free (cast_pd (x)); }
 }
 
+int valuecommon_count (t_symbol *s)
+{
+    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (s, valuecommon_class);
+    
+    if (x) { return x->x_referenceCount; }
+    
+    return -1;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -89,6 +98,46 @@ static void value_bang (t_value *x)
 static void value_float (t_value *x, t_float f)
 {
     if (x->x_raw) { *x->x_raw = f; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *value_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_value *x  = (t_value *)z;
+    
+    if (x->x_raw) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, x->x_name);
+    buffer_appendFloat (b,  *x->x_raw);
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
+}
+
+static void value_restore (t_value *x, t_symbol *s, int argc, t_atom *argv)
+{
+    value_set (x, atom_getSymbolAtIndex (0, argc, argv));
+    
+    /* Restore the value if it is the only client. */
+    
+    if (x->x_raw && valuecommon_count (x->x_name) == 1) {
+    //
+    value_float (x, atom_getFloatAtIndex (1, argc, argv));
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -138,7 +187,10 @@ void value_setup (void)
     class_addBang (value_class, (t_method)value_bang);
     class_addFloat (value_class, (t_method)value_float);
     
-    class_addMethod (value_class, (t_method)value_set, sym_set, A_DEFSYMBOL, A_NULL);
+    class_addMethod (value_class, (t_method)value_set,      sym_set,        A_DEFSYMBOL, A_NULL);
+    class_addMethod (value_class, (t_method)value_restore,  sym__restore,   A_GIMME, A_NULL);
+
+    class_setDataFunction (value_class, value_functionData);
 }
 
 void value_destroy (void)

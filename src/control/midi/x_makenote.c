@@ -126,6 +126,34 @@ static void makenote_clear (t_makenote *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *makenote_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_makenote *x = (t_makenote *)z;
+    t_buffer *b   = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_velocity);
+    buffer_appendFloat (b, x->x_duration);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void makenote_restore (t_makenote *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->x_velocity = atom_getFloatAtIndex (0, argc, argv);
+    x->x_duration = atom_getFloatAtIndex (1, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *makenote_new (t_float velocity, t_float duration)
 {
     t_makenote *x = (t_makenote *)pd_new (makenote_class);
@@ -166,9 +194,12 @@ void makenote_setup (void)
             
     class_addFloat (c, (t_method)makenote_float);
     
-    class_addMethod (c, (t_method)makenote_stop,    sym_stop,   A_NULL);
-    class_addMethod (c, (t_method)makenote_stop,    sym_flush,  A_NULL);
-    class_addMethod (c, (t_method)makenote_clear,   sym_clear,  A_NULL);
+    class_addMethod (c, (t_method)makenote_stop,    sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)makenote_stop,    sym_flush,      A_NULL);
+    class_addMethod (c, (t_method)makenote_clear,   sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)makenote_restore, sym__restore,   A_GIMME, A_NULL);
+
+    class_setDataFunction (c, makenote_functionData);
     
     makenote_class = c;
 }

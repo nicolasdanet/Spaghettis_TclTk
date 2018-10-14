@@ -88,6 +88,32 @@ static void random_seed (t_random *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *random_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_random *x = (t_random *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_range);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void random_restore (t_random *x, t_float f)
+{
+    x->x_range = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *random_new (t_float f)
 {
     t_random *x = (t_random *)pd_new (random_class);
@@ -121,7 +147,10 @@ void random_setup (void)
     class_addBang (c, (t_method)random_bang);
     class_addFloat (c, (t_method)random_float);
     
-    class_addMethod (c, (t_method)random_seed, sym_seed, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)random_seed,      sym_seed,       A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)random_restore,   sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, random_functionData);
     
     random_class = c;
 }

@@ -14,6 +14,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "d_filters.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* Real reverse one-zero filter. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -29,25 +34,15 @@ static t_class *rzero_rev_tilde_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _rzero_rev_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    t_sample    x_last;
-    t_outlet    *x_outlet;
-    } t_rzero_tilde_rev;
+typedef struct _real_raw_tilde t_rzero_rev_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void rzero_tilde_rev_set (t_rzero_tilde_rev *x, t_float f)
+static void rzero_rev_tilde_clear (t_rzero_rev_tilde *x)
 {
-    x->x_last = f;
-}
-
-static void rzero_tilde_rev_clear (t_rzero_tilde_rev *x)
-{
-    rzero_tilde_rev_set (x, 0.0);
+    x->x_real = 0.0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -58,15 +53,15 @@ static void rzero_tilde_rev_clear (t_rzero_tilde_rev *x)
 /* Notice that the two signals incoming could be theoretically just one. */
 /* But as only loads are done, it is assumed safe to use restricted pointers. */
 
-static t_int *rzero_tilde_rev_perform (t_int *w)
+static t_int *rzero_rev_tilde_perform (t_int *w)
 {
-    t_rzero_tilde_rev *x = (t_rzero_tilde_rev *)(w[1]);
+    t_rzero_rev_tilde *x = (t_rzero_rev_tilde *)(w[1]);
     PD_RESTRICTED in1 = (t_sample *)(w[2]);
     PD_RESTRICTED in2 = (t_sample *)(w[3]);
     PD_RESTRICTED out = (t_sample *)(w[4]);
     int n = (int)(w[5]);
     
-    t_sample last = x->x_last;
+    t_sample last = x->x_real;
     
     while (n--) {
         t_sample f = *in1++;
@@ -75,17 +70,17 @@ static t_int *rzero_tilde_rev_perform (t_int *w)
         last   = f;
     }
     
-    x->x_last = last;
+    x->x_real = last;
     
     return (w + 6);
 }
 
-static void rzero_tilde_rev_dsp (t_rzero_tilde_rev *x, t_signal **sp)
+static void rzero_rev_tilde_dsp (t_rzero_rev_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
     
-    dsp_add (rzero_tilde_rev_perform, 5, x,
+    dsp_add (rzero_rev_tilde_perform, 5, x,
         sp[0]->s_vector,
         sp[1]->s_vector,
         sp[2]->s_vector, 
@@ -96,9 +91,9 @@ static void rzero_tilde_rev_dsp (t_rzero_tilde_rev *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *rzero_tilde_rev_new (t_float f)
+static void *rzero_rev_tilde_new (t_float f)
 {
-    t_rzero_tilde_rev *x = (t_rzero_tilde_rev *)pd_new (rzero_rev_tilde_class);
+    t_rzero_rev_tilde *x = (t_rzero_rev_tilde *)pd_new (rzero_rev_tilde_class);
     
     x->x_outlet = outlet_newSignal (cast_object (x));
     
@@ -116,20 +111,23 @@ void rzero_rev_tilde_setup (void)
     t_class *c = NULL;
     
     c = class_new (sym_rzero_rev__tilde__,
-            (t_newmethod)rzero_tilde_rev_new,
+            (t_newmethod)rzero_rev_tilde_new,
             NULL,
-            sizeof (t_rzero_tilde_rev),
+            sizeof (t_rzero_rev_tilde),
             CLASS_DEFAULT,
             A_DEFFLOAT,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_rzero_tilde_rev, x_f);
+    CLASS_SIGNAL (c, t_rzero_rev_tilde, x_f);
     
-    class_addDSP (c, (t_method)rzero_tilde_rev_dsp);
+    class_addDSP (c, (t_method)rzero_rev_tilde_dsp);
         
-    class_addMethod (c, (t_method)rzero_tilde_rev_set,      sym_set,    A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)rzero_tilde_rev_clear,    sym_clear,  A_NULL);
-
+    class_addMethod (c, (t_method)rzero_rev_tilde_clear,    sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)real_raw_restore,         sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)real_raw_signals,         sym__signals,   A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, real_raw_functionData);
+    
     rzero_rev_tilde_class = c;
 }
 

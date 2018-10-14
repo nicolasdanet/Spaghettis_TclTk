@@ -39,6 +39,7 @@ static t_class *micaspell_class;        /* Shared. */
 typedef struct _micaspell {
     t_object            x_obj;          /* Must be the first. */
     mica::MIR::Spell    x_spell;
+    t_symbol            *x_key;
     t_outlet            *x_outlet;
     } t_micaspell;
 
@@ -82,12 +83,40 @@ static void micaspell_list (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
 
 static void micaspell_set (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
 {
-    mica::Concept c = concept_fetch (atom_getSymbolAtIndex (0, argc, argv));
+    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
-    if (mica::MIR::Spell::keyIsValid (c)) { x->x_spell.setKey (c); }
+    mica::Concept c = concept_fetch (t);
+    
+    if (mica::MIR::Spell::keyIsValid (c)) { x->x_spell.setKey (c); x->x_key = t; }
     else {
         error_invalid (sym_mica__space__spell, sym_key);
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *micaspell_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_micaspell *x = (t_micaspell *)z;
+    
+    if (x->x_key) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_key);
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -138,6 +167,7 @@ void micaspell_setup (void)
     
     class_addMethod (c, (t_method)micaspell_set, sym_set, A_GIMME, A_NULL);
     
+    class_setDataFunction (c, micaspell_functionData);
     class_setHelpName (c, sym_mica);
     
     micaspell_class = c;

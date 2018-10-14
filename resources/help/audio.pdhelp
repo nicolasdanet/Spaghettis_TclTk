@@ -14,11 +14,11 @@
 #X text 12 72 Provide real-time audio input and output.;
 #X f 41;
 #X text 156 108 Default is stereo.;
-#N canvas 551 254 367 144 more 0;
-#X obj 36 96 dac~ 1;
-#X msg 36 48 set 1 2 5;
+#N canvas 683 416 367 144 more 0;
 #X text 12 12 To avoid glitches do NOT change it with dsp ON.;
-#X connect 1 0 0 0;
+#X obj 36 96 dac~ 1 2 3 4;
+#X msg 36 48 set 5 6 7 8;
+#X connect 2 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 192 pd more;
 #X coords 0 0 1 1 250 175 0 0 0;

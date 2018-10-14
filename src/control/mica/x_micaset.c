@@ -29,9 +29,8 @@ static t_class *micaset_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _micaset {
-    t_object    x_obj;                  /* Must be the first. */
+    t_micabase  x_base;                 /* Must be the first. */
     t_symbol    *x_parsed;
-    t_symbol    *x_tag;
     t_outlet    *x_outlet;
     } t_micaset;
 
@@ -41,7 +40,7 @@ typedef struct _micaset {
 
 static void micaset_bang (t_micaset *x)
 {
-    if (!x->x_parsed) { outlet_symbol (x->x_outlet, x->x_tag); }
+    if (!x->x_parsed) { outlet_symbol (x->x_outlet, ((t_micabase *)x)->x_tag); }
     else {
         outlet_symbol (x->x_outlet, x->x_parsed);
     }
@@ -49,14 +48,14 @@ static void micaset_bang (t_micaset *x)
 
 static void micaset_float (t_micaset *x, t_float f)
 {
-    if (!x->x_parsed) { t_atom a; SET_FLOAT (&a, f); x->x_tag = concept_tagParsed (1, &a); }
+    if (!x->x_parsed) { t_atom a; SET_FLOAT (&a, f); ((t_micabase *)x)->x_tag = concept_tagParsed (1, &a); }
     
     micaset_bang (x);
 }
 
 static void micaset_list (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!x->x_parsed) { x->x_tag = concept_tagParsed (argc, argv); }
+    if (!x->x_parsed) { ((t_micabase *)x)->x_tag = concept_tagParsed (argc, argv); }
     
     micaset_bang (x);
 }
@@ -70,12 +69,38 @@ static void micaset_anything (t_micaset *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_buffer *micabase_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_micabase *x = (t_micabase *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, x->x_tag);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void micabase_restore (t_micabase *x, t_symbol *s)
+{
+    x->x_tag = s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *micaset_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_micaset *x = (t_micaset *)pd_new (micaset_class);
     
+    ((t_micabase *)x)->x_tag = concept_tag (mica::Undefined);
     x->x_parsed = NULL;
-    x->x_tag    = concept_tag (mica::Undefined);
     x->x_outlet = outlet_newSymbol (cast_object (x));
     
     if (argc) {
@@ -110,6 +135,9 @@ void micaset_setup (void)
     class_addList (c, (t_method)micaset_list);
     class_addAnything (c, (t_method)micaset_anything);
     
+    class_addMethod (c, (t_method)micabase_restore, sym__restore, A_SYMBOL, A_NULL);
+
+    class_setDataFunction (c, micabase_functionData);
     class_setHelpName (c, sym_mica);
     
     micaset_class = c;

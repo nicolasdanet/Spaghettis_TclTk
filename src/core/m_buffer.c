@@ -206,6 +206,13 @@ void buffer_appendSymbol (t_buffer *x, t_symbol *s)
     buffer_append (x, 1, &a);
 }
 
+void buffer_appendPointer (t_buffer *x, t_gpointer *gp)
+{
+    t_atom a;
+    SET_POINTER (&a, gp);
+    buffer_append (x, 1, &a);
+}
+
 void buffer_appendDollar (t_buffer *x, int n)
 {
     t_atom a;

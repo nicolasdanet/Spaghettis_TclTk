@@ -41,6 +41,32 @@ static void moses_float (t_moses *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *moses_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_moses *x  = (t_moses *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void moses_restore (t_moses *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *moses_new (t_float f)
 {
     t_moses *x = (t_moses *)pd_new (moses_class);
@@ -71,6 +97,10 @@ void moses_setup (void)
             A_NULL);
         
     class_addFloat (c, (t_method)moses_float);
+    
+    class_addMethod (c, (t_method)moses_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, moses_functionData);
     
     moses_class = c;
 }

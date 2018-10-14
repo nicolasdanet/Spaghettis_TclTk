@@ -132,6 +132,27 @@ static void line_set (t_line *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *line_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_line *x   = (t_line *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__inlet3);
+    buffer_appendFloat (b,  x->x_grain);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *line_new (t_float f, t_float grain)
 {
     t_line *x = (t_line *)pd_new (line_class);
@@ -187,6 +208,8 @@ void line_setup (void)
     
     #endif
     
+    class_setDataFunction (c, line_functionData);
+
     line_class = c;
 }
 

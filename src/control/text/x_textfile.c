@@ -120,6 +120,8 @@ void textfile_setup (void)
         
     #endif
     
+    class_setDataFunction (c, qlist_functionData);
+    
     textfile_class = c;
 }
 

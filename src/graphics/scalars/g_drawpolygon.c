@@ -345,6 +345,32 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *drawpolygon_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_drawpolygon *x = (t_drawpolygon *)z;
+    
+    if (field_isFloatConstant (&x->x_isVisible)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b, field_getFloatConstant (&x->x_isVisible));
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *drawpolygon_new (t_symbol *s, int argc, t_atom *argv)
 {
     int i;
@@ -435,6 +461,8 @@ void drawpolygon_setup (void)
     class_addFloat (c, (t_method)drawpolygon_float);
         
     class_setPainterBehavior (c, &drawpolygon_painterBehavior);
+
+    class_setDataFunction (c, drawpolygon_functionData);
 
     drawpolygon_class = c;
 }

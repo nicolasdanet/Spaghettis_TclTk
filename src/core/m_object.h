@@ -53,6 +53,9 @@ void    object_distributeAtomsOnInlets      (t_object *x, int argc, t_atom *argv
 
 t_float *object_getSignalAtIndex            (t_object *x, int m);
 
+void    object_getSignalValues              (t_object *x, t_buffer *b, int n);
+void    object_setSignalValues              (t_object *x, int argc, t_atom *argv);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

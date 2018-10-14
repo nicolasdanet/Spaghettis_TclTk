@@ -8,13 +8,9 @@
 #X text 24 24 hip~;
 #X text 12 312 See also:;
 #X obj 84 312 lop~;
-#N canvas 714 192 367 211 more 0;
+#N canvas 714 192 369 94 more 0;
 #X text 12 12 Creation argument initializes cutoff frequency.;
 #X obj 36 48 hip~ 10;
-#X text 12 84 Reinitialize the internal state.;
-#X obj 36 168 hip~ 5;
-#X msg 36 120 clear;
-#X connect 4 0 3 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 204 240 pd more;
 #X obj 96 144 nbx 5 40 0 500 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;

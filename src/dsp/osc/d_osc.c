@@ -77,6 +77,40 @@ static void osc_tilde_dsp (t_osc_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *osc_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_osc_tilde *x = (t_osc_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_phase);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void osc_tilde_restore (t_osc_tilde *x, t_float f)
+{
+    x->x_phase = f;
+}
+
+static void osc_tilde_signals (t_osc_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *osc_tilde_new (t_float f)
 {
     t_osc_tilde *x = (t_osc_tilde *)pd_new (osc_tilde_class);
@@ -109,7 +143,11 @@ void osc_tilde_setup (void)
     
     class_addDSP (c, (t_method)osc_tilde_dsp);
     
-    class_addMethod (c, (t_method)osc_tilde_phase, sym__inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)osc_tilde_phase,      sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)osc_tilde_restore,    sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)osc_tilde_signals,    sym__signals,   A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, osc_tilde_functionData);
 
     osc_tilde_class = c;
 }

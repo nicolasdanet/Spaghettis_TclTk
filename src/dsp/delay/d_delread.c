@@ -134,6 +134,27 @@ static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *delread_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_delread_tilde *x = (t_delread_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b, x->x_delayInMilliseconds);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *delread_tilde_new (t_symbol *s, t_float f)
 {
     t_delread_tilde *x = (t_delread_tilde *)pd_new (delread_tilde_class);
@@ -166,6 +187,8 @@ void delread_tilde_setup (void)
     
     class_addFloat (c, (t_method)delread_tilde_float);
     
+    class_setDataFunction (c, delread_tilde_functionData);
+
     delread_tilde_class = c;
 }
 

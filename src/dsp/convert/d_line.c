@@ -116,6 +116,27 @@ static void line_tilde_dsp (t_line_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *line_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_line_tilde *x = (t_line_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b, x->x_target);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *line_tilde_new (void)
 {
     t_line_tilde *x = (t_line_tilde *)pd_new (line_tilde_class);
@@ -146,7 +167,9 @@ void line_tilde_setup (void)
     class_addFloat (c, (t_method)line_tilde_float);
     
     class_addMethod (c, (t_method)line_tilde_stop, sym_stop, A_NULL);
-        
+    
+    class_setDataFunction (c, line_tilde_functionData);
+
     line_tilde_class = c;
 }
 

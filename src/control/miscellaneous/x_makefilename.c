@@ -148,6 +148,32 @@ static void makefilename_set (t_makefilename *x, t_symbol *dummy, int argc, t_at
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *makefilename_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_makefilename *x = (t_makefilename *)z;
+    //
+    if (x->x_typeRequired != A_NULL) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, x->x_format);
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *makefilename_new (t_symbol *dummy, int argc, t_atom *argv)
 {
     t_makefilename *x = (t_makefilename *)pd_new (makefilename_class);
@@ -189,6 +215,8 @@ void makefilename_setup (void)
     
     class_addMethod (c, (t_method)makefilename_set, sym_set, A_GIMME, A_NULL);
     
+    class_setDataFunction (c, makefilename_functionData);
+
     makefilename_class = c;
 }
 

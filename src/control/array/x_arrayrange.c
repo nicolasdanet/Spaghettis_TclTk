@@ -27,7 +27,7 @@ void *arrayrange_new (t_class *c, int argc, t_atom *argv, int makeOnsetInlet, in
     
     if (!err) {
 
-        x->ar_first     = 0;
+        x->ar_onset     = 0;
         x->ar_size      = -1;
         x->ar_fieldName = sym_y; 
             
@@ -59,18 +59,18 @@ void *arrayrange_new (t_class *c, int argc, t_atom *argv, int makeOnsetInlet, in
     
     if (!err) { 
     
-        if (makeOnsetInlet) { inlet_newFloat (cast_object (x), &x->ar_first); }
+        if (makeOnsetInlet) { inlet_newFloat (cast_object (x), &x->ar_onset); }
         if (makeSizeInlet)  { inlet_newFloat (cast_object (x), &x->ar_size); }
         
-        if (argc && IS_FLOAT (argv)) { x->ar_first = GET_FLOAT (argv); argc--; argv++; }
+        if (argc && IS_FLOAT (argv)) { x->ar_onset = GET_FLOAT (argv); argc--; argv++; }
         if (argc && IS_FLOAT (argv)) { x->ar_size  = GET_FLOAT (argv); argc--; argv++; }
 
         if (argc) { warning_unusedArguments (class_getName (c), argc, argv); }
         
-        if (ARRAYCLIENT_ASPOINTER (&x->ar_arrayclient)) {
-            inlet_newPointer (cast_object (x), ARRAYCLIENT_GETPOINTER (&x->ar_arrayclient));
+        if (ARRAYCLIENT_HAS_POINTER (&x->ar_arrayclient)) {
+            inlet_newPointer (cast_object (x), ARRAYCLIENT_ADDRESS_POINTER (&x->ar_arrayclient));
         } else {
-            inlet_newSymbol (cast_object (x),  ARRAYCLIENT_GETNAME    (&x->ar_arrayclient));
+            inlet_newSymbol (cast_object (x),  ARRAYCLIENT_ADDRESS_NAME    (&x->ar_arrayclient));
         }
     }
     
@@ -88,9 +88,24 @@ void arrayrange_update (t_arrayrange *x)
     arrayclient_update (&x->ar_arrayclient);
 }
 
-void arrayrange_setFirst (t_arrayrange *x, t_float f)
+void arrayrange_setOnset (t_arrayrange *x, t_float f)
 {
-    x->ar_first = f;
+    x->ar_onset = f;
+}
+
+void arrayrange_setSize (t_arrayrange *x, t_float f)
+{
+    x->ar_size = f;
+}
+
+t_float arrayrange_getOnset (t_arrayrange *x)
+{
+    return x->ar_onset;
+}
+
+t_float arrayrange_getSize (t_arrayrange *x)
+{
+    return x->ar_size;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,7 +128,7 @@ t_array *arrayrange_getRange (t_arrayrange *x, int *i, int *n)
     PD_ASSERT (a);
     
     int size = array_getSize (a);
-    int count, first = PD_CLAMP (x->ar_first, 0, size);
+    int count, first = PD_CLAMP (x->ar_onset, 0, size);
     
     if (x->ar_size < 0) { count = size - first; }
     else {
@@ -160,6 +175,35 @@ t_float arrayrange_quantile (t_arrayrange *x, t_float f)
     }
     
     return i;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_buffer *arrayrange_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, arrayclient_getName ((t_arrayclient *)z));
+    buffer_appendFloat (b,  arrayrange_getOnset ((t_arrayrange *)z));
+    buffer_appendFloat (b,  arrayrange_getSize ((t_arrayrange *)z));
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void arrayrange_restore (t_arrayrange *x, t_symbol *s, int argc, t_atom *argv)
+{
+    arrayclient_setName ((t_arrayclient *)x, atom_getSymbolAtIndex (0, argc, argv));
+    arrayrange_setOnset ((t_arrayrange *)x,  atom_getFloatAtIndex (1, argc, argv));
+    arrayrange_setSize ((t_arrayrange *)x,   atom_getFloatAtIndex (2, argc, argv));
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -7,34 +7,42 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef __x_binop_h_
-#define __x_binop_h_
+#ifndef __d_filters_h_
+#define __d_filters_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _binop {
-    t_object    bo_obj;         /* MUST be the first. */
-    t_float     bo_f1;
-    t_float     bo_f2;
-    t_outlet    *bo_outlet;
-    } t_binop;
+struct _real_raw_tilde {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_f;
+    t_sample    x_real;
+    t_outlet    *x_outlet;
+    };
+
+struct _complex_raw_tilde {
+    t_object    x_obj;                  /* Must be the first. */
+    t_float     x_f;
+    t_sample    x_real;
+    t_sample    x_imaginary;
+    t_outlet    *x_outletLeft;
+    t_outlet    *x_outletRight;
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        *binop_new              (t_class *c, t_float f);
+t_buffer    *real_raw_functionData      (t_gobj *z, int flags);
+t_buffer    *complex_raw_functionData   (t_gobj *z, int flags);
+
+void        real_raw_restore            (struct _real_raw_tilde *x, t_float f);
+void        real_raw_signals            (struct _real_raw_tilde *x, t_symbol *s, int argc, t_atom *argv);
+
+void        complex_raw_restore         (struct _complex_raw_tilde *x, t_symbol *s, int argc, t_atom *argv);
+void        complex_raw_signals         (struct _complex_raw_tilde *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-t_buffer    *binop_functionData     (t_gobj *z, int flags);
-
-void        binop_restore           (t_binop *x, t_float f);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#endif // __x_binop_h_
+#endif // __d_filters_h_

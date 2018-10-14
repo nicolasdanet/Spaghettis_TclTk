@@ -405,17 +405,32 @@ void gpointer_notify (t_gpointer *gp, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol *gpointer_getRepresentation (t_gpointer *gp)
+t_symbol *gpointer_asRepresentation (t_gpointer *gp)
 {
-    t_symbol *s = sym_invalid;
+    t_symbol *t = sym___arrobe__invalid;
     
     if (gp) {
-        if (gpointer_isValid (gp))            { s = &s_pointer; }
-        else if (gpointer_isValidOrNull (gp)) { s = sym_head; }
+        if (gpointer_isValid (gp))            { t = sym___arrobe__pointer; }
+        else if (gpointer_isValidOrNull (gp)) { t = sym___arrobe__head;    }
     }
     
-    return symbol_addPrefix (s, sym___arrobe__);
+    return t;
 }
+
+t_gpointer *gpointer_fromRepresentation (t_symbol *s)
+{
+    /* Not implemented yet. */
+    
+    PD_ASSERT (s != sym___arrobe__invalid);
+    PD_ASSERT (s != sym___arrobe__pointer);
+    PD_ASSERT (s != sym___arrobe__head);
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_error gpointer_getFieldAsString (t_gpointer *gp, t_symbol *fieldName, char *dest, int size)
 {

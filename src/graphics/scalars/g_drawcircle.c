@@ -357,6 +357,32 @@ static int drawcircle_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *drawcircle_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_drawcircle *x = (t_drawcircle *)z;
+        
+    if (field_isFloatConstant (&x->x_isVisible)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, &s_float);
+    buffer_appendFloat (b, field_getFloatConstant (&x->x_isVisible));
+    
+    return b;
+    //
+    }
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *drawcircle_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_drawcircle *x = (t_drawcircle *)pd_new (drawcircle_class);
@@ -446,6 +472,8 @@ void drawcircle_setup (void)
     
     class_setPainterBehavior (c, &drawcircle_painterBehavior);
     
+    class_setDataFunction (c, drawcircle_functionData);
+
     drawcircle_class = c;
 }
 

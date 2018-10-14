@@ -146,6 +146,49 @@ static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *bp_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_bp_tilde *x = (t_bp_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_frequency);
+    buffer_appendFloat (b, x->x_q);
+    buffer_appendFloat (b, (t_float)x->x_space.c_real1);
+    buffer_appendFloat (b, (t_float)x->x_space.c_real2);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void bp_tilde_restore (t_bp_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_float f = atom_getFloatAtIndex (0, argc, argv);
+    t_float q = atom_getFloatAtIndex (1, argc, argv);
+    
+    bp_tilde_coefficientsProceed (x, f, q);
+    
+    x->x_space.c_real1 = (t_sample)atom_getFloatAtIndex (2, argc, argv);
+    x->x_space.c_real2 = (t_sample)atom_getFloatAtIndex (3, argc, argv);
+}
+
+static void bp_tilde_signals (t_bp_tilde *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *bp_tilde_new (t_float f, t_float q)
 {
     t_bp_tilde *x = (t_bp_tilde *)pd_new (bp_tilde_class);
@@ -184,6 +227,10 @@ void bp_tilde_setup (void)
     class_addMethod (c, (t_method)bp_tilde_frequency,   sym__inlet2,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)bp_tilde_q,           sym__inlet3,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)bp_tilde_clear,       sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)bp_tilde_restore,     sym__restore,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bp_tilde_signals,     sym__signals,   A_FLOAT, A_NULL);
+    
+    class_setDataFunction (c, bp_tilde_functionData);
     
     bp_tilde_class = c;
 }

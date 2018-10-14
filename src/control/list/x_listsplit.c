@@ -52,6 +52,32 @@ static void listsplit_anything (t_listsplit *x, t_symbol *s, int argc, t_atom *a
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *listsplit_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_listsplit *x = (t_listsplit *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_f);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void listsplit_restore (t_listsplit *x, t_float f)
+{
+    x->x_f = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *listsplit_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listsplit *x = (t_listsplit *)pd_new (listsplit_class);
@@ -88,6 +114,9 @@ void listsplit_setup (void)
     class_addList (c, (t_method)listsplit_list);
     class_addAnything (c, (t_method)listsplit_anything);
     
+    class_addMethod (c, (t_method)listsplit_restore, sym__restore, A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, listsplit_functionData);
     class_setHelpName (c, &s_list);
     
     listsplit_class = c;

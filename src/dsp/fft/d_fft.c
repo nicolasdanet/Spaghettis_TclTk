@@ -78,6 +78,32 @@ static void fft_tilde_dsp (t_fft_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_buffer *fft_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_fft_tilde *x = (t_fft_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    object_getSignalValues (cast_object (x), b, 2);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void fft_tilde_signals (t_fft_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (cast_object (x), argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *fft_tilde_new (void)
 {
     t_fft_tilde *x = (t_fft_tilde *)pd_new (fft_tilde_class);
@@ -113,6 +139,10 @@ void fft_tilde_setup (void)
     CLASS_SIGNAL (c, t_fft_tilde, x_f);
     
     class_addDSP (c, (t_method)fft_tilde_dsp);
+    
+    class_addMethod (c, (t_method)fft_tilde_signals, sym__signals, A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, fft_tilde_functionData);
     
     fft_tilde_class = c;
 }

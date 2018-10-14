@@ -50,6 +50,7 @@ typedef struct _block {
     int         bk_period;                  /* Supermultiple factor. */
     int         bk_count;                   /* Counter for submultiple block size. */
     int         bk_frequency;               /* Submultiple factor. */
+    t_buffer    *bk_cache;
     } t_block;
 
 // -----------------------------------------------------------------------------------------------------------

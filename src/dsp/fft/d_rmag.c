@@ -39,6 +39,33 @@ static void rmag_tilde_dsp (t_rmag_tilde *x, t_signal **sp)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_buffer *rmag_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_rmag_tilde *x = (t_rmag_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__signals);
+    object_getSignalValues (cast_object (x), b, 2);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+void rmag_tilde_signals (t_rmag_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (cast_object (x), argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void *rmag_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
@@ -67,10 +94,13 @@ void rmag_tilde_setup (void)
             A_GIMME,
             A_NULL);
     
-    
     CLASS_SIGNAL (c, t_rmag_tilde, x_f);
     
     class_addDSP (c, (t_method)rmag_tilde_dsp);
+    
+    class_addMethod (c, (t_method)rmag_tilde_signals, sym__signals, A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, rmag_tilde_functionData);
     
     rmag_tilde_class = c;
 }
