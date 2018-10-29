@@ -1,7 +1,7 @@
 #N canvas 757 190 300 359 12;
 #X obj 36 288 print;
 #X msg 36 180 1 2 dog;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X obj 36 108 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X floatatom 36 132 5 0 0 1 - - -;

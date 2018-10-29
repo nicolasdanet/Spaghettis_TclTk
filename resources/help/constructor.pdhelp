@@ -3,7 +3,7 @@
 #X obj 180 276 set;
 #X obj 180 156 pointer;
 #X obj 84 276 struct;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X text 12 276 See also:;
 #X obj -60 12 freeze;
 #N canvas 367 201 335 326 \$0-data 1;

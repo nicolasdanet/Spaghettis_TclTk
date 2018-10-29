@@ -3,7 +3,7 @@
 #X obj 84 336 tabplay~;
 #X obj 216 336 writesf~;
 #X obj 156 336 readsf~;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 24 24 soundfiler;
 #X text 12 72 Read and write soundfiles from and to arrays.;

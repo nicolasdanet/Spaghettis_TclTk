@@ -20,7 +20,7 @@
 #X obj 36 120 draw polygon -color 800;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 288 108 pd more;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #N canvas 37 192 384 178 \$0-data 0;
 #X coords 0 0 1 1 230 140 1 0 0;

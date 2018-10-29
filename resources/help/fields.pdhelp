@@ -1,7 +1,7 @@
 #N canvas 764 238 376 317 12;
 #X obj 120 276 getsize;
 #X obj 36 168 pointer;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 12 276 See also:;
 #N canvas 328 198 375 337 \$0-data 1;

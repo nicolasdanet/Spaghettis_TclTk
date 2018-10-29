@@ -3,7 +3,7 @@
 #X obj 180 216 bendin;
 #X obj 240 216 touchin;
 #X text 12 216 See also:;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 12 72 Output MIDI control change.;
 #X obj 36 180 ctlout;

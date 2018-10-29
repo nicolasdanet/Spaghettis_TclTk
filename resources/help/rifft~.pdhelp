@@ -4,7 +4,7 @@
 #X obj 84 564 rfft~;
 #X obj 36 252 rifft~;
 #X obj 36 324 /~ 64;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 24 24 rifft~;
 #X text 12 564 See also:;

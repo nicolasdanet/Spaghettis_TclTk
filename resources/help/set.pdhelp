@@ -6,7 +6,7 @@
 #X f 5;
 #X obj 192 192 pointer;
 #X obj 96 276 get;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 24 24 set;
 #X text 12 276 See also:;

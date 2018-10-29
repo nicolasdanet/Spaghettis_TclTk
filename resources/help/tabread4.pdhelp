@@ -5,7 +5,7 @@
 #X coords 0 10 9 0 250 200 1 0 0;
 #X restore 192 120 graph \$0-array;
 #X obj 84 324 tabread;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 24 24 tabread4;
 #X text 12 324 See also:;
