@@ -2,7 +2,7 @@
 #X msg 36 108 4 5 weasel 6 7 rat;
 #X obj 168 228 oscparse;
 #X text 12 228 See also:;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 24 24 oscformat;
 #X text 12 72 Convert message to OSC packets.;

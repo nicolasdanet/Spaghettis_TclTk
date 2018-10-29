@@ -1,5 +1,5 @@
 #N canvas 807 138 300 295 12;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X text 24 24 tgl;
 #X obj -60 12 freeze;
 #X obj 36 216 tgl 15 0 \$0-from \$0-to empty 17 7 0 10 #ffffff #000000 #000000 1234 1234;

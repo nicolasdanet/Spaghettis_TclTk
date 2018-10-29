@@ -6,7 +6,7 @@
 #X floatatom 36 108 5 0 0 0 - - -;
 #X f 5;
 #X obj 264 324 struct;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 12 72 Fetch a pointer to an element of an array.;
 #N canvas 622 206 307 251 more 0;

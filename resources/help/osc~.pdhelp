@@ -2,7 +2,7 @@
 #X obj 144 276 cos~;
 #X obj 192 276 tabread4~;
 #X obj 84 276 phasor~;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X text 24 24 osc~;
 #X obj -60 12 freeze;
 #X text 12 72 Cosine wave oscillator.;

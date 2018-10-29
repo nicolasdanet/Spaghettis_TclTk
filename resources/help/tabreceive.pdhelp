@@ -9,7 +9,7 @@
 #X obj 156 300 tabread~;
 #X obj 300 300 array;
 #X text 12 300 See also:;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #N canvas 759 358 453 260 more 0;
 #X obj 36 216 print;

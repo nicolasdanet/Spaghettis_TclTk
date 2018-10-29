@@ -1,11 +1,11 @@
-#N canvas 571 196 315 337 12;
+#N canvas 571 196 300 338 12;
 #X obj 36 228 pipe 2000;
 #X msg 96 108 flush;
 #X msg 156 108 clear;
 #X obj 84 300 delay;
 #X obj 180 300 timer;
 #X text 12 300 See also:;
-#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #cccccc #000000;
+#X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 24 24 pipe;
 #N canvas 793 133 355 520 more 0;
@@ -54,7 +54,7 @@
 #X connect 18 0 6 0;
 #X connect 19 0 18 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 228 180 pd more;
+#X restore 204 180 pd more;
 #X obj 36 264 print;
 #X floatatom 36 108 5 0 0 1 - - -;
 #X f 5;
@@ -117,7 +117,7 @@
 #X connect 24 0 3 0;
 #X connect 25 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 228 228 pd units;
+#X restore 204 228 pd units;
 #N canvas 723 213 300 317 again 0;
 #X obj 36 156 print;
 #X floatatom 36 48 5 0 0 1 - - -;
@@ -135,7 +135,7 @@
 #X connect 4 0 5 0;
 #X connect 6 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 228 204 pd again;
+#X restore 204 204 pd again;
 #X connect 0 0 10 0;
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
