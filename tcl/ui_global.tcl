@@ -266,20 +266,10 @@ proc integerToColor {integer} {
 
 proc chooseColor {label initial title} {
     
-    # On macOS the initial color paramater seems broken.
-    
-    if {[tk windowingsystem] eq "aqua"} {
-    
-        set color [tk_chooseColor   -title $title -parent [winfo toplevel $label]]
-                                    
-    } else {
-    
-        set color [tk_chooseColor   -initialcolor [::integerToColor $initial] \
-                                    -title $title \
-                                    -parent [winfo toplevel $label]]
+    set color [tk_chooseColor   -initialcolor [::integerToColor $initial] \
+                                -title $title \
+                                -parent [winfo toplevel $label]]
 
-    }
-    
     if {$color ne ""} {
         $label configure -background $color
         return [::colorToInteger $color]
