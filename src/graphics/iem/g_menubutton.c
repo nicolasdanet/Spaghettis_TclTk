@@ -164,7 +164,7 @@ static void menubutton_drawNew (t_menubutton *x, t_glist *glist)
                     c,
                     d,
                     x->x_gui.iem_colorBackground,
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground,
+                    x->x_gui.iem_colorForeground,
                     x);
     gui_vAdd ("%s.c create text %d %d"
                     " -anchor nw"
@@ -211,11 +211,13 @@ static void menubutton_drawConfig (t_menubutton *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorBackground,
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
+                    x->x_gui.iem_colorForeground);
     gui_vAdd ("%s.c itemconfigure %lxTEXT -fill #%06x\n",
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
+    
+    menubutton_drawSelect (x, glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------

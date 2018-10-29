@@ -147,7 +147,9 @@ static void panel_drawConfig (t_panel *x, t_glist *glist)
     gui_vAdd ("%s.c itemconfigure %lxBASE -outline #%06x\n",
                     glist_getTagAsString (view),
                     x,
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorBackground);
+                    x->x_gui.iem_colorBackground);
+    
+    panel_drawSelect (x, glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------

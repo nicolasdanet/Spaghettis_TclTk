@@ -178,10 +178,9 @@ static void dial_drawJob (t_gobj *z, t_glist *glist)
                     dial_getNeedleTopX (x, m, ((w - h) / 2.0) + 2),
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2));
     
-    gui_vAdd ("%s.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",   // --
+    gui_vAdd ("%s.c itemconfigure %lxNUMBER -text {%s}\n",   // --
                     glist_getTagAsString (view),
                     x,
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground,
                     x->x_t);
 }
 
@@ -268,7 +267,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     dial_getNeedleTopY (x, n, ((w - h) / 2.0) + 2),
                     x->x_gui.iem_colorForeground,
                     x);
-    gui_vAdd ("%s.c create text %d %d -text {%s}"    // --
+    gui_vAdd ("%s.c create text %d %d -text {%s}"       // --
                     " -anchor center"
                     " -font [::getFont %d]"             // --
                     " -fill #%06x"
@@ -278,7 +277,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                     b + k,
                     x->x_t, 
                     x->x_digitsFontSize,
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground,
+                    x->x_gui.iem_colorForeground,
                     x);
     
     dial_hasKnob (x, glist);
@@ -329,13 +328,14 @@ static void dial_drawConfig (t_dial *x, t_glist *glist)
                     glist_getTagAsString (view),
                     x,
                     x->x_gui.iem_colorForeground);
-    gui_vAdd ("%s.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",             // --
+    gui_vAdd ("%s.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",        // --
                     glist_getTagAsString (view),
                     x, 
                     x->x_digitsFontSize,
-                    x->x_gui.iem_isSelected ? COLOR_SELECTED : x->x_gui.iem_colorForeground);
+                    x->x_gui.iem_colorForeground);
     
     dial_hasKnob (x, glist);
+    dial_drawSelect (x, glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
