@@ -9,6 +9,7 @@
 #include "../m_spaghettis.h"
 #include "../m_core.h"
 #include "../s_system.h"
+#include "../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -132,6 +133,8 @@ void undomanager_undo (t_undomanager *x)
     
     if (!instance_undoIsRecursive()) {
     //
+    int state = dsp_suspend();
+    
     instance_undoSetRecursive();
 
     {
@@ -152,6 +155,8 @@ void undomanager_undo (t_undomanager *x)
     }
     
     instance_undoUnsetRecursive();
+    
+    dsp_resume (state);
     //
     }
 }
@@ -162,6 +167,8 @@ void undomanager_redo (t_undomanager *x)
     
     if (!instance_undoIsRecursive()) {
     //
+    int state = dsp_suspend();
+    
     instance_undoSetRecursive();
 
     {
@@ -182,6 +189,8 @@ void undomanager_redo (t_undomanager *x)
     }
     
     instance_undoUnsetRecursive();
+    
+    dsp_resume (state);
     //
     }
 }
