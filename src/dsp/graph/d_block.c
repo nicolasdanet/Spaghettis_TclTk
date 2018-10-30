@@ -165,13 +165,13 @@ static void block_setProceed (t_block *x, t_symbol *s, int argc, t_atom *argv)
 
 static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int oldState = dsp_suspend();
+    int state = dsp_suspend();
     
     buffer_clear (x->bk_cache); buffer_append (x->bk_cache, argc, argv);
     
     block_setProceed (x, s, argc, argv);
     
-    dsp_resume (oldState);
+    dsp_resume (state);
 }
 
 static void block_float (t_block *x, t_float f)
