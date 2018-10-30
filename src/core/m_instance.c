@@ -178,7 +178,7 @@ void instance_dspStart (void)
 
     // PD_LOG ("START");
     
-    instance_dspInitialize();
+    instance_deselectAllObjects(); instance_dspInitialize();
     
     for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) { 
         canvas_dspProceed (glist, 1, NULL); 
@@ -189,7 +189,7 @@ void instance_dspStop (void)
 {
     // PD_LOG ("STOP");
     
-    instance_dspRelease();
+    instance_deselectAllObjects(); instance_dspRelease();
 }
 
 void instance_dspChainAppend (t_perform f, int n, ...)
@@ -309,6 +309,13 @@ void instance_clockTick (t_systime t)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+void instance_deselectAllObjects (void)
+{
+    t_glist *glist = instance_get()->pd_roots;
+    
+    while (glist) { glist_deselectAllRecursive (glist); glist = glist_getNext (glist); }
+}
 
 void instance_destroyAllScalarsByTemplate (t_template *tmpl)
 {
