@@ -569,7 +569,8 @@ int glist_fileOpen (t_glist *glist, const char *name, const char *extension, t_f
 int glist_undoIsOk (t_glist *glist)
 {
     if (glist_isAbstraction (glist) || glist_isArray (glist)) { return 0; }
-
+    else if (editor_hasSelectedBox (glist_getEditor (glist))) { return 0; }
+    
     return (glist_hasUndo (glist) && !instance_undoIsRecursive());
 }
 
