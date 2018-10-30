@@ -56,6 +56,8 @@ static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, 
     int c = rectangle_getBottomRightX (r);
     int d = rectangle_getBottomRightY (r);
     
+    int isSelected = glist_objectIsSelected (glist, cast_gobj (o));
+    
     if (create) {
     
         gui_vAdd ("%s.c create rectangle %d %d %d %d"
@@ -116,6 +118,15 @@ static void box_drawObject (t_glist *glist, t_object *o, char *tag, int create, 
                         glist_getTagAsString (view),
                         tag,
                         pattern);
+    }
+    
+    /* Required for edge cases (e.g. un-GOP patch). */
+    
+    {
+        gui_vAdd ("%s.c itemconfigure %sBORDER -fill #%06x\n",
+                        glist_getTagAsString (view),
+                        tag,
+                        (isSelected ? COLOR_SELECTED : COLOR_NORMAL));
     }
 }
 

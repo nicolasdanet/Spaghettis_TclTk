@@ -95,11 +95,11 @@ void editor_selectionAdd (t_editor *x, t_gobj *y)
 
 int editor_selectionRemove (t_editor *x, t_gobj *y)
 {
-    t_selection *s1 = NULL;
+    t_selection *s1 = x->e_selectedObjects;
     t_selection *s2 = NULL;
     
-    s1 = x->e_selectedObjects;
-    
+    if (s1) {
+    //
     if (selection_getObject (s1) == y) {
         x->e_selectedObjects = selection_getNext (x->e_selectedObjects);
         PD_MEMORY_FREE (s1);
@@ -113,6 +113,8 @@ int editor_selectionRemove (t_editor *x, t_gobj *y)
                 return 1;
             }
         }
+    }
+    //
     }
     
     return 0;
