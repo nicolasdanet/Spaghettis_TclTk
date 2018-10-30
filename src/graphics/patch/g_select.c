@@ -107,12 +107,12 @@ void glist_selectLassoEnd (t_glist *glist, int a, int b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void glist_deselectAllRecursive (t_gobj *y)
+static void glist_deselectAllRecursiveProceed (t_gobj *y)
 {
     if (gobj_isCanvas (y)) { 
     //
     t_gobj *o = NULL;
-    for (o = cast_glist (y)->gl_graphics; o; o = o->g_next) { glist_deselectAllRecursive (o); }
+    for (o = cast_glist (y)->gl_graphics; o; o = o->g_next) { glist_deselectAllRecursiveProceed (o); }
     glist_deselectAll (cast_glist (y));
     //
     }
@@ -132,6 +132,11 @@ int glist_deselectAllProceed (t_glist *glist, int withUndo)
     }
     
     return k;   /* Return 1 if an object has been recreated. */
+}
+
+void glist_deselectAllRecursive (t_glist *glist)
+{
+    glist_deselectAllRecursiveProceed (cast_gobj (glist));
 }
 
 int glist_deselectAll (t_glist *glist)
@@ -178,7 +183,7 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y, int withUndo)
             z = box;
             glist_sortSelected (glist);
             editor_selectionCacheLines (glist_getEditor (glist));
-            glist_deselectAllRecursive (y);
+            glist_deselectAllRecursiveProceed (y);
         }
         gobj_activated (y, glist, 0);
     }

@@ -179,6 +179,7 @@ void    instance_autoreleaseProceed             (t_pd *x);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void    instance_deselectAllObjects             (void);
 void    instance_destroyAllScalarsByTemplate    (t_template *tmpl);
 
 // -----------------------------------------------------------------------------------------------------------
