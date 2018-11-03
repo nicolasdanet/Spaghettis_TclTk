@@ -89,6 +89,7 @@
 		17DD0B4520611A5E00E79C0D /* x_micaspell.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DD0B4420611A5E00E79C0D /* x_micaspell.c */; };
 		17DFE17C20D156A600B242D7 /* x_timestamp.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DFE17B20D156A600B242D7 /* x_timestamp.c */; };
 		17E2A05820E11D610031D4AD /* g_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 17E2A05720E11D610031D4AD /* g_draw.c */; };
+		17EB5F88218D8C000031F580 /* x_urn.c in Sources */ = {isa = PBXBuildFile; fileRef = 17EB5F87218D8C000031F580 /* x_urn.c */; };
 		17F45C86213E843D005A8364 /* m_undocollapse.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F45C85213E843D005A8364 /* m_undocollapse.c */; };
 		17F6BD3C1F110686001E602C /* m_snap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F6BD3B1F110686001E602C /* m_snap.c */; };
 		17FB394520286650000BBED2 /* d_blockinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 17FB394420286650000BBED2 /* d_blockinfo.c */; };
@@ -588,6 +589,7 @@
 		17DD0B4420611A5E00E79C0D /* x_micaspell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micaspell.c; sourceTree = "<group>"; };
 		17DFE17B20D156A600B242D7 /* x_timestamp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_timestamp.c; sourceTree = "<group>"; };
 		17E2A05720E11D610031D4AD /* g_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_draw.c; sourceTree = "<group>"; };
+		17EB5F87218D8C000031F580 /* x_urn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_urn.c; sourceTree = "<group>"; };
 		17F45C85213E843D005A8364 /* m_undocollapse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_undocollapse.c; sourceTree = "<group>"; };
 		17F6BD3B1F110686001E602C /* m_snap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_snap.c; sourceTree = "<group>"; };
 		17F6BD3D1F110839001E602C /* m_snap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_snap.h; sourceTree = "<group>"; };
@@ -1700,6 +1702,7 @@
 				37FFF6871D97C17C00669135 /* x_binop2.c */,
 				37FFF6431D97BF0600669135 /* x_binop3.c */,
 				377CEF461DAA831E00E60461 /* x_random.c */,
+				17EB5F87218D8C000031F580 /* x_urn.c */,
 				37DB520F1D97D03100FEEBE0 /* x_clip.c */,
 				371526B51E49D03E00712D43 /* x_expr.c */,
 				17B9AED52107825B001C856F /* x_functions.c */,
@@ -2371,6 +2374,7 @@
 				17110F4C2125CDAE0050FC67 /* x_tralala.c in Sources */,
 				17CA45381FB188CF0054245C /* x_title.c in Sources */,
 				370793031DBB4F4B00183F74 /* x_midiout.c in Sources */,
+				17EB5F88218D8C000031F580 /* x_urn.c in Sources */,
 				3707931F1DBB507700183F74 /* x_midirealtimein.c in Sources */,
 				3707935C1DBB520A00183F74 /* x_polytouchin.c in Sources */,
 				3707937C1DBB529600183F74 /* x_touchin.c in Sources */,
