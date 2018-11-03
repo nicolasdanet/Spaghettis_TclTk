@@ -283,7 +283,7 @@ proc _updateTemplates {} {
     $m delete 0 end
     
     foreach item $::var(templates) {
-        $m add command -label $item -command [list ::ui_menu::_handle "_scalar $item"]
+        $m add command -label $item -command [list ::ui_menu::_handle 1 "_scalar $item"]
     }
 }
 
@@ -395,11 +395,11 @@ proc _file {m} {
     $m add command \
         -label [_ "Save"] \
         -accelerator "${accelerator}+S" \
-        -command { ::ui_menu::_handle save }
+        -command { ::ui_menu::_handle 0 save }
     $m add command \
         -label [_ "Save As..."] \
         -accelerator "Shift+${accelerator}+S" \
-        -command { ::ui_menu::_handle saveas }
+        -command { ::ui_menu::_handle 0 saveas }
     $m add separator
 
     $m add command \
@@ -423,48 +423,48 @@ proc _edit {m} {
     $m add command \
         -label [_ "Undo"] \
         -accelerator "${accelerator}+Z" \
-        -command { ::ui_menu::_handle _undo }
+        -command { ::ui_menu::_handle 1 _undo }
     $m add command \
         -label [_ "Redo"] \
         -accelerator "Shift+${accelerator}+Z" \
-        -command { ::ui_menu::_handle _redo }
+        -command { ::ui_menu::_handle 1 _redo }
     $m add separator
         
     $m add command \
         -label [_ "Cut"] \
         -accelerator "${accelerator}+X" \
-        -command { ::ui_menu::_handle _cut }
+        -command { ::ui_menu::_handle 1 _cut }
     $m add command \
         -label [_ "Copy"] \
         -accelerator "${accelerator}+C" \
-        -command { ::ui_menu::_handle _copy }
+        -command { ::ui_menu::_handle 1 _copy }
     $m add command \
         -label [_ "Paste"] \
         -accelerator "${accelerator}+V" \
-        -command { ::ui_menu::_handle _paste }
+        -command { ::ui_menu::_handle 1 _paste }
     $m add command \
         -label [_ "Duplicate"] \
         -accelerator "${accelerator}+D" \
-        -command { ::ui_menu::_handle _duplicate }
+        -command { ::ui_menu::_handle 1 _duplicate }
     $m add command \
         -label [_ "Select All"] \
         -accelerator "${accelerator}+A" \
-        -command { ::ui_menu::_handle _selectall }
+        -command { ::ui_menu::_handle 1 _selectall }
     $m add separator
 
     $m add command \
         -label [_ "Encapsulate"] \
-        -command { ::ui_menu::_handle _encapsulate }
+        -command { ::ui_menu::_handle 1 _encapsulate }
     $m add command \
         -label [_ "De-encapsulate"] \
-        -command { ::ui_menu::_handle _deencapsulate }
+        -command { ::ui_menu::_handle 1 _deencapsulate }
     $m add separator
     
     $m add check \
         -label [_ "Edit Mode"] \
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
-        -command { ::ui_menu::_handle "editmode $::var(isEditMode)" }
+        -command { ::ui_menu::_handle 0 "editmode $::var(isEditMode)" }
     $m add separator
     
     $m add command \
@@ -480,17 +480,17 @@ proc _arrange {m} {
     $m add command \
         -label [_ "Bring to Front"] \
         -accelerator "Shift+${accelerator}+F" \
-        -command { ::ui_menu::_handle _front }
+        -command { ::ui_menu::_handle 1 _front }
     $m add command \
         -label [_ "Send to Back"] \
         -accelerator "Shift+${accelerator}+B" \
-        -command { ::ui_menu::_handle _back }
+        -command { ::ui_menu::_handle 1 _back }
     $m add separator
     
     $m add command \
         -label [_ "Snap"] \
         -accelerator "${accelerator}+Y" \
-        -command { ::ui_menu::_handle _snap }
+        -command { ::ui_menu::_handle 1 _snap }
     $m add separator
     
     $m add check \
@@ -509,71 +509,71 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::ui_menu::_handle "obj menu" }
+        -command { ::ui_menu::_handle 1 "obj menu" }
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::ui_menu::_handle "msg menu" }
+        -command { ::ui_menu::_handle 1 "msg menu" }
     $m add command \
         -label [_ "Atom"] \
         -accelerator "${accelerator}+3" \
-        -command { ::ui_menu::_handleDirty "floatatom menu" }
+        -command { ::ui_menu::_handleDirty 1 "floatatom menu" }
     $m add command \
         -label [_ "Symbol"] \
         -accelerator "${accelerator}+4" \
-        -command { ::ui_menu::_handleDirty "symbolatom menu" }
+        -command { ::ui_menu::_handleDirty 1 "symbolatom menu" }
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::ui_menu::_handle "comment menu" }
+        -command { ::ui_menu::_handle 1 "comment menu" }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
         -accelerator "${accelerator}+6" \
-        -command { ::ui_menu::_handleDirty "bng menu" }
+        -command { ::ui_menu::_handleDirty 1 "bng menu" }
     $m add command \
         -label [_ "Toggle"] \
         -accelerator "${accelerator}+7" \
-        -command { ::ui_menu::_handleDirty "tgl menu" }
+        -command { ::ui_menu::_handleDirty 1 "tgl menu" }
     $m add command \
         -label [_ "Dial"] \
         -accelerator "${accelerator}+8" \
-        -command { ::ui_menu::_handleDirty "nbx menu" }
+        -command { ::ui_menu::_handleDirty 1 "nbx menu" }
     $m add command \
         -label [_ "Array"] \
         -accelerator "${accelerator}+9" \
-        -command { ::ui_menu::_handle "_array menu" }
+        -command { ::ui_menu::_handle 1 "_array menu" }
     $m add separator
     
     $m add command \
         -label [_ "VU"] \
-        -command { ::ui_menu::_handleDirty "vu menu" }
+        -command { ::ui_menu::_handleDirty 1 "vu menu" }
     $m add command \
         -label [_ "Panel"] \
-        -command { ::ui_menu::_handleDirty "cnv menu" }
+        -command { ::ui_menu::_handleDirty 1 "cnv menu" }
     $m add command \
         -label [_ "Menu Button"] \
-        -command { ::ui_menu::_handleDirty "menubutton menu" }
+        -command { ::ui_menu::_handleDirty 1 "menubutton menu" }
     $m add separator
     
     menu $m.vertical
     
     $m.vertical add command \
         -label [_ "Slider"] \
-        -command { ::ui_menu::_handleDirty "vslider menu" }
+        -command { ::ui_menu::_handleDirty 1 "vslider menu" }
     $m.vertical add command \
         -label [_ "Radio Button"] \
-        -command { ::ui_menu::_handleDirty "vradio menu" }
+        -command { ::ui_menu::_handleDirty 1 "vradio menu" }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
-        -command { ::ui_menu::_handleDirty "hslider menu" }
+        -command { ::ui_menu::_handleDirty 1 "hslider menu" }
     $m.horizontal add command \
         -label [_ "Radio Button"] \
-        -command { ::ui_menu::_handleDirty "hradio menu" }
+        -command { ::ui_menu::_handleDirty 1 "hradio menu" }
         
     $m add cascade \
         -label [_ "Vertical"] \
@@ -620,63 +620,63 @@ proc _popupObject {m} {
 
     $m.object add command \
         -label [_ "Object"] \
-        -command { ::ui_menu::_handle obj }
+        -command { ::ui_menu::_handle 1 obj }
     $m.object add command \
         -label [_ "Message"] \
-        -command { ::ui_menu::_handle msg }
+        -command { ::ui_menu::_handle 1 msg }
     $m.object add command \
         -label [_ "Atom"] \
-        -command { ::ui_menu::_handleDirty floatatom }
+        -command { ::ui_menu::_handleDirty 1 floatatom }
     $m.object add command \
         -label [_ "Symbol"] \
-        -command { ::ui_menu::_handleDirty symbolatom }
+        -command { ::ui_menu::_handleDirty 1 symbolatom }
     $m.object add command \
         -label [_ "Comment"] \
-        -command { ::ui_menu::_handle comment }
+        -command { ::ui_menu::_handle 1 comment }
     $m.object add separator
     
     $m.object add command \
         -label [_ "Bang"] \
-        -command { ::ui_menu::_handleDirty bng }
+        -command { ::ui_menu::_handleDirty 1 bng }
     $m.object add command \
         -label [_ "Toggle"] \
-        -command { ::ui_menu::_handleDirty tgl }
+        -command { ::ui_menu::_handleDirty 1 tgl }
     $m.object add command \
         -label [_ "Dial"] \
-        -command { ::ui_menu::_handleDirty nbx }
+        -command { ::ui_menu::_handleDirty 1 nbx }
     $m.object add command \
         -label [_ "Array"] \
-        -command { ::ui_menu::_handle _array }
+        -command { ::ui_menu::_handle 1 _array }
     $m.object add separator
     
     $m.object add command \
         -label [_ "VU"] \
-        -command { ::ui_menu::_handleDirty vu }
+        -command { ::ui_menu::_handleDirty 1 vu }
     $m.object add command \
         -label [_ "Panel"] \
-        -command { ::ui_menu::_handleDirty cnv }
+        -command { ::ui_menu::_handleDirty 1 cnv }
     $m.object add command \
         -label [_ "Menu Button"] \
-        -command { ::ui_menu::_handleDirty menubutton }
+        -command { ::ui_menu::_handleDirty 1 menubutton }
     $m.object add separator
     
     menu $m.object.vertical
     
     $m.object.vertical add command \
         -label [_ "Slider"] \
-        -command { ::ui_menu::_handleDirty vslider }
+        -command { ::ui_menu::_handleDirty 1 vslider }
     $m.object.vertical add command \
         -label [_ "Radio Button"] \
-        -command { ::ui_menu::_handleDirty vradio }
+        -command { ::ui_menu::_handleDirty 1 vradio }
     
     menu $m.object.horizontal
     
     $m.object.horizontal add command \
         -label [_ "Slider"] \
-        -command { ::ui_menu::_handleDirty hslider }
+        -command { ::ui_menu::_handleDirty 1 hslider }
     $m.object.horizontal add command \
         -label [_ "Radio Button"] \
-        -command { ::ui_menu::_handleDirty hradio }
+        -command { ::ui_menu::_handleDirty 1 hradio }
         
     $m.object add cascade \
         -label [_ "Vertical"] \
@@ -722,37 +722,36 @@ proc _popup {m} {
     
     $m add command \
         -label [_ "Bring to Front"] \
-        -command { ::ui_menu::_handle _front }
+        -command { ::ui_menu::_handle 1 _front }
     $m add command \
         -label [_ "Send to Back"] \
-        -command { ::ui_menu::_handle _back }
+        -command { ::ui_menu::_handle 1 _back }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _handle {message} {
+proc _handle {editing message} {
 
     set top [winfo toplevel $::var(windowFocused)]
     
     switch -- [winfo class $top] {
-        "PdPatch"       { ::ui_interface::pdsend "$top $message" }
         "PdText"        { ::ui_text::menu $top $message }
         "Spaghettis"    { ::ui_console::menu $message   }
+        "PdPatch"       {
+            if { [::ui_patch::hasEditMode $top] >= $editing } {
+                ::ui_interface::pdsend "$top $message"
+            }
+        }
     }
 }
 
 # Force the dirty bit also.
 
-proc _handleDirty {message} {
+proc _handleDirty {editing message} {
 
-    set top [winfo toplevel $::var(windowFocused)]
-    
-    if {[winfo class $top] eq "PdPatch"} {
-    
-        ::ui_interface::pdsend "$top $message"
-        ::ui_interface::pdsend "$top dirty 1"
-    }
+    ::ui_menu::_handle $editing $message
+    ::ui_menu::_handle $editing "dirty 1"
 }
 
 # ------------------------------------------------------------------------------------------------------------
