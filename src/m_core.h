@@ -61,6 +61,7 @@ void        buffer_withStringUnzeroed               (t_buffer *x, const char *s,
 void        buffer_reparseIfNeeded                  (t_buffer *x);
 void        buffer_reparse                          (t_buffer *x);
 void        buffer_invalidatePointers               (t_buffer *x);
+void        buffer_shuffle                          (t_buffer *x);
 
 int         buffer_isLastMessageProperlyEnded       (t_buffer *x);
 int         buffer_getNumberOfMessages              (t_buffer *x);

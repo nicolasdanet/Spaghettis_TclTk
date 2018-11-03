@@ -252,6 +252,7 @@
 #include "control/math/x_binop2.c"
 #include "control/math/x_binop3.c"
 #include "control/math/x_random.c"
+#include "control/math/x_urn.c"
 #include "control/math/x_clip.c"
 #include "control/math/x_expr.c"
 #include "control/math/x_functions.c"

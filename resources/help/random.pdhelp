@@ -43,6 +43,7 @@
 #X restore 204 204 pd again;
 #X text 12 72 Pseudorandom number generator.;
 #X f 31;
+#X obj 132 276 urn;
 #X connect 0 0 5 0;
 #X connect 4 0 0 0;
 #X connect 6 0 0 1;
