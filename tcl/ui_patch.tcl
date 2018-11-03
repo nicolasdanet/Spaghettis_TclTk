@@ -143,6 +143,13 @@ proc getTitle {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc hasEditMode {top} {
+
+    variable patchIsEditMode
+    
+    return $patchIsEditMode($top)
+}
+
 proc setEditMode {top {state {}}} {
 
     variable patchIsEditMode
