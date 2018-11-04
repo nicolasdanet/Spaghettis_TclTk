@@ -93,11 +93,14 @@ proc initialize {} {
     event add <<NewAtom>>                   <$mod-quotedbl>
     event add <<NewSymbol>>                 <$mod-quoteright>
     event add <<NewComment>>                <$mod-parenleft>
-    event add <<NewBang>>                   <$mod-section>
+    event add <<NewBang>>                   <$mod-minus>
     event add <<NewToggle>>                 <$mod-egrave>
-    event add <<NewDial>>                   <$mod-exclam>
+    event add <<NewDial>>                   <$mod-underscore>
     event add <<NewArray>>                  <$mod-ccedilla>
-     
+    
+    event add <<NewBang>>                   <$mod-section>
+    event add <<NewDial>>                   <$mod-exclam>
+    
     event add <<NewObject>>                 <Shift-$mod-Key-1>
     event add <<NewMessage>>                <Shift-$mod-Key-2>
     event add <<NewAtom>>                   <Shift-$mod-Key-3>
