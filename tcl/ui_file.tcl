@@ -118,6 +118,8 @@ proc saveAs {target filename directory destroy} {
         ::ui_interface::pdsend "$target _savetofile [::escaped $basename] [::escaped $directory] $destroy"
         set directoryNew $directory
     }
+    
+    ::bringToFront $target
 }
 
 # ------------------------------------------------------------------------------------------------------------
