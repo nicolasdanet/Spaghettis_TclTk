@@ -61,13 +61,17 @@ proc initialize {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc configureForPatch {} {
+proc configureForPatch {top} {
 
     .menubar.file entryconfigure [_ "Save"]                 -state normal
     .menubar.file entryconfigure [_ "Save As..."]           -state normal
     .menubar.file entryconfigure [_ "Close"]                -state normal
 
-    .menubar.edit entryconfigure [_ "Edit Mode"]            -state normal
+    if {[::ui_patch::isEditable $top] == 1} {
+        .menubar.edit entryconfigure [_ "Edit Mode"]        -state normal
+    } else {
+        .menubar.edit entryconfigure [_ "Edit Mode"]        -state disabled
+    }
 }
 
 proc configureForConsole {} {
@@ -739,7 +743,7 @@ proc _handle {editing message} {
         "PdText"        { ::ui_text::menu $top $message }
         "Spaghettis"    { ::ui_console::menu $message   }
         "PdPatch"       {
-            if { [::ui_patch::hasEditMode $top] >= $editing } {
+            if {[::ui_patch::hasEditMode $top] >= $editing} {
                 ::ui_interface::pdsend "$top $message"
             }
         }
