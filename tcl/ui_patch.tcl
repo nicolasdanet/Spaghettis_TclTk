@@ -24,17 +24,20 @@ namespace eval ::ui_patch:: {
 
 variable  patchTitle
 variable  patchIsEditMode
+variable  patchIsEditable
 
-array set patchTitle         {}
-array set patchIsEditMode    {}
+array set patchTitle        {}
+array set patchIsEditMode   {}
+array set patchIsEditable   {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc create {top width height coordinateX coordinateY isEditMode} {
+proc create {top width height coordinateX coordinateY isEditMode isEditable} {
 
     variable patchTitle
     variable patchIsEditMode
+    variable patchIsEditable
 
     toplevel $top -class PdPatch
     wm group $top .
@@ -72,6 +75,7 @@ proc create {top width height coordinateX coordinateY isEditMode} {
     
     set patchTitle($top)        ""
     set patchIsEditMode($top)   $isEditMode
+    set patchIsEditable($top)   $isEditable
 }
 
 proc willClose {top} {
@@ -83,9 +87,11 @@ proc closed {top} {
 
     variable patchTitle
     variable patchIsEditMode
+    variable patchIsEditable
 
     unset patchTitle($top)
     unset patchIsEditMode($top)
+    unset patchIsEditable($top)
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -138,6 +144,16 @@ proc getTitle {top} {
     variable patchTitle
     
     return $patchTitle($top)
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc isEditable {top} {
+
+    variable patchIsEditable
+    
+    return $patchIsEditable($top)
 }
 
 # ------------------------------------------------------------------------------------------------------------

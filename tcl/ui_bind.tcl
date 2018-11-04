@@ -249,7 +249,7 @@ proc _focusIn {top} {
             set ::var(isEditMode) 0
         }
         "PdPatch"           {
-            ::ui_menu::configureForPatch
+            ::ui_menu::configureForPatch $top
             ::ui_patch::setEditMode $top
             ::ui_patch::askForUpdateMenu $top
         }

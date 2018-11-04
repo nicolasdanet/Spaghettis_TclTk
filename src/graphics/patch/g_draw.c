@@ -658,14 +658,17 @@ void glist_windowOpen (t_glist *glist)
     else {
     //
     t_rectangle *r = glist_getWindowGeometry (glist);
+    int isEditable = !(glist_isArray (glist) || glist_isAbstraction (glist));
+    int isEditMode = isEditable && glist_hasEditMode (glist);
     
-    gui_vAdd ("::ui_patch::create %s %d %d %d %d %d\n",    // --
+    gui_vAdd ("::ui_patch::create %s %d %d %d %d %d %d\n",    // --
                     glist_getTagAsString (glist),
                     rectangle_getWidth (r),
                     rectangle_getHeight (r),
                     rectangle_getTopLeftX (r),
                     rectangle_getTopLeftY (r),
-                    glist_hasEditMode (glist));
+                    isEditMode,
+                    isEditable);
                     
     glist_setWindow (glist, 1); glist_updateTitle (glist);
     //
