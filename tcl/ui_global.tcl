@@ -63,7 +63,7 @@ proc rightNextTo {top} {
 
 proc bringToFront {top} {
 
-    wm deiconify $top; raise $top; focus $top
+    wm deiconify $top; raise $top; focus -force $top
 }
 
 proc removeFromScreen {top} {
