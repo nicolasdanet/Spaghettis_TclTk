@@ -442,6 +442,7 @@
 #include "dsp/fft/d_framp.c"
 #include "dsp/fft/d_mag.c"
 #include "dsp/fft/d_rmag.c"
+#include "dsp/fft/d_sigmund.c"
 
 /* FFT library. */
 

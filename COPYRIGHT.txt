@@ -5,54 +5,58 @@
 
 Excluding:
 
-    src/tinyexpr.c 
+    tinyexpr.c
     
         Copyright (c) 2015-2016 Lewis Van Winkle.
         
-    src/d_fftsg.c
+    d_fftsg.c
 
         Copyright (c) 1996-2001 Takuya OOURA.
 
-    src/s_MT_32.c
+    sigmund~.c
+
+        Copyright (c) 2005 Miller Puckette. BSD licensed. No warranties.
+
+    s_MT_32.c
 
         Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
         All rights reserved.
 
-    src/s_MT_64.c
+    s_MT_64.c
 
         Copyright (C) 2004, Makoto Matsumoto and Takuji Nishimura,
         All rights reserved.
 
-    src/s_midi_pm.c
+    s_midi_pm.c
         
         Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
   
-    src/s_midi_oss.c
+    s_midi_oss.c
         
         Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
   
-    src/s_midi_alsa.c
+    s_midi_alsa.c
     
         Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
     
-    src/s_midi_dummy.c
+    s_midi_dummy.c
     
         Copyright (c) 2010 Peter Brinkmann.
         
-    src/s_audio_dummy.c
+    s_audio_dummy.c
     
         Copyright (c) 2010 Peter Brinkmann.
     
-    src/s_utf8.c
+    s_utf8.c
     
         Basic UTF-8 manipulation routines,
         by Jeff Bezanson,
         placed in the public domain Fall 2005.
 
-    tcl/ui_text.tcl
+    ui_text.tcl
     
         Copyright (c) 2002-2012 krzYszcz and others.
     
