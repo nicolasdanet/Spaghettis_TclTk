@@ -25,10 +25,36 @@ typedef struct _bang {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void bang_bang (t_bang *x)
 {
     outlet_bang (x->x_outlet);
+}
+
+static void bang_float (t_bang *x, t_float f)
+{
+    bang_bang (x);
+}
+
+static void bang_symbol (t_bang *x, t_symbol *s)
+{
+    bang_bang (x);
+}
+
+static void bang_pointer (t_bang *x, t_gpointer *gp)
+{
+    bang_bang (x);
+}
+
+static void bang_list (t_bang *x, t_symbol *s, int argc, t_atom *argv)
+{
+    bang_bang (x);
+}
+
+static void bang_anything (t_bang *x, t_symbol *s, int argc, t_atom *argv)
+{
+    bang_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -71,10 +97,11 @@ void bang_setup (void)
     class_addCreator ((t_newmethod)bang_newByRegular, sym_b, A_NULL);
     
     class_addBang (c, (t_method)bang_bang);
-    class_addFloat (c, (t_method)bang_bang);
-    class_addSymbol (c, (t_method)bang_bang);
-    class_addList (c, (t_method)bang_bang);
-    class_addAnything (c, (t_method)bang_bang);
+    class_addFloat (c, (t_method)bang_float);
+    class_addSymbol (c, (t_method)bang_symbol);
+    class_addPointer (c, (t_method)bang_pointer);
+    class_addList (c, (t_method)bang_list);
+    class_addAnything (c, (t_method)bang_anything);
     
     bang_class = c;
 }
