@@ -64,11 +64,13 @@ t_symbol *utils_getUnusedBindName (t_class *c, t_symbol *prefix)
     
     while (1) {
         t_error err = string_sprintf (t, PD_STRING, "%s%d", prefix->s_name, i);
+        PD_ASSERT (err == PD_ERROR_NONE);
         PD_ABORT (err != PD_ERROR_NONE);
         t_symbol *name = gensym (t);
         if (!symbol_getThingByClass (name, c)) { return name; }
         i++;
-        PD_ABORT (i < 0);
+        PD_ASSERT (i > 0);
+        PD_ABORT (i <= 0);
     }
 }
 

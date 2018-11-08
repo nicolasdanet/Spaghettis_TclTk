@@ -153,6 +153,7 @@ static void canvas_dirty (t_glist *glist, t_float f)
 
 void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
+    PD_ASSERT (glist_hasParent (glist));
     PD_ABORT (!glist_hasParent (glist));
     
     if (glist_hasParent (glist)) {
