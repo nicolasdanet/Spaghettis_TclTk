@@ -56,6 +56,7 @@ typedef struct _pdinstance {
     t_environment   pd_environment;
     t_position      pd_locate;
     uint64_t        pd_pollingCount;
+    uint64_t        pd_autoreleaseCount;
     int             pd_overflowCount;
     int             pd_dspChainIdentifier;
     int             pd_dspChainSize;

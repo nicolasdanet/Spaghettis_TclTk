@@ -137,6 +137,8 @@ extern t_symbol *sym__arraydialog;
 extern t_symbol *sym__audiodialog;
 extern t_symbol *sym__audioproperties;
 extern t_symbol *sym__autorelease;
+extern t_symbol *sym__autoreleaseA;
+extern t_symbol *sym__autoreleaseB;
 extern t_symbol *sym__back;
 extern t_symbol *sym__bendin;
 extern t_symbol *sym__callback;

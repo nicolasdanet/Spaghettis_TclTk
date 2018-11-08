@@ -13,33 +13,44 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define AUTORELEASE_PERIOD      PD_SECONDS_TO_MILLISECONDS (7.0)
-#define AUTORELEASE_THRESHOLD   64
+#define AUTORELEASE_PERIOD  PD_SECONDS_TO_MILLISECONDS (7.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void pd_unbindQuiet (t_pd *, t_symbol *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void instance_autoreleaseDrainProceed (t_symbol *s)
+{
+    if (symbol_hasThingQuiet (s)) { pd_message (symbol_getThing (s), sym__autorelease, 0, NULL); }
+}
+
 static void instance_autoreleaseDrain (void)
 {
-    if (symbol_hasThingQuiet (sym__autorelease)) {
-        pd_message (symbol_getThing (sym__autorelease), sym__autorelease, 0, NULL);
-    }   
+    instance_autoreleaseDrainProceed (sym__autoreleaseA);
+    instance_autoreleaseDrainProceed (sym__autoreleaseB);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void instance_autoreleaseTask (void *dummy)
 {
-    instance_autoreleaseDrain();
+    instance_get()->pd_autoreleaseCount++;
+    
+    {
+        int n = (instance_get()->pd_autoreleaseCount & 1ULL);
+    
+        instance_autoreleaseDrainProceed (n ? sym__autoreleaseB : sym__autoreleaseA);
+    }
+    
     clock_delay (instance_get()->pd_autorelease, AUTORELEASE_PERIOD);
-}
-
-/* To avoid congestion rescheduling time is progressively diminished. */
-
-static void instance_autoreleaseReschedule (void)
-{
-    int t = symbol_getNumberOfThings (sym__autorelease);
-    double d = (AUTORELEASE_THRESHOLD - (double)t) / AUTORELEASE_THRESHOLD;
-    clock_delay (instance_get()->pd_autorelease, d * AUTORELEASE_PERIOD);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -54,8 +65,7 @@ void instance_autoreleaseRun (void)
 
 void instance_autoreleaseStop (void)
 {
-    instance_autoreleaseDrain();
-    clock_free (instance_get()->pd_autorelease);
+    instance_autoreleaseDrain(); clock_free (instance_get()->pd_autorelease);
     instance_get()->pd_autorelease = NULL;
 }
 
@@ -65,12 +75,13 @@ void instance_autoreleaseStop (void)
 
 void instance_autoreleaseRegister (t_pd *x)
 {
-    pd_bind (x, sym__autorelease);
+    int n = (instance_get()->pd_autoreleaseCount & 1ULL);
     
-    if (instance_get()->pd_autorelease) { instance_autoreleaseReschedule(); }
-    else {
-        instance_autoreleaseDrain();    /* While quitting the application. */
-    }
+    pd_bind (x, n ? sym__autoreleaseB : sym__autoreleaseA);
+
+    /* While quitting the application. */
+    
+    if (!instance_get()->pd_autorelease) { instance_autoreleaseDrain(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -80,7 +91,9 @@ void instance_autoreleaseRegister (t_pd *x)
 
 void instance_autoreleaseProceed (t_pd *x)
 {
-    pd_unbind (x, sym__autorelease); pd_free (x);
+    pd_unbindQuiet (x, sym__autoreleaseA);
+    pd_unbindQuiet (x, sym__autoreleaseB);
+    pd_free (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
