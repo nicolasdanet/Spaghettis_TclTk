@@ -193,12 +193,12 @@ void pd_bind (t_pd *x, t_symbol *s)
     }
 }
 
-void pd_unbind (t_pd *x, t_symbol *s)
+static t_error pd_unbindProceed (t_pd *x, t_symbol *s)
 {
     PD_ASSERT (s != &s_);
     
-    if (s->s_thing == x) { 
-        s->s_thing = NULL; 
+    if (s->s_thing == x) {
+        s->s_thing = NULL; return PD_ERROR_NONE;
         
     } else if (s->s_thing && pd_class (s->s_thing) == bindlist_class) {
         
@@ -206,21 +206,35 @@ void pd_unbind (t_pd *x, t_symbol *s)
         t_bindelement *e1 = NULL;
         t_bindelement *e2 = NULL;
         
-        if ((e1 = b->b_list)->e_what == x) {
-            b->b_list = e1->e_next;
-            PD_MEMORY_FREE (e1);
-        } else {
-            for ((e1 = b->b_list); (e2 = e1->e_next); (e1 = e2)) {
-                if (e2->e_what == x) {
-                    e1->e_next = e2->e_next;
-                    if (e2 == b->b_cached) { b->b_cached = e2->e_next; }
-                    PD_MEMORY_FREE (e2);
-                    break;
+        if (b->b_list) {
+            if ((e1 = b->b_list)->e_what == x) {
+                b->b_list = e1->e_next;
+                PD_MEMORY_FREE (e1); return PD_ERROR_NONE;
+            } else {
+                for ((e1 = b->b_list); (e2 = e1->e_next); (e1 = e2)) {
+                    if (e2->e_what == x) {
+                        e1->e_next = e2->e_next;
+                        if (e2 == b->b_cached) { b->b_cached = e2->e_next; }
+                        PD_MEMORY_FREE (e2); return PD_ERROR_NONE;
+                    }
                 }
             }
         }
-        
-    } else { PD_BUG; }
+    }
+    
+    return PD_ERROR;
+}
+
+void pd_unbindQuiet (t_pd *x, t_symbol *s)
+{
+    pd_unbindProceed (x, s);
+}
+
+void pd_unbind (t_pd *x, t_symbol *s)
+{
+    t_error err = pd_unbindProceed (x, s);
+    
+    PD_ASSERT (!err); PD_UNUSED (err);
 }
 
 // -----------------------------------------------------------------------------------------------------------

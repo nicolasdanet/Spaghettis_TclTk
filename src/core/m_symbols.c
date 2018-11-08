@@ -137,6 +137,8 @@ t_symbol *sym__arraydialog;
 t_symbol *sym__audiodialog;
 t_symbol *sym__audioproperties;
 t_symbol *sym__autorelease;
+t_symbol *sym__autoreleaseA;
+t_symbol *sym__autoreleaseB;
 t_symbol *sym__back;
 t_symbol *sym__bendin;
 t_symbol *sym__callback;
@@ -913,6 +915,8 @@ void symbols_initialize (void)
     sym__audiodialog                            = gensym ("_audiodialog");
     sym__audioproperties                        = gensym ("_audioproperties");
     sym__autorelease                            = gensym ("_autorelease");
+    sym__autoreleaseA                           = gensym ("_autoreleaseA");
+    sym__autoreleaseB                           = gensym ("_autoreleaseB");
     sym__back                                   = gensym ("_back");
     sym__bendin                                 = gensym ("_bendin");
     sym__callback                               = gensym ("_callback");

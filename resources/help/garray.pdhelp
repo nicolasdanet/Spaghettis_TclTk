@@ -21,7 +21,6 @@
 #N canvas 615 114 301 494 again 0;
 #X msg 36 84 constant \$1;
 #X obj 36 24 nbx 5 40 -1 1 0 0 empty empty empty 0 -7 0 10 #ffffff #000000 #000000 0 100;
-#X obj 36 252 bng 15 250 50 0 empty empty empty 0 -6 0 8 #fcfcfc #000000 #000000;
 #X obj 36 288 savepanel;
 #X obj 36 204 s \$0-array;
 #X msg 36 132 normalize;
@@ -30,13 +29,14 @@
 #X msg 36 324 \; \$0-array write \$1;
 #X msg 36 384 \; \$0-array rename $\$0-george;
 #X msg 36 432 \; \$0-george rename $\$0-array;
-#X connect 0 0 4 0;
+#X obj 36 252 bng 15 250 50 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000;
+#X connect 0 0 3 0;
 #X connect 1 0 0 0;
-#X connect 2 0 3 0;
-#X connect 3 0 8 0;
-#X connect 5 0 4 0;
-#X connect 6 0 4 0;
-#X connect 7 0 4 0;
+#X connect 2 0 7 0;
+#X connect 4 0 3 0;
+#X connect 5 0 3 0;
+#X connect 6 0 3 0;
+#X connect 10 0 2 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 168 252 pd again;
 #N canvas 822 511 411 162 more 0;
