@@ -167,6 +167,7 @@ void glist_objectSelect (t_glist *glist, t_gobj *y)
 
 int glist_objectDeselect (t_glist *glist, t_gobj *y, int withUndo)
 {
+    int dspState = 0;
     int dspSuspended = 0;
     
     t_box *z = NULL;
@@ -188,7 +189,7 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y, int withUndo)
         gobj_activated (y, glist, 0);
     }
     
-    if (class_hasDSP (pd_class (y))) { dspSuspended = dsp_suspend(); }
+    if (class_hasDSP (pd_class (y))) { dspState = dsp_suspend(); dspSuspended = 1; }
     //
     }
     
@@ -204,7 +205,7 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y, int withUndo)
     
     if (withUndo && glist_undoIsOk (glist)) { glist_undoAppendSeparator (glist); }
     
-    if (dspSuspended) { dsp_resume (dspSuspended); }
+    if (dspSuspended) { dsp_resume (dspState); }
     
     glist_updateEncapsulate (glist);
     

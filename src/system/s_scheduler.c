@@ -236,7 +236,7 @@ t_error scheduler_main (void)
         instance_pollingStop();
         instance_autoreleaseStop();
     
-    dsp_suspend();
+    dsp_close();
     audio_close();
     midi_close();
     

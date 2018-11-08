@@ -193,8 +193,6 @@ static int loader_externalOpen (t_glist *glist, t_symbol *name)
 
     if (glist_fileExist (glist, name->s_name, PD_PLUGIN, &p)) {
     //
-    int state = dsp_suspend();      // -- TODO: Is that really necessary?
-    
     char filepath[PD_STRING] = { 0 };
     
     char *filename  = fileproperties_getName (&p);
@@ -207,8 +205,6 @@ static int loader_externalOpen (t_glist *glist, t_symbol *name)
             loader_addLoaded (name, handle);
         }
     }
-    
-    dsp_resume (state);
     //
     }
     //
