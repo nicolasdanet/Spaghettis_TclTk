@@ -87,6 +87,7 @@ void warning_containsDuplicates             (void);
 
 void warning_tooManyCharacters              (t_symbol *);
 void warning_multipleBinding                (t_symbol *);
+void warning_fileIsCorrupted                (t_symbol *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -294,14 +294,7 @@ static int main_alreadyExists (void)
 
     if (!err) {
     //
-    struct flock lock;
-    
-    lock.l_start    = 0;
-    lock.l_len      = 0;
-    lock.l_type     = F_WRLCK;
-    lock.l_whence   = SEEK_SET;
-    
-    err = (fcntl (f, F_SETLK, &lock) < 0);
+    err = file_lock (f);
     //
     }
     //
