@@ -1,4 +1,4 @@
-#N canvas 797 131 275 386 12;
+#N canvas 750 138 300 386 12;
 #X msg 84 228 stop;
 #X obj 84 348 soundfiler;
 #X obj 84 264 osc~ 440;
@@ -19,16 +19,19 @@
 #X msg 36 192 open -samplerate 22050 /tmp/tututu.wav;
 #X msg 36 216 open -bytes 3 /tmp/tututu.wav;
 #X coords 0 0 1 1 250 175 0 0 0;
-#X restore 180 264 pd more;
+#X restore 192 264 pd more;
 #X obj 36 312 writesf~;
-#X obj 84 192 delay 1000;
+#X obj 84 180 delay 1000;
 #X obj 84 156 t b;
 #X msg 36 108 open /tmp/tututu.wav \, start;
 #X text 12 72 Write audio signals to disk.;
+#X msg 192 180 \; pd dsp 1;
+#X obj 84 204 bng 15 250 50 0 empty empty empty 0 0 0 10 #ffffff #000000 #000000;
 #X connect 0 0 9 0;
 #X connect 2 0 9 0;
-#X connect 10 0 0 0;
+#X connect 10 0 15 0;
 #X connect 11 0 10 0;
 #X connect 12 0 9 0;
 #X connect 12 0 11 0;
+#X connect 15 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;

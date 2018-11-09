@@ -76,6 +76,7 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
     int f = soundfile_writeFileHeader (x->sf_owner, &x->sf_properties);
     
     err = (f < 0);
+    
     if (!err) {
         x->sf_thread = sfthread_new (SFTHREAD_WRITER, x->sf_bufferSize, f, &x->sf_properties);
         PD_ASSERT (x->sf_thread);
@@ -114,7 +115,7 @@ static t_int *writesf_tilde_perform (t_int *w)
     t_writesf_tilde *x = (t_writesf_tilde *)(w[1]);
     int n = (int)(w[2]);
     
-    if (x->sf_run && x->sf_thread) {
+    if (x->sf_run && x->sf_thread && !sfthread_isEnd (x->sf_thread)) {
     //
     int numberOfChannels = x->sf_numberOfChannels;
     int bytesPerFrame    = numberOfChannels * x->sf_properties.ap_bytesPerSample;
@@ -134,7 +135,7 @@ static t_int *writesf_tilde_perform (t_int *w)
     {
         int32_t written = ringbuffer_write (sfthread_getBuffer (x->sf_thread), x->sf_cached, required);
         if (written != required) {
-            // -- FIXME: File corrupted; what to do?
+            sfthread_setCorrupted (x->sf_thread);
         }
     }
     //

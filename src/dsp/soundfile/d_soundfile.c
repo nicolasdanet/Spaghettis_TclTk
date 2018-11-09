@@ -682,12 +682,18 @@ int soundfile_writeFileHeader (t_glist *glist, t_audioproperties *args)
     
     err = path_withDirectoryAndName (filepath, PD_STRING, directory, name);
     
-    PD_UNUSED (err); PD_ASSERT (!err);
-    
+    if (!err) {
+    //
+    if (!path_isFileExistAsRegularFile (filepath)) {
+    //
     f = file_openWrite (filepath);
     
     if (f >= 0) { 
         if (write (f, t.h_c, t.h_bytesSet) < t.h_bytesSet) { close (f); f = -1; PD_BUG; }
+    }
+    //
+    } else { error_alreadyExists (symbol_addSuffix (args->ap_fileName, args->ap_fileExtension)); }
+    //
     }
     //
     }
@@ -772,15 +778,13 @@ t_error soundfile_writeFileClose (int f, int items, t_audioproperties *args)
 {
     t_error err = PD_ERROR_NONE;
     
-    if ((args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) || (items < args->ap_numberOfFrames)) {
+    if ((args->ap_numberOfFrames == SOUNDFILE_UNKNOWN) || (items != args->ap_numberOfFrames)) {
     //
-    err = (args->ap_numberOfFrames != SOUNDFILE_UNKNOWN);
-    
     args->ap_numberOfFrames = items;
     
-    if (args->ap_fileType == SOUNDFILE_WAVE)      { err |= soundfile_writeFileCloseWAVE (f, args); } 
-    else if (args->ap_fileType == SOUNDFILE_AIFF) { err |= soundfile_writeFileCloseAIFF (f, args); }
-    else if (args->ap_fileType == SOUNDFILE_NEXT) { err |= soundfile_writeFileCloseNEXT (f, args); }
+    if (args->ap_fileType == SOUNDFILE_WAVE)      { err = soundfile_writeFileCloseWAVE (f, args); }
+    else if (args->ap_fileType == SOUNDFILE_AIFF) { err = soundfile_writeFileCloseAIFF (f, args); }
+    else if (args->ap_fileType == SOUNDFILE_NEXT) { err = soundfile_writeFileCloseNEXT (f, args); }
     else {
         err = PD_ERROR;
     }

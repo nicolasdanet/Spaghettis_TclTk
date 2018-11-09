@@ -21,13 +21,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define SFTHREAD_QUIT       1
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define SFTHREAD_CHUNK      4096
-#define SFTHREAD_SLEEP      PD_MILLISECONDS_TO_NANOSECONDS (37.0)
+#define SFTHREAD_CHUNK  4096
+#define SFTHREAD_SLEEP  PD_MILLISECONDS_TO_NANOSECONDS (37.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -87,10 +82,9 @@ static void *sfthread_writerThread (void *z)
         
         if (required == 0) { PD_ATOMIC_INT32_WRITE (SFTHREAD_QUIT, &x->sft_flag); break; }
         if (written != loaded) {
-        
-            // -- FIXME: File corrupted; what to do?
-            
-            PD_ATOMIC_INT32_WRITE (SFTHREAD_QUIT, &x->sft_flag); break; 
+            PD_ATOMIC_INT32_WRITE (SFTHREAD_CORRUPTED, &x->sft_corrupted);
+            PD_ATOMIC_INT32_WRITE (SFTHREAD_QUIT, &x->sft_flag);
+            break;
         }
     }
     
@@ -108,8 +102,7 @@ static void *sfthread_writerThread (void *z)
     int framesWritten = x->sft_alreadyWritten / size;
     
     if (soundfile_writeFileClose (x->sft_fileDescriptor, framesWritten, &x->sft_properties)) {
-        // -- FIXME: File corrupted; what to do?
-        /* Occurs also if stopped before demanded frames. */
+        PD_ATOMIC_INT32_WRITE (SFTHREAD_CORRUPTED, &x->sft_corrupted);
     }
     //
     }
@@ -163,16 +156,28 @@ t_sfthread *sfthread_new (int type, int bufferSize, int fd, t_audioproperties *p
     //
     }
     
-    if (x->sft_error) { pd_free (cast_pd (x)); x = NULL; PD_BUG; }
+    if (x->sft_error) { close (x->sft_fileDescriptor); pd_free (cast_pd (x)); x = NULL; PD_BUG; }
     
     return x;
 }
 
 static void sfthread_free (t_sfthread *x)
 {
-    if (x->sft_error) { close (x->sft_fileDescriptor); }
-    else {
-        pthread_join (x->sft_thread, NULL);
+    if (!x->sft_error) {
+    //
+    pthread_join (x->sft_thread, NULL);
+    
+    /* Notice that it is reported here since logging is NOT thread-safe. */
+    /* However it should never happens. */
+    
+    if (PD_ATOMIC_INT32_READ (&x->sft_corrupted) != 0) {
+    //
+    t_symbol *filename = symbol_addSuffix (x->sft_properties.ap_fileName, x->sft_properties.ap_fileExtension);
+
+    warning_fileIsCorrupted (filename);
+    //
+    }
+    //
     }
     
     ringbuffer_free (x->sft_buffer);

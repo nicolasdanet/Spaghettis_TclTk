@@ -25,6 +25,7 @@ typedef struct _sfthread {
     t_error             sft_error;
     pthread_t           sft_thread;
     t_int32Atomic       sft_flag;
+    t_int32Atomic       sft_corrupted;
     t_ringbuffer        *sft_buffer;
     } t_sfthread;
 
@@ -41,11 +42,18 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define SFTHREAD_QUIT           1
+#define SFTHREAD_CORRUPTED      1
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* Takes file ownership. */
 
-t_sfthread  *sfthread_new   (int type, int bufferSize, int fd, t_audioproperties *p);
+t_sfthread  *sfthread_new       (int type, int bufferSize, int fd, t_audioproperties *p);
 
-void    sfthread_release    (t_sfthread *x);
+void    sfthread_release        (t_sfthread *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -59,6 +67,11 @@ static inline t_ringbuffer *sfthread_getBuffer (t_sfthread *x)
 static inline int sfthread_isEnd (t_sfthread *x)
 {
     return (PD_ATOMIC_INT32_READ (&x->sft_flag) != 0);
+}
+
+static inline void sfthread_setCorrupted (t_sfthread *x)
+{
+    if (!sfthread_isEnd (x)) { PD_ATOMIC_INT32_WRITE (SFTHREAD_CORRUPTED, &x->sft_corrupted); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -173,6 +173,8 @@ int         file_openReadConsideringSearchPath      (const char *directory,
                                                         const char *extension,
                                                         t_fileproperties *p);
 
+t_error     file_lock                               (int fd);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
