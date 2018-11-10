@@ -154,8 +154,6 @@ static void poly_clear (t_poly *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-// -- TODO: save contents also?
-
 static t_buffer *poly_functionData (t_gobj *z, int flags)
 {
     if (SAVED_DEEP (flags)) {

@@ -124,8 +124,6 @@ static PaError pa_openWithCallback (double sampleRate,
     if (numberOfChannelsOut > 0) { p2 = &parametersOut; }
 
     err = Pa_IsFormatSupported (p1, p2, sampleRate);
-
-    // -- TODO: Use paFramesPerBufferUnspecified instead of INTERNAL_BLOCKSIZE?
     
     if (err == paFormatIsSupported) {
     //

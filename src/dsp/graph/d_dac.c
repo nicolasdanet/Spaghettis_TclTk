@@ -89,8 +89,6 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-// -- TODO: For now doesn't restore signal values. Is that needed?
-
 static t_buffer *dac_tilde_functionData (t_gobj *z, int flags)
 {
     if (SAVED_DEEP (flags)) {
@@ -103,6 +101,10 @@ static t_buffer *dac_tilde_functionData (t_gobj *z, int flags)
     
     for (i = 0; i < x->x_size; i++) { buffer_appendFloat (b, x->x_vector[i]); }
     
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__signals);
+    object_getSignalValues (cast_object (x), b, x->x_size);
+    
     return b;
     //
     }
@@ -113,6 +115,11 @@ static t_buffer *dac_tilde_functionData (t_gobj *z, int flags)
 static void dac_tilde_restore (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
     dac_tilde_setProceed (x, s, argc, argv);
+}
+
+static void dac_tilde_signals (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (cast_object (x), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -164,6 +171,7 @@ void dac_tilde_setup (void)
     
     class_addMethod (c, (t_method)dac_tilde_set,        sym_set,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)dac_tilde_restore,    sym__restore,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dac_tilde_signals,    sym__signals,   A_GIMME, A_NULL);
 
     class_setDataFunction (c, dac_tilde_functionData);
     class_setHelpName (c, sym_audio);
