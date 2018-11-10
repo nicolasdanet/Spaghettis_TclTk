@@ -36,6 +36,13 @@ typedef struct _urn {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+// -- TODO: Use a best approach in case of a large range?
+
+/* < https://meta.stackoverflow.com/questions/334325 > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void urn_set (t_urn *x)
@@ -77,10 +84,6 @@ static void urn_bang (t_urn *x)
 static void urn_float (t_urn *x, t_float f)
 {
     x->x_range = PD_CLAMP (1, f, URN_LIMIT); urn_set (x);
-    
-    // -- TODO: Use a best approach in case of a large range?
-    
-    /* < https://meta.stackoverflow.com/questions/334325 > */
     
     if (f > URN_LIMIT) { warning_invalid (sym_urn, sym_range); }
 }

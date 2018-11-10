@@ -123,8 +123,6 @@ static void bag_clear (t_bag *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-// -- TODO: save contents also?
-
 static t_buffer *bag_functionData (t_gobj *z, int flags)
 {
     if (SAVED_DEEP (flags)) {
