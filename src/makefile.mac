@@ -169,7 +169,7 @@ clean:
 #	@echo "Install help ..."
 #	install -d $(DESTDIR)$(libpdhelpdir)
 #	install $(HELP_DIR)/*.pdhelp $(DESTDIR)$(libpdhelpdir)
-#	install $(HELP_DIR)/*.pd $(DESTDIR)$(libpdhelpdir)
+#	install $(HELP_DIR)/*.pdpatch $(DESTDIR)$(libpdhelpdir)
 #	install $(HELP_DIR)/*.txt $(DESTDIR)$(libpdhelpdir)
 #	install $(HELP_DIR)/*.aiff $(DESTDIR)$(libpdhelpdir)
 #	install $(HELP_DIR)/*.wav $(DESTDIR)$(libpdhelpdir)

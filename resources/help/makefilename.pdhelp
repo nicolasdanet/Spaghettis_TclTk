@@ -32,9 +32,9 @@
 #N canvas 720 315 419 263 again 0;
 #X obj 96 120 makefilename;
 #X obj 36 216 print;
-#X msg 36 48 /user/jojo/my folder foo/nightmares.pd;
+#X msg 36 48 /user/jojo/my folder foo/nightmares.pdpatch;
 #X msg 36 180 \$1;
-#X msg 96 84 /user/jojo/my folder foo/nightmares.pd;
+#X msg 96 84 /user/jojo/my folder foo/nightmares.pdpatch;
 #X text 12 12 Can be used to introduce whitespaces in a file path.;
 #X connect 0 0 3 0;
 #X connect 2 0 3 0;
