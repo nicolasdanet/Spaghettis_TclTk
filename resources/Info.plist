@@ -25,7 +25,7 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>pd</string>
+				<string>pdpatch</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Spaghettis Patch</string>
