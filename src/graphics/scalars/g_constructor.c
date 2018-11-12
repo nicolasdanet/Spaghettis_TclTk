@@ -15,30 +15,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *constructor_class;             /* Shared. */
+#include "../../control/x_tinyexpr.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if PD_WITH_TINYEXPR
-
-#include "../../control/tinyexpr.h"
-#include "../../control/math/x_expr.h"
-
-#endif // PD_WITH_TINYEXPR
+t_class *constructor_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 struct _constructor {
-    t_object    x_obj;                  /* MUST be the first. */
+    t_object    x_obj;              /* MUST be the first. */
     int         x_once;
     t_symbol    *x_field;
     t_buffer    *x_buffer;
-#if PD_WITH_TINYEXPR
-    te_variable x_variables[EXPR_FUNCTIONS];
     te_expr     *x_expression;
-#endif
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -54,8 +46,6 @@ t_symbol *constructor_getField (t_constructor *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_TINYEXPR
-
 t_float constructor_evaluateAsFloat (t_constructor *x)
 {
     if (x && buffer_getSize (x->x_buffer)) {
@@ -64,11 +54,9 @@ t_float constructor_evaluateAsFloat (t_constructor *x)
     
     if (!x->x_once) {
     //
-    int err;
-    
     char *t = atom_atomsToString (buffer_getSize (x->x_buffer), buffer_getAtoms (x->x_buffer));
     
-    if ((x->x_expression = te_compile (t, x->x_variables, EXPR_FUNCTIONS, &err)) == NULL) {
+    if ((x->x_expression = te_compile (t, NULL, 0)) == NULL) {
         error_invalid (sym_constructor, sym_expression);
     }
     
@@ -84,19 +72,6 @@ t_float constructor_evaluateAsFloat (t_constructor *x)
     
     return 0.0;
 }
-
-#else
-
-t_float constructor_evaluateAsFloat (t_constructor *x)
-{
-    if (x && buffer_getSize (x->x_buffer)) {
-        return atom_getFloat (buffer_getAtomAtIndex (x->x_buffer, 0));
-    }
-    
-    return 0.0;
-}
-
-#endif // PD_WITH_TINYEXPR
 
 t_symbol *constructor_evaluateAsSymbol (t_constructor *x)
 {
@@ -126,31 +101,12 @@ static void *constructor_new (t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    #if PD_WITH_TINYEXPR
-    
-    EXPR_TE_FUNCTION (0, "rand",    (const void *)expr_functionRandom,          TE_FUNCTION0);
-    EXPR_TE_FUNCTION (1, "randmt",  (const void *)expr_functionRandomMT,        TE_FUNCTION0);
-    EXPR_TE_FUNCTION (2, "min",     (const void *)expr_functionMinimum,         TE_FUNCTION2);
-    EXPR_TE_FUNCTION (3, "max",     (const void *)expr_functionMaximum,         TE_FUNCTION2);
-    EXPR_TE_FUNCTION (4, "eq",      (const void *)expr_functionEqual,           TE_FUNCTION2);
-    EXPR_TE_FUNCTION (5, "ne",      (const void *)expr_functionUnequal,         TE_FUNCTION2);
-    EXPR_TE_FUNCTION (6, "lt",      (const void *)expr_functionLessThan,        TE_FUNCTION2);
-    EXPR_TE_FUNCTION (7, "le",      (const void *)expr_functionLessEqual,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (8, "gt",      (const void *)expr_functionGreaterThan,     TE_FUNCTION2);
-    EXPR_TE_FUNCTION (9, "ge",      (const void *)expr_functionGreaterEqual,    TE_FUNCTION2);
-    
-    #endif
-    
     return x;
 }
 
 static void constructor_free (t_constructor *x)
 {
-    #if PD_WITH_TINYEXPR
-    
     if (x->x_expression) { te_free (x->x_expression); }
-    
-    #endif
     
     buffer_free (x->x_buffer);
 }

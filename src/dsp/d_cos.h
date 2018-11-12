@@ -35,7 +35,7 @@ static inline float cosf9_reduce(float phase) {
     int q = p;
     return p - q;
   } else {
-    if (PD_UNLIKELY(__isnanf(p) || __isinff(p))) {
+    if (PD_UNLIKELY(isnan(p) || isinf(p))) {
       // return NaN
       return p - p;
     } else {
