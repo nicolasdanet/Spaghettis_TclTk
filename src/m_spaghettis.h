@@ -391,7 +391,6 @@
 #include <netinet/tcp.h>
 #include <pthread.h>
 #include <sched.h>
-#include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -428,20 +427,12 @@
 #define PD_WITH_LEGACY              1                   /* Compatibility. */
 #endif
 
-#ifndef PD_WITH_REALTIME
-#define PD_WITH_REALTIME            1                   /* Require RT policy. */
-#endif
-
 #ifndef PD_WITH_DEADCODE
 #define PD_WITH_DEADCODE            0                   /* Include unused code. */
 #endif
 
 #ifndef PD_WITH_TINYEXPR
 #define PD_WITH_TINYEXPR            1                   /* Use TinyExpr library. */
-#endif
-
-#ifndef PD_WITH_BELLE
-#define PD_WITH_BELLE               1                   /* Use Belle library. */
 #endif
 
 #ifndef PD_WITH_MAIN
@@ -454,11 +445,15 @@
 
 /* For now, only the MICA library is used. */
 
-#if PD_WITH_BELLE
+#define BELLE_MICA_ONLY             1
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Enable memory leaks detector and assertions. */
+
 #if PD_WITH_DEBUG
     #define BELLE_WITH_DEBUG        1
-#endif
-    #define BELLE_MICA_ONLY         1
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
