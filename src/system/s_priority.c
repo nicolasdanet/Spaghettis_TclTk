@@ -13,76 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static uid_t priority_euid;         /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_LINUX
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#if defined ( _POSIX_MEMLOCK ) && ( _POSIX_MEMLOCK > 0 )
-    #define PRIORITY_MEMLOCK        1
-#else
-    #define PRIORITY_MEMLOCK        0
-#endif
-
-#if defined ( _POSIX_PRIORITY_SCHEDULING ) && ( _POSIX_PRIORITY_SCHEDULING > 0 )
-    #define PRIORITY_SCHEDULING     1
-#else 
-    #define PRIORITY_SCHEDULING     0
-#endif 
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#if PRIORITY_SCHEDULING
-
-static t_error priority_setRTLinuxScheduling (void)
-{
-    struct sched_param param;
-    int min = sched_get_priority_min (SCHED_FIFO);
-    int max = sched_get_priority_max (SCHED_FIFO);
-    
-    param.sched_priority = PD_MIN (min + 4, max);   /* Arbitrary. */
-
-    return (sched_setscheduler (0, SCHED_FIFO, &param) == -1);
-}
-
-#endif // PRIORITY_SCHEDULING
-
-#if PRIORITY_MEMLOCK
-
-static t_error priority_setRTLinuxMemoryLocking (void)
-{       
-    return (mlockall (MCL_CURRENT | MCL_FUTURE) == -1);
-}
-
-#endif // PRIORITY_MEMLOCK
-
-static t_error priority_setRTLinux (void)
-{
-    t_error err = PD_ERROR;
-    
-    #if PRIORITY_SCHEDULING
-        err = PD_ERROR_NONE; err |= priority_setRTLinuxScheduling();
-    #endif
-
-    #if PRIORITY_MEMLOCK
-        priority_setRTLinuxMemoryLocking();
-    #endif
-    
-    return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#endif // PD_LINUX
+static uid_t priority_euid;     /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -125,10 +56,21 @@ static t_error priority_setRTNative (void)
 
 static t_error priority_setRTNative (void)
 {
-    if (!priority_setRTLinux()) { fprintf (stdout, "RT Enabled\n"); }
-    else {
-        fprintf (stdout, "RT Disabled\n");
-    }
+    t_error err = PD_ERROR;
+    
+    #if defined ( _POSIX_PRIORITY_SCHEDULING ) && ( _POSIX_PRIORITY_SCHEDULING > 0 )
+
+    struct sched_param param;
+    int min = sched_get_priority_min (SCHED_FIFO);
+    int max = sched_get_priority_max (SCHED_FIFO);
+    
+    param.sched_priority = PD_MIN (min + 4, max);       /* Arbitrary. */
+
+    err = (sched_setscheduler (0, SCHED_FIFO, &param) != 0);
+    
+    #endif
+    
+    fprintf (stdout, err ? "RT Disabled\n" : "RT Enabled\n");
 
     return PD_ERROR_NONE;
 }
@@ -191,21 +133,10 @@ t_error priority_privilegeRelinquish (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_REALTIME
-
 t_error priority_setPolicy (void)
 {
     return priority_setRTNative();
 }
 
-#else
-
-t_error priority_setPolicy (void)
-{
-    return PD_ERROR_NONE;
-}
-
-#endif // PD_WITH_REALTIME
-    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
