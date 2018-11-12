@@ -195,6 +195,7 @@
 /* Control. */
 
 #include "control/x_atomoutlet.c"
+#include "control/x_tinyexpr.c"
 
 #include "control/atom/x_int.c"
 #include "control/atom/x_float.c"
@@ -255,7 +256,6 @@
 #include "control/math/x_urn.c"
 #include "control/math/x_clip.c"
 #include "control/math/x_expr.c"
-#include "control/math/x_functions.c"
 
 #include "control/time/x_metro.c"
 #include "control/time/x_delay.c"

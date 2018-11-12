@@ -77,6 +77,7 @@ t_symbol    *color_toEncoded                (t_color color);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int         math_areEquivalent              (t_float a, t_float b);
 int         math_compareFloat               (t_float a, t_float b);
 t_float     math_euclideanDistance          (t_float a, t_float b, t_float c, t_float d);
 
@@ -203,9 +204,24 @@ static inline int char_isWhitespace (char c)
     return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
 }
 
+static inline int char_isNumeric (char c)
+{
+    return ((c >= '0' && c <= '9') || (c == '.'));
+}
+
+static inline int char_isAlphabeticLowercase (char c)
+{
+    return (c >= 'a' && c <= 'z');
+}
+
 static inline int char_isAlphanumeric (char c)
 {
     return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_'));
+}
+
+static inline int char_isAlphanumericLowercase (char c)
+{
+    return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c == '_'));
 }
 
 // -----------------------------------------------------------------------------------------------------------

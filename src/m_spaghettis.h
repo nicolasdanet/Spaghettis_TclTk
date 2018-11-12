@@ -431,10 +431,6 @@
 #define PD_WITH_DEADCODE            0                   /* Include unused code. */
 #endif
 
-#ifndef PD_WITH_TINYEXPR
-#define PD_WITH_TINYEXPR            1                   /* Use TinyExpr library. */
-#endif
-
 #ifndef PD_WITH_MAIN
 #define PD_WITH_MAIN                1                   /* Use main entry. */
 #endif
@@ -1006,6 +1002,7 @@ PD_DLL void     instance_dspChainAppend         (t_perform f, int n, ...);
 #define PD_PI                       3.1415926535897932384626433832795
 #define PD_TWO_PI                   6.283185307179586476925286766559
 #define PD_LOG_TEN                  2.3025850929940456840179914546844
+#define PD_E                        2.7182818284590452353602874713527
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -14,6 +14,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int math_areEquivalent (t_float a, t_float b)
+{
+    return ((PD_ABS (b - a)) < PD_EPSILON);
+}
+
 int math_compareFloat (t_float a, t_float b)    /* Basic implementation of comparaison function. */
 {
     if (a < b) { return -1; } else if (b > a) { return 1; } else { return 0; }

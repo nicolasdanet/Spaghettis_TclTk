@@ -7,7 +7,6 @@
 
 #define PD_BUILDING_APPLICATION     1
 #define PD_WITH_DEADCODE            1
-#define PD_WITH_TINYEXPR            0
 #define PD_WITH_MAIN                0
 #define PD_WITH_DUMMY               1
 
@@ -33,6 +32,7 @@
 #include "t_memory.c"
 #include "t_benchmark.c"
 #include "t_buffer.c"
+#include "t_expr.c"
 #include "t_prim.cpp"
 #include "t_MICA.cpp"
 #include "t_MIR.cpp"

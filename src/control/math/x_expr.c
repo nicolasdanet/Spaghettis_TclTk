@@ -14,38 +14,43 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if PD_WITH_TINYEXPR
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 /* < https://github.com/codeplea/tinyexpr > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "../tinyexpr.h"
+#include "../x_tinyexpr.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "x_expr.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static t_class *expr_class;                     /* Shared. */
-static t_class *vexpr_class;                    /* Shared. */
+static t_class *expr_class;             /* Shared. */
+static t_class *vexpr_class;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define EXPR_VARIABLES                  9
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define EXPR_TE_VARIABLE(i, s)          { \
+                                            x->x_variables[i].te_name    = (s)->s_name;  \
+                                            x->x_variables[i].te_address = x->x_v + (i); \
+                                            x->x_variables[i].te_type    = TE_VARIABLE;  \
+                                        }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 typedef struct _expr {
-    t_object    x_obj;                          /* Must be the first. */
+    t_object    x_obj;                  /* Must be the first. */
     t_float     x_f[EXPR_VARIABLES];
     double      x_v[EXPR_VARIABLES];
-    te_variable x_variables[EXPR_VARIABLES + EXPR_FUNCTIONS];
+    te_variable x_variables[EXPR_VARIABLES];
     te_expr     *x_expression;
     t_buffer    *x_vector;
     t_outlet    *x_outlet;
@@ -64,24 +69,6 @@ static void expr_initializeVariables (t_expr *x)
         string_sprintf (t, PD_STRING, "vf%d", i + 1);
         EXPR_TE_VARIABLE (i, gensym (t));
     }
-}
-
-static void expr_initializeFunctions (t_expr *x, int i)
-{
-    PD_ASSERT (i < EXPR_VARIABLES);
-    
-    /* Add extended functions. */
-    
-    EXPR_TE_FUNCTION (i,        "rand",     (const void *)expr_functionRandom,        TE_FUNCTION0);
-    EXPR_TE_FUNCTION (i + 1,    "randmt",   (const void *)expr_functionRandomMT,      TE_FUNCTION0);
-    EXPR_TE_FUNCTION (i + 2,    "min",      (const void *)expr_functionMinimum,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 3,    "max",      (const void *)expr_functionMaximum,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 4,    "eq",       (const void *)expr_functionEqual,         TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 5,    "ne",       (const void *)expr_functionUnequal,       TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 6,    "lt",       (const void *)expr_functionLessThan,      TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 7,    "le",       (const void *)expr_functionLessEqual,     TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 8,    "gt",       (const void *)expr_functionGreaterThan,   TE_FUNCTION2);
-    EXPR_TE_FUNCTION (i + 9,    "ge",       (const void *)expr_functionGreaterEqual,  TE_FUNCTION2);
 }
 
 static int expr_getNumberOfVariables (char *expression)
@@ -204,7 +191,7 @@ static void *expr_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_expr *x = (t_expr *)pd_new ((s == sym_expr) ? expr_class : vexpr_class);
     
-    int err, size = 0;
+    int size = 0;
     
     {
         char *z = (char *)"0";
@@ -213,8 +200,7 @@ static void *expr_new (t_symbol *s, int argc, t_atom *argv)
         size = expr_getNumberOfVariables (t);
         expr_initializeVariables (x);
         string_replaceCharacter (t, '$', 'v');
-        expr_initializeFunctions  (x, size);
-        x->x_expression = te_compile (t, x->x_variables, size + EXPR_FUNCTIONS, &err);
+        x->x_expression = te_compile (t, x->x_variables, size);
         
         if (argc) { PD_MEMORY_FREE (t); }
     }
@@ -286,29 +272,6 @@ void expr_destroy (void)
     class_free (expr_class);
     class_free (vexpr_class);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#else
-
-void expr_setup (void)
-{
-}
-
-void expr_destroy (void)
-{
-}
-
-void expr_initialize (void)
-{
-}
-
-void expr_release (void)
-{
-}
-
-#endif // PD_WITH_TINYEXPR
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

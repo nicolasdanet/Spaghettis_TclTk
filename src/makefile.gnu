@@ -40,10 +40,6 @@ CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION -I$(BELLE_DIR)/Source $(PD_OPTIONS
 CFLAGS   = -ggdb -O3 -ffast-math -march=native -fvisibility=hidden $(WARNINGS)
 CXXFLAGS = -std=c++11 $(CFLAGS)
 
-# Expr with TinyExpr.
-
-EXPR_SRC = control/tinyexpr.c
-
 # Sources amalgamated.
 
 SRC = amalgam.cpp
@@ -51,7 +47,6 @@ SRC = amalgam.cpp
 # Objects.
 
 OBJ_CPP = $(SRC:.cpp=.o)
-OBJ_LIB = $(EXPR_SRC:.c=.o)
 
 # Targets.
 
@@ -66,13 +61,9 @@ $(OBJ_CPP): %.o : %.cpp
 	@echo "Build CPP $@ ..."
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_LIB): %.o : %.c
-	@echo "Build $@ ..."
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
-
-$(BIN_DIR)/spaghettis: $(OBJ_CPP) $(OBJ_LIB) | $(BIN_DIR)
+$(BIN_DIR)/spaghettis: $(OBJ_CPP) | $(BIN_DIR)
 	@echo "Build spaghettis ..."
-	@$(CXX) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ_CPP) $(OBJ_LIB) $(LIB)
+	@$(CXX) $(LDFLAGS) -o $(BIN_DIR)/spaghettis $(OBJ_CPP) $(LIB)
 
 $(BIN_DIR)/spaghettissnd: u_pdsend.c | $(BIN_DIR)
 	@echo "Build spaghettissnd ..."
@@ -93,7 +84,6 @@ clean:
 	@-rm -f makefile.dependencies
 	@echo "Remove objects ..."
 	@-rm -f $(OBJ_CPP)
-	@-rm -f $(OBJ_LIB)
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/spaghettis $(BIN_DIR)/spaghettissnd $(BIN_DIR)/spaghettisrcv
 	@echo "Remove bin directory ..."
