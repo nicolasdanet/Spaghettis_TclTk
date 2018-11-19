@@ -92,12 +92,12 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     reblocked |= (upsample   != 1);
     
     x->bk_reblocked      = reblocked;
-    x->bk_phase          = (int)(instance_getDspPhase() & (t_phase)(period - 1));
+    x->bk_phase          = (int)(chain_getPhase (instance_getChain()) & (t_phase)(period - 1));
     x->bk_period         = period;
     x->bk_frequency      = frequency;
 
     // PD_LOG ("PHASE");
-    // PD_LOG_NUMBER (instance_getDspPhase());
+    // PD_LOG_NUMBER (chain_getPhase (instance_getChain()));
     // PD_LOG ("BLOCK FREQUENCY");
     // PD_LOG_NUMBER (x->bk_frequency);
     // PD_LOG ("BLOCK PERIOD");

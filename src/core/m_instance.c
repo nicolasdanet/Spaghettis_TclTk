@@ -21,14 +21,9 @@ t_pdinstance *pd_this;  /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_new (void *, t_symbol *, int, t_atom *);
-void canvas_closeProceed (t_glist *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void scheduler_setLogicalTime (t_systime);
+void canvas_new                 (void *, t_symbol *, int, t_atom *);
+void canvas_closeProceed        (t_glist *);
+void scheduler_setLogicalTime   (t_systime);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -122,54 +117,18 @@ t_glist *instance_registerGetOwner (t_id u)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_int instance_dspDone (t_int *dummy)
+t_chain *instance_getChain (void)
 {
-    return 0;
-}
-
-static void instance_dspRelease (void)
-{
-    if (instance_get()->pd_dspChain != NULL) {
-    //
-    PD_MEMORY_FREE (instance_get()->pd_dspChain);
-    
-    instance_get()->pd_dspChain = NULL;
-    //
-    }
-    
-    instance_signalFreeAll();
-}
-
-static void instance_dspInitialize (void)
-{
-    instance_dspRelease();
-    
-    PD_ASSERT (instance_ugenGetContext() == NULL);
-    PD_ASSERT (instance_get()->pd_dspChain == NULL);
-    
-    instance_get()->pd_dspChainSize = 1;
-    instance_get()->pd_dspChain     = (t_int *)PD_MEMORY_GET (sizeof (t_int));
-    instance_get()->pd_dspChain[0]  = (t_int)instance_dspDone;
-    
-    instance_incrementDspChainIdentifier();
+    return instance_get()->pd_chain;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void instance_dspTick (void)
 {
-    t_int *t = instance_getDspChain();
-    
-    if (t) {
-    //
-    while (t) { t = (*(t_perform)(*t))(t); } instance_incrementDspPhase();
-        
-    // PD_LOG ("#");
-    // PD_LOG_NUMBER (instance_getDspPhase());
-    // PD_LOG ("#");
-    //
-    }
+    chain_tick (instance_getChain());
 }
 
 void instance_dspStart (void)
@@ -178,7 +137,11 @@ void instance_dspStart (void)
 
     // PD_LOG ("START");
     
-    instance_deselectAllObjects(); instance_dspInitialize();
+    chain_release (instance_getChain());
+    
+    PD_ASSERT (instance_ugenGetContext() == NULL);
+    
+    chain_initialize (instance_getChain());
     
     for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) { 
         canvas_dspProceed (glist, 1, NULL); 
@@ -189,70 +152,7 @@ void instance_dspStop (void)
 {
     // PD_LOG ("STOP");
     
-    instance_deselectAllObjects(); instance_dspRelease();
-}
-
-void instance_dspChainAppend (t_perform f, int n, ...)
-{
-    int size = instance_get()->pd_dspChainSize + n + 1;
-    
-    PD_ASSERT (instance_get()->pd_dspChain != NULL);
-    
-    size_t newSize = sizeof (t_int) * size;
-    size_t oldSize = sizeof (t_int) * instance_get()->pd_dspChainSize;
-    
-    instance_get()->pd_dspChain = (t_int *)PD_MEMORY_RESIZE (instance_get()->pd_dspChain, oldSize, newSize);
-    
-    {
-    //
-    int i;
-    va_list ap;
-
-    instance_get()->pd_dspChain[instance_get()->pd_dspChainSize - 1] = (t_int)f;
-
-    va_start (ap, n);
-    
-    for (i = 0; i < n; i++) { 
-        instance_get()->pd_dspChain[instance_get()->pd_dspChainSize + i] = va_arg (ap, t_int);
-    }
-    
-    va_end (ap);
-    //
-    }
-    
-    instance_get()->pd_dspChain[size - 1] = (t_int)instance_dspDone;
-    instance_get()->pd_dspChainSize = size;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void instance_signalAdd (t_signal *s)
-{
-    s->s_next = instance_get()->pd_signals;
-    
-    instance_get()->pd_signals = s;
-}
-
-void instance_signalFreeAll (void)
-{
-    t_signal *s = NULL;
-    
-    while ((s = instance_get()->pd_signals)) {
-    //
-    instance_get()->pd_signals = s->s_next;
-    
-    if (!s->s_hasBorrowed) { PD_MEMORY_FREE (s->s_vector); }
-    else {
-    //
-    PD_ASSERT (s->s_unused); PD_MEMORY_FREE (s->s_unused);
-    //
-    }
-    
-    PD_MEMORY_FREE (s);
-    //
-    }
+    chain_release (instance_getChain());
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -380,14 +280,14 @@ static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     
     /* Note that it can be a recursive call. */
     
-    if (!instance_get()->pd_loadingExternal) {
+    if (!instance_get()->pd_isLoadingExternal) {
 
         /* First search an external. */
         
         if (loader_load (instance_contextGetCurrent(), s)) {
-            instance_get()->pd_loadingExternal = 1;
+            instance_get()->pd_isLoadingExternal = 1;
             pd_message (x, s, argc, argv);              /* Try again. */
-            instance_get()->pd_loadingExternal = 0;
+            instance_get()->pd_isLoadingExternal = 0;
         
         /* Otherwise look for an abstraction. */
         
@@ -416,6 +316,7 @@ static t_pdinstance *instance_new()
     x->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     x->pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     
+    x->pd_chain       = chain_new();
     x->pd_register    = register_new();
     
     class_addAnything (x->pd_objectMaker, (t_method)instance_factory);
@@ -433,14 +334,13 @@ static t_pdinstance *instance_new()
 
 static void instance_free (t_pdinstance *x)
 {
-    PD_ASSERT (x->pd_dspChain       == NULL);
-    PD_ASSERT (x->pd_clocks         == NULL);
-    PD_ASSERT (x->pd_signals        == NULL);
-    PD_ASSERT (x->pd_roots          == NULL);
-    PD_ASSERT (x->pd_polling        == NULL);
-    PD_ASSERT (x->pd_autorelease    == NULL);
+    PD_ASSERT (x->pd_clocks      == NULL);
+    PD_ASSERT (x->pd_roots       == NULL);
+    PD_ASSERT (x->pd_polling     == NULL);
+    PD_ASSERT (x->pd_autorelease == NULL);
     
     register_free (x->pd_register);
+    chain_free (x->pd_chain);
     
     class_free (x->pd_canvasMaker);
     class_free (x->pd_objectMaker);

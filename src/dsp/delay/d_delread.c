@@ -114,7 +114,7 @@ static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
     if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_delread__tilde__, x->x_name); } }
     else {
     //
-    int buildIdentifier = instance_getDspChainIdentifier();
+    t_id buildIdentifier = chain_getIdentifier (instance_getChain());
     
     /* Set the offset size as zero in non-recirculating cases. */
         

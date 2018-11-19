@@ -26,7 +26,7 @@ typedef struct _delwrite_tilde {
     t_object                    dw_obj;                         /* Must be the first. */
     t_float                     dw_f;
     t_float                     dw_delayLineInMilliseconds;
-    int                         dw_buildIdentifier;
+    t_id                        dw_buildIdentifier;
     t_delwrite_tilde_control    dw_space;
     t_symbol                    *dw_name;
     } t_delwrite_tilde;

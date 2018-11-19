@@ -550,6 +550,7 @@ enum {
 
 struct _array;
 struct _box;
+struct _chain;
 struct _class;
 struct _clock;
 struct _constructor;
@@ -571,6 +572,7 @@ struct _voutlet;
 
 #define t_array                     struct _array
 #define t_box                       struct _box
+#define t_chain                     struct _chain
 #define t_class                     struct _class
 #define t_clock                     struct _clock
 #define t_constructor               struct _constructor
@@ -728,7 +730,7 @@ typedef struct _signal {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define dsp_add                         instance_dspChainAppend
+#define dsp_add(...)                    chain_append (instance_getChain(), __VA_ARGS__)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -932,6 +934,7 @@ PD_DLL void     post_log                        (const char *fmt, ...);         
 // MARK: -
 
 PD_DLL t_glist  *instance_contextGetCurrent     (void);
+PD_DLL t_chain  *instance_getChain              (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -953,7 +956,7 @@ PD_DLL int      signal_getOverlap               (t_signal *s);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-PD_DLL void     instance_dspChainAppend         (t_perform f, int n, ...);
+PD_DLL void     chain_append                    (t_chain *x, t_perform f, int n, ...);
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
