@@ -140,7 +140,7 @@ void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p
     
     {
     
-    t_phase phase   = instance_getDspPhase();
+    t_phase phase   = chain_getPhase (instance_getChain());
     int period      = p->bp_period;
     int bigPeriod   = PD_MAX (1, (int)(p->bp_blockSize / vectorSize));
     int phaseRead   = (int)((phase) & (t_phase)(bigPeriod - 1));

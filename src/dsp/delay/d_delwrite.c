@@ -117,7 +117,7 @@ static t_int *delwrite_tilde_perform (t_int *w)
 
 static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
 {
-    x->dw_buildIdentifier = instance_getDspChainIdentifier();
+    x->dw_buildIdentifier = chain_getIdentifier (instance_getChain());
     
     delwrite_tilde_delayLineUpdate (x, sp[0]->s_sampleRate, sp[0]->s_vectorSize);
     

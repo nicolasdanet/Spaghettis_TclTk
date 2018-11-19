@@ -7,82 +7,58 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#include "../../m_spaghettis.h"
-#include "../../m_core.h"
-#include "../../s_system.h"
-#include "../../d_dsp.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static int dsp_status;      /* Static. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static void dsp_report (void)
-{
-    if (symbol_hasThingQuiet (sym__dspstatus)) {
-    //
-    pd_float (symbol_getThing (sym__dspstatus), (t_float)dsp_status);
-    //
-    }
-}
+#ifndef __m_chain_h_
+#define __m_chain_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void dsp_setState (int n)
-{
-    n = (n != 0);
-    
-    if (n != dsp_status) {
-    //
-    instance_deselectAllObjects();
-    
-    if (n) { if (audio_start() == PD_ERROR_NONE) { instance_dspStart(); dsp_status = 1; } }
-    else {
-        instance_dspStop(); dsp_status = 0; audio_stop();
-    }
-    
-    gui_vAdd ("set ::var(isDsp) %d\n", dsp_status);     // --
-    
-    post ("dsp: %d", dsp_status);                       // --
-    
-    dsp_report();
-    //
-    }
-}
-
-int dsp_getState (void)
-{
-    return dsp_status;
-}
+typedef int64_t t_phase;                /* Assumed two's complement. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void dsp_update (void)
+struct _chain {
+    t_id        dsp_identifier;
+    t_phase     dsp_phase;
+    int         dsp_size;
+    t_int       *dsp_chain;
+    t_signal    *dsp_signals;
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_chain *chain_new          (void);
+
+void    chain_free          (t_chain *x);
+void    chain_initialize    (t_chain *x);
+void    chain_release       (t_chain *x);
+void    chain_tick          (t_chain *x);
+void    chain_addSignal     (t_chain *x, t_signal *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline t_id chain_getIdentifier (t_chain *x)
 {
-    dsp_resume (dsp_suspend());
+    return x->dsp_identifier;
 }
 
-int dsp_suspend (void)
+static inline t_phase chain_getPhase (t_chain *x)
 {
-    int n = dsp_status; if (n) { instance_dspStop(); dsp_status = 0; } return n;
+    return x->dsp_phase;
 }
 
-void dsp_resume (int n)
+static inline int chain_getSize (t_chain *x)
 {
-    if (n) { instance_dspStart(); dsp_status = 1; dsp_report(); }
-}
-
-void dsp_close (void)
-{
-    dsp_suspend();
+    return x->dsp_size;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#endif // __m_chain_h_

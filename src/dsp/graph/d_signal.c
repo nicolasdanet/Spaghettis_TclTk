@@ -31,7 +31,7 @@ static t_signal *signal_new (t_float sampleRate, int vectorSize, int overlap)
     s->s_vector     = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
     s->s_unused     = NULL;
     
-    instance_signalAdd (s);
+    chain_addSignal (instance_getChain(), s);
     
     return s;
 }

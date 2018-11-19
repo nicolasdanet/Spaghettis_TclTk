@@ -20,6 +20,7 @@
 #include "core/m_symbols.c"
 #include "core/m_environment.c"
 #include "core/m_autorelease.c"
+#include "core/m_chain.c"
 #include "core/m_instance.c"
 #include "core/m_stack.c"
 #include "core/m_bind.c"

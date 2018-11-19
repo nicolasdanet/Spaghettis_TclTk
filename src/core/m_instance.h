@@ -19,12 +19,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef int64_t t_phase;                    /* Assumed -1 has all bits set (two's complement). */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 typedef struct _stackelement {
     t_glist         *s_context;
     t_symbol        *s_loadedAbstraction;
@@ -39,7 +33,6 @@ typedef struct _stack {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 typedef struct _position {
     int             p_x;
@@ -58,16 +51,12 @@ typedef struct _pdinstance {
     uint64_t        pd_pollingCount;
     uint64_t        pd_autoreleaseCount;
     int             pd_overflowCount;
-    int             pd_dspChainIdentifier;
-    int             pd_dspChainSize;
-    t_phase         pd_dspPhase;
-    int             pd_loadingExternal;
-    int             pd_undoIsRecursive;
+    int             pd_isLoadingExternal;
+    int             pd_isUndoRecursive;
     t_symbol        *pd_loadingAbstraction;
-    t_int           *pd_dspChain;
+    t_chain         *pd_chain;
     t_dspcontext    *pd_ugenContext;
     t_clock         *pd_clocks;
-    t_signal        *pd_signals;
     t_glist         *pd_roots;
     t_clock         *pd_polling;
     t_clock         *pd_autorelease;
@@ -154,9 +143,6 @@ t_glist *instance_registerGetOwner              (t_id u);
 void    instance_dspTick                        (void);
 void    instance_dspStart                       (void);
 void    instance_dspStop                        (void);
-
-void    instance_signalAdd                      (t_signal *s);
-void    instance_signalFreeAll                  (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -277,26 +263,6 @@ static inline int instance_isMakerObject (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline t_phase instance_getDspPhase (void)
-{
-    return instance_get()->pd_dspPhase;
-}
-
-static inline int instance_getDspChainSize (void)
-{
-    return instance_get()->pd_dspChainSize;
-}
-
-static inline t_int *instance_getDspChain (void)
-{
-    return instance_get()->pd_dspChain;
-}
-
-static inline int instance_getDspChainIdentifier (void)
-{
-    return instance_get()->pd_dspChainIdentifier;
-}
-
 static inline t_glist *instance_getRoots (void)
 {
     return instance_get()->pd_roots;
@@ -305,20 +271,6 @@ static inline t_glist *instance_getRoots (void)
 static inline t_pd *instance_getNewestObject (void)
 {
     return instance_get()->pd_newest;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline void instance_incrementDspPhase (void)
-{
-    instance_get()->pd_dspPhase++;
-}
-
-static inline void instance_incrementDspChainIdentifier (void)
-{
-    instance_get()->pd_dspChainIdentifier++;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -336,17 +288,17 @@ static inline void instance_setNewestObject (t_pd *x)
 
 static inline int instance_undoIsRecursive (void)
 {
-    return (instance_get()->pd_undoIsRecursive > 0);
+    return (instance_get()->pd_isUndoRecursive > 0);
 }
 
 static inline void instance_undoSetRecursive (void)
 {
-    instance_get()->pd_undoIsRecursive++;
+    instance_get()->pd_isUndoRecursive++;
 }
 
 static inline void instance_undoUnsetRecursive (void)
 {
-    instance_get()->pd_undoIsRecursive--;
+    instance_get()->pd_isUndoRecursive--;
 }
 
 // -----------------------------------------------------------------------------------------------------------

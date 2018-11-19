@@ -21,6 +21,7 @@
 #include "core/m_helpers.h"
 #include "core/m_clipboard.h"
 #include "core/m_environment.h"
+#include "core/m_chain.h"
 #include "core/m_instance.h"
 #include "core/m_class.h"
 #include "core/m_object.h"
