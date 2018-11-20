@@ -532,6 +532,7 @@
 		17A2BD231F0A30480071D330 /* d_macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d_macros.h; sourceTree = "<group>"; };
 		17ACD8181FA46D3B00E4DB71 /* x_counter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_counter.c; sourceTree = "<group>"; };
 		17B1B571215FB9AB0067D398 /* m_encapsulate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_encapsulate.c; sourceTree = "<group>"; };
+		17B4224B21A54B1300AFA408 /* s_atomic_float.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = s_atomic_float.h; sourceTree = "<group>"; };
 		17B52BE42142B3DB0002F71A /* m_register.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_register.c; sourceTree = "<group>"; };
 		17B6F17D20D93E8000955A9D /* x_oscstream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_oscstream.c; sourceTree = "<group>"; };
 		17B7C280213BD2ED0095D248 /* m_undoduplicate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_undoduplicate.c; sourceTree = "<group>"; };
@@ -1359,6 +1360,7 @@
 				37D7D91F1E71AE6400CED977 /* s_clock.h */,
 				17C9FE1B1FE00B77007066EC /* s_time.h */,
 				17C9FE1F1FE00B78007066EC /* s_atomic.h */,
+				17B4224B21A54B1300AFA408 /* s_atomic_float.h */,
 				17C9FE211FE00B78007066EC /* s_atomic_mac.h */,
 				17C9FE2A1FE00B79007066EC /* s_atomic_posix.h */,
 				37A404B71C789F6200001FD3 /* s_midi.h */,

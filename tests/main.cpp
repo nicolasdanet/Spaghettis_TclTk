@@ -25,6 +25,7 @@
 
 #include "t_random.c"
 #include "t_atomic.c"
+#include "t_float.c"
 #include "t_ringbuffer.c"
 #include "t_time.c"
 #include "t_utf8.c"
