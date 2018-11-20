@@ -46,16 +46,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if defined ( __cplusplus )
+#if PD_CPP
 
 static inline void outlet_list (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 {
     outlet_list (x, argc, argv);
 }
 
-#else
-    #error
-#endif
+#endif // PD_CPP
 
 static inline void freebytes (void *x, size_t size)
 {
