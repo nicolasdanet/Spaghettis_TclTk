@@ -102,12 +102,19 @@ static void ooura_release (void)
 
 void fft_stateRelease (t_FFTState *x)
 {
-    if (x->ooura_cache) { PD_MEMORY_FREE (x->ooura_cache); }
+    if (x->ooura_cache) { PD_MEMORY_FREE (x->ooura_cache); } x->ooura_size = 0;
 }
 
 void fft_stateInitialize (t_FFTState *x, int n)
 {
-    fft_stateRelease (x); x->ooura_cache = (double *)PD_MEMORY_GET (n * 2 * sizeof (double));
+    if (n > x->ooura_size) {
+    //
+    fft_stateRelease (x);
+
+    x->ooura_cache = (double *)PD_MEMORY_GET (n * 2 * sizeof (double));
+    x->ooura_size  = n;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
