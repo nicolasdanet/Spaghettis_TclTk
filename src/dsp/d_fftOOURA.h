@@ -26,7 +26,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _FFTState { double *ooura_cache; } t_FFTState;
+typedef struct _FFTState { int ooura_size; double *ooura_cache; } t_FFTState;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -82,6 +82,13 @@ void fft_stateInitialize    (t_FFTState *x, int n);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Imitate Ron Mayer API. */
+
+/* Ron Mayer's real FFT have imaginary coefficients in reversed order. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static inline void fft_realFFT (t_FFTState *x, int n, PD_RESTRICTED s)
 {
     double *t = x->ooura_cache;
@@ -101,6 +108,30 @@ static inline void fft_realFFT (t_FFTState *x, int n, PD_RESTRICTED s)
     //
     }
 }
+
+#if PD_CPP
+
+static inline void fft_realFFT (t_FFTState *x, int n, t_float *s)
+{
+    double *t = x->ooura_cache;
+    int i, half = (n >> 1);
+    
+    for (i = 0; i < n; i++) { t[i] = (double)s[i]; }
+    
+    rdft (n, 1, t, ooura_ip, ooura_w);
+    
+    s[0]     = (t_float)t[0];
+    s[half]  = (t_float)t[1];
+    
+    for (i = 1; i < half; i++) {
+    //
+    s[i]     = (t_float)t[(i * 2) + 0];
+    s[n - i] = (t_float)t[(i * 2) + 1];
+    //
+    }
+}
+
+#endif
 
 static inline void fft_realInverseFFT (t_FFTState *x, int n, PD_RESTRICTED s)
 {

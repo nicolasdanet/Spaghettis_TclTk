@@ -1012,6 +1012,7 @@ PD_DLL void     chain_append                    (t_chain *x, t_perform f, int n,
 #define PD_HALF_PI                  1.5707963267948966192313216916398
 #define PD_PI                       3.1415926535897932384626433832795
 #define PD_TWO_PI                   6.283185307179586476925286766559
+#define PD_LOG_TWO                  0.69314718055994530941723212145818
 #define PD_LOG_TEN                  2.3025850929940456840179914546844
 #define PD_E                        2.7182818284590452353602874713527
 
