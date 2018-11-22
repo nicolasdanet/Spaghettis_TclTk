@@ -63,7 +63,6 @@ static void ifft_tilde_dsp (t_ifft_tilde *x, t_signal **sp)
     PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
     
-    fft_setSize (n);
     fft_stateInitialize (&x->x_state, n);
     
     dsp_addCopyPerform (sp[0]->s_vector, sp[2]->s_vector, n);

@@ -100,7 +100,7 @@ typedef double t_floatarg;
 
 static inline int ooura_init (int n)
 {
-    fft_setSize (n); return 1;
+    return (n <= FFT_MAXIMUM);
 }
 
 // -----------------------------------------------------------------------------------------------------------
