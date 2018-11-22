@@ -78,7 +78,6 @@ static void rifft_tilde_dsp (t_rifft_tilde *x, t_signal **sp)
     PD_RESTRICTED in2  = sp[1]->s_vector;
     PD_RESTRICTED out1 = sp[2]->s_vector;
 
-    fft_setSize (n);
     fft_stateInitialize (&x->x_state, n);
     
     dsp_addCopyPerform (in1, out1, half + 1);

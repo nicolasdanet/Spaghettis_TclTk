@@ -80,7 +80,6 @@ static void rfft_tilde_dsp (t_rfft_tilde *x, t_signal **sp)
     
     int half = (n >> 1);
     
-    fft_setSize (n);
     fft_stateInitialize (&x->x_state, n);
     
     dsp_addCopyPerform (in1, out1, n);

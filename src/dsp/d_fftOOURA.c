@@ -49,8 +49,6 @@ static int ooura_getNextSize (int n)
 static void ooura_dummy (int n)
 {
     double *t = (double *)PD_MEMORY_GET (n * sizeof (double));
-    
-    int i; for (i = 0; i < n; i++) { t[i] = 0.0; }
         
     rdft (n, 1, t, ooura_ip, ooura_w);
     
@@ -94,7 +92,7 @@ void ooura_initialize (int n)
 
 static void ooura_release (void)
 {
-    if (ooura_w)  { PD_MEMORY_FREE (ooura_w); }
+    if (ooura_w)  { PD_MEMORY_FREE (ooura_w);  }
     if (ooura_ip) { PD_MEMORY_FREE (ooura_ip); }
 }
 
@@ -118,7 +116,7 @@ void fft_stateInitialize (t_FFTState *x, int n)
 
 void fft_initialize (void)
 {
-    ooura_initialize (INTERNAL_BLOCKSIZE);
+    ooura_initialize (FFT_MAXIMUM);
 }
 
 void fft_release (void)
