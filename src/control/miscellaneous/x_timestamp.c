@@ -73,7 +73,7 @@ static void timestamp_list (t_timestamp *x, t_symbol *s, int argc, t_atom *argv)
         if (!err) { outlet_float (x->x_outlet, PD_NANOSECONDS_TO_MILLISECONDS (ns)); }
         else {
             err = stamp_elapsedNanoseconds (&t, &now, &ns);
-            PD_ASSERT (!err);
+            PD_ASSERT (!err); PD_UNUSED (err);
             outlet_float (x->x_outlet, PD_NANOSECONDS_TO_MILLISECONDS (ns) * (-1.0));
         }
     }
