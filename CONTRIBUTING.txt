@@ -1,5 +1,26 @@
 
 # Contributing
 
-Contributions are welcomed (planned to be more beginners-friendly in the future).
+Any contributions are welcomed:
+
+    - Send kudos and stars.
+    - Report typos and misspellings.
+    - Test compilation and report results.
+    - Use Spaghettis and signal issues.
+    - Use Spaghettis and open a feature request.
+    - Improve tutorials and/or help patches.
+    - Start a wiki.
+    - Improve the code.
+    - Ask.
+
+    ...
+
+How-To:
+
+    1. Fork Spaghettis on GitHub.
+    2. ( git clone https://github.com/YOURNAME/Spaghettis ).
+    3. ( git commit -am "Do stuff" ).
+    4. ( git push origin master ).
+    5. Make a PULL REQUEST.
+    6. Delete your fork once merged.
 
