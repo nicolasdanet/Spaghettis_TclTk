@@ -1,0 +1,5 @@
+
+# Platforms
+
+- macOS     10.14 (Mojave)
+- Ubuntu    18.04 (LTS)
