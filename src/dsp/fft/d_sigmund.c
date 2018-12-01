@@ -339,6 +339,8 @@ static void sigmund_tilde_proceedRaw (t_sigmund_tilde *x, t_float *array, t_sigm
     
     /* FFT. */
     
+    PD_ASSERT (n * 2 <= FFT_MAXIMUM);
+    
     fft_realFFT (&x->x_state, n * 2, t);
     
     for (i = 0; i < n; i++)     { real[i] = t[i];         }
