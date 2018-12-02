@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -7,58 +7,33 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef __m_chain_h_
-#define __m_chain_h_
+#ifndef __d_chain_h_
+#define __d_chain_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef int64_t t_phase;                /* Assumed two's complement. */
+t_chain     *chain_new                  (void);
+
+void        chain_release               (t_chain *x);
+void        chain_tick                  (t_chain *x);
+void        chain_addSignal             (t_chain *x, t_signal *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _chain {
-    t_id        dsp_identifier;
-    t_phase     dsp_phase;
-    int         dsp_size;
-    t_int       *dsp_chain;
-    t_signal    *dsp_signals;
-    };
+void        chain_setQuantum            (t_chain *x, int n);
+int         chain_hasQuantumRemaining   (t_chain *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_chain *chain_new          (void);
-
-void    chain_free          (t_chain *x);
-void    chain_initialize    (t_chain *x);
-void    chain_release       (t_chain *x);
-void    chain_tick          (t_chain *x);
-void    chain_addSignal     (t_chain *x, t_signal *s);
+int         chain_getSize               (t_chain *x);
+t_id        chain_getIdentifier         (t_chain *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline t_id chain_getIdentifier (t_chain *x)
-{
-    return x->dsp_identifier;
-}
-
-static inline t_phase chain_getPhase (t_chain *x)
-{
-    return x->dsp_phase;
-}
-
-static inline int chain_getSize (t_chain *x)
-{
-    return x->dsp_size;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#endif // __m_chain_h_
+#endif // __d_chain_h_

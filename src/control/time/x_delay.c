@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -164,12 +164,6 @@ void delay_setup (void)
     class_addMethod (c, (t_method)delay_floatDelay, sym__inlet2,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)delay_stop,       sym_stop,       A_NULL);
     class_addMethod (c, (t_method)delay_unit,       sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
-    
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)delay_unit,       sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
-        
-    #endif
     
     class_setDataFunction (c, delay_functionData);
 

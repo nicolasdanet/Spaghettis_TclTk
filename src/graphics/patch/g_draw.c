@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -76,7 +76,7 @@ void glist_updateEncapsulate (t_glist *glist)
     //
     t_gobj *y = selection_getObject (editor_getSelection (glist_getEditor (glist)));
     
-    if (gobj_isCanvas (y) && glist_isSubpatch (cast_glist (y)) && !glist_isArray (cast_glist (y))) {
+    if (gobj_isCanvas (y) && glist_isSubpatch (cast_glist (y))) {
         hasDeencapsulate = 1;
     }
     //
@@ -125,7 +125,7 @@ void glist_updateRectangle (t_glist *glist)
 {
     if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {
     //
-    if (!glist_isArray (glist)) {
+    if (!glist_isGraphicArray (glist)) {
     //
     gui_vAdd ("%s.c delete RECTANGLE\n", glist_getTagAsString (glist));
     
@@ -242,7 +242,7 @@ void glist_updateLinesForObject (t_glist *glist, t_object *o)
 
 static void glist_drawArrayName (t_glist *glist)
 {
-    if (glist_isArray (glist)) {
+    if (glist_isGraphicArray (glist)) {
     //
     int isSelected = glist_isSelected (glist);
     int color      = isSelected ? COLOR_SELECTED : COLOR_NORMAL;
@@ -266,7 +266,7 @@ static void glist_drawArrayName (t_glist *glist)
          
         for (y = glist->gl_graphics; y; y = y->g_next) {
         //
-        if (pd_class (y) == garray_class) {
+        if (gobj_isGraphicArray (y)) {
         //
         if (garray_isNameShown ((t_garray *)y)) {
         //
@@ -338,7 +338,7 @@ void glist_drawRectangle (t_glist *glist)
 {
     if (glist_isGraphOnParent (glist) && glist_hasWindow (glist)) {
     //
-    if (!glist_isArray (glist)) {
+    if (!glist_isGraphicArray (glist)) {
     //
     int a = rectangle_getTopLeftX (glist_getGraphGeometry (glist));
     int b = rectangle_getTopLeftY (glist_getGraphGeometry (glist));
@@ -658,7 +658,7 @@ void glist_windowOpen (t_glist *glist)
     else {
     //
     t_rectangle *r = glist_getWindowGeometry (glist);
-    int isEditable = !(glist_isArray (glist) || glist_isAbstraction (glist));
+    int isEditable = !(glist_isGraphicArray (glist) || glist_isAbstraction (glist));
     int isEditMode = isEditable && glist_hasEditMode (glist);
     
     gui_vAdd ("::ui_patch::create %s %d %d %d %d %d %d\n",    // --

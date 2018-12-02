@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -20,23 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define SCHEDULER_AUDIO_STOP        0
-#define SCHEDULER_AUDIO_POLL        1
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 #define AUDIO_DEFAULT_SAMPLERATE    44100
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* Note that LCM of (32000, 44100, 48000, 88200, 96000) is 14112000. */
-
-#define SYSTIME_PER_MILLISECOND     (32.0 * 441.0)
-#define SYSTIME_PER_SECOND          (SYSTIME_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -73,13 +57,10 @@ t_error     scheduler_main                          (void);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Usable in DSP perform. */
-
 t_systime   scheduler_getLogicalTime                (void);
 t_systime   scheduler_getLogicalTimeAfter           (double ms);
 double      scheduler_getMillisecondsSince          (t_systime systime);    
 double      scheduler_getUnitsSince                 (t_systime systime, double unit, int isSamples);
-void        scheduler_setAudioState                 (int state);
 void        scheduler_needToExit                    (void);
 void        scheduler_needToExitWithError           (void);
 int         scheduler_isExiting                     (void);
@@ -88,12 +69,14 @@ int         scheduler_isExiting                     (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error     priority_privilegeStart                 (void);
-t_error     priority_privilegeDrop                  (void);
-t_error     priority_privilegeRestore               (void);
-t_error     priority_privilegeRelinquish            (void);
+t_error     privilege_start                         (void);
+t_error     privilege_drop                          (void);
+t_error     privilege_restore                       (void);
 
-t_error     priority_setPolicy                      (void);
+t_error     privilege_relinquish                    (void);     /* Error MUST lead to stop execution. */
+void        privilege_check                         (void);
+
+t_error     priority_setPolicy                      (pthread_t thread);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -293,6 +276,7 @@ int         logger_isRunning                        (void);
 // MARK: -
 
 void        sys_setSignalHandlers                   (void);
+int         sys_isMainThread                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

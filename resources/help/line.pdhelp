@@ -2,7 +2,6 @@
 #X msg 96 108 0 1000;
 #X msg 36 108 1 1000;
 #X obj 84 264 line~;
-#X obj 132 264 vline~;
 #X text 12 264 See also:;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
@@ -58,8 +57,8 @@
 #X connect 3 0 2 1;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 180 192 pd again;
-#X connect 0 0 10 0;
-#X connect 1 0 10 0;
-#X connect 10 0 11 0;
-#X connect 12 0 10 0;
+#X connect 0 0 9 0;
+#X connect 1 0 9 0;
+#X connect 9 0 10 0;
+#X connect 11 0 9 0;
 #X coords 0 0 1 1 250 175 0 0 0;

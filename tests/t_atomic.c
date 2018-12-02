@@ -19,7 +19,7 @@ static t_uint64Atomic   test_uInt64Shared;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define ATOMIC_LOOP     10000000
+#define TEST_ATOMIC_LOOP     10000000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ void *test_increment (void *x)
     
     if ((n % 2) == 0) {
     //
-    for (i = 0; i < ATOMIC_LOOP; i++) {
+    for (i = 0; i < TEST_ATOMIC_LOOP; i++) {
         PD_ATOMIC_INT32_INCREMENT (&test_int32Shared);
         // test_int32Shared++;
         ttt_wasteTime (&w);
@@ -42,7 +42,7 @@ void *test_increment (void *x)
     //
     } else {
     //
-    for (i = 0; i < ATOMIC_LOOP; i++) {
+    for (i = 0; i < TEST_ATOMIC_LOOP; i++) {
         PD_ATOMIC_INT32_DECREMENT (&test_int32Shared);
         ttt_wasteTime (&w);
     }
@@ -130,7 +130,7 @@ void *test_loadStore (void *x)
         
         PD_RAND48_INIT (seed);
         
-        for (i = 0; i < ATOMIC_LOOP; i++) {
+        for (i = 0; i < TEST_ATOMIC_LOOP; i++) {
         //
         int k = (int)(PD_RAND48_DOUBLE (seed) * 8);
         
@@ -147,7 +147,7 @@ void *test_loadStore (void *x)
 
     } else {
     
-        for (i = 0; i < ATOMIC_LOOP; i++) {
+        for (i = 0; i < TEST_ATOMIC_LOOP; i++) {
         //
         PD_MEMORY_BARRIER;      /* Prevent hoisting the load out of the loop. */
         
@@ -217,7 +217,7 @@ void *test_bitwise (void *x)
     
     ttt_wasteInit (&w, n);
     
-    for (i = 0; i < (ATOMIC_LOOP / 32); i++) {
+    for (i = 0; i < (TEST_ATOMIC_LOOP / 32); i++) {
     //
     for (j = start; j < end; j++) {
         PD_ATOMIC_UINT32_SET (test_uInt32Masks[j], &test_uInt32Shared);

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -51,7 +51,7 @@ int     object_isSignalOutlet               (t_object *x, int m);
 void    object_serializeWidth               (t_object *x, t_buffer *b);
 void    object_distributeAtomsOnInlets      (t_object *x, int argc, t_atom *argv);
 
-t_float *object_getSignalAtIndex            (t_object *x, int m);
+t_float64Atomic *object_getSignalAtIndex    (t_object *x, int m);
 
 void    object_getSignalValues              (t_object *x, t_buffer *b, int n);
 void    object_setSignalValues              (t_object *x, int argc, t_atom *argv);
@@ -99,6 +99,11 @@ static inline int object_isAtom (t_object *x)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static inline t_float64Atomic *object_getFirstInletSignal (t_object *x)
+{
+    return &x->te_f;
+}
 
 static inline t_buffer *object_getBuffer (t_object *x)
 {

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -20,7 +20,7 @@
 #include "core/m_symbols.c"
 #include "core/m_environment.c"
 #include "core/m_autorelease.c"
-#include "core/m_chain.c"
+#include "core/m_clocks.c"
 #include "core/m_instance.c"
 #include "core/m_stack.c"
 #include "core/m_bind.c"
@@ -93,11 +93,11 @@
 #include "system/s_main.c"
 #include "system/s_scheduler.c"
 #include "system/s_priority.c"
+#include "system/s_privilege.c"
 #include "system/s_handlers.c"
 #include "system/s_clock.c"
 #include "system/s_time.c"
-#include "system/s_atomic_mac.c"
-#include "system/s_atomic_posix.c"
+#include "system/s_atomic.c"
 #include "system/s_receiver.c"
 #include "system/s_monitor.c"
 #include "system/s_defer.c"
@@ -344,6 +344,9 @@
 /* DSP. */
 
 #include "dsp/graph/d_dsp.c"
+#include "dsp/graph/d_dspthread.c"
+#include "dsp/graph/d_chain.c"
+#include "dsp/graph/d_closures.c"
 #include "dsp/graph/d_signal.c"
 #include "dsp/graph/d_ugen.c"
 #include "dsp/graph/d_canvas.c"
@@ -353,7 +356,6 @@
 #include "dsp/graph/d_dac.c"
 #include "dsp/graph/d_resample.c"
 #include "dsp/graph/d_block.c"
-#include "dsp/graph/d_blockinfo.c"
 #include "dsp/graph/d_vperform.c"
 #include "dsp/graph/d_perform.c"
 #include "dsp/graph/d_functions.c"
@@ -369,7 +371,6 @@
 
 #include "dsp/convert/d_sig.c"
 #include "dsp/convert/d_line.c"
-#include "dsp/convert/d_vline.c"
 #include "dsp/convert/d_snapshot.c"
 #include "dsp/convert/d_env.c"
 #include "dsp/convert/d_threshold.c"

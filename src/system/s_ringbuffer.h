@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -31,10 +31,10 @@ void    ringbuffer_free                 (t_ringbuffer *x);
 
 /* Functions below could be called concurrently. */
 
-int32_t ringbuffer_getAvailableWrite    (t_ringbuffer *x);
-int32_t ringbuffer_getAvailableRead     (t_ringbuffer *x);
-int32_t ringbuffer_write                (t_ringbuffer *x, const void *data, int32_t n);
-int32_t ringbuffer_read                 (t_ringbuffer *x, void *data, int32_t n);
+int32_t ringbuffer_getAvailableWrite    (t_ringbuffer *x);                              /* Usable in DSP. */
+int32_t ringbuffer_getAvailableRead     (t_ringbuffer *x);                              /* Usable in DSP. */
+int32_t ringbuffer_write                (t_ringbuffer *x, const void *v, int32_t n);    /* Usable in DSP. */
+int32_t ringbuffer_read                 (t_ringbuffer *x, void *v, int32_t n);          /* Usable in DSP. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

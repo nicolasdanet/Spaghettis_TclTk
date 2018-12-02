@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -61,19 +62,13 @@ t_buffer *unop_tilde_functionData (t_gobj *z, int flags)
     struct _unop_tilde *x = (struct _unop_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
     }
     
     return NULL;
-}
-
-void unop_tilde_signals (struct _unop_tilde *x, t_float f)
-{
-    x->x_f = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -101,15 +96,11 @@ void abs_tilde_setup (void)
             (t_newmethod)abs_tilde_new,
             NULL,
             sizeof (t_abs_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_abs_tilde, x_f);
-    
     class_addDSP (c, (t_method)abs_tilde_dsp);
 
-    class_addMethod (c, (t_method)unop_tilde_signals, sym__signals, A_FLOAT, A_NULL);
-    
     class_setDataFunction (c, unop_tilde_functionData);
     class_setHelpName (c, sym_math__tilde__);
     

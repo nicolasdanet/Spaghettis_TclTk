@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -15,11 +15,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "x_text.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_WITH_LEGACY
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -62,6 +57,8 @@ void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
         error_invalidArguments (sym_text__space__tolist, argc, argv); pd_free (cast_pd (x)); x = NULL;
     }
     
+    warning_deprecatedObject (sym_text__space__tolist);
+    
     return x;
 }
 
@@ -99,6 +96,8 @@ void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
         error_invalidArguments (sym_text__space__fromlist, argc, argv);
         pd_free (cast_pd (x)); x = NULL;
     }
+    
+    warning_deprecatedObject (sym_text__space__fromlist);
     
     return x;
 }
@@ -162,23 +161,6 @@ void textlist_destroy (void)
     class_free (texttolist_class);
     class_free (textfromlist_class);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#else
-
-void textlist_setup (void)
-{
-
-}
-
-void textlist_destroy (void)
-{
-
-}
-
-#endif // PD_WITH_LEGACY
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

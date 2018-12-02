@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -21,8 +21,8 @@ t_class *block_class;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define BLOCK_PROLOGUE  2
-#define BLOCK_EPILOGUE  2
+#define BLOCK_PROLOGUE  3
+#define BLOCK_EPILOGUE  3
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -42,31 +42,16 @@ int block_getBlockSize (t_block *x)
     return x->bk_blockSize;
 }
 
-/* Get the current step number in submultiple iteration. */
-
-int block_getCount (t_block *x)
+static void block_float (t_block *x, t_float f)
 {
-    if (x->bk_frequency > 1) { return (x->bk_frequency - x->bk_count); }
-    else {
-        return 0;
-    }
-}
-
-int block_getFrequency (t_block *x)
-{
-    return x->bk_frequency;
-}
-
-int block_getPeriod (t_block *x)
-{
-    return x->bk_period;
+    if (x->bk_switchable) { PD_ATOMIC_INT32_WRITE ((f != 0.0), &x->bk_switchedOn); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void block_setProperties (t_block *x, t_blockproperties *p)
+void block_getAndSetProperties (t_block *x, t_blockproperties *p, t_blockclosure *c)
 {
     int parentBlockSize         = p->bp_blockSize;
     int isTopPatch              = p->bp_reblocked;
@@ -85,25 +70,22 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     PD_ASSERT (PD_IS_POWER_2 (period));
     PD_ASSERT (PD_IS_POWER_2 (frequency));
     PD_ASSERT (period == 1 || frequency == 1);
-        
+    
+    chain_setQuantum (instance_chainGetTemporary(), blockSize);
+    
     reblocked |= (overlap    != 1);
     reblocked |= (blockSize  != parentBlockSize);
     reblocked |= (downsample != 1);
     reblocked |= (upsample   != 1);
     
-    x->bk_reblocked      = reblocked;
-    x->bk_phase          = (int)(chain_getPhase (instance_getChain()) & (t_phase)(period - 1));
-    x->bk_period         = period;
-    x->bk_frequency      = frequency;
+    c->s_reblocked      = reblocked;
+    c->s_period         = period;
+    c->s_frequency      = frequency;
 
-    // PD_LOG ("PHASE");
-    // PD_LOG_NUMBER (chain_getPhase (instance_getChain()));
     // PD_LOG ("BLOCK FREQUENCY");
-    // PD_LOG_NUMBER (x->bk_frequency);
+    // PD_LOG_NUMBER (c->s_frequency);
     // PD_LOG ("BLOCK PERIOD");
-    // PD_LOG_NUMBER (x->bk_period);
-    // PD_LOG ("BLOCK PHASE");
-    // PD_LOG_NUMBER (x->bk_phase);
+    // PD_LOG_NUMBER (c->s_period);
     
     p->bp_blockSize      = blockSize;
     p->bp_overlap        = overlap;
@@ -116,22 +98,105 @@ void block_setProperties (t_block *x, t_blockproperties *p)
     p->bp_frequency      = frequency;
 }
 
-void block_setLengthInDspChain (t_block *x, int context, int epilogue)
+void block_setLengthInDspChain (t_blockclosure *c, int context, int epilogue)
 {
-    x->bk_contextLength  = context;
-    x->bk_epilogueLength = epilogue;
+    c->s_contextLength  = context;
+    c->s_epilogueLength = epilogue;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void block_setProceed (t_block *x, t_symbol *s, int argc, t_atom *argv)
+static void block_dsp (t_block *x, t_signal **sp)
+{
+    /* Empty but required. */
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* Perform the context only one time (the first) over the period. */
+/* By-pass it the rest of the times (or either all the time if it is switched). */
+/* Notice that with a period of 1 (i.e. NOT or smaller reblocked) it is triggered each time. */
+
+t_int *block_performPrologue (t_int *w)
+{
+    t_block *x        = (t_block *)w[1];
+    t_blockclosure *c = (t_blockclosure *)w[2];
+    
+    if (PD_ATOMIC_INT32_READ (&x->bk_switchedOn)) {
+    //
+    if (c->s_phase) { c->s_phase++; if (c->s_phase == c->s_period) { c->s_phase = 0; } }
+    else {
+        c->s_count = c->s_frequency;
+        c->s_phase = c->s_period > 1 ? 1 : 0;
+
+        return (w + BLOCK_PROLOGUE);
+    }
+    //
+    }
+    
+    /* Go to the outlet epilogue (to zero the signal out). */
+    
+    return (w + c->s_contextLength);
+}
+
+/* Perform the context several time (according to the frequency set above). */
+/* It is required for instance if the block size of a context is smaller than its parent's one. */
+
+t_int *block_performEpilogue (t_int *w)
+{
+    // t_block *x = (t_block *)w[1];
+    t_blockclosure *c = (t_blockclosure *)w[2];
+    
+    if (c->s_reblocked) {
+    //
+    if (c->s_count - 1) {
+        c->s_count--; return (w - (c->s_contextLength - (BLOCK_PROLOGUE + BLOCK_EPILOGUE)));
+    } else {
+        return (w + BLOCK_EPILOGUE);
+    }
+    //
+    }
+    
+    return (w + BLOCK_EPILOGUE + c->s_epilogueLength);   /* By-pass the outlets epilogue. */
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *block_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_block *x  = (t_block *)z;
+    t_buffer *b = buffer_new();
+    
+    if (x->bk_switchable) {
+        buffer_appendSymbol (b, &s_float);
+        buffer_appendFloat (b, PD_ATOMIC_INT32_READ (&x->bk_switchedOn));
+    }
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void block_newProceed (t_block *x, int argc, t_atom *argv)
 {
     t_float f1      = atom_getFloatAtIndex (0, argc, argv);
     t_float f2      = atom_getFloatAtIndex (1, argc, argv);
     t_float f3      = atom_getFloatAtIndex (2, argc, argv);
-    int blockSize   = (int)PD_MAX (0.0, f1);
+    int blockSize   = (int)PD_CLAMP (f1, 0.0, BLOCK_MAXIMUM);
     int overlap     = (int)PD_MAX (1.0, f2);
     int upsample    = 1;
     int downsample  = 1;
@@ -147,8 +212,7 @@ static void block_setProceed (t_block *x, t_symbol *s, int argc, t_atom *argv)
     }
         
     if (!PD_IS_POWER_2 (downsample) || !PD_IS_POWER_2 (upsample)) {
-        warning_invalid (sym_block__tilde__, sym_resampling);
-        downsample = 1; upsample = 1;
+        downsample = 1; upsample = 1; warning_invalid (sym_block__tilde__, sym_resampling);
     }
     //
     }
@@ -159,133 +223,15 @@ static void block_setProceed (t_block *x, t_symbol *s, int argc, t_atom *argv)
     x->bk_upsample   = upsample;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void block_set (t_block *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int state = dsp_suspend();
-    
-    buffer_clear (x->bk_cache); buffer_append (x->bk_cache, argc, argv);
-    
-    block_setProceed (x, s, argc, argv);
-    
-    dsp_resume (state);
-}
-
-static void block_float (t_block *x, t_float f)
-{
-    if (x->bk_switchable) { x->bk_switchedOn = (f != 0.0); }
-}
-
-static void block_dsp (t_block *x, t_signal **sp)
-{
-
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* Perform the context only one time (the first) over the period. */
-/* By-pass it the rest of the times (or either all the time if it is switched). */
-/* Notice that with a period of 1 (i.e NOT or smaller reblocked) it is triggered each time. */
-
-t_int *block_performPrologue (t_int *w)
-{
-    t_block *x = (t_block *)w[1];
-    
-    if (x->bk_switchedOn) {
-    //
-    if (x->bk_phase) { x->bk_phase++; if (x->bk_phase == x->bk_period) { x->bk_phase = 0; } }
-    else {
-        x->bk_count = x->bk_frequency;
-        x->bk_phase = x->bk_period > 1 ? 1 : 0;
-
-        return (w + BLOCK_PROLOGUE);
-    }
-    //
-    }
-    
-    /* Go to the outlet epilogue (to zero the signal out). */
-    
-    return (w + x->bk_contextLength);
-}
-
-/* Perform the context several time (according to the frequency set above). */
-/* It is required for instance if the block size of a context is smaller than its parent's one. */
-
-t_int *block_performEpilogue (t_int *w)
-{
-    t_block *x = (t_block *)w[1];
-    
-    if (x->bk_reblocked) {
-    //
-    if (x->bk_count - 1) {
-        x->bk_count--; return (w - (x->bk_contextLength - (BLOCK_PROLOGUE + BLOCK_EPILOGUE)));
-    } else {
-        return (w + BLOCK_EPILOGUE);
-    }
-    //
-    }
-    
-    return (w + BLOCK_EPILOGUE + x->bk_epilogueLength);   /* By-pass the outlets epilogue. */
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static t_buffer *block_functionData (t_gobj *z, int flags)
-{
-    if (SAVED_DEEP (flags)) {
-    //
-    t_block *x = (t_block *)z;
-    
-    if (buffer_getSize (x->bk_cache)) {
-    //
-    t_buffer *b = buffer_new();
-    
-    buffer_appendSymbol (b, sym__restore);
-    buffer_append (b, buffer_getSize (x->bk_cache), buffer_getAtoms (x->bk_cache));
-    
-    if (x->bk_switchable) {
-        buffer_appendComma (b);
-        buffer_appendSymbol (b, &s_float);
-        buffer_appendFloat (b, x->bk_switchedOn);
-    }
-    
-    return b;
-    //
-    }
-    //
-    }
-    
-    return NULL;
-}
-
-static void block_restore (t_block *x, t_symbol *s, int argc, t_atom *argv)
-{
-    block_setProceed (x, s, argc, argv);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void *block_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_block *x = (t_block *)pd_new (block_class);
     
-    x->bk_phase      = 0;
-    x->bk_period     = 1;
-    x->bk_frequency  = 1;
     x->bk_switchable = 0;
-    x->bk_switchedOn = 1;
-    x->bk_cache      = buffer_new();
     
-    block_setProceed (x, s, argc, argv);
+    PD_ATOMIC_INT32_WRITE (1, &x->bk_switchedOn);
+    
+    block_newProceed (x, argc, argv);
     
     return x;
 }
@@ -295,14 +241,10 @@ static void *block_newSwitch (t_symbol *s, int argc, t_atom *argv)
     t_block *x = (t_block *)block_new (s, argc, argv);
     
     x->bk_switchable = 1;
-    x->bk_switchedOn = 0;
+    
+    PD_ATOMIC_INT32_WRITE (0, &x->bk_switchedOn);
     
     return x;
-}
-
-static void block_free (t_block *x)
-{
-    buffer_free (x->bk_cache);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -315,7 +257,7 @@ void block_tilde_setup (void)
     
     c = class_new (sym_block__tilde__,
             (t_newmethod)block_new,
-            (t_method)block_free,
+            NULL,
             sizeof (t_block),
             CLASS_DEFAULT, 
             A_GIMME,
@@ -325,9 +267,6 @@ void block_tilde_setup (void)
             
     class_addDSP (c, (t_method)block_dsp);
     class_addFloat (c, (t_method)block_float);
-    
-    class_addMethod (c, (t_method)block_set,        sym_set,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)block_restore,    sym__restore,   A_GIMME, A_NULL);
     
     class_setDataFunction (c, block_functionData);
 

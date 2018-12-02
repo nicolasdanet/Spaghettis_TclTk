@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -94,27 +94,6 @@ static void ooura_release (void)
 {
     if (ooura_w)  { PD_MEMORY_FREE (ooura_w);  }
     if (ooura_ip) { PD_MEMORY_FREE (ooura_ip); }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void fft_stateRelease (t_FFTState *x)
-{
-    if (x->ooura_cache) { PD_MEMORY_FREE (x->ooura_cache); } x->ooura_size = 0;
-}
-
-void fft_stateInitialize (t_FFTState *x, int n)
-{
-    if (n > x->ooura_size) {
-    //
-    fft_stateRelease (x);
-
-    x->ooura_cache = (double *)PD_MEMORY_GET (n * 2 * sizeof (double));
-    x->ooura_size  = n;
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

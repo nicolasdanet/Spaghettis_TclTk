@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -118,20 +118,6 @@ t_float canvas_getBlockSize (t_glist *glist)
     }
     
     return blockSize;
-}
-
-t_block *canvas_getBlock (t_glist *glist)
-{
-    t_glist *p = glist;
-    
-    while (p) {
-        t_block *b = canvas_getBlockIfContainsAny (&p);
-        if (b) {
-            return b;
-        }
-    }
-    
-    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

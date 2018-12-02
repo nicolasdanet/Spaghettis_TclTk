@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -242,42 +242,6 @@ void iemgui_setReceive (void *x, t_symbol *s)
     iemgui_checkSendReceiveLoop (iem);
 }
 
-#if PD_WITH_LEGACY
-
-void iemgui_setLabel (void *x, t_symbol *s)
-{
-    t_iem *iem  = cast_iem (x);
-    t_symbol *t = symbol_hashToDollar (symbol_emptyAsNil (s));
-    
-    iem->iem_unexpandedLabel = t;
-    iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
-}
-
-void iemgui_setLabelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_iem *iem = cast_iem (x);
-    
-    if (argc > 1) {
-    //
-    iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
-    iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
-    //
-    }
-}
-
-void iemgui_setLabelFont (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_iem *iem = cast_iem (x);
-    
-    if (argc) {
-    //
-    iem->iem_fontSize = (int)atom_getFloatAtIndex (argc > 1 ? 1 : 0, argc, argv);
-    //
-    }
-}
-
-#endif // PD_WITH_LEGACY
-
 void iemgui_setBackgroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_iem *iem = cast_iem (x);
@@ -295,41 +259,6 @@ void iemgui_setForegroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
     
     if (glist_isOnScreen (iem->iem_owner)) { (*iem->iem_fnDraw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
-
-#if PD_WITH_LEGACY
-
-void iemgui_setPosition (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_iem *iem = cast_iem (x);
-    
-    if (argc > 1) {
-    //
-    object_setSnappedX (cast_object (iem), atom_getFloatAtIndex (0, argc, argv));
-    object_setSnappedY (cast_object (iem), atom_getFloatAtIndex (1, argc, argv));
-    
-    iemgui_boxChanged (x);
-    //
-    }
-}
-
-void iemgui_movePosition (void *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_iem *iem = cast_iem (x);
-    
-    if (argc > 1) {
-    //
-    int m = atom_getFloatAtIndex (0, argc, argv);
-    int n = atom_getFloatAtIndex (1, argc, argv);
-    
-    object_setSnappedX (cast_object (iem), object_getX (cast_object (iem)) + m);
-    object_setSnappedY (cast_object (iem), object_getY (cast_object (iem)) + n);
-
-    iemgui_boxChanged (x);
-    //
-    }
-}
-
-#endif // PD_WITH_LEGACY
 
 void iemgui_boxChanged (void *x)
 {

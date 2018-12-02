@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -15,18 +15,18 @@
 // MARK: -
 
 struct _inlet {
-    t_pd            i_pd;                   /* MUST be the first. */
-    struct _inlet   *i_next;
-    t_object        *i_owner;
-    t_pd            *i_receiver;
-    t_symbol        *i_type;
-    int             i_hot;
+    t_pd                    i_pd;           /* MUST be the first. */
+    struct _inlet           *i_next;
+    t_object                *i_owner;
+    t_pd                    *i_receiver;
+    t_symbol                *i_type;
+    int                     i_hot;
     union {
-        t_symbol    *i_method;
-        t_gpointer  *i_pointer;
-        t_float     *i_float;
-        t_symbol    **i_symbol;
-        t_float     i_signal;
+        t_symbol            *i_method;
+        t_gpointer          *i_pointer;
+        t_float             *i_float;
+        t_symbol            **i_symbol;
+        t_float64Atomic     i_signal;
     } i_un;
     };
 
@@ -61,7 +61,7 @@ static inline t_object *inlet_getOwner (t_inlet *x)
     return x->i_owner;
 }
 
-static inline t_float *inlet_getSignal (t_inlet *x)
+static inline t_float64Atomic *inlet_getSignal (t_inlet *x)
 {
     return &x->i_un.i_signal;
 }

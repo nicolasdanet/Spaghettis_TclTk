@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -57,19 +57,6 @@ static void get_pointer (t_get *x, t_gpointer *gp)
     } else { error_invalid (sym_get, &s_pointer); }
 }
 
-#if PD_WITH_LEGACY
-
-static void get_set (t_get *x, t_symbol *templateName, t_symbol *fieldName)
-{
-    if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_get); }
-    else {
-        x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
-        x->x_fields[0].gv_fieldName = fieldName;
-    }
-}
-
-#endif
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -113,13 +100,7 @@ void get_setup (void)
             A_NULL);
             
     class_addPointer (c, (t_method)get_pointer); 
-    
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)get_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
-    
-    #endif
-    
+
     get_class = c;
 }
 

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -26,8 +27,6 @@ static t_class *rifft_tilde_class;          /* Shared. */
 
 typedef struct _rifft_tilde {
     t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    t_FFTState  x_state;
     t_outlet    *x_outlet;
     } t_rifft_tilde;
 
@@ -78,12 +77,12 @@ static void rifft_tilde_dsp (t_rifft_tilde *x, t_signal **sp)
     PD_RESTRICTED in2  = sp[1]->s_vector;
     PD_RESTRICTED out1 = sp[2]->s_vector;
 
-    fft_stateInitialize (&x->x_state, n);
+    t_FFTState *t = fftstate_new (n);
     
     dsp_addCopyPerform (in1, out1, half + 1);
     
     dsp_add (rifft_tilde_performFlip, 3, in2 + 1, out1 + n, half - 1);
-    dsp_add (rifft_tilde_perform, 3, &x->x_state, out1, n);
+    dsp_add (rifft_tilde_perform, 3, t, out1, n);
     //
     }
 }
@@ -99,7 +98,6 @@ t_buffer *rifft_tilde_functionData (t_gobj *z, int flags)
     t_rifft_tilde *x = (t_rifft_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
     object_getSignalValues (cast_object (x), b, 2);
     
     return b;
@@ -107,11 +105,6 @@ t_buffer *rifft_tilde_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
-}
-
-void rifft_tilde_signals (t_rifft_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -129,11 +122,6 @@ static void *rifft_tilde_new (void)
     return x;
 }
 
-static void rifft_tilde_free (t_rifft_tilde *x)
-{
-    fft_stateRelease (&x->x_state);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -144,17 +132,13 @@ void rifft_tilde_setup (void)
     
     c = class_new (sym_rifft__tilde__,
             (t_newmethod)rifft_tilde_new,
-            (t_method)rifft_tilde_free,
+            NULL,
             sizeof (t_rifft_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_rifft_tilde, x_f);
-    
     class_addDSP (c, (t_method)rifft_tilde_dsp);
-    
-    class_addMethod (c, (t_method)rifft_tilde_signals, sym__signals, A_GIMME, A_NULL);
-    
+        
     class_setDataFunction (c, rifft_tilde_functionData);
     
     rifft_tilde_class = c;

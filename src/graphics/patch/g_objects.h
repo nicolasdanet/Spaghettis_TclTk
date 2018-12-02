@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -69,10 +69,11 @@ void        garray_setDataFromIndex         (t_garray *x, int i, t_float f);
 t_float     garray_getAmplitude             (t_garray *x);
 t_id        garray_getTag                   (t_garray *x);
 void        garray_setNextTag               (t_garray *x);
-void        garray_setAsUsedInDSP           (t_garray *x);
 void        garray_setSaveWithParent        (t_garray *x, int savedWithParent);
 void        garray_setHideName              (t_garray *x, int hideName);
 void        garray_setInhibit               (t_garray *x, int inhibit);
+void        garray_setAsUsedInDSP           (t_garray *x);
+int         garray_isUsedInDSP              (t_garray *x);
 int         garray_isNameShown              (t_garray *x);
 void        garray_redraw                   (t_garray *x);
 void        garray_resize                   (t_garray *x, t_float f);

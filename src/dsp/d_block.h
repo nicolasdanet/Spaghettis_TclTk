@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -14,16 +14,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define BLOCK_MAXIMUM   65536
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 typedef struct _blockproperties {
-    int         bp_blockSize;               /* Blocksize (power of two). */
-    int         bp_overlap;                 /* Number of overlap (power of two). */
-    int         bp_downsample;              /* Downsampling factor. */
-    int         bp_upsample;                /* Upsampling factor. */
-    int         bp_switchable;              /* Is it a "block~" or a "switch~" object. */
-    int         bp_reblocked;               /* True if reblocking is required. */
-    t_float     bp_sampleRate;              /* Sample rate of the context. */
-    int         bp_period;                  /* Supermultiple factor. */
-    int         bp_frequency;               /* Submultiple factor. */
+    int             bp_blockSize;           /* Blocksize (power of two). */
+    int             bp_overlap;             /* Number of overlap (power of two). */
+    int             bp_downsample;          /* Downsampling factor. */
+    int             bp_upsample;            /* Upsampling factor. */
+    int             bp_switchable;          /* Is it a "block~" or a "switch~" object. */
+    int             bp_reblocked;           /* True if reblocking is required. */
+    t_float         bp_sampleRate;          /* Sample rate of the context. */
+    int             bp_period;              /* Supermultiple factor. */
+    int             bp_frequency;           /* Submultiple factor. */
     } t_blockproperties;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -36,22 +42,16 @@ typedef struct _blockproperties {
 /* It can be a supermultiple OR a submultiple. */
 
 typedef struct _block {
-    t_object    bk_obj;                     /* Must be the first. */
-    int         bk_blockSize;               /* Blocksize (power of two). */
-    int         bk_overlap;                 /* Number of overlap (power of two). */
-    int         bk_downsample;              /* Downsampling factor (power of two). */
-    int         bk_upsample;                /* Upsampling factor (power of two). */
-    int         bk_switchable;              /* Is it a "block~" or a "switch~" object. */
-    int         bk_switchedOn;              /* False if all context IS bypassed. */
-    int         bk_reblocked;               /* True if reblocking is required. */
-    int         bk_contextLength;           /* Size of the DSP chain for all the context. */
-    int         bk_epilogueLength;          /* Size of the DSP chain for the epilogue. */
-    int         bk_phase;                   /* Index for supermultiple block size. */
-    int         bk_period;                  /* Supermultiple factor. */
-    int         bk_count;                   /* Counter for submultiple block size. */
-    int         bk_frequency;               /* Submultiple factor. */
-    t_buffer    *bk_cache;
+    t_object        bk_obj;                 /* Must be the first. */
+    int             bk_blockSize;           /* Blocksize (power of two). */
+    int             bk_overlap;             /* Number of overlap (power of two). */
+    int             bk_downsample;          /* Downsampling factor (power of two). */
+    int             bk_upsample;            /* Upsampling factor (power of two). */
+    int             bk_switchable;          /* Is it a "block~" or a "switch~" object. */
+    t_int32Atomic   bk_switchedOn;          /* False if all context IS bypassed. */
     } t_block;
+
+/* See also t_blockclosure structure. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,9 +66,6 @@ t_int       *block_performEpilogue          (t_int *w);
 
 t_float     block_getResamplingRatio        (t_block *x);
 int         block_getBlockSize              (t_block *x);
-int         block_getCount                  (t_block *x);
-int         block_getFrequency              (t_block *x);
-int         block_getPeriod                 (t_block *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

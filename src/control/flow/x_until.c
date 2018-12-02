@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -66,6 +66,8 @@ static void *until_new (void)
     
     inlet_new2 (x, &s_bang);
 
+    warning_deprecatedObject (sym_until);
+    
     return x;
 }
 

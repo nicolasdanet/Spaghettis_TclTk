@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -92,16 +93,12 @@ void log_tilde_setup (void)
             (t_newmethod)log_tilde_new,
             NULL,
             sizeof (t_log_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_NULL);
-            
-    CLASS_SIGNAL (c, t_log_tilde, x_f);
-    
+                
     class_addDSP (c, (t_method)log_tilde_dsp);
-    
-    class_addMethod (c, (t_method)binop_tilde_signals, sym__signals, A_GIMME, A_NULL);
-    
+        
     class_setDataFunction (c, binop_tilde_functionData);
     class_setHelpName (c, sym_math__tilde__);
     

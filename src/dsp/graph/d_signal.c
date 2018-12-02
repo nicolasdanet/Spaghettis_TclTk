@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -31,7 +31,7 @@ static t_signal *signal_new (t_float sampleRate, int vectorSize, int overlap)
     s->s_vector     = (t_sample *)PD_MEMORY_GET (vectorSize * sizeof (t_sample));
     s->s_unused     = NULL;
     
-    chain_addSignal (instance_getChain(), s);
+    chain_addSignal (instance_chainGetTemporary(), s);
     
     return s;
 }

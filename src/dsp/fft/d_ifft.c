@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -26,8 +27,6 @@ static t_class *ifft_tilde_class;       /* Shared. */
 
 typedef struct _ifft_tilde {
     t_object    x_obj;                  /* Must be the first. */
-    t_float     x_f;
-    t_FFTState  x_state;
     t_outlet    *x_outletLeft;
     t_outlet    *x_outletRight;
     } t_ifft_tilde;
@@ -63,12 +62,12 @@ static void ifft_tilde_dsp (t_ifft_tilde *x, t_signal **sp)
     PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
     
-    fft_stateInitialize (&x->x_state, n);
+    t_FFTState *t = fftstate_new (n);
     
     dsp_addCopyPerform (sp[0]->s_vector, sp[2]->s_vector, n);
     dsp_addCopyPerform (sp[1]->s_vector, sp[3]->s_vector, n);
     
-    dsp_add (ifft_tilde_perform, 4, &x->x_state, sp[2]->s_vector, sp[3]->s_vector, n);
+    dsp_add (ifft_tilde_perform, 4, t, sp[2]->s_vector, sp[3]->s_vector, n);
     //
     }
 }
@@ -84,7 +83,6 @@ t_buffer *ifft_tilde_functionData (t_gobj *z, int flags)
     t_ifft_tilde *x = (t_ifft_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
     object_getSignalValues (cast_object (x), b, 2);
     
     return b;
@@ -92,11 +90,6 @@ t_buffer *ifft_tilde_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
-}
-
-void ifft_tilde_signals (t_ifft_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -115,11 +108,6 @@ static void *ifft_tilde_new (void)
     return x;
 }
 
-static void ifft_tilde_free (t_ifft_tilde *x)
-{
-    fft_stateRelease (&x->x_state);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -130,16 +118,12 @@ void ifft_tilde_setup (void)
     
     c = class_new (sym_ifft__tilde__,
             (t_newmethod)ifft_tilde_new,
-            (t_method)ifft_tilde_free,
+            NULL,
             sizeof (t_ifft_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_ifft_tilde, x_f);
-    
     class_addDSP (c, (t_method)ifft_tilde_dsp);
-    
-    class_addMethod (c, (t_method)ifft_tilde_signals, sym__signals, A_GIMME, A_NULL);
     
     class_setDataFunction (c, ifft_tilde_functionData);
     

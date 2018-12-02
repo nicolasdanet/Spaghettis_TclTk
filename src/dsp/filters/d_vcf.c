@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -30,17 +30,11 @@ t_class *vcf_tilde_class;                   /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _vcf_tilde_control {
-    t_sample            c_real;
-    t_sample            c_imaginary;
-    t_sample            c_q;
-    t_sample            c_conversion;
-    } t_vcf_tilde_control;
-
 typedef struct _vcf_tilde {
     t_object            x_obj;              /* Must be the first. */
-    t_float             x_f;
-    t_vcf_tilde_control x_space;
+    t_sample            x_real;
+    t_sample            x_imaginary;
+    t_float64Atomic     x_q;
     t_outlet            *x_outletLeft;
     t_outlet            *x_outletRight;
     } t_vcf_tilde;
@@ -49,20 +43,9 @@ typedef struct _vcf_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void vcf_tilde_restore (t_vcf_tilde *, t_symbol *, int, t_atom *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void vcf_tilde_qFactor (t_vcf_tilde *x, t_float f)
 {
-    x->x_space.c_q = (t_sample)PD_MAX (0.0, f);
-}
-
-static void vcf_tilde_clear (t_vcf_tilde *x)
-{
-    vcf_tilde_restore (x, sym_clear, 0, NULL);
+    f = PD_MAX (0.0, f); PD_ATOMIC_FLOAT64_WRITE (f, &x->x_q);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -75,18 +58,18 @@ static void vcf_tilde_clear (t_vcf_tilde *x)
 
 static t_int *vcf_tilde_perform (t_int *w)
 {
-    t_vcf_tilde_control *c = (t_vcf_tilde_control *)(w[1]);
+    t_vcf_tilde *x     = (t_vcf_tilde *)(w[1]);
     PD_RESTRICTED in1  = (t_sample *)(w[2]);
     PD_RESTRICTED in2  = (t_sample *)(w[3]);
     PD_RESTRICTED out1 = (t_sample *)(w[4]);
     PD_RESTRICTED out2 = (t_sample *)(w[5]);
-    int n = (int)(w[6]);
+    t_space *t         = (t_space *)(w[6]);
+    int n = (int)(w[7]);
     
-    t_sample re = c->c_real;
-    t_sample im = c->c_imaginary;
-    t_sample q  = c->c_q;
-    t_sample k  = c->c_conversion;
+    t_sample re = x->x_real;
+    t_sample im = x->x_imaginary;
     
+    double q = PD_ATOMIC_FLOAT64_READ (&x->x_q);
     double qInverse = (q > 0.0 ? 1.0 / q : 0.0);
     double correction = 2.0 - (2.0 / (q + 2.0));
 
@@ -97,7 +80,7 @@ static t_int *vcf_tilde_perform (t_int *w)
     double pReal;
     double pImaginary;
     
-    centerFrequency = (*in2++) * k; 
+    centerFrequency = (*in2++) * t->s_float0;
     centerFrequency = PD_MAX (0.0, centerFrequency);
     
     r = (qInverse > 0.0 ? 1.0 - centerFrequency * qInverse : 0.0);
@@ -124,15 +107,15 @@ static t_int *vcf_tilde_perform (t_int *w)
     if (PD_FLOAT32_IS_BIG_OR_SMALL (re)) { re = 0.0; }
     if (PD_FLOAT32_IS_BIG_OR_SMALL (im)) { im = 0.0; }
     
-    c->c_real = re;
-    c->c_imaginary = im;
+    x->x_real = re;
+    x->x_imaginary = im;
     
-    return (w + 7);
+    return (w + 8);
 }
 
 static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
 {
-    x->x_space.c_conversion = (t_sample)(PD_TWO_PI / sp[0]->s_sampleRate);
+    t_space *t = space_new(); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
    
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[0]->s_vector != sp[3]->s_vector);
@@ -140,11 +123,12 @@ static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
     PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
     
-    dsp_add (vcf_tilde_perform, 6, &x->x_space,
+    dsp_add (vcf_tilde_perform, 7, x,
         sp[0]->s_vector,
         sp[1]->s_vector,
         sp[2]->s_vector,
-        sp[3]->s_vector, 
+        sp[3]->s_vector,
+        t,
         sp[0]->s_vectorSize);
 }
 
@@ -160,13 +144,8 @@ static t_buffer *vcf_tilde_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__inlet2);
-    buffer_appendFloat (b,  (t_float)x->x_space.c_q);
+    buffer_appendFloat (b,  PD_ATOMIC_FLOAT64_READ (&x->x_q));
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__restore);
-    buffer_appendFloat (b,  (t_float)x->x_space.c_real);
-    buffer_appendFloat (b,  (t_float)x->x_space.c_imaginary);
-    buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
     object_getSignalValues (cast_object (x), b, 2);
     
     return b;
@@ -176,17 +155,6 @@ static t_buffer *vcf_tilde_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void vcf_tilde_restore (t_vcf_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    x->x_space.c_real      = (t_sample)atom_getFloatAtIndex (0, argc, argv);
-    x->x_space.c_imaginary = (t_sample)atom_getFloatAtIndex (1, argc, argv);
-}
-
-static void vcf_tilde_signals (t_vcf_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -194,12 +162,7 @@ static void vcf_tilde_signals (t_vcf_tilde *x, t_symbol *s, int argc, t_atom *ar
 static void *vcf_tilde_new (t_float f)
 {
     t_vcf_tilde *x = (t_vcf_tilde *)pd_new (vcf_tilde_class);
-
-    x->x_space.c_real       = 0.0;
-    x->x_space.c_imaginary  = 0.0;
-    x->x_space.c_q          = 0.0;
-    x->x_space.c_conversion = 0.0;
-
+    
     vcf_tilde_qFactor (x, f);
     
     x->x_outletLeft  = outlet_newSignal (cast_object (x));
@@ -223,18 +186,13 @@ void vcf_tilde_setup (void)
             (t_newmethod)vcf_tilde_new,
             NULL,
             sizeof (t_vcf_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_vcf_tilde, x_f);
-    
     class_addDSP (c, (t_method)vcf_tilde_dsp);
     
-    class_addMethod (c, (t_method)vcf_tilde_qFactor,    sym__inlet2,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)vcf_tilde_clear,      sym_clear,      A_NULL);
-    class_addMethod (c, (t_method)vcf_tilde_restore,    sym__restore,   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vcf_tilde_signals,    sym__signals,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vcf_tilde_qFactor, sym__inlet2, A_FLOAT, A_NULL);
     
     class_setDataFunction (c, vcf_tilde_functionData);
     

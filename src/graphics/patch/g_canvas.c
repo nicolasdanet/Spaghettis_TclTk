@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -193,9 +193,7 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
-    #if PD_WITH_LEGACY
-    
-    if (!isGOP) {
+    if (!isGOP) {   /* Allow compatbility with legacy. */
     
         glist_setBounds (glist, &bounds);
             
@@ -206,8 +204,6 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
             bounds_set (&bounds, 0.0, 0.0, PD_ABS (scaleX), PD_ABS (scaleY));
         }
     }
-    
-    #endif
     
     rectangle_setByWidthAndHeight (&r, a, b, width, height);
     
@@ -269,7 +265,7 @@ static void canvas_window (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     glist_setWindowGeometry (glist, &r);
     
-    if (glist_isArray (glist)) { glist_updateWindow (glist); }
+    if (glist_isGraphicArray (glist)) { glist_updateWindow (glist); }
     //
     }
 }
@@ -467,7 +463,7 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     t3 = glist_isGraphOnParent (glist);
     
     PD_ASSERT (argc == 7);
-    PD_ASSERT (!glist_isArray (glist));
+    PD_ASSERT (!glist_isGraphicArray (glist));
     PD_ASSERT (manager != NULL);
     
     {
@@ -521,6 +517,8 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
     
     PD_ASSERT (s1 == NULL);
     PD_ASSERT (s2 == NULL);
+    
+    if (isDirty) { glist_deselectAll (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -553,7 +551,7 @@ static void canvas_functionUndo (t_gobj *x, t_buffer *b)
     t_bounds *bounds = glist_getBounds (glist);
     t_rectangle *r   = glist_getGraphGeometry (glist);
     
-    PD_ASSERT (!glist_isArray (glist));
+    PD_ASSERT (!glist_isGraphicArray (glist));
     
     buffer_appendSymbol (b, sym__canvasdialog);
     buffer_appendFloat (b,  rectangle_getTopLeftX (r));
@@ -569,14 +567,14 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy, t_mouse *m)
 {
     t_glist *glist = cast_glist (x);
     
-    if (glist_isArray (glist)) {
+    if (glist_isGraphicArray (glist)) {
     
         /* Legacy patches can contains multiple arrays. */
         
         t_gobj *y = NULL;
         
         for (y = glist->gl_graphics; y; y = y->g_next) {
-            if (pd_class (y) == garray_class) { garray_functionProperties ((t_garray *)y); }
+            if (gobj_isGraphicArray (y)) { garray_functionProperties ((t_garray *)y); }
         }
         
     } else {
@@ -597,7 +595,7 @@ static void canvas_functionProperties (t_gobj *x, t_glist *dummy, t_mouse *m)
                             bounds_getBottom (bounds));
 
         PD_UNUSED (err); PD_ASSERT (!err);
-    
+        
         stub_new (cast_pd (glist), (void *)glist, t);
     }
 }
@@ -631,7 +629,7 @@ static void canvas_free (t_glist *glist)
 {
     glist_undoDisable (glist);
     
-    if (glist_hasView (glist) && glist_hasWindow (glist)) { glist_windowClose (glist); } 
+    if (glist_hasView (glist) && glist_hasWindow (glist)) { glist_windowClose (glist); }
     
     stub_destroyWithKey ((void *)glist);
     
@@ -657,12 +655,6 @@ void canvas_setup (void)
             A_NULL);
 
     class_addCreator ((t_newmethod)canvas_newSubpatch, sym_pd, A_DEFSYMBOL, A_NULL);
-    
-    #if PD_WITH_LEGACY
-    
-    class_addCreator ((t_newmethod)canvas_newSubpatch, sym_page, A_DEFSYMBOL, A_NULL);
-        
-    #endif
     
     class_addDSP (c, (t_method)canvas_dsp);
     class_addClick (c, (t_method)canvas_click);
@@ -691,6 +683,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeFloatAtom,         sym_floatatom,          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeSymbolAtom,        sym_symbolatom,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeComment,           sym_comment,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_makeComment,           sym_text,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_makeScalar,            sym_scalar,             A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_makeBang,              sym_bng,                A_GIMME, A_NULL);
@@ -738,21 +731,6 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_fromScalarDialog,      sym__scalardialog,      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_fromDialog,            sym__canvasdialog,      A_GIMME, A_NULL);
    
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)canvas_open,                  sym_menu__dash__open,   A_NULL);
-    class_addMethod (c, (t_method)canvas_makeComment,           sym_text,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeToggle,            sym_toggle,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeVu,                sym_vumeter,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makePanel,             sym_mycnv,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_makeDial,              sym_numbox,             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_close,                 sym_menuclose,          A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_save,                  sym_menusave,           A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_saveAs,                sym_menusaveas,         A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_requireArrayDialog,    sym_menuarray,          A_NULL);
-
-    #endif
-    
     class_setWidgetBehavior (c, &glist_widgetbehavior);
     class_setSaveFunction (c, canvas_functionSave);
     class_setUndoFunction (c, canvas_functionUndo);

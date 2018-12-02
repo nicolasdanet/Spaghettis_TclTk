@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -245,8 +245,8 @@ static void symbol_hasThingError (t_symbol *s)
 {  
     if (s) {
     if (s != sym___hash__A) {
-    if (!string_startWith (s->s_name, PD_GUISTUB)) {    /* Avoid to moan for proxy binds. */
-    if (!string_startWith (s->s_name, ".x")) {
+    if (!string_startWith (s->s_name, PD_GUISTUB))  {    /* Avoid to moan for proxy binds. */
+    if (!string_startWith (s->s_name, PD_GUIPROXY)) {
         error_noSuch (s, sym_object);
     }
     }

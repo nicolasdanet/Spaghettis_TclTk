@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define AUTORELEASE_PERIOD  PD_SECONDS_TO_MILLISECONDS (7.0)
+#define AUTORELEASE_PERIOD  PD_SECONDS_TO_MILLISECONDS (3.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

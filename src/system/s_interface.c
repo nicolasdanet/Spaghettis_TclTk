@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -131,7 +131,7 @@ static t_error interface_launchGuiSpawnProcess (void)
     
     if (pid < 0)   { err = PD_ERROR; PD_BUG; }
     else if (!pid) {
-        if (!priority_privilegeRelinquish()) {                  /* Child lose setuid privileges. */
+        if (!privilege_relinquish()) {                  /* Child lose setuid privileges. */
             execl ("/bin/sh", "sh", "-c", command, NULL);
         }
         _exit (1);
@@ -269,14 +269,14 @@ t_error interface_start (void)
     t_error err = interface_startGui();
     
     PD_ASSERT (!err);
-    
-    if (!err && !(err = priority_privilegeRestore())) { 
-        err |= priority_setPolicy();
-        err |= priority_privilegeRelinquish();
+
+    if (!(err |= privilege_restore())) {
+        err |= instance_dspCreate();
+        err |= privilege_relinquish();
     }
     
     PD_ASSERT (!err);
-        
+    
     return err;
 }
 

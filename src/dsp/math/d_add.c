@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -53,7 +54,6 @@ t_buffer *binop_tilde_functionData (t_gobj *z, int flags)
     struct _binop_tilde *x = (struct _binop_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
     object_getSignalValues (cast_object (x), b, 2);
     
     return b;
@@ -61,11 +61,6 @@ t_buffer *binop_tilde_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
-}
-
-void binop_tilde_signals (struct _binop_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -79,11 +74,10 @@ t_buffer *binopScalar_tilde_functionData (t_gobj *z, int flags)
     struct _binopscalar_tilde *x = (struct _binopscalar_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__restore);
-    buffer_appendFloat (b,  x->x_scalar);
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendFloat (b,  PD_ATOMIC_FLOAT64_READ (&x->x_scalar));
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b,  x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
@@ -92,14 +86,9 @@ t_buffer *binopScalar_tilde_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-void binopScalar_tilde_restore (struct _binopscalar_tilde *x, t_float f)
+void binopScalar_tilde_float (struct _binopscalar_tilde *x, t_float f)
 {
-    x->x_scalar = f;
-}
-
-void binopScalar_tilde_signals (struct _binopscalar_tilde *x, t_float f)
-{
-    x->x_f = f;
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_scalar);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -115,7 +104,7 @@ static void *add_tilde_newWithScalar (t_symbol *s, int argc, t_atom *argv)
     x->x_scalar = atom_getFloatAtIndex (0, argc, argv);
     x->x_outlet = outlet_newSignal (cast_object (x));
 
-    inlet_newFloat (cast_object (x), &x->x_scalar);
+    inlet_new2 (x, &s_float);
     
     return x;
 }
@@ -153,7 +142,7 @@ void add_tilde_setup (void)
                                 (t_newmethod)add_tilde_new,
                                 NULL,
                                 sizeof (t_add_tilde),
-                                CLASS_DEFAULT,
+                                CLASS_DEFAULT | CLASS_SIGNAL,
                                 A_GIMME,
                                 A_NULL);
     
@@ -161,30 +150,15 @@ void add_tilde_setup (void)
                                 NULL,
                                 NULL,
                                 sizeof (t_addscalar_tilde),
-                                CLASS_DEFAULT,
+                                CLASS_DEFAULT | CLASS_SIGNAL,
                                 A_NULL);
     
-    CLASS_SIGNAL (add_tilde_class, t_add_tilde, x_f);
-    CLASS_SIGNAL (addScalar_tilde_class, t_addscalar_tilde, x_f);
-            
     class_addDSP (add_tilde_class, (t_method)add_tilde_dsp);
     class_addDSP (addScalar_tilde_class, (t_method)addScalar_tilde_dsp);
     
-    class_addMethod (add_tilde_class,
-        (t_method)binop_tilde_signals,
-        sym__signals,
-        A_GIMME,
-        A_NULL);
-    
     class_addMethod (addScalar_tilde_class,
-        (t_method)binopScalar_tilde_signals,
-        sym__signals,
-        A_FLOAT,
-        A_NULL);
-    
-    class_addMethod (addScalar_tilde_class,
-        (t_method)binopScalar_tilde_restore,
-        sym__restore,
+        (t_method)binopScalar_tilde_float,
+        sym__inlet2,
         A_FLOAT,
         A_NULL);
 

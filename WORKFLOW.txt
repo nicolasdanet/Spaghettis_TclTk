@@ -1,7 +1,7 @@
 
 # Workflow
 
-First fork the repository on GitHub
+First fork the repository on GitHub.
 
 Clone:
 

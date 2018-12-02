@@ -4,11 +4,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* < https://github.com/mintomic/mintomic/tree/master/tests > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #include "t_randomMT64.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -23,7 +18,7 @@ static double           test_doubleShared;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define FLOAT_LOOP      10000000
+#define TEST_FLOAT_LOOP     10000000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -57,7 +52,7 @@ void *test_float (void *x)
     
     if ((n % 2) == 0) {
         
-        for (i = 0; i < FLOAT_LOOP; i++) {
+        for (i = 0; i < TEST_FLOAT_LOOP; i++) {
         //
         double f = test_floatGet();
         
@@ -72,7 +67,7 @@ void *test_float (void *x)
 
     } else {
     
-        for (i = 0; i < FLOAT_LOOP; i++) {
+        for (i = 0; i < TEST_FLOAT_LOOP; i++) {
         //
         PD_MEMORY_BARRIER;      /* Prevent hoisting the load out of the loop. */
         
@@ -101,7 +96,9 @@ void test13__float() {    /* Read / Write. */
 
 TTT_BEGIN (AtomicFloat, 13, "Atomic - Float")
 
+    TTT_EXPECT (sizeof (t_float64Atomic) == 8);
     TTT_EXPECT (sizeof (double) == sizeof (uint64_t));
+    TTT_EXPECT (sizeof (double) == sizeof (t_float64Atomic));
     
     PD_ATOMIC_FLOAT64_WRITE (test_floatGet(), &test_float64Shared);
     

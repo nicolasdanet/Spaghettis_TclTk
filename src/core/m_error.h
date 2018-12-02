@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -29,7 +29,6 @@ int  error__options                         (t_symbol *s, int argc, t_atom *argv
 
 void error_dspLoop                          (void);
 void error_stackOverflow                    (void);
-void error_ioStuck                          (void);
 void error_stubNotFound                     (void);
 void error_searchPathOverflow               (void);
 
@@ -40,7 +39,6 @@ void error_searchPathOverflow               (void);
 void error_recursiveInstantiation           (t_symbol *);
 void error_badClassName                     (t_symbol *);
 void error_sendReceiveLoop                  (t_symbol *);
-void error_canNotSetMultipleFields          (t_symbol *);
 void error_alreadyExists                    (t_symbol *);
 void error_canNotOpen                       (t_symbol *);
 void error_canNotCreate                     (t_symbol *);
@@ -88,6 +86,7 @@ void warning_containsDuplicates             (void);
 void warning_tooManyCharacters              (t_symbol *);
 void warning_multipleBinding                (t_symbol *);
 void warning_fileIsCorrupted                (t_symbol *);
+void warning_deprecatedObject               (t_symbol *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

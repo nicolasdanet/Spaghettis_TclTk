@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -26,10 +26,10 @@ static t_class *receive_tilde_class;            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _receive_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_sample    *x_vector;
-    t_symbol    *x_name;
-    t_outlet    *x_outlet;
+    t_object            x_obj;                  /* Must be the first. */
+    t_pointerAtomic     x_p;
+    t_symbol            *x_name;
+    t_outlet            *x_outlet;
     } t_receive_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -39,13 +39,11 @@ typedef struct _receive_tilde {
 static void receive_tilde_set (t_receive_tilde *x, t_symbol *s)
 {
     t_send_tilde *sender = (t_send_tilde *)symbol_getThingByClass ((x->x_name = s), send_tilde_class);
+    t_sample *t = sender ? sender->x_vector : NULL;
     
-    x->x_vector = NULL;
+    PD_ATOMIC_POINTER_WRITE (t, &x->x_p);
     
-    if (!sender) { if (x->x_name != &s_) { error_canNotFind (sym_receive__tilde__, x->x_name); } }
-    else {
-        x->x_vector = sender->x_vector;
-    }
+    if (!t && x->x_name != &s_) { error_canNotFind (sym_receive__tilde__, x->x_name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -58,7 +56,7 @@ static t_int *receive_tilde_perform (t_int *w)
 {
     t_receive_tilde *x = (t_receive_tilde *)(w[1]);
     PD_RESTRICTED out  = (t_sample *)(w[2]);
-    PD_RESTRICTED in   = x->x_vector;
+    PD_RESTRICTED in   = (t_sample *)PD_ATOMIC_POINTER_READ (&x->x_p);
     
     if (in) { memcpy (out, in, INTERNAL_BLOCKSIZE * sizeof (t_sample)); }
     else {
@@ -73,7 +71,7 @@ static void receive_tilde_dsp (t_receive_tilde *x, t_signal **sp)
     if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_receive__tilde__, sym_size); }
     else {
         receive_tilde_set (x, x->x_name);
-        PD_ASSERT (x->x_vector != sp[0]->s_vector);
+        PD_ASSERT ((t_sample *)PD_ATOMIC_POINTER_READ (&x->x_p) != sp[0]->s_vector);
         dsp_add (receive_tilde_perform, 2, x, sp[0]->s_vector);
     }
 }
@@ -107,9 +105,10 @@ static void *receive_tilde_new (t_symbol *s)
 {
     t_receive_tilde *x = (t_receive_tilde *)pd_new (receive_tilde_class);
     
-    x->x_vector = NULL;
     x->x_name   = s;
     x->x_outlet = outlet_newSignal (cast_object (x));
+    
+    PD_ATOMIC_POINTER_WRITE (NULL, &x->x_p);
     
     return x;
 }

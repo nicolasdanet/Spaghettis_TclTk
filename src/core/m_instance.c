@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -16,14 +16,30 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define INSTANCE_TIME_CLOCKS    1000
+#define INSTANCE_TIME_CHAIN     5000
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_pdinstance *pd_this;  /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_new                 (void *, t_symbol *, int, t_atom *);
-void canvas_closeProceed        (t_glist *);
-void scheduler_setLogicalTime   (t_systime);
+void canvas_new             (void *, t_symbol *, int, t_atom *);
+void canvas_closeProceed    (t_glist *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+int dspthread_isChainSafeToDelete (t_dspthread *, t_chain *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void *atomic_pointerSwap    (void *, t_pointerAtomic *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -117,91 +133,125 @@ t_glist *instance_registerGetOwner (t_id u)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_chain *instance_getChain (void)
+void instance_clocksAdd (t_clock *c)
 {
-    return instance_get()->pd_chain;
+    clocks_add (instance_get()->pd_clocks, c);
+}
+
+void instance_clocksRemove (t_clock *c)
+{
+    clocks_remove (instance_get()->pd_clocks, c);
+}
+
+void instance_clocksTick (t_systime t)
+{
+    PD_ASSERT (sys_isMainThread());
+    
+    clocks_tick (instance_get()->pd_clocks, t);
+}
+
+void instance_clocksClean (void)
+{
+    int n = PD_ATOMIC_INT32_INCREMENT (&instance_get()->pd_clocksCount);
+    
+    if (n > INSTANCE_TIME_CLOCKS) {
+    //
+    if (clocks_clean (instance_get()->pd_clocks)) {
+        PD_ATOMIC_INT32_WRITE (0, &instance_get()->pd_clocksCount);
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void instance_dspTick (void)
+t_chain *instance_chainGetCurrent (void)
 {
-    chain_tick (instance_getChain());
+    return (t_chain *)PD_ATOMIC_POINTER_READ (&instance_get()->pd_chain);
+}
+
+static void instance_chainSetCurrent (t_chain *chain)
+{
+    t_chain *oldChain = (t_chain *)atomic_pointerSwap ((void *)chain, &instance_get()->pd_chain);
+    
+    if (oldChain) { chain_release (oldChain); }
+}
+
+t_chain *instance_chainGetTemporary (void)
+{
+    t_chain *chain = instance_get()->pd_build; PD_ASSERT (chain); return chain;
+}
+
+static void instance_chainStartTemporary (void)
+{
+    PD_ASSERT (instance_get()->pd_build == NULL); instance_get()->pd_build = chain_new();
+}
+
+static void instance_chainPushTemporary (void)
+{
+    instance_chainSetCurrent (instance_chainGetTemporary()); instance_get()->pd_build = NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int instance_isChainSafeToDelete (t_chain *chain)
+{
+    int safe = dspthread_isChainSafeToDelete (instance_get()->pd_dsp, chain);
+    
+    PD_ASSERT (safe);   /* It should never happened unless DSP stalled. */
+    
+    return safe;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error instance_dspCreate (void)
+{
+    return dspthread_create (instance_get()->pd_dsp);
 }
 
 void instance_dspStart (void)
 {
     t_glist *glist;
 
-    // PD_LOG ("START");
-    
-    chain_release (instance_getChain());
-    
     PD_ASSERT (instance_ugenGetContext() == NULL);
     
-    chain_initialize (instance_getChain());
+    instance_chainStartTemporary();
     
     for (glist = instance_getRoots(); glist; glist = glist_getNext (glist)) { 
         canvas_dspProceed (glist, 1, NULL); 
     }
+    
+    instance_chainPushTemporary();
+    
+    dspthread_run (instance_get()->pd_dsp);
 }
 
 void instance_dspStop (void)
 {
-    // PD_LOG ("STOP");
-    
-    chain_release (instance_getChain());
+    dspthread_stop (instance_get()->pd_dsp);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* Enqueue the clock sorted up by logical time. */
-
-void instance_clockAdd (t_clock *c)
+void instance_dspClean (void)
 {
-    t_systime systime = clock_getLogicalTime (c);
-    
-    if (instance_get()->pd_clocks && clock_getLogicalTime (instance_get()->pd_clocks) <= systime) {
-    
-        t_clock *m = instance_get()->pd_clocks;
-        t_clock *n = instance_get()->pd_clocks->c_next;
-        
-        while (m) {
-            if (!n || clock_getLogicalTime (n) > systime) {
-                m->c_next = c; c->c_next = n; return;
-            }
-            m = n;
-            n = m->c_next;
-        }
-        
-    } else {
-        c->c_next = instance_get()->pd_clocks; instance_get()->pd_clocks = c;
-    }
-}
-
-void instance_clockUnset (t_clock *c)
-{
-    if (c == instance_get()->pd_clocks) { instance_get()->pd_clocks = c->c_next; }
-    else {
-        t_clock *t = instance_get()->pd_clocks;
-        while (t->c_next != c) { t = t->c_next; } t->c_next = c->c_next;
-    }
-}
-
-void instance_clockTick (t_systime t)
-{
-    while (instance_get()->pd_clocks && clock_getLogicalTime (instance_get()->pd_clocks) < t) {
+    if (instance_chainGetCurrent()) {
     //
-    t_clock *c = instance_get()->pd_clocks;
-    scheduler_setLogicalTime (clock_getLogicalTime (c));
-    clock_unset (c);
-    clock_execute (c);
+    t_systime t = dspthread_time (instance_get()->pd_dsp);
+    
+    if (t && scheduler_getMillisecondsSince (t) > INSTANCE_TIME_CHAIN) { instance_chainSetCurrent (NULL); }
     //
     }
+}
+
+void instance_dspFree (void)
+{
+    instance_chainSetCurrent (NULL); dspthread_free (instance_get()->pd_dsp);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -316,31 +366,25 @@ static t_pdinstance *instance_new()
     x->pd_objectMaker = class_new (sym_objectmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     x->pd_canvasMaker = class_new (sym_canvasmaker, NULL, NULL, 0, CLASS_ABSTRACT, A_NULL);
     
-    x->pd_chain       = chain_new();
+    x->pd_clocks      = clocks_new();
     x->pd_register    = register_new();
+    x->pd_dsp         = dspthread_new();
     
     class_addAnything (x->pd_objectMaker, (t_method)instance_factory);
-        
+    
     class_addMethod (x->pd_canvasMaker, (t_method)canvas_new, sym_canvas, A_GIMME, A_NULL);
-    
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (x->pd_canvasMaker, (t_method)template_create, sym_struct, A_GIMME, A_NULL);
-    
-    #endif
     
     return x;
 }
 
 static void instance_free (t_pdinstance *x)
 {
-    PD_ASSERT (x->pd_clocks      == NULL);
     PD_ASSERT (x->pd_roots       == NULL);
     PD_ASSERT (x->pd_polling     == NULL);
     PD_ASSERT (x->pd_autorelease == NULL);
     
     register_free (x->pd_register);
-    chain_free (x->pd_chain);
+    clocks_free (x->pd_clocks);
     
     class_free (x->pd_canvasMaker);
     class_free (x->pd_objectMaker);

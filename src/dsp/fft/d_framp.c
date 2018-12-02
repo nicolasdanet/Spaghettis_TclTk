@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -14,6 +14,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -31,7 +32,6 @@ static t_class *framp_tilde_class;          /* Shared. */
 
 typedef struct _framp_tilde {
     t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
     t_outlet    *x_outletLeft;
     t_outlet    *x_outletRight;
     } t_framp_tilde;
@@ -147,7 +147,6 @@ t_buffer *framp_tilde_functionData (t_gobj *z, int flags)
     t_framp_tilde *x = (t_framp_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
     object_getSignalValues (cast_object (x), b, 2);
     
     return b;
@@ -155,11 +154,6 @@ t_buffer *framp_tilde_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
-}
-
-void framp_tilde_signals (t_framp_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -190,15 +184,11 @@ void framp_tilde_setup (void)
             (t_newmethod)framp_tilde_new,
             NULL,
             sizeof (t_framp_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_framp_tilde, x_f);
-    
     class_addDSP (c, (t_method)framp_tilde_dsp);
-    
-    class_addMethod (c, (t_method)framp_tilde_signals, sym__signals, A_GIMME, A_NULL);
-    
+        
     class_setDataFunction (c, framp_tilde_functionData);
     
     framp_tilde_class = c;

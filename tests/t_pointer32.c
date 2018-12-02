@@ -1,77 +1,111 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
-
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
-#ifndef __s_atomic_mac_h_
-#define __s_atomic_mac_h_
+/* < https://github.com/mintomic/mintomic/tree/master/tests > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include <libkern/OSAtomic.h>
+#if PD_32BIT
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
-typedef volatile int32_t    __attribute__ ((__aligned__ (4)))   t_int32Atomic;
-typedef volatile uint32_t   __attribute__ ((__aligned__ (4)))   t_uint32Atomic;
-typedef volatile uint64_t   __attribute__ ((__aligned__ (8)))   t_uint64Atomic;
+static int test_pointerFailed;
+
+static t_pointerAtomic  test_pointerShared;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_MEMORY_BARRIER                       OSMemoryBarrier()
+#define TEST_POINTER_LOOP   10000000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_ATOMIC_INT32_INCREMENT(q)            OSAtomicIncrement32 ((q))
-#define PD_ATOMIC_INT32_DECREMENT(q)            OSAtomicDecrement32 ((q))
+void *test_pointer (void *x)
+{
+    int i, n = (int)(long)x;
+    
+    TTTWaste w;
+    
+    ttt_wasteInit (&w, n);
+    
+    if ((n % 2) == 0) {
+    
+        t_rand48 seed;
+        
+        PD_RAND48_INIT (seed);
+        
+        for (i = 0; i < TEST_POINTER_LOOP; i++) {
+        //
+        int k = (int)(PD_RAND48_DOUBLE (seed) * 8);
+        
+        PD_ATOMIC_POINTER_WRITE (test_uInt32Values[k], &test_pointerShared);
+        
+        PD_MEMORY_BARRIER;      /* Prevent hoisting the store out of the loop. */
+        
+        ttt_wasteTime (&w);
+        //
+        }
 
-#define PD_ATOMIC_INT32_READ(q)                 atomic_int32Read ((q))
-#define PD_ATOMIC_INT32_WRITE(value, q)         atomic_int32Write ((value), (q))
+    } else {
+    
+        for (i = 0; i < TEST_POINTER_LOOP; i++) {
+        //
+        PD_MEMORY_BARRIER;      /* Prevent hoisting the load out of the loop. */
+        
+        void *t = PD_ATOMIC_POINTER_READ (&test_pointerShared);
+        
+        if (((uint32_t)t * (uint32_t)t) < test_uInt32Limit) { test_pointerFailed = 1; }
+        
+        ttt_wasteTime (&w);
+        //
+        }
+    }
+
+    return NULL;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
-#define PD_ATOMIC_UINT32_SET(mask, q)           OSAtomicOr32 ((mask), (q))
-#define PD_ATOMIC_UINT32_UNSET(mask, q)         OSAtomicAnd32 ((~(mask)), (q))
-
-#define PD_ATOMIC_UINT32_READ(q)                atomic_uInt32Read ((q))
-#define PD_ATOMIC_UINT32_WRITE(value, q)        atomic_uInt32Write ((value), (q))
-
-#define PD_ATOMIC_UINT32_TRUE(mask, q)          ((mask) & PD_ATOMIC_UINT32_READ (q))
-#define PD_ATOMIC_UINT32_FALSE(mask, q)         !((mask) & PD_ATOMIC_UINT32_READ (q))
+#if 0
+void test14__pointer() {    /* Read / Write. */
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
-#define PD_ATOMIC_UINT64_READ(q)                atomic_uInt64Read ((q))
-#define PD_ATOMIC_UINT64_WRITE(value, q)        atomic_uInt64Write ((value), (q))
+TTT_BEGIN (AtomicPointer, 14, "Atomic - Pointer")
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
+    TTT_EXPECT (sizeof (t_pointerAtomic) == 4);
+    
+    PD_ATOMIC_POINTER_WRITE (test_uInt32Values[0], &test_pointerShared);
+    
+    if (ttt_testThreadsLaunch (test_pointer) != TTT_GOOD) { TTT_FAIL; }
+    else {
+       TTT_EXPECT (test_pointerFailed == 0);
+    }
 
-int32_t     atomic_int32Read    (t_int32Atomic *q);
-void        atomic_int32Write   (int32_t n, t_int32Atomic *q);
-
-uint32_t    atomic_uInt32Read   (t_uint32Atomic *q);
-void        atomic_uInt32Write  (uint32_t n, t_uint32Atomic *q);
-
-uint64_t    atomic_uInt64Read   (t_uint64Atomic *q);
-void        atomic_uInt64Write  (uint64_t n, t_uint64Atomic *q);
+TTT_END
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // __s_atomic_mac_h_
+
+#if 0
+}
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#endif // PD_32BIT
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

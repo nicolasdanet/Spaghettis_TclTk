@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -293,26 +293,6 @@ t_template *template_findByIdentifier (t_symbol *s)
 {
     return ((t_template *)symbol_getThingByClass (s, template_class));
 }
-
-#if PD_WITH_LEGACY
-
-void template_create (void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc && IS_SYMBOL (argv)) {
-    //
-    t_symbol *templateIdentifier = symbol_makeTemplateIdentifier (atom_getSymbolAtIndex (0, argc, argv));
-    
-    argc--;
-    argv++;
-    
-    if (template_findByIdentifier (templateIdentifier) == NULL) { 
-        template_new (templateIdentifier, argc, argv);
-    }
-    //
-    }
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

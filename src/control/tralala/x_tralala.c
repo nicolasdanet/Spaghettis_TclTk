@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
 #include "../../s_system.h"
+#include "../../g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -118,6 +119,7 @@ static t_buffer *tralala_functionData (t_gobj *z, int flags)
     }
     //
     }
+    
     return NULL;
 }
 

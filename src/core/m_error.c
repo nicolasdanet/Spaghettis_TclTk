@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -80,11 +80,6 @@ void error_stackOverflow (void)
     post_error (PD_TRANSLATE ("%s: stack overflow"), PD_NAME_LOWERCASE);
 }
 
-void error_ioStuck (void)
-{
-    post_error (PD_TRANSLATE ("audio: I/O stuck"));
-}
-
 void error_stubNotFound (void)
 {
     post_error (PD_TRANSLATE ("loader: stub not found"));
@@ -108,15 +103,6 @@ void error_sendReceiveLoop (t_symbol *s)
 {
     post_error (PD_TRANSLATE ("%s: send/receive loop"), s->s_name);
 }
-
-#if PD_WITH_LEGACY
-
-void error_canNotSetMultipleFields (t_symbol *s)
-{
-    post_error (PD_TRANSLATE ("%s: can't set multiple fields"), s->s_name);
-}
-
-#endif
 
 void error_alreadyExists (t_symbol *s)
 {
@@ -284,6 +270,11 @@ void warning_multipleBinding (t_symbol *s)
 void warning_fileIsCorrupted (t_symbol *s)
 {
     post_warning (PD_TRANSLATE ("%s: file is corrupted"), s->s_name);
+}
+
+void warning_deprecatedObject (t_symbol *s)
+{
+    post_warning (PD_TRANSLATE ("%s: deprecated object"), s->s_name);
 }
 
 void warning_containsDuplicates (void)

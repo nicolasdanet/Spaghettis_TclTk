@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2017-2018 Nicolas Danet. */
+/* Copyright (c) 2017-2019 Nicolas Danet. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -115,9 +115,9 @@ void ttt_wasteInit (TTTWaste *q, int n)
     q->index_ = 0;
 }
 
-void ttt_wasteTime (TTTWaste *q)
+uint32_t ttt_wasteTimeProceed (TTTWaste *q)
 {
-    uint32_t i;
+    uint32_t i, j = 0;
     
     do {
     //
@@ -126,8 +126,21 @@ void ttt_wasteTime (TTTWaste *q)
     if (q->index_ >= TTT_WASTE_SIZE) {
         q->index_ -= TTT_WASTE_SIZE;
     }
+    j++;
     //
     } while (i & 7);
+    
+    return j;
+}
+
+void ttt_wasteTime (TTTWaste *q)
+{
+    ttt_wasteTimeProceed (q);
+}
+
+void ttt_wasteMoreTime (TTTWaste *q)
+{
+    uint32_t i = 0; while (i < 4096) { i += ttt_wasteTimeProceed (q); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

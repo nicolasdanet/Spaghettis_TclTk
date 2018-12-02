@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -103,8 +103,7 @@ static void line_float (t_line *x, t_float f)
     
     } else {
     
-        line_set (x, f);
-        outlet_float (x->x_outlet, f);
+        line_set (x, f); outlet_float (x->x_outlet, f);
     }
 }
 
@@ -202,12 +201,6 @@ void line_setup (void)
     class_addMethod (c, (t_method)line_cancel,      sym_cancel,     A_NULL);
     class_addMethod (c, (t_method)line_set,         sym_set,        A_FLOAT, A_NULL);
 
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)line_cancel,      sym_stop,       A_NULL);
-    
-    #endif
-    
     class_setDataFunction (c, line_functionData);
 
     line_class = c;

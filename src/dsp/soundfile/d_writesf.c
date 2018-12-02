@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -29,16 +29,21 @@ static t_class *writesf_tilde_class;                /* Shared. */
 
 typedef struct _writesf_tilde {
     t_object            sf_obj;                     /* Must be the first. */
-    t_float             sf_f;
-    t_audioproperties   sf_properties;
+    pthread_mutex_t     sf_mutex;
     int                 sf_numberOfChannels;
     int                 sf_bufferSize;
     int                 sf_run;
-    unsigned char       *sf_cached;
+    int                 sf_dismissed;
     t_sfthread          *sf_thread;
+    unsigned char       *sf_cached;
     t_glist             *sf_owner;
-    t_sample            *(sf_vectorsIn[SOUNDFILE_CHANNELS]);
     } t_writesf_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void writesf_tilde_dismiss (t_writesf_tilde *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -52,11 +57,18 @@ typedef struct _writesf_tilde {
 
 static void writesf_tilde_close (t_writesf_tilde *x)
 {
-    if (x->sf_thread) { sfthread_release (x->sf_thread); x->sf_thread = NULL; }
+    t_sfthread *sfthread = x->sf_thread;
     
-    x->sf_run = 0;
+    pthread_mutex_lock (&x->sf_mutex);
     
-    soundfile_propertiesInit (&x->sf_properties);
+        x->sf_thread = NULL;
+        x->sf_run    = 0;
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+    PD_MEMORY_BARRIER;
+    
+    sfthread_release (sfthread);
 }
 
 static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_atom *argv)
@@ -65,26 +77,36 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
     
     {
     //
-    t_audioproperties *p = &x->sf_properties;
+    t_audioproperties p; soundfile_propertiesInit (&p);
     
-    t_error err = soundfile_writeFileParse (x->sf_owner, sym_writesf__tilde__, &argc, &argv, p);
+    t_error err = soundfile_writeFileParse (x->sf_owner, sym_writesf__tilde__, &argc, &argv, &p);
     
-    p->ap_numberOfChannels = x->sf_numberOfChannels;
+    p.ap_numberOfChannels = x->sf_numberOfChannels;
     
     if (!err) {
     //
-    int f = soundfile_writeFileHeader (x->sf_owner, &x->sf_properties);
+    int f = soundfile_writeFileHeader (x->sf_owner, &p);
     
     err = (f < 0);
     
     if (!err) {
-        x->sf_thread = sfthread_new (SFTHREAD_WRITER, x->sf_bufferSize, f, &x->sf_properties);
+    
+        t_sfthread *sfthread = sfthread_new (SFTHREAD_WRITER, x->sf_bufferSize, f, &p);
+        
+        PD_MEMORY_BARRIER;
+        
+        pthread_mutex_lock (&x->sf_mutex);
+        
+            x->sf_thread = sfthread;
+        
+        pthread_mutex_unlock (&x->sf_mutex);
+        
         PD_ASSERT (x->sf_thread);
     }
     //
     }
     
-    if (err) { error_canNotOpen (p->ap_fileName); }
+    if (err) { error_canNotOpen (p.ap_fileName); }
     //
     }
 }
@@ -95,10 +117,15 @@ static void writesf_tilde_open (t_writesf_tilde *x, t_symbol *s, int argc, t_ato
 
 static void writesf_tilde_start (t_writesf_tilde *x)
 {
-    if (!x->sf_thread) { error_unexpected (sym_writesf__tilde__, sym_start); }
-    else {
-        x->sf_run = 1;
-    }
+    t_error err = PD_ERROR_NONE;
+    
+    pthread_mutex_lock (&x->sf_mutex);
+    
+        err = (x->sf_thread == NULL); if (!err) { x->sf_run = 1; }
+    
+    pthread_mutex_unlock (&x->sf_mutex);
+    
+    if (err) { error_unexpected (sym_writesf__tilde__, sym_start); }
 }
 
 static void writesf_tilde_stop (t_writesf_tilde *x)
@@ -113,23 +140,28 @@ static void writesf_tilde_stop (t_writesf_tilde *x)
 static t_int *writesf_tilde_perform (t_int *w)
 {
     t_writesf_tilde *x = (t_writesf_tilde *)(w[1]);
-    int n = (int)(w[2]);
+    t_sfvectors *t     = (t_sfvectors *)(w[2]);
+    int n = (int)(w[3]);
     
+    if (pthread_mutex_trylock (&x->sf_mutex) == 0) {
+    //
     if (x->sf_run && x->sf_thread && !sfthread_isEnd (x->sf_thread)) {
     //
-    int numberOfChannels = x->sf_numberOfChannels;
-    int bytesPerFrame    = numberOfChannels * x->sf_properties.ap_bytesPerSample;
+    int isBigEndian      = sfthread_isBigEndian (x->sf_thread);
+    int numberOfChannels = t->s_size;
+    int bytesPerSample   = sfthread_getBytesPerSample (x->sf_thread);
+    int bytesPerFrame    = numberOfChannels * bytesPerSample;
     int32_t required     = bytesPerFrame * n;
     
     if (required < x->sf_bufferSize) {
     //
     soundfile_encode32 (numberOfChannels,
-        x->sf_vectorsIn,
+        t->s_v,
         x->sf_cached,
         n,
         0,
-        x->sf_properties.ap_bytesPerSample,
-        x->sf_properties.ap_isBigEndian,
+        bytesPerSample,
+        isBigEndian,
         (float)1.0);
     
     {
@@ -143,16 +175,33 @@ static t_int *writesf_tilde_perform (t_int *w)
     //
     }
     
-    return (w + 3);
+    pthread_mutex_unlock (&x->sf_mutex);
+    //
+    }
+    
+    return (w + 4);
 }
 
 static void writesf_tilde_dsp (t_writesf_tilde *x, t_signal **sp)
 {
     int i;
-    
-    for (i = 0; i < x->sf_numberOfChannels; i++) { x->sf_vectorsIn[i] = sp[i]->s_vector; }
 
-    dsp_add (writesf_tilde_perform, 2, x, sp[0]->s_vectorSize);
+    t_sfvectors *t = sfvectors_new(); t->s_size = x->sf_numberOfChannels;
+    
+    PD_ASSERT (t->s_size <= SOUNDFILE_CHANNELS);
+    
+    for (i = 0; i < t->s_size; i++) { t->s_v[i] = sp[i]->s_vector; }
+
+    dsp_add (writesf_tilde_perform, 3, x, t, sp[0]->s_vectorSize);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void writesf_tilde_functionDismiss (t_gobj *z)
+{
+    writesf_tilde_dismiss ((t_writesf_tilde *)z);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -166,7 +215,7 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
 
     t_writesf_tilde *x = (t_writesf_tilde *)pd_new (writesf_tilde_class);
     
-    soundfile_propertiesInit (&x->sf_properties);
+    pthread_mutex_init (&x->sf_mutex, NULL);
     
     if (!PD_IS_POWER_2 (size)) { size = (int)PD_NEXT_POWER_2 (size); }
     
@@ -180,11 +229,24 @@ static void *writesf_tilde_new (t_float f1, t_float f2)
     return x;
 }
 
+static void writesf_tilde_dismiss (t_writesf_tilde *x)
+{
+    if (!x->sf_dismissed) {
+    //
+    x->sf_dismissed = 1;
+    
+    writesf_tilde_close (x);
+    //
+    }
+}
+
 static void writesf_tilde_free (t_writesf_tilde *x)
 {
-    writesf_tilde_close (x);
+    writesf_tilde_dismiss (x);
     
     PD_MEMORY_FREE (x->sf_cached);
+    
+    pthread_mutex_destroy (&x->sf_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -199,18 +261,18 @@ void writesf_tilde_setup (void)
             (t_newmethod)writesf_tilde_new, 
             (t_method)writesf_tilde_free,
             sizeof (t_writesf_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_DEFFLOAT,
             A_NULL);
         
-    CLASS_SIGNAL (c, t_writesf_tilde, sf_f);
-    
     class_addDSP (c, (t_method)writesf_tilde_dsp);
         
     class_addMethod (c, (t_method)writesf_tilde_start,  sym_start,  A_NULL);
     class_addMethod (c, (t_method)writesf_tilde_stop,   sym_stop,   A_NULL);
     class_addMethod (c, (t_method)writesf_tilde_open,   sym_open,   A_GIMME, A_NULL);
+
+    class_setDismissFunction (c, writesf_tilde_functionDismiss);
 
     writesf_tilde_class = c;
 }

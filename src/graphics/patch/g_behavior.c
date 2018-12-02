@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -96,7 +96,7 @@ void glist_behaviorVisibilityChangedProceed (t_glist *x, t_glist *owner, int isV
         
     for (y = x->gl_graphics; y; y = y->g_next) {
     //
-    if (isVisible && isMoving && (pd_class (y) == garray_class)) { continue; }
+    if (isVisible && isMoving && gobj_isGraphicArray (y)) { continue; }
     gobj_visibilityChanged (y, x, isVisible);
     //
     }

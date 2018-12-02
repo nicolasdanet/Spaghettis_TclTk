@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -700,13 +700,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     t_slider *x = (t_slider *)pd_new (slider_class);
     
     if (s == sym_vslider) { x->x_isVertical = 1; }
-    
-    #if PD_WITH_LEGACY 
-    
-    if (s == sym_vsl)     { x->x_isVertical = 1; }
 
-    #endif
-    
     {
     //
     int width           = x->x_isVertical ? IEM_VSLIDER_DEFAULT_WIDTH  : IEM_HSLIDER_DEFAULT_WIDTH;
@@ -822,23 +816,6 @@ void slider_setup (void)
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
     
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)slider_initialize,            sym_init,               A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemgui_movePosition,          sym_delta,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setPosition,           sym_pos,                A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_label_font,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)slider_logarithmic,           sym_log,                A_NULL);
-    class_addMethod (c, (t_method)slider_linear,                sym_lin,                A_NULL);
-    
-    class_addCreator ((t_newmethod)slider_new, sym_hsl, A_GIMME, A_NULL);
-    class_addCreator ((t_newmethod)slider_new, sym_vsl, A_GIMME, A_NULL);
-    
-    #endif
-
     class_setWidgetBehavior (c, &slider_widgetBehavior);
     class_setHelpName (c, sym_slider);
     class_setSaveFunction (c, slider_functionSave);

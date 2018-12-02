@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../g_graphics.h"
 #include "../../d_dsp.h"
 
@@ -26,15 +27,14 @@ static t_class *tabosc4_tilde_class;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _tabosc4_tilde {
-    t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    double      x_phase;
-    t_float     x_conversion;
-    t_float     x_size;
-    t_float     x_sizeInverse;
-    t_word      *x_vector;
-    t_symbol    *x_name;
-    t_outlet    *x_outlet;
+    t_object            x_obj;              /* Must be the first. */
+    pthread_mutex_t     x_mutex;
+    t_float             x_phase;
+    int                 x_set;
+    int                 x_size;
+    t_word              *x_vector;
+    t_symbol            *x_name;
+    t_outlet            *x_outlet;
     } t_tabosc4_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -43,24 +43,25 @@ typedef struct _tabosc4_tilde {
 
 static void tabosc4_tilde_set (t_tabosc4_tilde *x, t_symbol *s)
 {
-    int n, size;
+    pthread_mutex_lock (&x->x_mutex);
     
-    tab_fetchArray ((x->x_name = s), &n, &x->x_vector, sym_tabosc4__tilde__);
-
-    size = n - 3;   /* Size of the usable size of the table. */
+        int n, size;
     
-    if (size > 0 && PD_IS_POWER_2 (size)) { 
-        x->x_size = size;
-        x->x_sizeInverse = (t_float)(1.0 / x->x_size);
-        
-    } else {
-        x->x_vector = NULL; if (s != &s_) { error_invalid (sym_tabosc4__tilde__, sym_array); }
-    }
-}
+        t_error err1 = tab_fetchArray ((x->x_name = s), &n, &x->x_vector);
+        t_error err2 = PD_ERROR;
 
-static void tabosc4_tilde_phase (t_tabosc4_tilde *x, t_float f)
-{
-    x->x_phase = f;
+        size = n - 3;   /* Size of the usable part of the table. */
+    
+        if (size > 0 && PD_IS_POWER_2 (size)) { x->x_size = size; err2 = PD_ERROR_NONE; }
+        else {
+            x->x_size = 0; x->x_vector = NULL;
+        }
+    
+        x->x_set = 1;
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    
+    tab_errorProceed (sym_tabosc4__tilde__, s, err1, err2);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -74,27 +75,33 @@ static t_int *tabosc4_tilde_perform (t_int *w)
     t_tabosc4_tilde *x = (t_tabosc4_tilde *)(w[1]);
     PD_RESTRICTED in   = (t_sample *)(w[2]);
     PD_RESTRICTED out  = (t_sample *)(w[3]);
-    int n = (int)(w[4]);
+    t_space *t         = (t_space *)(w[4]);
+    int n = (int)(w[5]);
     
-    t_word *data = x->x_vector;
-    
-    if (data) {
+    if (pthread_mutex_trylock (&x->x_mutex) == 0) {
     //
-    t_float size = x->x_size;
-    int sizeMask = size - 1;
-    t_float conversion = size * x->x_conversion;
+    if (x->x_set) {
+        t->s_int0     = x->x_size;
+        t->s_pointer0 = (void *)x->x_vector;
+        x->x_set      = 0;
+    }
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    //
+    }
+    
+    if (t->s_pointer0) {
+    //
+    const int size = t->s_int0;
+    double phase   = (size * x->x_phase) + DSP_UNITBIT;
     
     t_rawcast64 z;
-    t_word *p = NULL;
-    int t;
-    
-    double phase = (size * x->x_phase) + DSP_UNITBIT;
     
     while (n--) {
     //
     z.z_d = phase;
-    phase += (*in++) * conversion;
-    p = data + (z.z_i[PD_RAWCAST64_MSB] & sizeMask);
+    phase += (*in++) * size * t->s_float0;
+    t_word *p = (t_word *)t->s_pointer0 + (z.z_i[PD_RAWCAST64_MSB] & (size - 1));
     z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
     *out++ = (t_sample)dsp_4PointsInterpolationWithWords ((t_float)(z.z_d - DSP_UNITBIT), p);
     //
@@ -103,25 +110,42 @@ static t_int *tabosc4_tilde_perform (t_int *w)
     /* Wrap the phase (keep only the fractional part). */
     /* Size must be a power of two. */
     
-    z.z_d = DSP_UNITBIT * size; t = z.z_i[PD_RAWCAST64_MSB];
+    z.z_d = DSP_UNITBIT * size; int k = z.z_i[PD_RAWCAST64_MSB];
     z.z_d = phase + (DSP_UNITBIT * size - DSP_UNITBIT);
-    z.z_i[PD_RAWCAST64_MSB] = t;
-    x->x_phase = (z.z_d - DSP_UNITBIT * size) * x->x_sizeInverse;
+    z.z_i[PD_RAWCAST64_MSB] = k;
+    x->x_phase = (z.z_d - DSP_UNITBIT * size) * (1.0 / size);
     //
     } else { while (n--) { *out++ = 0.0; } }
     
-    return (w + 5);
+    return (w + 6);
 }
 
 static void tabosc4_tilde_dsp (t_tabosc4_tilde *x, t_signal **sp)
 {
-    x->x_conversion = (t_float)(1.0 / sp[0]->s_sampleRate);
+    t_space *t   = space_new();
+    int n        = 0;
+    t_word *w    = NULL;
+    t_error err1 = tab_fetchArray (x->x_name, &n, &w);
+    t_error err2 = PD_ERROR_NONE;
     
-    tabosc4_tilde_set (x, x->x_name);
+    if (!err1) {
+    //
+    int size = n - 3;   /* Size of the usable part of the table. */
+    
+    if (size > 0 && PD_IS_POWER_2 (size)) { t->s_int0 = size; t->s_pointer0 = (void *)w; }
+    else {
+        err2 = PD_ERROR;
+    }
+    //
+    }
 
+    tab_errorProceed (sym_tabread4__tilde__, x->x_name, err1, err2);
+    
+    t->s_float0 = (t_float)(1.0 / sp[0]->s_sampleRate);
+    
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (tabosc4_tilde_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add (tabosc4_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -138,22 +162,13 @@ static t_buffer *tabosc4_tilde_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym_set);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__inlet2);
-    buffer_appendFloat (b,  x->x_phase);
-    buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b,  x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
     }
     
     return NULL;
-}
-
-static void tabosc4_tilde_signals (t_tabosc4_tilde *x, t_float f)
-{
-    x->x_f = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -164,12 +179,17 @@ static void *tabosc4_tilde_new (t_symbol *s)
 {
     t_tabosc4_tilde *x = (t_tabosc4_tilde *)pd_new (tabosc4_tilde_class);
     
+    pthread_mutex_init (&x->x_mutex, NULL);
+    
     x->x_name   = s;
     x->x_outlet = outlet_newSignal (cast_object (x));
     
-    inlet_new2 (x, &s_float);
-    
     return x;
+}
+
+static void tabosc4_tilde_free (t_tabosc4_tilde *x)
+{
+    pthread_mutex_destroy (&x->x_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -182,19 +202,15 @@ void tabosc4_tilde_setup (void)
     
     c = class_new (sym_tabosc4__tilde__,
             (t_newmethod)tabosc4_tilde_new,
-            NULL,
+            (t_method)tabosc4_tilde_free,
             sizeof (t_tabosc4_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFSYMBOL,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_tabosc4_tilde, x_f);
-    
     class_addDSP (c, (t_method)tabosc4_tilde_dsp);
     
-    class_addMethod (c, (t_method)tabosc4_tilde_set,        sym_set,        A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)tabosc4_tilde_phase,      sym__inlet2,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)tabosc4_tilde_signals,    sym__signals,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)tabosc4_tilde_set, sym_set, A_SYMBOL, A_NULL);
 
     class_setDataFunction (c, tabosc4_tilde_functionData);
     

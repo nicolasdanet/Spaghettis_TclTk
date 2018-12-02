@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -333,12 +333,6 @@ void *drawtext_new (t_symbol *s, int argc, t_atom *argv)
     while (argc > 0) {
 
         t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
-        
-        #if PD_WITH_LEGACY
-        
-        if (t == sym___dash__v) { t = sym___dash__visible; }
-        
-        #endif
         
         if (argc > 1 && t == sym___dash__visible) {
             field_setAsFloat (&x->x_isVisible, 1, argv + 1);

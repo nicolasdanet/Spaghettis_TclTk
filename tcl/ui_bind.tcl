@@ -2,7 +2,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Copyright (c) 1997-2018 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
+# Copyright (c) 1997-2019 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -60,6 +60,8 @@ proc initialize {} {
     event add <<SendBack>>                  <Shift-$mod-Key-b>
     event add <<SaveAs>>                    <Shift-$mod-Key-s>
     
+    event add <<RunDSP>>                    <Shift-$mod-Key-r>
+        
     }
     
     if {[tk windowingsystem] eq "x11"}  {
@@ -67,6 +69,7 @@ proc initialize {} {
     event add <<BringFront>>                <Shift-$mod-Key-F>
     event add <<SendBack>>                  <Shift-$mod-Key-B>
     event add <<SaveAs>>                    <Shift-$mod-Key-S>
+    event add <<RunDSP>>                    <Shift-$mod-Key-R>
     event delete <<Paste>>                  <$mod-Key-y>
     event delete <<Cut>>                    <$mod-Key-w>
     
@@ -110,8 +113,6 @@ proc initialize {} {
     event add <<NewToggle>>                 <Shift-$mod-Key-7>
     event add <<NewDial>>                   <Shift-$mod-Key-8>
     event add <<NewArray>>                  <Shift-$mod-Key-9>
-        
-    event add <<RunDSP>>                    <$mod-Key-r>
     
     event add <<Motion1>>                   <Motion>
     event add <<Motion2>>                   <Shift-Motion>

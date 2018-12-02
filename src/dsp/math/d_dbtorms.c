@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -75,16 +76,12 @@ void dbtorms_tilde_setup (void)
             (t_newmethod)dbtorms_tilde_new,
             NULL,
             sizeof (t_dbtorms_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
     
     class_addCreator ((t_newmethod)dbtorms_tilde_new, sym_dbtoamp__tilde__, A_NULL);
     
-    CLASS_SIGNAL (c, t_dbtorms_tilde, x_f);
-    
     class_addDSP (c, (t_method)dbtorms_tilde_dsp);
-    
-    class_addMethod (c, (t_method)unop_tilde_signals, sym__signals, A_FLOAT, A_NULL);
     
     class_setDataFunction (c, unop_tilde_functionData);
     class_setHelpName (c, sym_acoustic__tilde__);

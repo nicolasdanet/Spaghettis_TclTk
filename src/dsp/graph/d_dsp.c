@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -69,19 +69,21 @@ void dsp_update (void)
     dsp_resume (dsp_suspend());
 }
 
+/* Note that DSP chain is NOT suspended while the new chain is builded. */
+
 int dsp_suspend (void)
 {
-    int n = dsp_status; if (n) { instance_dspStop(); dsp_status = 0; } return n;
+    int n = dsp_status; dsp_status = 0; return n;
 }
 
 void dsp_resume (int n)
 {
-    if (n) { instance_dspStart(); dsp_status = 1; dsp_report(); }
+    if (n) { instance_dspStart(); dsp_status = 1; }
 }
 
 void dsp_close (void)
 {
-    dsp_suspend();
+    instance_dspStop(); dsp_status = 0; instance_dspFree();
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -22,7 +22,7 @@ static t_class *set_class;                  /* Shared. */
 
 typedef struct _setvariable {
     t_symbol        *sv_fieldName;
-    t_word          sv_w;
+    t_atom          sv_atom;
     } t_setvariable;
 
 typedef struct _set {
@@ -52,9 +52,9 @@ static void set_bang (t_set *x)
     
     if (gpointer_hasField (&x->x_gpointer, s)) {
         if (x->x_asSymbol && gpointer_fieldIsSymbol (&x->x_gpointer, s)) {
-            gpointer_setSymbol (&x->x_gpointer, s, WORD_SYMBOL (&x->x_fields[i].sv_w));
+            gpointer_setSymbol (&x->x_gpointer, s, GET_SYMBOL (&x->x_fields[i].sv_atom));
         } else if (!x->x_asSymbol && gpointer_fieldIsFloat (&x->x_gpointer, s)) {
-            gpointer_setFloat (&x->x_gpointer, s, WORD_FLOAT (&x->x_fields[i].sv_w));
+            gpointer_setFloat (&x->x_gpointer, s, GET_FLOAT (&x->x_fields[i].sv_atom));
         } else {
             error_mismatch (sym_set, sym_type);
         }
@@ -71,8 +71,7 @@ static void set_float (t_set *x, t_float f)
 {
     if (x->x_asSymbol) { error_mismatch (sym_set, sym_type); }
     else {
-        WORD_FLOAT (&x->x_fields[0].sv_w) = f;
-        set_bang (x);
+        SET_FLOAT (&x->x_fields[0].sv_atom, f); set_bang (x);
     }
 }
 
@@ -80,8 +79,7 @@ static void set_symbol (t_set *x, t_symbol *s)
 {
     if (!x->x_asSymbol) { error_mismatch (sym_set, sym_type); }
     else {
-        WORD_SYMBOL (&x->x_fields[0].sv_w) = s;
-        set_bang (x);
+        SET_SYMBOL (&x->x_fields[0].sv_atom, s); set_bang (x);
     }
 }
 
@@ -100,28 +98,6 @@ static void set_fields (t_set *x, t_symbol *s, int argc, t_atom *argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#if PD_WITH_LEGACY
-
-static void set_set (t_set *x, t_symbol *templateName, t_symbol *fieldName)
-{
-    if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_set); }
-    else {
-        x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
-        x->x_fields[0].sv_fieldName = fieldName;
-       
-        if (x->x_asSymbol) {
-            WORD_SYMBOL (&x->x_fields[0].sv_w) = &s_;
-        } else {
-            WORD_FLOAT (&x->x_fields[0].sv_w)  = 0.0;
-        }
-    }
-}
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void *set_new (t_symbol *s, int argc, t_atom *argv)
@@ -133,12 +109,6 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
     if (argc && IS_SYMBOL (argv)) {
     
         t_symbol *t = GET_SYMBOL (argv);
-        
-        #if PD_WITH_LEGACY
-        
-        if (t == sym___dash__s) { t = sym___dash__symbol; }
-        
-        #endif
         
         if (t == sym___dash__symbol) {
             x->x_asSymbol = 1;
@@ -157,16 +127,16 @@ static void *set_new (t_symbol *s, int argc, t_atom *argv)
         int i;
         for (i = 0; i < x->x_fieldsSize; i++) {
             x->x_fields[i].sv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
-            WORD_SYMBOL (&x->x_fields[i].sv_w) = &s_;
-            if (i) { inlet_newSymbol (cast_object (x), (t_symbol **)&x->x_fields[i].sv_w); }
+            SET_SYMBOL (&x->x_fields[i].sv_atom, &s_);
+            if (i) { inlet_newSymbol (cast_object (x), ADDRESS_SYMBOL (&x->x_fields[i].sv_atom)); }
         }
         
     } else {
         int i;
         for (i = 0; i < x->x_fieldsSize; i++) {
             x->x_fields[i].sv_fieldName  = atom_getSymbolAtIndex (i + 1, argc, argv);
-            WORD_FLOAT (&x->x_fields[i].sv_w) = 0.0;
-            if (i) { inlet_newFloat (cast_object (x), (t_float *)&x->x_fields[i].sv_w); }
+            SET_FLOAT (&x->x_fields[i].sv_atom, 0.0);
+            if (i) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_fields[i].sv_atom)); }
         }
     }
     
@@ -205,12 +175,6 @@ void set_setup (void)
     class_addSymbol (c, (t_method)set_symbol); 
 
     class_addMethod (c, (t_method)set_fields, sym_fields, A_GIMME, A_NULL);
-    
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)set_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
-    
-    #endif
     
     set_class = c;
 }

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -85,12 +85,6 @@ static void *print_new (t_symbol *s, int argc, t_atom *argv)
     t_print *x = (t_print *)pd_new (print_class);
     
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
-    
-    #if PD_WITH_LEGACY
-    
-    if (t == sym___dash__n) { t = sym___dash__none; }
-    
-    #endif
     
     if (t == sym___dash__none) { x->x_name = &s_; }
     else {

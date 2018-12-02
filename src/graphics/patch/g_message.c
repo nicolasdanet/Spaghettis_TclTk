@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -386,14 +386,6 @@ void message_setup (void)
     class_addMethod (c, (t_method)message_addDollar,        sym_adddollar,          A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)message_addDollarSymbol,  sym_adddollarsymbol,    A_SYMBOL, A_NULL);
 
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)message_append,           sym_add2,               A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_addSemicolon,     sym_addsemi,            A_NULL);
-    class_addMethod (c, (t_method)message_addDollarSymbol,  sym_adddollsym,         A_SYMBOL, A_NULL);
-        
-    #endif
-    
     message_class = c;
     
     c = class_new (sym_messageresponder,

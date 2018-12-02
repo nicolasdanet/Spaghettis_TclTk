@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -115,23 +115,6 @@ static void append_fields (t_append *x, t_symbol *s, int argc, t_atom *argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#if PD_WITH_LEGACY
-
-static void append_set (t_append *x, t_symbol *templateName, t_symbol *fieldName)
-{
-    if (x->x_fieldsSize != 1) { error_canNotSetMultipleFields (sym_append); }
-    else {
-        x->x_templateIdentifier     = template_makeIdentifierWithWildcard (templateName); 
-        x->x_fields[0].gv_fieldName = fieldName;
-        x->x_fields[0].gv_f         = 0.0;
-    }
-}
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void *append_new (t_symbol *s, int argc, t_atom *argv)
@@ -185,12 +168,6 @@ void append_setup (void)
     
     class_addMethod (c, (t_method)append_fields, sym_fields, A_GIMME, A_NULL);
 
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)append_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL);
-    
-    #endif
-    
     append_class = c;
 }
 

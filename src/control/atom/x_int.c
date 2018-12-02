@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -37,18 +37,6 @@ static void int_float (t_intobject *x, t_float f)
 {
     x->x_f = f; int_bang (x);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_WITH_LEGACY
-
-static void int_send (t_intobject *x, t_symbol *s)
-{
-    if (symbol_hasThing (s)) { int i = (int)x->x_f; pd_float (symbol_getThing (s), (t_float)i); }
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -115,12 +103,6 @@ void int_setup (void)
     
     class_addMethod (c, (t_method)int_restore, sym__restore, A_FLOAT, A_NULL);
 
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)int_send, sym_send, A_SYMBOL, A_NULL);
-    
-    #endif
-    
     class_setDataFunction (c, int_functionData);
 
     int_class = c;

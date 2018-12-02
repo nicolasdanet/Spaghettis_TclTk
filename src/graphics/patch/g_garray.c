@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -37,6 +37,12 @@ static int  garray_behaviorMouse                (t_gobj *, t_glist *, t_mouse *)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void garray_dismiss (t_garray *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_class *garray_class;                                      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -53,6 +59,7 @@ struct _garray {
     int         x_saveWithParent;
     int         x_hideName;
     int         x_inhibit;
+    int         x_dismissed;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -80,9 +87,9 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define GARRAY_AT(n)    *((t_float *)(array_getElements (array) + (int)n))
+#define GARRAY_AT(n)    (array_getElements (array) + (int)n)
 
-// *((t_float *)(array_getElementAtIndex (array, (int)n)))
+// array_getElementAtIndex (array, (int)n)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -177,7 +184,7 @@ static void garray_updateGraphRange (t_garray *x, t_float up, t_float down)
     
     t_error err = bounds_set (&bounds, a, b, c, d);
     
-    PD_ASSERT (glist_isArray (x->x_owner));
+    PD_ASSERT (glist_isGraphicArray (x->x_owner));
     PD_ASSERT (!err);
     
     if (!err) { glist_setBounds (x->x_owner, &bounds); }
@@ -188,7 +195,7 @@ static void garray_updateGraphGeometry (t_garray *x, int width, int height)
     int w = rectangle_getWidth (glist_getGraphGeometry (x->x_owner));
     int h = rectangle_getHeight (glist_getGraphGeometry (x->x_owner));
     
-    PD_ASSERT (glist_isArray (x->x_owner));
+    PD_ASSERT (glist_isGraphicArray (x->x_owner));
     
     if (w != width || h != height) {
     //
@@ -218,7 +225,7 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
     
     t_error err = bounds_set (&bounds, a, b, c, d);
     
-    PD_ASSERT (glist_isArray (x->x_owner));
+    PD_ASSERT (glist_isGraphicArray (x->x_owner));
     PD_ASSERT (!err);
     
     if (!err) { glist_setBounds (x->x_owner, &bounds); }
@@ -233,7 +240,7 @@ static void garray_updateGraphSize (t_garray *x, int size, int style)
 static void garray_setWithSineWavesProceed (t_garray *x,
     int numberOfPoints,
     int numberOfSineWaves,
-    t_float *amplitudeOfSineWaves,
+    t_atom *amplitudeOfSineWaves,
     int isSine)
 {
     double phase, phaseIncrement;
@@ -257,15 +264,15 @@ static void garray_setWithSineWavesProceed (t_garray *x,
     
     if (isSine) {
         for (j = 0, fj = phase; j < numberOfSineWaves; j++, fj += phase) { 
-            sum += (double)amplitudeOfSineWaves[j] * sin (fj);
+            sum += (double)atom_getFloatAtIndex (j, numberOfSineWaves, amplitudeOfSineWaves) * sin (fj);
         }
     } else {
         for (j = 0, fj = 0; j < numberOfSineWaves; j++, fj += phase) {
-            sum += (double)amplitudeOfSineWaves[j] * cos (fj);
+            sum += (double)atom_getFloatAtIndex (j, numberOfSineWaves, amplitudeOfSineWaves) * cos (fj);
         }
     }
     
-    GARRAY_AT (i) = (t_float)sum;
+    w_setFloat (GARRAY_AT (i), (t_float)sum);
     //
     }
     
@@ -276,20 +283,12 @@ static void garray_setWithSineWaves (t_garray *x, t_symbol *s, int argc, t_atom 
 {    
     if (argc > 1) {
     //
-    t_float *t = NULL;
-    int i;
     int n = atom_getFloatAtIndex (0, argc, argv);
     
     argv++;
     argc--;
     
-    t = (t_float *)PD_MEMORY_GET (sizeof (t_float) * argc);
-    
-    for (i = 0; i < argc; i++) { t[i] = atom_getFloatAtIndex (i, argc, argv); }
-    
-    garray_setWithSineWavesProceed (x, n, argc, t, isSine);
-    
-    PD_MEMORY_FREE (t);
+    garray_setWithSineWavesProceed (x, n, argc, argv, isSine);
     //
     }
 }
@@ -330,7 +329,7 @@ void garray_setDataAtIndex (t_garray *x, int i, t_float f)
     int size = array_getSize (array);
     int n = PD_CLAMP (i, 0, size - 1);
     
-    GARRAY_AT (n) = f;
+    w_setFloat (GARRAY_AT (n), f);
 }
 
 t_float garray_getDataAtIndex (t_garray *x, int i)
@@ -339,7 +338,7 @@ t_float garray_getDataAtIndex (t_garray *x, int i)
     
     int size = array_getSize (array);
     int n = PD_CLAMP (i, 0, size - 1);
-    t_float f = GARRAY_AT (n);
+    t_float f = w_getFloat (GARRAY_AT (n));
     
     return f;
 }
@@ -350,7 +349,7 @@ void garray_setDataFromIndex (t_garray *x, int i, t_float f)
     
     int n, size = array_getSize (array);
     
-    for (n = PD_CLAMP (i, 0, size - 1); n < size; n++) { GARRAY_AT (n) = f; }
+    for (n = PD_CLAMP (i, 0, size - 1); n < size; n++) { w_setFloat (GARRAY_AT (n), f); }
 }
 
 t_float garray_getAmplitude (t_garray *x)
@@ -361,7 +360,7 @@ t_float garray_getAmplitude (t_garray *x)
     
     t_float f = 0.0;
     
-    for (i = 0; i < size; i++) { t_float t = GARRAY_AT (i); f = PD_MAX (f, PD_ABS (t)); }
+    for (i = 0; i < size; i++) { t_float t = w_getFloat (GARRAY_AT (i)); f = PD_MAX (f, PD_ABS (t)); }
 
     return f;
 }
@@ -394,11 +393,6 @@ t_scalar *garray_getScalar (t_garray *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void garray_setAsUsedInDSP (t_garray *x)
-{
-    x->x_isUsedInDSP = 1;
-}
-
 void garray_setSaveWithParent (t_garray *x, int savedWithParent)
 {
     x->x_saveWithParent = (savedWithParent != 0);
@@ -419,9 +413,19 @@ void garray_setInhibit (t_garray *x, int inhibit)
     }
 }
 
+void garray_setAsUsedInDSP (t_garray *x)
+{
+    x->x_isUsedInDSP = 1;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+int garray_isUsedInDSP (t_garray *x)
+{
+    return (x->x_isUsedInDSP != 0);
+}
 
 int garray_isNameShown (t_garray *x)
 {
@@ -470,7 +474,7 @@ static void garray_list (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     if (argc > 0) {
     //
-    for (i = 0; i < argc; i++) { GARRAY_AT (i + j) = atom_getFloat (argv + i); }
+    for (i = 0; i < argc; i++) { w_setFloat (GARRAY_AT (i + j), atom_getFloat (argv + i)); }
     
     garray_redraw (x);
     //
@@ -494,13 +498,15 @@ static void garray_normalize (t_garray *x, t_float f)
     if (f <= 0.0) { f = (t_float)1.0; }
 
     for (i = 0; i < array_getSize (array); i++) {
-        double t = GARRAY_AT (i);
+        double t = w_getFloat (GARRAY_AT (i));
         if (PD_ABS (t) > maximum) { maximum = PD_ABS (t); }
     }
     
     if (maximum > 0.0) {
         double k = f / maximum;
-        for (i = 0; i < array_getSize (array); i++) { GARRAY_AT (i) *= (t_float)k; }
+        for (i = 0; i < array_getSize (array); i++) {
+            w_setFloat (GARRAY_AT (i), w_getFloat (GARRAY_AT (i)) * (t_float)k);
+        }
     }
     
     garray_redraw (x);
@@ -530,6 +536,7 @@ static void garray_rename (t_garray *x, t_symbol *s)
     garray_redraw (x);
     garray_updateGraphName (x);
     garray_updateGraphWindow (x);
+    dsp_update();
     //
     }
 }
@@ -556,12 +563,12 @@ static void garray_read (t_garray *x, t_symbol *name)
         double v = 0.0;
         if (!fscanf (file, "%lf", &v)) { break; }
         else {
-            GARRAY_AT (i) = (t_float)v; 
+            w_setFloat (GARRAY_AT (i), (t_float)v);
         }
         //
         }
         
-        while (i < array_getSize (array)) { GARRAY_AT (i) = 0.0; i++; }
+        while (i < array_getSize (array)) { w_setFloat (GARRAY_AT (i), 0.0); i++; }
         
         fclose (file);      /* < http://stackoverflow.com/a/13691168 > */
         
@@ -593,7 +600,7 @@ static void garray_write (t_garray *x, t_symbol *name)
         t_array *array = garray_getArray (x);
         
         for (i = 0; i < array_getSize (array); i++) {
-            if (fprintf (file, "%.9g\n", GARRAY_AT (i)) < 1) {
+            if (fprintf (file, "%.9g\n", w_getFloat (GARRAY_AT (i))) < 1) {
                 PD_BUG; break;
             }
         }
@@ -613,12 +620,18 @@ void garray_resize (t_garray *x, t_float f)
     t_array *array = garray_getArray (x);
     int n = PD_MAX (1, (int)f);
     int style = scalar_getFloat (x->x_scalar, sym_style);
+    int dspState = 0;
+    int dspSuspended = 0;
+    
+    PD_ASSERT (sys_isMainThread());
+    
+    if (garray_isUsedInDSP (x)) { dspState = dsp_suspend(); dspSuspended = 1; }
     
     garray_updateGraphSize (x, n, style);
     garray_updateGraphWindow (x);
     array_resizeAndRedraw (array, x->x_owner, n);
     
-    if (x->x_isUsedInDSP) { dsp_update(); }
+    if (dspSuspended) { dsp_resume (dspState); }
 }
 
 static void garray_range (t_garray *x, t_symbol *s, int argc, t_atom *argv)
@@ -716,7 +729,7 @@ static t_buffer *garray_functionData (t_gobj *z, int flags)
     int i, n = array_getSize (array);
     
     buffer_appendFloat (b, 0);
-    for (i = 0; i < n; i++) { buffer_appendFloat (b, GARRAY_AT (i)); }
+    for (i = 0; i < n; i++) { buffer_appendFloat (b, w_getFloat (GARRAY_AT (i))); }
     
     return b;
     //
@@ -747,6 +760,11 @@ static void garray_functionUndo (t_gobj *z, t_buffer *b)
     buffer_appendFloat (b,  x->x_inhibit);
 }
 
+static void garray_functionDismiss (t_gobj *z)
+{
+    garray_dismiss ((t_garray *)z);
+}
+
 void garray_functionProperties (t_garray *x)
 {
     char t[PD_STRING] = { 0 };
@@ -755,7 +773,7 @@ void garray_functionProperties (t_garray *x)
     t_array *array = garray_getArray (x);
     t_bounds *bounds = glist_getBounds (x->x_owner);
 
-    PD_ASSERT (glist_isArray (x->x_owner));
+    PD_ASSERT (glist_isGraphicArray (x->x_owner));
     
     err |= string_sprintf (t, PD_STRING,
                 "::ui_array::show %%s %s %d %d %d %.9g %.9g %d %d %d %d 0\n",
@@ -903,7 +921,6 @@ static t_garray *garray_makeObjectWithScalar (t_glist *glist,
     x->x_owner          = glist;
     x->x_unexpandedName = name;
     x->x_name           = dollar_expandSymbol (name, glist);
-    x->x_isUsedInDSP    = 0;
     x->x_saveWithParent = save;
     x->x_hideName       = hide;
     
@@ -962,12 +979,24 @@ t_garray *garray_makeObject (t_glist *glist, t_symbol *name, t_float size, t_flo
     return x;
 }
 
-static void garray_free (t_garray *x)
+static void garray_dismiss (t_garray *x)
 {
+    if (!x->x_dismissed) {
+    //
+    x->x_dismissed = 1;
+    
     gui_jobRemove ((void *)x);
     stub_destroyWithKey ((void *)x);
     pd_unbind (cast_pd (x), x->x_name);
-    pd_free (cast_pd (x->x_scalar));
+    
+    x->x_owner = NULL;
+    //
+    }
+}
+
+static void garray_free (t_garray *x)
+{
+    garray_dismiss (x); pd_free (cast_pd (x->x_scalar));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -998,16 +1027,11 @@ void garray_setup (void)
     class_addMethod (c, (t_method)garray_range,         sym_range,          A_GIMME,  A_NULL);
     class_addMethod (c, (t_method)garray_fromDialog,    sym__arraydialog,   A_GIMME,  A_NULL);
     
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)garray_constant, sym_const, A_DEFFLOAT, A_NULL);
-    
-    #endif
-    
     class_setWidgetBehavior (c, &garray_widgetBehavior);
     class_setSaveFunction (c, garray_functionSave);
     class_setDataFunction (c, garray_functionData);
     class_setUndoFunction (c, garray_functionUndo);
+    class_setDismissFunction (c, garray_functionDismiss);
     
     garray_class = c;
 }

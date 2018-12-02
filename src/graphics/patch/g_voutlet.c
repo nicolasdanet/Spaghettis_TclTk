@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -15,6 +15,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static void voutlet_dismiss (t_voutlet *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_class *voutlet_class;         /* Shared. */
 
@@ -74,6 +80,15 @@ static void voutlet_anything (t_voutlet *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void voutlet_functionDismiss (t_gobj *z)
+{
+    voutlet_dismiss ((t_voutlet *)z);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *voutlet_newSignal (t_symbol *s)
 {
     t_voutlet *x = (t_voutlet *)pd_new (voutlet_class);
@@ -82,7 +97,6 @@ static void *voutlet_newSignal (t_symbol *s)
     
     x->vo_bufferSize = 0;
     x->vo_buffer     = (t_sample *)PD_MEMORY_GET (0);
-    x->vo_bufferEnd  = x->vo_buffer;
     x->vo_owner      = instance_contextGetCurrent();
     x->vo_outlet     = glist_outletAdd (x->vo_owner, &s_signal);
     
@@ -103,9 +117,22 @@ static void *voutlet_new (t_symbol *s)
     return x;
 }
 
+static void voutlet_dismiss (t_voutlet *x)
+{
+    if (!x->vo_dismissed) {
+    //
+    x->vo_dismissed = 1;
+    
+    glist_outletRemove (x->vo_owner, x->vo_outlet);
+    
+    x->vo_owner = NULL;
+    //
+    }
+}
+
 static void voutlet_free (t_voutlet *x)
 {
-    glist_outletRemove (x->vo_owner, x->vo_outlet);
+    voutlet_dismiss (x);
     
     if (x->vo_buffer) { PD_MEMORY_FREE (x->vo_buffer); }
     
@@ -139,6 +166,7 @@ void voutlet_setup (void)
     class_addAnything (c, (t_method)voutlet_anything);
     
     class_setHelpName (c, sym_pd);
+    class_setDismissFunction (c, voutlet_functionDismiss);
     
     voutlet_class = c;
 }

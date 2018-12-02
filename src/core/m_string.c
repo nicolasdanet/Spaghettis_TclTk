@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -161,7 +161,7 @@ t_error string_escapeOccurrence (char *dest, size_t size, const char *chars)
     return err;
 }
 
-#endif
+#endif // PD_WITH_DEADCODE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -243,7 +243,7 @@ void string_getNumberOfColumnsAndLines (const char *s, int *numberOfColumns, int
     *numberOfLines   = n;
 }
 
-#endif
+#endif // PD_WITH_DEADCODE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

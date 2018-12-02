@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -24,15 +24,6 @@ typedef struct _noise_tilde {
     int         x_state;
     t_outlet    *x_outlet;
     } t_noise_tilde;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void noise_seed (t_noise_tilde *x, t_float f)
-{
-    x->x_state = (int)f;
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -89,12 +80,10 @@ void noise_tilde_setup (void)
             (t_newmethod)noise_tilde_new,
             NULL,
             sizeof (t_noise_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_NOINLET,
             A_NULL);
             
     class_addDSP (c, (t_method)noise_tilde_dsp);
-    
-    class_addMethod (c, (t_method)noise_seed, sym_seed, A_FLOAT, A_NULL);
     
     noise_tilde_class = c;
 }

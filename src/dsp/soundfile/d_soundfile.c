@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -66,14 +66,6 @@ t_error soundfile_readFileParse (t_glist *dummy, t_symbol *s, int *ac, t_atom **
     while (argc > 0) {
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
-    
-    #if PD_WITH_LEGACY
-    
-    if (t == sym___dash__maxsize)  { t = sym___dash__frames; }
-    if (t == sym___dash__f)        { t = sym___dash__frames; }
-    if (t == sym___dash__s)        { t = sym___dash__skip;   }
-    
-    #endif
     
     if (t == sym___dash__nextstep) { t = sym___dash__next; }
     
@@ -395,18 +387,6 @@ t_error soundfile_writeFileParse (t_glist *glist, t_symbol *s, int *ac, t_atom *
     while (argc > 0) {
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
-    
-    #if PD_WITH_LEGACY
-    
-    if (t == sym___dash__nframes)  { t = sym___dash__frames;     }
-    if (t == sym___dash__f)        { t = sym___dash__frames;     }
-    if (t == sym___dash__b)        { t = sym___dash__bytes;      }
-    if (t == sym___dash__s)        { t = sym___dash__skip;       }
-    if (t == sym___dash__r)        { t = sym___dash__samplerate; }
-    if (t == sym___dash__rate)     { t = sym___dash__samplerate; }
-    if (t == sym___dash__n)        { t = sym___dash__normalize;  }
-    
-    #endif
     
     if (t == sym___dash__nextstep) { t = sym___dash__next; }
     

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,32 +9,35 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *osc_tilde_class;        /* Shared. */
+/* Results for high frequency (i.e. 700 kHz at 44100 Hz) are wrong. */
+/* It is due to limited range of Hoeldrich's trick. */
+/* But does it really matter, since it is always far above the Nyquist frequency? */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class *osc_tilde_class;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _osc_tilde {
-    t_object    x_obj;                  /* Must be the first. */
-    double      x_phase;
-    t_float     x_conversion;
-    t_float     x_f;
-    t_outlet    *x_outlet;
+    t_object            x_obj;              /* Must be the first. */
+    t_float64Atomic     x_phase;
+    t_outlet            *x_outlet;
     } t_osc_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void osc_tilde_phase (t_osc_tilde *x, t_float f)
-{
-    x->x_phase = (double)COSINE_TABLE_SIZE * f;
-}
+int atomic_float64CompareAndSwap (double *, double, t_float64Atomic *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -44,33 +47,34 @@ static void osc_tilde_phase (t_osc_tilde *x, t_float f)
 
 static t_int *osc_tilde_perform (t_int *w)
 {
-    t_osc_tilde *x = (t_osc_tilde *)(w[1]);
+    t_osc_tilde *x    = (t_osc_tilde *)(w[1]);
     PD_RESTRICTED in  = (t_sample *)(w[2]);
     PD_RESTRICTED out = (t_sample *)(w[3]);
-    int n = (int)(w[4]);
+    t_space *t        = (t_space *)(w[4]);
+    int n             = (int)(w[5]);
     
-    double phase = x->x_phase;
-    t_float k = x->x_conversion;
-    t_rawcast64 z;
+    double phase = PD_ATOMIC_FLOAT64_READ (&x->x_phase);
     
-    while (n--) { *out++ = (t_sample)dsp_getCosineAtLUT (phase); phase += (*in++) * k; }
+    double f = dsp_wrapCosine (phase);
 
-    /* Wrap the phase to the cosine table size. */
+    /* Accumulation can not overflow the Hoeldrich's trick range with a reasonable frequency. */
     
-    z.z_d = phase + COSINE_UNITBIT;
-    z.z_i[PD_RAWCAST64_MSB] = COSINE_UNITBIT_MSB;
-    x->x_phase = z.z_d - COSINE_UNITBIT;
+    while (n--) { *out++ = (t_sample)dsp_getCosineAtLUT (f); f += (*in++) * t->s_float0; }
+
+    /* Don't overwrite if the phase have been explicitly changed. */
     
-    return (w + 5);
+    atomic_float64CompareAndSwap (&phase, f, &x->x_phase);
+    
+    return (w + 6);
 }
 
 static void osc_tilde_dsp (t_osc_tilde *x, t_signal **sp)
 {
-    x->x_conversion = COSINE_TABLE_SIZE / sp[0]->s_sampleRate;
+    t_space *t = space_new(); t->s_float0 = COSINE_TABLE_SIZE / sp[0]->s_sampleRate;
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (osc_tilde_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add (osc_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -85,10 +89,9 @@ static t_buffer *osc_tilde_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__restore);
-    buffer_appendFloat (b, x->x_phase);
+    buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_phase));
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
@@ -99,12 +102,12 @@ static t_buffer *osc_tilde_functionData (t_gobj *z, int flags)
 
 static void osc_tilde_restore (t_osc_tilde *x, t_float f)
 {
-    x->x_phase = f;
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_phase);
 }
 
-static void osc_tilde_signals (t_osc_tilde *x, t_float f)
+static void osc_tilde_phase (t_osc_tilde *x, t_float f)
 {
-    x->x_f = f;
+    osc_tilde_restore (x, (double)COSINE_TABLE_SIZE * f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -115,11 +118,12 @@ static void *osc_tilde_new (t_float f)
 {
     t_osc_tilde *x = (t_osc_tilde *)pd_new (osc_tilde_class);
     
-    x->x_f = f;
+    PD_ATOMIC_FLOAT64_WRITE (f, object_getFirstInletSignal (cast_object (x)));
+    
     x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_new2 (x, &s_float);
-
+    
     return x;
 }
 
@@ -135,17 +139,14 @@ void osc_tilde_setup (void)
             (t_newmethod)osc_tilde_new,
             NULL,
             sizeof (t_osc_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_osc_tilde, x_f);
-    
     class_addDSP (c, (t_method)osc_tilde_dsp);
     
-    class_addMethod (c, (t_method)osc_tilde_phase,      sym__inlet2,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)osc_tilde_restore,    sym__restore,   A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)osc_tilde_signals,    sym__signals,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)osc_tilde_phase,   sym__inlet2,  A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)osc_tilde_restore, sym__restore, A_FLOAT, A_NULL);
     
     class_setDataFunction (c, osc_tilde_functionData);
 

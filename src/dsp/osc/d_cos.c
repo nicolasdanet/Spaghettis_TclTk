@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -27,7 +27,6 @@ static t_class  *cos_tilde_class;       /* Shared. */
 
 typedef struct _cost_tilde {
     t_object    x_obj;                  /* Must be the first. */
-    t_float     x_f;
     t_outlet    *x_outlet;
     } t_cos_tilde;
 
@@ -100,7 +99,11 @@ static t_int *cos_tilde_perform (t_int *w)
     PD_RESTRICTED out = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    while (n--) { *out++ = (t_sample)dsp_getCosineAtLUT ((*in++) * COSINE_TABLE_SIZE); }
+    while (n--) {
+    //
+    *out++ = (t_sample)dsp_getCosineAtLUT (dsp_clipForHoeldrichOverflow (*in++) * COSINE_TABLE_SIZE);
+    //
+    }
 
     return (w + 4);
 }
@@ -123,19 +126,13 @@ static t_buffer *cos_tilde_functionData (t_gobj *z, int flags)
     t_cos_tilde *x = (t_cos_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
     }
     
     return NULL;
-}
-
-static void cos_tilde_signals (t_cos_tilde *x, t_float f)
-{
-    x->x_f = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -163,15 +160,11 @@ void cos_tilde_setup (void)
             (t_newmethod)cos_tilde_new,
             NULL,
             sizeof (t_cos_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_cos_tilde, x_f);
-    
     class_addDSP (c, (t_method)cos_tilde_dsp);
     
-    class_addMethod (c, (t_method)cos_tilde_signals, sym__signals, A_FLOAT, A_NULL);
-
     class_setDataFunction (c, cos_tilde_functionData);
     
     cos_tilde_class = c;

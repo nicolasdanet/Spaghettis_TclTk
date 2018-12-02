@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -382,8 +382,7 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     int canOpen       = (y && (gobj_isCanvas (y) || class_hasMethod (pd_class (y), sym__open)));
     int canHelp       = (y != NULL);
     int canObject     = editMode;
-    int canOrder      = (glist_objectGetNumberOfSelected (glist) != 0);
-    
+
     if (y && gobj_isCanvas (y)) {
     //
     if (glist_isAbstraction (cast_glist (y))) { canProperties = 0; }
@@ -393,16 +392,18 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     
     if (glist_isAbstraction (glist)) { canProperties = 0; }
     
-    gui_vAdd ("::ui_menu::showPopup %s %d %d %d %d %d %d %d %d\n",
-                    glist_getTagAsString (glist), 
-                    a, 
-                    b,
-                    canValue,
-                    canProperties,
-                    canOpen,
-                    canHelp,
-                    canObject,
-                    canOrder);
+    if (!glist_deselectAll (glist)) {
+    
+        gui_vAdd ("::ui_menu::showPopup %s %d %d %d %d %d %d %d\n",
+                        glist_getTagAsString (glist),
+                        a,
+                        b,
+                        canValue,
+                        canProperties,
+                        canOpen,
+                        canHelp,
+                        canObject);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -661,7 +662,7 @@ void glist_mouse (t_glist *glist, int a, int b, int m, int clicked)
 
     PD_ASSERT (!editor_hasAction (e));
     
-    isGOPMode &= (glist_isGraphOnParent (glist) && glist_hasWindow (glist) && !glist_isArray (glist));
+    isGOPMode &= (glist_isGraphOnParent (glist) && glist_hasWindow (glist) && !glist_isGraphicArray (glist));
     
     if (!isGOPMode) { editor_graphSetSelected (e, 0); }
     else if (clicked) {

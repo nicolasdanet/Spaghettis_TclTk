@@ -1,104 +1,64 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
-
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "../m_spaghettis.h"
-#include "../m_core.h"
-#include "../s_system.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_POSIX_ATOMIC
+/* Testing Hoeldrich trick. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_LOAD_STORE_32_IS_ATOMIC
-
-int32_t atomic_int32Read (t_int32Atomic *q)
-{
-    return (*q);
-}
-
-void atomic_int32Write (int32_t n, t_int32Atomic *q)
-{
-    (*q) = n;
-}
-
-uint32_t atomic_uInt32Read (t_uint32Atomic *q)
-{
-    return (*q);
-}
-
-void atomic_uInt32Write (uint32_t n, t_uint32Atomic *q)
-{
-    (*q) = n;
-}
-
-#else
-
-int32_t atomic_int32Read (t_int32Atomic *q)
-{
-    return __atomic_load_n (q, __ATOMIC_RELAXED);
-}
-
-void atomic_int32Write (int32_t n, t_int32Atomic *q)
-{
-    __atomic_store_n (q, n, __ATOMIC_RELAXED);
-}
-
-uint32_t atomic_uInt32Read (t_uint32Atomic *q)
-{
-    return __atomic_load_n (q, __ATOMIC_RELAXED);
-}
-
-void atomic_uInt32Write (uint32_t n, t_uint32Atomic *q)
-{
-    __atomic_store_n (q, n, __ATOMIC_RELAXED);
-}
-
-#endif // PD_LOAD_STORE_32_IS_ATOMIC
+#define TEST_HOELDRICH_LOOP     1000000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_LOAD_STORE_64_IS_ATOMIC
-
-uint64_t atomic_uInt64Read (t_uint64Atomic *q)
-{
-    return (*q);
-}
-
-void atomic_uInt64Write (uint64_t n, t_uint64Atomic *q)
-{
-    (*q) = n;
-}
-
-#else
-
-uint64_t atomic_uInt64Read (t_uint64Atomic *q)
-{
-    return __atomic_load_n (q, __ATOMIC_RELAXED);
-}
-
-void atomic_uInt64Write (uint64_t n, t_uint64Atomic *q)
-{
-    __atomic_store_n (q, n, __ATOMIC_RELAXED);
-}
-
-#endif // PD_LOAD_STORE_64_IS_ATOMIC
+#if 0
+void test63__base() {
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#endif // PD_POSIX_ATOMIC
+TTT_BEGIN (HoeldrichBase, 63, "Hoeldrich - Base")
+
+    int i;
+    
+    cos_tilde_initialize();
+    
+    t_rand48 seed; PD_RAND48_INIT (seed);
+    
+    for (i = 0; i < TEST_HOELDRICH_LOOP; i++) {
+    //
+    double t = (PD_RAND48_DOUBLE (seed) - 0.5) * 4096;
+    double f = dsp_getCosineAtLUT (t * COSINE_TABLE_SIZE);
+    double g = cos (t * PD_TWO_PI);
+    
+    int k = math_areEquivalent (f, g, 1E-4);
+
+    if (t > -1024.0 && t < 1024.0) { TTT_EXPECT (k); }      /* TOTALLY wrong outside that range. */
+    //
+    }
+    
+    double f0 =  1024.0;    // --
+    double f1 = -1024.0;
+
+    TTT_EXPECT (math_areEquivalent (dsp_getCosineAtLUT (f0 * COSINE_TABLE_SIZE), cos (f0 * PD_TWO_PI), 1E-4));
+    TTT_EXPECT (math_areEquivalent (dsp_getCosineAtLUT (f1 * COSINE_TABLE_SIZE), cos (f1 * PD_TWO_PI), 1E-4));
+    
+    cos_tilde_release();
+
+TTT_END
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if 0
+}
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

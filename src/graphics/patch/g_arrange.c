@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -105,7 +105,9 @@ void canvas_deencapsulate (t_glist *glist)
     //
     t_gobj *y = selection_getObject (editor_getSelection (glist_getEditor (glist)));
     
-    if (gobj_isCanvas (y) && !glist_isArray (cast_glist (y))) { encapsulate_deencapsulate (cast_glist (y)); }
+    if (gobj_isCanvas (y) && !glist_isGraphicArray (cast_glist (y))) {
+        encapsulate_deencapsulate (cast_glist (y));
+    }
     //
     }
 }

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -55,7 +56,7 @@ static void *less_tilde_newWithScalar (t_symbol *s, int argc, t_atom *argv)
     x->x_scalar = atom_getFloatAtIndex (0, argc, argv);
     x->x_outlet = outlet_newSignal (cast_object (x));
 
-    inlet_newFloat (cast_object (x), &x->x_scalar);
+    inlet_new2 (x, &s_float);
     
     return x;
 }
@@ -93,7 +94,7 @@ void less_tilde_setup (void)
                                 (t_newmethod)less_tilde_new,
                                 NULL,
                                 sizeof (t_less_tilde),
-                                CLASS_DEFAULT,
+                                CLASS_DEFAULT | CLASS_SIGNAL,
                                 A_GIMME,
                                 A_NULL);
     
@@ -101,30 +102,15 @@ void less_tilde_setup (void)
                                 NULL,
                                 NULL,
                                 sizeof (t_lessscalar_tilde),
-                                CLASS_DEFAULT,
+                                CLASS_DEFAULT | CLASS_SIGNAL,
                                 A_NULL);
-    
-    CLASS_SIGNAL (less_tilde_class, t_less_tilde, x_f);
-    CLASS_SIGNAL (lessScalar_tilde_class, t_lessscalar_tilde, x_f);
-            
+                
     class_addDSP (less_tilde_class, (t_method)less_tilde_dsp);
     class_addDSP (lessScalar_tilde_class, (t_method)lessScalar_tilde_dsp);
     
-    class_addMethod (less_tilde_class,
-        (t_method)binop_tilde_signals,
-        sym__signals,
-        A_GIMME,
-        A_NULL);
-    
     class_addMethod (lessScalar_tilde_class,
-        (t_method)binopScalar_tilde_signals,
-        sym__signals,
-        A_FLOAT,
-        A_NULL);
-    
-    class_addMethod (lessScalar_tilde_class,
-        (t_method)binopScalar_tilde_restore,
-        sym__restore,
+        (t_method)binopScalar_tilde_float,
+        sym__inlet2,
         A_FLOAT,
         A_NULL);
 

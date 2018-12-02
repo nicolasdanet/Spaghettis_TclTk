@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -35,15 +36,6 @@ static t_class *rzero_tilde_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _real_raw_tilde t_rzero_tilde;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void rzero_tilde_clear (t_rzero_tilde *x)
-{
-    x->x_real = 0.0;
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -114,17 +106,11 @@ void zero_tilde_setup (void)
             (t_newmethod)rzero_tilde_new,
             NULL,
             sizeof (t_rzero_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_NULL);
         
-    CLASS_SIGNAL (c, t_rzero_tilde, x_f);
-    
     class_addDSP (c, (t_method)rzero_tilde_dsp);
-        
-    class_addMethod (c, (t_method)rzero_tilde_clear,    sym_clear,      A_NULL);
-    class_addMethod (c, (t_method)real_raw_restore,     sym__restore,   A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)real_raw_signals,     sym__signals,   A_GIMME, A_NULL);
     
     class_setDataFunction (c, real_raw_functionData);
     

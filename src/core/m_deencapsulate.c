@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -278,7 +278,7 @@ void encapsulate_deencapsulate (t_glist *glist)
     t_glist *parent = glist_getParent (glist);
     int undoable    = glist_undoIsOk (parent);
     
-    PD_ASSERT (!glist_isArray (glist));
+    PD_ASSERT (!glist_isGraphicArray (glist));
     PD_ASSERT (parent != NULL);
         
     if (undoable) { glist_undoAppend (parent, undodeencapsulate_new()); }

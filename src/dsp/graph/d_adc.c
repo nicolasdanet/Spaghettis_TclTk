@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -20,32 +20,16 @@ extern t_sample *audio_soundIn;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *adc_tilde_class;       /* Shared. */
+static t_class  *adc_tilde_class;                           /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _adc_tilde {
-    t_object    x_obj;                  /* Must be the first. */
+    t_object    x_obj;                                      /* Must be the first. */
     int         x_size;
-    int         *x_vector;
+    int         x_vector[DEVICES_MAXIMUM_CHANNELS];
     } t_adc_tilde;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void adc_tilde_setProceed (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int i, k = PD_MIN (argc, x->x_size);
-    
-    for (i = 0; i < k; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
-}
-
-static void adc_tilde_set (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    adc_tilde_setProceed (x, s, argc, argv); dsp_update();
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -89,45 +73,17 @@ static void adc_tilde_dsp (t_adc_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_buffer *adc_tilde_functionData (t_gobj *z, int flags)
-{
-    if (SAVED_DEEP (flags)) {
-    //
-    t_adc_tilde *x = (t_adc_tilde *)z;
-    t_buffer *b = buffer_new();
-    int i;
-    
-    buffer_appendSymbol (b, sym__restore);
-    
-    for (i = 0; i < x->x_size; i++) { buffer_appendFloat (b, x->x_vector[i]); }
-    
-    return b;
-    //
-    }
-    
-    return NULL;
-}
-
-static void adc_tilde_restore (t_adc_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    adc_tilde_setProceed (x, s, argc, argv);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void *adc_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_adc_tilde *x = (t_adc_tilde *)pd_new (adc_tilde_class);
     int i;
     
-    x->x_size   = argc ? argc : 2;
-    x->x_vector = (int *)PD_MEMORY_GET (x->x_size * sizeof (int));
+    x->x_size = argc ? argc : 2;
+    x->x_size = PD_MIN (x->x_size, DEVICES_MAXIMUM_CHANNELS);
     
     if (!argc) { x->x_vector[0] = 1; x->x_vector[1] = 2; }
     else {
-        for (i = 0; i < argc; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
+        for (i = 0; i < x->x_size; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
     }
     
     for (i = 0; i < x->x_size; i++) {
@@ -135,11 +91,6 @@ static void *adc_tilde_new (t_symbol *s, int argc, t_atom *argv)
     }
     
     return x;
-}
-
-static void adc_tilde_free (t_adc_tilde *x)
-{
-    PD_MEMORY_FREE (x->x_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -152,18 +103,14 @@ void adc_tilde_setup (void)
     
     c = class_new (sym_adc__tilde__,
             (t_newmethod)adc_tilde_new,
-            (t_method)adc_tilde_free,
+            NULL,
             sizeof (t_adc_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_NOINLET,
             A_GIMME,
             A_NULL);
             
     class_addDSP (c, (t_method)adc_tilde_dsp);
-    
-    class_addMethod (c, (t_method)adc_tilde_set,        sym_set,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)adc_tilde_restore,    sym__restore,   A_GIMME, A_NULL);
 
-    class_setDataFunction (c, adc_tilde_functionData);
     class_setHelpName (c, sym_audio);
     
     adc_tilde_class = c;

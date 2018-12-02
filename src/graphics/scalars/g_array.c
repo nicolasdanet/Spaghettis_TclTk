@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -11,6 +11,7 @@
 #include "../../m_core.h"
 #include "../../s_system.h"
 #include "../../g_graphics.h"
+#include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -235,33 +236,62 @@ t_gpointer *array_getTopParent (t_array *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Return NULL if it is NOT owned by a garray. */
+/* Notice that it returns NULL also during the creation of the garray from file. */
+
+static t_garray *array_getGraphicArray (t_array *x)
+{
+    if (array_getElementSize (x) == 1) {
+        t_gpointer *t = array_getTopParent (x);
+        if (gpointer_getTemplateIdentifier (t) == sym__TEMPLATE_float__dash__array) {
+            return gpointer_getGraphicArray (t);
+        }
+    }
+
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void array_resize (t_array *x, int n)
 {
     t_template *tmpl = template_findByIdentifier (x->a_templateIdentifier);
+    t_garray *a      = array_getGraphicArray (x);
     
-    PD_ASSERT (tmpl);
-    
-    int oldSize = x->a_size;
-    int newSize = PD_MAX (1, n);
+    int oldSize  = x->a_size;
+    int newSize  = PD_MAX (1, n);
 
     int m = (int)(x->a_elementSize * sizeof (t_word));
     
     /* Release. */
     
-    if (newSize < oldSize) {
+    if (!a && (newSize < oldSize)) {
         t_word *t = x->a_elements + (x->a_elementSize * newSize);
         int count = oldSize - newSize;
         for (; count--; t += x->a_elementSize) { word_free (t, tmpl); }
     }
     
-    /* Reallocate. */
+    /* Allocate or reallocate. */
     
-    x->a_elements = (t_word *)PD_MEMORY_RESIZE (x->a_elements, oldSize * m, newSize * m);
-    x->a_size     = n;
+    if (a && garray_isUsedInDSP (a)) {
+    
+        t_word *t     = x->a_elements;
+        x->a_elements = (t_word *)PD_MEMORY_GET (newSize * m);
+        x->a_size     = n;
+
+        memcpy (x->a_elements, t, PD_MIN (oldSize, newSize) * m); garbage_newRaw ((void *)t);
+        
+    } else {
+    
+        x->a_elements = (t_word *)PD_MEMORY_RESIZE (x->a_elements, oldSize * m, newSize * m);
+        x->a_size     = n;
+    }
     
     /* Initialize. */
     
-    if (newSize > oldSize) {
+    if (!a && (newSize > oldSize)) {
         t_word *t = x->a_elements + (x->a_elementSize * oldSize);
         int count = newSize - oldSize;
         for (; count--; t += x->a_elementSize) { word_init (t, tmpl, &x->a_parent); }
