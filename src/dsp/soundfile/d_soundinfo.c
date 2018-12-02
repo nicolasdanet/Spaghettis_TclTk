@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -82,10 +82,6 @@ static int soundinfo_readHeader (t_soundinfo *x, int argc, t_atom *argv)
 
     return (err == PD_ERROR_NONE);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 static void soundinfo_read (t_soundinfo *x, t_symbol *s, int argc, t_atom *argv)
 {

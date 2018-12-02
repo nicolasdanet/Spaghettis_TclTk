@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -82,7 +82,7 @@ void outmidi_clock (int port)
     midi_broadcast (port, 1, MIDI_CLOCK, 0, 0);
 }
 
-#endif
+#endif // PD_WITH_DEADCODE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

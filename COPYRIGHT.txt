@@ -1,13 +1,13 @@
 
 # Copyright
 
-    Copyright (c) 1997-2018 Miller Puckette and others.
+    Copyright (c) 1997-2019 Miller Puckette and others.
 
 Excluding:
 
     tinyexpr.c
     
-        Copyright (c) 2015-2018 Lewis Van Winkle.
+        Copyright (c) 2015-2019 Lewis Van Winkle.
         
     d_fftsg.c
 
@@ -67,5 +67,5 @@ Excluding:
     belle.cpp
 
         Copyright (c) 2007-2013 William Andrew Burnson.
-        Copyright (c) 2013-2018 Nicolas Danet.
+        Copyright (c) 2013-2019 Nicolas Danet.
 

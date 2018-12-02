@@ -64,7 +64,7 @@
 		</dict>
 	</array>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright (c) 1997-2018 Miller Puckette and others.</string>
+	<string>Copyright (c) 1997-2019 Miller Puckette and others.</string>
 	<key>CFBundleIconFile</key>
 	<string>Wish.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -72,6 +72,6 @@
 	<key>ATSApplicationFontsPath</key>
 	<string>font</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.6.0</string>
+	<string>10.12.0</string>
 </dict>
 </plist>

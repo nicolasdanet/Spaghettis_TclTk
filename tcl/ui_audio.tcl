@@ -2,7 +2,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Copyright (c) 1997-2018 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
+# Copyright (c) 1997-2019 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -30,8 +30,6 @@ variable  audioInChannels
 variable  audioOutChannels
 variable  audioInEnabled
 variable  audioOutEnabled
-variable  audioSampleRate
-variable  audioSampleRateOld 
 
 array set audioInDevice    {}
 array set audioOutDevice   {}
@@ -45,8 +43,7 @@ array set audioOutEnabled  {}
 
 proc show {top \
            i1 i2 i3 i4 iChannels1 iChannels2 iChannels3 iChannels4 \
-           o1 o2 o3 o4 oChannels1 oChannels2 oChannels3 oChannels4 \
-           sampleRate} {
+           o1 o2 o3 o4 oChannels1 oChannels2 oChannels3 oChannels4} {
     
     variable audioIn
     variable audioOut
@@ -56,8 +53,6 @@ proc show {top \
     variable audioOutChannels
     variable audioInEnabled
     variable audioOutEnabled
-    variable audioSampleRate 
-    variable audioSampleRateOld
 
     ::ui_menu::disableAudio
         
@@ -82,11 +77,6 @@ proc show {top \
     set audioOutEnabled(3)  [expr {$oChannels3 > 0}]
     set audioOutEnabled(4)  [expr {$oChannels4 > 0}]
 
-    set audioSampleRate     $sampleRate
-    set audioSampleRateOld  $sampleRate
-
-    set sampleRateValues {22050 32000 44100 48000 88200 96000}
-        
     toplevel $top -class PdDialog
     wm title $top [_ "Audio"]
     wm group $top .
@@ -96,28 +86,17 @@ proc show {top \
     wm geometry  $top [::rightNextTo .console]
     
     ttk::frame      $top.f                              {*}[::styleFrame]
-    ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame]  -text [_ "Properties"]
     ttk::labelframe $top.f.inputs                       {*}[::styleLabelFrame]  -text [_ "Inputs"]
     ttk::labelframe $top.f.outputs                      {*}[::styleLabelFrame]  -text [_ "Outputs"]
     
     pack $top.f                                         {*}[::packMain]
-    pack $top.f.properties                              {*}[::packCategory]
     
-    if {$audioIn ne ""}  { pack $top.f.inputs           {*}[::packCategoryNext] }
+    if {$audioIn ne ""}  { pack $top.f.inputs           {*}[::packCategory] }
     if {$audioOut ne ""} { pack $top.f.outputs          {*}[::packCategoryNext] }
-    
-    ttk::label $top.f.properties.sampleRateLabel        {*}[::styleLabel] \
-                                                            -text [_ "Sample Rate"]
-    ::createMenuByValue $top.f.properties.sampleRate    $sampleRateValues ::ui_audio::audioSampleRate \
-                                                            -width [::measure $sampleRateValues]   
-
-    grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky ew
-    grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky ew
     
     if {![llength [winfo children $top.f.inputs]]}  { ::ui_audio::_makeIn  $top.f.inputs  1 }
     if {![llength [winfo children $top.f.outputs]]} { ::ui_audio::_makeOut $top.f.outputs 1 }
 
-    grid columnconfigure $top.f.properties  1 -weight 1
     grid columnconfigure $top.f.inputs      1 -weight 1
     grid columnconfigure $top.f.outputs     1 -weight 1
     
@@ -210,7 +189,6 @@ proc _apply {top} {
     variable audioOutChannels
     variable audioInEnabled
     variable audioOutEnabled
-    variable audioSampleRate 
     
     _forceValues
     
@@ -230,8 +208,7 @@ proc _apply {top} {
             [expr {$audioOutChannels(1) * ($audioOutEnabled(1) ? 1 : -1)}] \
             [expr {$audioOutChannels(2) * ($audioOutEnabled(2) ? 1 : -1)}] \
             [expr {$audioOutChannels(3) * ($audioOutEnabled(3) ? 1 : -1)}] \
-            [expr {$audioOutChannels(4) * ($audioOutEnabled(4) ? 1 : -1)}] \
-            $audioSampleRate"
+            [expr {$audioOutChannels(4) * ($audioOutEnabled(4) ? 1 : -1)}]"
     
     ::ui_interface::pdsend "pd _savepreferences"
 }
@@ -243,8 +220,6 @@ proc _forceValues {} {
 
     variable audioInChannels
     variable audioOutChannels
-    variable audioSampleRate
-    variable audioSampleRateOld
 
     foreach i {1 2 3 4} {
     
@@ -257,9 +232,6 @@ proc _forceValues {} {
     set audioOutChannels($i) [::tcl::mathfunc::min $audioOutChannels($i) 32]
     
     }
-    
-    set audioSampleRate      [::ifInteger $audioSampleRate $audioSampleRateOld]
-    set audioSampleRate      [::tcl::mathfunc::max $audioSampleRate 1]
 }
 
 # ------------------------------------------------------------------------------------------------------------

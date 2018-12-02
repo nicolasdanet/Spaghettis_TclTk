@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -262,7 +262,6 @@ extern t_symbol *sym_bindlist;
 extern t_symbol *sym_biquad__tilde__;
 extern t_symbol *sym_bitwise;
 extern t_symbol *sym_block__tilde__;
-extern t_symbol *sym_blockinfo__tilde__;
 extern t_symbol *sym_blocksize;
 extern t_symbol *sym_bng;
 extern t_symbol *sym_bp__tilde__;
@@ -273,6 +272,7 @@ extern t_symbol *sym_cancel;
 extern t_symbol *sym_canvas;
 extern t_symbol *sym_canvasmaker;
 extern t_symbol *sym_catch__tilde__;
+extern t_symbol *sym_chain;
 extern t_symbol *sym_change;
 extern t_symbol *sym_channels;
 extern t_symbol *sym_circle;
@@ -375,6 +375,7 @@ extern t_symbol *sym_format;
 extern t_symbol *sym_frames;
 extern t_symbol *sym_framp__tilde__;
 extern t_symbol *sym_freeze;
+extern t_symbol *sym_fromlist;
 extern t_symbol *sym_fromsymbol;
 extern t_symbol *sym_front;
 extern t_symbol *sym_fswap;
@@ -389,7 +390,6 @@ extern t_symbol *sym_group;
 extern t_symbol *sym_help;
 extern t_symbol *sym_hip__tilde__;
 extern t_symbol *sym_hold;
-extern t_symbol *sym_hop;
 extern t_symbol *sym_hradio;
 extern t_symbol *sym_hslider;
 extern t_symbol *sym_i;
@@ -660,12 +660,14 @@ extern t_symbol *sym_template;
 extern t_symbol *sym_text;
 extern t_symbol *sym_text__space__define;
 extern t_symbol *sym_text__space__delete;
+extern t_symbol *sym_text__space__fromlist;
 extern t_symbol *sym_text__space__get;
 extern t_symbol *sym_text__space__insert;
 extern t_symbol *sym_text__space__search;
 extern t_symbol *sym_text__space__sequence;
 extern t_symbol *sym_text__space__set;
 extern t_symbol *sym_text__space__size;
+extern t_symbol *sym_text__space__tolist;
 extern t_symbol *sym_textfile;
 extern t_symbol *sym_tgl;
 extern t_symbol *sym_threshold__tilde__;
@@ -673,6 +675,7 @@ extern t_symbol *sym_throw__tilde__;
 extern t_symbol *sym_timer;
 extern t_symbol *sym_timestamp;
 extern t_symbol *sym_title;
+extern t_symbol *sym_tolist;
 extern t_symbol *sym_tosymbol;
 extern t_symbol *sym_touchin;
 extern t_symbol *sym_touchout;
@@ -717,7 +720,6 @@ extern t_symbol *sym_value;
 extern t_symbol *sym_vcf__tilde__;
 extern t_symbol *sym_vd__tilde__;
 extern t_symbol *sym_vexpr;
-extern t_symbol *sym_vline__tilde__;
 extern t_symbol *sym_vradio;
 extern t_symbol *sym_vslider;
 extern t_symbol *sym_vsnapshot__tilde__;
@@ -750,86 +752,6 @@ extern t_symbol *sym_Space;
 extern t_symbol *sym_Tab;
 extern t_symbol *sym_Text;
 extern t_symbol *sym_Up;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_WITH_LEGACY
-
-extern t_symbol *sym___dash__b;
-extern t_symbol *sym___dash__c;
-extern t_symbol *sym___dash__f;
-extern t_symbol *sym___dash__g;
-extern t_symbol *sym___dash__k;
-extern t_symbol *sym___dash__maxfreq;
-extern t_symbol *sym___dash__maxsize;
-extern t_symbol *sym___dash__minpower;
-extern t_symbol *sym___dash__n;
-extern t_symbol *sym___dash__nframes;
-extern t_symbol *sym___dash__npeak;
-extern t_symbol *sym___dash__npts;
-extern t_symbol *sym___dash__r;
-extern t_symbol *sym___dash__rate;
-extern t_symbol *sym___dash__s;
-extern t_symbol *sym___dash__stabletime;
-extern t_symbol *sym___dash__t;
-extern t_symbol *sym___dash__u;
-extern t_symbol *sym___dash__v;
-extern t_symbol *sym___dash__w;
-extern t_symbol *sym_add2;
-extern t_symbol *sym_adddollsym;
-extern t_symbol *sym_addsemi;
-extern t_symbol *sym_args;
-extern t_symbol *sym_auto;
-extern t_symbol *sym_const;
-extern t_symbol *sym_delta;
-extern t_symbol *sym_double_change;
-extern t_symbol *sym_env;
-extern t_symbol *sym_fromlist;
-extern t_symbol *sym_get_pos;
-extern t_symbol *sym_hsl;
-extern t_symbol *sym_init;
-extern t_symbol *sym_label;
-extern t_symbol *sym_label_font;
-extern t_symbol *sym_label_pos;
-extern t_symbol *sym_lin;
-extern t_symbol *sym_log_height;
-extern t_symbol *sym_menu__dash__open;
-extern t_symbol *sym_menuarray;
-extern t_symbol *sym_menuclose;
-extern t_symbol *sym_menusave;
-extern t_symbol *sym_menusaveas;
-extern t_symbol *sym_ms;
-extern t_symbol *sym_msec;
-extern t_symbol *sym_my_canvas;
-extern t_symbol *sym_my_numbox;
-extern t_symbol *sym_mycnv;
-extern t_symbol *sym_numbox;
-extern t_symbol *sym_page;
-extern t_symbol *sym_permin;
-extern t_symbol *sym_perms;
-extern t_symbol *sym_permsec;
-extern t_symbol *sym_persec;
-extern t_symbol *sym_pos;
-extern t_symbol *sym_q8_rsqrt__tilde__;
-extern t_symbol *sym_q8_sqrt__tilde__;
-extern t_symbol *sym_sam;
-extern t_symbol *sym_samp;
-extern t_symbol *sym_send__dash__window;
-extern t_symbol *sym_setbounds;
-extern t_symbol *sym_sec;
-extern t_symbol *sym_single_change;
-extern t_symbol *sym_tempo;
-extern t_symbol *sym_text__space__fromlist;
-extern t_symbol *sym_text__space__tolist;
-extern t_symbol *sym_toggle;
-extern t_symbol *sym_tolist;
-extern t_symbol *sym_vis_size;
-extern t_symbol *sym_vnext;
-extern t_symbol *sym_vsl;
-extern t_symbol *sym_vumeter;
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

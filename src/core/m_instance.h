@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -50,13 +50,15 @@ typedef struct _pdinstance {
     t_position      pd_locate;
     uint64_t        pd_pollingCount;
     uint64_t        pd_autoreleaseCount;
+    t_int32Atomic   pd_clocksCount;
     int             pd_overflowCount;
     int             pd_isLoadingExternal;
     int             pd_isUndoRecursive;
+    t_pointerAtomic pd_chain;
+    t_chain         *pd_build;
     t_symbol        *pd_loadingAbstraction;
-    t_chain         *pd_chain;
     t_dspcontext    *pd_ugenContext;
-    t_clock         *pd_clocks;
+    t_clocks        *pd_clocks;
     t_glist         *pd_roots;
     t_clock         *pd_polling;
     t_clock         *pd_autorelease;
@@ -64,6 +66,7 @@ typedef struct _pdinstance {
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
     t_register      *pd_register;
+    t_dspthread     *pd_dsp;
     } t_pdinstance;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -140,17 +143,26 @@ t_glist *instance_registerGetOwner              (t_id u);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    instance_dspTick                        (void);
+t_error instance_dspCreate                      (void);
 void    instance_dspStart                       (void);
 void    instance_dspStop                        (void);
+void    instance_dspClean                       (void);
+void    instance_dspFree                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    instance_clockAdd                       (t_clock *c);
-void    instance_clockUnset                     (t_clock *c);
-void    instance_clockTick                      (t_systime systime);
+t_chain *instance_chainGetCurrent               (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void    instance_clocksClean                    (void);
+void    instance_clocksAdd                      (t_clock *c);
+void    instance_clocksRemove                   (t_clock *c);
+void    instance_clocksTick                     (t_systime systime);
 
 void    instance_pollingRun                     (void);
 void    instance_pollingStop                    (void);

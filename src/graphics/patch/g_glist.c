@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -178,7 +178,7 @@ int glist_isAbstraction (t_glist *glist)
     return (glist_hasParent (glist) && (glist->gl_environment != NULL));
 }
 
-int glist_isSubpatch (t_glist *glist)
+int glist_isSubpatchOrGraphicArray (t_glist *glist)
 {
     return (!glist_isTop (glist));
 }
@@ -195,7 +195,12 @@ int glist_isSubpatch (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int glist_isArray (t_glist *glist)
+int glist_isSubpatch (t_glist *glist)
+{
+    return (glist_isSubpatchOrGraphicArray (glist) && !glist_isGraphicArray (glist));
+}
+
+int glist_isGraphicArray (t_glist *glist)
 {
     return (utils_getFirstAtomOfObject (cast_object (glist)) == sym_graph);
 }
@@ -256,13 +261,13 @@ t_glist *glist_getView (t_glist *glist)
     return glist;
 }
 
-t_garray *glist_getArray (t_glist *glist)
+t_garray *glist_getGraphicArray (t_glist *glist)
 {
     t_gobj *y = glist->gl_graphics;
     
-    if (y && pd_class (y) == garray_class) { return (t_garray *)y; }
+    if (y && gobj_isGraphicArray (y)) { return (t_garray *)y; }
     else {
-        PD_BUG; return NULL;    /* Could be NULL in legacy patches. */
+        return NULL;    /* Could be NULL in legacy patches or at release time. */
     }
 }
 
@@ -310,7 +315,7 @@ void glist_setName (t_glist *glist, t_symbol *name)
 {
     if (!utils_isNameAllowedForWindow (name)) { warning_badName (sym_pd, name); }
     
-    if (name == &s_) { name = glist_isArray (glist) ? sym_Array : sym_Patch; }
+    if (name == &s_) { name = glist_isGraphicArray (glist) ? sym_Array : sym_Patch; }
     
     if (name != glist->gl_name) {
     //
@@ -568,7 +573,7 @@ int glist_fileOpen (t_glist *glist, const char *name, const char *extension, t_f
 
 int glist_undoIsOk (t_glist *glist)
 {
-    if (glist_isAbstraction (glist) || glist_isArray (glist)) { return 0; }
+    if (glist_isAbstraction (glist) || glist_isGraphicArray (glist)) { return 0; }
     else if (editor_hasSelectedBox (glist_getEditor (glist))) { return 0; }
     
     return (glist_hasUndo (glist) && !instance_undoIsRecursive());
@@ -832,11 +837,20 @@ static void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
     }
 }
 
+static void glist_objectRemoveFree (t_gobj *y)
+{
+    if (gobj_hasDSP (y) && !gobj_isCanvas (y)) { garbage_newObject (y); }
+    else {
+        pd_free (cast_pd (y));
+    }
+}
+
 void glist_objectRemove (t_glist *glist, t_gobj *y)
 {
-    int needToRebuild = class_hasDSP (pd_class (y));
+    int needToRebuild = gobj_hasDSP (y);
     int needToRepaint = class_hasPainterBehavior (pd_class (y)) || (pd_class (y) == struct_class);
     int undoable      = glist_undoIsOk (glist);
+    int state         = 0;
     
     glist_deleteBegin (glist);
     
@@ -846,6 +860,8 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
     if (needToRepaint) { paint_erase(); }
     if (glist_isOnScreen (glist)) { gobj_visibilityChanged (y, glist, 0); }
     if (gobj_isCanvas (y)) { glist_closebang (cast_glist (y)); }
+    
+    if (needToRebuild) { state = dsp_suspend(); }
     
     {
         t_box *box = NULL;
@@ -867,14 +883,14 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
         }
     
         glist_objectRemoveProceed (glist, y);
-        pd_free (cast_pd (y));
+        glist_objectRemoveFree (y);
 
         if (box) {
             editor_boxRemove (glist_getEditor (glist), box); 
         }
     }
     
-    if (needToRebuild) { dsp_update(); }
+    if (needToRebuild) { dsp_resume (state); }
     if (needToRepaint) { paint_draw(); }
     
     glist->gl_uniqueIdentifier = utils_unique();    /* Invalidate all pointers. */
@@ -907,7 +923,7 @@ void glist_objectRemoveAll (t_glist *glist)
     while ((y = glist->gl_graphics)) {
     //
     if (!dspSuspended) { 
-        if (class_hasDSP (pd_class (y))) { dspState = dsp_suspend(); dspSuspended = 1; }
+        if (gobj_hasDSP (y)) { dspState = dsp_suspend(); dspSuspended = 1; }
     }
 
     glist_objectRemove (glist, y);
@@ -1422,8 +1438,14 @@ t_error glist_lineConnect (t_glist *glist,
     int indexOfObjectIn,
     int indexOfInlet)
 {
-    t_gobj *src          = glist_objectGetAt (glist, indexOfObjectOut);
-    t_gobj *dest         = glist_objectGetAt (glist, indexOfObjectIn);
+    t_gobj *src  = glist_objectGetAt (glist, indexOfObjectOut);
+    t_gobj *dest = glist_objectGetAt (glist, indexOfObjectIn);
+    
+    PD_ASSERT (src);
+    PD_ASSERT (dest);
+    
+    if (src && dest) {
+    //
     t_object *srcObject  = cast_objectIfConnectable (src);
     t_object *destObject = cast_objectIfConnectable (dest);
     
@@ -1450,14 +1472,16 @@ t_error glist_lineConnect (t_glist *glist,
     return glist_objectConnect (glist, srcObject, m, destObject, n);
     //
     }
+    //
+    }
     
     return PD_ERROR;
 }
 
 t_error glist_lineConnectByUnique (t_id u, int indexOfOutlet, t_id v, int indexOfInlet)
 {
-    t_gobj *src          = instance_registerGetObject (u);
-    t_gobj *dest         = instance_registerGetObject (v);
+    t_gobj *src  = instance_registerGetObject (u);
+    t_gobj *dest = instance_registerGetObject (v);
 
     if (src && dest) {
     //

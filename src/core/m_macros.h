@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -15,6 +15,12 @@
 // MARK: -
 
 #define PD_SHORT_FILE       (strrchr (__FILE__, '/') ? strrchr (__FILE__, '/') + 1 : __FILE__)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void post_log (const char *, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -86,22 +92,165 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define PD_SECONDS_TO_MILLISECONDS(n)       ((double)(n) * 1000.0)
+#define PD_MILLISECONDS_TO_SECONDS(n)       ((double)(n) * 1e-3)
+#define PD_SECONDS_TO_MICROSECONDS(n)       ((double)(n) * 1000000.0)
+#define PD_MICROSECONDS_TO_SECONDS(n)       ((double)(n) * 1e-6)
+#define PD_MILLISECONDS_TO_MICROSECONDS(n)  ((double)(n) * 1000.0)
+#define PD_MICROSECONDS_TO_MILLISECONDS(n)  ((double)(n) * 1e-3)
+#define PD_SECONDS_TO_NANOSECONDS(n)        ((double)(n) * 1000000000.0)
+#define PD_NANOSECONDS_TO_SECONDS(n)        ((double)(n) * 1e-9)
+#define PD_MILLISECONDS_TO_NANOSECONDS(n)   ((double)(n) * 1000000.0)
+#define PD_NANOSECONDS_TO_MILLISECONDS(n)   ((double)(n) * 1e-6)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define PD_MAX(a,b)                         ((a)>(b)?(a):(b))
+#define PD_MIN(a,b)                         ((a)<(b)?(a):(b))
+
+#define PD_ABS(a)                           ((a)<0?-(a):(a))
+#define PD_CLAMP(u,a,b)                     ((u)<(a)?(a):(u)>(b)?(b):(u))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://www.math-solutions.org/graphplotter.html > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define PD_HALF_PI                          1.5707963267948966192313216916398
+#define PD_PI                               3.1415926535897932384626433832795
+#define PD_TWO_PI                           6.283185307179586476925286766559
+#define PD_LOG_TWO                          0.69314718055994530941723212145818
+#define PD_LOG_TEN                          2.3025850929940456840179914546844
+#define PD_E                                2.7182818284590452353602874713527
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_seed time_makeRandomSeed (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* < http://en.wikipedia.org/wiki/Linear_congruential_generator > */
+
+#define PD_RAND48_INIT(s)                   ((s) = (t_rand48)time_makeRandomSeed() & 0xffffffffffffULL)
+#define PD_RAND48_NEXT(s)                   ((s) = (((s) * 0x5deece66dULL + 0xbULL) & 0xffffffffffffULL))
+#define PD_RAND48_UINT32(s)                 (PD_RAND48_NEXT (s) >> 16)
+#define PD_RAND48_DOUBLE(s)                 (PD_RAND48_UINT32 (s) * (1.0 / 4294967296.0))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define pd_class(x)                         (*((t_pd *)(x)))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define cast_pd(x)                          ((t_pd *)(x))
+#define cast_iem(x)                         ((t_iem *)(x))
+#define cast_gobj(x)                        ((t_gobj *)(x))
+#define cast_glist(x)                       ((t_glist *)(x))
+#define cast_scalar(x)                      ((t_scalar *)(x))
+#define cast_object(x)                      ((t_object *)(x))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define IS_NULL(atom)                       ((atom)->a_type == A_NULL)
+#define IS_SEMICOLON(atom)                  ((atom)->a_type == A_SEMICOLON)
+#define IS_COMMA(atom)                      ((atom)->a_type == A_COMMA)
+#define IS_POINTER(atom)                    ((atom)->a_type == A_POINTER)
+#define IS_FLOAT(atom)                      ((atom)->a_type == A_FLOAT)
+#define IS_SYMBOL(atom)                     ((atom)->a_type == A_SYMBOL)
+#define IS_DOLLAR(atom)                     ((atom)->a_type == A_DOLLAR)
+#define IS_DOLLARSYMBOL(atom)               ((atom)->a_type == A_DOLLARSYMBOL)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define SET_NULL(atom)                      ((atom)->a_type = A_NULL)
+#define SET_SEMICOLON(atom)                 ((atom)->a_type = A_SEMICOLON, (atom)->a_w.a_index = 0)
+#define SET_COMMA(atom)                     ((atom)->a_type = A_COMMA, (atom)->a_w.a_index = 0)
+#define SET_POINTER(atom, gp)               ((atom)->a_type = A_POINTER, (atom)->a_w.a_gpointer = (gp))
+#define SET_FLOAT(atom, f)                  ((atom)->a_type = A_FLOAT, (atom)->a_w.a_float = (f))
+#define SET_SYMBOL(atom, s)                 ((atom)->a_type = A_SYMBOL, (atom)->a_w.a_symbol = (s))
+#define SET_DOLLAR(atom, n)                 ((atom)->a_type = A_DOLLAR, (atom)->a_w.a_index = (n))
+#define SET_DOLLARSYMBOL(atom, s)           ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.a_symbol = (s))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define GET_POINTER(atom)                   ((atom)->a_w.a_gpointer)
+#define GET_FLOAT(atom)                     ((atom)->a_w.a_float)
+#define GET_SYMBOL(atom)                    ((atom)->a_w.a_symbol)
+#define GET_DOLLAR(atom)                    ((atom)->a_w.a_index)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 #define IS_SEMICOLON_OR_COMMA(atom)         ((IS_SEMICOLON(atom)) || (IS_COMMA(atom)))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define WORD_FLOAT(w)                       ((w)->w_float)
-#define WORD_SYMBOL(w)                      ((w)->w_symbol)
-#define WORD_ARRAY(w)                       ((w)->w_array)
+#define ADDRESS_FLOAT(atom)                 &((atom)->a_w.a_float)
+#define ADDRESS_SYMBOL(atom)                &((atom)->a_w.a_symbol)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define ADDRESS_FLOAT(atom)                 &((atom)->a_w.w_float)
-#define ADDRESS_SYMBOL(atom)                &((atom)->a_w.w_symbol)
+double  atomic_float64ReadRelaxed   (t_float64Atomic *);
+void    atomic_float64WriteRelaxed  (double, t_float64Atomic *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void w_setFloat (t_word *w, t_float f)
+{
+    atomic_float64WriteRelaxed (f, &w->w_float);
+}
+
+static inline t_float w_getFloat (t_word *w)
+{
+    return atomic_float64ReadRelaxed (&w->w_float);
+}
+
+static inline void w_setSymbol (t_word *w, t_symbol *s)
+{
+    w->w_symbol = s;
+}
+
+static inline t_symbol *w_getSymbol (t_word *w)
+{
+    return w->w_symbol;
+}
+
+static inline void w_setArray (t_word *w, t_array *a)
+{
+    w->w_array = a;
+}
+
+static inline t_array *w_getArray (t_word *w)
+{
+    return w->w_array;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

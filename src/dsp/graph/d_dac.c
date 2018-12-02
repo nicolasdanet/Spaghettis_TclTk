@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -20,37 +20,23 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *dac_tilde_class;       /* Shared. */
+static t_class  *dac_tilde_class;                               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _dac_tilde {
-    t_object    x_obj;                  /* Must be the first. */
-    t_float     x_f;
+    t_object    x_obj;                                          /* Must be the first. */
     int         x_size;
-    int         *x_vector;
+    int         x_vector[DEVICES_MAXIMUM_CHANNELS];
     } t_dac_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void dac_tilde_setProceed (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int i, k = PD_MIN (argc, x->x_size);
-    
-    for (i = 0; i < k; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
-}
-
-static void dac_tilde_set (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    dac_tilde_setProceed (x, s, argc, argv); dsp_update();
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
+/* < https://lists.puredata.info/pipermail/pd-list/2017-10/120755.html > */
+/* < https://lists.puredata.info/pipermail/pd-list/2011-09/091004.html > */
 
 static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
 {
@@ -73,6 +59,12 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
     t_sample *out = audio_soundOut + (INTERNAL_BLOCKSIZE * channel);
     
     dsp_addPlusPerformAliased (out, t->s_vector, out, INTERNAL_BLOCKSIZE);
+    
+    #if 1
+    
+        dsp_addClipPerform (out, INTERNAL_BLOCKSIZE);
+    
+    #endif
     //
     }
     //
@@ -95,14 +87,7 @@ static t_buffer *dac_tilde_functionData (t_gobj *z, int flags)
     //
     t_dac_tilde *x = (t_dac_tilde *)z;
     t_buffer *b = buffer_new();
-    int i;
-    
-    buffer_appendSymbol (b, sym__restore);
-    
-    for (i = 0; i < x->x_size; i++) { buffer_appendFloat (b, x->x_vector[i]); }
-    
-    buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
+
     object_getSignalValues (cast_object (x), b, x->x_size);
     
     return b;
@@ -110,16 +95,6 @@ static t_buffer *dac_tilde_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
-}
-
-static void dac_tilde_restore (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    dac_tilde_setProceed (x, s, argc, argv);
-}
-
-static void dac_tilde_signals (t_dac_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -131,22 +106,17 @@ static void *dac_tilde_new (t_symbol *s, int argc, t_atom *argv)
     t_dac_tilde *x = (t_dac_tilde *)pd_new (dac_tilde_class);
     int i;
     
-    x->x_size   = argc ? argc : 2;
-    x->x_vector = (int *)PD_MEMORY_GET (x->x_size * sizeof (int));
+    x->x_size = argc ? argc : 2;
+    x->x_size = PD_MIN (x->x_size, DEVICES_MAXIMUM_CHANNELS);
     
     if (!argc) { x->x_vector[0] = 1; x->x_vector[1] = 2; }
     else {
-        for (i = 0; i < argc; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
+        for (i = 0; i < x->x_size; i++) { x->x_vector[i] = (int)atom_getFloatAtIndex (i, argc, argv); }
     }
     
     for (i = 1; i < x->x_size; i++) { inlet_newSignal (cast_object (x)); }
     
     return x;
-}
-
-static void dac_tilde_free (t_dac_tilde *x)
-{
-    PD_MEMORY_FREE (x->x_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -159,20 +129,14 @@ void dac_tilde_setup (void)
     
     c = class_new (sym_dac__tilde__,
             (t_newmethod)dac_tilde_new,
-            (t_method)dac_tilde_free,
+            NULL,
             sizeof (t_dac_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_GIMME,
             A_NULL);
         
-    CLASS_SIGNAL (c, t_dac_tilde, x_f);
-    
     class_addDSP (c, (t_method)dac_tilde_dsp);
     
-    class_addMethod (c, (t_method)dac_tilde_set,        sym_set,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dac_tilde_restore,    sym__restore,   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dac_tilde_signals,    sym__signals,   A_GIMME, A_NULL);
-
     class_setDataFunction (c, dac_tilde_functionData);
     class_setHelpName (c, sym_audio);
     

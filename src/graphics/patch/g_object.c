@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -24,6 +24,26 @@ extern t_widgetbehavior text_widgetBehavior;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+int gobj_hasDSP (t_gobj *x)
+{
+    t_garray *a = NULL;
+    
+    if (gobj_isGraphicArray (x)) { a = (t_garray *)x; }
+    else if (gobj_isCanvas (x) && glist_isGraphicArray (cast_glist (x))) {
+        a = glist_getGraphicArray (cast_glist (x));
+    }
+    
+    if (a) {
+        return garray_isUsedInDSP (a);
+    }
+    
+    return class_hasDSP (pd_class (x));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void gobj_getRectangle (t_gobj *x, t_glist *owner, t_rectangle *r)
 {
@@ -179,8 +199,8 @@ int gobj_isViewable (t_gobj *x, t_glist *owner)
     
     if (!gobj_isViewable (cast_gobj (owner), glist_getParent (owner))) { return 0; }
     
-    if (pd_class (x) == garray_class) { return 1; }                 /* Always true. */
-    if (gobj_isScalar (x) && glist_isArray (owner)) { return 1; }   /* Ditto. */
+    if (gobj_isGraphicArray (x)) { return 1; }                              /* Always true. */
+    if (gobj_isScalar (x) && glist_isGraphicArray (owner)) { return 1; }    /* Ditto. */
     else {
     //
     {
@@ -271,7 +291,7 @@ void gobj_help (t_gobj *y)
             directory = environment_getDirectoryAsString (glist_getEnvironment (cast_glist (y)));
         }
     
-    } else if (gobj_isCanvas (y) && glist_isArray (cast_glist (y))) {
+    } else if (gobj_isCanvas (y) && glist_isGraphicArray (cast_glist (y))) {
         err = string_copy (name, PD_STRING, sym_garray->s_name);
         directory = "";
         

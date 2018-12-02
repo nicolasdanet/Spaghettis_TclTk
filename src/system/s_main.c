@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -319,9 +319,9 @@ static int main_alreadyExists (void)
 
 int main_entry (int argc, char **argv)
 {
-    t_error err = priority_privilegeStart();
+    t_error err = privilege_start();
     
-    if (!err && !(err = priority_privilegeDrop())) {
+    if (!err && !(err = privilege_drop())) {
     //
     main_entryNative();
     
@@ -359,16 +359,17 @@ int main_entry (int argc, char **argv)
     if (!err) {
     //
     midi_initialize();
-    setup_initialize();     /* Instance initialized here. */
+    setup_initialize();                     /* Instance initialized. */
     preferences_load();
     
     if (searchpath_scan() != PD_ERROR_NONE) { PD_BUG; }
     
-    if (!(err |= interface_start())) {
+    if (!(err |= interface_start())) {      /* DSP thread created. */
+    
         if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
     }
     
-    setup_release();
+    setup_release();                        /* Instance released. */
     midi_release();
     audio_release(); 
     //

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -35,7 +36,7 @@ typedef struct _unop_tilde t_rsqrt_tilde;
 t_sample rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];           /* Static. */
 t_sample rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Static. */
 
-#endif
+#endif // PD_WITH_DEADCODE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -104,20 +105,10 @@ void rsqrt_tilde_setup (void)
             (t_newmethod)rsqrt_tilde_new,
             NULL,
             sizeof (t_rsqrt_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_rsqrt_tilde, x_f);
-    
     class_addDSP (c, (t_method)rsqrt_tilde_dsp);
-    
-    #if PD_WITH_LEGACY
-    
-    class_addCreator ((t_newmethod)rsqrt_tilde_new, sym_q8_rsqrt__tilde__, A_NULL);
-    
-    #endif
-    
-    class_addMethod (c, (t_method)unop_tilde_signals, sym__signals, A_FLOAT, A_NULL);
     
     class_setDataFunction (c, unop_tilde_functionData);
     class_setHelpName (c, sym_math__tilde__);

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -44,8 +44,8 @@ static void tabread4_float (t_tabread4 *x, t_float f)
     garray_getData (a, &size, &data);
     
     if (size < 4)           { outlet_float (x->x_outlet, 0.0); }
-    else if (n < 1)         { outlet_float (x->x_outlet, WORD_FLOAT (data + 1)); }
-    else if (n > size - 3)  { outlet_float (x->x_outlet, WORD_FLOAT (data + size - 2)); }
+    else if (n < 1)         { outlet_float (x->x_outlet, w_getFloat (data + 1)); }
+    else if (n > size - 3)  { outlet_float (x->x_outlet, w_getFloat (data + size - 2)); }
     else {
         outlet_float (x->x_outlet, dsp_4PointsInterpolationWithWords ((f - n), data + n - 1));
     }

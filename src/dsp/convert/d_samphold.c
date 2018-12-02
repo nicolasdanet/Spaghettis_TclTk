@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -20,29 +21,11 @@ static t_class *samphold_tilde_class;       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _samphold_tilde {
-    t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    t_sample    x_lastControl;
-    t_sample    x_lastOut;
-    t_outlet    *x_outlet;
+    t_object            x_obj;              /* Must be the first. */
+    t_float64Atomic     x_lastControl;
+    t_float64Atomic     x_lastOut;
+    t_outlet            *x_outlet;
     } t_samphold_tilde;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void samphold_tilde_reset (t_samphold_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc && IS_FLOAT (argv)) { x->x_lastControl = GET_FLOAT (argv); }
-    else {
-        x->x_lastControl = PD_FLT_MAX;
-    }
-}
-
-static void samphold_tilde_set (t_samphold_tilde *x, t_float f)
-{
-    x->x_lastOut = f;
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -58,11 +41,10 @@ static t_int *samphold_tilde_perform (t_int *w)
     PD_RESTRICTED in1 = (t_sample *)(w[2]);
     PD_RESTRICTED in2 = (t_sample *)(w[3]);
     PD_RESTRICTED out = (t_sample *)(w[4]);
-    int n = (int)(w[5]);
+    int i, n = (int)(w[5]);
     
-    t_sample lastControl = x->x_lastControl;
-    t_sample lastOut = x->x_lastOut;
-    int i;
+    t_sample lastControl = (t_sample)PD_ATOMIC_FLOAT64_READ (&x->x_lastControl);
+    t_sample lastOut     = (t_sample)PD_ATOMIC_FLOAT64_READ (&x->x_lastOut);
         
     for (i = 0; i < n; i++) {
     //
@@ -77,8 +59,8 @@ static t_int *samphold_tilde_perform (t_int *w)
     //
     }
     
-    x->x_lastControl = lastControl;
-    x->x_lastOut = lastOut;
+    PD_ATOMIC_FLOAT64_WRITE ((double)lastControl, &x->x_lastControl);
+    PD_ATOMIC_FLOAT64_WRITE ((double)lastOut, &x->x_lastOut);
     
     return (w + 6);
 }
@@ -107,11 +89,10 @@ static t_buffer *samphold_tilde_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__restore);
-    buffer_appendFloat (b, x->x_lastControl);
-    buffer_appendFloat (b, x->x_lastOut);
+    buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_lastControl));
+    buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_lastOut));
     
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
     object_getSignalValues (cast_object (x), b, 2);
     
     return b;
@@ -123,13 +104,11 @@ static t_buffer *samphold_tilde_functionData (t_gobj *z, int flags)
 
 static void samphold_tilde_restore (t_samphold_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_lastControl = atom_getFloatAtIndex (0, argc, argv);
-    x->x_lastOut     = atom_getFloatAtIndex (1, argc, argv);
-}
-
-static void samphold_tilde_signals (t_samphold_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
+    t_float f0 = atom_getFloatAtIndex (0, argc, argv);
+    t_float f1 = atom_getFloatAtIndex (1, argc, argv);
+    
+    PD_ATOMIC_FLOAT64_WRITE (f0, &x->x_lastControl);
+    PD_ATOMIC_FLOAT64_WRITE (f1, &x->x_lastOut);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -159,18 +138,12 @@ void samphold_tilde_setup (void)
             (t_newmethod)samphold_tilde_new,
             NULL,
             sizeof (t_samphold_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
-            
-    CLASS_SIGNAL (c, t_samphold_tilde, x_f);
-    
+                
     class_addDSP (c, (t_method)samphold_tilde_dsp);
-        
-    class_addMethod (c, (t_method)samphold_tilde_reset,     sym_reset,      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)samphold_tilde_set,       sym_set,        A_DEFFLOAT, A_NULL);
-
-    class_addMethod (c, (t_method)samphold_tilde_restore,   sym__restore,   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)samphold_tilde_signals,   sym__signals,   A_GIMME, A_NULL);
+    
+    class_addMethod (c, (t_method)samphold_tilde_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, samphold_tilde_functionData);
 

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -14,19 +14,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Note that all values (after creation) of the delay lines are used in DSP thread only. */
+/* Except the size but that is read only. */
+/* Thus no need of mutex machinery. */
+
 typedef struct delwrite_tilde_control {
-    t_float                     c_sampleRate;
-    int                         c_vectorSize;
-    int                         c_phase;
-    int                         c_size;
-    t_sample                    *c_vector;
+    int                         dw_size;
+    int                         dw_phase;
+    t_sample                    *dw_vector;
     } t_delwrite_tilde_control;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 typedef struct _delwrite_tilde {
-    t_object                    dw_obj;                         /* Must be the first. */
-    t_float                     dw_f;
-    t_float                     dw_delayLineInMilliseconds;
-    t_id                        dw_buildIdentifier;
+    t_object                    dw_obj;                     /* Must be the first. */
+    t_id                        dw_identifier;
     t_delwrite_tilde_control    dw_space;
     t_symbol                    *dw_name;
     } t_delwrite_tilde;

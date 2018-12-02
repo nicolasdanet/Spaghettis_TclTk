@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -16,7 +16,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *vinlet_class;          /* Shared. */
+static void vinlet_dismiss (t_vinlet *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_class *vinlet_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -74,6 +80,15 @@ static void vinlet_anything (t_vinlet *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void vinlet_functionDismiss (t_gobj *z)
+{
+    vinlet_dismiss ((t_vinlet *)z);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *vinlet_newSignal (t_symbol *s)
 {
     t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
@@ -82,7 +97,6 @@ static void *vinlet_newSignal (t_symbol *s)
 
     x->vi_bufferSize   = 0;
     x->vi_buffer       = (t_sample *)PD_MEMORY_GET (0);
-    x->vi_bufferEnd    = x->vi_buffer;
     x->vi_owner        = instance_contextGetCurrent();
     x->vi_outlet       = outlet_newSignal (cast_object (x));
     x->vi_inlet        = glist_inletAdd (x->vi_owner, cast_pd (x), 1);
@@ -102,9 +116,22 @@ static void *vinlet_new (t_symbol *s)
     return x;
 }
 
+static void vinlet_dismiss (t_vinlet *x)
+{
+    if (!x->vi_dismissed) {
+    //
+    x->vi_dismissed = 1;
+    
+    glist_inletRemove (x->vi_owner, x->vi_inlet);
+    
+    x->vi_owner = NULL;
+    //
+    }
+}
+
 static void vinlet_free (t_vinlet *x)
 {
-    glist_inletRemove (x->vi_owner, x->vi_inlet);
+    vinlet_dismiss (x);
     
     if (x->vi_buffer) { PD_MEMORY_FREE (x->vi_buffer); }
     
@@ -138,6 +165,7 @@ void vinlet_setup (void)
     class_addAnything (c, (t_method)vinlet_anything);
     
     class_setHelpName (c, sym_pd);
+    class_setDismissFunction (c, vinlet_functionDismiss);
     
     vinlet_class = c;
 }

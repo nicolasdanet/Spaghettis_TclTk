@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -189,7 +189,7 @@ int glist_objectDeselect (t_glist *glist, t_gobj *y, int withUndo)
         gobj_activated (y, glist, 0);
     }
     
-    if (class_hasDSP (pd_class (y))) { dspState = dsp_suspend(); dspSuspended = 1; }
+    if (gobj_hasDSP (y)) { dspState = dsp_suspend(); dspSuspended = 1; }
     //
     }
     
@@ -336,7 +336,7 @@ void glist_objectRemoveSelectedProceed (t_glist *glist)
     
     if (glist_objectIsSelected (glist, t1)) {
         if (!dspSuspended) {
-            if (class_hasDSP (pd_class (t1))) { dspState = dsp_suspend(); dspSuspended = 1; }
+            if (gobj_hasDSP (t1)) { dspState = dsp_suspend(); dspSuspended = 1; }
         }
         if (!gobj_isScalar (t1)) {
             onlyScalars = 0;

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -45,7 +45,6 @@ t_symbol    *template_getUnexpandedName             (t_template *x);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void        template_create                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
 int         template_isValid                        (t_template *x);
 void        template_free                           (t_template *x);
 

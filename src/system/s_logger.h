@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Lock-free logger for low latency debugging. */
+/* Non-blocking logger for low latency debugging. */
 /* Handy to post small constant strings while developing DSP code. */
 /* Note that only ONE thread might be safely logged at once. */
 /* By the way probably not a good idea to use it in the release product. */

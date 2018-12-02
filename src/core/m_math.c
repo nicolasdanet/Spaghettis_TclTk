@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -14,9 +14,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int math_areEquivalent (t_float a, t_float b)
+int math_areEquivalent (t_float a, t_float b, t_float f)
 {
-    return ((PD_ABS (b - a)) < PD_EPSILON);
+    return ((PD_ABS (b - a)) < f);
 }
 
 int math_compareFloat (t_float a, t_float b)    /* Basic implementation of comparaison function. */

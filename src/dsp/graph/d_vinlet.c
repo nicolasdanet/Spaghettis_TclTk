@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -20,55 +20,60 @@
 
 static t_int *vinlet_performPrologue (t_int *w)
 {
-    t_vinlet *x = (t_vinlet *)(w[1]);
-    PD_RESTRICTED in = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
+    t_vinletclosure *c = (t_vinletclosure *)(w[1]);
     
-    t_sample *out = x->vi_bufferWrite;
+    t_sample *out      = c->s_bufferWrite;
+    t_sample *in       = c->s_in;
+    int n              = c->s_inSize;
     
-    if (out == x->vi_bufferEnd) {
-        t_sample *f1 = x->vi_buffer;
-        t_sample *f2 = x->vi_buffer + x->vi_hopSize;
-        int shift    = x->vi_bufferSize - x->vi_hopSize;
-        out -= x->vi_hopSize;
-        // PD_LOG ("SHIFT");
-        // PD_LOG_NUMBER (x->vi_hopSize);
-        // PD_LOG ("/");
-        // PD_LOG_NUMBER (shift);
+    if (out == c->s_bufferEnd) {
+        t_sample *f1 = c->s_buffer;
+        t_sample *f2 = c->s_buffer + c->s_hopSize;
+        int shift    = c->s_bufferSize - c->s_hopSize;
+        out -= c->s_hopSize;
+        if (shift) {
+            // PD_LOG ("SHIFT");
+            // PD_LOG_NUMBER (c->s_hopSize);
+            // PD_LOG ("/");
+            // PD_LOG_NUMBER (shift);
+        }
         while (shift--) { *f1++ = *f2++; }
     }
     
     // PD_LOG ("P");
-    // PD_LOG_NUMBER (out - x->vi_buffer);
+    // PD_LOG_NUMBER (out - c->s_buffer);
     // PD_LOG ("/");
     // PD_LOG_NUMBER (n);
     
     while (n--) { *out++ = *in++; }
     
-    x->vi_bufferWrite = out;
+    c->s_bufferWrite = out;
     
-    return (w + 4);
+    return (w + 2);
 }
 
 /* Read from buffer. */
 
 static t_int *vinlet_perform (t_int *w)
 {
-    t_vinlet *x = (t_vinlet *)(w[1]);
-    PD_RESTRICTED out = (t_sample *)(w[2]);
+    t_vinletclosure *c = (t_vinletclosure *)(w[1]);
+    PD_RESTRICTED out  = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    t_sample *in = x->vi_bufferRead;
-
+    t_sample *in = c->s_bufferRead;
+    
+    int z = c->s_zeroed;
+    
     // PD_LOG ("R");
-    // PD_LOG_NUMBER (in - x->vi_buffer);
+    // PD_LOG_NUMBER (in - c->s_buffer);
     // PD_LOG ("/");
     // PD_LOG_NUMBER (n);
     
-    while (n--) { *out++ = *in++; }
-    if (in == x->vi_bufferEnd) { in = x->vi_buffer; }
+    while (n--) { if (z) { *in = 0.0; } *out = *in; out++; in++; }
     
-    x->vi_bufferRead = in;
+    if (in == c->s_bufferEnd) { in = c->s_buffer; }
+    
+    c->s_bufferRead = in;
     
     return (w + 4);
 }
@@ -79,6 +84,8 @@ static t_int *vinlet_perform (t_int *w)
 
 void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
 {
+    PD_ASSERT (x->vi_closure == NULL);
+    
     if (vinlet_isSignal (x)) {
     //
     if (!p->bp_reblocked) {     /* Vector sizes are equal thus no buffering is required. */
@@ -90,11 +97,12 @@ void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     t_signal *s = NULL;
     int parentVectorSize = 1;
     int vectorSize = 1;
-    int bufferSize;
 
-    resample_setRatio (&x->vi_resample, p->bp_downsample, p->bp_upsample);
+    resample_set (&x->vi_resample, p->bp_downsample, p->bp_upsample);
     
     x->vi_directSignal = NULL;
+    
+    t_vinletclosure *c = x->vi_closure = vinlet_newClosure();
     
     if (signals) {
         s = signals[inlet_getIndexAsSignal (x->vi_inlet)];
@@ -102,39 +110,43 @@ void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
         vectorSize = parentVectorSize * p->bp_upsample / p->bp_downsample;
     }
 
-    bufferSize = PD_MAX (p->bp_blockSize, vectorSize);
+    int bufferSize = PD_MAX (p->bp_blockSize, vectorSize);
     
     if (bufferSize != x->vi_bufferSize) {
-        PD_MEMORY_FREE (x->vi_buffer);
+        garbage_newRaw ((void *)x->vi_buffer);
         x->vi_bufferSize = bufferSize;
         x->vi_buffer     = (t_sample *)PD_MEMORY_GET (x->vi_bufferSize * sizeof (t_sample));
-        x->vi_bufferEnd  = x->vi_buffer + x->vi_bufferSize;
     }
     
-    if (!signals) { memset (x->vi_buffer, 0, x->vi_bufferSize * sizeof (t_sample)); }
+    c->s_buffer     = x->vi_buffer;
+    c->s_bufferSize = x->vi_bufferSize;
+    c->s_bufferEnd  = x->vi_buffer + x->vi_bufferSize;
+    
+    if (!signals) { c->s_zeroed = 1; }
     else {
     //
-    t_sample *t = NULL;
-    int phase = (int)((chain_getPhase (instance_getChain()) - 1) & (t_phase)(p->bp_period - 1));
+    int phase = p->bp_period - 1;
     
-    x->vi_hopSize     = p->bp_period * vectorSize;
-    x->vi_bufferWrite = phase ? x->vi_bufferEnd - (x->vi_hopSize - (phase * vectorSize)) : x->vi_bufferEnd;
+    c->s_hopSize     = p->bp_period * vectorSize;
+    c->s_bufferWrite = phase ? c->s_bufferEnd - (c->s_hopSize - (phase * vectorSize)) : c->s_bufferEnd;
     
-    // PD_LOG ("INLET BUFFER");
-    // PD_LOG_NUMBER (bufferSize);
-    // PD_LOG ("INLET PHASE");
-    // PD_LOG_NUMBER (phase);
+    // PD_LOG ("INLET SIZE");
+    // PD_LOG_NUMBER (c->s_bufferSize);
+    // PD_LOG ("INLET WRITE");
+    // PD_LOG_NUMBER (c->s_bufferWrite - c->s_buffer);
     // PD_LOG ("INLET HOP");
-    // PD_LOG_NUMBER (x->vi_hopSize);
+    // PD_LOG_NUMBER (c->s_hopSize);
     
-    PD_ASSERT (x->vi_hopSize <= x->vi_bufferSize);
+    PD_ASSERT (c->s_hopSize <= c->s_bufferSize);
     
-    if (!resample_isRequired (&x->vi_resample)) { t = s->s_vector; }    /* Original signal. */
-    else {
-        t = resample_setBuffer (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize);  /* Resampled. */
+    c->s_inSize = vectorSize;
+    c->s_in     = s->s_vector;
+        
+    if (resample_isRequired (&x->vi_resample)) {
+        c->s_in = resample_getBufferInlet (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize);
     }
 
-    dsp_add (vinlet_performPrologue, 3, x, t, vectorSize);
+    dsp_add (vinlet_performPrologue, 1, c);     /* Must be after resampling above. */
     //
     }
     //
@@ -147,21 +159,24 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
 {
     if (vinlet_isSignal (x)) {
     //
-    t_signal *out = sp[0];
-            
+    t_signal *out      = sp[0];
+    t_vinletclosure *c = x->vi_closure;
+    
     if (x->vi_directSignal) { signal_borrow (out, x->vi_directSignal); }    /* By-pass the inlet. */
     else {
     //
     /* No phase required. */ 
     /* Submultiple read is always completed at each tick. */
     
-    x->vi_bufferRead = x->vi_buffer;
+    c->s_bufferRead = x->vi_buffer;
     
-    dsp_add (vinlet_perform, 3, x, out->s_vector, out->s_vectorSize);
+    dsp_add (vinlet_perform, 3, c, out->s_vector, out->s_vectorSize);
     //
     }
     //
     }
+    
+    x->vi_closure = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

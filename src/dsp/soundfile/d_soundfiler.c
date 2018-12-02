@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -158,7 +158,7 @@ static int soundfiler_readDecode (int f,
         /* Note that in function below sizeof (t_word) is assumed equal to sizeof (double). */
         
         soundfile_decode64 (args->ap_numberOfChannels,
-            (double **)w,
+            w,
             (unsigned char *)t,
             size,
             framesAlreadyRead,
@@ -334,7 +334,7 @@ static int soundfiler_writeEncode (int f,
     /* Note that in function below sizeof (t_word) is assumed equal to sizeof (double). */
     
     soundfile_encode64 (args->ap_numberOfChannels,
-        (double **)w,
+        w,
         (unsigned char *)t,
         sizeInFrames,
         args->ap_onset,

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -51,7 +51,16 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
+#define SOUNDFILE_CHANNELS  64
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#include "dsp/d_dspthread.h"
+#include "dsp/d_chain.h"
+#include "dsp/d_closure.h"
 #include "dsp/d_block.h"
 #include "dsp/d_resample.h"
 #include "dsp/d_functions.h"
@@ -65,12 +74,10 @@
 struct _vinlet {
     t_object                vi_obj;             /* Must be the first. */
     t_resample              vi_resample;        /* Extended buffer if resampling is required. */
-    int                     vi_hopSize;         /* Size of the hop if overlapped. */
-    int                     vi_bufferSize;      /* Handle vector size conversion in a buffer. */
-    t_sample                *vi_buffer;
-    t_sample                *vi_bufferEnd;
-    t_sample                *vi_bufferWrite;
-    t_sample                *vi_bufferRead;
+    int                     vi_dismissed;
+    int                     vi_bufferSize;
+    t_sample                *vi_buffer;         /* Handle vector size conversion in a buffer. */
+    t_vinletclosure         *vi_closure;
     t_glist                 *vi_owner;
     t_outlet                *vi_outlet;
     t_inlet                 *vi_inlet;
@@ -80,13 +87,11 @@ struct _vinlet {
 struct _voutlet {
     t_object                vo_obj;             /* Must be the first. */
     t_resample              vo_resample;        /* Extended buffer if resampling is required. */
-    int                     vo_hopSize;         /* Size of the hop if overlapped. */
+    int                     vo_dismissed;
     int                     vo_copyOut;         /* Behavior is to perform a copy ("switch~" object). */
-    int                     vo_bufferSize;      /* Handle vector size conversion in a buffer. */
-    t_sample                *vo_buffer;
-    t_sample                *vo_bufferEnd;
-    t_sample                *vo_bufferRead;
-    t_sample                *vo_bufferWrite;
+    int                     vo_bufferSize;
+    t_sample                *vo_buffer;         /* Handle vector size conversion in a buffer. */
+    t_voutletclosure        *vo_closure;
     t_glist                 *vo_owner;
     t_outlet                *vo_outlet;
     t_signal                *vo_directSignal;   /* Used to efficiently by-pass the outlet. */
@@ -185,8 +190,6 @@ void        ugen_graphClose             (t_dspcontext *context);
 void        canvas_dspProceed           (t_glist *glist, int isTopLevel, t_signal **sp);
 t_float     canvas_getSampleRate        (t_glist *glist);
 t_float     canvas_getBlockSize         (t_glist *glist);
-
-t_block     *canvas_getBlock            (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

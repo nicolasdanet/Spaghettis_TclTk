@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -393,15 +393,6 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
         
             t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
         
-            #if PD_WITH_LEGACY
-            
-            if (t == sym___dash__t) { t = sym___dash__unit;   }
-            if (t == sym___dash__u) { t = sym___dash__unit;   }
-            if (t == sym___dash__g) { t = sym___dash__global; }
-            if (t == sym___dash__w) { t = sym___dash__wait;   }
-            
-            #endif
-            
             if (t == sym___dash__global) {
                 useGlobal = 1; argc--; argv++; 
                 
@@ -484,15 +475,6 @@ void textsequence_setup (void)
     class_addMethod (c, (t_method)textsequence_arguments,   sym_arguments,  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textsequence_unit,        sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
     
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)textsequence_automatic,   sym_auto,       A_NULL);
-    class_addMethod (c, (t_method)textsequence_arguments,   sym_args,       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)textsequence_message,     sym_line,       A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)textsequence_unit,        sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
-        
-    #endif 
-
     class_setDataFunction (c, textsequence_functionData);
     class_setHelpName (c, sym_text);
     

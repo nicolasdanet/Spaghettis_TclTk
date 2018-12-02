@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -79,7 +79,7 @@ static t_proxy *proxy_newWithBound (t_pd *owner, t_symbol *bindTo)
 
 t_proxy *proxy_new (t_pd *owner)
 {
-    char t[PD_STRING] = { 0 }; t_error err = string_sprintf (t, PD_STRING, ".x%lx", owner);
+    char t[PD_STRING] = { 0 }; t_error err = string_sprintf (t, PD_STRING, PD_GUIPROXY "%lx", owner);
     
     PD_UNUSED (err); PD_ASSERT (!err);
     

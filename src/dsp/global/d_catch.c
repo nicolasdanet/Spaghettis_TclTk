@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -20,6 +20,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void catch_tilde_dismiss (t_catch_tilde *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_class *catch_tilde_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -31,6 +37,15 @@ static void catch_tilde_dsp (t_catch_tilde *x, t_signal **sp)
     else {
         dsp_addCopyZeroPerform (x->x_vector, sp[0]->s_vector, INTERNAL_BLOCKSIZE);
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void catch_tilde_functionDismiss (t_gobj *x)
+{
+    catch_tilde_dismiss ((t_catch_tilde *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -50,11 +65,14 @@ static void *catch_tilde_new (t_symbol *s)
     return x;
 }
 
+static void catch_tilde_dismiss (t_catch_tilde *x)
+{
+    if (x->x_name && x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); x->x_name = NULL; }
+}
+
 static void catch_tilde_free (t_catch_tilde *x)
 {
-    if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
-    
-    PD_MEMORY_FREE (x->x_vector);
+    catch_tilde_dismiss (x); PD_MEMORY_FREE (x->x_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -76,7 +94,8 @@ void catch_tilde_setup (void)
     class_addDSP (c, (t_method)catch_tilde_dsp);
     
     class_setHelpName (c, sym_throw__tilde__);
-    
+    class_setDismissFunction (c, catch_tilde_functionDismiss);
+
     catch_tilde_class = c;
 }
 

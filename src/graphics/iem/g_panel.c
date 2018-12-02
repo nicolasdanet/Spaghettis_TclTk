@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -189,21 +189,6 @@ static void panel_size (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     //
     }
 }
-
-#if PD_WITH_LEGACY
-
-static void panel_getPosition (t_panel *x)
-{
-    if (x->x_gui.iem_canSend && symbol_hasThing (x->x_gui.iem_send)) {
-        t_float a = glist_getPixelX (x->x_gui.iem_owner, cast_object (x));
-        t_float b = glist_getPixelY (x->x_gui.iem_owner, cast_object (x));
-        SET_FLOAT (&x->x_t[0], a);
-        SET_FLOAT (&x->x_t[1], b);
-        pd_list (symbol_getThing (x->x_gui.iem_send), 2, x->x_t);
-    }
-}
-
-#endif // PD_WITH_LEGACY
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -420,21 +405,6 @@ void panel_setup (void)
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
 
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)iemgui_movePosition,          sym_delta,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setPosition,           sym_pos,                A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_label_font,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)panel_size,                   sym_vis_size,           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_getPosition,            sym_get_pos,            A_NULL);
-        
-    class_addCreator ((t_newmethod)panel_new, sym_my_canvas, A_GIMME, A_NULL);
-        
-    #endif
-    
     class_setWidgetBehavior (c, &panel_widgetBehavior);
     class_setSaveFunction (c, panel_functionSave);
     class_setUndoFunction (c, panel_functionUndo);

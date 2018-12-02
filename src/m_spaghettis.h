@@ -11,7 +11,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -231,17 +231,12 @@
 #include "Availability.h"
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
-    #define PD_POSIX_ATOMIC         1
-    #define PD_POSIX_TIME           1
 #else
-    #define PD_MAC_ATOMIC           1
-    #define PD_MAC_TIME             1
+    #error "Unsupported platform!"
 #endif
 
 #else
 #if PD_LINUX
-    #define PD_POSIX_ATOMIC         1
-    #define PD_POSIX_TIME           1
 #else
     #error "Unsupported platform!"
 #endif // PD_LINUX
@@ -249,7 +244,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 #if defined ( __cplusplus )
     #define PD_CPP                  1
@@ -352,6 +346,7 @@
 #if ! ( PD_BUILDING_APPLICATION )               /* Avoid namespace pollution. */
 
 #include <stdlib.h>
+#include <stdint.h>
 
 #else 
 
@@ -428,11 +423,7 @@
 #endif
 
 #ifndef PD_WITH_LOGGER
-#define PD_WITH_LOGGER              0                   /* Debug with lock-free logger. */
-#endif
-
-#ifndef PD_WITH_LEGACY
-#define PD_WITH_LEGACY              1                   /* Compatibility. */
+#define PD_WITH_LOGGER              0                   /* Debug with non-blocking logger. */
 #endif
 
 #ifndef PD_WITH_DEADCODE
@@ -484,6 +475,7 @@
 #define CLASS_BOX                   4
 
 #define CLASS_NOINLET               8
+#define CLASS_SIGNAL                16
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -509,17 +501,41 @@ typedef double                      t_systime;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if PD_LP64
-    typedef unsigned int            t_keycode;          // uint32_t
-    typedef unsigned long           t_rand48;           // uint64_t
-    typedef unsigned long           t_seed;             // uint64_t
-    typedef unsigned long           t_id;               // uint64_t
+typedef uint32_t                    t_keycode;
+typedef uint64_t                    t_rand48;
+typedef uint64_t                    t_seed;
+typedef uint64_t                    t_id;
+typedef int64_t                     t_phase;        /* Assumed two's complement. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Alignment may not work on stack (don't use local atomic variables). */
+
+/* < http://gcc.gnu.org/bugzilla/show_bug.cgi?id=16660 > */
+/* < http://stackoverflow.com/questions/841433/gcc-attribute-alignedx-explanation > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+typedef int32_t     __attribute__ ((__aligned__ (4)))   t_int32Atomic;
+typedef uint32_t    __attribute__ ((__aligned__ (4)))   t_uint32Atomic;
+typedef uint64_t    __attribute__ ((__aligned__ (8)))   t_uint64Atomic;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_64BIT
+    typedef void*   __attribute__ ((__aligned__ (8)))   t_pointerAtomic;
 #else
-    typedef unsigned long           t_keycode;
-    typedef unsigned long long      t_rand48;
-    typedef unsigned long long      t_seed;
-    typedef unsigned long long      t_id;
+    typedef void*   __attribute__ ((__aligned__ (4)))   t_pointerAtomic;
 #endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef double      __attribute__ ((__aligned__ (8)))   t_float64Atomic;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -561,8 +577,10 @@ struct _box;
 struct _chain;
 struct _class;
 struct _clock;
+struct _clocks;
 struct _constructor;
 struct _dspcontext;
+struct _dspthread;
 struct _garray;
 struct _gatom;
 struct _glist;
@@ -573,6 +591,7 @@ struct _outconnect;
 struct _outlet;
 struct _receiver;
 struct _ringbuffer;
+struct _sfthread;
 struct _struct;
 struct _template;
 struct _vinlet;
@@ -583,8 +602,10 @@ struct _voutlet;
 #define t_chain                     struct _chain
 #define t_class                     struct _class
 #define t_clock                     struct _clock
+#define t_clocks                    struct _clocks
 #define t_constructor               struct _constructor
 #define t_dspcontext                struct _dspcontext
+#define t_dspthread                 struct _dspthread
 #define t_garray                    struct _garray
 #define t_gatom                     struct _gatom
 #define t_glist                     struct _glist
@@ -595,6 +616,7 @@ struct _voutlet;
 #define t_outlet                    struct _outlet
 #define t_receiver                  struct _receiver
 #define t_ringbuffer                struct _ringbuffer
+#define t_sfthread                  struct _sfthread
 #define t_struct                    struct _struct
 #define t_template                  struct _template
 #define t_vinlet                    struct _vinlet
@@ -615,17 +637,20 @@ typedef struct _symbol {
 
 struct _buffer;
 
-typedef union word {
-    t_float         w_float;
-    int             w_index;
+typedef union _word {
+    t_float64Atomic w_float;
     t_symbol        *w_symbol;
-    t_gpointer      *w_gpointer;
     t_array         *w_array;
     } t_word;
 
 typedef struct _atom {
     t_atomtype      a_type;
-    t_word          a_w;
+    union {
+        t_float     a_float;
+        int         a_index;
+        t_symbol    *a_symbol;
+        t_gpointer  *a_gpointer;
+    } a_w;
     } t_atom;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -669,6 +694,7 @@ typedef enum {
 
 typedef struct _object {
     t_gobj          te_g;                       /* MUST be the first. */
+    t_float64Atomic te_f;
     t_buffer        *te_buffer;
     t_inlet         *te_inlets;
     t_outlet        *te_outlets;
@@ -732,13 +758,7 @@ typedef struct _signal {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define CLASS_SIGNAL(c, t, field)       class_addSignal (c, (char *)(&((t *)0)->field) - (char *)0)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define dsp_add(...)                    chain_append (instance_getChain(), __VA_ARGS__)
+#define dsp_add(...)                    chain_append (instance_chainGetTemporary(), __VA_ARGS__)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -822,7 +842,6 @@ PD_DLL t_class  *class_new                      (t_symbol *name,
 PD_DLL void     class_addCreator                (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...);
 
 PD_DLL void     class_addMethod                 (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
-PD_DLL void     class_addSignal                 (t_class *c, t_int offset);
 PD_DLL void     class_free                      (t_class *c);
 
 PD_DLL void     class_addBang                   (t_class *c, t_method fn);
@@ -871,6 +890,9 @@ PD_DLL void     outlet_anything                 (t_outlet *x, t_symbol *s, int a
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+PD_DLL void     atom_setSymbol                  (t_atom *a, t_symbol *s);
+PD_DLL void     atom_setFloat                   (t_atom *a, t_float f);
+
 PD_DLL t_symbol *atom_getSymbol                 (t_atom *a);
 PD_DLL t_symbol *atom_getSymbolAtIndex          (int n, int argc, t_atom *argv);
 
@@ -916,17 +938,15 @@ PD_DLL void     buffer_appendComma              (t_buffer *x);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Notice that all clock functions MUST be called only by one (and the same) thread. */
+/* The new and free functions might be called NON-CONCURRENTLY in other thread. */
+/* E.g. constructed in the main thread with delay and unset in the DSP perform. */
+
 PD_DLL t_clock  *clock_new                      (void *owner, t_method fn);
 
 PD_DLL void     clock_free                      (t_clock *x);
-PD_DLL void     clock_unset                     (t_clock *x);                   /* Usable in DSP perform. */
-PD_DLL void     clock_delay                     (t_clock *x, double delay);     /* Ditto. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-PD_DLL t_seed   time_makeRandomSeed             (void);
+PD_DLL void     clock_unset                     (t_clock *x);                   /* Usable in DSP. */
+PD_DLL void     clock_delay                     (t_clock *x, double delay);     /* Usable in DSP. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -935,20 +955,13 @@ PD_DLL t_seed   time_makeRandomSeed             (void);
 PD_DLL void     post                            (const char *fmt, ...);
 PD_DLL void     post_warning                    (const char *fmt, ...);
 PD_DLL void     post_error                      (const char *fmt, ...);
-PD_DLL void     post_log                        (const char *fmt, ...);         /* No-op in release build. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 PD_DLL t_glist  *instance_contextGetCurrent     (void);
-PD_DLL t_chain  *instance_getChain              (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-PD_DLL void     glist_setDirty                  (t_glist *g, int n);
+PD_DLL t_chain  *instance_chainGetTemporary     (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -979,75 +992,6 @@ PD_DLL void     chain_append                    (t_chain *x, t_perform f, int n,
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PD_SECONDS_TO_MILLISECONDS(n)           ((double)(n) * 1000.0)
-#define PD_MILLISECONDS_TO_SECONDS(n)           ((double)(n) * 1e-3)
-#define PD_SECONDS_TO_MICROSECONDS(n)           ((double)(n) * 1000000.0)
-#define PD_MICROSECONDS_TO_SECONDS(n)           ((double)(n) * 1e-6)
-#define PD_MILLISECONDS_TO_MICROSECONDS(n)      ((double)(n) * 1000.0)
-#define PD_MICROSECONDS_TO_MILLISECONDS(n)      ((double)(n) * 1e-3)
-#define PD_SECONDS_TO_NANOSECONDS(n)            ((double)(n) * 1000000000.0)
-#define PD_NANOSECONDS_TO_SECONDS(n)            ((double)(n) * 1e-9)
-#define PD_MILLISECONDS_TO_NANOSECONDS(n)       ((double)(n) * 1000000.0)
-#define PD_NANOSECONDS_TO_MILLISECONDS(n)       ((double)(n) * 1e-6)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define PD_MAX(a,b)                 ((a)>(b)?(a):(b))
-#define PD_MIN(a,b)                 ((a)<(b)?(a):(b))
-
-#define PD_ABS(a)                   ((a)<0?-(a):(a))
-#define PD_CLAMP(u,a,b)             ((u)<(a)?(a):(u)>(b)?(b):(u))
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* < http://www.math-solutions.org/graphplotter.html > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define PD_HALF_PI                  1.5707963267948966192313216916398
-#define PD_PI                       3.1415926535897932384626433832795
-#define PD_TWO_PI                   6.283185307179586476925286766559
-#define PD_LOG_TWO                  0.69314718055994530941723212145818
-#define PD_LOG_TEN                  2.3025850929940456840179914546844
-#define PD_E                        2.7182818284590452353602874713527
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* < http://en.wikipedia.org/wiki/Linear_congruential_generator > */
-
-#define PD_RAND48_INIT(s)           ((s) = (t_rand48)time_makeRandomSeed() & 0xffffffffffffULL)
-#define PD_RAND48_NEXT(s)           ((s) = (((s) * 0x5deece66dULL + 0xbULL) & 0xffffffffffffULL))
-#define PD_RAND48_UINT32(s)         (PD_RAND48_NEXT (s) >> 16)
-#define PD_RAND48_DOUBLE(s)         (PD_RAND48_UINT32 (s) * (1.0 / 4294967296.0))
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define pd_class(x)                 (*((t_pd *)(x)))
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define cast_pd(x)                  ((t_pd *)(x))
-#define cast_iem(x)                 ((t_iem *)(x))
-#define cast_gobj(x)                ((t_gobj *)(x))
-#define cast_glist(x)               ((t_glist *)(x))
-#define cast_scalar(x)              ((t_scalar *)(x))
-#define cast_object(x)              ((t_object *)(x))
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 #if PD_BUILDING_APPLICATION
 
 #define class_addDSP(c, m)          class_addMethod ((c), (t_method)(m), sym_dsp, A_CANT, A_NULL)
@@ -1065,41 +1009,6 @@ PD_DLL void     chain_append                    (t_chain *x, t_perform f, int n,
 #define class_addClosebang(c, m)    class_addMethod ((c), (t_method)(m), gensym ("closebang"), A_NULL)
 
 #endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define IS_NULL(atom)               ((atom)->a_type == A_NULL)
-#define IS_SEMICOLON(atom)          ((atom)->a_type == A_SEMICOLON)
-#define IS_COMMA(atom)              ((atom)->a_type == A_COMMA)
-#define IS_POINTER(atom)            ((atom)->a_type == A_POINTER)
-#define IS_FLOAT(atom)              ((atom)->a_type == A_FLOAT)
-#define IS_SYMBOL(atom)             ((atom)->a_type == A_SYMBOL)
-#define IS_DOLLAR(atom)             ((atom)->a_type == A_DOLLAR)
-#define IS_DOLLARSYMBOL(atom)       ((atom)->a_type == A_DOLLARSYMBOL)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define SET_NULL(atom)              ((atom)->a_type = A_NULL)
-#define SET_SEMICOLON(atom)         ((atom)->a_type = A_SEMICOLON, (atom)->a_w.w_index = 0)
-#define SET_COMMA(atom)             ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)
-#define SET_POINTER(atom, gp)       ((atom)->a_type = A_POINTER, (atom)->a_w.w_gpointer = (gp))
-#define SET_FLOAT(atom, f)          ((atom)->a_type = A_FLOAT, (atom)->a_w.w_float = (f))
-#define SET_SYMBOL(atom, s)         ((atom)->a_type = A_SYMBOL, (atom)->a_w.w_symbol = (s))
-#define SET_DOLLAR(atom, n)         ((atom)->a_type = A_DOLLAR, (atom)->a_w.w_index = (n))
-#define SET_DOLLARSYMBOL(atom, s)   ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.w_symbol = (s))
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define GET_POINTER(atom)           ((atom)->a_w.w_gpointer)
-#define GET_FLOAT(atom)             ((atom)->a_w.w_float)
-#define GET_SYMBOL(atom)            ((atom)->a_w.w_symbol)
-#define GET_DOLLAR(atom)            ((atom)->a_w.w_index)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -197,12 +197,6 @@ void metro_setup (void)
     class_addMethod (c, (t_method)metro_stop,       sym_stop,       A_NULL);
     class_addMethod (c, (t_method)metro_unit,       sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
 
-    #if PD_WITH_LEGACY 
-    
-    class_addMethod (c, (t_method)metro_unit,       sym_tempo,      A_FLOAT, A_SYMBOL, A_NULL);
-    
-    #endif
-    
     class_setDataFunction (c, metro_functionData);
 
     metro_class = c;

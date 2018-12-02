@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 #include "../m_spaghettis.h"
 #include "../m_core.h"
 #include "../s_system.h"
+#include "../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -24,9 +25,9 @@ t_sample *audio_soundOut;                           /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      audio_totalOfChannelsIn;            /* Static. */
-static int      audio_totalOfChannelsOut;           /* Static. */
-static t_float  audio_sampleRate;                   /* Static. */
+static int              audio_totalOfChannelsIn;    /* Static. */
+static int              audio_totalOfChannelsOut;   /* Static. */
+static t_float64Atomic  audio_sampleRate;           /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -36,7 +37,6 @@ t_error audio_stop (void)
 {
     if (audio_isOpened()) { audio_close(); } return PD_ERROR_NONE;
 }
-
 
 t_error audio_start (void)
 {
@@ -56,9 +56,20 @@ int audio_poll (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+double audio_getNanosecondsToSleep (void)
+{
+    double t = INTERNAL_BLOCKSIZE / audio_getSampleRate();
+    
+    return PD_SECONDS_TO_NANOSECONDS (t);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_float audio_getSampleRate (void)
 {
-    return (audio_sampleRate <= 0 ? AUDIO_DEFAULT_SAMPLERATE : audio_sampleRate);
+    t_float f = PD_ATOMIC_FLOAT64_READ (&audio_sampleRate); return (f <= 0.0 ? AUDIO_DEFAULT_SAMPLERATE : f);
 }
 
 int audio_getTotalOfChannelsIn (void) 
@@ -83,8 +94,8 @@ void audio_vectorInitialize (t_float sampleRate, int totalOfChannelsIn, int tota
     PD_ASSERT (totalOfChannelsIn >= 0);
     PD_ASSERT (totalOfChannelsOut >= 0);
     
-    if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
-    if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }
+    if (audio_soundIn)  { garbage_newRaw ((void *)audio_soundIn);  audio_soundIn  = NULL; }
+    if (audio_soundOut) { garbage_newRaw ((void *)audio_soundOut); audio_soundOut = NULL; }
     
     audio_soundIn  = (t_sample *)PD_MEMORY_GET (m);
     audio_soundOut = (t_sample *)PD_MEMORY_GET (n);
@@ -92,7 +103,7 @@ void audio_vectorInitialize (t_float sampleRate, int totalOfChannelsIn, int tota
     audio_totalOfChannelsIn  = totalOfChannelsIn;
     audio_totalOfChannelsOut = totalOfChannelsOut;
     
-    audio_sampleRate = sampleRate;
+    PD_ATOMIC_FLOAT64_WRITE (sampleRate, &audio_sampleRate);
 }
 
 void audio_vectorShrinkIn (int totalOfChannelsIn)

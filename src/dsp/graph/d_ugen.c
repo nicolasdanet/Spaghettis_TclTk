@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -16,8 +16,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void block_setProperties        (t_block *, t_blockproperties *);
-void block_setLengthInDspChain  (t_block *, int, int);
+void block_getAndSetProperties  (t_block *, t_blockproperties *, t_blockclosure *);
+void block_setLengthInDspChain  (t_blockclosure *, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ static void ugen_graphMainRecursiveEmptyInlets (t_dspcontext *context, t_ugenbox
     if (u->u_in[i].i_numberOfConnections == 0) {
     //
     t_signal *s = signal_newWithContext (context);
-    t_float *f  = object_getSignalAtIndex (u->u_owner, i);
+    t_float64Atomic *f = object_getSignalAtIndex (u->u_owner, i);
     
     if (f) { dsp_addScalarPerform (f, s->s_vector, s->s_vectorSize); }
     else {
@@ -372,6 +372,8 @@ void ugen_graphClose (t_dspcontext *context)
     
     t_block *block = ugen_graphGetBlockIfContainsAny (context);
     
+    t_blockclosure *c = block ? block_newClosure() : NULL;
+    
     t_blockproperties p;
     
     p.bp_blockSize  = parentBlockSize;
@@ -383,8 +385,10 @@ void ugen_graphClose (t_dspcontext *context)
     p.bp_sampleRate = parentSampleRate;
     p.bp_period     = 1;
     p.bp_frequency  = 1;
-
-    if (block) { block_setProperties (block, &p); }
+    
+    PD_ASSERT (!block || c);
+    
+    if (block) { block_getAndSetProperties (block, &p, c); }
 
     context->dc_sampleRate = p.bp_sampleRate;
     context->dc_blockSize  = p.bp_blockSize;
@@ -392,22 +396,22 @@ void ugen_graphClose (t_dspcontext *context)
     
     ugen_graphPrologue (context, &p);
     
-    chainBegin = chain_getSize (instance_getChain());
+    chainBegin = chain_getSize (instance_chainGetTemporary());
     
-    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performPrologue, 1, block); }   
+    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performPrologue, 2, block, c); }
 
     ugen_graphMain (context);
 
-    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performEpilogue, 1, block); }
+    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performEpilogue, 2, block, c); }
     
-    chainEnd = chain_getSize (instance_getChain());
+    chainEnd = chain_getSize (instance_chainGetTemporary());
 
     ugen_graphEpilogue (context, &p);
 
-    chainEpilogue = chain_getSize (instance_getChain());
+    chainEpilogue = chain_getSize (instance_chainGetTemporary());
     
-    if (block) { block_setLengthInDspChain (block, chainEnd - chainBegin, chainEpilogue - chainEnd); }
-
+    if (block) { block_setLengthInDspChain (c, chainEnd - chainBegin, chainEpilogue - chainEnd); }
+    
     ugen_graphDelete (context);
 }
 

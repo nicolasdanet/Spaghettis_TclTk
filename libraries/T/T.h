@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2017-2018 Nicolas Danet. */
+/* Copyright (c) 2017-2019 Nicolas Danet. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -127,8 +127,9 @@ typedef struct _TTTWaste {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void ttt_wasteInit  (TTTWaste *q, int n);
-void ttt_wasteTime  (TTTWaste *q);                                  /* Waste CPU cycles randomly. */
+void ttt_wasteInit      (TTTWaste *q, int n);
+void ttt_wasteTime      (TTTWaste *q);              /* Waste CPU cycles randomly. */
+void ttt_wasteMoreTime  (TTTWaste *q);              /* Waste hundred more CPU cycles randomly. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

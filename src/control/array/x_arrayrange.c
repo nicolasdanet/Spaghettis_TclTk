@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -35,12 +35,6 @@ void *arrayrange_new (t_class *c, int argc, t_atom *argv, int makeOnsetInlet, in
         //
         t_symbol *t = GET_SYMBOL (argv);
 
-        #if PD_WITH_LEGACY
-        
-        if (t == sym___dash__f) { t = sym___dash__field; }
-        
-        #endif
-        
         if (t == sym___dash__field) {
             if (argc >= 3 && IS_SYMBOL (argv + 1) && IS_SYMBOL (argv + 2)) {
                 x->ar_fieldName = GET_SYMBOL (argv + 2);

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -349,7 +349,7 @@ t_garray *gpointer_getGraphicArray (t_gpointer *gp)
 {
     t_glist *glist = gpointer_getView (gp);
     
-    if (glist_isArray (glist)) { return glist_getArray (glist); }
+    if (glist_isGraphicArray (glist)) { return glist_getGraphicArray (glist); }
     
     return NULL;
 }

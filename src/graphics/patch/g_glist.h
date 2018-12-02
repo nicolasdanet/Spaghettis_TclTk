@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -90,7 +90,7 @@ t_glist         *glist_getTop               (t_glist *g);
 t_environment   *glist_getEnvironment       (t_glist *g);
 t_undomanager   *glist_getUndoManager       (t_glist *g);
 t_glist         *glist_getView              (t_glist *g);
-t_garray        *glist_getArray             (t_glist *g);
+t_garray        *glist_getGraphicArray      (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -99,8 +99,9 @@ t_garray        *glist_getArray             (t_glist *g);
 int     glist_isRoot                        (t_glist *g);
 int     glist_isTop                         (t_glist *g);
 int     glist_isAbstraction                 (t_glist *g);
+int     glist_isSubpatchOrGraphicArray      (t_glist *g);
 int     glist_isSubpatch                    (t_glist *g);
-int     glist_isArray                       (t_glist *g);
+int     glist_isGraphicArray                (t_glist *g);
 int     glist_isDirty                       (t_glist *g);
 int     glist_isFrozen                      (t_glist *g);
 int     glist_isOnScreen                    (t_glist *g);
@@ -137,6 +138,7 @@ int     glist_fileOpen      (t_glist *g, const char *name, const char *extension
 // MARK: -
 
 void    glist_setName                       (t_glist *g, t_symbol *name);
+void    glist_setDirty                      (t_glist *g, int n);
 void    glist_setFrozen                     (t_glist *g, int n);
 void    glist_setFontSize                   (t_glist *g, int n);
 void    glist_setMotion                     (t_glist *g, t_gobj *y, t_motionfn fn, int a, int b);
@@ -522,7 +524,7 @@ static inline int glist_hasUndo (t_glist *g)
 
 static inline int glist_isEditable (t_glist *g)
 {
-    return (!glist_isAbstraction (g) && !glist_isArray (g));
+    return (!glist_isAbstraction (g) && !glist_isGraphicArray (g));
 }
 
 static inline int glist_isLoading (t_glist *g)

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -30,21 +30,14 @@ static t_class *bp_tilde_class;                 /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _bp_tilde_control {
-    t_sample            c_real1;
-    t_sample            c_real2;
-    t_sample            c_a1;
-    t_sample            c_a2;
-    t_sample            c_gain;
-    } t_bp_tilde_control;
-
 typedef struct _bp_tilde {
     t_object            x_obj;                  /* Must be the first. */
-    t_float             x_f;
-    t_float             x_sampleRate;
+    pthread_mutex_t     x_mutex;
     t_float             x_frequency;
     t_float             x_q;
-    t_bp_tilde_control  x_space;
+    int                 x_set;
+    t_sample            x_real1;
+    t_sample            x_real2;
     t_outlet            *x_outlet;
     } t_bp_tilde;
 
@@ -52,68 +45,66 @@ typedef struct _bp_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline double bp_tilde_coefficientsProceedQCosine (double f)
-{
-    if (f < -PD_HALF_PI || f > PD_HALF_PI) { return 0.0; }
-    else {
-        return cos (f);
-    }
-}
-
-static void bp_tilde_coefficientsProceed (t_bp_tilde *x, t_float f, t_float q)
-{
-    x->x_frequency  = (f < 0.001) ? (t_float)10.0 : f;
-    x->x_q          = (t_float)PD_MAX (0.0, q);
-    
-    {
-        double omega      = x->x_frequency * PD_TWO_PI / x->x_sampleRate;
-        double omegaPerQ  = PD_MIN ((x->x_q < 0.001) ? 1.0 : (omega / x->x_q), 1.0);
-        double r          = 1.0 - omegaPerQ;
-        
-        x->x_space.c_a1   = (t_sample)(2.0 * bp_tilde_coefficientsProceedQCosine (omega) * r);
-        x->x_space.c_a2   = (t_sample)(- r * r);
-        x->x_space.c_gain = (t_sample)(2.0 * omegaPerQ * (omegaPerQ + r * omega));
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void bp_tilde_frequency (t_bp_tilde *x, t_float f)
 {
-    bp_tilde_coefficientsProceed (x, f, x->x_q);
+    pthread_mutex_lock (&x->x_mutex);
+    
+        x->x_frequency  = (f < 0.001) ? (t_float)10.0 : f;
+        x->x_set        = 1;
+    
+    pthread_mutex_unlock (&x->x_mutex);
 }
 
 static void bp_tilde_q (t_bp_tilde *x, t_float q)
 {
-    bp_tilde_coefficientsProceed (x, x->x_frequency, q);
-}
-
-static void bp_tilde_clear (t_bp_tilde *x)
-{
-    x->x_space.c_real1 = 0.0;
-    x->x_space.c_real2 = 0.0;
+    pthread_mutex_lock (&x->x_mutex);
+    
+        x->x_q          = (t_float)PD_MAX (0.0, q);
+        x->x_set        = 1;
+    
+    pthread_mutex_unlock (&x->x_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static void bp_tilde_space (t_space *t, t_float frequency, t_float q)
+{
+    double omega     = frequency * t->s_float0;
+    double omegaPerQ = PD_MIN ((q < 0.001) ? 1.0 : (omega / q), 1.0);
+    double r         = 1.0 - omegaPerQ;
+    double k         = (omega < -PD_HALF_PI || omega > PD_HALF_PI) ? 0.0 : cos (omega);
+    
+    t->s_float1      = (2.0 * k * r);
+    t->s_float2      = (- r * r);
+    t->s_float3      = (2.0 * omegaPerQ * (omegaPerQ + r * omega));
+}
 
 /* No aliasing. */
 
 static t_int *bp_tilde_perform (t_int *w)
 {
-    t_bp_tilde_control *c = (t_bp_tilde_control *)(w[1]);
+    t_bp_tilde *x = (t_bp_tilde *)(w[1]);
     PD_RESTRICTED in  = (t_sample *)(w[2]);
     PD_RESTRICTED out = (t_sample *)(w[3]);
-    int n = (int)(w[4]);
+    t_space *t        = (t_space *)(w[4]);
+    int n = (int)(w[5]);
 
-    t_sample last1  = c->c_real1;
-    t_sample last2  = c->c_real2;
-    t_sample a1     = c->c_a1;
-    t_sample a2     = c->c_a2;
-    t_sample gain   = c->c_gain;
+    if (pthread_mutex_trylock (&x->x_mutex) == 0) {
+    //
+    if (x->x_set) { bp_tilde_space (t, x->x_frequency, x->x_q); x->x_set = 0; }
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    //
+    }
+    
+    t_sample a1      = t->s_float1;
+    t_sample a2      = t->s_float2;
+    t_sample gain    = t->s_float3;
+    
+    t_sample last1   = x->x_real1;
+    t_sample last2   = x->x_real2;
     
     while (n--) {
         t_sample f = (*in++) + a1 * last1 + a2 * last2;
@@ -125,21 +116,25 @@ static t_int *bp_tilde_perform (t_int *w)
     if (PD_FLOAT32_IS_BIG_OR_SMALL (last1)) { last1 = 0.0; }
     if (PD_FLOAT32_IS_BIG_OR_SMALL (last2)) { last2 = 0.0; }
     
-    c->c_real1 = last1;
-    c->c_real2 = last2;
+    x->x_real1 = last1;
+    x->x_real2 = last2;
     
-    return (w + 5);
+    return (w + 6);
 }
 
 static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
 {
-    x->x_sampleRate = sp[0]->s_sampleRate;
+    t_space *t = space_new(); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
+
+    pthread_mutex_lock (&x->x_mutex);
     
-    bp_tilde_coefficientsProceed (x, x->x_frequency, x->x_q);
+        bp_tilde_space (t, x->x_frequency, x->x_q);
+    
+    pthread_mutex_unlock (&x->x_mutex);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (bp_tilde_perform, 4, &x->x_space, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add (bp_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -153,14 +148,18 @@ static t_buffer *bp_tilde_functionData (t_gobj *z, int flags)
     t_bp_tilde *x = (t_bp_tilde *)z;
     t_buffer *b = buffer_new();
     
+    pthread_mutex_lock (&x->x_mutex);
+    
+        t_float f = x->x_frequency;
+        t_float q = x->x_q;
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    
     buffer_appendSymbol (b, sym__restore);
-    buffer_appendFloat (b, x->x_frequency);
-    buffer_appendFloat (b, x->x_q);
-    buffer_appendFloat (b, (t_float)x->x_space.c_real1);
-    buffer_appendFloat (b, (t_float)x->x_space.c_real2);
+    buffer_appendFloat (b, f);
+    buffer_appendFloat (b, q);
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
@@ -174,15 +173,8 @@ static void bp_tilde_restore (t_bp_tilde *x, t_symbol *s, int argc, t_atom *argv
     t_float f = atom_getFloatAtIndex (0, argc, argv);
     t_float q = atom_getFloatAtIndex (1, argc, argv);
     
-    bp_tilde_coefficientsProceed (x, f, q);
-    
-    x->x_space.c_real1 = (t_sample)atom_getFloatAtIndex (2, argc, argv);
-    x->x_space.c_real2 = (t_sample)atom_getFloatAtIndex (3, argc, argv);
-}
-
-static void bp_tilde_signals (t_bp_tilde *x, t_float f)
-{
-    x->x_f = f;
+    bp_tilde_frequency (x, f);
+    bp_tilde_q (x, q);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -193,14 +185,22 @@ static void *bp_tilde_new (t_float f, t_float q)
 {
     t_bp_tilde *x = (t_bp_tilde *)pd_new (bp_tilde_class);
     
+    pthread_mutex_init (&x->x_mutex, NULL);
+
     x->x_outlet = outlet_newSignal (cast_object (x));
     
     inlet_new2 (x, &s_float);
     inlet_new3 (x, &s_float);
     
-    bp_tilde_coefficientsProceed (x, f, q);
+    bp_tilde_frequency (x, f);
+    bp_tilde_q (x, q);
 
     return x;
+}
+
+static void bp_tilde_free (t_bp_tilde *x)
+{
+    pthread_mutex_destroy (&x->x_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -213,22 +213,18 @@ void bp_tilde_setup (void)
     
     c = class_new (sym_bp__tilde__,
             (t_newmethod)bp_tilde_new,
-            NULL,
+            (t_method)bp_tilde_free,
             sizeof (t_bp_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_DEFFLOAT,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_bp_tilde, x_f);
-    
     class_addDSP (c, (t_method)bp_tilde_dsp);
     
     class_addMethod (c, (t_method)bp_tilde_frequency,   sym__inlet2,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)bp_tilde_q,           sym__inlet3,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)bp_tilde_clear,       sym_clear,      A_NULL);
     class_addMethod (c, (t_method)bp_tilde_restore,     sym__restore,   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bp_tilde_signals,     sym__signals,   A_FLOAT, A_NULL);
     
     class_setDataFunction (c, bp_tilde_functionData);
     

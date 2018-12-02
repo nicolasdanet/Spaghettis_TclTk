@@ -1,8 +1,6 @@
 #N canvas 614 112 438 268 12;
 #X obj 36 144 sig~;
 #X obj 84 228 delwrite~;
-#X obj 168 228 delread4~;
-#X f 9;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
 #X text 24 24 delread~;
@@ -30,8 +28,10 @@
 #X f 5;
 #X floatatom 36 108 5 0 0 1 - - -;
 #X f 5;
-#X connect 0 0 9 0;
+#X obj 168 228 vd~;
+#X f 3;
+#X connect 0 0 8 0;
+#X connect 9 0 10 0;
 #X connect 10 0 11 0;
-#X connect 11 0 12 0;
-#X connect 13 0 0 0;
+#X connect 12 0 0 0;
 #X coords 0 0 1 1 250 175 0 0 0;

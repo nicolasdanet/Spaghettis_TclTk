@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -35,15 +36,6 @@ static t_class *rpole_tilde_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _real_raw_tilde t_rpole_tilde;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void rpole_tilde_clear (t_rpole_tilde *x)
-{
-    x->x_real = 0.0;
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -97,12 +89,9 @@ t_buffer *real_raw_functionData (t_gobj *z, int flags)
     if (SAVED_DEEP (flags)) {
     //
     struct _real_raw_tilde *x = (struct _real_raw_tilde *)z;
+    
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__restore);
-    buffer_appendFloat (b,  (t_float)x->x_real);
-    buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
     object_getSignalValues (cast_object (x), b, 2);
     
     return b;
@@ -110,16 +99,6 @@ t_buffer *real_raw_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
-}
-
-void real_raw_restore (struct _real_raw_tilde *x, t_float f)
-{
-    x->x_real = (t_sample)f;
-}
-
-void real_raw_signals (struct _real_raw_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -149,17 +128,11 @@ void rpole_tilde_setup (void)
             (t_newmethod)rpole_tilde_new,
             NULL,
             sizeof (t_rpole_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_rpole_tilde, x_f);
-    
     class_addDSP (c, (t_method)rpole_tilde_dsp);
-        
-    class_addMethod (c, (t_method)rpole_tilde_clear,    sym_clear,      A_NULL);
-    class_addMethod (c, (t_method)real_raw_restore,     sym__restore,   A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)real_raw_signals,     sym__signals,   A_GIMME, A_NULL);
     
     class_setDataFunction (c, real_raw_functionData);
     

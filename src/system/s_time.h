@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -25,6 +25,7 @@ typedef uint64_t t_stamp;
 void        time_set                    (t_time *t);
 void        time_addNanoseconds         (t_time *t, t_nano ns);
 t_error     time_elapsedNanoseconds     (const t_time *t0, const t_time *t1, t_nano *elapsed);
+void        time_wait                   (t_time *t);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

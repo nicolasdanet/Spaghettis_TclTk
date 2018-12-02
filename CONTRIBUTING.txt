@@ -11,7 +11,7 @@ Any contributions are welcomed:
     - Improve tutorials and/or help patches.
     - Start a wiki.
     - Improve the code.
-    - Ask.
+    - Ask (don't be shy).
 
     ...
 

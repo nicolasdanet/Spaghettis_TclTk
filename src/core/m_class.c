@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -30,7 +30,12 @@ static void class_defaultAnything   (t_pd *, t_symbol *, int, t_atom *);
 
 static void class_floatForSignal (t_pd *x, t_float f)
 {
-    *(class_getFirstInletSignal (x)) = f;
+    PD_ATOMIC_FLOAT64_WRITE (f, object_getFirstInletSignal (cast_object (x)));
+}
+
+static void class_setSignals (t_object *x, t_symbol *s, int argc, t_atom *argv)
+{
+    object_setSignalValues (x, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -173,6 +178,8 @@ t_class *class_new (t_symbol *s,
     int count = 0;
     t_class *c = NULL;
     int type = flags & (CLASS_ABSTRACT | CLASS_INVISIBLE | CLASS_GRAPHIC | CLASS_BOX);
+    int hasSignal = (flags & CLASS_SIGNAL);
+    
     if (!type) { type = CLASS_BOX; }
     
     *vp = type1;
@@ -202,7 +209,7 @@ t_class *class_new (t_symbol *s,
     c->c_methodFree         = (t_freemethod)freeMethod;
     c->c_methodBang         = class_defaultBang;
     c->c_methodPointer      = class_defaultPointer;
-    c->c_methodFloat        = class_defaultFloat;
+    c->c_methodFloat        = hasSignal ? class_floatForSignal : class_defaultFloat;
     c->c_methodSymbol       = class_defaultSymbol;
     c->c_methodList         = class_defaultList;
     c->c_methodAnything     = class_defaultAnything;
@@ -212,23 +219,14 @@ t_class *class_new (t_symbol *s,
     c->c_fnData             = NULL;
     c->c_fnProperties       = NULL;
     c->c_fnValue            = NULL;
-    c->c_signalOffset       = 0;
+    c->c_hasSignal          = hasSignal;
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
     c->c_type               = type;
     c->c_size               = size;
 
-    return c;
-}
-
-void class_addSignal (t_class *c, t_int offset)
-{
-    PD_ASSERT (c->c_methodFloat == class_defaultFloat);
+    if (hasSignal) { class_addMethod (c, (t_method)class_setSignals, sym__signals, A_GIMME, A_NULL); }
     
-    if (offset <= 0) { PD_BUG; }
-    else {
-        c->c_signalOffset = offset;
-        c->c_methodFloat  = class_floatForSignal;
-    }
+    return c;
 }
 
 void class_addCreator (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...)

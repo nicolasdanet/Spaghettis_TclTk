@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -43,6 +43,8 @@ static pthread_mutex_t  leak_mutex;                             /* Static. */
 static void leak_report (void)
 {
     int i;
+    
+    PD_ASSERT (sys_isMainThread());
     
     pthread_mutex_lock (&leak_mutex);
     
@@ -148,6 +150,8 @@ void *leak_getMemoryChecked (size_t n, const char *f, int line)
 {
     void *t = memory_get (n);
     
+    PD_ASSERT (sys_isMainThread());
+    
     pthread_mutex_lock (&leak_mutex);
     
         leak_add ((t_int)t, f, line);
@@ -161,6 +165,8 @@ void *leak_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, co
 {
     void *t = memory_getResize (ptr, oldSize, newSize);
     
+    PD_ASSERT (sys_isMainThread());
+    
     pthread_mutex_lock (&leak_mutex);
     
         leak_update ((t_int)ptr, (t_int)t, f, line);
@@ -172,6 +178,8 @@ void *leak_getMemoryResizeChecked (void *ptr, size_t oldSize, size_t newSize, co
 
 void leak_freeMemoryChecked (void *ptr, const char *f, int line)
 {
+    PD_ASSERT (sys_isMainThread());
+    
     if (ptr) {
     //
     pthread_mutex_lock (&leak_mutex);

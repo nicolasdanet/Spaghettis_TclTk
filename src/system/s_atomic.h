@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -14,90 +14,95 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Assume than 32-bit integer load and store are atomic. */
-
-/* < http://preshing.com/20130618/atomic-vs-non-atomic-operations/ > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_32BIT
-    #define PD_LOAD_STORE_32_IS_ATOMIC      1
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_64BIT
-    #define PD_LOAD_STORE_32_IS_ATOMIC      1
-    #define PD_LOAD_STORE_64_IS_ATOMIC      1
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* Alignment may not work on stack (don't use local atomic variables). */
-
-/* < http://gcc.gnu.org/bugzilla/show_bug.cgi?id=16660 > */
-/* < http://stackoverflow.com/questions/841433/gcc-attribute-alignedx-explanation > */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-// -- t_int32Atomic;
-// -- t_uint32Atomic;
-// -- t_uint64Atomic;
-// -- t_float64Atomic;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-// -- PD_ATOMIC_INT32_INCREMENT             Relaxed increment and fetch.
-// -- PD_ATOMIC_INT32_DECREMENT(q)          Relaxed decrement and fetch.
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-// -- PD_ATOMIC_INT32_READ(q)               Relaxed load.
-// -- PD_ATOMIC_UINT32_READ(q)
-// -- PD_ATOMIC_UINT64_READ(q)
-// -- PD_ATOMIC_FLOAT64_READ(q)
-
-// -- PD_ATOMIC_INT32_WRITE(value, q)       Relaxed store.
-// -- PD_ATOMIC_UINT32_WRITE
-// -- PD_ATOMIC_UINT64_WRITE
-// -- PD_ATOMIC_FLOAT64_WRITE
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-// -- PD_ATOMIC_UINT32_SET(mask, q)         Relaxed bitmask set and fetch.
-// -- PD_ATOMIC_UINT32_UNSET(mask, q)       Relaxed bitmask unset and fetch.
-
-// -- PD_ATOMIC_UINT32_TRUE(mask, q)        Relaxed bitmask test.
-// -- PD_ATOMIC_UINT32_FALSE(mask, q)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-// -- PD_MEMORY_BARRIER                     A full memory barrier.
+#define PD_MEMORY_BARRIER                       __sync_synchronize()
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_MAC_ATOMIC
-    #include "s_atomic_mac.h"
-#endif
+#define PD_ATOMIC_INT32_INCREMENT(q)            atomic_int32Increment((q))
+#define PD_ATOMIC_INT32_DECREMENT(q)            atomic_int32Decrement((q))
 
-#if PD_POSIX_ATOMIC
-    #include "s_atomic_posix.h"
-#endif
+#define PD_ATOMIC_INT32_READ(q)                 atomic_int32Read ((q))
+#define PD_ATOMIC_INT32_WRITE(value, q)         atomic_int32Write ((value), (q))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-#include "s_atomic_float.h"
+#define PD_ATOMIC_UINT32_SET(mask, q)           atomic_uInt32Set ((mask), (q))
+#define PD_ATOMIC_UINT32_UNSET(mask, q)         atomic_uInt32Unset ((mask), (q))
+
+#define PD_ATOMIC_UINT32_READ(q)                atomic_uInt32Read ((q))
+#define PD_ATOMIC_UINT32_WRITE(value, q)        atomic_uInt32Write ((value), (q))
+
+#define PD_ATOMIC_UINT32_TRUE(mask, q)          atomic_uInt32True ((mask), (q))
+#define PD_ATOMIC_UINT32_FALSE(mask, q)         atomic_uInt32False ((mask), (q))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define PD_ATOMIC_UINT64_READ(q)                atomic_uInt64Read ((q))
+#define PD_ATOMIC_UINT64_WRITE(value, q)        atomic_uInt64Write ((value), (q))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define PD_ATOMIC_FLOAT64_READ(q)               atomic_float64Read ((q))
+#define PD_ATOMIC_FLOAT64_WRITE(value, q)       atomic_float64Write ((value), (q))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define PD_ATOMIC_POINTER_READ(q)               atomic_pointerRead ((q))
+#define PD_ATOMIC_POINTER_WRITE(value, q)       atomic_pointerWrite (((void *)value), (q))
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int32_t     atomic_int32Increment       (t_int32Atomic *q);
+int32_t     atomic_int32Decrement       (t_int32Atomic *q);
+
+int32_t     atomic_int32Read            (t_int32Atomic *q);
+void        atomic_int32Write           (int32_t n, t_int32Atomic *q);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+uint32_t    atomic_uInt32Set            (uint32_t mask, t_uint32Atomic *q);
+uint32_t    atomic_uInt32Unset          (uint32_t mask, t_uint32Atomic *q);
+
+int         atomic_uInt32True           (uint32_t mask, t_uint32Atomic *q);
+int         atomic_uInt32False          (uint32_t mask, t_uint32Atomic *q);
+
+uint32_t    atomic_uInt32Read           (t_uint32Atomic *q);
+void        atomic_uInt32Write          (uint32_t n, t_uint32Atomic *q);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+uint64_t    atomic_uInt64Read           (t_uint64Atomic *q);
+void        atomic_uInt64Write          (uint64_t n, t_uint64Atomic *q);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+double      atomic_float64Read          (t_float64Atomic *q);
+void        atomic_float64Write         (double f, t_float64Atomic *q);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void        *atomic_pointerRead         (t_pointerAtomic *q);
+void        atomic_pointerWrite         (void *p, t_pointerAtomic *q);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -443,12 +443,6 @@ static void *oscformat_new (t_symbol *s, int argc, t_atom *argv)
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
 
-    #if PD_WITH_LEGACY
-        
-    if (t == sym___dash__f) { t = sym___dash__format; }
-        
-    #endif
-        
     if (argc > 1 && IS_SYMBOL (argv + 1) && (t == sym___dash__format)) {
         oscformat_format (x, GET_SYMBOL (argv + 1));
         argc -= 2;

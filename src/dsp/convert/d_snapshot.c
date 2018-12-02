@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -21,12 +21,17 @@ static t_class *snapshot_tilde_class;       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _snapshot_tilde {
-    t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    t_sample    x_value;
-    int         x_hasPolling;
-    t_outlet    *x_outlet;
+    t_object            x_obj;              /* Must be the first. */
+    t_float64Atomic     x_value;
+    int                 x_hasPolling;
+    t_outlet            *x_outlet;
     } t_snapshot_tilde;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void snapshot_tilde_dismiss (t_snapshot_tilde *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -34,17 +39,17 @@ typedef struct _snapshot_tilde {
 
 static void snapshot_tilde_bang (t_snapshot_tilde *x)
 {
-    outlet_float (x->x_outlet, x->x_value);
-}
-
-static void snapshot_tilde_set (t_snapshot_tilde *x, t_float f)
-{
-    x->x_value = f;
+    outlet_float (x->x_outlet, PD_ATOMIC_FLOAT64_READ (&x->x_value));
 }
 
 static void snapshot_tilde_polling (t_snapshot_tilde *x)
 {
     if (dsp_getState()) { snapshot_tilde_bang (x); }
+}
+
+static void snapshot_tilde_set (t_snapshot_tilde *x, t_float f)
+{
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_value);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -55,10 +60,11 @@ static void snapshot_tilde_polling (t_snapshot_tilde *x)
 
 static t_int *snapshot_tilde_perform (t_int *w)
 {
-    PD_RESTRICTED in  = (t_sample *)(w[1]);
-    PD_RESTRICTED out = (t_sample *)(w[2]);
+    PD_RESTRICTED in   = (t_sample *)(w[1]);
+    t_float64Atomic *v = (t_float64Atomic *)(w[2]);
+    t_float f          = *in;
     
-    *out = *in;
+    PD_ATOMIC_FLOAT64_WRITE (f, v);
     
     return (w + 3);
 }
@@ -80,10 +86,9 @@ static t_buffer *snapshot_tilde_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym_set);
-    buffer_appendFloat (b, x->x_value);
+    buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_value));
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
@@ -92,9 +97,9 @@ static t_buffer *snapshot_tilde_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void snapshot_tilde_signals (t_snapshot_tilde *x, t_float f)
+static void snapshot_tilde_functionDismiss (t_gobj *z)
 {
-    x->x_f = f;
+    snapshot_tilde_dismiss ((t_snapshot_tilde *)z);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -118,9 +123,14 @@ static void *snapshot_tilde_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
+static void snapshot_tilde_dismiss (t_snapshot_tilde *x)
+{
+    if (x->x_hasPolling) { x->x_hasPolling = 0; instance_pollingUnregister (cast_pd (x)); }
+}
+
 static void snapshot_tilde_free (t_snapshot_tilde *x)
 {
-    if (x->x_hasPolling) { instance_pollingUnregister (cast_pd (x)); }
+    snapshot_tilde_dismiss (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -135,22 +145,20 @@ void snapshot_tilde_setup (void)
             (t_newmethod)snapshot_tilde_new,
             (t_method)snapshot_tilde_free,
             sizeof (t_snapshot_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_GIMME,
             A_NULL);
     
     class_addCreator ((t_newmethod)snapshot_tilde_new, sym_vsnapshot__tilde__, A_GIMME, A_NULL);
     
-    CLASS_SIGNAL (c, t_snapshot_tilde, x_f);
-    
     class_addDSP (c, (t_method)snapshot_tilde_dsp);
     class_addBang (c, (t_method)snapshot_tilde_bang);
     class_addPolling (c, (t_method)snapshot_tilde_polling);
     
-    class_addMethod (c, (t_method)snapshot_tilde_set,       sym_set,        A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)snapshot_tilde_signals,   sym__signals,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)snapshot_tilde_set, sym_set, A_FLOAT, A_NULL);
     
     class_setDataFunction (c, snapshot_tilde_functionData);
+    class_setDismissFunction (c, snapshot_tilde_functionDismiss);
 
     snapshot_tilde_class = c;
 }

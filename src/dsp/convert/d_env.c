@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -27,16 +27,16 @@ static t_class *env_tilde_class;        /* Shared. */
 // MARK: -
 
 typedef struct _env_tilde {
-    t_object    x_obj;                  /* Must be the first. */
-    t_float     x_f;
-    int         x_phase;
-    int         x_period;
-    t_sample    x_sum[ENV_MAXIMUM_OVERLAP + 1];
-    t_float     x_result;
-    int         x_window;
-    t_sample    *x_vector;
-    t_clock     *x_clock;
-    t_outlet    *x_outlet;
+    t_object            x_obj;          /* Must be the first. */
+    t_float64Atomic     x_result;
+    int                 x_phase;
+    int                 x_period;
+    int                 x_window;
+    int                 x_dismissed;
+    t_sample            x_sum[ENV_MAXIMUM_OVERLAP + 1];
+    t_sample            *x_vector;
+    t_clock             *x_clock;
+    t_outlet            *x_outlet;
     } t_env_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -45,7 +45,9 @@ typedef struct _env_tilde {
 
 static void env_tilde_task (t_env_tilde *x)
 {
-    outlet_float (x->x_outlet, math_powerToDecibel (x->x_result));
+    if (!x->x_dismissed) {
+        outlet_float (x->x_outlet, math_powerToDecibel (PD_ATOMIC_FLOAT64_READ (&x->x_result)));
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -90,7 +92,7 @@ static t_int *env_tilde_perform (t_int *w)
     
     if (x->x_phase < 0) {
     //
-    sum = x->x_sum; x->x_result = *sum;
+    sum = x->x_sum; PD_ATOMIC_FLOAT64_WRITE (*sum, &x->x_result);
     
     for (i = x->x_period; i < x->x_window; i += x->x_period) { *sum = *(sum + 1); sum++; } 
     
@@ -125,8 +127,7 @@ static t_buffer *env_tilde_functionData (t_gobj *z, int flags)
     t_env_tilde *x = (t_env_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
@@ -135,9 +136,9 @@ static t_buffer *env_tilde_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void env_tilde_signals (t_env_tilde *x, t_float f)
+static void env_tilde_functionDismiss (t_gobj *z)
 {
-    x->x_f = f;
+    t_env_tilde *x = (t_env_tilde *)z; x->x_dismissed = 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -198,19 +199,16 @@ void env_tilde_setup (void)
             (t_newmethod)env_tilde_new,
             (t_method)env_tilde_free,
             sizeof (t_env_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_DEFFLOAT,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_env_tilde, x_f);
-    
     class_addDSP (c, (t_method)env_tilde_dsp);
     
-    class_addMethod (c, (t_method)env_tilde_signals, sym__signals, A_FLOAT, A_NULL);
-    
     class_setDataFunction (c, env_tilde_functionData);
-    
+    class_setDismissFunction (c, env_tilde_functionDismiss);
+
     env_tilde_class = c;
 }
 

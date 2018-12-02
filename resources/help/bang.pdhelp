@@ -7,11 +7,10 @@
 #X text 12 264 See also:;
 #X obj 84 264 trigger;
 #X obj 36 228 print;
-#X obj 144 264 bang~;
 #X msg 36 132 Launch the GBU-43/B MOAB.;
-#X obj 192 264 int;
+#X obj 144 264 int;
 #X text 12 72 Bang whatever it receives.;
 #X connect 0 0 1 0;
 #X connect 1 0 7 0;
-#X connect 9 0 1 0;
+#X connect 8 0 1 0;
 #X coords 0 0 1 1 250 175 0 0 0;

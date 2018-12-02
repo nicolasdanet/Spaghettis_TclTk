@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -21,6 +21,7 @@ static t_class *bang_tilde_class;       /* Shared. */
 
 typedef struct _bang_tilde {
     t_object    x_obj;                  /* Must be the first. */
+    int         x_dismissed;
     t_outlet    *x_outlet;
     t_clock     *x_clock;
     } t_bang_tilde;
@@ -31,7 +32,7 @@ typedef struct _bang_tilde {
 
 static void bang_tilde_task (t_bang_tilde *x)
 {
-    outlet_bang (x->x_outlet);
+    if (!x->x_dismissed) { outlet_bang (x->x_outlet); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -59,13 +60,22 @@ static void bang_tilde_dsp (t_bang_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void bang_tilde_functionDismiss (t_gobj *z)
+{
+    t_bang_tilde *x = (t_bang_tilde *)z; x->x_dismissed = 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *bang_tilde_new (void)
 {
     t_bang_tilde *x = (t_bang_tilde *)pd_new (bang_tilde_class);
     
     x->x_outlet = outlet_newBang (cast_object (x));
     x->x_clock  = clock_new ((void *)x, (t_method)bang_tilde_task);
-    
+        
     return x;
 }
 
@@ -91,6 +101,8 @@ void bang_tilde_setup (void)
             
     class_addDSP (c, (t_method)bang_tilde_dsp);
     
+    class_setDismissFunction (c, bang_tilde_functionDismiss);
+
     bang_tilde_class = c;
 }
 

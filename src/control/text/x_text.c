@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -109,12 +109,6 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     
         t_symbol *t = GET_SYMBOL (argv);
         
-        #if PD_WITH_LEGACY
-        
-        if (t == sym___dash__k) { t = sym___dash__keep; }
-        
-        #endif
-        
         if (t == sym___dash__keep) { x->x_keep = 1; argc--; argv++; }
         else {
             break;
@@ -160,12 +154,8 @@ static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     else if (t == sym_search)           { newest = (t_pd *)textsearch_new (s,   argc - 1, argv + 1); }
     else if (t == sym_sequence)         { newest = (t_pd *)textsequence_new (s, argc - 1, argv + 1); }
     else {
-        #if PD_WITH_LEGACY
-        
         if (t == sym_tolist)            { newest = (t_pd *)texttolist_new (s,   argc - 1, argv + 1); }
         else if (t == sym_fromlist)     { newest = (t_pd *)textfromlist_new (s, argc - 1, argv + 1); }
-
-        #endif
         
         if (!newest) { error_unexpected (sym_text, t); }
     }

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -21,21 +21,21 @@
 
 static t_int *voutlet_perform (t_int *w)
 {
-    t_voutlet *x = (t_voutlet *)(w[1]);
-    PD_RESTRICTED in = (t_sample *)(w[2]);
+    t_voutletclosure *c = (t_voutletclosure *)(w[1]);
+    PD_RESTRICTED in    = (t_sample *)(w[2]);
     int n = (int)(w[3]);
     
-    t_sample *out  = x->vo_bufferWrite;
-    t_sample *next = out + x->vo_hopSize;
+    t_sample *out  = c->s_bufferWrite;
+    t_sample *next = out + c->s_hopSize;
     
     // PD_LOG ("W");
-    // PD_LOG_NUMBER (out - x->vo_buffer);
+    // PD_LOG_NUMBER (out - c->s_buffer);
     // PD_LOG ("/");
     // PD_LOG_NUMBER (n);
     
-    while (n--) { *out += *in; out++; in++; if (out == x->vo_bufferEnd) { out = x->vo_buffer; } }
+    while (n--) { *out += *in; out++; in++; if (out == c->s_bufferEnd) { out = c->s_buffer; } }
     
-    x->vo_bufferWrite = (next >= x->vo_bufferEnd) ? x->vo_buffer : next;
+    c->s_bufferWrite = (next >= c->s_bufferEnd) ? c->s_buffer : next;
     
     return (w + 4);
 }
@@ -45,25 +45,24 @@ static t_int *voutlet_perform (t_int *w)
 
 static t_int *voutlet_performEpilogue (t_int *w)
 {
-    t_voutlet *x = (t_voutlet *)(w[1]);
-    PD_RESTRICTED out = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
-    
-    t_sample *in = x->vo_bufferRead;
-    
-    if (out == NULL) { out = resample_vector (&x->vo_resample); }   /* Can NOT be fetch before (see below). */
+    t_voutletclosure *c = (t_voutletclosure *)(w[1]);
+
+    t_sample *in  = c->s_bufferRead;
+    t_sample *out = c->s_out;
+    int n         = c->s_outSize;
     
     // PD_LOG ("E");
-    // PD_LOG_NUMBER (in - x->vo_buffer);
+    // PD_LOG_NUMBER (in - c->s_buffer);
     // PD_LOG ("/");
     // PD_LOG_NUMBER (n);
     
     while (n--) { *out = *in; *in = 0.0; out++; in++; }
-    if (in == x->vo_bufferEnd) { in = x->vo_buffer; }
     
-    x->vo_bufferRead = in;
+    if (in == c->s_bufferEnd) { in = c->s_buffer; }
     
-    return (w + 4);
+    c->s_bufferRead = in;
+    
+    return (w + 2);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,6 +71,8 @@ static t_int *voutlet_performEpilogue (t_int *w)
 
 void voutlet_dspPrologue (t_voutlet *x, t_signal **signals, t_blockproperties *p)
 {
+    PD_ASSERT (x->vo_closure == NULL);
+    
     if (voutlet_isSignal (x)) {
     //
     if (p->bp_reblocked)  { x->vo_directSignal = NULL; }
@@ -94,6 +95,8 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     //
     t_signal *in = sp[0];
     
+    t_voutletclosure *c = x->vo_closure = voutlet_newClosure();
+    
     if (x->vo_copyOut) {    /* Note that the switch off is proceeded by the "block~" object. */
     
         dsp_addCopyPerform (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize);
@@ -103,7 +106,7 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     } else {
         if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }     /* By-pass the outlet. */
         else {
-            dsp_add (voutlet_perform, 3, x, in->s_vector, in->s_vectorSize);    /* Reblocked. */
+            dsp_add (voutlet_perform, 3, c, in->s_vector, in->s_vectorSize);    /* Reblocked. */
         }
     }
     //
@@ -119,71 +122,50 @@ void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p
     t_signal *s = NULL;
     int parentVectorSize = 1;
     int vectorSize = 1;
-    int bufferSize;
     
-    resample_setRatio (&x->vo_resample, p->bp_downsample, p->bp_upsample);
+    resample_set (&x->vo_resample, p->bp_downsample, p->bp_upsample);
     
+    t_voutletclosure *c = x->vo_closure;
+        
     if (signals) {
         s = signals[outlet_getIndexAsSignal (x->vo_outlet)];
         parentVectorSize = s->s_vectorSize;
         vectorSize = parentVectorSize * p->bp_upsample / p->bp_downsample;
     }
     
-    bufferSize = PD_MAX (p->bp_blockSize, vectorSize);
+    int bufferSize = PD_MAX (p->bp_blockSize, vectorSize);
     
     if (bufferSize != x->vo_bufferSize) {
-        PD_MEMORY_FREE (x->vo_buffer);
+        garbage_newRaw ((void *)x->vo_buffer);
         x->vo_bufferSize = bufferSize;
         x->vo_buffer     = (t_sample *)PD_MEMORY_GET (x->vo_bufferSize * sizeof (t_sample));
-        x->vo_bufferEnd  = x->vo_buffer + bufferSize;
     }
     
-    {
+    c->s_buffer      = x->vo_buffer;
+    c->s_bufferRead  = x->vo_buffer;
+    c->s_bufferWrite = x->vo_buffer;
+    c->s_bufferSize  = x->vo_bufferSize;
+    c->s_bufferEnd   = x->vo_buffer + x->vo_bufferSize;
     
-    t_phase phase   = chain_getPhase (instance_getChain());
-    int period      = p->bp_period;
-    int bigPeriod   = PD_MAX (1, (int)(p->bp_blockSize / vectorSize));
-    int phaseRead   = (int)((phase) & (t_phase)(bigPeriod - 1));
-    int phaseWrite  = (int)((phase + period - 1) & (t_phase)(- period) & (t_phase)(bigPeriod - 1));
-    
-    // PD_LOG ("OUTLET BUFFER");
-    // PD_LOG_NUMBER (bufferSize);
-    // PD_LOG ("OUTLET PHASE READ");
-    // PD_LOG_NUMBER (phaseRead);
-    // PD_LOG ("OUTLET PHASE WRITE");
-    // PD_LOG_NUMBER (phaseWrite);
-    
-    /* Variable above is next multiple of the hop size (modulo the window period). */
-    /* < http://stackoverflow.com/a/1766566 > */
-    /* Note that ~(n - 1) is equal to (-n) for power of 2 (assume two's complement). */
-    
-    x->vo_bufferRead  = x->vo_buffer + (vectorSize * phaseRead);
-    x->vo_bufferWrite = x->vo_buffer + (vectorSize * phaseWrite);
-    
-    }
-    
-    if (x->vo_bufferWrite == x->vo_bufferEnd)     { x->vo_bufferWrite = x->vo_buffer; }
-    if (p->bp_period == 1 && p->bp_frequency > 1) { x->vo_hopSize = vectorSize / p->bp_frequency; }
+    if (p->bp_period == 1 && p->bp_frequency > 1) { c->s_hopSize = vectorSize / p->bp_frequency; }
     else { 
-        x->vo_hopSize = p->bp_period * vectorSize;
+        c->s_hopSize = p->bp_period * vectorSize;
     }
     
+    // PD_LOG ("OUTLET SIZE");
+    // PD_LOG_NUMBER (c->s_bufferSize);
     // PD_LOG ("OUTLET HOP");
-    // PD_LOG_NUMBER (x->vo_hopSize);
+    // PD_LOG_NUMBER (c->s_hopSize);
     
     if (signals) {
     //
-    if (resample_isRequired (&x->vo_resample)) { dsp_add (voutlet_performEpilogue, 3, x, NULL, vectorSize); }
-    else {
-        dsp_add (voutlet_performEpilogue, 3, x, s->s_vector, vectorSize);
-    }
+    dsp_add (voutlet_performEpilogue, 1, c);    /* Must be before resampling below. */
     
-    /* Note that the resampled vector can be reallocated in function below. */
-    /* Thus it can NOT be used above. */
-    /* Fetch it later in the perform method. */
-
+    c->s_outSize = vectorSize;
+    c->s_out     = s->s_vector;
+    
     if (resample_isRequired (&x->vo_resample)) { 
-        resample_getBuffer (&x->vo_resample, s->s_vector, parentVectorSize, vectorSize);
+        c->s_out = resample_getBufferOutlet (&x->vo_resample, s->s_vector, parentVectorSize, vectorSize);
     }
     //
     }
@@ -196,6 +178,8 @@ void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p
     }
     //
     }
+    
+    x->vo_closure = NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

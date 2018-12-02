@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -19,17 +19,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-double scheduler_getTimeToWaitInMilliseconds (void);
+double audio_getNanosecondsToSleep (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-#define JACK_SLEEP \
-    nano_sleep (PD_MILLISECONDS_TO_NANOSECONDS (scheduler_getTimeToWaitInMilliseconds() / 4.0));
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 #define JACK_MAXIMUM_PORTS  128
 
@@ -57,7 +51,12 @@ static int                  jack_numberOfPortsOut;                              
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define JACK_BUFFER_SIZE    8192        /* Buffer size (per channel). */
+#define JACK_GRAIN          5
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define JACK_BUFFER         8192        /* Buffer size (per channel). */
                                         /* MUST be a power of two. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -88,11 +87,11 @@ static void jack_buffersAllocate (int numberOfChannelsIn, int numberOfChannelsOu
     jack_buffersFree();
 
     for (i = 0; i < numberOfChannelsIn;  i++) {
-        jack_ringIn[i]  = ringbuffer_new (sizeof (t_sample), JACK_BUFFER_SIZE);
+        jack_ringIn[i]  = ringbuffer_new (sizeof (t_sample), JACK_BUFFER);
     }
     
     for (i = 0; i < numberOfChannelsOut; i++) {
-        jack_ringOut[i] = ringbuffer_new (sizeof (t_sample), JACK_BUFFER_SIZE);
+        jack_ringOut[i] = ringbuffer_new (sizeof (t_sample), JACK_BUFFER);
     }
 }
 
@@ -120,9 +119,13 @@ static int jack_pollCallback (jack_nframes_t framesCount, void *dummy)
     //
     void *t = jack_port_get_buffer (jack_portsOut[i], framesCount);
 
-    if (readable) { ringbuffer_read (jack_ringOut[i], t, framesCount); } 
-    else { 
-        memset (t, 0, framesCount * sizeof (t_sample));                     /* Fill with zeros. */
+    if (readable) {
+        // PD_LOG ("*");
+        ringbuffer_read (jack_ringOut[i], t, framesCount);
+        
+    } else {
+        // PD_LOG ("@");
+        memset (t, 0, framesCount * sizeof (t_sample));   /* Fill with zeros. */
     }
     //
     }
@@ -190,7 +193,7 @@ t_error audio_openNative (t_devicesproperties *p)
     PD_ASSERT (sizeof (t_sample) == sizeof (jack_default_audio_sample_t));
     PD_ABORT  (sizeof (t_sample) != sizeof (jack_default_audio_sample_t));
     
-    if (numberOfChannelsIn || numberOfChannelsOut) {
+    if (numberOfChannelsIn) {   /* For now audio in is required to synchronize properly the callback. */
     //
     jack_status_t status;
     
@@ -292,13 +295,17 @@ int audio_pollNative (void)
     if (!jack_client || (!jack_numberOfPortsIn && !jack_numberOfPortsOut)) { return DACS_NO; }
     else {
     //
-    int needToWait = 0;
-
+    int needToWait = 0; double ns = audio_getNanosecondsToSleep() / (double)JACK_GRAIN;
+    
     if (jack_numberOfPortsIn) {
     //
     for (i = 0; i < jack_numberOfPortsIn; i++) {
         while (ringbuffer_getAvailableRead (jack_ringIn[i]) < INTERNAL_BLOCKSIZE) {
-            status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT;
+            if (needToWait < JACK_GRAIN * 2) {
+                // PD_LOG (".");
+                nano_sleep (ns);
+            } else { return DACS_NO; }
             needToWait++;
         }
     }
@@ -309,7 +316,11 @@ int audio_pollNative (void)
     //
     for (i = 0; i < jack_numberOfPortsOut; i++) {
         while (ringbuffer_getAvailableWrite (jack_ringOut[i]) < INTERNAL_BLOCKSIZE) {
-            status = DACS_SLEPT; if (needToWait < 10) { JACK_SLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT;
+            if (needToWait < JACK_GRAIN * 2) {
+                // PD_LOG (".");
+                nano_sleep (ns);
+            } else { return DACS_NO; }
             needToWait++;
         }
     }

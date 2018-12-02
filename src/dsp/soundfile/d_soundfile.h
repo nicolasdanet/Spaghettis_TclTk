@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -118,7 +118,6 @@ typedef struct _nextstep {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define SOUNDFILE_CHANNELS          64
 #define SOUNDFILE_UNKNOWN           PD_INT_MAX
 #define SOUNDFILE_UNDEFINED         -1
 
@@ -389,7 +388,7 @@ void    soundfile_decode32          (int numberOfChannels,
                                         int n);                         /* Number of channels required. */
 
 void    soundfile_encode64          (int numberOfChannels,
-                                        double **v,
+                                        t_word **v,
                                         unsigned char *t,
                                         int numberOfFrames,
                                         int onset,
@@ -398,7 +397,7 @@ void    soundfile_encode64          (int numberOfChannels,
                                         float normalFactor);
 
 void    soundfile_decode64          (int numberOfChannels,
-                                        double **v,
+                                        t_word **v,
                                         unsigned char *t,
                                         int numberOfFrames,
                                         int onset,

@@ -2,7 +2,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Copyright (c) 1997-2018 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
+# Copyright (c) 1997-2019 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ proc configureForText {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc showPopup {top xcanvas ycanvas hasValue hasProperties hasOpen hasHelp hasObject hasOrder} {
+proc showPopup {top xcanvas ycanvas hasValue hasProperties hasOpen hasHelp hasObject} {
 
     variable popupX
     variable popupY
@@ -174,14 +174,6 @@ proc showPopup {top xcanvas ycanvas hasValue hasProperties hasOpen hasHelp hasOb
     } else {
         .popup entryconfigure [_ "Add Object"]          -state disabled
         .popup entryconfigure [_ "Add Scalar"]          -state disabled
-    }
-    
-    if {$hasOrder} {
-        .popup entryconfigure [_ "Bring to Front"]      -state normal
-        .popup entryconfigure [_ "Send to Back"]        -state normal
-    } else {
-        .popup entryconfigure [_ "Bring to Front"]      -state disabled
-        .popup entryconfigure [_ "Send to Back"]        -state disabled
     }
     
     set xpopup [expr {int([winfo rootx $top.c] + $xcanvas - [$top.c canvasx 0])}]
@@ -601,7 +593,7 @@ proc _media {m} {
     
     $m add check \
         -label [_ "Run DSP"] \
-        -accelerator "${accelerator}+R" \
+        -accelerator "Shift+${accelerator}+R" \
         -variable ::var(isDsp) \
         -command { ::ui_interface::pdsend "pd dsp $::var(isDsp)" }
 }
@@ -722,14 +714,6 @@ proc _popup {m} {
     $m add cascade \
         -label [_ "Add Scalar"] \
         -menu $m.scalar
-    $m add separator
-    
-    $m add command \
-        -label [_ "Bring to Front"] \
-        -command { ::ui_menu::_handle 1 _front }
-    $m add command \
-        -label [_ "Send to Back"] \
-        -command { ::ui_menu::_handle 1 _back }
 }
 
 # ------------------------------------------------------------------------------------------------------------

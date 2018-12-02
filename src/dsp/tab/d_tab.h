@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -14,7 +14,33 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void tab_fetchArray (t_symbol *s, int *size, t_word **data, t_symbol *err);
+t_error tab_fetchArray (t_symbol *s, int *size, t_word **data);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void tab_errorProceed (t_symbol *s1, t_symbol *s2, t_error err1, t_error err2)
+{
+    if (s2 != &s_) {
+    //
+    if (err1) { error_canNotFind (s1, s2); }
+    if (err2) { error_invalid (s1, sym_array); }
+    //
+    }
+}
+
+static inline void tab_error (t_symbol *s1, t_symbol *s2)
+{
+    tab_errorProceed (s1, s2, PD_ERROR, PD_ERROR_NONE);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#define TAB_PHASE  1
+#define TAB_ARRAY  2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

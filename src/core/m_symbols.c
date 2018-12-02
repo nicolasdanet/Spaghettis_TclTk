@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -262,7 +262,6 @@ t_symbol *sym_bindlist;
 t_symbol *sym_biquad__tilde__;
 t_symbol *sym_bitwise;
 t_symbol *sym_block__tilde__;
-t_symbol *sym_blockinfo__tilde__;
 t_symbol *sym_blocksize;
 t_symbol *sym_bng;
 t_symbol *sym_bp__tilde__;
@@ -273,6 +272,7 @@ t_symbol *sym_cancel;
 t_symbol *sym_canvas;
 t_symbol *sym_canvasmaker;
 t_symbol *sym_catch__tilde__;
+t_symbol *sym_chain;
 t_symbol *sym_change;
 t_symbol *sym_channels;
 t_symbol *sym_circle;
@@ -375,6 +375,7 @@ t_symbol *sym_format;
 t_symbol *sym_frames;
 t_symbol *sym_framp__tilde__;
 t_symbol *sym_freeze;
+t_symbol *sym_fromlist;
 t_symbol *sym_fromsymbol;
 t_symbol *sym_front;
 t_symbol *sym_fswap;
@@ -389,7 +390,6 @@ t_symbol *sym_group;
 t_symbol *sym_help;
 t_symbol *sym_hip__tilde__;
 t_symbol *sym_hold;
-t_symbol *sym_hop;
 t_symbol *sym_hradio;
 t_symbol *sym_hslider;
 t_symbol *sym_i;
@@ -659,6 +659,7 @@ t_symbol *sym_tan;
 t_symbol *sym_template;
 t_symbol *sym_text;
 t_symbol *sym_text__space__define;
+t_symbol *sym_text__space__fromlist;
 t_symbol *sym_text__space__delete;
 t_symbol *sym_text__space__get;
 t_symbol *sym_text__space__insert;
@@ -666,6 +667,7 @@ t_symbol *sym_text__space__search;
 t_symbol *sym_text__space__sequence;
 t_symbol *sym_text__space__set;
 t_symbol *sym_text__space__size;
+t_symbol *sym_text__space__tolist;
 t_symbol *sym_textfile;
 t_symbol *sym_tgl;
 t_symbol *sym_threshold__tilde__;
@@ -673,6 +675,7 @@ t_symbol *sym_throw__tilde__;
 t_symbol *sym_timer;
 t_symbol *sym_timestamp;
 t_symbol *sym_title;
+t_symbol *sym_tolist;
 t_symbol *sym_tosymbol;
 t_symbol *sym_touchin;
 t_symbol *sym_touchout;
@@ -717,7 +720,6 @@ t_symbol *sym_value;
 t_symbol *sym_vcf__tilde__;
 t_symbol *sym_vd__tilde__;
 t_symbol *sym_vexpr;
-t_symbol *sym_vline__tilde__;
 t_symbol *sym_vradio;
 t_symbol *sym_vslider;
 t_symbol *sym_vsnapshot__tilde__;
@@ -750,86 +752,6 @@ t_symbol *sym_Right;
 t_symbol *sym_Tab;
 t_symbol *sym_Text;
 t_symbol *sym_Up;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_WITH_LEGACY
-
-t_symbol *sym___dash__b;
-t_symbol *sym___dash__c;
-t_symbol *sym___dash__f;
-t_symbol *sym___dash__g;
-t_symbol *sym___dash__k;
-t_symbol *sym___dash__maxfreq;
-t_symbol *sym___dash__maxsize;
-t_symbol *sym___dash__minpower;
-t_symbol *sym___dash__n;
-t_symbol *sym___dash__nframes;
-t_symbol *sym___dash__npeak;
-t_symbol *sym___dash__npts;
-t_symbol *sym___dash__r;
-t_symbol *sym___dash__rate;
-t_symbol *sym___dash__s;
-t_symbol *sym___dash__stabletime;
-t_symbol *sym___dash__t;
-t_symbol *sym___dash__u;
-t_symbol *sym___dash__v;
-t_symbol *sym___dash__w;
-t_symbol *sym_add2;
-t_symbol *sym_adddollsym;
-t_symbol *sym_addsemi;
-t_symbol *sym_args;
-t_symbol *sym_auto;
-t_symbol *sym_const;
-t_symbol *sym_delta;
-t_symbol *sym_double_change;
-t_symbol *sym_env;
-t_symbol *sym_fromlist;
-t_symbol *sym_get_pos;
-t_symbol *sym_hsl;
-t_symbol *sym_init;
-t_symbol *sym_label;
-t_symbol *sym_label_font;
-t_symbol *sym_label_pos;
-t_symbol *sym_lin;
-t_symbol *sym_log_height;
-t_symbol *sym_menu__dash__open;
-t_symbol *sym_menuarray;
-t_symbol *sym_menuclose;
-t_symbol *sym_menusave;
-t_symbol *sym_menusaveas;
-t_symbol *sym_ms;
-t_symbol *sym_msec;
-t_symbol *sym_my_canvas;
-t_symbol *sym_my_numbox;
-t_symbol *sym_mycnv;
-t_symbol *sym_numbox;
-t_symbol *sym_page;
-t_symbol *sym_permin;
-t_symbol *sym_perms;
-t_symbol *sym_permsec;
-t_symbol *sym_persec;
-t_symbol *sym_pos;
-t_symbol *sym_q8_rsqrt__tilde__;
-t_symbol *sym_q8_sqrt__tilde__;
-t_symbol *sym_sam;
-t_symbol *sym_samp;
-t_symbol *sym_send__dash__window;
-t_symbol *sym_setbounds;
-t_symbol *sym_sec;
-t_symbol *sym_single_change;
-t_symbol *sym_tempo;
-t_symbol *sym_text__space__fromlist;
-t_symbol *sym_text__space__tolist;
-t_symbol *sym_toggle;
-t_symbol *sym_tolist;
-t_symbol *sym_vis_size;
-t_symbol *sym_vnext;
-t_symbol *sym_vsl;
-t_symbol *sym_vumeter;
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -1064,7 +986,6 @@ void symbols_initialize (void)
     sym_biquad__tilde__                         = gensym ("biquad~");
     sym_bitwise                                 = gensym ("bitwise");
     sym_block__tilde__                          = gensym ("block~");
-    sym_blockinfo__tilde__                      = gensym ("blockinfo~");
     sym_blocksize                               = gensym ("blocksize");
     sym_bng                                     = gensym ("bng");
     sym_bp__tilde__                             = gensym ("bp~");
@@ -1075,6 +996,7 @@ void symbols_initialize (void)
     sym_canvas                                  = gensym ("canvas");
     sym_canvasmaker                             = gensym ("canvasmaker");
     sym_catch__tilde__                          = gensym ("catch~");
+    sym_chain                                   = gensym ("chain");
     sym_change                                  = gensym ("change");
     sym_channels                                = gensym ("channels");
     sym_circle                                  = gensym ("circle");
@@ -1177,6 +1099,7 @@ void symbols_initialize (void)
     sym_frames                                  = gensym ("frames");
     sym_framp__tilde__                          = gensym ("framp~");
     sym_freeze                                  = gensym ("freeze");
+    sym_fromlist                                = gensym ("fromlist");
     sym_fromsymbol                              = gensym ("fromsymbol");
     sym_front                                   = gensym ("front");
     sym_fswap                                   = gensym ("fswap");
@@ -1191,7 +1114,6 @@ void symbols_initialize (void)
     sym_help                                    = gensym ("help");
     sym_hip__tilde__                            = gensym ("hip~");
     sym_hold                                    = gensym ("hold");
-    sym_hop                                     = gensym ("hop");
     sym_hradio                                  = gensym ("hradio");
     sym_hslider                                 = gensym ("hslider");
     sym_i                                       = gensym ("i");
@@ -1462,12 +1384,14 @@ void symbols_initialize (void)
     sym_text                                    = gensym ("text");
     sym_text__space__define                     = gensym ("text define");
     sym_text__space__delete                     = gensym ("text delete");
+    sym_text__space__fromlist                   = gensym ("text fromlist");
     sym_text__space__get                        = gensym ("text get");
     sym_text__space__insert                     = gensym ("text insert");
     sym_text__space__search                     = gensym ("text search");
     sym_text__space__sequence                   = gensym ("text sequence");
     sym_text__space__set                        = gensym ("text set");
     sym_text__space__size                       = gensym ("text size");
+    sym_text__space__tolist                     = gensym ("text tolist");
     sym_textfile                                = gensym ("textfile");
     sym_tgl                                     = gensym ("tgl");
     sym_threshold__tilde__                      = gensym ("threshold~");
@@ -1475,6 +1399,7 @@ void symbols_initialize (void)
     sym_timer                                   = gensym ("timer");
     sym_timestamp                               = gensym ("timestamp");
     sym_title                                   = gensym ("title");
+    sym_tolist                                  = gensym ("tolist");
     sym_tosymbol                                = gensym ("tosymbol");
     sym_touchin                                 = gensym ("touchin");
     sym_touchout                                = gensym ("touchout");
@@ -1519,7 +1444,6 @@ void symbols_initialize (void)
     sym_vcf__tilde__                            = gensym ("vcf~");
     sym_vd__tilde__                             = gensym ("vd~");
     sym_vexpr                                   = gensym ("vexpr");
-    sym_vline__tilde__                          = gensym ("vline~");
     sym_vradio                                  = gensym ("vradio");
     sym_vslider                                 = gensym ("vslider");
     sym_vsnapshot__tilde__                      = gensym ("vsnapshot~");
@@ -1552,83 +1476,6 @@ void symbols_initialize (void)
     sym_Tab                                     = gensym ("Tab");
     sym_Text                                    = gensym ("Text");
     sym_Up                                      = gensym ("Up");
-    
-    #if PD_WITH_LEGACY
-
-    sym___dash__b                               = gensym ("-b");
-    sym___dash__c                               = gensym ("-c");
-    sym___dash__f                               = gensym ("-f");
-    sym___dash__g                               = gensym ("-g");
-    sym___dash__k                               = gensym ("-k");
-    sym___dash__maxfreq                         = gensym ("-maxfreq");
-    sym___dash__maxsize                         = gensym ("-maxsize");
-    sym___dash__minpower                        = gensym ("-minpower");
-    sym___dash__n                               = gensym ("-n");
-    sym___dash__nframes                         = gensym ("-nframes");
-    sym___dash__npeak                           = gensym ("-npeak");
-    sym___dash__npts                            = gensym ("-npts");
-    sym___dash__r                               = gensym ("-r");
-    sym___dash__rate                            = gensym ("-rate");
-    sym___dash__s                               = gensym ("-s");
-    sym___dash__stabletime                      = gensym ("-stabletime");
-    sym___dash__t                               = gensym ("-t");
-    sym___dash__u                               = gensym ("-u");
-    sym___dash__v                               = gensym ("-v");
-    sym___dash__w                               = gensym ("-w");
-    sym_add2                                    = gensym ("add2");
-    sym_adddollsym                              = gensym ("adddollsym");
-    sym_addsemi                                 = gensym ("addsemi");
-    sym_args                                    = gensym ("args");
-    sym_auto                                    = gensym ("auto");
-    sym_const                                   = gensym ("const");
-    sym_delta                                   = gensym ("delta");
-    sym_double_change                           = gensym ("double_change");
-    sym_env                                     = gensym ("env");
-    sym_fromlist                                = gensym ("fromlist");
-    sym_get_pos                                 = gensym ("get_pos");
-    sym_hsl                                     = gensym ("hsl");
-    sym_init                                    = gensym ("init");
-    sym_label                                   = gensym ("label");
-    sym_label_font                              = gensym ("label_font");
-    sym_label_pos                               = gensym ("label_pos");
-    sym_lin                                     = gensym ("lin");
-    sym_log_height                              = gensym ("log_height");
-    sym_menu__dash__open                        = gensym ("menu-open");
-    sym_menuarray                               = gensym ("menuarray");
-    sym_menuclose                               = gensym ("menuclose");
-    sym_menusave                                = gensym ("menusave");
-    sym_menusaveas                              = gensym ("menusaveas");
-    sym_ms                                      = gensym ("ms");
-    sym_msec                                    = gensym ("msec");
-    sym_my_canvas                               = gensym ("my_canvas");
-    sym_my_numbox                               = gensym ("my_numbox");
-    sym_mycnv                                   = gensym ("mycnv");
-    sym_numbox                                  = gensym ("numbox");
-    sym_page                                    = gensym ("page");
-    sym_permin                                  = gensym ("permin");
-    sym_perms                                   = gensym ("perms");
-    sym_permsec                                 = gensym ("permsec");
-    sym_persec                                  = gensym ("persec");
-    sym_pos                                     = gensym ("pos");
-    sym_q8_rsqrt__tilde__                       = gensym ("q8_rsqrt~");
-    sym_q8_sqrt__tilde__                        = gensym ("q8_sqrt~");
-    sym_sam                                     = gensym ("sam");
-    sym_samp                                    = gensym ("samp");
-    sym_send__dash__window                      = gensym ("send-window");
-    sym_setbounds                               = gensym ("setbounds");
-    sym_sec                                     = gensym ("sec");
-    sym_single_change                           = gensym ("single_change");
-    sym_tempo                                   = gensym ("tempo");
-    sym_text__space__fromlist                   = gensym ("text fromlist");
-    sym_text__space__tolist                     = gensym ("text tolist");
-    sym_toggle                                  = gensym ("toggle");
-    sym_tolist                                  = gensym ("tolist");
-    sym_vis_size                                = gensym ("vis_size");
-    sym_vnext                                   = gensym ("vnext");
-    sym_vsl                                     = gensym ("vsl");
-    sym_vumeter                                 = gensym ("vumeter");
-    
-    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------

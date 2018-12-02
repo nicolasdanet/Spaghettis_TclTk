@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -24,7 +24,7 @@ static void glist_serializeHeader (t_glist *glist, t_buffer *b)
     buffer_appendFloat (b,  rectangle_getWidth (glist_getWindowGeometry (glist)));
     buffer_appendFloat (b,  rectangle_getHeight (glist_getWindowGeometry (glist)));
     
-    if (!glist_isSubpatch (glist)) { buffer_appendFloat (b,  glist_getFontSize (glist)); }
+    if (!glist_isSubpatchOrGraphicArray (glist)) { buffer_appendFloat (b,  glist_getFontSize (glist)); }
     else {
     //
     t_symbol *s = &s_;
@@ -32,7 +32,7 @@ static void glist_serializeHeader (t_glist *glist, t_buffer *b)
     /* Note that the name of a subpatch or an array could be expanded. */
     /* Code below is required to fetch the unexpanded form. */
     
-    if (glist_isArray (glist)) { s = garray_getUnexpandedName (glist_getArray (glist)); }
+    if (glist_isGraphicArray (glist)) { s = garray_getUnexpandedName (glist_getGraphicArray (glist)); }
     else {
         t_buffer *z = buffer_new();
         buffer_serialize (z, object_getBuffer (cast_object (glist)));
@@ -104,17 +104,17 @@ static void glist_serializeGraph (t_glist *glist, t_buffer *b)
 
 static void glist_serializeFooter (t_glist *glist, t_buffer *b)
 {
-    if (glist_isSubpatch (glist)) {
+    if (glist_isSubpatchOrGraphicArray (glist)) {
     //
     buffer_appendSymbol (b, sym___hash__X);
     buffer_appendSymbol (b, sym_restore);
     buffer_appendFloat (b, object_getX (cast_object (glist)));
     buffer_appendFloat (b, object_getY (cast_object (glist)));
     
-    if (!glist_isArray (glist)) { buffer_serialize (b, object_getBuffer (cast_object (glist))); }
+    if (!glist_isGraphicArray (glist)) { buffer_serialize (b, object_getBuffer (cast_object (glist))); }
     else {
         buffer_appendSymbol (b, sym_graph);
-        buffer_appendSymbol (b, garray_getUnexpandedName (glist_getArray (glist)));
+        buffer_appendSymbol (b, garray_getUnexpandedName (glist_getGraphicArray (glist)));
     }
     
     buffer_appendSemicolon (b);

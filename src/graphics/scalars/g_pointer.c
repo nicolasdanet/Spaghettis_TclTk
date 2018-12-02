@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -108,7 +108,7 @@ static t_glist *pointer_fetch (t_pointer *x, t_symbol *s)
     //
     t_glist *glist = cast_glist (symbol_getThingByClass (symbol_makeBindIfNot (s), canvas_class));
     
-    if (glist && !glist_isArray (glist)) { return glist; }
+    if (glist && !glist_isGraphicArray (glist)) { return glist; }
     
     return NULL;
     //
@@ -189,15 +189,6 @@ static void pointer_nextProceed (t_pointer *x, int flag)
     error_invalid (&s_pointer, &s_pointer);
 }
 
-#if PD_WITH_LEGACY
-
-static void pointer_nextSelected (t_pointer *x)
-{
-    pointer_nextProceed (x, POINTER_NEXT | POINTER_SELECTED);
-}
-
-#endif
-
 static void pointer_nextEnable (t_pointer *x)
 {
     pointer_nextProceed (x, POINTER_NEXT | POINTER_ENABLE);
@@ -217,37 +208,6 @@ static void pointer_next (t_pointer *x)
 {
     pointer_nextProceed (x, POINTER_NEXT);
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#if PD_WITH_LEGACY
-
-static void pointer_sendwindow (t_pointer *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (!gpointer_isValidOrNull (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
-    else {
-    //
-    if (argc && IS_SYMBOL (argv)) {
-        t_glist *view = glist_getView (gpointer_getView (&x->x_gpointer));
-        pd_message (cast_pd (view), GET_SYMBOL (argv), argc - 1, argv + 1);
-    }
-    //
-    }
-}
-
-static void pointer_send (t_pointer *x, t_symbol *s)
-{
-    if (!gpointer_isValidOrNull (&x->x_gpointer)) { error_invalid (&s_pointer, &s_pointer); }
-    else {
-        if (symbol_hasThing (s)) {
-            pd_pointer (symbol_getThing (s), &x->x_gpointer);
-        }
-    }
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -310,14 +270,6 @@ void pointer_setup (void)
     class_addMethod (c, (t_method)pointer_nextDelete,   sym_delete,                 A_NULL);
     class_addMethod (c, (t_method)pointer_nextDisable,  sym_disable,                A_NULL);
     class_addMethod (c, (t_method)pointer_nextEnable,   sym_enable,                 A_NULL);
-    
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)pointer_send,         sym_send,                   A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)pointer_nextSelected, sym_vnext,                  A_NULL);
-    class_addMethod (c, (t_method)pointer_sendwindow,   sym_send__dash__window,     A_GIMME, A_NULL); 
-
-    #endif
 
     pointer_class = c;
 }

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -19,14 +19,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-double scheduler_getTimeToWaitInMilliseconds (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#define PORTAUDIO_SLEEP \
-    nano_sleep (PD_MILLISECONDS_TO_NANOSECONDS (scheduler_getTimeToWaitInMilliseconds() / 4.0));
+double audio_getNanosecondsToSleep (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -54,7 +47,12 @@ static int              pa_channelsOut;                 /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define PORTAUDIO_BUFFER_SIZE       4096                /* Must be > INTERNAL_BLOCKSIZE. */
+#define PORTAUDIO_GRAIN     5
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define PORTAUDIO_BUFFER    4096                        /* Must be > INTERNAL_BLOCKSIZE. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -80,8 +78,10 @@ static int pa_ringCallback (const void *input,
     if (output) {
     //
     if (ringbuffer_getAvailableRead (pa_ringOut) >= requiredOut) {
+        // PD_LOG ("*");
         ringbuffer_read (pa_ringOut, output, requiredOut);
     } else {
+        // PD_LOG ("@");
         memset (output, 0, requiredOut * sizeof (t_sample));        /* Fill with zeros. */
     }
     //
@@ -235,16 +235,16 @@ t_error audio_openNative (t_devicesproperties *p)
     if (pa_ringIn)  { ringbuffer_free (pa_ringIn);  pa_ringIn  = NULL; }
     if (pa_ringOut) { ringbuffer_free (pa_ringOut); pa_ringOut = NULL; }
 
-    if (pa_channelsIn || pa_channelsOut) {
+    if (pa_channelsIn) {    /* For now audio in is required to synchronize properly the callback. */
     //
     PaError err = paNoError;
     
     {
-        int32_t k  = (int32_t)PD_NEXT_POWER_2 (PORTAUDIO_BUFFER_SIZE * pa_channelsIn);
+        int32_t k  = (int32_t)PD_NEXT_POWER_2 (PORTAUDIO_BUFFER * pa_channelsIn);
         pa_ringIn  = ringbuffer_new (sizeof (t_sample), k == 0 ? 1 : k);
     }
     {
-        int32_t k  = (int32_t)PD_NEXT_POWER_2 (PORTAUDIO_BUFFER_SIZE * pa_channelsOut);
+        int32_t k  = (int32_t)PD_NEXT_POWER_2 (PORTAUDIO_BUFFER * pa_channelsOut);
         pa_ringOut = ringbuffer_new (sizeof (t_sample), k == 0 ? 1 : k);
     }
     
@@ -300,18 +300,26 @@ int audio_pollNative (void)
     
     t_sample *t = (t_sample *)alloca ((PD_MAX (requiredIn, requiredOut)) * sizeof (t_sample));
 
-    int needToWait = 0;
+    int needToWait = 0; double ns = audio_getNanosecondsToSleep() / (double)PORTAUDIO_GRAIN;
     
     if (pa_channelsIn)  {
         while (ringbuffer_getAvailableRead (pa_ringIn) < requiredIn) {
-            status = DACS_SLEPT; if (needToWait < 10) { PORTAUDIO_SLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT;
+            if (needToWait < PORTAUDIO_GRAIN * 2) {
+                // PD_LOG (".");
+                nano_sleep (ns);
+            } else { return DACS_NO; }
             needToWait++;
         }
     }
     
     if (pa_channelsOut) {
         while (ringbuffer_getAvailableWrite (pa_ringOut) < requiredOut) {
-            status = DACS_SLEPT; if (needToWait < 10) { PORTAUDIO_SLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT;
+            if (needToWait < PORTAUDIO_GRAIN * 2) {
+                // PD_LOG (".");
+                nano_sleep (ns);
+            } else { return DACS_NO; }
             needToWait++;
         }
     }

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -21,7 +21,7 @@
 #include "core/m_helpers.h"
 #include "core/m_clipboard.h"
 #include "core/m_environment.h"
-#include "core/m_chain.h"
+#include "core/m_clocks.h"
 #include "core/m_instance.h"
 #include "core/m_class.h"
 #include "core/m_object.h"

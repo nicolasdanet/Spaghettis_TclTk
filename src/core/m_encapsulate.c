@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -614,8 +614,8 @@ void encapsulate_encapsulate (t_glist *glist)
     
     {
         t_rectangle r = glist_objectGetBoundingBoxOfSelected (glist);
-        t_buffer *b   = clipboard_copyProceed (glist, 0, 1);
         int state     = dsp_suspend();
+        t_buffer *b   = clipboard_copyProceed (glist, 0, 1);
         t_point pt    = point_make (rectangle_getMiddleX (&r), rectangle_getMiddleY (&r));
     
         t_inlethelper *inlets   = NULL;

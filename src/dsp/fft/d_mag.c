@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -21,7 +22,6 @@ static t_class *mag_tilde_class;            /* Shared. */
 
 typedef struct _mag_tilde {
     t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
     t_outlet    *x_outlet;
     } t_mag_tilde;
 
@@ -48,7 +48,6 @@ t_buffer *mag_tilde_functionData (t_gobj *z, int flags)
     t_mag_tilde *x = (t_mag_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
     object_getSignalValues (cast_object (x), b, 2);
     
     return b;
@@ -56,11 +55,6 @@ t_buffer *mag_tilde_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
-}
-
-void mag_tilde_signals (t_mag_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    object_setSignalValues (cast_object (x), argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -90,16 +84,12 @@ void mag_tilde_setup (void)
             (t_newmethod)mag_tilde_new,
             NULL,
             sizeof (t_mag_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_GIMME,
             A_NULL);
     
-    CLASS_SIGNAL (c, t_mag_tilde, x_f);
-    
     class_addDSP (c, (t_method)mag_tilde_dsp);
-    
-    class_addMethod (c, (t_method)mag_tilde_signals, sym__signals, A_GIMME, A_NULL);
-    
+        
     class_setDataFunction (c, mag_tilde_functionData);
     
     mag_tilde_class = c;

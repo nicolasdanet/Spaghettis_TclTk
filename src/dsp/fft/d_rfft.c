@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -26,8 +27,6 @@ static t_class *rfft_tilde_class;           /* Shared. */
 
 typedef struct _rfft_tilde {
     t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    t_FFTState  x_state;
     t_outlet    *x_outletLeft;
     t_outlet    *x_outletRight;
     } t_rfft_tilde;
@@ -80,11 +79,11 @@ static void rfft_tilde_dsp (t_rfft_tilde *x, t_signal **sp)
     
     int half = (n >> 1);
     
-    fft_stateInitialize (&x->x_state, n);
+    t_FFTState *t = fftstate_new (n);
     
     dsp_addCopyPerform (in1, out1, n);
     
-    dsp_add (rfft_tilde_perform, 3, &x->x_state, out1, n);
+    dsp_add (rfft_tilde_perform, 3, t, out1, n);
     dsp_add (rfft_tilde_performFlipZero, 3, out1 + half + 1, out2 + half, half - 1);
     //
     }
@@ -101,19 +100,13 @@ static t_buffer *rfft_tilde_functionData (t_gobj *z, int flags)
     t_rfft_tilde *x = (t_rfft_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
     }
     
     return NULL;
-}
-
-static void rfft_tilde_signals (t_rfft_tilde *x, t_float f)
-{
-    x->x_f = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -130,11 +123,6 @@ static void *rfft_tilde_new (void)
     return x;
 }
 
-static void rfft_tilde_free (t_rfft_tilde *x)
-{
-    fft_stateRelease (&x->x_state);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -145,17 +133,13 @@ void rfft_tilde_setup (void)
     
     c = class_new (sym_rfft__tilde__,
             (t_newmethod)rfft_tilde_new,
-            (t_method)rfft_tilde_free,
+            NULL,
             sizeof (t_rfft_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_rfft_tilde, x_f);
-    
     class_addDSP (c, (t_method)rfft_tilde_dsp);
-    
-    class_addMethod (c, (t_method)rfft_tilde_signals, sym__signals, A_FLOAT, A_NULL);
-    
+        
     class_setDataFunction (c, rfft_tilde_functionData);
     
     rfft_tilde_class = c;

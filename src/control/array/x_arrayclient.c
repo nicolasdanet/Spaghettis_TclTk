@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -33,13 +33,6 @@ t_error arrayclient_init (t_arrayclient *x, int *ac, t_atom **av)
     while (argc && IS_SYMBOL (argv)) {
     //
     t_symbol *t = GET_SYMBOL (argv);
-    
-    #if PD_WITH_LEGACY
-        
-    if (t == sym___dash__s) { t = sym___dash__template; }
-    if (t == sym___dash__t) { t = sym___dash__template; }
-      
-    #endif
     
     if (t == sym___dash__template) {
         if (argc >= 3 && IS_SYMBOL (argv + 1) && IS_SYMBOL (argv + 2)) {

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -17,16 +17,17 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Note that a maximum sized FFT is done at startup. */
+/* Thus we assumed that Ooura's FFT is thread-safe next. */
+/* Please let me know if it is not the case. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 #define FFT_MINIMUM         4
 #define FFT_MAXIMUM         65536
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-typedef struct _FFTState { int ooura_size; double *ooura_cache; } t_FFTState;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ static inline void ooura_complexFFT (t_FFTState *x,
     int n,
     int type)
 {
-    double *t = x->ooura_cache;
+    double *t = x->s_cache;
     int i;
     
     for (i = 0; i < n; i++) {
@@ -75,13 +76,6 @@ static inline void ooura_complexFFT (t_FFTState *x,
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void fft_stateRelease       (t_FFTState *x);
-void fft_stateInitialize    (t_FFTState *x, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 /* Imitate Ron Mayer API. */
 
 /* Ron Mayer's real FFT have imaginary coefficients in reversed order. */
@@ -91,7 +85,7 @@ void fft_stateInitialize    (t_FFTState *x, int n);
 
 static inline void fft_realFFT (t_FFTState *x, int n, PD_RESTRICTED s)
 {
-    double *t = x->ooura_cache;
+    double *t = x->s_cache;
     int i, half = (n >> 1);
     
     for (i = 0; i < n; i++) { t[i] = (double)s[i]; }
@@ -113,7 +107,7 @@ static inline void fft_realFFT (t_FFTState *x, int n, PD_RESTRICTED s)
 
 static inline void fft_realFFT (t_FFTState *x, int n, t_float *s)
 {
-    double *t = x->ooura_cache;
+    double *t = x->s_cache;
     int i, half = (n >> 1);
     
     for (i = 0; i < n; i++) { t[i] = (double)s[i]; }
@@ -135,7 +129,7 @@ static inline void fft_realFFT (t_FFTState *x, int n, t_float *s)
 
 static inline void fft_realInverseFFT (t_FFTState *x, int n, PD_RESTRICTED s)
 {
-    double *t = x->ooura_cache;
+    double *t = x->s_cache;
     int i, half = (n >> 1);
     
     t[0] = (double)s[0];

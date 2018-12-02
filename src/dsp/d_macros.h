@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -141,22 +141,24 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Notice that the trick above seems broken for index with a large value. */
+/* Notice that the trick above is broken for index with a large value. */
 
-/* Thus an efficient mechanism to protect to overflow should be implemented. */
+/* < https://lists.puredata.info/pipermail/pd-dev/2016-11/020873.html > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_float *cos_tilde_table;
 
-static inline t_float dsp_getCosineAtLUT (double position)
+static inline t_float dsp_getCosineAtLUT (double index)
 {
     t_float f1, f2, f;
     t_rawcast64 z;
     int i;
-        
-    z.z_d = position + DSP_UNITBIT;
+    
+    // -- Note that index MUST be <= 2^19 (i.e. 1024 * COSINE_TABLE_SIZE).
+    
+    z.z_d = index + DSP_UNITBIT;
     
     i = (int)(z.z_i[PD_RAWCAST64_MSB] & (COSINE_TABLE_SIZE - 1));   /* Integer part. */
     
@@ -170,6 +172,39 @@ static inline t_float dsp_getCosineAtLUT (double position)
     f2 = cos_tilde_table[i + 1];
     
     return (f1 + f * (f2 - f1));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline double dsp_clipForHoeldrichOverflow (double f)
+{
+    return PD_CLAMP (f, -1024.0, 1024.0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+// -- Wrap the phase to [0.0, 512.0[ range.
+
+static double inline dsp_wrapCosine (double phase)
+{
+    t_rawcast64 z;
+    z.z_d = phase + COSINE_UNITBIT;
+    z.z_i[PD_RAWCAST64_MSB] = COSINE_UNITBIT_MSB;
+    return z.z_d - COSINE_UNITBIT;
+}
+
+// -- Wrap the phase to [0.0, 1.0[ range.
+
+static double inline dsp_wrapPhasor (double phase)
+{
+    t_rawcast64 z;
+    z.z_d = phase + DSP_UNITBIT;
+    z.z_i[PD_RAWCAST64_MSB] = DSP_UNITBIT_MSB;
+    return z.z_d - DSP_UNITBIT;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -191,10 +226,10 @@ static inline t_float dsp_4PointsInterpolationWithFloats (t_float f, double a, d
 
 static inline t_float dsp_4PointsInterpolationWithWords (t_float f, t_word *data)
 {
-    double a = (double)WORD_FLOAT (data + 0);
-    double b = (double)WORD_FLOAT (data + 1);
-    double c = (double)WORD_FLOAT (data + 2);
-    double d = (double)WORD_FLOAT (data + 3);
+    double a = (double)w_getFloat (data + 0);
+    double b = (double)w_getFloat (data + 1);
+    double c = (double)w_getFloat (data + 2);
+    double d = (double)w_getFloat (data + 3);
     
     return dsp_4PointsInterpolationWithFloats (f, a, b, c, d);
 }
@@ -208,7 +243,7 @@ static inline t_float dsp_4PointsInterpolationWithWords (t_float f, t_word *data
 // -----------------------------------------------------------------------------------------------------------
 
 /* Note that a float can be factorized into two floats. */
-/* For one keep the mantissa and set the exponent to zero (i.e 0x7f with the bias). */
+/* For one keep the mantissa and set the exponent to zero (i.e. 0x7f with the bias). */
 /* For the other keep the exponent and set the mantissa to zero. */
 /* Thus the rsqrt is approximated by the product of two (with fast lookup) rsqrt. */
 

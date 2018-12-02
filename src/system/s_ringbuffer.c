@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -28,6 +28,13 @@ struct _ringbuffer {
     size_t          rb_bytes;
     char            *rb_vector;
     };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int32_t atomic_int32ReadRelaxed     (t_int32Atomic *);
+void    atomic_int32WriteRelaxed    (int32_t , t_int32Atomic *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -67,7 +74,7 @@ int32_t ringbuffer_getAvailableRead (t_ringbuffer *x)
 {
     /* Get absolute value (assume two's complement representation). */
     
-    return ((PD_ATOMIC_INT32_READ (&x->rb_write) - PD_ATOMIC_INT32_READ (&x->rb_read)) & x->rb_hiMask);
+    return ((atomic_int32ReadRelaxed (&x->rb_write) - atomic_int32ReadRelaxed (&x->rb_read)) & x->rb_hiMask);
 }
 
 int32_t ringbuffer_getAvailableWrite (t_ringbuffer *x)
@@ -90,7 +97,7 @@ static int32_t ringbuffer_getWriteRegions (t_ringbuffer *x, int32_t n,
     
     n = PD_MIN (available, n);
     
-    index = PD_ATOMIC_INT32_READ (&x->rb_write) & x->rb_loMask;
+    index = atomic_int32ReadRelaxed (&x->rb_write) & x->rb_loMask;
     
     if ((index + n) > x->rb_size) {
         
@@ -120,7 +127,7 @@ int32_t ringbuffer_write (t_ringbuffer *x, const void *data, int32_t n)
     void    *r1 = NULL;
     void    *r2 = NULL;
     
-    int32_t written = ringbuffer_getWriteRegions (x, n, &r1, &size1, &r2, &size2);
+    int32_t t = ringbuffer_getWriteRegions (x, n, &r1, &size1, &r2, &size2);
 
     if (size2 > 0) {
         memcpy (r1, data,       size1 * x->rb_bytes);
@@ -132,9 +139,9 @@ int32_t ringbuffer_write (t_ringbuffer *x, const void *data, int32_t n)
     
     PD_MEMORY_BARRIER;
     
-    PD_ATOMIC_INT32_WRITE ((PD_ATOMIC_INT32_READ (&x->rb_write) + written) & x->rb_hiMask, &x->rb_write);
+    atomic_int32WriteRelaxed ((atomic_int32ReadRelaxed (&x->rb_write) + t) & x->rb_hiMask, &x->rb_write);
     
-    return written;
+    return t;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -153,7 +160,7 @@ static int32_t ringbuffer_getReadRegions (t_ringbuffer *x,
     
     n = PD_MIN (available, n);
     
-    index = PD_ATOMIC_INT32_READ (&x->rb_read) & x->rb_loMask;
+    index = atomic_int32ReadRelaxed (&x->rb_read) & x->rb_loMask;
     
     if ((index + n) > x->rb_size) {
         int32_t firstHalf = x->rb_size - index;
@@ -181,7 +188,7 @@ int32_t ringbuffer_read (t_ringbuffer *x, void *data, int32_t n)
     void *r1 = NULL;
     void *r2 = NULL;
     
-    int32_t loaded = ringbuffer_getReadRegions (x, n, &r1, &size1, &r2, &size2);
+    int32_t t = ringbuffer_getReadRegions (x, n, &r1, &size1, &r2, &size2);
     
     if (size2 > 0) {
         memcpy (data, r1,       size1 * x->rb_bytes);
@@ -193,9 +200,9 @@ int32_t ringbuffer_read (t_ringbuffer *x, void *data, int32_t n)
     
     PD_MEMORY_BARRIER;
 
-    PD_ATOMIC_INT32_WRITE ((PD_ATOMIC_INT32_READ (&x->rb_read) + loaded) & x->rb_hiMask, &x->rb_read);
+    atomic_int32WriteRelaxed ((atomic_int32ReadRelaxed (&x->rb_read) + t) & x->rb_hiMask, &x->rb_read);
     
-    return loaded;
+    return t;
 }
 
 // -----------------------------------------------------------------------------------------------------------

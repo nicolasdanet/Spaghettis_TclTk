@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -21,30 +21,34 @@ static t_class *threshold_tilde_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _threshold_tilde {
-    t_object    x_obj;                      /* Must be the first. */
-    t_float     x_f;
-    int         x_state;
-    t_float     x_high;
-    t_float     x_low;
-    t_float     x_wait;
-    t_float     x_deadTimeHigh;
-    t_float     x_deadTimeLow;
-    t_float     x_millisecondsPerTick;
-    t_clock     *x_clock;
-    t_outlet    *x_outletLeft;
-    t_outlet    *x_outletRight;
+    t_object            x_obj;              /* Must be the first. */
+    pthread_mutex_t     x_mutex;
+    t_float             x_high;
+    t_float             x_low;
+    t_float             x_deadTimeHigh;
+    t_float             x_deadTimeLow;
+    int                 x_set;
+    int                 x_state;
+    int                 x_dismissed;
+    t_float             x_wait;
+    t_clock             *x_clockLeft;
+    t_clock             *x_clockRight;
+    t_outlet            *x_outletLeft;
+    t_outlet            *x_outletRight;
     } t_threshold_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void threshold_tilde_tick (t_threshold_tilde *x)  
+static void threshold_tilde_taskLeft (t_threshold_tilde *x)
 {
-    if (x->x_state) { outlet_bang (x->x_outletLeft); }
-    else {
-        outlet_bang (x->x_outletRight);
-    }
+    if (!x->x_dismissed) { outlet_bang (x->x_outletLeft); }
+}
+
+static void threshold_tilde_taskRight (t_threshold_tilde *x)
+{
+    if (!x->x_dismissed) { outlet_bang (x->x_outletRight); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -58,16 +62,15 @@ static void threshold_tilde_set (t_threshold_tilde *x, t_symbol *s, int argc, t_
     t_float low       = atom_getFloatAtIndex (2, argc, argv);
     t_float lowDead   = atom_getFloatAtIndex (3, argc, argv);
     
-    x->x_high         = high;
-    x->x_deadTimeHigh = highDead;
-    x->x_low          = low;
-    x->x_deadTimeLow  = lowDead;
-}
-
-static void threshold_tilde_state (t_threshold_tilde *x, t_float f)
-{
-    x->x_state = (f != 0.0);
-    x->x_wait  = 0.0;
+    pthread_mutex_lock (&x->x_mutex);
+    
+        x->x_high         = high;
+        x->x_low          = low;
+        x->x_deadTimeHigh = highDead;
+        x->x_deadTimeLow  = lowDead;
+        x->x_set          = 1;
+    
+    pthread_mutex_unlock (&x->x_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -79,18 +82,33 @@ static void threshold_tilde_state (t_threshold_tilde *x, t_float f)
 static t_int *threshold_tilde_perform (t_int *w)
 {
     t_threshold_tilde *x = (t_threshold_tilde *)(w[1]);
-    PD_RESTRICTED in = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
+    PD_RESTRICTED in     = (t_sample *)(w[2]);
+    t_space *t           = (t_space *)(w[3]);
+    int n = (int)(w[4]);
     
-    if (x->x_wait > 0.0) { x->x_wait -= x->x_millisecondsPerTick; }
+    if (pthread_mutex_trylock (&x->x_mutex) == 0) {
+    //
+    if (x->x_set) {
+        t->s_float1 = x->x_high;
+        t->s_float2 = x->x_low;
+        t->s_float3 = x->x_deadTimeHigh;
+        t->s_float4 = x->x_deadTimeLow;
+        x->x_set    = 0;
+    }
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    //
+    }
+    
+    if (x->x_wait > 0.0) { x->x_wait -= t->s_float0; }
     else if (x->x_state) {
     
         while (n--) {
         //
-        if ((*in++) < x->x_low) {
+        if ((*in++) < t->s_float2) {
             x->x_state = 0;
-            x->x_wait  = x->x_deadTimeLow;
-            clock_delay (x->x_clock, 0.0);
+            x->x_wait  = t->s_float4;
+            clock_delay (x->x_clockRight, 0.0);
             break;
         }
         //
@@ -100,24 +118,35 @@ static t_int *threshold_tilde_perform (t_int *w)
  
         while (n--) {
         //
-        if ((*in++) >= x->x_high) {
+        if ((*in++) >= t->s_float1) {
             x->x_state = 1;
-            x->x_wait  = x->x_deadTimeHigh;
-            clock_delay (x->x_clock, 0.0);
+            x->x_wait  = t->s_float3;
+            clock_delay (x->x_clockLeft, 0.0);
             break;
         }
         //
         }
     }
     
-    return (w + 4);
+    return (w + 5);
 }
 
 void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
 {
-    x->x_millisecondsPerTick = (t_float)(1000.0 * sp[0]->s_vectorSize / sp[0]->s_sampleRate);
+    t_space *t = space_new();
     
-    dsp_add (threshold_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    t->s_float0 = (t_float)(1000.0 * sp[0]->s_vectorSize / sp[0]->s_sampleRate);
+    
+    pthread_mutex_lock (&x->x_mutex);
+    
+        t->s_float1 = x->x_high;
+        t->s_float2 = x->x_low;
+        t->s_float3 = x->x_deadTimeHigh;
+        t->s_float4 = x->x_deadTimeLow;
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    
+    dsp_add (threshold_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -131,19 +160,25 @@ static t_buffer *threshold_tilde_functionData (t_gobj *z, int flags)
     t_threshold_tilde *x = (t_threshold_tilde *)z;
     t_buffer *b = buffer_new();
     
+    t_float f1, f2, f3, f4;
+    
+    pthread_mutex_lock (&x->x_mutex);
+    
+        f1 = x->x_high;
+        f2 = x->x_deadTimeHigh;
+        f3 = x->x_low;
+        f4 = x->x_deadTimeLow;
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    
     buffer_appendSymbol (b, sym_set);
-    buffer_appendFloat (b, x->x_high);
-    buffer_appendFloat (b, x->x_deadTimeHigh);
-    buffer_appendFloat (b, x->x_low);
-    buffer_appendFloat (b, x->x_deadTimeLow);
+    buffer_appendFloat (b, f1);
+    buffer_appendFloat (b, f2);
+    buffer_appendFloat (b, f3);
+    buffer_appendFloat (b, f4);
     
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__inlet2);
-    buffer_appendFloat (b, x->x_state);
-    
-    buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
@@ -152,9 +187,9 @@ static t_buffer *threshold_tilde_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void threshold_tilde_signals (t_threshold_tilde *x, t_float f)
+static void threshold_tilde_functionDismiss (t_gobj *z)
 {
-    x->x_f = f;
+    t_threshold_tilde *x = (t_threshold_tilde *)z; x->x_dismissed = 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -165,12 +200,13 @@ static void *threshold_tilde_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_threshold_tilde *x = (t_threshold_tilde *)pd_new (threshold_tilde_class);
     
-    x->x_clock       = clock_new ((void *)x, (t_method)threshold_tilde_tick);
+    pthread_mutex_init (&x->x_mutex, NULL);
+    
+    x->x_clockLeft   = clock_new ((void *)x, (t_method)threshold_tilde_taskLeft);
+    x->x_clockRight  = clock_new ((void *)x, (t_method)threshold_tilde_taskRight);
     x->x_outletLeft  = outlet_newBang (cast_object (x));
     x->x_outletRight = outlet_newBang (cast_object (x));
     
-    inlet_new2 (x, &s_float);
-
     threshold_tilde_set (x, s, argc, argv);
     
     return x;
@@ -178,7 +214,10 @@ static void *threshold_tilde_new (t_symbol *s, int argc, t_atom *argv)
 
 static void threshold_tilde_free (t_threshold_tilde *x)
 {
-    clock_free (x->x_clock);
+    clock_free (x->x_clockRight);
+    clock_free (x->x_clockLeft);
+    
+    pthread_mutex_destroy (&x->x_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -193,20 +232,17 @@ void threshold_tilde_setup (void)
             (t_newmethod)threshold_tilde_new,
             (t_method)threshold_tilde_free,
             sizeof (t_threshold_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_GIMME,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_threshold_tilde, x_f);
-    
     class_addDSP (c, (t_method)threshold_tilde_dsp);
         
-    class_addMethod (c, (t_method)threshold_tilde_state,    sym__inlet2,    A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)threshold_tilde_set,      sym_set,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)threshold_tilde_signals,  sym__signals,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)threshold_tilde_set, sym_set, A_GIMME, A_NULL);
 
     class_setDataFunction (c, threshold_tilde_functionData);
-    
+    class_setDismissFunction (c, threshold_tilde_functionDismiss);
+
     threshold_tilde_class = c;
 }
 

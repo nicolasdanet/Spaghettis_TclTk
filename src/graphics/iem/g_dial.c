@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -862,23 +862,6 @@ void dial_setup (void)
     class_addMethod (c, (t_method)dial_linear,                  sym_linear,             A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
-
-    #if PD_WITH_LEGACY
-    
-    class_addMethod (c, (t_method)dial_initialize,              sym_init,               A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemgui_movePosition,          sym_delta,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setPosition,           sym_pos,                A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_dummy,                 sym_color,              A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelPosition,      sym_label_pos,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabelFont,          sym_label_font,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemgui_setLabel,              sym_label,              A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dial_steps,                   sym_log_height,         A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_logarithmic,             sym_log,                A_NULL);
-    class_addMethod (c, (t_method)dial_linear,                  sym_lin,                A_NULL);
-    
-    class_addCreator ((t_newmethod)dial_new, sym_my_numbox, A_GIMME, A_NULL);
-    
-    #endif
 
     class_setWidgetBehavior (c, &dial_widgetBehavior);
     class_setSaveFunction (c, dial_functionSave);

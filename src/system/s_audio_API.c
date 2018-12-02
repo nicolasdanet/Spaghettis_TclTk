@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -100,11 +100,9 @@ t_error audio_open (void)
     if (err) {
         error_canNotOpen (sym_audio);
         audio_state = 0;
-        scheduler_setAudioState (SCHEDULER_AUDIO_STOP);
         
     } else {
         audio_state = 1;
-        scheduler_setAudioState (SCHEDULER_AUDIO_POLL);
     }
     
     return err;
@@ -112,9 +110,7 @@ t_error audio_open (void)
 
 void audio_close (void)
 {
-    if (audio_isOpened()) { audio_closeNative(); }
-    audio_state = 0;
-    scheduler_setAudioState (SCHEDULER_AUDIO_STOP);
+    if (audio_isOpened()) { audio_closeNative(); } audio_state = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -255,7 +251,7 @@ void audio_requireDialog (void)
         } 
         
         err |= string_sprintf (t, PD_STRING,
-            "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+            "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             i[0],
             i[1],
             i[2],
@@ -271,8 +267,7 @@ void audio_requireDialog (void)
             n[0],
             n[1],
             n[2],
-            n[3], 
-            devices_getSampleRate (&audio));
+            n[3]);
             
         if (!err) {
             stub_new (&global_class, (void *)audio_requireDialog, t);
@@ -292,7 +287,7 @@ void audio_fromDialog (int argc, t_atom *argv)
     
     int i;
     
-    PD_ASSERT (argc == 17);
+    PD_ASSERT (argc == 16);
     PD_ASSERT (DEVICES_MAXIMUM_IO >= 4);
     
     for (i = 0; i < 4; i++) {
@@ -308,8 +303,6 @@ void audio_fromDialog (int argc, t_atom *argv)
             devices_appendAudioOutWithNumber (&audio, (int)atom_getFloatAtIndex (i + 8,  argc, argv), t);
         }
     }
-    
-    devices_setSampleRate (&audio, (int)atom_getFloatAtIndex (16, argc, argv));
     
     audio_close();
     audio_setDevices (&audio);

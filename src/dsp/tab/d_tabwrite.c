@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../g_graphics.h"
 #include "../../d_dsp.h"
 
@@ -26,68 +27,57 @@ static t_class *tabwrite_tilde_class;           /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _tabwrite_tilde {
-    t_object    x_obj;                          /* Must be the first. */
-    t_float     x_f;
-    int         x_count;
-    int         x_redraw;
-    int         x_phase;
-    int         x_size;
-    int         x_period;
-    t_word      *x_vector;
-    t_symbol    *x_name;
-    t_clock     *x_clock;
+    t_object            x_obj;                  /* Must be the first. */
+    pthread_mutex_t     x_mutex;
+    t_int32Atomic       x_redraw;
+    int                 x_dismissed;
+    int                 x_time;
+    int                 x_set;
+    int                 x_phase;
+    int                 x_size;
+    int                 x_cached;
+    t_word              *x_vector;
+    t_symbol            *x_name;
+    t_clock             *x_clock;
     } t_tabwrite_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void tab_fetchArray (t_symbol *s, int *size, t_word **data, t_symbol *err)
+static void tabwrite_tilde_dismiss (t_tabwrite_tilde *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error tab_fetchArray (t_symbol *s, int *size, t_word **data)
 {
+    t_garray *a = (t_garray *)symbol_getThingByClass (s, garray_class);
+    
     (*size) = 0;
     (*data) = NULL;
     
-    {
-        t_garray *a = (t_garray *)symbol_getThingByClass (s, garray_class);
-        
-        if (!a) { if (s != &s_) { error_canNotFind (err, s); } }
-        else {
-            garray_getData (a, size, data);
-            garray_setAsUsedInDSP (a);
-        }
-    }
+    if (a) { garray_setAsUsedInDSP (a); garray_getData (a, size, data); return PD_ERROR_NONE; }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void tabwrite_tilde_counter (t_tabwrite_tilde *x)
-{
-    x->x_count = x->x_size >> 4;
-}
-
-static void tabwrite_tilde_bang (t_tabwrite_tilde *x)
-{
-    x->x_phase = 0;
-    
-    if (x->x_period > 0.0) { clock_unset (x->x_clock); clock_delay (x->x_clock, x->x_period); }
-}
-
-static void tabwrite_tilde_task (t_tabwrite_tilde *x)
-{
-    tabwrite_tilde_bang (x);
-}
-
 static void tabwrite_tilde_polling (t_tabwrite_tilde *x)
 {
-    if (x->x_redraw) {
+    int n = PD_ATOMIC_INT32_READ (&x->x_redraw);
+    
+    if (n > 0) {
     //
     t_garray *a = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
     if (a) { garray_redraw (a); }
 
-    x->x_redraw = 0;
+    while (n--) { PD_ATOMIC_INT32_DECREMENT (&x->x_redraw); }
     //
     }
 }
@@ -96,74 +86,151 @@ static void tabwrite_tilde_polling (t_tabwrite_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void tabwrite_tilde_bang (t_tabwrite_tilde *x)
+{
+    pthread_mutex_lock (&x->x_mutex);
+    
+        x->x_phase = 0;
+        x->x_set   |= TAB_PHASE;
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    
+    if (!x->x_dismissed && x->x_time > 0.0) { clock_delay (x->x_clock, x->x_time); }
+}
+
 static void tabwrite_tilde_set (t_tabwrite_tilde *x, t_symbol *s)
 {
-    tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector, sym_tabwrite__tilde__);
+    pthread_mutex_lock (&x->x_mutex);
     
-    tabwrite_tilde_counter (x);
+        t_error err = tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector);
+
+        x->x_phase = PD_INT_MAX;
+        x->x_set   |= TAB_ARRAY;
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    
+    if (err) { tab_error (sym_tabwrite__tilde__, s); }
 }
 
 static void tabwrite_tilde_start (t_tabwrite_tilde *x, t_float f)
 {
-    x->x_phase = (f > 0 ? f : 0);
+    pthread_mutex_lock (&x->x_mutex);
+    
+        x->x_phase = (f > 0 ? f : 0);
+        x->x_set   |= TAB_PHASE;
+    
+    pthread_mutex_unlock (&x->x_mutex);
 }
 
 static void tabwrite_tilde_stop (t_tabwrite_tilde *x)
 {
-    x->x_redraw = 1; x->x_phase = PD_INT_MAX;
+    PD_ATOMIC_INT32_INCREMENT (&x->x_redraw);
+    
+    pthread_mutex_lock (&x->x_mutex);
+    
+        x->x_phase = PD_INT_MAX;
+        x->x_set   |= TAB_PHASE;
+    
+    pthread_mutex_unlock (&x->x_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static void tabwrite_tilde_space (t_space *t, t_word *w, int size, int phase, int k)
+{
+    t->s_int2       = phase;
+    t->s_int3       = 0;
+    
+    if (k) {
+    //
+    t->s_int0       = size;
+    t->s_int1       = (size > 4096) ? (size >> 4) : 0;      /* Don't wait the end to draw large arrays. */
+    t->s_pointer0   = (void *)w;
+    //
+    }
+}
 
 /* No aliasing. */
 
 static t_int *tabwrite_tilde_perform (t_int *w)
 {
     t_tabwrite_tilde *x = (t_tabwrite_tilde *)(w[1]);
-    PD_RESTRICTED in = (t_sample *)(w[2]);
-    int n = (int)(w[3]);
+    PD_RESTRICTED in    = (t_sample *)(w[2]);
+    t_space *t          = (t_space *)(w[3]);
+    int n = (int)(w[4]);
     
-    if (x->x_vector) {
+    /* Fetch old value of the phase at startup if the DSP chain is swapped. */
+    
+    if (!t->s_int4) { if (x->x_cached >= 0) { t->s_int2 = x->x_cached; } t->s_int4 = 1; }
+    
+    if (pthread_mutex_trylock (&x->x_mutex) == 0) {
     //
-    int end = x->x_size;
-    int phase = x->x_phase;
+    if (x->x_set) {
     
-    if (end > phase) {
+        tabwrite_tilde_space (t, x->x_vector, x->x_size, x->x_phase, (x->x_set & TAB_ARRAY));
+        
+        x->x_set = 0;
+    }
+    
+    pthread_mutex_unlock (&x->x_mutex);
     //
-    t_word *data = x->x_vector + phase;
-    int size = PD_MIN (n, end - phase);
+    }
     
-    phase += size; if (phase >= end) { x->x_redraw = 1; phase = PD_INT_MAX; }
+    if (t->s_pointer0) {
+    //
+    if (t->s_int0 > t->s_int2) {
+    //
+    t_word *data = (t_word *)t->s_pointer0 + t->s_int2;
+    int remains  = t->s_int0 - t->s_int2;
+    int size     = PD_MIN (n, remains);
     
-    x->x_phase = phase;
+    t->s_int2 += size;
+    t->s_int3 += size;
     
-    x->x_count -= n; if (x->x_count <= 0) { x->x_redraw = 1; tabwrite_tilde_counter (x); }
+    if (t->s_int2 >= t->s_int0) {
+        PD_ATOMIC_INT32_INCREMENT (&x->x_redraw);
+        t->s_int2 = PD_INT_MAX;
+        t->s_int3 = 0;
+        
+    } else if (t->s_int1 && t->s_int3 > t->s_int1) {
+        PD_ATOMIC_INT32_INCREMENT (&x->x_redraw);
+        t->s_int3 = 0;
+    }
     
     while (size--) {
-    //
-    t_sample f = *in++;
-    if (PD_FLOAT32_IS_BIG_OR_SMALL (f)) { f = 0.0; }
-    WORD_FLOAT (data) = (t_float)f;
-    data++;
-    //
+
+        t_sample f = *in++;
+        if (PD_FLOAT32_IS_BIG_OR_SMALL (f)) { f = 0.0; }
+        w_setFloat (data, (t_float)f);
+        data++;
     }
     //
-    } else { x->x_phase = PD_INT_MAX; }
+    } else { t->s_int2 = PD_INT_MAX; }
     //
     }
     
-    return (w + 4);
+    x->x_cached = t->s_int2;
+    
+    return (w + 5);
 }
 
 static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
 {
-    tabwrite_tilde_set (x, x->x_name);
+    t_space *t  = space_new();
+    int size    = 0;
+    t_word *w   = NULL;
+    t_error err = tab_fetchArray (x->x_name, &size, &w);
+
+    if (err) { tab_error (sym_tabwrite__tilde__, x->x_name); }
+    else {
+        tabwrite_tilde_space (t, w, size, PD_INT_MAX, 1);
+    }
     
-    if (x->x_period > 0.0) { clock_delay (x->x_clock, x->x_period); }
+    if (!x->x_dismissed && x->x_time > 0.0) { clock_delay (x->x_clock, x->x_time); }
     
-    dsp_add (tabwrite_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    dsp_add (tabwrite_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -180,8 +247,7 @@ static t_buffer *tabwrite_tilde_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym_set);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b, x->x_f);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
@@ -190,9 +256,9 @@ static t_buffer *tabwrite_tilde_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void tabwrite_tilde_signals (t_tabwrite_tilde *x, t_float f)
+static void tabwrite_tilde_functionDismiss (t_gobj *z)
 {
-    x->x_f = f;
+    tabwrite_tilde_dismiss ((t_tabwrite_tilde *)z);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -203,21 +269,36 @@ static void *tabwrite_tilde_new (t_symbol *s, t_float f)
 {
     t_tabwrite_tilde *x = (t_tabwrite_tilde *)pd_new (tabwrite_tilde_class);
     
-    x->x_phase  = PD_INT_MAX;
-    x->x_period = PD_MAX (0.0, f);
+    pthread_mutex_init (&x->x_mutex, NULL);
+    
+    x->x_time   = PD_MAX (0.0, f);
+    x->x_cached = -1;
     x->x_name   = s;
-    x->x_clock  = clock_new ((void *)x, (t_method)tabwrite_tilde_task);
+    x->x_clock  = clock_new ((void *)x, (t_method)tabwrite_tilde_bang);
     
     instance_pollingRegister (cast_pd (x));
     
     return x;
 }
 
-static void tabwrite_tilde_free (t_tabwrite_tilde *x)
+static void tabwrite_tilde_dismiss (t_tabwrite_tilde *x)
 {
-    clock_free (x->x_clock);
+    if (!x->x_dismissed) {
+    //
+    x->x_dismissed = 1;
     
     instance_pollingUnregister (cast_pd (x));
+    //
+    }
+}
+
+static void tabwrite_tilde_free (t_tabwrite_tilde *x)
+{
+    tabwrite_tilde_dismiss (x);
+    
+    clock_free (x->x_clock);
+    
+    pthread_mutex_destroy (&x->x_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -232,23 +313,21 @@ void tabwrite_tilde_setup (void)
             (t_newmethod)tabwrite_tilde_new,
             (t_method)tabwrite_tilde_free,
             sizeof (t_tabwrite_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFSYMBOL,
             A_DEFFLOAT,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_tabwrite_tilde, x_f);
-    
     class_addDSP (c, (t_method)tabwrite_tilde_dsp);
     class_addBang (c, (t_method)tabwrite_tilde_bang);
     class_addPolling (c, (t_method)tabwrite_tilde_polling);
         
-    class_addMethod (c, (t_method)tabwrite_tilde_set,       sym_set,        A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)tabwrite_tilde_start,     sym_start,      A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)tabwrite_tilde_stop,      sym_stop,       A_NULL);
-    class_addMethod (c, (t_method)tabwrite_tilde_signals,   sym__signals,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_set,   sym_set,    A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_start, sym_start,  A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_stop,  sym_stop,   A_NULL);
 
     class_setDataFunction (c, tabwrite_tilde_functionData);
+    class_setDismissFunction (c, tabwrite_tilde_functionDismiss);
 
     tabwrite_tilde_class = c;
 }

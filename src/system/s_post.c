@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -20,6 +20,8 @@ void post (const char *fmt, ...)
     char t[PD_STRING] = { 0 };
     va_list ap;
     
+    PD_ASSERT (sys_isMainThread());
+    
     va_start (ap, fmt);
     k = vsnprintf (t, PD_STRING, fmt, ap);
     va_end (ap);
@@ -36,6 +38,8 @@ void post_warning (const char *fmt, ...)
     char t[PD_STRING] = { 0 };
     va_list ap;
     
+    PD_ASSERT (sys_isMainThread());
+    
     va_start (ap, fmt);
     k = vsnprintf (t, PD_STRING, fmt, ap);
     va_end (ap);
@@ -50,6 +54,8 @@ void post_error (const char *fmt, ...)
     int k;
     char t[PD_STRING] = { 0 };
     va_list ap;
+    
+    PD_ASSERT (sys_isMainThread());
     
     va_start (ap, fmt);
     k = vsnprintf (t, PD_STRING, fmt, ap);

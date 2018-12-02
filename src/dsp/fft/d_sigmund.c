@@ -64,6 +64,12 @@ static t_class *sigmund_tilde_class;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define SIGMUND_BUFFER          4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 enum {
     OUT_PITCH           = 0,
     OUT_ENVELOPE        = 1,
@@ -126,7 +132,6 @@ typedef struct _sigmundhelper {
 
 typedef struct _sigmund_tilde {
     t_object            x_obj;                      /* MUST be the first. */
-    t_float             x_f;
     t_float             x_maximumFrequency;
     t_float             x_vibrato;
     t_float             x_stableTime;
@@ -135,6 +140,7 @@ typedef struct _sigmund_tilde {
     t_float             x_parameter1;
     t_float             x_parameter2;
     t_float             x_sampleRate;
+    int                 x_dismissed;
     int                 x_mode;
     int                 x_points;
     int                 x_numberOfPeaks;
@@ -150,6 +156,7 @@ typedef struct _sigmund_tilde {
     int                 x_cache3Size;
     t_FFTState          x_state;
     t_variableout       x_outlets[SIGMUND_OUTLETS];
+    t_ringbuffer        *x_ringbuffer;
     t_notefinder        *x_finder;
     t_peak              *x_peaks;
     t_peak              *x_tracks;
@@ -867,10 +874,8 @@ static void sigmund_tilde_proceed (t_sigmund_tilde *x, int points, t_float *arra
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void sigmund_tilde_task (t_sigmund_tilde *x)
+static void sigmund_tilde_taskProceed (t_sigmund_tilde *x)
 {
-    if (x->x_index == x->x_points) {
-    //
     sigmund_tilde_proceed (x, x->x_points, x->x_buffer, x->x_sampleRate);
     
     if (x->x_hop >= x->x_points) { x->x_index = 0; x->x_count = x->x_hop - x->x_points; }
@@ -879,9 +884,35 @@ static void sigmund_tilde_task (t_sigmund_tilde *x)
         x->x_count = 0;
         memmove (x->x_buffer, x->x_buffer + x->x_hop, x->x_index * sizeof (t_float));
     }
+}
+
+static void sigmund_tilde_task (t_sigmund_tilde *x)
+{
+    if (!x->x_dismissed) {
+    //
+    int32_t available = ringbuffer_getAvailableRead (x->x_ringbuffer);
+    
+    while (available-- > 0) {   // --
+    //
+    t_sample t; ringbuffer_read (x->x_ringbuffer, &t, 1);
+    
+    if (x->x_count > 0) { x->x_count--; }
+    else {
+        PD_ASSERT (x->x_index < x->x_points);
+        t_float *fp = x->x_buffer + x->x_index;
+        *fp = (t_float)t;
+        x->x_index++;
+        if (x->x_index == x->x_points) { sigmund_tilde_taskProceed (x); }
+    }
+    //
+    }
     //
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static t_int *sigmund_tilde_perform (t_int *w)
 {
@@ -889,35 +920,20 @@ static t_int *sigmund_tilde_perform (t_int *w)
     PD_RESTRICTED in   = (t_sample *)(w[2]);
     int n = (int)(w[3]);
 
-    if (x->x_count > 0) { x->x_count -= n; }
-    else {
-    //
-    if (x->x_index != x->x_points) {
-    //
-    t_float *fp = x->x_buffer + x->x_index;
-    x->x_index += n;
-    while (n--) { *fp++ = *in++; }
-    if (x->x_index == x->x_points) { clock_delay (x->x_clock, 0.0); }
-    //
-    }
-    //
-    }
+    if (ringbuffer_getAvailableWrite (x->x_ringbuffer) >= n) { ringbuffer_write (x->x_ringbuffer, in, n); }
+
+    clock_delay (x->x_clock, 0.0);
     
     return (w + 4);
 }
 
 static void sigmund_tilde_dsp (t_sigmund_tilde *x, t_signal **sp)
 {
-    if (x->x_hop % sp[0]->s_vectorSize) { error_invalid (sym_sigmund__tilde__, sym_hop); }
-    else {
-    //
     if (x->x_mode == MODE_STREAM) {
     //
     x->x_sampleRate = sp[0]->s_sampleRate;
     
     dsp_add (sigmund_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
-    //
-    }
     //
     }
 }
@@ -948,7 +964,7 @@ static void sigmund_tilde_list (t_sigmund_tilde *x, t_symbol *s, int argc, t_ato
     else {
         int i;
         for (i = 0; i < points; i++) {
-            buffer[i] = WORD_FLOAT (data + i + onset);
+            buffer[i] = w_getFloat (data + i + onset);
         }
         sigmund_tilde_proceed (x, points, buffer, sampleRate);
     }
@@ -956,6 +972,31 @@ static void sigmund_tilde_list (t_sigmund_tilde *x, t_symbol *s, int argc, t_ato
     } else { error_canNotFind (sym_array, name); }
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_buffer *sigmund_tilde_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_sigmund_tilde *x = (t_sigmund_tilde *)z;
+    t_buffer *b = buffer_new();
+    
+    object_getSignalValues (cast_object (x), b, 1);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void sigmund_tilde_functionDismiss (t_gobj *z)
+{
+    t_sigmund_tilde *x = (t_sigmund_tilde *)z; x->x_dismissed = 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -1035,20 +1076,7 @@ static void *sigmund_tilde_new (t_symbol *s, int argc, t_atom *argv)
     while (argc > 0) {
     //
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
-    
-    #if PD_WITH_LEGACY
-    
-    if (t == sym___dash__t)          { t = sym___dash__table;     }
-    if (t == sym___dash__s)          { t = sym___dash__stream;    }
-    if (t == sym___dash__npts)       { t = sym___dash__points;    }
-    if (t == sym___dash__npeak)      { t = sym___dash__peaks;     }
-    if (t == sym___dash__maxfreq)    { t = sym___dash__frequency; }
-    if (t == sym___dash__stabletime) { t = sym___dash__time;      }
-    if (t == sym___dash__minpower)   { t = sym___dash__power;     }
-    
-    #endif
-    
-    t_float f = atom_getFloatAtIndex (1, argc, argv);
+    t_float f   = atom_getFloatAtIndex (1, argc, argv);
     
     if (t == sym___dash__table) {
         x->x_mode = MODE_TABLE;
@@ -1103,13 +1131,6 @@ static void *sigmund_tilde_new (t_symbol *s, int argc, t_atom *argv)
     t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
     
     if (x->x_outletsSize >= SIGMUND_OUTLETS) { break; }
-    
-    #if PD_WITH_LEGACY
-    
-    if (t == sym_env)   { t = sym_envelope;  }
-    if (t == sym_notes) { t = sym_note;      }
-    
-    #endif
     
     if (t == sym_pitch) {
         x->x_outlets[x->x_outletsSize].v_outlet = outlet_newFloat (cast_object (x));
@@ -1169,14 +1190,15 @@ static void *sigmund_tilde_new (t_symbol *s, int argc, t_atom *argv)
     PD_ASSERT (PD_IS_POWER_2 (x->x_hop));
     PD_ASSERT (PD_IS_POWER_2 (x->x_points));
     
-    x->x_finder = (t_notefinder *)PD_MEMORY_GET (sizeof (t_notefinder));
-    x->x_peaks  = (t_peak *)PD_MEMORY_GET (x->x_numberOfPeaks * sizeof (t_peak));
-    x->x_tracks = (t_peak *)PD_MEMORY_GET (x->x_numberOfPeaks * sizeof (t_peak));
-    x->x_cache1 = (t_float *)PD_MEMORY_GET (0);
-    x->x_cache2 = (t_float *)PD_MEMORY_GET (0);
-    x->x_cache3 = (t_float *)PD_MEMORY_GET (0);
-    x->x_buffer = (t_float *)PD_MEMORY_GET (x->x_points * sizeof (t_float));
-    x->x_clock  = clock_new ((void *)x, (t_method)sigmund_tilde_task);
+    x->x_ringbuffer = ringbuffer_new (sizeof (t_sample), SIGMUND_BUFFER);
+    x->x_finder     = (t_notefinder *)PD_MEMORY_GET (sizeof (t_notefinder));
+    x->x_peaks      = (t_peak *)PD_MEMORY_GET (x->x_numberOfPeaks * sizeof (t_peak));
+    x->x_tracks     = (t_peak *)PD_MEMORY_GET (x->x_numberOfPeaks * sizeof (t_peak));
+    x->x_cache1     = (t_float *)PD_MEMORY_GET (0);
+    x->x_cache2     = (t_float *)PD_MEMORY_GET (0);
+    x->x_cache3     = (t_float *)PD_MEMORY_GET (0);
+    x->x_buffer     = (t_float *)PD_MEMORY_GET (x->x_points * sizeof (t_float));
+    x->x_clock      = clock_new ((void *)x, (t_method)sigmund_tilde_task);
     
     return x;
 }
@@ -1194,6 +1216,8 @@ static void sigmund_tilde_free (t_sigmund_tilde *x)
     PD_MEMORY_FREE (x->x_tracks);
     PD_MEMORY_FREE (x->x_peaks);
     PD_MEMORY_FREE (x->x_finder);
+    
+    ringbuffer_free (x->x_ringbuffer);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -1208,15 +1232,16 @@ void sigmund_tilde_setup (void)
             (t_newmethod)sigmund_tilde_new,
             (t_method)sigmund_tilde_free,
             sizeof (t_sigmund_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_GIMME,
             A_NULL);
-    
-    CLASS_SIGNAL (c, t_sigmund_tilde, x_f);
     
     class_addDSP (c, (t_method)sigmund_tilde_dsp);
     
     class_addList (c, (t_method)sigmund_tilde_list);
+        
+    class_setDataFunction (c, sigmund_tilde_functionData);
+    class_setDismissFunction (c, sigmund_tilde_functionDismiss);
     
     sigmund_tilde_class = c;
 }

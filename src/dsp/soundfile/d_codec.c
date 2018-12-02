@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -281,7 +281,7 @@ void soundfile_encode32 (int numberOfChannels,
 // MARK: -
 
 void soundfile_encode64Linear16 (int numberOfChannels,
-    double **v,
+    t_word **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
@@ -292,7 +292,6 @@ void soundfile_encode64Linear16 (int numberOfChannels,
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    double *s = NULL;
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     
@@ -301,8 +300,9 @@ void soundfile_encode64Linear16 (int numberOfChannels,
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            soundfile_encodeLinear16BigEndian (*s, k, p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            double f = w_getFloat (v[i] + offset + j);
+            soundfile_encodeLinear16BigEndian (f, k, p2);
         }
         
         p1 += bytesPerSample;
@@ -310,8 +310,9 @@ void soundfile_encode64Linear16 (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            soundfile_encodeLinear16LittleEndian (*s, k, p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            double f = w_getFloat (v[i] + offset + j);
+            soundfile_encodeLinear16LittleEndian (f, k, p2);
         }
         
         p1 += bytesPerSample;
@@ -320,7 +321,7 @@ void soundfile_encode64Linear16 (int numberOfChannels,
 }
 
 void soundfile_encode64Linear24 (int numberOfChannels,
-    double **v,
+    t_word **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
@@ -331,7 +332,6 @@ void soundfile_encode64Linear24 (int numberOfChannels,
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    double *s = NULL;
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     
@@ -340,8 +340,9 @@ void soundfile_encode64Linear24 (int numberOfChannels,
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            soundfile_encodeLinear24BigEndian (*s, k, p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            double f = w_getFloat (v[i] + offset + j);
+            soundfile_encodeLinear24BigEndian (f, k, p2);
         }
         
         p1 += bytesPerSample;
@@ -349,8 +350,9 @@ void soundfile_encode64Linear24 (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            soundfile_encodeLinear24LittleEndian (*s, k, p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            double f = w_getFloat (v[i] + offset + j);
+            soundfile_encodeLinear24LittleEndian (f, k, p2);
         }
         
         p1 += bytesPerSample;
@@ -359,7 +361,7 @@ void soundfile_encode64Linear24 (int numberOfChannels,
 }
 
 void soundfile_encode64Float (int numberOfChannels,
-    double **v,
+    t_word **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
@@ -370,15 +372,15 @@ void soundfile_encode64Float (int numberOfChannels,
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    double *s = NULL;
     
     int bytesPerFrame = bytesPerSample * numberOfChannels;
     int offset = onset;
     
     if (isBigEndian) {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            soundfile_encodeFloat32BigEndian (*s, normalFactor, p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            double f = w_getFloat (v[i] + offset + j);
+            soundfile_encodeFloat32BigEndian (f, normalFactor, p2);
         }
         
         p1 += bytesPerSample;
@@ -386,8 +388,9 @@ void soundfile_encode64Float (int numberOfChannels,
         
     } else {
         for (i = 0; i < numberOfChannels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            soundfile_encodeFloat32LittleEndian (*s, normalFactor, p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            double f = w_getFloat (v[i] + offset + j);
+            soundfile_encodeFloat32LittleEndian (f, normalFactor, p2);
         }
         
         p1 += bytesPerSample;
@@ -396,7 +399,7 @@ void soundfile_encode64Float (int numberOfChannels,
 }
 
 void soundfile_encode64 (int numberOfChannels,
-    double **v,
+    t_word **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
@@ -678,7 +681,7 @@ void soundfile_decode32 (int numberOfChannels,
 
 void soundfile_decode64Linear16 (int numberOfChannels,
     int n,
-    double **v,
+    t_word **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
@@ -688,7 +691,6 @@ void soundfile_decode64Linear16 (int numberOfChannels,
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    double *s = NULL;
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
@@ -696,8 +698,8 @@ void soundfile_decode64Linear16 (int numberOfChannels,
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            *s = soundfile_decodeLinear16BigEndian (p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            w_setFloat (v[i] + offset + j, soundfile_decodeLinear16BigEndian (p2));
         }
         
         p1 += bytesPerSample;
@@ -705,8 +707,8 @@ void soundfile_decode64Linear16 (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            *s = soundfile_decodeLinear16LittleEndian (p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            w_setFloat (v[i] + offset + j, soundfile_decodeLinear16LittleEndian (p2));
         }
         
         p1 += bytesPerSample;
@@ -716,7 +718,7 @@ void soundfile_decode64Linear16 (int numberOfChannels,
 
 void soundfile_decode64Linear24 (int numberOfChannels,
     int n,
-    double **v,
+    t_word **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
@@ -726,7 +728,6 @@ void soundfile_decode64Linear24 (int numberOfChannels,
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    double *s = NULL;
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
@@ -734,8 +735,8 @@ void soundfile_decode64Linear24 (int numberOfChannels,
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            *s = soundfile_decodeLinear24BigEndian (p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            w_setFloat (v[i] + offset + j, soundfile_decodeLinear24BigEndian (p2));
         }
         
         p1 += bytesPerSample;
@@ -743,8 +744,8 @@ void soundfile_decode64Linear24 (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            *s = soundfile_decodeLinear24LittleEndian (p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            w_setFloat (v[i] + offset + j, soundfile_decodeLinear24LittleEndian (p2));
         }
         
         p1 += bytesPerSample;
@@ -754,7 +755,7 @@ void soundfile_decode64Linear24 (int numberOfChannels,
 
 void soundfile_decode64Float (int numberOfChannels,
     int n,
-    double **v,
+    t_word **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
@@ -764,7 +765,6 @@ void soundfile_decode64Float (int numberOfChannels,
     int i, j;
     unsigned char *p1 = t;
     unsigned char *p2 = NULL;
-    double *s = NULL;
     
     int channels = PD_MIN (numberOfChannels, n);
     int bytesPerFrame = bytesPerSample * numberOfChannels;
@@ -772,8 +772,8 @@ void soundfile_decode64Float (int numberOfChannels,
     
     if (isBigEndian) {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            *s = soundfile_decodeFloat32BigEndian (p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            w_setFloat (v[i] + offset + j, soundfile_decodeFloat32BigEndian (p2));
         }
         
         p1 += bytesPerSample;
@@ -781,8 +781,8 @@ void soundfile_decode64Float (int numberOfChannels,
         
     } else {
         for (i = 0; i < channels; i++) {
-        for (j = 0, p2 = p1, s = v[i] + offset; j < numberOfFrames; j++, p2 += bytesPerFrame, s++) {
-            *s = soundfile_decodeFloat32LittleEndian (p2);
+        for (j = 0, p2 = p1; j < numberOfFrames; j++, p2 += bytesPerFrame) {
+            w_setFloat (v[i] + offset + j, soundfile_decodeFloat32LittleEndian (p2));
         }
         
         p1 += bytesPerSample;
@@ -791,7 +791,7 @@ void soundfile_decode64Float (int numberOfChannels,
 }
 
 void soundfile_decode64 (int numberOfChannels,
-    double **v,
+    t_word **v,
     unsigned char *t,
     int numberOfFrames,
     int onset,
@@ -841,12 +841,9 @@ void soundfile_decode64 (int numberOfChannels,
     
     {
         int i, j;
-        double *s = NULL;
     
         for (i = numberOfChannels; i < n; i++) {
-            for (j = 0, s = v[i] + onset; j < numberOfFrames; j++, s++) {
-                *s = 0.0;
-            }
+            for (j = 0; j < numberOfFrames; j++) { w_setFloat (v[i] + onset + j, 0.0); }
         }
     }
 }

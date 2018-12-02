@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -62,6 +62,20 @@ static t_error atom_symbolToBackslashedString (t_atom *a, char *s, int size)
     }
     
     return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void atom_setSymbol (t_atom *a, t_symbol *s)
+{
+    SET_SYMBOL (a, s);
+}
+
+void atom_setFloat (t_atom *a, t_float f)
+{
+    SET_FLOAT (a, f);
 }
 
 // -----------------------------------------------------------------------------------------------------------

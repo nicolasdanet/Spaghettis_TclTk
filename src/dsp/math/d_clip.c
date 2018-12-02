@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,6 +9,7 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -20,11 +21,10 @@ static t_class *clip_tilde_class;       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _clip_tilde {
-    t_object    x_obj;                  /* Must be the first. */
-    t_float     x_f;
-    t_float     x_low;
-    t_float     x_high;
-    t_outlet    *x_outlet;
+    t_object            x_obj;                  /* Must be the first. */
+    t_float64Atomic     x_low;
+    t_float64Atomic     x_high;
+    t_outlet            *x_outlet;
     } t_clip_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -35,13 +35,15 @@ typedef struct _clip_tilde {
 
 static t_int *clip_tilde_perform (t_int *w)
 {
-    t_clip_tilde *x = (t_clip_tilde *)(w[1]);
+    t_clip_tilde *x   = (t_clip_tilde *)(w[1]);
     PD_RESTRICTED in  = (t_sample *)(w[2]);
     PD_RESTRICTED out = (t_sample *)(w[3]);
     int n = (int)(w[4]);
     
-    t_sample f1 = PD_MIN (x->x_low, x->x_high);
-    t_sample f2 = PD_MAX (x->x_low, x->x_high);
+    t_float t0  = PD_ATOMIC_FLOAT64_READ (&x->x_low);
+    t_float t1  = PD_ATOMIC_FLOAT64_READ (&x->x_high);
+    t_sample f1 = PD_MIN (t0, t1);
+    t_sample f2 = PD_MAX (t0, t1);
     
     while (n--) {
     //
@@ -65,6 +67,20 @@ static void clip_tilde_dsp (t_clip_tilde *x, t_signal **sp)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void clip_tilde_low (t_clip_tilde *x, t_float f)
+{
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_low);
+}
+
+void clip_tilde_high (t_clip_tilde *x, t_float f)
+{
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_high);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_buffer *clip_tilde_functionData (t_gobj *z, int flags)
 {
     if (SAVED_DEEP (flags)) {
@@ -72,29 +88,19 @@ t_buffer *clip_tilde_functionData (t_gobj *z, int flags)
     t_clip_tilde *x = (t_clip_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym__restore);
-    buffer_appendFloat (b,  x->x_low);
-    buffer_appendFloat (b,  x->x_high);
+    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendFloat (b,  PD_ATOMIC_FLOAT64_READ (&x->x_low));
     buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__signals);
-    buffer_appendFloat (b,  x->x_f);
+    buffer_appendSymbol (b, sym__inlet3);
+    buffer_appendFloat (b,  PD_ATOMIC_FLOAT64_READ (&x->x_high));
+    buffer_appendComma (b);
+    object_getSignalValues (cast_object (x), b, 1);
     
     return b;
     //
     }
     
     return NULL;
-}
-
-void clip_tilde_restore (t_clip_tilde *x, t_symbol *s, int argc, t_atom *argv)
-{
-    x->x_low  = atom_getFloatAtIndex (0, argc, argv);
-    x->x_high = atom_getFloatAtIndex (1, argc, argv);
-}
-
-void clip_tilde_signals (t_clip_tilde *x, t_float f)
-{
-    x->x_f = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -105,12 +111,13 @@ static void *clip_tilde_new (t_float low, t_float high)
 {
     t_clip_tilde *x = (t_clip_tilde *)pd_new (clip_tilde_class);
     
-    x->x_low    = low;
-    x->x_high   = high;
     x->x_outlet = outlet_newSignal (cast_object (x));
     
-    inlet_newFloat (cast_object (x), &x->x_low);
-    inlet_newFloat (cast_object (x), &x->x_high);
+    inlet_new2 (x, &s_float);
+    inlet_new3 (x, &s_float);
+    
+    clip_tilde_low (x, low);
+    clip_tilde_high (x, high);
     
     return x;
 }
@@ -127,17 +134,15 @@ void clip_tilde_setup (void)
             (t_newmethod)clip_tilde_new,
             NULL,
             sizeof (t_clip_tilde),
-            CLASS_DEFAULT,
+            CLASS_DEFAULT | CLASS_SIGNAL,
             A_DEFFLOAT,
             A_DEFFLOAT,
             A_NULL);
             
-    CLASS_SIGNAL (c, t_clip_tilde, x_f);
-    
     class_addDSP (c, (t_method)clip_tilde_dsp);
     
-    class_addMethod (c, (t_method)clip_tilde_restore, sym__restore, A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)clip_tilde_signals, sym__signals, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)clip_tilde_low,   sym__inlet2, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)clip_tilde_high,  sym__inlet3, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, clip_tilde_functionData);
     

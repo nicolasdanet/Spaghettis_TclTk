@@ -7,7 +7,7 @@ Yet another fork of Pure Data < https://puredata.info/ >.
 
 Remark:
 
-    This is an (AT YOUR OWN RISK) work-in-progress version.
+    This is an (AT YOUR OWN RISK) experimental work-in-progress.
 
 Build:
 

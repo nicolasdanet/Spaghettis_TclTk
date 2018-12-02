@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -20,7 +20,7 @@ t_float point_euclideanDistance (t_point *a, t_point *b)
     return math_euclideanDistance (point_getX (a), point_getY (a), point_getX (b), point_getY (b));
 }
 
-#endif
+#endif // PD_WITH_DEADCODE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

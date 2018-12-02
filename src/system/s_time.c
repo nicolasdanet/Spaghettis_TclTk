@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -23,7 +23,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_MAC_TIME
+#if 0
 
 static mach_timebase_info_data_t time_baseInfo;       /* Static. */
 
@@ -37,7 +37,7 @@ static void time_initialize (void)
 void time_ctor (void)  __attribute__ ((constructor));
 void time_ctor (void)  { time_initialize(); }
 
-#endif // PD_MAC_TIME
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ t_seed time_makeRandomSeed (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_MAC_TIME
+#if 0
 
 void time_set (t_time *t)
 {
@@ -154,12 +154,12 @@ t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
     return PD_ERROR;
 }
 
-#endif // PD_MAC_TIME
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if PD_POSIX_TIME
+#if 1
 
 void time_set (t_time *t)
 {
@@ -187,11 +187,44 @@ t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
     return PD_ERROR;
 }
 
-#endif // PD_POSIX_TIME
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+#if PD_LINUX
+
+void time_wait (t_time *t)
+{
+    struct timespec deadline;
+
+    deadline.tv_sec  = (time_t)((*t) / TIME_NSEC_PER_SEC);
+    deadline.tv_nsec = (long)((*t) % TIME_NSEC_PER_SEC);
+
+    clock_nanosleep (CLOCK_MONOTONIC, TIMER_ABSTIME, &deadline, NULL);
+}
+
+#endif // PD_LINUX
+
+#if PD_APPLE
+
+void time_wait (t_time *t)
+{
+    t_nano ns; t_time now; time_set (&now);
+    
+    if (time_elapsedNanoseconds (&now, t, &ns) == PD_ERROR_NONE) { nano_sleep (ns); }
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* Assumed thread-safe. */
+
+/* < https://www.gnu.org/software/libc/manual/html_node/Sleeping.html > */
 
 void nano_sleep (t_nano ns)
 {

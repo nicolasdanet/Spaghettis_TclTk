@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -9,10 +9,46 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../s_system.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* No aliasing. */
+
+t_int *vPerform_clip (t_int *w)
+{
+    PD_RESTRICTED s = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
+    int n = (int)(w[2]);
+    
+    while (n) {
+    //
+    t_sample f0 = s[0];
+    t_sample f1 = s[1];
+    t_sample f2 = s[2];
+    t_sample f3 = s[3];
+    t_sample f4 = s[4];
+    t_sample f5 = s[5];
+    t_sample f6 = s[6];
+    t_sample f7 = s[7];
+    
+    s[0] = PD_CLAMP (f0, (t_sample)-1.0, (t_sample)1.0);
+    s[1] = PD_CLAMP (f1, (t_sample)-1.0, (t_sample)1.0);
+    s[2] = PD_CLAMP (f2, (t_sample)-1.0, (t_sample)1.0);
+    s[3] = PD_CLAMP (f3, (t_sample)-1.0, (t_sample)1.0);
+    s[4] = PD_CLAMP (f4, (t_sample)-1.0, (t_sample)1.0);
+    s[5] = PD_CLAMP (f5, (t_sample)-1.0, (t_sample)1.0);
+    s[6] = PD_CLAMP (f6, (t_sample)-1.0, (t_sample)1.0);
+    s[7] = PD_CLAMP (f7, (t_sample)-1.0, (t_sample)1.0);
+    
+    n -= 8;
+    s += 8;
+    //
+    }
+    
+    return (w + 3);
+}
 
 /* No aliasing. */
 
@@ -43,7 +79,8 @@ t_int *vPerform_zero (t_int *w)
 
 t_int *vPerform_scalar (t_int *w)
 {
-    t_sample f = *(t_float *)(w[1]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[1]);
+    t_sample f = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s = (t_sample *)PD_ALIGNED ((t_sample *)(w[2]));
     int n = (int)(w[3]);
     
@@ -276,7 +313,8 @@ t_int *vPerform_plusAliased (t_int *w)
 t_int *vPerform_plusScalar (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    t_sample g = *(t_float *)(w[2]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[2]);
+    t_sample g = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
@@ -300,7 +338,7 @@ t_int *vPerform_plusScalar (t_int *w)
     s2[6] = f6 + g;
     s2[7] = f7 + g;
     
-    n -= 8; 
+    n -= 8;
     s1 += 8;
     s2 += 8;
     //
@@ -362,7 +400,8 @@ t_int *vPerform_subtractAliased (t_int *w)
 t_int *vPerform_subtractScalar (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    t_sample g = *(t_float *)(w[2]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[2]);
+    t_sample g = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
@@ -386,7 +425,7 @@ t_int *vPerform_subtractScalar (t_int *w)
     s2[6] = f6 - g;
     s2[7] = f7 - g;
     
-    n -= 8; 
+    n -= 8;
     s1 += 8;
     s2 += 8;
     //
@@ -448,7 +487,8 @@ t_int *vPerform_multiplyAliased (t_int *w)
 t_int *vPerform_multiplyScalar (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    t_sample g = *(t_float *)(w[2]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[2]);
+    t_sample g = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
@@ -472,7 +512,7 @@ t_int *vPerform_multiplyScalar (t_int *w)
     s2[6] = f6 * g;
     s2[7] = f7 * g;
     
-    n -= 8; 
+    n -= 8;
     s1 += 8;
     s2 += 8;
     //
@@ -534,7 +574,8 @@ t_int *vPerform_divideAliased (t_int *w)
 t_int *vPerform_divideScalar (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    t_sample g = *(t_float *)(w[2]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[2]);
+    t_sample g = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
@@ -560,7 +601,7 @@ t_int *vPerform_divideScalar (t_int *w)
     s2[6] = f6 * g;
     s2[7] = f7 * g;
     
-    n -= 8; 
+    n -= 8;
     s1 += 8;
     s2 += 8;
     //
@@ -622,7 +663,8 @@ t_int *vPerform_maximumAliased (t_int *w)
 t_int *vPerform_maximumScalar (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    t_sample g = *(t_float *)(w[2]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[2]);
+    t_sample g = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
@@ -646,7 +688,7 @@ t_int *vPerform_maximumScalar (t_int *w)
     s2[6] = PD_MAX (f6, g);
     s2[7] = PD_MAX (f7, g);
     
-    n -= 8; 
+    n -= 8;
     s1 += 8;
     s2 += 8;
     //
@@ -708,7 +750,8 @@ t_int *vPerform_minimumAliased (t_int *w)
 t_int *vPerform_minimumScalar (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    t_sample g = *(t_float *)(w[2]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[2]);
+    t_sample g = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
@@ -732,7 +775,7 @@ t_int *vPerform_minimumScalar (t_int *w)
     s2[6] = PD_MIN (f6, g);
     s2[7] = PD_MIN (f7, g);
     
-    n -= 8; 
+    n -= 8;
     s1 += 8;
     s2 += 8;
     //
@@ -794,7 +837,8 @@ t_int *vPerform_greaterAliased (t_int *w)
 t_int *vPerform_greaterScalar (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    t_sample g = *(t_float *)(w[2]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[2]);
+    t_sample g = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     
@@ -880,7 +924,8 @@ t_int *vPerform_lessAliased (t_int *w)
 t_int *vPerform_lessScalar (t_int *w)
 {
     PD_RESTRICTED s1 = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    t_sample g = *(t_float *)(w[2]);
+    t_float64Atomic *t = (t_float64Atomic *)(w[2]);
+    t_sample g = PD_ATOMIC_FLOAT64_READ (t);
     PD_RESTRICTED s2 = (t_sample *)PD_ALIGNED ((t_sample *)(w[3]));
     int n = (int)(w[4]);
     

@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -77,7 +77,7 @@ t_symbol    *color_toEncoded                (t_color color);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         math_areEquivalent              (t_float a, t_float b);
+int         math_areEquivalent              (t_float a, t_float b, t_float f = PD_EPSILON);
 int         math_compareFloat               (t_float a, t_float b);
 t_float     math_euclideanDistance          (t_float a, t_float b, t_float c, t_float d);
 

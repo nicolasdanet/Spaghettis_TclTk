@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -15,15 +15,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *sig_tilde_class;        /* Shared. */
+static t_class *sig_tilde_class;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _sig_tilde {
-    t_object    x_obj;                  /* Must be the first. */
-    t_float     x_f;
-    t_outlet    *x_outlet;
+    t_object            x_obj;              /* Must be the first. */
+    t_float64Atomic     x_f;
+    t_outlet            *x_outlet;
     } t_sig_tilde;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ typedef struct _sig_tilde {
 
 static void sig_tilde_float (t_sig_tilde *x, t_float f)
 {
-    x->x_f = f;
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ static t_buffer *sig_tilde_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, &s_float);
-    buffer_appendFloat (b, x->x_f);
+    buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_f));
     
     return b;
     //
@@ -73,8 +73,9 @@ static void *sig_tilde_new (t_float f)
 {
     t_sig_tilde *x = (t_sig_tilde *)pd_new (sig_tilde_class);
     
-    x->x_f      = f;
     x->x_outlet = outlet_newSignal (cast_object (x));
+    
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_f);
     
     return x;
 }

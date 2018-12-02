@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -72,6 +72,7 @@ void binop3_setup               (void);
 void blocksize_setup            (void);
 void bng_setup                  (void);
 void canvas_setup               (void);
+void chain_setup                (void);
 void change_setup               (void);
 void clip_setup                 (void);
 void closebang_setup            (void);
@@ -248,7 +249,6 @@ void add_tilde_setup            (void);
 void bang_tilde_setup           (void);
 void biquad_tilde_setup         (void);
 void block_tilde_setup          (void);
-void blockinfo_tilde_setup      (void);
 void bp_tilde_setup             (void);
 void catch_tilde_setup          (void);
 void clip_tilde_setup           (void);
@@ -313,7 +313,6 @@ void threshold_tilde_setup      (void);
 void throw_tilde_setup          (void);
 void vcf_tilde_setup            (void);
 void vd_tilde_setup             (void);
-void vline_tilde_setup          (void);
 void wrap_tilde_setup           (void);
 void writesf_tilde_setup        (void);
 void zero_tilde_setup           (void);
@@ -344,6 +343,7 @@ void binop3_destroy             (void);
 void blocksize_destroy          (void);
 void bng_destroy                (void);
 void canvas_destroy             (void);
+void chain_destroy              (void);
 void change_destroy             (void);
 void clip_destroy               (void);
 void closebang_destroy          (void);
@@ -518,7 +518,6 @@ void add_tilde_destroy          (void);
 void bang_tilde_destroy         (void);
 void biquad_tilde_destroy       (void);
 void block_tilde_destroy        (void);
-void blockinfo_tilde_destroy    (void);
 void bp_tilde_destroy           (void);
 void catch_tilde_destroy        (void);
 void clip_tilde_destroy         (void);
@@ -583,7 +582,6 @@ void threshold_tilde_destroy    (void);
 void throw_tilde_destroy        (void);
 void vcf_tilde_destroy          (void);
 void vd_tilde_destroy           (void);
-void vline_tilde_destroy        (void);
 void wrap_tilde_destroy         (void);
 void writesf_tilde_destroy      (void);
 void zero_tilde_destroy         (void);
@@ -617,6 +615,7 @@ void setup_setup (void)
     blocksize_setup();
     bng_setup();
     canvas_setup();
+    chain_setup();
     change_setup();
     clip_setup();
     closebang_setup();
@@ -787,7 +786,6 @@ void setup_setup (void)
     bang_tilde_setup();
     biquad_tilde_setup();
     block_tilde_setup();
-    blockinfo_tilde_setup();
     bp_tilde_setup();
     catch_tilde_setup();
     clip_tilde_setup();
@@ -852,7 +850,6 @@ void setup_setup (void)
     throw_tilde_setup();
     vcf_tilde_setup();
     vd_tilde_setup();
-    vline_tilde_setup();
     wrap_tilde_setup();
     writesf_tilde_setup();
     zero_tilde_setup();
@@ -882,6 +879,7 @@ void setup_destroy (void)
     blocksize_destroy();
     bng_destroy();
     canvas_destroy();
+    chain_destroy();
     change_destroy();
     clip_destroy();
     closebang_destroy();
@@ -1050,7 +1048,6 @@ void setup_destroy (void)
     bang_tilde_destroy();
     biquad_tilde_destroy();
     block_tilde_destroy();
-    blockinfo_tilde_destroy();
     bp_tilde_destroy();
     catch_tilde_destroy();
     clip_tilde_destroy();
@@ -1115,7 +1112,6 @@ void setup_destroy (void)
     throw_tilde_destroy();
     vcf_tilde_destroy();
     vd_tilde_destroy();
-    vline_tilde_destroy();
     wrap_tilde_destroy();
     writesf_tilde_destroy();
     zero_tilde_destroy();

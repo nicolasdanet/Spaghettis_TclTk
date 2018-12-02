@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -82,14 +82,14 @@ static t_int *resample_performUpsamplingHold (t_int *w)
 
 static t_int *resample_performUpsamplingLinear (t_int *w)
 {
-    PD_RESTRICTED t  = (t_sample *)(w[1]);
+    t_space *t       = (t_space *)(w[1]);
     PD_RESTRICTED s1 = (t_sample *)(w[2]);
     PD_RESTRICTED s2 = (t_sample *)(w[3]);
     int up = (int)(w[4]);
     int size = (int)(w[5]);
     int length = size * up;
     
-    t_sample a = *t;
+    t_sample a = (t_sample)t->s_float0;
     t_sample b = *s1;
     int n;
     
@@ -107,7 +107,7 @@ static t_int *resample_performUpsamplingLinear (t_int *w)
     //
     }
 
-    *t = a;
+    t->s_float0 = (t_float)a;
   
     return (w + 6);
 }
@@ -116,30 +116,39 @@ static t_int *resample_performUpsamplingLinear (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int resample_setAllocateVectorIfRequired (t_resample *x, t_sample *s, int size, int resampledSize)
+static void resample_releaseVector (t_resample *x)
 {
-    if (size == resampledSize) {
+    if (x->r_vector && x->r_allocated) { garbage_newRaw ((void *)x->r_vector); }
     
-        if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vectorSize = 0; x->r_vector = NULL; }
-        
-        x->r_vector = s;
-        
-        return 0;
-        
-    } else if (x->r_vectorSize != resampledSize) {
+    x->r_allocated = 0; x->r_vector = NULL;
+}
+
+static void resample_allocateVector (t_resample *x, int n)
+{
+    resample_releaseVector (x);
     
-        size_t oldSize  = sizeof (t_sample) * x->r_vectorSize;
-        size_t newSize  = sizeof (t_sample) * resampledSize;
-        x->r_vectorSize = resampledSize;
-        x->r_vector     = (t_sample *)PD_MEMORY_RESIZE (x->r_vector, oldSize, newSize);
-    }
+    PD_ASSERT (n > 0);
     
-    return 1;
+    x->r_vector    = (t_sample *)PD_MEMORY_GET (sizeof (t_sample) * n);
+    x->r_allocated = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static int resample_setAllocateVectorIfRequired (t_resample *x, t_sample *s, int size, int resampledSize)
+{
+    if (size == resampledSize) { resample_releaseVector (x); x->r_vector = s; return 0; }
+    else {
+    
+        if (x->r_allocated != resampledSize) {
+            resample_allocateVector (x, resampledSize);
+        }
+        
+        return 1;
+    }
+}
 
 static void resample_addResampling (t_resample *x,
     t_sample *in,
@@ -180,11 +189,57 @@ static void resample_addResampling (t_resample *x,
     case RESAMPLE_DEFAULT : PD_BUG;     /* Falls through. */
     case RESAMPLE_ZERO    : dsp_add (resample_performUpsamplingZero,    4, in, out, t, inSize); break;
     case RESAMPLE_HOLD    : dsp_add (resample_performUpsamplingHold,    4, in, out, t, inSize); break;
-    case RESAMPLE_LINEAR  : dsp_add (resample_performUpsamplingLinear,  5, &x->r_buffer, in, out, t, inSize);
+    case RESAMPLE_LINEAR  : dsp_add (resample_performUpsamplingLinear,  5, space_new(), in, out, t, inSize);
     //
     }
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_sample *resample_getBufferInlet (t_resample *x, t_sample *s, int size, int resampledSize)
+{
+    if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
+        resample_addResampling (x,
+            s,
+            size,
+            x->r_vector,
+            x->r_allocated,
+            (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_HOLD);
+    }
+    
+    return x->r_vector;
+}
+
+t_sample *resample_getBufferOutlet (t_resample *x, t_sample *s, int size, int resampledSize)
+{
+    if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
+        resample_addResampling (x,
+            x->r_vector,
+            x->r_allocated,
+            s,
+            size,
+            (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_HOLD);
+    }
+    
+    return x->r_vector;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int resample_isRequired (t_resample *x)
+{
+    return (x->r_downsample != x->r_upsample);
+}
+
+void resample_set (t_resample *x, int downsample, int upsample)
+{
+    x->r_downsample = downsample; x->r_upsample = upsample;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -199,66 +254,15 @@ void resample_init (t_resample *x, t_symbol *type)
     if (type == sym_linear) { x->r_type = RESAMPLE_LINEAR;  }
     if (type == sym_pad)    { x->r_type = RESAMPLE_ZERO;    }
     
-    #if PD_WITH_LEGACY
-    
-    if (type == sym_lin)    { x->r_type = RESAMPLE_LINEAR;  }
-    
-    #endif
-
     x->r_downsample = 1;
     x->r_upsample   = 1;
-    x->r_vectorSize = 0;
+    x->r_allocated  = 0;
     x->r_vector     = NULL;
 }
 
 void resample_free (t_resample *x)
 {
-    if (x->r_vector) { PD_MEMORY_FREE (x->r_vector); x->r_vectorSize = 0; x->r_vector = NULL; }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void resample_setRatio (t_resample *x, int downsample, int upsample)
-{
-    x->r_downsample = downsample;
-    x->r_upsample   = upsample;
-}
-
-int resample_isRequired (t_resample *x)
-{
-    return (x->r_downsample != x->r_upsample);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_sample *resample_setBuffer (t_resample *x, t_sample *s, int size, int resampledSize)
-{
-    if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
-        resample_addResampling (x,
-            s,
-            size,
-            x->r_vector,
-            x->r_vectorSize,
-            (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_HOLD);
-    }
-    
-    return x->r_vector;
-}
-
-void resample_getBuffer (t_resample *x, t_sample *s, int size, int resampledSize)
-{
-    if (resample_setAllocateVectorIfRequired (x, s, size, resampledSize)) {
-        resample_addResampling (x,
-            x->r_vector,
-            x->r_vectorSize,
-            s,
-            size,
-            (x->r_type != RESAMPLE_DEFAULT) ? x->r_type : RESAMPLE_HOLD);
-    }
+    resample_releaseVector (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

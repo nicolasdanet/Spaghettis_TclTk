@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -411,7 +411,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         
     rectangle_setNothing (r);
     
-    if (glist_isArray (glist)) { rectangle_setEverything (r); }
+    if (glist_isGraphicArray (glist)) { rectangle_setEverything (r); }
     else {
     //
     t_plotproperties p;
@@ -946,7 +946,7 @@ static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float
         
         /* The garray case is handled differently. */
         
-        if (glist_isArray (glist)) { return plot_behaviorMouseArray (x, &p, m); }
+        if (glist_isGraphicArray (glist)) { return plot_behaviorMouseArray (x, &p, m); }
         else {
             return plot_behaviorMouseGrab (x, &p, m);
         }
@@ -971,7 +971,7 @@ int plot_hitElement (t_gobj *z,
     
     t_plotproperties p;
     
-    PD_ASSERT (!glist_isArray (glist));
+    PD_ASSERT (!glist_isGraphicArray (glist));
     
     if (!plot_fetchProperties (x, gp, &p) && (p.p_visible != 0)) {
     //
@@ -1099,15 +1099,6 @@ void *plot_new (t_symbol *s, int argc, t_atom *argv)
     while (argc > 0) {
 
         t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
-        
-        #if PD_WITH_LEGACY
-        
-        if (t == sym_curve)     { t = sym___dash__curve;   }
-        if (t == sym___dash__c) { t = sym___dash__curve;   }
-        if (t == sym___dash__v) { t = sym___dash__visible; }
-        if (t == sym___dash__w) { t = sym___dash__width;   }
-        
-        #endif
         
         if (argc > 1 && t == sym___dash__visible) {
             field_setAsFloat (&x->x_isVisible, 1, argv + 1);

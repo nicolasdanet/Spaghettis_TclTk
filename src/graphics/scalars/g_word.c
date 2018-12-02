@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -27,11 +27,11 @@ void word_init (t_word *w, t_template *tmpl, t_gpointer *gp)
     if (!isPrivate) { ctor = template_getInstanceConstructorIfAny (tmpl, v->ds_fieldName); }
     
     switch (v->ds_type) {
-        case DATA_FLOAT  :  WORD_FLOAT (w)  = ctor ? constructor_evaluateAsFloat (ctor)  : 0.0;       break;
-        case DATA_SYMBOL :  WORD_SYMBOL (w) = ctor ? constructor_evaluateAsSymbol (ctor) : &s_symbol; break;
+        case DATA_FLOAT  :  w_setFloat (w, ctor ? constructor_evaluateAsFloat (ctor) : 0.0);         break;
+        case DATA_SYMBOL :  w_setSymbol (w, ctor ? constructor_evaluateAsSymbol (ctor) : &s_symbol); break;
         case DATA_ARRAY  :  int n = (int)(ctor ? constructor_evaluateAsFloat (ctor) : 0.0);
-                            WORD_ARRAY (w) = array_new (v->ds_templateIdentifier, gp);
-                            if (n > 1) { array_resize (WORD_ARRAY (w), n); }
+                            w_setArray (w, array_new (v->ds_templateIdentifier, gp));
+                            if (n > 1) { array_resize (w_getArray (w), n); }
                             break;
     }
     //
@@ -47,7 +47,7 @@ void word_free (t_word *w, t_template *tmpl)
     t_dataslot *v = template_getSlots (tmpl);
     
     for (i = 0; i < template_getSize (tmpl); i++) {
-        if (v->ds_type == DATA_ARRAY) { array_free (WORD_ARRAY (w + i)); }
+        if (v->ds_type == DATA_ARRAY) { array_free (w_getArray (w + i)); }
         v++;
     }
     //
@@ -64,7 +64,7 @@ t_float word_getFloat (t_word *w, t_template *tmpl, t_symbol *fieldName)
     
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
         if (type == DATA_FLOAT) {
-            return *(t_float *)(w + i);
+            return w_getFloat (w + i);
         }
     }
 
@@ -77,7 +77,7 @@ t_symbol *word_getSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName)
     
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
         if (type == DATA_SYMBOL) {
-            return *(t_symbol **)(w + i);
+            return w_getSymbol (w + i);
         }
     }
 
@@ -90,7 +90,7 @@ t_array *word_getArray (t_word *w, t_template *tmpl, t_symbol *fieldName)
     
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
         if (type == DATA_ARRAY) {
-            return *(t_array **)(w + i);
+            return w_getArray (w + i);
         }
     }
 
@@ -109,7 +109,7 @@ void word_setFloat (t_word *w, t_template *tmpl, t_symbol *fieldName, t_float f)
     
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
         if (type == DATA_FLOAT) { 
-            *(t_float *)(w + i) = f; 
+            w_setFloat (w + i, f);
         }
     }
 }
@@ -122,7 +122,7 @@ void word_setSymbol (t_word *w, t_template *tmpl, t_symbol *fieldName, t_symbol 
     
     if (template_getRaw (tmpl, fieldName, &i, &type, &dummy)) {
         if (type == DATA_SYMBOL) { 
-            *(t_symbol **)(w + i) = s;
+            w_setSymbol (w + i, s);
         }
     }
 }

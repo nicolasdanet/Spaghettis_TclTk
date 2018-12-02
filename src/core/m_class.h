@@ -1,5 +1,5 @@
 
-/* Copyright (c) 1997-2018 Miller Puckette and others. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -49,6 +49,7 @@ typedef t_buffer    *(*t_datafn)            (t_gobj *x, int flags);
 typedef void        (*t_undofn)             (t_gobj *x, t_buffer *b);
 typedef void        (*t_propertiesfn)       (t_gobj *x, t_glist *glist, t_mouse *m);
 typedef void        (*t_valuefn)            (t_gobj *x, t_glist *glist, t_mouse *m);
+typedef void        (*t_dismissfn)          (t_gobj *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -124,7 +125,8 @@ struct _class {
     t_undofn                    c_fnUndo;
     t_propertiesfn              c_fnProperties;
     t_valuefn                   c_fnValue;
-    t_int                       c_signalOffset;
+    t_dismissfn                 c_fnDismiss;
+    int                         c_hasSignal;
     int                         c_hasFirstInlet;
     int                         c_hasDSP;
     int                         c_type;
@@ -193,12 +195,7 @@ static inline int class_hasFirstInlet (t_class *c)
 
 static inline int class_hasFirstInletAsSignal (t_class *c)
 {
-    return (class_hasFirstInlet (c) && (c->c_signalOffset > 0));
-}
-
-static inline t_float *class_getFirstInletSignal (t_pd *x)
-{
-    return (t_float *)(((char *)x) + pd_class (x)->c_signalOffset);
+    return (class_hasFirstInlet (c) && c->c_hasSignal);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -308,6 +305,11 @@ static inline int class_hasValueFunction (t_class *c)
     return (c->c_fnValue != NULL);
 }
 
+static inline int class_hasDismissFunction (t_class *c)
+{
+    return (c->c_fnDismiss != NULL);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -347,6 +349,11 @@ static inline t_valuefn class_getValueFunction (t_class *c)
     return c->c_fnValue;
 }
 
+static inline t_dismissfn class_getDismissFunction (t_class *c)
+{
+    return c->c_fnDismiss;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -384,6 +391,11 @@ static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
 static inline void class_setValueFunction (t_class *c, t_valuefn f)
 {
     c->c_fnValue = f;
+}
+
+static inline void class_setDismissFunction (t_class *c, t_dismissfn f)
+{
+    c->c_fnDismiss = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
