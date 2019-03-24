@@ -16,13 +16,14 @@
 /* Non-blocking logger for low latency debugging. */
 /* Handy to post small constant strings while developing DSP code. */
 /* Note that only ONE thread might be safely logged at once. */
+/* In practice with several it is rarely a problem. */
 /* By the way probably not a good idea to use it in the release product. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if ( PD_WITH_DEBUG && PD_WITH_LOGGER ) 
+#if PD_WITH_DEBUG 
     #define PD_LOG(s)           logger_appendString (s)
     #define PD_LOG_NUMBER(f)    logger_appendFloat ((double)(f))
 #else
@@ -36,12 +37,6 @@
 
 t_error logger_initialize       (void);
 void    logger_release          (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int     logger_isRunning        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

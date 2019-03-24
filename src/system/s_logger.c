@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if ( PD_WITH_DEBUG && PD_WITH_LOGGER )
+#if PD_WITH_DEBUG
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -27,7 +27,6 @@ extern t_symbol *main_directorySupport;
 t_ringbuffer                    *logger_ring;                   /* Static. */
 
 static int                      logger_file;                    /* Static. */
-static int                      logger_running;                 /* Static. */
 static pthread_t                logger_thread;                  /* Static. */
 static t_int32Atomic            logger_quit;                    /* Static. */
 
@@ -78,9 +77,8 @@ t_error logger_initialize (void)
     //
     logger_ring = ringbuffer_new (1, LOGGER_BUFFER_SIZE);
     
-    if (!(err = (pthread_create (&logger_thread, NULL, logger_task, NULL) != 0))) {
-        logger_running = 1;
-    } else {
+    if (!(err = (pthread_create (&logger_thread, NULL, logger_task, NULL) != 0))) { }
+    else {
         ringbuffer_free (logger_ring); close (logger_file);
     }
 
@@ -93,18 +91,11 @@ t_error logger_initialize (void)
 
 void logger_release (void)
 {
-    logger_running = 0;
-    
     PD_ATOMIC_INT32_WRITE (1, &logger_quit);
     
     pthread_join (logger_thread, NULL);
     
     ringbuffer_free (logger_ring); close (logger_file);
-}
-
-int logger_isRunning (void)
-{
-    return logger_running;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -139,15 +130,10 @@ void logger_release (void)
 {
 }
 
-int logger_isRunning (void)
-{
-    return 0;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#endif
+#endif  // PD_WITH_DEBUG
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

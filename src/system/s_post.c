@@ -106,10 +106,7 @@ void post_log (const char *fmt, ...)
     va_end (ap);
     
     if (k >= 0 && k < PD_STRING) {
-        if (PD_WITH_LOGGER && logger_isRunning()) { logger_appendString (t); }
-        else {
-            post_syslog (t);
-        }
+        post_syslog (t);
     }
 }
 
