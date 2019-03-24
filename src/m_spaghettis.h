@@ -422,10 +422,6 @@
 #define PD_WITH_DEBUG               0                   /* Debug mode. */
 #endif
 
-#ifndef PD_WITH_LOGGER
-#define PD_WITH_LOGGER              0                   /* Debug with non-blocking logger. */
-#endif
-
 #ifndef PD_WITH_DEADCODE
 #define PD_WITH_DEADCODE            0                   /* Include unused code. */
 #endif
