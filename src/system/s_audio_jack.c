@@ -120,11 +120,10 @@ static int jack_pollCallback (jack_nframes_t framesCount, void *dummy)
     void *t = jack_port_get_buffer (jack_portsOut[i], framesCount);
 
     if (readable) {
-        // PD_LOG ("*");
         ringbuffer_read (jack_ringOut[i], t, framesCount);
         
     } else {
-        // PD_LOG ("@");
+        PD_LOG ("*@*");
         memset (t, 0, framesCount * sizeof (t_sample));   /* Fill with zeros. */
     }
     //
@@ -303,7 +302,7 @@ int audio_pollNative (void)
         while (ringbuffer_getAvailableRead (jack_ringIn[i]) < INTERNAL_BLOCKSIZE) {
             status = DACS_SLEPT;
             if (needToWait < JACK_GRAIN * 2) {
-                // PD_LOG (".");
+                PD_LOG (".");
                 nano_sleep (ns);
             } else { return DACS_NO; }
             needToWait++;
@@ -318,7 +317,7 @@ int audio_pollNative (void)
         while (ringbuffer_getAvailableWrite (jack_ringOut[i]) < INTERNAL_BLOCKSIZE) {
             status = DACS_SLEPT;
             if (needToWait < JACK_GRAIN * 2) {
-                // PD_LOG (".");
+                PD_LOG (".");
                 nano_sleep (ns);
             } else { return DACS_NO; }
             needToWait++;
