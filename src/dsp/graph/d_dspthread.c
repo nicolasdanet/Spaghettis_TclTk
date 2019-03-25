@@ -114,9 +114,13 @@ static void dspthread_proceed (t_dspthread *x)
     //
     t_time t = 0.0; int stuck = 0; int dacs = audio_poll();
     
-    // if (dacs == DACS_NO)         { PD_LOG ("#"); }
-    // else if (dacs == DACS_YES)   { PD_LOG ("!"); }
-    // else if (dacs == DACS_SLEPT) { PD_LOG ("/"); }
+    #if PD_WITH_DEBUG
+    
+    if (dacs == DACS_NO)         { PD_LOG ("#"); }
+    else if (dacs == DACS_YES)   { PD_LOG ("!"); }
+    else if (dacs == DACS_SLEPT) { PD_LOG ("/"); }
+    
+    #endif
     
     if (dacs == DACS_YES) { time_set (&t); time_addNanoseconds (&t, audio_getNanosecondsToSleep() * 0.9); }
     if (dacs != DACS_NO)  { chain_tick (chain); stuck = 0; } else { stuck++; }

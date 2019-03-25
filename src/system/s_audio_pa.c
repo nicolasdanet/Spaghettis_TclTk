@@ -78,10 +78,9 @@ static int pa_ringCallback (const void *input,
     if (output) {
     //
     if (ringbuffer_getAvailableRead (pa_ringOut) >= requiredOut) {
-        // PD_LOG ("*");
         ringbuffer_read (pa_ringOut, output, requiredOut);
     } else {
-        // PD_LOG ("@");
+        PD_LOG ("*@*");
         memset (output, 0, requiredOut * sizeof (t_sample));        /* Fill with zeros. */
     }
     //
@@ -306,7 +305,7 @@ int audio_pollNative (void)
         while (ringbuffer_getAvailableRead (pa_ringIn) < requiredIn) {
             status = DACS_SLEPT;
             if (needToWait < PORTAUDIO_GRAIN * 2) {
-                // PD_LOG (".");
+                PD_LOG (".");
                 nano_sleep (ns);
             } else { return DACS_NO; }
             needToWait++;
@@ -317,7 +316,7 @@ int audio_pollNative (void)
         while (ringbuffer_getAvailableWrite (pa_ringOut) < requiredOut) {
             status = DACS_SLEPT;
             if (needToWait < PORTAUDIO_GRAIN * 2) {
-                // PD_LOG (".");
+                PD_LOG (".");
                 nano_sleep (ns);
             } else { return DACS_NO; }
             needToWait++;
