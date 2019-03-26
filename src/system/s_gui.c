@@ -38,13 +38,6 @@ static int  gui_bufferTail;     /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void gui_jobClear (void);
-int  gui_jobFlush (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 static void gui_bufferEnlarge()
 {
     int oldSize = gui_bufferSize;
@@ -120,14 +113,9 @@ void gui_add (const char *s)
     gui_vAdd ("%s", s);
 }
 
-int gui_flush (void)
+void gui_flush (void)
 {
-    int didSomething = 0;
-    
-    didSomething |= gui_jobFlush();
-    didSomething |= gui_bufferFlush();
-
-    return didSomething;
+    gui_bufferFlush();
 }
 
 // -----------------------------------------------------------------------------------------------------------

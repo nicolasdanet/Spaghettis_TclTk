@@ -107,10 +107,12 @@ void        monitor_removePoller                    (int fd);
 
 void        gui_jobAdd                              (void *owner, t_glist *glist, t_drawfn f);
 void        gui_jobRemove                           (void *owner);
+int         gui_jobFlush                            (void);
+void        gui_jobClear                            (void);
 
 void        gui_vAdd                                (const char *format, ...);
 void        gui_add                                 (const char *s);
-int         gui_flush                               (void);
+void        gui_flush                               (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

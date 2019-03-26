@@ -35,6 +35,12 @@ static t_float64Atomic  scheduler_systime;          /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define SCHEDULER_JOB   20
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void scheduler_setLogicalTime (t_systime t)
 {
     PD_ATOMIC_FLOAT64_WRITE (t, &scheduler_systime);
@@ -117,6 +123,7 @@ static void scheduler_mainLoop (void)
 {
     const double realTimeAtStart       = clock_getRealTimeInSeconds();
     const t_systime logicalTimeAtStart = scheduler_getLogicalTime();
+    uint64_t count = 0;
     
     midi_start();
     
@@ -131,6 +138,7 @@ static void scheduler_mainLoop (void)
     if (!PD_ATOMIC_INT32_READ (&scheduler_quit)) {
         midi_poll();
         monitor_nonBlocking();
+        if (count++ % SCHEDULER_JOB == 0) { gui_jobFlush(); }
         gui_flush();
     }
     
