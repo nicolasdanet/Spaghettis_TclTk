@@ -169,7 +169,7 @@ static void message_anything (t_message *x, t_symbol *s, int argc, t_atom *argv)
 
 void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (glist_hasWindow (x->m_owner)) {                     /* Not shown in GOP. */
+    if (glist_hasWindow (x->m_owner)) {         /* Not shown in GOP. */
     //
     if (glist_isOnScreen (x->m_owner)) {
     //
@@ -179,7 +179,7 @@ void message_click (t_message *x, t_symbol *s, int argc, t_atom *argv)
                     glist_getTagAsString (x->m_owner), 
                     box_getTag (text));
     
-    gui_flush(); clock_delay (x->m_clock, 120.0);           /* Force the GUI to update. */
+    clock_delay (x->m_clock, 120.0);
     //
     }
     //
