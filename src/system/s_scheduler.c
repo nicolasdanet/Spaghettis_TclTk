@@ -138,7 +138,7 @@ static void scheduler_mainLoop (void)
     if (!PD_ATOMIC_INT32_READ (&scheduler_quit)) {
         midi_poll();
         monitor_nonBlocking();
-        if (count++ % SCHEDULER_JOB == 0) { gui_jobFlush(); }
+        if (count++ % SCHEDULER_JOB == 0) { gui_jobFlush(); }   // --
         gui_flush();
     }
     

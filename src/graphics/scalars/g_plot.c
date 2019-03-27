@@ -455,19 +455,20 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
     t_float  relativeY,
     t_glist  *glist,
     t_word   *w,
-    t_symbol *color)
+    t_symbol *color,
+    int      step)
 {
     int size = array_getSize (p->p_array);
     t_float minY = PD_FLT_MAX;
     t_float maxY = -minY;
-    int i;
+    int i, y0 = (step != 1) ? plot_toInteger (glist_valueToPixelY (glist, 0.0)) : 0;
     
     t_plotpixels here;
     t_plotpixels next;
     
     plot_getPixelsAtIndex (p, relativeX, relativeY, 0, glist, p->p_width, &next);
     
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i += step) {
     //
     here = next;
     
@@ -478,6 +479,11 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
 
     if (p->p_fieldX || i == size - 1 || (int)here.p_pixelX != (int)next.p_pixelX) {
 
+        int y1 = plot_toInteger (minY);
+        int y2 = plot_toInteger (maxY);
+        
+        if (step != 1) { y1 = PD_MIN (y0, y1); y2 = PD_MAX (y0, y2); }
+        
         gui_vAdd ("%s.c create rectangle %d %d %d %d"
                         " -width %d"
                         " -fill %s"
@@ -485,9 +491,9 @@ static void plot_behaviorVisibilityDrawPoint (t_plot *x,
                         " -tags %lxPLOT\n",
                         glist_getTagAsString (glist_getView (glist)),
                         (p->p_fieldX == NULL) ? (int)here.p_pixelX : (int)here.p_pixelX - 1,
-                        plot_toInteger (minY),
+                        y1,
                         (p->p_fieldX == NULL) ? (int)next.p_pixelX : (int)here.p_pixelX + 1,
-                        plot_toInteger (maxY),
+                        y2,
                         (int)PD_MAX (0, p->p_width - 1.0),
                         color->s_name,
                         color->s_name,
@@ -506,18 +512,19 @@ static void plot_behaviorVisibilityDrawPolygonFill (t_plot *x,
     t_float  relativeY,
     t_glist  *glist,
     t_word   *w,
-    t_symbol *color)
+    t_symbol *color,
+    int      step)
 {
     int size = array_getSize (p->p_array);
-    int cX[PLOT_MAXIMUM_DRAWN] = { 0 };     
-    int cL[PLOT_MAXIMUM_DRAWN] = { 0 };
-    int cH[PLOT_MAXIMUM_DRAWN] = { 0 };
+    int cX[PLOT_MAXIMUM_DRAWN + 1] = { 0 };
+    int cL[PLOT_MAXIMUM_DRAWN + 1] = { 0 };
+    int cH[PLOT_MAXIMUM_DRAWN + 1] = { 0 };
     int elementsDrawn = 0;
     int i;
     
     int previous = -PD_INT_MAX;
         
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i += step) {
     //
     t_plotpixels c;
     
@@ -572,7 +579,8 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
     t_float  relativeY,
     t_glist  *glist,
     t_word   *w,
-    t_symbol *color)
+    t_symbol *color,
+    int      step)
 {
     t_heapstring *t = heapstring_new (0);
     
@@ -584,7 +592,7 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
         
     heapstring_addSprintf (t, "%s.c create line", glist_getTagAsString (glist_getView (glist)));
     
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i += step) {
     //
     t_plotpixels c;
 
@@ -613,7 +621,7 @@ static void plot_behaviorVisibilityDrawPolygonSegment (t_plot *x,
     gui_add (heapstring_getRaw (t));
     //
     } else {
-        plot_behaviorVisibilityDrawPoint (x, p, relativeX, relativeY, glist, w, color);
+        plot_behaviorVisibilityDrawPoint (x, p, relativeX, relativeY, glist, w, color, step);
     }
     
     heapstring_free (t);
@@ -661,9 +669,11 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     t_float baseY,
     int isVisible)
 {
-    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getView (gp);
-    
-    t_word *w = gpointer_getElement (gp);
+    t_plot *x      = (t_plot *)z;
+    t_glist *glist = gpointer_getView (gp);
+    t_word *w      = gpointer_getElement (gp);
+    t_garray *a    = gpointer_getGraphicArray (gp);
+    int isArray    = (a != NULL);
     
     t_plotproperties p;
     
@@ -673,6 +683,16 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     //
     t_float relativeX = plot_getRelativeX (&p, baseX);
     t_float relativeY = plot_getRelativeY (&p, baseY);
+    
+    int step = 1;
+    
+    /* Don't test all points in large arrays. */
+    
+    if (isArray) {
+    //
+    int size = garray_getSize (a); if (size > PLOT_MAXIMUM_DRAWN) { step = size / PLOT_MAXIMUM_DRAWN; }
+    //
+    }
     
     if (!isVisible) { gui_vAdd ("%s.c delete %lxPLOT\n", glist_getTagAsString (glist_getView (glist)), w); }
     else {
@@ -685,12 +705,12 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     /* Segment can be a straight line or a curved one. */
     
     if (p.p_style == PLOT_POINTS) {     
-            plot_behaviorVisibilityDrawPoint (x, &p, relativeX, relativeY, glist, w, color);
+            plot_behaviorVisibilityDrawPoint (x, &p, relativeX, relativeY, glist, w, color, step);
     } else {
         if (p.p_fieldW) {               
-            plot_behaviorVisibilityDrawPolygonFill (x, &p, relativeX, relativeY, glist, w, color);
+            plot_behaviorVisibilityDrawPolygonFill (x, &p, relativeX, relativeY, glist, w, color, step);
         } else {                        
-            plot_behaviorVisibilityDrawPolygonSegment (x, &p, relativeX, relativeY, glist, w, color);
+            plot_behaviorVisibilityDrawPolygonSegment (x, &p, relativeX, relativeY, glist, w, color, step);
         }
     }
     //
@@ -698,7 +718,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     
     /* Recursively change the visibility of the elements. */
     
-    plot_behaviorVisibilityChangedRecursive (x, &p, relativeX, relativeY, isVisible);
+    if (!isArray) { plot_behaviorVisibilityChangedRecursive (x, &p, relativeX, relativeY, isVisible); }
     //
     }
     //
