@@ -15,12 +15,12 @@
 // MARK: -
 
 /* Note that all values (after creation) of the delay lines are used in DSP thread only. */
-/* Except the size but that is read only. */
 /* Thus no need of mutex machinery. */
 
 typedef struct delwrite_tilde_control {
     int                         dw_size;
     int                         dw_phase;
+    int                         dw_allocated;
     t_sample                    *dw_vector;
     } t_delwrite_tilde_control;
 

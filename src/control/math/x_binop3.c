@@ -323,15 +323,15 @@ void binop3_setup (void)
     class_addFloat (binopIntegerModulo_class,   (t_method)binopIntegerModulo_float);
     class_addFloat (binopIntegerDivide_class,   (t_method)binopIntegerDivide_float);
     
-    class_addMethod (binopBitwiseAnd_class,     (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopLogicalAnd_class,     (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopBitwiseOr_class,      (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopLogicalOr_class,      (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopShiftLeft_class,      (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopShiftRight_class,     (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopModulo_class,         (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopIntegerModulo_class,  (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopIntegerDivide_class,  (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopBitwiseAnd_class,     (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopLogicalAnd_class,     (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopBitwiseOr_class,      (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopLogicalOr_class,      (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopShiftLeft_class,      (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopShiftRight_class,     (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopModulo_class,         (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopIntegerModulo_class,  (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopIntegerDivide_class,  (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (binopBitwiseAnd_class,       binop_functionData);
     class_setDataFunction (binopLogicalAnd_class,       binop_functionData);
@@ -342,6 +342,16 @@ void binop3_setup (void)
     class_setDataFunction (binopModulo_class,           binop_functionData);
     class_setDataFunction (binopIntegerModulo_class,    binop_functionData);
     class_setDataFunction (binopIntegerDivide_class,    binop_functionData);
+
+    class_requirePending (binopBitwiseAnd_class);
+    class_requirePending (binopLogicalAnd_class);
+    class_requirePending (binopBitwiseOr_class);
+    class_requirePending (binopLogicalOr_class);
+    class_requirePending (binopShiftLeft_class);
+    class_requirePending (binopShiftRight_class);
+    class_requirePending (binopModulo_class);
+    class_requirePending (binopIntegerModulo_class);
+    class_requirePending (binopIntegerDivide_class);
 
     class_setHelpName (binopBitwiseAnd_class,           sym_bitwise);
     class_setHelpName (binopLogicalAnd_class,           sym_logical);

@@ -65,10 +65,33 @@ static t_int *samphold_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+static void samphold_tilde_initialize (void *lhs, void *rhs)
+{
+    t_samphold_tilde *x   = (t_samphold_tilde *)lhs;
+    t_samphold_tilde *old = (t_samphold_tilde *)rhs;
+    
+    PD_ATOMIC_FLOAT64_WRITE (PD_ATOMIC_FLOAT64_READ (&old->x_lastControl), &x->x_lastControl);
+    PD_ATOMIC_FLOAT64_WRITE (PD_ATOMIC_FLOAT64_READ (&old->x_lastOut), &x->x_lastOut);
+}
+
 static void samphold_tilde_dsp (t_samphold_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_samphold_tilde *old = (t_samphold_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (samphold_tilde_initialize, x, old);
+    
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    //
+    }
+    //
+    }
     
     dsp_add (samphold_tilde_perform, 5, x,
         sp[0]->s_vector,
@@ -93,7 +116,7 @@ static t_buffer *samphold_tilde_functionData (t_gobj *z, int flags)
     buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_lastOut));
     
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

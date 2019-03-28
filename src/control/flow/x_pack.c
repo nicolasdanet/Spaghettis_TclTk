@@ -99,7 +99,7 @@ static t_buffer *pack_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     int i;
     
-    buffer_appendSymbol (b, &s_list);
+    buffer_appendSymbol (b, sym__restore);
     
     for (i = 0; i < x->x_size; i++) { buffer_appendAtom (b, atomoutlet_getAtom (x->x_vector + i)); }
     
@@ -110,6 +110,24 @@ static t_buffer *pack_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
+}
+
+static void pack_restore (t_pack *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_pack *old = (t_pack *)instance_pendingFetch (cast_gobj (x));
+
+    int i;
+    
+    PD_ASSERT (!old || (x->x_size == old->x_size));
+    
+    for (i = 0; i < PD_MIN (x->x_size, argc); i++) {
+    //
+    t_atom *a   = old ? atomoutlet_getAtom (old->x_vector + i) : (argv + i);
+    t_error err = atomoutlet_setAtom (x->x_vector + i, a);
+    
+    PD_ASSERT (!err); PD_UNUSED (err);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -184,8 +202,11 @@ void pack_setup (void)
     class_addList (c, (t_method)pack_list);
     class_addAnything (c, (t_method)pack_anything);
     
-    class_setDataFunction (c, pack_functionData);
+    class_addMethod (c, (t_method)pack_restore, sym__restore, A_GIMME, A_NULL);
 
+    class_setDataFunction (c, pack_functionData);
+    class_requirePending (c);
+    
     pack_class = c;
 }
 

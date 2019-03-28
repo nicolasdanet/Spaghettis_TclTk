@@ -67,7 +67,7 @@ static t_symbol *slots_name (t_atom *key)
     if (key) {
         if (IS_SYMBOL (key)) { return GET_SYMBOL (key); }
         else {
-            return symbol_addPrefix (symbol_withAtoms (1, key), sym___arrobe__);
+            return symbol_addPrefix (symbol_withAtom (key), sym___arrobe__);
         }
     }
     

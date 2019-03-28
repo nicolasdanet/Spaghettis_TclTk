@@ -68,10 +68,37 @@ static t_int *rpole_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+void real_raw_initialize (void *lhs, void *rhs)
+{
+    struct _real_raw_tilde *x   = (struct _real_raw_tilde *)lhs;
+    struct _real_raw_tilde *old = (struct _real_raw_tilde *)rhs;
+    
+    x->x_real = old->x_real;
+}
+
+void real_raw_initializer (t_gobj *x)
+{
+    if (dsp_objectNeedInitializer (x)) {
+    //
+    struct _real_raw_tilde *old = (struct _real_raw_tilde *)garbage_fetch (x);
+    
+    if (old) {
+    //
+    initializer_new (real_raw_initialize, x, old);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+}
+
 static void rpole_tilde_dsp (t_rpole_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
+    
+    real_raw_initializer (cast_gobj (x));
     
     dsp_add (rpole_tilde_perform, 5, x,
         sp[0]->s_vector,
@@ -92,7 +119,7 @@ t_buffer *real_raw_functionData (t_gobj *z, int flags)
     
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

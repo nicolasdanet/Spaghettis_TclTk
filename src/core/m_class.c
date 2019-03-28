@@ -154,7 +154,7 @@ static void class_defaultSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendSemicolon (b);
     object_serializeWidth (x, b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 // -----------------------------------------------------------------------------------------------------------

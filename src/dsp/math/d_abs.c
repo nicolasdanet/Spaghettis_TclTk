@@ -48,6 +48,8 @@ static void abs_tilde_dsp (t_abs_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_add (abs_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
@@ -62,7 +64,7 @@ t_buffer *unop_tilde_functionData (t_gobj *z, int flags)
     struct _unop_tilde *x = (struct _unop_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

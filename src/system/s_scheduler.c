@@ -51,6 +51,11 @@ t_systime scheduler_getLogicalTime (void)
     return PD_ATOMIC_FLOAT64_READ (&scheduler_systime);
 }
 
+t_systime scheduler_addMillisecondsToSystime (t_systime t, double ms)
+{
+    return (t + ms);
+}
+
 t_systime scheduler_getLogicalTimeAfter (double ms)
 {
     return (scheduler_getLogicalTime() + ms);

@@ -28,6 +28,7 @@ static t_class *metro_class;            /* Shared. */
 
 typedef struct _metro {
     t_object    x_obj;                  /* Must be the first. */
+    t_systime   x_cache;
     double      x_delay;
     int         x_reentrantStart;
     int         x_reentrantStop;
@@ -41,7 +42,14 @@ typedef struct _metro {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void metro_float (t_metro *, t_float);
+t_error clock_reschedule    (t_clock *x, double, double, t_systime);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void metro_float     (t_metro *, t_float);
+static void metro_dismiss   (t_metro *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -132,12 +140,46 @@ static t_buffer *metro_functionData (t_gobj *z, int flags)
     
     buffer_appendSymbol (b, sym__inlet2);
     buffer_appendFloat (b,  x->x_delay);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  clock_isSet (x->x_clock) ? clock_getLogicalTime (x->x_clock) : 0.0);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void metro_functionDismiss (t_gobj *z)
+{
+    metro_dismiss ((t_metro *)z);
+}
+
+static void metro_restoreReschedule (t_metro *x, t_systime f)
+{
+    if (f > 0.0) {
+    //
+    t_error err = clock_reschedule (x->x_clock, x->x_delay, PD_SECONDS_TO_MILLISECONDS (60), f);
+    
+    if (err) { metro_bang (x); }
+    //
+    }
+}
+
+static void metro_restore (t_metro *x, t_float f)
+{
+    t_metro *old = (t_metro *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) {
+    //
+    metro_floatDelay (x, old->x_delay);
+    
+    if (old->x_unitName) { metro_unit (x, old->x_unitName, old->x_unitValue); }
+    //
+    }
+    
+    metro_restoreReschedule (x, old ? old->x_cache : f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -169,6 +211,15 @@ static void *metro_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
+static void metro_dismiss (t_metro *x)
+{
+    if (clock_isSet (x->x_clock)) {
+    //
+    x->x_cache = clock_getLogicalTime (x->x_clock); clock_unset (x->x_clock);
+    //
+    }
+}
+
 static void metro_free (t_metro *x)
 {
     clock_free (x->x_clock);
@@ -196,9 +247,12 @@ void metro_setup (void)
     class_addMethod (c, (t_method)metro_floatDelay, sym__inlet2,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)metro_stop,       sym_stop,       A_NULL);
     class_addMethod (c, (t_method)metro_unit,       sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)metro_restore,    sym__restore,   A_FLOAT, A_NULL);
 
     class_setDataFunction (c, metro_functionData);
-
+    class_setDismissFunction (c, metro_functionDismiss);
+    class_requirePending (c);
+    
     metro_class = c;
 }
 

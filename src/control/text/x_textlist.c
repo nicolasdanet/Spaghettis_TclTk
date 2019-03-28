@@ -57,7 +57,7 @@ void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
         error_invalidArguments (sym_text__space__tolist, argc, argv); pd_free (cast_pd (x)); x = NULL;
     }
     
-    warning_deprecatedObject (sym_text__space__tolist);
+    static int once = 0; if (!once) { warning_deprecatedObject (sym_text__space__tolist); once = 1; }
     
     return x;
 }
@@ -73,6 +73,32 @@ static void texttolist_bang (t_texttolist *x)
         buffer_free (t);
         
     } else { error_undefined (sym_text__space__tolist, sym_text); }
+}
+
+static t_buffer *texttolist_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_texttolist *x = (t_texttolist *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, textclient_getName (&x->x_textclient));
+
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void texttolist_restore (t_texttolist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_texttolist *old = (t_texttolist *)instance_pendingFetch (cast_gobj (x));
+    
+    t_symbol *name = old ? textclient_getName (&old->x_textclient) : atom_getSymbolAtIndex (0, argc, argv);
+    
+    textclient_setName (&x->x_textclient, name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,7 +123,7 @@ void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
         pd_free (cast_pd (x)); x = NULL;
     }
     
-    warning_deprecatedObject (sym_text__space__fromlist);
+    static int once = 0; if (!once) { warning_deprecatedObject (sym_text__space__fromlist); once = 1; }
     
     return x;
 }
@@ -119,6 +145,32 @@ static void textfromlist_anything (t_textfromlist *x, t_symbol *s, int argc, t_a
     utils_anythingToList (cast_pd (x), (t_listmethod)textfromlist_list, s, argc, argv);
 }
 
+static t_buffer *textfromlist_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_textfromlist *x = (t_textfromlist *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, textclient_getName (&x->x_textclient));
+
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void textfromlist_restore (t_textfromlist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_textfromlist *old = (t_textfromlist *)instance_pendingFetch (cast_gobj (x));
+    
+    t_symbol *name = old ? textclient_getName (&old->x_textclient) : atom_getSymbolAtIndex (0, argc, argv);
+    
+    textclient_setName (&x->x_textclient, name);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -136,6 +188,9 @@ void textlist_setup (void)
             A_NULL);
             
     class_addBang (c, (t_method)texttolist_bang);
+    class_addMethod (c, (t_method)texttolist_restore, sym__restore, A_GIMME, A_NULL);
+    class_setDataFunction (c, texttolist_functionData);
+    class_requirePending (c);
     class_setHelpName (c, sym_text);
 
     texttolist_class = c;
@@ -150,7 +205,9 @@ void textlist_setup (void)
             
     class_addList (c, (t_method)textfromlist_list);
     class_addAnything (c, (t_method)textfromlist_anything);
-    
+    class_addMethod (c, (t_method)textfromlist_restore, sym__restore, A_GIMME, A_NULL);
+    class_setDataFunction (c, textfromlist_functionData);
+    class_requirePending (c);
     class_setHelpName (c, sym_text);
     
     textfromlist_class = c;

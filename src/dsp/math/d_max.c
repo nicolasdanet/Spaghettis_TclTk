@@ -35,11 +35,15 @@ typedef struct _binopscalar_tilde t_maxscalar_tilde;
 
 static void max_tilde_dsp (t_max_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_addMaximumPerformAliased (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void maxScalar_tilde_dsp (t_maxscalar_tilde *x, t_signal **sp)
 {
+    binopScalar_tilde_restore (x);
+    
     dsp_addMaximumScalarPerform (sp[0]->s_vector, &x->x_scalar, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 

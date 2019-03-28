@@ -9,6 +9,7 @@
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
 #include "../../s_system.h"
+#include "../../g_graphics.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -16,21 +17,28 @@
 // MARK: -
 
 struct _chain {
-    t_pd        x_pd;               /* Must be the first. */
-    t_id        x_identifier;
-    t_phase     x_phase;
-    int         x_quantum;
-    int         x_size;
-    t_int       *x_chain;
-    t_signal    *x_signals;
-    t_closure   *x_closures;
+    t_pd            x_pd;               /* Must be the first. */
+    t_id            x_identifier;
+    t_phase         x_phase;
+    int             x_quantum;
+    int             x_size;
+    t_int           *x_chain;
+    t_signal        *x_signals;
+    t_closure       *x_closures;
+    t_initializer   *x_initializers;
     };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int instance_isChainSafeToDelete (t_chain *);
+int  instance_isChainSafeToDelete   (t_chain *);
+void instance_chainSetInitialized   (void);
+
+void initializer_proceed            (t_initializer *x);
+void initializer_free               (t_initializer *x);
+
+void closure_free                   (t_closure *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -40,12 +48,6 @@ static t_class *chain_class;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void closure_free (t_closure *);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 static t_int chain_done (t_int *dummy)
 {
@@ -99,10 +101,17 @@ void chain_append (t_chain *x, t_perform f, int n, ...)
     x->x_chain[size - 1] = (t_int)chain_done; x->x_size = size;
 }
 
+static void chain_initialize (t_chain *x)
+{
+    t_initializer *i = x->x_initializers; while (i) { initializer_proceed (i); i = i->s_next; }
+}
+
 void chain_tick (t_chain *x)
 {
     t_int *t = x->x_chain;
 
+    if (x->x_phase == 0) { chain_initialize (x); instance_chainSetInitialized(); }
+    
     if (t) {
     //
     // PD_LOG ("#");
@@ -110,10 +119,10 @@ void chain_tick (t_chain *x)
     // PD_LOG ("#");
     
     while (t) { t = (*(t_perform)(*t))(t); }
-    
-    x->x_phase++;
     //
     }
+    
+    x->x_phase++;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -128,6 +137,30 @@ void chain_addSignal (t_chain *x, t_signal *s)
 void chain_addClosure (t_chain *x, t_closure *s)
 {
     s->s_next = x->x_closures; x->x_closures = s;
+}
+
+void chain_addInitializer (t_chain *x, t_initializer *s)
+{
+    s->s_next = x->x_initializers; x->x_initializers = s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_closure *chain_fetchClosure (t_chain *x, t_gobj *o)
+{
+    t_closure *c = x->x_closures;
+    t_id u = gobj_getUnique (o);
+    t_id s = gobj_getSource (o);
+    
+    while (c) {
+    //
+    if (c->s_id == u || c->s_src == u || c->s_id == s || c->s_src == s) { return c; } else { c = c->s_next; }
+    //
+    }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -170,8 +203,9 @@ t_chain *chain_new (void)
 
 static void chain_free (t_chain *x)
 {
-    t_signal *signal   = NULL;
-    t_closure *closure = NULL;
+    t_signal *signal           = NULL;
+    t_closure *closure         = NULL;
+    t_initializer *initializer = NULL;
     
     while ((signal = x->x_signals)) {
     //
@@ -186,7 +220,13 @@ static void chain_free (t_chain *x)
     //
     }
     
-    while ((closure = x->x_closures)) { x->x_closures = closure->s_next; closure_free (closure); }
+    while ((closure = x->x_closures)) {
+        x->x_closures = closure->s_next; closure_free (closure);
+    }
+    
+    while ((initializer = x->x_initializers)) {
+        x->x_initializers = initializer->s_next; initializer_free (initializer);
+    }
     
     PD_MEMORY_FREE (x->x_chain);
 }

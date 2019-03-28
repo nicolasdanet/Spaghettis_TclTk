@@ -47,7 +47,7 @@ static t_error append_proceed (t_append *x, t_float f, int setFields)
     //
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
-    t_scalar *scalar = scalar_new (gpointer_getView (&x->x_gpointer), x->x_templateIdentifier);
+    t_scalar *scalar = scalar_new (gpointer_getOwner (&x->x_gpointer), x->x_templateIdentifier);
     
     if (!scalar) { error_invalid (sym_append, sym_template); }
     else {
@@ -69,7 +69,7 @@ static t_error append_proceed (t_append *x, t_float f, int setFields)
         }
     }
     
-    glist_objectAddNext (gpointer_getView (&x->x_gpointer),
+    glist_objectAddNext (gpointer_getOwner (&x->x_gpointer),
         cast_gobj (scalar),
         cast_gobj (gpointer_getScalar (&x->x_gpointer)));
         
@@ -111,6 +111,32 @@ static void append_fields (t_append *x, t_symbol *s, int argc, t_atom *argv)
     gpointer_setFields (&x->x_gpointer, argc, argv); outlet_pointer (x->x_outlet, &x->x_gpointer);
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *append_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void append_restore (t_append *x)
+{
+    t_append *old = (t_append *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { gpointer_setByCopy (&x->x_gpointer, &old->x_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -166,8 +192,12 @@ void append_setup (void)
     class_addBang (c, (t_method)append_bang);
     class_addFloat (c, (t_method)append_float);
     
-    class_addMethod (c, (t_method)append_fields, sym_fields, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)append_fields,    sym_fields,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)append_restore,   sym__restore,   A_NULL);
 
+    class_setDataFunction (c, append_functionData);
+    class_requirePending (c);
+    
     append_class = c;
 }
 

@@ -55,6 +55,35 @@ static void tabplay_tilde_task (t_tabplay_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void tabplay_tilde_setProceed (t_tabplay_tilde *x, t_symbol *s, int verbose)
+{
+    pthread_mutex_lock (&x->x_mutex);
+    
+        t_error err = tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector);
+    
+        x->x_start  = PD_INT_MAX;
+        x->x_end    = 0;
+        x->x_set    |= TAB_ARRAY;
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    
+    if (verbose && err) { tab_error (sym_tabplay__tilde__, s); }
+}
+
+static void tabplay_tilde_set (t_tabplay_tilde *x, t_symbol *s)
+{
+    tabplay_tilde_setProceed (x, s, 1);
+}
+
+static void tabplay_tilde_restore (t_tabplay_tilde *x, t_symbol *s)
+{
+    tabplay_tilde_setProceed (x, s, 0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void tabplay_tilde_list (t_tabplay_tilde *x, t_symbol *s, int argc, t_atom *argv)
 {
     pthread_mutex_lock (&x->x_mutex);
@@ -67,21 +96,6 @@ static void tabplay_tilde_list (t_tabplay_tilde *x, t_symbol *s, int argc, t_ato
         x->x_set    |= TAB_PHASE;
     
     pthread_mutex_unlock (&x->x_mutex);
-}
-
-static void tabplay_tilde_set (t_tabplay_tilde *x, t_symbol *s)
-{
-    pthread_mutex_lock (&x->x_mutex);
-    
-        t_error err = tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector);
-    
-        x->x_start  = PD_INT_MAX;
-        x->x_end    = 0;
-        x->x_set    |= TAB_ARRAY;
-    
-    pthread_mutex_unlock (&x->x_mutex);
-    
-    if (err) { tab_error (sym_tabplay__tilde__, s); }
 }
 
 static void tabplay_tilde_stop (t_tabplay_tilde *x)
@@ -122,6 +136,19 @@ static t_int *tabplay_tilde_perform (t_int *w)
     t_space *t         = (t_space *)(w[3]);
     int n = (int)(w[4]);
     
+    if (pthread_mutex_trylock (&x->x_mutex) == 0) {
+    //
+    if (x->x_set) {
+    
+        tabplay_tilde_space (t, x->x_vector, x->x_size, x->x_start, x->x_end, (x->x_set & TAB_ARRAY));
+        
+        x->x_set = 0;
+    }
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    //
+    }
+    
     /* Fetch old value of the phase at startup if the DSP chain is swapped. */
     
     if (!t->s_int4) {
@@ -134,19 +161,6 @@ static t_int *tabplay_tilde_perform (t_int *w)
     }
         
     t->s_int4 = 1;
-    //
-    }
-    
-    if (pthread_mutex_trylock (&x->x_mutex) == 0) {
-    //
-    if (x->x_set) {
-    
-        tabplay_tilde_space (t, x->x_vector, x->x_size, x->x_start, x->x_end, (x->x_set & TAB_ARRAY));
-        
-        x->x_set = 0;
-    }
-    
-    pthread_mutex_unlock (&x->x_mutex);
     //
     }
     
@@ -171,9 +185,33 @@ static t_int *tabplay_tilde_perform (t_int *w)
     return (w + 5);
 }
 
+static void tabplay_tilde_initialize (void *lhs, void *rhs)
+{
+    t_tabplay_tilde *x   = (t_tabplay_tilde *)lhs;
+    t_tabplay_tilde *old = (t_tabplay_tilde *)rhs;
+    
+    x->x_cachedPhase = old->x_cachedPhase;
+    x->x_cachedEnd   = old->x_cachedEnd;
+}
+
 static void tabplay_tilde_dsp (t_tabplay_tilde *x, t_signal **sp)
 {
-    t_space *t  = space_new();
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabplay_tilde *old = (t_tabplay_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (tabplay_tilde_initialize, x, old);
+    
+    if (x->x_name != old->x_name) { tabplay_tilde_setProceed (x, old->x_name, 1); }
+    //
+    }
+    //
+    }
+    
+    {
+    t_space *t  = space_new (cast_gobj (x));
     int size    = 0;
     t_word *w   = NULL;
     t_error err = tab_fetchArray (x->x_name, &size, &w);
@@ -184,8 +222,10 @@ static void tabplay_tilde_dsp (t_tabplay_tilde *x, t_signal **sp)
     tabplay_tilde_space (t, w, size, PD_INT_MAX, 0, 1);
     //
     }
-    
+
     dsp_add (tabplay_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -199,7 +239,7 @@ static t_buffer *tabplay_tilde_functionData (t_gobj *z, int flags)
     t_tabplay_tilde *x = (t_tabplay_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_name);
     
     return b;
@@ -261,8 +301,9 @@ void tabplay_tilde_setup (void)
     
     class_addList (c, (t_method)tabplay_tilde_list);
         
-    class_addMethod (c, (t_method)tabplay_tilde_set,  sym_set,  A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)tabplay_tilde_stop, sym_stop, A_NULL);
+    class_addMethod (c, (t_method)tabplay_tilde_set,        sym_set,        A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabplay_tilde_restore,    sym__restore,   A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabplay_tilde_stop,       sym_stop,       A_NULL);
     
     class_setDataFunction (c, tabplay_tilde_functionData);
     class_setDismissFunction (c, tabplay_tilde_functionDismiss);

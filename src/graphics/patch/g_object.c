@@ -118,33 +118,6 @@ int gobj_mouse (t_gobj *x, t_glist *owner, t_mouse *m)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_id gobj_getUnique (t_gobj *x)
-{
-    return x->g_id;
-}
-
-void gobj_setUnique (t_gobj *x, t_id u)
-{
-    x->g_id = u;
-}
-
-void gobj_changeUnique (t_gobj *x, t_id u)
-{
-    instance_registerRename (x, u); gobj_setUnique (x, u);
-}
-
-void gobj_serializeUnique (t_gobj *x, t_symbol *s, t_buffer *b)
-{
-    buffer_appendSymbol (b, sym___hash__X);
-    buffer_appendSymbol (b, s);
-    utils_appendUnique (b, gobj_getUnique (x));
-    buffer_appendSemicolon (b);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void gobj_save (t_gobj *x, t_buffer *b, int flags)
 {
     if (class_hasSaveFunction (pd_class (x))) { (*(class_getSaveFunction (pd_class (x)))) (x, b, flags); }

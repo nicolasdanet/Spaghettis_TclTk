@@ -70,6 +70,10 @@ static void scalar_drawJob (t_gobj *z, t_glist *glist)
     scalar_behaviorVisibilityChanged (z, glist, 1);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void scalar_drawSelectRectangle (t_scalar *x, t_glist *glist, int isSelected)
 {
     t_glist *view = glist_getView (glist);
@@ -161,9 +165,17 @@ static void scalar_notifySelected (t_scalar *x, int isSelected)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void scalar_redrawProceed (t_scalar *x, t_glist *glist, int now)
+{
+    if (now) { scalar_drawJob (cast_gobj (x), glist); }
+    else {
+        gui_jobAdd ((void *)x, glist, scalar_drawJob);
+    }
+}
+
 void scalar_redraw (t_scalar *x, t_glist *glist)
 {
-    gui_jobAdd ((void *)x, glist, scalar_drawJob);
+    scalar_redrawProceed (x, glist, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -173,7 +185,7 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
 
@@ -256,7 +268,7 @@ static void scalar_behaviorDeleted (t_gobj *z, t_glist *glist)
 static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *owner = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+    t_glist *owner = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
     t_float baseX  = scalar_getFloat (x, sym_x);
     t_float baseY  = scalar_getFloat (x, sym_y);
 
@@ -311,7 +323,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
     
     if (!x->sc_disable && view) {
     //
@@ -349,47 +361,7 @@ static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void scalar_serialize (t_scalar *x, t_buffer *b)
-{
-    t_template *tmpl = scalar_getTemplate (x);
-    t_symbol *s = template_getUnexpandedName (tmpl);
-    int i;
-    
-    if (!s) { buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->sc_templateIdentifier)); }
-    else {
-        buffer_appendDollarSymbol (b, s);
-    }
-    
-    for (i = 0; i < template_getSize (tmpl); i++) {
-    
-        t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
-        
-        if (template_fieldIsFloat (tmpl, fieldName)) {
-            t_atom t;
-            SET_FLOAT (&t, word_getFloat (x->sc_element, tmpl, fieldName));
-            buffer_appendAtom (b, &t);
-            
-        } else if (template_fieldIsSymbol (tmpl, fieldName)) {
-            t_atom t;
-            SET_SYMBOL (&t, word_getSymbol (x->sc_element, tmpl, fieldName));
-            buffer_appendAtom (b, &t);
-        }
-    }
-
-    buffer_appendSemicolon (b);
-
-    for (i = 0; i < template_getSize (tmpl); i++) {
-    
-        t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
-            
-        if (template_fieldIsArray (tmpl, fieldName)) {
-            array_serialize (word_getArray (x->sc_element, tmpl, fieldName), b);
-            buffer_appendSemicolon (b);
-        }
-    }
-}
-
-void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
+static void scalar_deserializeProceed (t_scalar *x, int argc, t_atom *argv)
 {
     t_template *tmpl = scalar_getTemplate (x);
     
@@ -435,6 +407,57 @@ void scalar_deserialize (t_scalar *x, t_glist *glist, int argc, t_atom *argv)
     }
 }
 
+/* First atom is the template name. */
+
+void scalar_deserialize (t_scalar *x, int argc, t_atom *argv)
+{
+    PD_ASSERT (argc > 0); scalar_deserializeProceed (x, argc - 1, argv + 1);
+}
+
+void scalar_serialize (t_scalar *x, t_buffer *b)
+{
+    t_template *tmpl = scalar_getTemplate (x);
+    t_symbol *s = template_getUnexpandedName (tmpl);
+    int i;
+    
+    if (!s) { buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->sc_templateIdentifier)); }
+    else {
+        buffer_appendDollarSymbol (b, s);
+    }
+    
+    for (i = 0; i < template_getSize (tmpl); i++) {
+    
+        t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
+        
+        if (template_fieldIsFloat (tmpl, fieldName)) {
+            t_atom t;
+            SET_FLOAT (&t, word_getFloat (x->sc_element, tmpl, fieldName));
+            buffer_appendAtom (b, &t);
+            
+        } else if (template_fieldIsSymbol (tmpl, fieldName)) {
+            t_atom t;
+            SET_SYMBOL (&t, word_getSymbol (x->sc_element, tmpl, fieldName));
+            buffer_appendAtom (b, &t);
+        }
+    }
+
+    buffer_appendSemicolon (b);
+
+    for (i = 0; i < template_getSize (tmpl); i++) {
+    
+        t_symbol *fieldName = template_getFieldAtIndex (tmpl, i);
+        
+        if (template_fieldIsArray (tmpl, fieldName)) {
+            array_serialize (word_getArray (x->sc_element, tmpl, fieldName), b);
+            buffer_appendSemicolon (b);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* Note that scalars are usually NOT saved with patch. */
 /* This function is required only for copy and paste behavior. */
 /* It is required for undo and redo also. */
@@ -450,14 +473,25 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_serialize (b, t);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
     
     buffer_free (t);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
+t_buffer *scalar_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_buffer *b = buffer_new();
+
+    buffer_appendSymbol (b, sym__restore);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
 
 static int scalar_functionValueFetchIfPlotted (t_scalar *x,
     t_glist *glist,
@@ -469,7 +503,7 @@ static int scalar_functionValueFetchIfPlotted (t_scalar *x,
     
     if (m->m_clickedRight && template_containsArray (scalar_getTemplate (x))) {
     //
-    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
 
     if (view) {
     //
@@ -533,6 +567,10 @@ void scalar_functionValue (t_gobj *z, t_glist *glist, t_mouse *m)
     heapstring_free (h); gpointer_unset (&gp);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void scalar_fromValue (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc > 5) {
@@ -579,6 +617,27 @@ void scalar_fromValue (t_scalar *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void scalar_restore (t_scalar *x)
+{
+    t_scalar *old = (t_scalar *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    t_buffer *t = buffer_new();
+   
+    scalar_serialize (old, t); scalar_deserialize (x, buffer_getSize (t), buffer_getAtoms (t));
+    
+    buffer_free (t);
+    
+    scalar_redrawProceed (x, scalar_getOwner (x), 1);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_word *scalar_getElement (t_scalar *x)
 {
     return x->sc_element;
@@ -596,6 +655,11 @@ t_template *scalar_getTemplate (t_scalar *x)
     PD_ASSERT (tmpl);
     
     return tmpl;
+}
+
+t_glist *scalar_getOwner (t_scalar *x)
+{
+    return x->sc_owner;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -684,6 +748,8 @@ t_scalar *scalar_new (t_glist *owner, t_symbol *templateIdentifier)
         word_init (x->sc_element, tmpl, &gp);
         
         gpointer_unset (&gp);
+        
+        instance_setBoundA (cast_pd (x));
     }
     
     return x;
@@ -715,11 +781,14 @@ void scalar_setup (void)
         CLASS_GRAPHIC,
         A_NULL);
     
-    class_addMethod (c, (t_method)scalar_fromValue, sym__scalardialog, A_GIMME, A_NULL);
-    
+    class_addMethod (c, (t_method)scalar_fromValue, sym__scalardialog,  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)scalar_restore,   sym__restore,       A_NULL);
+
     class_setWidgetBehavior (c, &scalar_widgetBehavior);
     class_setSaveFunction (c, scalar_functionSave);
+    class_setDataFunction (c, scalar_functionData);
     class_setValueFunction (c, scalar_functionValue);
+    class_requirePending (c);
     
     scalar_class = c;
 }

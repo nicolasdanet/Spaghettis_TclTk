@@ -68,6 +68,8 @@ static void rifft_tilde_dsp (t_rifft_tilde *x, t_signal **sp)
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
     
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     if (n < FFT_MINIMUM || n > FFT_MAXIMUM) { error_invalid (sym_rifft__tilde__, sym_size); }
     else {
     //
@@ -77,8 +79,8 @@ static void rifft_tilde_dsp (t_rifft_tilde *x, t_signal **sp)
     PD_RESTRICTED in2  = sp[1]->s_vector;
     PD_RESTRICTED out1 = sp[2]->s_vector;
 
-    t_FFTState *t = fftstate_new (n);
-    
+    t_FFTState *t = fftstate_new (cast_gobj (x), n);
+        
     dsp_addCopyPerform (in1, out1, half + 1);
     
     dsp_add (rifft_tilde_performFlip, 3, in2 + 1, out1 + n, half - 1);
@@ -98,7 +100,7 @@ t_buffer *rifft_tilde_functionData (t_gobj *z, int flags)
     t_rifft_tilde *x = (t_rifft_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

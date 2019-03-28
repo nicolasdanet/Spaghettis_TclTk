@@ -283,7 +283,7 @@ t_word *gpointer_getElement (t_gpointer *gp)
     return NULL;
 }
 
-t_glist *gpointer_getView (t_gpointer *gp)
+t_glist *gpointer_getOwner (t_gpointer *gp)
 {
     if (gpointer_isScalar (gp)) { return gpointer_getParentForScalar (gp); }
     else {
@@ -347,7 +347,7 @@ int gpointer_isValidInstanceOf (t_gpointer *gp, t_symbol *templateIdentifier)
 
 t_garray *gpointer_getGraphicArray (t_gpointer *gp)
 {
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     
     if (glist_isGraphicArray (glist)) { return glist_getGraphicArray (glist); }
     
@@ -360,19 +360,19 @@ t_garray *gpointer_getGraphicArray (t_gpointer *gp)
 
 void gpointer_redraw (t_gpointer *gp)
 {
-    scalar_redraw (gpointer_getBase (gp), gpointer_getView (gp));
+    scalar_redraw (gpointer_getBase (gp), gpointer_getOwner (gp));
 }
 
 void gpointer_erase (t_gpointer *gp)
 {
-    t_glist *view = gpointer_getView (gp);
+    t_glist *view = gpointer_getOwner (gp);
     
     if (glist_isOnScreen (view)) { gobj_visibilityChanged (cast_gobj (gpointer_getBase (gp)), view, 0); }
 }
 
 void gpointer_draw (t_gpointer *gp)
 {
-    t_glist *view = gpointer_getView (gp);
+    t_glist *view = gpointer_getOwner (gp);
     
     glist_redrawRequired (view);
     

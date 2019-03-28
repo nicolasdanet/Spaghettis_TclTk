@@ -66,7 +66,9 @@ static t_buffer *symbol_functionData (t_gobj *z, int flags)
 
 static void symbol_restore (t_symbolobject *x, t_symbol *s)
 {
-    x->x_s = s;
+    t_symbolobject *old = (t_symbolobject *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_s = old ? old->x_s : s;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -112,6 +114,7 @@ void symbol_setup (void)
     class_addMethod (c, (t_method)symbol_restore, sym__restore, A_SYMBOL, A_NULL);
 
     class_setDataFunction (c, symbol_functionData);
+    class_requirePending (c);
     
     symbol_class = c;
 }

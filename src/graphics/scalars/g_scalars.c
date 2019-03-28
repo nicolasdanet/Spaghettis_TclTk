@@ -196,7 +196,16 @@ static t_buffer *scalars_functionData (t_gobj *z, int flags)
 
 static void scalars_restore (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
 {
-    slots_clear (x->x_slots); buffer_deserialize (slots_getRaw (x->x_slots), argc, argv);
+    t_scalars *old = (t_scalars *)instance_pendingFetch (cast_gobj (x));
+
+    slots_clear (x->x_slots);
+    
+    if (!old) { buffer_deserialize (slots_getRaw (x->x_slots), argc, argv); }
+    else {
+    //
+    t_slots *t = x->x_slots; x->x_slots = old->x_slots; old->x_slots = t;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -269,7 +278,8 @@ void scalars_setup (void)
     class_addMethod (c, (t_method)scalars_restore,  sym__restore,   A_GIMME, A_NULL);
     
     class_setDataFunction (c, scalars_functionData);
-    
+    class_requirePending (c);
+
     scalars_class = c;
 }
 

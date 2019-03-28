@@ -81,9 +81,38 @@ static t_int *delwrite_tilde_perform (t_int *w)
     return (w + 4);
 }
 
+static void delwrite_tilde_initialize (void *lhs, void *rhs)
+{
+    t_delwrite_tilde *x   = (t_delwrite_tilde *)lhs;
+    t_delwrite_tilde *old = (t_delwrite_tilde *)rhs;
+    
+    if (x->dw_space.dw_size      == old->dw_space.dw_size) {
+    if (x->dw_space.dw_allocated == old->dw_space.dw_allocated) {
+    //
+    x->dw_space.dw_phase = old->dw_space.dw_phase;
+    memcpy (x->dw_space.dw_vector, old->dw_space.dw_vector, x->dw_space.dw_allocated * sizeof (t_sample));
+    //
+    }
+    }
+}
+
 static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
 {
     x->dw_identifier = chain_getIdentifier (instance_chainGetTemporary());
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_delwrite_tilde *old = (t_delwrite_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (delwrite_tilde_initialize, x, old);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
     
     dsp_add (delwrite_tilde_perform, 3, &x->dw_space, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
@@ -99,7 +128,7 @@ static t_buffer *delwrite_tilde_functionData (t_gobj *z, int flags)
     t_delwrite_tilde *x = (t_delwrite_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //
@@ -119,15 +148,18 @@ static void delwrite_tilde_functionDismiss (t_gobj *z)
 
 static void delwrite_tilde_newAllocate (t_delwrite_tilde *x, t_float milliseconds)
 {
-    int n = (int)(PD_MILLISECONDS_TO_SECONDS (milliseconds) * AUDIO_DEFAULT_SAMPLERATE);
+    int allocated, n = (int)(PD_MILLISECONDS_TO_SECONDS (milliseconds) * AUDIO_DEFAULT_SAMPLERATE);
     
     n = PD_MAX (1, n);
     n += ((- n) & (DELAY_ROUND_SAMPLES - 1));   /* Snap to the next multiple of DELAY_ROUND_SAMPLES. */
     n += INTERNAL_BLOCKSIZE;
 
-    x->dw_space.dw_vector = (t_sample *)PD_MEMORY_GET ((n + DELAY_EXTRA_SAMPLES) * sizeof (t_sample));
-    x->dw_space.dw_size   = n;
-    x->dw_space.dw_phase  = DELAY_EXTRA_SAMPLES;
+    allocated = n + DELAY_EXTRA_SAMPLES;
+    
+    x->dw_space.dw_vector    = (t_sample *)PD_MEMORY_GET (allocated * sizeof (t_sample));
+    x->dw_space.dw_size      = n;
+    x->dw_space.dw_phase     = DELAY_EXTRA_SAMPLES;
+    x->dw_space.dw_allocated = allocated;
 }
 
 static void *delwrite_tilde_new (t_symbol *s, t_float milliseconds)

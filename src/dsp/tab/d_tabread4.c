@@ -41,7 +41,7 @@ typedef struct _tabread4_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void tabread4_tilde_set (t_tabread4_tilde *x, t_symbol *s)
+static void tabread4_tilde_setProceed (t_tabread4_tilde *x, t_symbol *s, int verbose)
 {
     pthread_mutex_lock (&x->x_mutex);
     
@@ -51,7 +51,17 @@ static void tabread4_tilde_set (t_tabread4_tilde *x, t_symbol *s)
     
     pthread_mutex_unlock (&x->x_mutex);
     
-    if (err) { tab_error (sym_tabread4__tilde__, s); }
+    if (verbose && err) { tab_error (sym_tabread4__tilde__, s); }
+}
+
+static void tabread4_tilde_set (t_tabread4_tilde *x, t_symbol *s)
+{
+    tabread4_tilde_setProceed (x, s, 1);
+}
+
+static void tabread4_tilde_restore (t_tabread4_tilde *x, t_symbol *s)
+{
+    tabread4_tilde_setProceed (x, s, 0);
 }
 
 static void tabread4_tilde_onset (t_tabread4_tilde *x, t_float f)
@@ -107,7 +117,25 @@ static t_int *tabread4_tilde_perform (t_int *w)
 
 static void tabread4_tilde_dsp (t_tabread4_tilde *x, t_signal **sp)
 {
-    t_space *t  = space_new();
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabread4_tilde *old = (t_tabread4_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    if (x->x_name != old->x_name) { tabread4_tilde_setProceed (x, old->x_name, 1); }
+    
+    tabread4_tilde_onset (x, PD_ATOMIC_FLOAT64_READ (&old->x_onset));
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+    
+    {
+    //
+    t_space *t  = space_new (cast_gobj (x));
     int size    = 0;
     t_word *w   = NULL;
     t_error err = tab_fetchArray (x->x_name, &size, &w);
@@ -120,6 +148,8 @@ static void tabread4_tilde_dsp (t_tabread4_tilde *x, t_signal **sp)
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
     dsp_add (tabread4_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -133,13 +163,13 @@ static t_buffer *tabread4_tilde_functionData (t_gobj *z, int flags)
     t_tabread4_tilde *x = (t_tabread4_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
     buffer_appendSymbol (b, sym__inlet2);
     buffer_appendFloat (b,  PD_ATOMIC_FLOAT64_READ (&x->x_onset));
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //
@@ -189,9 +219,10 @@ void tabread4_tilde_setup (void)
             
     class_addDSP (c, (t_method)tabread4_tilde_dsp);
     
-    class_addMethod (c, (t_method)tabread4_tilde_set,   sym_set,      A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)tabread4_tilde_onset, sym__inlet2,  A_FLOAT, A_NULL);
-
+    class_addMethod (c, (t_method)tabread4_tilde_set,       sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabread4_tilde_onset,     sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)tabread4_tilde_restore,   sym__restore,   A_SYMBOL, A_NULL);
+    
     class_setDataFunction (c, tabread4_tilde_functionData);
     
     tabread4_tilde_class = c;

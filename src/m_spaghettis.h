@@ -665,7 +665,7 @@ typedef t_class *t_pd;
 
 typedef struct _gobj {
     t_pd            g_pd;                       /* MUST be the first. */
-    t_id            g_id;
+    t_id            g_id[3];
     struct _gobj    *g_next;
     } t_gobj;
 
@@ -820,7 +820,6 @@ PD_DLL t_pd     *symbol_getThingByClass         (t_symbol *s, t_class *c);
 
 PD_DLL const char *symbol_getName               (t_symbol *s);
 
-PD_DLL int      symbol_getNumberOfThings        (t_symbol *s);
 PD_DLL int      symbol_hasThing                 (t_symbol *s);
 PD_DLL int      symbol_hasThingQuiet            (t_symbol *s);
 

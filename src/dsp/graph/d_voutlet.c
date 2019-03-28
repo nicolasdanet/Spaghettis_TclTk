@@ -69,6 +69,22 @@ static t_int *voutlet_performEpilogue (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void voutlet_initialize (void *lhs, void *rhs)
+{
+    t_voutlet *x   = (t_voutlet *)lhs;
+    t_voutlet *old = (t_voutlet *)rhs;
+    
+    if (x->vo_bufferSize == old->vo_bufferSize) {
+    //
+    memcpy (x->vo_buffer, old->vo_buffer, x->vo_bufferSize * sizeof (t_sample));    /* No aliasing. */
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void voutlet_dspPrologue (t_voutlet *x, t_signal **signals, t_blockproperties *p)
 {
     PD_ASSERT (x->vo_closure == NULL);
@@ -95,19 +111,31 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     //
     t_signal *in = sp[0];
     
-    t_voutletclosure *c = x->vo_closure = voutlet_newClosure();
+    t_voutletclosure *c = x->vo_closure = voutlet_newClosure (cast_gobj (x));
     
     if (x->vo_copyOut) {    /* Note that the switch off is proceeded by the "block~" object. */
-    
-        dsp_addCopyPerform (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize);
+    //
+    dsp_addCopyPerform (in->s_vector, x->vo_directSignal->s_vector, in->s_vectorSize);
         
-        PD_ASSERT (in->s_vectorSize == x->vo_directSignal->s_vectorSize);
-        
+    PD_ASSERT (in->s_vectorSize == x->vo_directSignal->s_vectorSize);
+    //
     } else {
-        if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }     /* By-pass the outlet. */
-        else {
-            dsp_add (voutlet_perform, 3, c, in->s_vector, in->s_vectorSize);    /* Reblocked. */
-        }
+    //
+    if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }     /* By-pass the outlet. */
+    else {
+    //
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_voutlet *old = (t_voutlet *)garbage_fetch (cast_gobj (x));
+            
+    if (old) { initializer_new (voutlet_initialize, x, old); }
+    //
+    }
+        
+    dsp_add (voutlet_perform, 3, c, in->s_vector, in->s_vectorSize);        /* Reblocked. */
+    //
+    }
+    //
     }
     //
     }

@@ -51,6 +51,8 @@ static void dac_tilde_dsp (t_dac_tilde *x, t_signal **sp)
     t_signal *t = (*s);
     int n = t->s_vectorSize;
     
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    
     if (n != INTERNAL_BLOCKSIZE) { err = PD_ERROR; }
     else {
     //
@@ -88,7 +90,7 @@ static t_buffer *dac_tilde_functionData (t_gobj *z, int flags)
     t_dac_tilde *x = (t_dac_tilde *)z;
     t_buffer *b = buffer_new();
 
-    object_getSignalValues (cast_object (x), b, x->x_size);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

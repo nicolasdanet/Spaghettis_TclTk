@@ -36,7 +36,7 @@ static void setsize_float (t_setsize *x, t_float f)
         if (gpointer_hasField (&x->x_gpointer, x->x_fieldName)) {
             if (gpointer_fieldIsArrayAndValid (&x->x_gpointer, x->x_fieldName)) {
                 t_array *array = gpointer_getArray (&x->x_gpointer, x->x_fieldName);
-                array_resizeAndRedraw (array, gpointer_getView (&x->x_gpointer), PD_MAX (1, (int)f));
+                array_resizeAndRedraw (array, gpointer_getOwner (&x->x_gpointer), PD_MAX (1, (int)f));
         
     } else { error_invalid (sym_setsize, x->x_fieldName); }
     } else { error_missingField (sym_setsize, x->x_fieldName); }
@@ -63,12 +63,21 @@ static t_buffer *setsize_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym_set);
     buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->x_templateIdentifier));
     buffer_appendSymbol (b, x->x_fieldName);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void setsize_restore (t_setsize *x)
+{
+    t_setsize *old = (t_setsize *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { gpointer_setByCopy (&x->x_gpointer, &old->x_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,10 +122,12 @@ void setsize_setup (void)
             
     class_addFloat (c, (t_method)setsize_float);
     
-    class_addMethod (c, (t_method)setsize_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
-    
-    class_setDataFunction (c, setsize_functionData);
+    class_addMethod (c, (t_method)setsize_set,      sym_set,        A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)setsize_restore,  sym__restore,   A_NULL);
 
+    class_setDataFunction (c, setsize_functionData);
+    class_requirePending (c);
+    
     setsize_class = c;
 }
 

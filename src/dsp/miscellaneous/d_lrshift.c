@@ -71,6 +71,8 @@ static void lrshift_tilde_dsp (t_lrshift_tilde *x, t_signal **sp)
     int size  = sp[0]->s_vectorSize;
     int shift = PD_CLAMP (x->x_n, -size, size);
 
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
     if (shift < 0) {
@@ -102,7 +104,7 @@ t_buffer *lrshift_tilde_functionData (t_gobj *z, int flags)
     t_lrshift_tilde *x = (t_lrshift_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

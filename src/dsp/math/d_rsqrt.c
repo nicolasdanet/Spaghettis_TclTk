@@ -77,6 +77,8 @@ void rsqrt_tilde_initialize (void)
 
 static void rsqrt_tilde_dsp (t_rsqrt_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_addInverseSquareRootPerform (sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 

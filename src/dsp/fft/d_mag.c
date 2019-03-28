@@ -34,6 +34,8 @@ typedef struct _mag_tilde {
 
 static void mag_tilde_dsp (t_mag_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_addMagnitudePerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
@@ -48,7 +50,7 @@ t_buffer *mag_tilde_functionData (t_gobj *z, int flags)
     t_mag_tilde *x = (t_mag_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

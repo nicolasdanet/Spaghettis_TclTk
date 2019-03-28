@@ -347,7 +347,7 @@ static void radio_setStateAt (t_radio *x, int position)
     
     x->x_floatValue = x->x_state;
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
 }
 
 static int radio_getStateAt (t_radio *x, int position)
@@ -386,11 +386,9 @@ static void radio_float (t_radio *x, t_float f)
 {
     radio_setState (x, (int64_t)f); x->x_floatValue = f;
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
     
-    if (x->x_gui.iem_goThrough) {
-        radio_out (x); 
-    }
+    if (x->x_gui.iem_goThrough) { radio_out (x); }
 }
 
 static void radio_click (t_radio *x, t_symbol *s, int argc, t_atom *argv)
@@ -436,9 +434,7 @@ static void radio_size (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 
 static void radio_set (t_radio *x, t_float f)
 {
-    radio_setState (x, (int64_t)f); x->x_floatValue = f;
-    
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    radio_setState (x, (int64_t)f); x->x_floatValue = f; IEMGUI_UPDATE (x);
 }
 
 static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
@@ -466,7 +462,7 @@ static void radio_mode (t_radio *x, t_symbol *s)
     
     glist_setDirty (cast_iem (x)->iem_owner, 1);
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
     //
     }
 }
@@ -502,6 +498,10 @@ static int radio_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     
     return 1;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 /* To keep compatibility with legacy the multiple mode is saved only if activated. */
 
@@ -540,7 +540,7 @@ static void radio_functionSave (t_gobj *z, t_buffer *b, int flags)
     if (SAVED_DEEP (flags)) { buffer_appendFloat (b, 1.0); }
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 static void radio_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -616,6 +616,10 @@ static void radio_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     stub_new (cast_pd (x), (void *)x, t);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void radio_fromValue (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
     radio_float (x, atom_getFloatAtIndex (0, argc, argv));
@@ -660,6 +664,25 @@ static void radio_fromDialog (t_radio *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t2 != x->x_mode);
     
     iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void radio_restore (t_radio *x)
+{
+    t_radio *old = (t_radio *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    iemgui_restore (cast_gobj (x), cast_gobj (old));
+    
+    radio_set (x, old->x_floatValue);
+    
+    iemgui_boxChanged ((void *)x);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -773,13 +796,16 @@ void radio_setup (void)
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)radio_mode,                   sym_mode,               A_DEFSYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)radio_restore,                sym__restore,           A_NULL);
+
     class_setWidgetBehavior (c, &radio_widgetBehavior);
     class_setHelpName (c, sym_radio);
     class_setSaveFunction (c, radio_functionSave);
+    class_setDataFunction (c, iemgui_functionData);
     class_setValueFunction (c, radio_functionValue);
     class_setUndoFunction (c, radio_functionUndo);
     class_setPropertiesFunction (c, radio_functionProperties);
+    class_requirePending (c);
     
     radio_class = c;
 }

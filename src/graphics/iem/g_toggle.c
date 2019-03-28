@@ -277,7 +277,7 @@ static void toggle_set (t_toggle *x, t_float f)
     
     x->x_state = f;
 
-    if (draw) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (draw) { IEMGUI_UPDATE (x); }
 }
 
 static void toggle_nonZero (t_toggle *x, t_float f)
@@ -305,6 +305,10 @@ static int toggle_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     
     return 1;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void toggle_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
@@ -337,7 +341,7 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b, int flags)
     if (SAVED_DEEP (flags)) { buffer_appendFloat (b, 1.0); }
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 /* Fake dialog message from interpreter. */
@@ -439,6 +443,25 @@ static void toggle_fromDialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void toggle_restore (t_toggle *x)
+{
+    t_toggle *old = (t_toggle *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    iemgui_restore (cast_gobj (x), cast_gobj (old));
+    
+    toggle_set (x, old->x_state);
+    
+    iemgui_boxChanged ((void *)x);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_toggle *x = (t_toggle *)pd_new (toggle_class);
@@ -532,11 +555,14 @@ void toggle_setup (void)
     class_addMethod (c, (t_method)toggle_nonZero,               sym_nonzero,            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)toggle_restore,               sym__restore,           A_NULL);
 
     class_setWidgetBehavior (c, &toggle_widgetBehavior);
     class_setSaveFunction (c, toggle_functionSave);
+    class_setDataFunction (c, iemgui_functionData);
     class_setUndoFunction (c, toggle_functionUndo);
     class_setPropertiesFunction (c, toggle_functionProperties);
+    class_requirePending (c);
     
     toggle_class = c;
 }

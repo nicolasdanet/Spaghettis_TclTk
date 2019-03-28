@@ -16,6 +16,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void gobj_changeSource (t_gobj *, t_id);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void glist_taskRedraw (t_glist *glist)
 {
     glist_redraw (glist);
@@ -176,6 +182,11 @@ int glist_isTop (t_glist *glist)
 int glist_isAbstraction (t_glist *glist)
 {
     return (glist_hasParent (glist) && (glist->gl_environment != NULL));
+}
+
+int glist_isAbstractionOrInside (t_glist *g)
+{
+    return (glist_isAbstraction (glist_getTop (g)));
 }
 
 int glist_isSubpatchOrGraphicArray (t_glist *glist)
@@ -403,13 +414,13 @@ void glist_setScroll (t_glist *glist, int a, int b)
     glist->gl_scrollX = a; glist->gl_scrollY = b; glist_updatePatchGeometry (glist);
 }
 
-void glist_setUnique (t_glist *glist, int argc, t_atom *argv)
+void glist_setIdentifiers (t_glist *glist, int argc, t_atom *argv)
 {
     t_id u; t_error err = utils_uniqueWithAtoms (argc, argv, &u);
     
     PD_ASSERT (!err); PD_UNUSED (err);
     
-    gobj_changeUnique (cast_gobj (glist), u);
+    gobj_changeIdentifiers (cast_gobj (glist), u);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -573,7 +584,7 @@ int glist_fileOpen (t_glist *glist, const char *name, const char *extension, t_f
 
 int glist_undoIsOk (t_glist *glist)
 {
-    if (glist_isAbstraction (glist) || glist_isGraphicArray (glist)) { return 0; }
+    if (glist_isAbstractionOrInside (glist) || glist_isGraphicArray (glist)) { return 0; }
     else if (editor_hasSelectedBox (glist_getEditor (glist))) { return 0; }
     
     return (glist_hasUndo (glist) && !instance_undoIsRecursive());
@@ -706,7 +717,7 @@ void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
     if (template_isValid (template_findByIdentifier (templateIdentifier))) {
     //
     t_scalar *scalar = scalar_new (glist, templateIdentifier);
-    scalar_deserialize (scalar, glist, argc - 1, expanded + 1);
+    scalar_deserialize (scalar, argc, expanded);
     glist_objectAdd (glist, cast_gobj (scalar));
     //
     } else {
@@ -720,7 +731,7 @@ void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
     }
 }
 
-void glist_objectSetUniqueOfLast (t_glist *glist, int argc, t_atom *argv)
+void glist_objectSetIdentifiersOfLast (t_glist *glist, int argc, t_atom *argv)
 {
     if (glist->gl_graphics) {
     //
@@ -733,7 +744,25 @@ void glist_objectSetUniqueOfLast (t_glist *glist, int argc, t_atom *argv)
     
     for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
     
-    gobj_changeUnique (g1, u);
+    gobj_changeIdentifiers (g1, u);
+    //
+    }
+}
+
+void glist_objectSetSourceOfLast (t_glist *glist, int argc, t_atom *argv)
+{
+    if (glist->gl_graphics) {
+    //
+    t_gobj *g1 = NULL;
+    t_gobj *g2 = NULL;
+    
+    t_id u; t_error err = utils_uniqueWithAtoms (argc, argv, &u);
+    
+    PD_ASSERT (!err); PD_UNUSED (err);
+    
+    for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
+    
+    gobj_changeSource (g1, u);
     //
     }
 }
@@ -837,12 +866,17 @@ static void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
     }
 }
 
-static void glist_objectRemoveFree (t_gobj *y)
+static void glist_objectRemoveFree (t_glist *glist, t_gobj *y)
 {
-    if (gobj_hasDSP (y) && !gobj_isCanvas (y)) { garbage_newObject (y); }
-    else {
-        pd_free (cast_pd (y));
+    if (gobj_hasDSP (y) && !gobj_isCanvas (y)) {
+        if (garbage_newObject (y)) { return; }
     }
+    
+    if (instance_pendingRequired (y)) {
+        if (!glist_isAbstractionOrInside (glist)) { instance_pendingAdd (y); return; }
+    }
+
+    pd_free (cast_pd (y));
 }
 
 void glist_objectRemove (t_glist *glist, t_gobj *y)
@@ -883,7 +917,7 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
         }
     
         glist_objectRemoveProceed (glist, y);
-        glist_objectRemoveFree (y);
+        glist_objectRemoveFree (glist, y);
 
         if (box) {
             editor_boxRemove (glist_getEditor (glist), box); 

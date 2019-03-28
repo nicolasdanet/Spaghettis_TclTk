@@ -66,7 +66,9 @@ static t_buffer *change_functionData (t_gobj *z, int flags)
 
 static void change_restore (t_change *x, t_float f)
 {
-    x->x_f = f;
+    t_change *old = (t_change *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_f = old ? old->x_f : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -106,7 +108,8 @@ void change_setup (void)
     class_addMethod (c, (t_method)change_restore,   sym__restore,   A_FLOAT, A_NULL);
 
     class_setDataFunction (c, change_functionData);
-    
+    class_requirePending (c);
+
     change_class = c;
 }
 

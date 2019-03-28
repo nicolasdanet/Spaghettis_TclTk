@@ -82,6 +82,22 @@ static t_int *vinlet_perform (t_int *w)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void vinlet_initialize (void *lhs, void *rhs)
+{
+    t_vinlet *x   = (t_vinlet *)lhs;
+    t_vinlet *old = (t_vinlet *)rhs;
+    
+    if (x->vi_bufferSize == old->vi_bufferSize) {
+    //
+    memcpy (x->vi_buffer, old->vi_buffer, x->vi_bufferSize * sizeof (t_sample));    /* No aliasing. */
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
 {
     PD_ASSERT (x->vi_closure == NULL);
@@ -102,7 +118,7 @@ void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     
     x->vi_directSignal = NULL;
     
-    t_vinletclosure *c = x->vi_closure = vinlet_newClosure();
+    t_vinletclosure *c = x->vi_closure = vinlet_newClosure (cast_gobj (x));
     
     if (signals) {
         s = signals[inlet_getIndexAsSignal (x->vi_inlet)];
@@ -159,16 +175,25 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
 {
     if (vinlet_isSignal (x)) {
     //
-    t_signal *out      = sp[0];
-    t_vinletclosure *c = x->vi_closure;
-    
+    t_signal *out = sp[0];
+
     if (x->vi_directSignal) { signal_borrow (out, x->vi_directSignal); }    /* By-pass the inlet. */
     else {
     //
+    t_vinletclosure *c = x->vi_closure;
+    
     /* No phase required. */ 
     /* Submultiple read is always completed at each tick. */
     
     c->s_bufferRead = x->vi_buffer;
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_vinlet *old = (t_vinlet *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (vinlet_initialize, x, old); }
+    //
+    }
     
     dsp_add (vinlet_perform, 3, c, out->s_vector, out->s_vectorSize);
     //

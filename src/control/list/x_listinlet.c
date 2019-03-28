@@ -87,6 +87,16 @@ void listinlet_listSet (t_listinlet *x, int argc, t_atom *argv)
     }
 }
 
+void listinlet_listSetByCopy (t_listinlet *x, t_listinlet *toCopy)
+{
+    t_buffer *b = buffer_new();
+    
+    listinlet_listGet (toCopy, b);
+    listinlet_listSet (x, buffer_getSize (b), buffer_getAtoms (b));
+    
+    buffer_free (b);
+}
+
 void listinlet_listGet (t_listinlet *x, t_buffer *b)
 {
     int i; for (i = 0; i < x->li_size; i++) { buffer_appendAtom (b, &x->li_vector[i].le_atom); }
@@ -174,19 +184,19 @@ void listinlet_clear (t_listinlet *x)
     listinlet_init (x);
 }
 
-void listinlet_clone (t_listinlet *x, t_listinlet *y)
+void listinlet_clone (t_listinlet *x, t_listinlet *newList)
 {
     int i;
     
-    y->li_pd         = x->li_pd;
-    y->li_size       = x->li_size;
-    y->li_hasPointer = x->li_hasPointer;
-    y->li_vector     = (t_listinletelement *)PD_MEMORY_GET (x->li_size * sizeof (t_listinletelement));
+    newList->li_pd         = x->li_pd;
+    newList->li_size       = x->li_size;
+    newList->li_hasPointer = x->li_hasPointer;
+    newList->li_vector     = (t_listinletelement *)PD_MEMORY_GET (x->li_size * sizeof (t_listinletelement));
 
     for (i = 0; i < x->li_size; i++) {
     //
-    y->li_vector[i].le_atom = x->li_vector[i].le_atom;
-    listinlet_cacheIfPointer (y, i, &x->li_vector[i].le_atom);
+    newList->li_vector[i].le_atom = x->li_vector[i].le_atom;
+    listinlet_cacheIfPointer (newList, i, &x->li_vector[i].le_atom);
     //
     }
 }

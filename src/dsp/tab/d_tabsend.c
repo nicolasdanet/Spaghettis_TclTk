@@ -66,8 +66,10 @@ static void tabsend_tilde_polling (t_tabsend_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void tabsend_tilde_set (t_tabsend_tilde *x, t_symbol *s)
+static void tabsend_tilde_setProceed (t_tabsend_tilde *x, t_symbol *s, int verbose)
 {
+    tabsend_tilde_polling (x);
+    
     pthread_mutex_lock (&x->x_mutex);
     
         t_error err = tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector);
@@ -76,7 +78,17 @@ static void tabsend_tilde_set (t_tabsend_tilde *x, t_symbol *s)
     
     pthread_mutex_unlock (&x->x_mutex);
     
-    if (err) { tab_error (sym_tabsend__tilde__, s); }
+    if (verbose && err) { tab_error (sym_tabsend__tilde__, s); }
+}
+
+static void tabsend_tilde_set (t_tabsend_tilde *x, t_symbol *s)
+{
+    tabsend_tilde_setProceed (x, s, 1);
+}
+
+static void tabsend_tilde_restore (t_tabsend_tilde *x, t_symbol *s)
+{
+    tabsend_tilde_setProceed (x, s, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -128,7 +140,23 @@ static t_int *tabsend_tilde_perform (t_int *w)
 
 static void tabsend_tilde_dsp (t_tabsend_tilde *x, t_signal **sp)
 {
-    t_space *t  = space_new();
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabsend_tilde *old = (t_tabsend_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    if (x->x_name != old->x_name) { tabsend_tilde_setProceed (x, old->x_name, 1); }
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+    
+    {
+    //
+    t_space *t  = space_new (cast_gobj (x));
     int size    = 0;
     t_word *w   = NULL;
     t_error err = tab_fetchArray (x->x_name, &size, &w);
@@ -139,6 +167,8 @@ static void tabsend_tilde_dsp (t_tabsend_tilde *x, t_signal **sp)
     }
     
     dsp_add (tabsend_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -152,10 +182,10 @@ static t_buffer *tabsend_tilde_functionData (t_gobj *z, int flags)
     t_tabsend_tilde *x = (t_tabsend_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //
@@ -223,7 +253,8 @@ void tabsend_tilde_setup (void)
     class_addDSP (c, (t_method)tabsend_tilde_dsp);
     class_addPolling (c, (t_method)tabsend_tilde_polling);
     
-    class_addMethod (c, (t_method)tabsend_tilde_set, sym_set, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabsend_tilde_set,        sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabsend_tilde_restore,    sym__restore,   A_SYMBOL, A_NULL);
 
     class_setDataFunction (c, tabsend_tilde_functionData);
     class_setDismissFunction (c, tabsend_tilde_functionDismiss);

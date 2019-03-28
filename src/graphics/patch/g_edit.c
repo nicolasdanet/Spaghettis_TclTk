@@ -385,12 +385,12 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
 
     if (y && gobj_isCanvas (y)) {
     //
-    if (glist_isAbstraction (cast_glist (y))) { canProperties = 0; }
-    if (glist_hasWindow (cast_glist (y)))     { canProperties = canOpen = canHelp = 0; }
+    if (glist_isAbstractionOrInside (cast_glist (y))) { canProperties = 0; }
+    if (glist_hasWindow (cast_glist (y)))             { canProperties = canOpen = canHelp = 0; }
     //
     }
     
-    if (glist_isAbstraction (glist)) { canProperties = 0; }
+    if (glist_isAbstractionOrInside (glist)) { canProperties = 0; }
     
     if (!glist_deselectAll (glist)) {
     
@@ -446,7 +446,7 @@ static int glist_mouseOverEditResize (t_glist *glist, t_gobj *y, int a, int b, i
     if (cast_objectIfConnectable (y)) {
     //
     resizable |= object_isViewedAsBox (cast_object (y));
-    resizable |= (gobj_isCanvas (y) && !glist_isAbstraction (cast_glist (y)));
+    resizable |= (gobj_isCanvas (y) && !glist_isAbstractionOrInside (cast_glist (y)));
     
     if (resizable) {
         int w = rectangle_getBottomRightX (r) - EDIT_GRIP_SIZE;

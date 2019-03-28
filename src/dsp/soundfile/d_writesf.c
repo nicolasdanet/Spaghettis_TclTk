@@ -22,6 +22,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Note that for now that object is reset with encapsulation. */
+
+// -- TODO: Fetch states with pending?
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_class *writesf_tilde_class;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -186,7 +194,7 @@ static void writesf_tilde_dsp (t_writesf_tilde *x, t_signal **sp)
 {
     int i;
 
-    t_sfvectors *t = sfvectors_new(); t->s_size = x->sf_numberOfChannels;
+    t_sfvectors *t = sfvectors_new (cast_gobj (x)); t->s_size = x->sf_numberOfChannels;
     
     PD_ASSERT (t->s_size <= SOUNDFILE_CHANNELS);
     

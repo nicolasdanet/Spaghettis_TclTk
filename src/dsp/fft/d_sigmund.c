@@ -31,6 +31,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Note that for now that object is reset with encapsulation. */
+
+// -- TODO: Fetch states with pending?
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_class *sigmund_tilde_class;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -933,6 +941,8 @@ static void sigmund_tilde_dsp (t_sigmund_tilde *x, t_signal **sp)
     //
     x->x_sampleRate = sp[0]->s_sampleRate;
     
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_add (sigmund_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
     //
     }
@@ -985,7 +995,7 @@ t_buffer *sigmund_tilde_functionData (t_gobj *z, int flags)
     t_sigmund_tilde *x = (t_sigmund_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

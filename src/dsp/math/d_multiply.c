@@ -35,11 +35,15 @@ typedef struct _binopscalar_tilde t_multiplyscalar_tilde;
 
 static void multiply_tilde_dsp (t_multiply_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_addMultiplyPerformAliased (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
 static void multiplyScalar_tilde_dsp (t_multiplyscalar_tilde *x, t_signal **sp)
 {
+    binopScalar_tilde_restore (x);
+    
     dsp_addMultiplyScalarPerform (sp[0]->s_vector, &x->x_scalar, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 

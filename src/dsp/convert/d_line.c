@@ -27,12 +27,18 @@ typedef struct _line_tilde {
     t_float             x_base;
     t_float             x_target;
     t_float             x_time;
-    t_float             x_step;
     int                 x_stop;
     int                 x_rebase;
     int                 x_retarget;
-    int                 x_count;
-    t_float             x_current;
+    int                 x_dspCount;
+    t_float             x_dspCurrent;
+    t_float             x_dspStep;
+    t_float             x_dspTarget;
+    int                 x_tmpInitialize;
+    int                 x_tmpCount;
+    t_float             x_tmpCurrent;
+    t_float             x_tmpStep;
+    t_float             x_tmpTarget;
     t_outlet            *x_outlet;
     } t_line_tilde;
 
@@ -40,16 +46,16 @@ typedef struct _line_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_float line_tilde_target (t_line_tilde *x)
+static t_float line_tilde_getValueOfTarget (t_line_tilde *x)
 {
     t_float f = 0.0;
-    
+
     pthread_mutex_lock (&x->x_mutex);
-    
+
         f = x->x_target;
-    
+
     pthread_mutex_unlock (&x->x_mutex);
-    
+
     return f;
 }
 
@@ -95,30 +101,41 @@ static t_int *line_tilde_perform (t_int *w)
     t_space *t        = (t_space *)(w[3]);
     int n = (int)(w[4]);
     
-    t_float millisecondsToSamples = t->s_float1;
+    t_float millisecondsToSamples = t->s_float0;
     
     while (n--) {
     //
     if (x->x_retarget && pthread_mutex_trylock (&x->x_mutex) == 0) {
     //
     if (x->x_retarget) {
-        x->x_current  = x->x_rebase ? x->x_base : x->x_current;
-        x->x_target   = x->x_stop   ? x->x_current : x->x_target;
-        x->x_count    = x->x_stop   ? 0 : (int)(x->x_time * millisecondsToSamples);
-        x->x_step     = x->x_count ? ((x->x_target - x->x_current) / x->x_count) : 0.0;
-        x->x_stop     = 0;
-        x->x_rebase   = 0;
-        x->x_retarget = 0;
-        t->s_float0   = x->x_target;
+        x->x_dspCurrent = x->x_rebase ? x->x_base : x->x_dspCurrent;
+        x->x_target     = x->x_stop   ? x->x_dspCurrent : x->x_target;
+        x->x_dspCount   = x->x_stop   ? 0 : (int)(x->x_time * millisecondsToSamples);
+        x->x_dspStep    = x->x_dspCount ? ((x->x_target - x->x_dspCurrent) / x->x_dspCount) : 0.0;
+        x->x_dspTarget  = x->x_target;
+        x->x_stop       = 0;
+        x->x_rebase     = 0;
+        x->x_retarget   = 0;
     }
     
     pthread_mutex_unlock (&x->x_mutex);
     //
     }
     
-    if (x->x_count) { *out++ = (t_sample)x->x_current; x->x_current += x->x_step; x->x_count--; }
-    else {
-        *out++ = (t_sample)t->s_float0; x->x_current = t->s_float0;
+    if (x->x_tmpInitialize) {
+    //
+    x->x_tmpInitialize  = 0;
+    x->x_dspCount       = x->x_tmpCount;
+    x->x_dspCurrent     = x->x_tmpCurrent;
+    x->x_dspStep        = x->x_tmpStep;
+    x->x_dspTarget      = x->x_tmpTarget;
+    //
+    }
+    
+    if (x->x_dspCount) {
+        *out++ = (t_sample)x->x_dspCurrent; x->x_dspCurrent += x->x_dspStep; x->x_dspCount--;
+    } else {
+        *out++ = (t_sample)x->x_dspTarget; x->x_dspCurrent = x->x_dspTarget;
     }
     //
     }
@@ -126,12 +143,31 @@ static t_int *line_tilde_perform (t_int *w)
     return (w + 5);
 }
 
+static void line_tilde_initialize (void *lhs, void *rhs)
+{
+    t_line_tilde *x     = (t_line_tilde *)lhs;
+    t_line_tilde *old   = (t_line_tilde *)rhs;
+    
+    x->x_tmpCount       = old->x_dspCount;
+    x->x_tmpCurrent     = old->x_dspCurrent;
+    x->x_tmpStep        = old->x_dspStep;
+    x->x_tmpTarget      = old->x_dspTarget;
+    x->x_tmpInitialize  = 1;
+}
+
 static void line_tilde_dsp (t_line_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new();
+    t_space *t = space_new (cast_gobj (x));
 
-    t->s_float0 = line_tilde_target (x);
-    t->s_float1 = (t_float)(sp[0]->s_sampleRate / 1000.0);
+    t->s_float0 = (t_float)(sp[0]->s_sampleRate / 1000.0);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_line_tilde *old = (t_line_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (line_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (line_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
@@ -148,7 +184,7 @@ static t_buffer *line_tilde_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, &s_float);
-    buffer_appendFloat (b, line_tilde_target (x));
+    buffer_appendFloat (b, line_tilde_getValueOfTarget (x));
     
     return b;
     //

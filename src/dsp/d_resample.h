@@ -20,13 +20,14 @@ typedef struct _resample {
     int         r_upsample;             /* Upsampling factor. */
     int         r_allocated;            /* Size of allocated resampled vector signal. */
     t_sample    *r_vector;              /* Resampled vector signal. */
+    t_gobj      *r_owner;
     } t_resample;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        resample_init               (t_resample *x, t_symbol *type);
+void        resample_init               (t_resample *x, t_gobj *owner, t_symbol *type);
 void        resample_free               (t_resample *x);
 
 // -----------------------------------------------------------------------------------------------------------

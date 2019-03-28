@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define PATHREGISTER_DEFAULT    1024
+#define PATHREGISTER_DEFAULT_SIZE   1024
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ static t_pathregister *pathregister_new (void)
     t_pathregister *x = (t_pathregister *)PD_MEMORY_GET (sizeof (t_pathregister));
     
     x->pr_size      = 0;
-    x->pr_allocated = PATHREGISTER_DEFAULT;
+    x->pr_allocated = PATHREGISTER_DEFAULT_SIZE;
     x->pr_hashes    = (uint64_t *)PD_MEMORY_GET (sizeof (uint64_t) * x->pr_allocated);
     
     return x;

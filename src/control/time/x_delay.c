@@ -22,6 +22,7 @@ static t_class *delay_class;        /* Shared. */
 
 typedef struct _delay {
     t_object    x_obj;              /* Must be the first. */
+    t_systime   x_cache;
     double      x_delay;
     t_float     x_unitValue;
     t_symbol    *x_unitName;
@@ -33,7 +34,14 @@ typedef struct _delay {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void delay_floatDelay (t_delay *, t_float);
+void clock_set (t_clock *, t_systime);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void delay_floatDelay    (t_delay *, t_float);
+static void delay_dismiss       (t_delay *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -101,12 +109,40 @@ static t_buffer *delay_functionData (t_gobj *z, int flags)
     
     buffer_appendSymbol (b, sym__inlet2);
     buffer_appendFloat (b,  x->x_delay);
-    
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  clock_isSet (x->x_clock) ? clock_getLogicalTime (x->x_clock) : 0.0);
+
     return b;
     //
     }
     
     return NULL;
+}
+
+static void delay_functionDismiss (t_gobj *z)
+{
+    delay_dismiss ((t_delay *)z);
+}
+
+static void delay_restoreDelay (t_delay *x, t_systime f)
+{
+    if (f > 0.0 && f > scheduler_getLogicalTime()) { clock_set (x->x_clock, f); }
+}
+
+static void delay_restore (t_delay *x, t_float f)
+{
+    t_delay *old = (t_delay *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) {
+    //
+    delay_floatDelay (x, old->x_delay);
+    
+    if (old->x_unitName) { delay_unit (x, old->x_unitName, old->x_unitValue); }
+    //
+    }
+    
+    delay_restoreDelay (x, old ? old->x_cache : f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -133,6 +169,15 @@ static void *delay_new (t_symbol *s, int argc, t_atom *argv)
     if (argc > 3) { warning_unusedArguments (s, argc - 3, argv + 3); }
     
     return x;
+}
+
+static void delay_dismiss (t_delay *x)
+{
+    if (clock_isSet (x->x_clock)) {
+    //
+    x->x_cache = clock_getLogicalTime (x->x_clock); clock_unset (x->x_clock);
+    //
+    }
 }
 
 static void delay_free (t_delay *x)
@@ -164,9 +209,12 @@ void delay_setup (void)
     class_addMethod (c, (t_method)delay_floatDelay, sym__inlet2,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)delay_stop,       sym_stop,       A_NULL);
     class_addMethod (c, (t_method)delay_unit,       sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
-    
-    class_setDataFunction (c, delay_functionData);
+    class_addMethod (c, (t_method)delay_restore,    sym__restore,   A_FLOAT, A_NULL);
 
+    class_setDataFunction (c, delay_functionData);
+    class_setDismissFunction (c, delay_functionDismiss);
+    class_requirePending (c);
+    
     delay_class = c;
 }
 

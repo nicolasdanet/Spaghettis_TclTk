@@ -45,6 +45,35 @@ static void realtime_elapsed (t_realtime *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *realtime_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_realtime *x = (t_realtime *)z;
+    
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  x->x_time);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void realtime_restore (t_realtime *x, t_float f)
+{
+    t_realtime *old = (t_realtime *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_time = old ? old->x_time : f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *realtime_new (void)
 {
     t_realtime *x = (t_realtime *)pd_new (realtime_class);
@@ -77,8 +106,12 @@ void realtime_setup (void)
     
     class_addBang (c, (t_method)realtime_bang);
     
-    class_addMethod (c, (t_method)realtime_elapsed, sym__inlet2, A_NULL);
-    
+    class_addMethod (c, (t_method)realtime_elapsed, sym__inlet2,    A_NULL);
+    class_addMethod (c, (t_method)realtime_restore, sym__restore,   A_FLOAT, A_NULL);
+
+    class_setDataFunction (c, realtime_functionData);
+    class_requirePending (c);
+
     realtime_class = c;
 }
 

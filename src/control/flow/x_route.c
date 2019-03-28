@@ -237,7 +237,8 @@ static void route_restore (t_route *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->x_size == 1 && argc == 1) {
     //
-    t_error err = atomoutlet_setAtom (x->x_vector, argv);
+    t_route *old = (t_route *)instance_pendingFetch (cast_gobj (x));
+    t_error err  = atomoutlet_setAtom (x->x_vector, old ? atomoutlet_getAtom (old->x_vector) : argv);
     
     PD_ASSERT (!err); PD_UNUSED (err);
     //
@@ -314,6 +315,7 @@ void route_setup (void)
     class_addMethod (c, (t_method)route_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, route_functionData);
+    class_requirePending (c);
     
     route_class = c;
 }

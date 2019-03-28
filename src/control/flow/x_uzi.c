@@ -91,7 +91,9 @@ static t_buffer *uzi_functionData (t_gobj *z, int flags)
 
 static void uzi_restore (t_uzi *x, t_float f)
 {
-    x->x_count = f;
+    t_uzi *old = (t_uzi *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_count = old ? old->x_count : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -133,7 +135,8 @@ void uzi_setup (void)
     class_addMethod (c, (t_method)uzi_restore,  sym__restore,   A_FLOAT, A_NULL);
 
     class_setDataFunction (c, uzi_functionData);
-    
+    class_requirePending (c);
+
     uzi_class = c;
 }
 

@@ -58,7 +58,7 @@ t_error tab_fetchArray (t_symbol *s, int *size, t_word **data)
     (*size) = 0;
     (*data) = NULL;
     
-    if (a) { garray_setAsUsedInDSP (a); garray_getData (a, size, data); return PD_ERROR_NONE; }
+    if (a) { garray_setAsUsedInDSP (a, 1); garray_getData (a, size, data); return PD_ERROR_NONE; }
     
     return PD_ERROR;
 }
@@ -86,6 +86,32 @@ static void tabwrite_tilde_polling (t_tabwrite_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void tabwrite_tilde_setProceed (t_tabwrite_tilde *x, t_symbol *s, int verbose)
+{
+    tabwrite_tilde_polling (x);
+    
+    pthread_mutex_lock (&x->x_mutex);
+    
+        t_error err = tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector);
+
+        x->x_phase = PD_INT_MAX;
+        x->x_set   |= TAB_ARRAY;
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    
+    if (verbose && err) { tab_error (sym_tabwrite__tilde__, s); }
+}
+
+static void tabwrite_tilde_set (t_tabwrite_tilde *x, t_symbol *s)
+{
+    tabwrite_tilde_setProceed (x, s, 1);
+}
+
+static void tabwrite_tilde_restore (t_tabwrite_tilde *x, t_symbol *s)
+{
+    tabwrite_tilde_setProceed (x, s, 0);
+}
+
 static void tabwrite_tilde_bang (t_tabwrite_tilde *x)
 {
     pthread_mutex_lock (&x->x_mutex);
@@ -96,20 +122,6 @@ static void tabwrite_tilde_bang (t_tabwrite_tilde *x)
     pthread_mutex_unlock (&x->x_mutex);
     
     if (!x->x_dismissed && x->x_time > 0.0) { clock_delay (x->x_clock, x->x_time); }
-}
-
-static void tabwrite_tilde_set (t_tabwrite_tilde *x, t_symbol *s)
-{
-    pthread_mutex_lock (&x->x_mutex);
-    
-        t_error err = tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector);
-
-        x->x_phase = PD_INT_MAX;
-        x->x_set   |= TAB_ARRAY;
-    
-    pthread_mutex_unlock (&x->x_mutex);
-    
-    if (err) { tab_error (sym_tabwrite__tilde__, s); }
 }
 
 static void tabwrite_tilde_start (t_tabwrite_tilde *x, t_float f)
@@ -161,10 +173,6 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     t_space *t          = (t_space *)(w[3]);
     int n = (int)(w[4]);
     
-    /* Fetch old value of the phase at startup if the DSP chain is swapped. */
-    
-    if (!t->s_int4) { if (x->x_cached >= 0) { t->s_int2 = x->x_cached; } t->s_int4 = 1; }
-    
     if (pthread_mutex_trylock (&x->x_mutex) == 0) {
     //
     if (x->x_set) {
@@ -177,6 +185,10 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     pthread_mutex_unlock (&x->x_mutex);
     //
     }
+    
+    /* Fetch old value of the phase at startup if the DSP chain is swapped. */
+    
+    if (!t->s_int4) { if (x->x_cached >= 0) { t->s_int2 = x->x_cached; } t->s_int4 = 1; }
     
     if (t->s_pointer0) {
     //
@@ -216,9 +228,37 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     return (w + 5);
 }
 
+static void tabwrite_tilde_initialize (void *lhs, void *rhs)
+{
+    t_tabwrite_tilde *x   = (t_tabwrite_tilde *)lhs;
+    t_tabwrite_tilde *old = (t_tabwrite_tilde *)rhs;
+    
+    x->x_cached = old->x_cached;
+}
+
 static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
 {
-    t_space *t  = space_new();
+    if (!x->x_dismissed && x->x_time > 0.0) { clock_delay (x->x_clock, x->x_time); }
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabwrite_tilde *old = (t_tabwrite_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (tabwrite_tilde_initialize, x, old);
+    
+    if (x->x_name != old->x_name) { tabwrite_tilde_setProceed (x, old->x_name, 1); }
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+    
+    {
+    //
+    t_space *t  = space_new (cast_gobj (x));
     int size    = 0;
     t_word *w   = NULL;
     t_error err = tab_fetchArray (x->x_name, &size, &w);
@@ -228,9 +268,9 @@ static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
         tabwrite_tilde_space (t, w, size, PD_INT_MAX, 1);
     }
     
-    if (!x->x_dismissed && x->x_time > 0.0) { clock_delay (x->x_clock, x->x_time); }
-    
     dsp_add (tabwrite_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -244,10 +284,10 @@ static t_buffer *tabwrite_tilde_functionData (t_gobj *z, int flags)
     t_tabwrite_tilde *x = (t_tabwrite_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //
@@ -322,9 +362,10 @@ void tabwrite_tilde_setup (void)
     class_addBang (c, (t_method)tabwrite_tilde_bang);
     class_addPolling (c, (t_method)tabwrite_tilde_polling);
         
-    class_addMethod (c, (t_method)tabwrite_tilde_set,   sym_set,    A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)tabwrite_tilde_start, sym_start,  A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)tabwrite_tilde_stop,  sym_stop,   A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_set,       sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_start,     sym_start,      A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_stop,      sym_stop,       A_NULL);
+    class_addMethod (c, (t_method)tabwrite_tilde_restore,   sym__restore,   A_SYMBOL, A_NULL);
 
     class_setDataFunction (c, tabwrite_tilde_functionData);
     class_setDismissFunction (c, tabwrite_tilde_functionDismiss);

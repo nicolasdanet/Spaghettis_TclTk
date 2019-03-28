@@ -407,7 +407,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     t_float baseY,
     t_rectangle *r)
 {
-    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getView (gp);
+    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getOwner (gp);
         
     rectangle_setNothing (r);
     
@@ -420,7 +420,7 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     //
     int i;
     
-    t_glist *view = template_getInstanceViewIfPainters (array_getTemplate (p.p_array));
+    t_glist *view = template_getInstanceOwnerIfPainters (array_getTemplate (p.p_array));
     
     for (i = 0; i < array_getSize (p.p_array); i += p.p_step) {
 
@@ -633,7 +633,7 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     t_float relativeY, 
     int isVisible)
 {
-    t_glist *view = template_getInstanceViewIfPainters (array_getTemplate (p->p_array));
+    t_glist *view = template_getInstanceOwnerIfPainters (array_getTemplate (p->p_array));
     
     if (view) {
     //
@@ -670,7 +670,7 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
     int isVisible)
 {
     t_plot *x      = (t_plot *)z;
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     t_word *w      = gpointer_getElement (gp);
     t_garray *a    = gpointer_getGraphicArray (gp);
     int isArray    = (a != NULL);
@@ -812,7 +812,7 @@ static int plot_behaviorMouseMatch (t_plot *x,
     if (plot_thickness == PLOT_THICKNESS_UP   && plot_cumulativeY >= 0.0) { plot_direction = (t_float)-1.0; }
     if (plot_thickness == PLOT_THICKNESS_DOWN && plot_cumulativeY <= 0.0) { plot_direction = (t_float)-1.0; }
         
-    glist_setMotion (gpointer_getView (&plot_gpointer), 
+    glist_setMotion (gpointer_getOwner (&plot_gpointer),
         NULL, 
         (t_motionfn)plot_motion, 
         m->m_x, 
@@ -825,7 +825,7 @@ static int plot_behaviorMouseMatch (t_plot *x,
 
 static int plot_behaviorMouseGrabRecursive (t_plot *x, t_plotproperties *p, t_mouse *m)
 {
-    t_glist *view = template_getInstanceViewIfPainters (array_getTemplate (p->p_array));
+    t_glist *view = template_getInstanceOwnerIfPainters (array_getTemplate (p->p_array));
     
     if (view) {
     //
@@ -839,7 +839,7 @@ static int plot_behaviorMouseGrabRecursive (t_plot *x, t_plotproperties *p, t_mo
         plot_relativeX,
         plot_relativeY,
         i,
-        gpointer_getView (&plot_gpointer),
+        gpointer_getOwner (&plot_gpointer),
         plot_width,
         &c);
     
@@ -873,7 +873,7 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
         plot_relativeX, 
         plot_relativeY, 
         i,
-        gpointer_getView (&plot_gpointer),
+        gpointer_getOwner (&plot_gpointer),
         plot_width, 
         &c);
     
@@ -900,8 +900,8 @@ static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
 
 static int plot_behaviorMouseArray (t_plot *x, t_plotproperties *p, t_mouse *m)
 {
-    t_float valueX = glist_pixelToValueX (gpointer_getView (&plot_gpointer), m->m_x);
-    t_float valueY = glist_pixelToValueY (gpointer_getView (&plot_gpointer), m->m_y);
+    t_float valueX = glist_pixelToValueX (gpointer_getOwner (&plot_gpointer), m->m_x);
+    t_float valueY = glist_pixelToValueY (gpointer_getOwner (&plot_gpointer), m->m_y);
     
     PD_ASSERT (plot_relativeX  == 0.0);
     PD_ASSERT (plot_relativeY  == 0.0);
@@ -926,7 +926,7 @@ static int plot_behaviorMouseArray (t_plot *x, t_plotproperties *p, t_mouse *m)
         
         array_setFloatAtIndexByDescriptor (p->p_array, i, &x->x_fieldY, valueY);
         
-        glist_setMotion (gpointer_getView (&plot_gpointer), 
+        glist_setMotion (gpointer_getOwner (&plot_gpointer),
             NULL, 
             (t_motionfn)plot_motion, 
             m->m_x, 
@@ -946,7 +946,7 @@ static int plot_behaviorMouseArray (t_plot *x, t_plotproperties *p, t_mouse *m)
 
 static int plot_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_float baseY, t_mouse *m)
 {
-    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getView (gp);
+    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getOwner (gp);
     
     t_plotproperties p;
     
@@ -987,7 +987,7 @@ int plot_hitElement (t_gobj *z,
     t_symbol **s,
     t_gpointer *e)
 {
-    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getView (gp);
+    t_plot *x = (t_plot *)z; t_glist *glist = gpointer_getOwner (gp);
     
     t_plotproperties p;
     
@@ -995,7 +995,7 @@ int plot_hitElement (t_gobj *z,
     
     if (!plot_fetchProperties (x, gp, &p) && (p.p_visible != 0)) {
     //
-    t_glist *view = template_getInstanceViewIfPainters (array_getTemplate (p.p_array));
+    t_glist *view = template_getInstanceOwnerIfPainters (array_getTemplate (p.p_array));
     
     if (view) {
     //

@@ -73,7 +73,7 @@
 #N canvas 427 123 550 594 again 0;
 #X obj 36 48 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 36 84 expr rand()*pi;
-#X f 16;
+#X f 14;
 #X obj 252 276 expr min($f1 \, $f2);
 #X obj 36 120 print;
 #X obj 252 300 expr max($f1 \, $f2);

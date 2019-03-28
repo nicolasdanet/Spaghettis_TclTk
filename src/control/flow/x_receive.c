@@ -90,7 +90,7 @@ static t_buffer *receive_functionData (t_gobj *z, int flags)
     t_receive *x = (t_receive *)z;
     t_buffer *b  = buffer_new();
     
-    buffer_appendSymbol (b, sym__inlet2);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_name);
     
     return b;
@@ -98,6 +98,14 @@ static t_buffer *receive_functionData (t_gobj *z, int flags)
     }
     
     return NULL;
+}
+
+static void receive_restore (t_receive *x, t_symbol *s)
+{
+    t_receive *old = (t_receive *)instance_pendingFetch (cast_gobj (x));
+    t_symbol *name = old ? old->x_name : s;
+    
+    receive_bind (x, name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -150,9 +158,11 @@ void receive_setup (void)
     
     /* Use an A_GIMME signature (instead of A_SYMBOL) to avoid warnings with list. */
     
-    class_addMethod (c, (t_method)receive_set, sym__inlet2, A_GIMME, A_NULL);
-    
+    class_addMethod (c, (t_method)receive_set,      sym__inlet2,    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)receive_restore,  sym__restore,   A_SYMBOL, A_NULL);
+
     class_setDataFunction (c, receive_functionData);
+    class_requirePending (c);
 
     receive_class = c;
 }

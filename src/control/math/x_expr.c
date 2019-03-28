@@ -180,7 +180,15 @@ static t_buffer *expr_functionData (t_gobj *z, int flags)
 
 static void expr_restore (t_expr *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int i; for (i = 0; i < EXPR_VARIABLES; i++) { x->x_f[i] = atom_getFloatAtIndex (i, argc, argv); }
+    t_expr *old = (t_expr *)instance_pendingFetch (cast_gobj (x));
+
+    int i;
+    
+    for (i = 0; i < EXPR_VARIABLES; i++) {
+    //
+    x->x_f[i] = old ? old->x_f[i] : atom_getFloatAtIndex (i, argc, argv);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -263,6 +271,9 @@ void expr_setup (void)
 
     class_setDataFunction (expr_class,      expr_functionData);
     class_setDataFunction (vexpr_class,     expr_functionData);
+    
+    class_requirePending (expr_class);
+    class_requirePending (vexpr_class);
     
     class_setHelpName (vexpr_class, sym_expr);
 }

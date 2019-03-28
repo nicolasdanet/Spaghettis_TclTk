@@ -20,6 +20,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+/* Note that for now that object is reset with encapsulation. */
+
+// -- TODO: Fetch states with pending?
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 int atom_copyAtomsExpandedWithArguments (t_atom *, int, t_atom *, int, t_glist *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -55,6 +63,7 @@ typedef struct _textsequence {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void textsequence_dismiss    (t_textsequence *);
 static void textsequence_stop       (t_textsequence *);
 static void textsequence_message    (t_textsequence *, t_float);
 
@@ -182,7 +191,7 @@ static void textsequence_proceedOutContent (t_textsequence *x,
     int argc,
     t_atom *argv)
 {
-    t_glist *view = textclient_fetchView (&x->x_textclient);
+    t_glist *view = textclient_fetchOwner (&x->x_textclient);
         
     int count = end - start - x->x_waitCount;
     t_atom *a = buffer_getAtomAtIndex (b, start + x->x_waitCount);
@@ -347,11 +356,11 @@ static t_buffer *textsequence_functionData (t_gobj *z, int flags)
     if (SAVED_DEEP (flags)) {
     //
     t_textsequence *x = (t_textsequence *)z;
+    
+    t_buffer *b = buffer_new();
         
     if (x->x_unitName || x->x_argc) {
     //
-    t_buffer *b = buffer_new();
-    
     if (x->x_unitName) {
         buffer_appendSymbol (b, sym_unit);
         buffer_appendFloat (b,  x->x_unitValue);
@@ -365,13 +374,39 @@ static t_buffer *textsequence_functionData (t_gobj *z, int flags)
         buffer_append (b, x->x_argc, x->x_argv);
     }
     
-    return b;
+    buffer_appendComma (b);
     //
     }
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, textclient_getName (&x->x_textclient));
+    
+    return b;
     //
     }
     
     return NULL;
+}
+
+static void textsequence_functionDismiss (t_gobj *z)
+{
+    textsequence_dismiss ((t_textsequence *)z);
+}
+
+static void textsequence_restore (t_textsequence *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_textsequence *old = (t_textsequence *)instance_pendingFetch (cast_gobj (x));
+    
+    t_symbol *name = old ? textclient_getName (&old->x_textclient) : atom_getSymbolAtIndex (0, argc, argv);
+    
+    textclient_setName (&x->x_textclient, name);
+    
+    if (old) {
+    //
+    if (old->x_unitName) { textsequence_unit (x, old->x_unitName, old->x_unitValue); }
+    if (old->x_argc)     { textsequence_arguments (x, NULL, old->x_argc, old->x_argv); }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -442,6 +477,11 @@ void *textsequence_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
+static void textsequence_dismiss (t_textsequence *x)
+{
+    clock_unset (x->x_clock);
+}
+
 static void textsequence_free (t_textsequence *x)
 {
     if (x->x_argv)  { PD_MEMORY_FREE (x->x_argv); }
@@ -472,10 +512,15 @@ void textsequence_setup (void)
     class_addMethod (c, (t_method)textsequence_automatic,   sym_automatic,  A_NULL);
     class_addMethod (c, (t_method)textsequence_rewind,      sym_rewind,     A_NULL);
     class_addMethod (c, (t_method)textsequence_message,     sym_message,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)textsequence_message,     sym_line,       A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)textsequence_arguments,   sym_arguments,  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textsequence_unit,        sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)textsequence_restore,     sym__restore,   A_GIMME, A_NULL);
+
     class_setDataFunction (c, textsequence_functionData);
+    class_setDismissFunction (c, textsequence_functionDismiss);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_text);
     
     textsequence_class = c;

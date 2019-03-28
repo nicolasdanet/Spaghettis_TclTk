@@ -65,6 +65,12 @@ static void bp_tilde_q (t_bp_tilde *x, t_float q)
     pthread_mutex_unlock (&x->x_mutex);
 }
 
+static void bp_tilde_set (t_bp_tilde *x, t_float f, t_float q)
+{
+    bp_tilde_frequency (x, f);
+    bp_tilde_q (x, q);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -122,9 +128,36 @@ static t_int *bp_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+static void bp_tilde_initialize (void *lhs, void *rhs)
+{
+    t_bp_tilde *x   = (t_bp_tilde *)lhs;
+    t_bp_tilde *old = (t_bp_tilde *)rhs;
+    
+    x->x_real1 = old->x_real1;
+    x->x_real2 = old->x_real2;
+}
+
 static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new(); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_bp_tilde *old = (t_bp_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (bp_tilde_initialize, x, old);
+    
+    bp_tilde_set (x, old->x_frequency, old->x_q);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+    
+    {
+    //
+    t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
 
     pthread_mutex_lock (&x->x_mutex);
     
@@ -135,6 +168,8 @@ static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
     dsp_add (bp_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -159,7 +194,7 @@ static t_buffer *bp_tilde_functionData (t_gobj *z, int flags)
     buffer_appendFloat (b, f);
     buffer_appendFloat (b, q);
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //
@@ -173,8 +208,7 @@ static void bp_tilde_restore (t_bp_tilde *x, t_symbol *s, int argc, t_atom *argv
     t_float f = atom_getFloatAtIndex (0, argc, argv);
     t_float q = atom_getFloatAtIndex (1, argc, argv);
     
-    bp_tilde_frequency (x, f);
-    bp_tilde_q (x, q);
+    bp_tilde_set (x, f, q);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -192,8 +226,7 @@ static void *bp_tilde_new (t_float f, t_float q)
     inlet_new2 (x, &s_float);
     inlet_new3 (x, &s_float);
     
-    bp_tilde_frequency (x, f);
-    bp_tilde_q (x, q);
+    bp_tilde_set (x, f, q);
 
     return x;
 }

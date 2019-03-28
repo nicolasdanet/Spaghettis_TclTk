@@ -76,16 +76,23 @@ static void micaspell_list (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void micaspell_set (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
+static void micaspell_setProceed (t_micaspell *x, t_symbol *key)
 {
-    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+    if (key != &s_) {
+    //
+    mica::Concept c = concept_fetch (key);
     
-    mica::Concept c = concept_fetch (t);
-    
-    if (mica::MIR::Spell::keyIsValid (c)) { x->x_spell.setKey (c); x->x_key = t; }
+    if (mica::MIR::Spell::keyIsValid (c)) { x->x_spell.setKey (c); x->x_key = key; }
     else {
         error_invalid (sym_mica__space__spell, sym_key);
     }
+    //
+    }
+}
+
+static void micaspell_set (t_micaspell *x, t_symbol *s, int argc, t_atom *argv)
+{
+    micaspell_setProceed (x, atom_getSymbolAtIndex (0, argc, argv));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,21 +104,23 @@ static t_buffer *micaspell_functionData (t_gobj *z, int flags)
     if (SAVED_DEEP (flags)) {
     //
     t_micaspell *x = (t_micaspell *)z;
-    
-    if (x->x_key) {
-    //
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_key);
     
     return b;
     //
     }
-    //
-    }
     
     return NULL;
+}
+
+static void micaspell_restore (t_micaspell *x, t_symbol *s)
+{
+    t_micaspell *old = (t_micaspell *)instance_pendingFetch (cast_gobj (x));
+
+    micaspell_setProceed (x, old ? old->x_key : s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -124,15 +133,10 @@ void *micaspell_new (t_symbol *s, int argc, t_atom *argv)
     
     try { new (x) t_micaspell; } catch (...) { PD_BUG; }
     
+    x->x_key    = &s_;
     x->x_outlet = outlet_newList (cast_object (x));
     
-    if (argc) {
-    //
-    t_symbol *t = concept_tagParsed (argc, argv);
-    
-    t_atom a; SET_SYMBOL (&a, t); micaspell_set (x, sym_set, 1, &a);
-    //
-    }
+    if (argc) { micaspell_setProceed (x, concept_tagParsed (argc, argv)); }
     
     return x;
 }
@@ -160,9 +164,12 @@ void micaspell_setup (void)
     
     class_addList (c, (t_method)micaspell_list);
     
-    class_addMethod (c, (t_method)micaspell_set, sym_set, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)micaspell_set,     sym_set,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)micaspell_restore, sym__restore,  A_DEFSYMBOL, A_NULL);
     
     class_setDataFunction (c, micaspell_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_mica);
     
     micaspell_class = c;

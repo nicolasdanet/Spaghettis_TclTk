@@ -61,9 +61,7 @@ static t_widgetbehavior bng_widgetBehavior =        /* Shared. */
 
 static void bng_taskFlash (t_bng *x)
 {
-    x->x_flashed = 0;
-    
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    x->x_flashed = 0; IEMGUI_UPDATE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -200,9 +198,7 @@ static void bng_draw (t_bng *x, t_glist *glist, int mode)
 
 static void bng_updateFlash (t_bng *x)
 {
-    if (!x->x_flashed) {
-        x->x_flashed = 1; (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
-    }
+    if (!x->x_flashed) { x->x_flashed = 1; IEMGUI_UPDATE (x); }
     
     clock_delay (x->x_clock, x->x_flashTime);
 }
@@ -317,6 +313,10 @@ static int bng_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void bng_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_bng *x = (t_bng *)z;
@@ -347,7 +347,7 @@ static void bng_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendSymbol (b, colors.c_symColorLabel);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 /* Fake dialog message from interpreter. */
@@ -438,6 +438,17 @@ static void bng_fromDialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t1 != x->x_flashTime);
     
     iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void bng_restore (t_bng *x)
+{
+    t_bng *old = (t_bng *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { iemgui_restore (cast_gobj (x), cast_gobj (old)); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -537,11 +548,14 @@ void bng_setup (void)
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)bng_restore,                  sym__restore,           A_NULL);
+
     class_setWidgetBehavior (c, &bng_widgetBehavior);
     class_setSaveFunction (c, bng_functionSave);
+    class_setDataFunction (c, iemgui_functionData);
     class_setUndoFunction (c, bng_functionUndo);
     class_setPropertiesFunction (c, bng_functionProperties);
+    class_requirePending (c);
     
     bng_class = c;
 }

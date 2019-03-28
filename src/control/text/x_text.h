@@ -26,6 +26,8 @@ typedef struct _textclient {
     t_symbol        *tc_name;
     } t_textclient;
 
+/* Also used by textfile object. */
+
 typedef struct _qlist {
     t_textbuffer    ql_textbuffer;                  /* Must be the first. */
     int             ql_indexOfMessage;
@@ -62,7 +64,7 @@ void        textbuffer_read                 (t_textbuffer *x, t_symbol *s);
 void        textbuffer_write                (t_textbuffer *x, t_symbol *s);
 void        textbuffer_addLine              (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 
-t_glist     *textbuffer_getView             (t_textbuffer *x);
+t_glist     *textbuffer_getOwner            (t_textbuffer *x);
 t_buffer    *textbuffer_getBuffer           (t_textbuffer *x);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,8 +74,11 @@ t_buffer    *textbuffer_getBuffer           (t_textbuffer *x);
 t_error     textclient_init                 (t_textclient *x, int *argc, t_atom **argv);
 void        textclient_update               (t_textclient *x);
 
-t_glist     *textclient_fetchView           (t_textclient *x);
+t_glist     *textclient_fetchOwner          (t_textclient *x);
 t_buffer    *textclient_fetchBuffer         (t_textclient *x);
+
+t_symbol    *textclient_getName             (t_textclient *x);
+void        textclient_setName              (t_textclient *x, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -98,6 +103,7 @@ void        qlist_clear                     (t_qlist *x);
 void        qlist_set                       (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
 void        qlist_add                       (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
 void        qlist_append                    (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
+void        qlist_restore                   (t_qlist *x, t_symbol *s, int argc, t_atom *argv);
 void        qlist_read                      (t_qlist *x, t_symbol *name);
 void        qlist_write                     (t_qlist *x, t_symbol *name);
 void        qlist_modified                  (t_qlist *x);

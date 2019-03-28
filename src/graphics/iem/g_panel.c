@@ -206,6 +206,10 @@ static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *
     rectangle_set (r, a, b, c, d);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void panel_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_panel *x = (t_panel *)z;
@@ -233,7 +237,7 @@ static void panel_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendSymbol (b, colors.c_symColorLabel);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 static void panel_functionUndo (t_gobj *z, t_buffer *b)
@@ -288,6 +292,10 @@ static void panel_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     stub_new (cast_pd (x), (void *)x, t);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty  = 0;
@@ -318,6 +326,17 @@ static void panel_fromDialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t1 != x->x_panelHeight);
     
     iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void panel_restore (t_panel *x)
+{
+    t_panel *old = (t_panel *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { iemgui_restore (cast_gobj (x), cast_gobj (old)); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -404,11 +423,14 @@ void panel_setup (void)
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)panel_restore,                sym__restore,           A_NULL);
 
     class_setWidgetBehavior (c, &panel_widgetBehavior);
     class_setSaveFunction (c, panel_functionSave);
+    class_setDataFunction (c, iemgui_functionData);
     class_setUndoFunction (c, panel_functionUndo);
     class_setPropertiesFunction (c, panel_functionProperties);
+    class_requirePending (c);
     
     panel_class = c;
 }

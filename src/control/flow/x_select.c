@@ -116,7 +116,13 @@ static t_buffer *select1_functionData (t_gobj *z, int flags)
 
 static void select1_restore (t_select1 *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 1) { x->x_atom = *argv; }
+    t_select1 *old = (t_select1 *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+        atom_copyAtom (&old->x_atom, &x->x_atom);
+    } else if (argc == 1) {
+        atom_copyAtom (argv, &x->x_atom);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -260,7 +266,8 @@ void select_setup (void)
     class_addMethod (select1_class,         (t_method)select1_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (select1_class,   select1_functionData);
-    
+    class_requirePending (select1_class);
+
     class_addFloat (select2_class,          (t_method)select2_float);
     class_addSymbol (select2_class,         (t_method)select2_symbol);
     class_addAnything (select2_class,       (t_method)select2_anything);

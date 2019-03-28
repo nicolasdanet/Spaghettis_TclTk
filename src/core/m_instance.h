@@ -51,9 +51,12 @@ typedef struct _pdinstance {
     uint64_t        pd_pollingCount;
     uint64_t        pd_autoreleaseCount;
     t_int32Atomic   pd_clocksCount;
+    int             pd_overflow;
     int             pd_overflowCount;
     int             pd_isLoadingExternal;
     int             pd_isUndoRecursive;
+    int             pd_hasPending;
+    t_int32Atomic   pd_chainRetain;
     t_pointerAtomic pd_chain;
     t_chain         *pd_build;
     t_symbol        *pd_loadingAbstraction;
@@ -62,6 +65,7 @@ typedef struct _pdinstance {
     t_glist         *pd_roots;
     t_clock         *pd_polling;
     t_clock         *pd_autorelease;
+    t_gobj          *pd_pending;
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
@@ -219,6 +223,23 @@ int     instance_getDefaultY                    (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_error instance_overflowPush                   (void);
+void    instance_overflowPop                    (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_gobj  *instance_pendingFetch                  (t_gobj *y);
+
+int     instance_pendingRequired                (t_gobj *y);
+void    instance_pendingAdd                     (t_gobj *y);
+void    instance_pendingRelease                 (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static inline void instance_contextSetCurrent (t_glist *glist)
 {
     return instance_setBoundX (cast_pd (glist));
@@ -236,20 +257,6 @@ static inline void instance_ugenSetContext (t_dspcontext *context)
 static inline t_dspcontext *instance_ugenGetContext (void)
 {
     return instance_get()->pd_ugenContext;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline t_error instance_overflowPush (void)
-{
-    return (t_error)(++instance_get()->pd_overflowCount >= INSTANCE_OVERFLOW);
-}
-
-static inline void instance_overflowPop (void)
-{
-    instance_get()->pd_overflowCount--;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -311,6 +318,25 @@ static inline void instance_undoSetRecursive (void)
 static inline void instance_undoUnsetRecursive (void)
 {
     instance_get()->pd_isUndoRecursive--;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline int instance_hasPending (void)
+{
+    return (instance_get()->pd_hasPending != 0);
+}
+
+static inline void instance_pendingBegin (void)
+{
+    instance_get()->pd_hasPending++;
+}
+
+static inline void instance_pendingEnd (void)
+{
+    instance_get()->pd_hasPending--; if (instance_get()->pd_hasPending == 0) { instance_pendingRelease(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

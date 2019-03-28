@@ -77,14 +77,21 @@ static t_buffer *counter_functionData (t_gobj *z, int flags)
     t_counter *x = (t_counter *)z;
     t_buffer *b  = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
-    buffer_appendFloat (b, x->x_count);
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  x->x_count);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void counter_restore (t_counter *x, t_float f)
+{
+    t_counter *old = (t_counter *)instance_pendingFetch (cast_gobj (x));
+    
+    x->x_count = old ? old->x_count : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -125,11 +132,13 @@ void counter_setup (void)
     class_addBang (c, (t_method)counter_bang);
     class_addFloat (c, (t_method)counter_float);
     
-    class_addMethod (c, (t_method)counter_reset,    sym_reset,  A_NULL);
-    class_addMethod (c, (t_method)counter_set,      sym_set,    A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)counter_reset,    sym_reset,      A_NULL);
+    class_addMethod (c, (t_method)counter_set,      sym_set,        A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)counter_restore,  sym__restore,   A_FLOAT, A_NULL);
     
     class_setDataFunction (c, counter_functionData);
-
+    class_requirePending (c);
+    
     counter_class = c;
 }
 

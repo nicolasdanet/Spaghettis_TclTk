@@ -60,7 +60,8 @@
 
 #include "dsp/d_dspthread.h"
 #include "dsp/d_chain.h"
-#include "dsp/d_closure.h"
+#include "dsp/d_closures.h"
+#include "dsp/d_initializer.h"
 #include "dsp/d_block.h"
 #include "dsp/d_resample.h"
 #include "dsp/d_functions.h"

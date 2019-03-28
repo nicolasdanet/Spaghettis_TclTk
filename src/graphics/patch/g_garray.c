@@ -43,6 +43,12 @@ static void garray_dismiss (t_garray *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void array_copyGraphicArray (t_word *, t_word *, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_class *garray_class;                                      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -175,6 +181,8 @@ static void garray_updateGraphName (t_garray *x)
 
 static void garray_updateGraphRange (t_garray *x, t_float up, t_float down)
 {
+    if (!glist_isLoading (x->x_owner)) {    /* Would be overwrite by coords method. */
+    //
     t_float a = bounds_getLeft (glist_getBounds (x->x_owner));
     t_float b = up;
     t_float c = bounds_getRight (glist_getBounds (x->x_owner));
@@ -188,10 +196,14 @@ static void garray_updateGraphRange (t_garray *x, t_float up, t_float down)
     PD_ASSERT (!err);
     
     if (!err) { glist_setBounds (x->x_owner, &bounds); }
+    //
+    }
 }
 
 static void garray_updateGraphGeometry (t_garray *x, int width, int height)
 {
+    if (!glist_isLoading (x->x_owner)) {    /* Would be overwrite by coords method. */
+    //
     int w = rectangle_getWidth (glist_getGraphGeometry (x->x_owner));
     int h = rectangle_getHeight (glist_getGraphGeometry (x->x_owner));
     
@@ -210,11 +222,13 @@ static void garray_updateGraphGeometry (t_garray *x, int width, int height)
     if (glist_isParentOnScreen (x->x_owner)) { glist_redrawRequired (glist_getParent (x->x_owner)); }
     //
     }
+    //
+    }
 }
 
 static void garray_updateGraphSize (t_garray *x, int size, int style)
 {
-    if (!glist_isLoading (x->x_owner)) {
+    if (!glist_isLoading (x->x_owner)) {    /* Would be overwrite by coords method. */
     //
     t_float a = 0.0;
     t_float b = bounds_getTop (glist_getBounds (x->x_owner));
@@ -379,7 +393,7 @@ t_symbol *garray_getUnexpandedName (t_garray *x)
     return x ? x->x_unexpandedName : sym_Patch;     /* Could be NULL in legacy patches. */
 }
 
-t_glist *garray_getView (t_garray *x)
+t_glist *garray_getOwner (t_garray *x)
 {
     return x->x_owner;
 }
@@ -413,9 +427,9 @@ void garray_setInhibit (t_garray *x, int inhibit)
     }
 }
 
-void garray_setAsUsedInDSP (t_garray *x)
+void garray_setAsUsedInDSP (t_garray *x, int usedInDSP)
 {
-    x->x_isUsedInDSP = 1;
+    x->x_isUsedInDSP = (usedInDSP != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -524,6 +538,8 @@ static void garray_cosinesum (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 
 static void garray_rename (t_garray *x, t_symbol *s)
 {
+    if (s != x->x_unexpandedName) {
+    //
     t_symbol *expanded = dollar_expandSymbol (s, x->x_owner);
     
     if (symbol_getThingByClass (expanded, garray_class)) { error_alreadyExists (expanded); }
@@ -537,6 +553,8 @@ static void garray_rename (t_garray *x, t_symbol *s)
     garray_updateGraphName (x);
     garray_updateGraphWindow (x);
     dsp_update();
+    //
+    }
     //
     }
 }
@@ -715,7 +733,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  t);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 static t_buffer *garray_functionData (t_gobj *z, int flags)
@@ -730,6 +748,9 @@ static t_buffer *garray_functionData (t_gobj *z, int flags)
     
     buffer_appendFloat (b, 0);
     for (i = 0; i < n; i++) { buffer_appendFloat (b, w_getFloat (GARRAY_AT (i))); }
+    
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
@@ -793,6 +814,10 @@ void garray_functionProperties (t_garray *x)
     stub_new (cast_pd (x), (void *)x, t);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty = 0;
@@ -837,22 +862,7 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     t_array *array = garray_getArray (x);
     
-    if (name != x->x_unexpandedName) {
-    //
-    t_symbol *expanded = dollar_expandSymbol (name, x->x_owner);
-    
-    if (symbol_getThingByClass (expanded, garray_class)) { error_alreadyExists (expanded); }
-    else {
-        x->x_unexpandedName = name;
-        pd_unbind (cast_pd (x), x->x_name);
-        x->x_name = expanded;
-        pd_bind (cast_pd (x), x->x_name);
-
-        garray_updateGraphName (x);
-        dsp_update();
-    }
-    //
-    }
+    garray_rename (x, name);
 
     if (size == 1) { style = PLOT_POINTS; }
     
@@ -902,6 +912,45 @@ void garray_fromDialog (t_garray *x, t_symbol *s, int argc, t_atom *argv)
     
     PD_ASSERT (s1 == NULL);
     PD_ASSERT (s2 == NULL);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* For now data are fetch during encapsulation only if properties of array have NOT changed. */
+
+static void garray_restoreProceed (t_garray *x, t_garray *old)
+{
+    t_error err = PD_ERROR_NONE;
+
+    err |= (garray_getSize (x)  != garray_getSize (old));
+    err |= (x->x_saveWithParent != old->x_saveWithParent);
+    err |= (x->x_hideName       != old->x_hideName);
+    err |= (x->x_inhibit        != old->x_inhibit);
+    err |= (x->x_unexpandedName != old->x_unexpandedName);
+    
+    err |= (scalar_getFloat (x->x_scalar, sym_style) != scalar_getFloat (old->x_scalar, sym_style));
+
+    if (!err) {
+    //
+    t_word *dest = array_getElements (garray_getArray (x));
+    t_word *src  = array_getElements (garray_getArray (old));
+    
+    array_copyGraphicArray (dest, src, garray_getSize (x));
+    //
+    }
+}
+
+static void garray_restore (t_garray *x)
+{
+    t_garray *old = (t_garray *)instance_pendingFetch (cast_gobj (x));
+    
+    if (!old) {
+        old = (t_garray *)garbage_fetch (cast_gobj (x));
+    }
+    
+    if (old) { garray_restoreProceed (x, old); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -1026,12 +1075,14 @@ void garray_setup (void)
     class_addMethod (c, (t_method)garray_resize,        sym_resize,         A_FLOAT,  A_NULL);
     class_addMethod (c, (t_method)garray_range,         sym_range,          A_GIMME,  A_NULL);
     class_addMethod (c, (t_method)garray_fromDialog,    sym__arraydialog,   A_GIMME,  A_NULL);
+    class_addMethod (c, (t_method)garray_restore,       sym__restore,       A_NULL);
     
     class_setWidgetBehavior (c, &garray_widgetBehavior);
     class_setSaveFunction (c, garray_functionSave);
     class_setDataFunction (c, garray_functionData);
     class_setUndoFunction (c, garray_functionUndo);
     class_setDismissFunction (c, garray_functionDismiss);
+    class_requirePending (c);
     
     garray_class = c;
 }

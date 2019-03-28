@@ -101,29 +101,42 @@ static t_buffer *tralala_functionData (t_gobj *z, int flags)
     
     if (SAVED_DEEP (flags) || x->x_keep) {
     //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    
     if (x->x_hasLearned) {
     //
-    t_buffer *b  = buffer_new();
     tll_array *a = tll_algorithmSerialize (x->x_algorithm);
     int i, size  = tll_arrayGetSize (a);
  
     buffer_reserve (b, size + 2);
-    buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, size);
     for (i = 0; i < size; i++) { buffer_appendFloat (b, tll_arrayGetAtIndex (a, i)); }
     
     tll_arrayFree (a);
-    
-    return b;
     //
     }
+    
+    return b;
     //
     }
     
     return NULL;
 }
 
-static void tralala_restore (t_tralala *x, t_symbol *s, int argc, t_atom *argv)
+static void tralala_restoreEncapsulation (t_tralala *x, t_tralala *old)
+{
+    t_rand48 *t0      = x->x_random;
+    tll_algorithm *t1 = x->x_algorithm;
+    int t2            = x->x_hasLearned;
+    
+    x->x_random       = old->x_random;     old->x_random     = t0;
+    x->x_algorithm    = old->x_algorithm;  old->x_algorithm  = t1;
+    x->x_hasLearned   = old->x_hasLearned; old->x_hasLearned = t2;
+}
+
+static void tralala_restoreProceed (t_tralala *x, int argc, t_atom *argv)
 {
     if (argc && IS_FLOAT (argv)) {
     //
@@ -137,6 +150,13 @@ static void tralala_restore (t_tralala *x, t_symbol *s, int argc, t_atom *argv)
     tll_arrayFree (a);
     //
     }
+}
+
+static void tralala_restore (t_tralala *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_tralala *old = (t_tralala *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { tralala_restoreEncapsulation (x, old); } else { tralala_restoreProceed (x, argc, argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -211,7 +231,8 @@ void tralala_setup (void)
     class_addMethod (c, (t_method)tralala_restore,  sym__restore,   A_GIMME, A_NULL);
     
     class_setDataFunction (c, tralala_functionData);
-    
+    class_requirePending (c);
+
     tralala_class = c;
 }
 

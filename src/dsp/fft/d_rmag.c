@@ -34,6 +34,8 @@ typedef struct _rmag_tilde {
 
 static void rmag_tilde_dsp (t_rmag_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_addInverseMagnitudePerform (sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_vectorSize);
 }
 
@@ -48,7 +50,7 @@ t_buffer *rmag_tilde_functionData (t_gobj *z, int flags)
     t_rmag_tilde *x = (t_rmag_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

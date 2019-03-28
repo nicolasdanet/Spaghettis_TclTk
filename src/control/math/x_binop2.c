@@ -207,12 +207,12 @@ void binop2_setup (void)
     class_addFloat (binopGreaterEquals_class,   (t_method)binopGreaterEquals_float);
     class_addFloat (binopLessEquals_class,      (t_method)binopLessEquals_float);
     
-    class_addMethod (binopEquals_class,         (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopNotEquals_class,      (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopGreater_class,        (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopLess_class,           (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopGreaterEquals_class,  (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopLessEquals_class,     (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopEquals_class,         (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopNotEquals_class,      (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopGreater_class,        (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopLess_class,           (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopGreaterEquals_class,  (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopLessEquals_class,     (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
     
     class_setDataFunction (binopEquals_class,           binop_functionData);
     class_setDataFunction (binopNotEquals_class,        binop_functionData);
@@ -221,6 +221,13 @@ void binop2_setup (void)
     class_setDataFunction (binopGreaterEquals_class,    binop_functionData);
     class_setDataFunction (binopLessEquals_class,       binop_functionData);
     
+    class_requirePending (binopEquals_class);
+    class_requirePending (binopNotEquals_class);
+    class_requirePending (binopGreater_class);
+    class_requirePending (binopLess_class);
+    class_requirePending (binopGreaterEquals_class);
+    class_requirePending (binopLessEquals_class);
+
     class_setHelpName (binopEquals_class,               sym_logical);
     class_setHelpName (binopNotEquals_class,            sym_logical);
     class_setHelpName (binopGreater_class,              sym_logical);

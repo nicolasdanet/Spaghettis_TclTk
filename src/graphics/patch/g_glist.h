@@ -99,6 +99,7 @@ t_garray        *glist_getGraphicArray      (t_glist *g);
 int     glist_isRoot                        (t_glist *g);
 int     glist_isTop                         (t_glist *g);
 int     glist_isAbstraction                 (t_glist *g);
+int     glist_isAbstractionOrInside         (t_glist *g);
 int     glist_isSubpatchOrGraphicArray      (t_glist *g);
 int     glist_isSubpatch                    (t_glist *g);
 int     glist_isGraphicArray                (t_glist *g);
@@ -146,7 +147,7 @@ void    glist_setBounds                     (t_glist *g, t_bounds *bounds);
 void    glist_setGraphGeometry              (t_glist *g, t_rectangle *r, t_bounds *bounds, int isGOP);
 void    glist_setWindowGeometry             (t_glist *g, t_rectangle *r);
 void    glist_setScroll                     (t_glist *g, int a, int b);
-void    glist_setUnique                     (t_glist *g, int argc, t_atom *argv);
+void    glist_setIdentifiers                (t_glist *g, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -172,7 +173,8 @@ void    glist_undoAppend                    (t_glist *g, t_undoaction *a);
 
 void    glist_objectMake                    (t_glist *g, int a, int b, int w, int selected, t_buffer *t);
 void    glist_objectMakeScalar              (t_glist *g, int argc, t_atom *argv);
-void    glist_objectSetUniqueOfLast         (t_glist *g, int argc, t_atom *argv);
+void    glist_objectSetIdentifiersOfLast    (t_glist *g, int argc, t_atom *argv);
+void    glist_objectSetSourceOfLast         (t_glist *g, int argc, t_atom *argv);
 void    glist_objectSetWidthOfLast          (t_glist *g, int w);
 void    glist_objectAddNext                 (t_glist *g, t_gobj *y, t_gobj *first);
 void    glist_objectAdd                     (t_glist *g, t_gobj *y);
@@ -524,7 +526,7 @@ static inline int glist_hasUndo (t_glist *g)
 
 static inline int glist_isEditable (t_glist *g)
 {
-    return (!glist_isAbstraction (g) && !glist_isGraphicArray (g));
+    return (!glist_isAbstractionOrInside (g) && !glist_isGraphicArray (g));
 }
 
 static inline int glist_isLoading (t_glist *g)

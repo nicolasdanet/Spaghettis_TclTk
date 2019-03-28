@@ -90,11 +90,32 @@ void arrayclient_setName (t_arrayclient *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void arrayclient_restore (t_arrayclient *x, t_arrayclient *old)
+{
+    if (ARRAYCLIENT_HAS_POINTER (x)) { gpointer_setByCopy (&x->ac_gpointer, &old->ac_gpointer); }
+    else {
+        arrayclient_setName (x, arrayclient_getName (old));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_garray *arrayclient_fetchGraphicArray (t_arrayclient *x)
+{
+    PD_ASSERT (x->ac_name); return (t_garray *)symbol_getThingByClass (x->ac_name, garray_class);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_array *arrayclient_fetchArray (t_arrayclient *x)
 {
     if (x->ac_name) {
     
-        t_garray *y = (t_garray *)symbol_getThingByClass (x->ac_name, garray_class);
+        t_garray *y = arrayclient_fetchGraphicArray (x);
         
         if (y) { return garray_getArray (y); }
         else {
@@ -116,18 +137,13 @@ t_array *arrayclient_fetchArray (t_arrayclient *x)
     return NULL;
 }
 
-t_garray *arrayclient_fetchOwnerIfName (t_arrayclient *x)
-{
-    PD_ASSERT (x->ac_name); return (t_garray *)symbol_getThingByClass (x->ac_name, garray_class);
-}
-
-t_glist *arrayclient_fetchView (t_arrayclient *x)
+t_glist *arrayclient_fetchOwner (t_arrayclient *x)
 {
     if (x->ac_name) {
     
-        t_garray *y = (t_garray *)symbol_getThingByClass (x->ac_name, garray_class);
+        t_garray *y = arrayclient_fetchGraphicArray (x);
         
-        if (y) { return garray_getView (y); }
+        if (y) { return garray_getOwner (y); }
         else {
             error_canNotFind (sym_array, x->ac_name);
         }
@@ -137,7 +153,7 @@ t_glist *arrayclient_fetchView (t_arrayclient *x)
         if (gpointer_isValidInstanceOf (&x->ac_gpointer, x->ac_templateIdentifier)) {
             if (gpointer_hasField (&x->ac_gpointer, x->ac_fieldName)) {
                 if (gpointer_fieldIsArrayAndValid (&x->ac_gpointer, x->ac_fieldName)) {
-                    return gpointer_getView (&x->ac_gpointer);
+                    return gpointer_getOwner (&x->ac_gpointer);
                     
         } else { error_invalid (sym_array, x->ac_fieldName); }
         } else { error_missingField (sym_array, x->ac_fieldName); }
@@ -154,7 +170,7 @@ t_glist *arrayclient_fetchView (t_arrayclient *x)
 void arrayclient_update (t_arrayclient *x)
 {
     t_array *array = arrayclient_fetchArray (x);
-    t_glist *view  = arrayclient_fetchView (x);
+    t_glist *view  = arrayclient_fetchOwner (x);
     
     PD_ASSERT (array);
     PD_ASSERT (view);

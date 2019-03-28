@@ -124,18 +124,22 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
                     b + x->x_gui.iem_height - IEM_SLIDER_PIXEL);
 }
 
+static void slider_drawUpdateProceed (t_slider *x, t_glist *glist)
+{
+    if (x->x_isVertical) {
+        slider_drawUpdateVertical (x, glist);
+    } else {
+        slider_drawUpdateHorizontal (x, glist);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void slider_drawJob (t_gobj *z, t_glist *glist)
 {
-    t_slider *x = (t_slider *)z;
-    
-    if (x->x_isVertical) { slider_drawUpdateVertical (x, glist); }
-    else {
-        slider_drawUpdateHorizontal (x, glist);
-    }
+    t_slider *x = (t_slider *)z; slider_drawUpdateProceed (x, glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -162,7 +166,7 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
                     a + x->x_gui.iem_width, 
                     b + x->x_gui.iem_height);
                 
-    slider_drawUpdate (x, glist);
+    slider_drawUpdateProceed (x, glist);
 }
 
 static void slider_drawNew (t_slider *x, t_glist *glist)
@@ -384,7 +388,7 @@ static void slider_click (t_slider *x, t_symbol *s, int argc, t_atom *argv)
         int numberOfSteps = slider_getNumberOfSteps (x);
         x->x_position = PD_CLAMP ((int)t, 0, numberOfSteps);
         x->x_floatValue = slider_getValue (x);
-        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        IEMGUI_UPDATE (x);
     }
     
     glist_setMotion (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)slider_motion, a, b);
@@ -423,7 +427,7 @@ static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float 
     if (t != old) {
         x->x_position   = t;
         x->x_floatValue = slider_getValue (x);
-        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        IEMGUI_UPDATE (x);
         slider_out (x);
     }
     //
@@ -482,7 +486,7 @@ static void slider_set (t_slider *x, t_float f)
         x->x_position = (int)((f - x->x_minimum) / slider_getStepValue (x));
     }
         
-    if (x->x_position != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_position != old) { IEMGUI_UPDATE (x); }
 }
 
 static void slider_steady (t_slider *x, t_float f)
@@ -525,6 +529,10 @@ static int slider_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void slider_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_slider *x = (t_slider *)z;
@@ -560,7 +568,7 @@ static void slider_functionSave (t_gobj *z, t_buffer *b, int flags)
     if (SAVED_DEEP (flags)) { buffer_appendFloat (b, 1.0); }
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 static void slider_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -635,6 +643,9 @@ static void slider_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy
     
     stub_new (cast_pd (x), (void *)x, t);
 }
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void slider_fromValue (t_slider *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -689,6 +700,25 @@ static void slider_fromDialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t5 != x->x_maximum);
     
     iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void slider_restore (t_slider *x)
+{
+    t_slider *old = (t_slider *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    iemgui_restore (cast_gobj (x), cast_gobj (old));
+    
+    slider_set (x, old->x_floatValue);
+    
+    iemgui_boxChanged ((void *)x);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -815,13 +845,16 @@ void slider_setup (void)
     class_addMethod (c, (t_method)slider_linear,                sym_linear,             A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)slider_restore,               sym__restore,           A_NULL);
+
     class_setWidgetBehavior (c, &slider_widgetBehavior);
     class_setHelpName (c, sym_slider);
     class_setSaveFunction (c, slider_functionSave);
+    class_setDataFunction (c, iemgui_functionData);
     class_setValueFunction (c, slider_functionValue);
     class_setUndoFunction (c, slider_functionUndo);
     class_setPropertiesFunction (c, slider_functionProperties);
+    class_requirePending (c);
     
     slider_class = c;
 }

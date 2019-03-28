@@ -60,6 +60,8 @@ t_int *log_tilde_perform (t_int *w)
 
 static void log_tilde_dsp (t_log_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
     

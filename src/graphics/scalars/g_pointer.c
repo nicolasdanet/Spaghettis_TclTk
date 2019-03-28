@@ -138,7 +138,7 @@ static void pointer_clear (t_pointer *x, t_symbol *s)
 static void pointer_rewind (t_pointer *x)
 {
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
-        gpointer_setAsNull (&x->x_gpointer, gpointer_getView (&x->x_gpointer));
+        gpointer_setAsNull (&x->x_gpointer, gpointer_getOwner (&x->x_gpointer));
     } else {
         error_invalid (&s_pointer, &s_pointer);
     }
@@ -157,7 +157,7 @@ static void pointer_nextProceed (t_pointer *x, int flag)
 
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
-    t_glist *glist = gpointer_getView (&x->x_gpointer);
+    t_glist *glist = gpointer_getOwner (&x->x_gpointer);
 
     if (!wantSelected || glist_isOnScreen (glist)) {
 
@@ -207,6 +207,32 @@ static void pointer_nextDelete (t_pointer *x)
 static void pointer_next (t_pointer *x)
 {
     pointer_nextProceed (x, POINTER_NEXT);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_buffer *pointer_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void pointer_restore (t_pointer *x)
+{
+    t_pointer *old = (t_pointer *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { gpointer_setByCopy (&x->x_gpointer, &old->x_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -263,14 +289,18 @@ void pointer_setup (void)
     class_addBang (c, (t_method)pointer_bang); 
     class_addPointer (c, (t_method)pointer_pointer); 
         
-    class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,               A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)pointer_clear,        sym_clear,                  A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,                 A_NULL);
-    class_addMethod (c, (t_method)pointer_next,         sym_next,                   A_NULL);
-    class_addMethod (c, (t_method)pointer_nextDelete,   sym_delete,                 A_NULL);
-    class_addMethod (c, (t_method)pointer_nextDisable,  sym_disable,                A_NULL);
-    class_addMethod (c, (t_method)pointer_nextEnable,   sym_enable,                 A_NULL);
+    class_addMethod (c, (t_method)pointer_traverse,     sym_traverse,   A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)pointer_clear,        sym_clear,      A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)pointer_rewind,       sym_rewind,     A_NULL);
+    class_addMethod (c, (t_method)pointer_next,         sym_next,       A_NULL);
+    class_addMethod (c, (t_method)pointer_nextDelete,   sym_delete,     A_NULL);
+    class_addMethod (c, (t_method)pointer_nextDisable,  sym_disable,    A_NULL);
+    class_addMethod (c, (t_method)pointer_nextEnable,   sym_enable,     A_NULL);
+    class_addMethod (c, (t_method)pointer_restore,      sym__restore,   A_NULL);
 
+    class_setDataFunction (c, pointer_functionData);
+    class_requirePending (c);
+    
     pointer_class = c;
 }
 

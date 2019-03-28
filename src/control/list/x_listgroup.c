@@ -26,10 +26,9 @@ static t_class *listgroup_class;            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _listgroup {
-    t_object        x_obj;                  /* Must be the first. */
-    t_listinlet     x_listinlet;
-    t_float         x_group;
-    t_outlet        *x_outlet;
+    t_listinlethelper   x_h;                /* Must be the first. */
+    t_float             x_group;
+    t_outlet            *x_outlet;
     } t_listgroup;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -44,7 +43,7 @@ static void listgroup_clear (t_listgroup *);
 
 static void listgroup_output (t_listgroup *x)
 {
-    int m = listinlet_getSize (&x->x_listinlet);
+    int m = listinlet_getSize (&x->x_h.lh_listinlet);
     int n = PD_MAX (1, (int)x->x_group);
     t_atom *t = NULL;
     
@@ -55,18 +54,18 @@ static void listgroup_output (t_listgroup *x)
     //
     PD_ATOMS_ALLOCA (t, m);
     
-    if (listinlet_hasPointer (&x->x_listinlet)) {
+    if (listinlet_hasPointer (&x->x_h.lh_listinlet)) {
     
         t_listinlet cache;
         listinlet_init (&cache);
-        listinlet_clone (&x->x_listinlet, &cache);
+        listinlet_clone (&x->x_h.lh_listinlet, &cache);
         listinlet_copyAtomsUnchecked (&cache, t);
         outlet_list (x->x_outlet, count, t);
         listinlet_clear (&cache);
         
     } else {
     
-        listinlet_copyAtomsUnchecked (&x->x_listinlet, t);
+        listinlet_copyAtomsUnchecked (&x->x_h.lh_listinlet, t);
         outlet_list (x->x_outlet, count, t);
     }
     
@@ -74,7 +73,7 @@ static void listgroup_output (t_listgroup *x)
     //
     }
     
-    listinlet_clear (&x->x_listinlet);
+    listinlet_clear (&x->x_h.lh_listinlet);
 }
 
 static void listgroup_append (t_listgroup *x, int argc, t_atom *argv)
@@ -83,8 +82,8 @@ static void listgroup_append (t_listgroup *x, int argc, t_atom *argv)
     
     for (i = 0; i < argc; i++) {
     //
-    listinlet_listAppend (&x->x_listinlet, 1, argv + i);
-    if (listinlet_getSize (&x->x_listinlet) >= n) { listgroup_output (x); }
+    listinlet_listAppend (&x->x_h.lh_listinlet, 1, argv + i);
+    if (listinlet_getSize (&x->x_h.lh_listinlet) >= n) { listgroup_output (x); }
     //
     }
 }
@@ -129,7 +128,7 @@ static void listgroup_anything (t_listgroup *x, t_symbol *s, int argc, t_atom *a
 
 static void listgroup_clear (t_listgroup *x)
 {
-    listinlet_clear (&x->x_listinlet);
+    listinlet_clear (&x->x_h.lh_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -141,15 +140,10 @@ static t_buffer *listgroup_functionData (t_gobj *z, int flags)
     if (SAVED_DEEP (flags)) {
     //
     t_listgroup *x = (t_listgroup *)z;
-    t_buffer *b = buffer_new();
+    t_buffer *b = listhelper_functionData (z, flags);
     
-    buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, x->x_group);
-    buffer_appendComma (b);
-    buffer_appendSymbol (b, &s_list);
-    listinlet_listGet (&x->x_listinlet, b);
-    buffer_invalidatePointers (b);
-    
+
     return b;
     //
     }
@@ -157,9 +151,17 @@ static t_buffer *listgroup_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void listgroup_restore (t_listgroup *x, t_float f)
+static void listgroup_restore (t_listgroup *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_group = f;
+    if (argc) {
+    //
+    t_listgroup *old = (t_listgroup *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_group = old ? old->x_group : atom_getFloatAtIndex (argc - 1, argc, argv);
+    
+    argc--; listhelper_restore ((t_listinlethelper *)x, s, argc, argv);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -170,7 +172,7 @@ void *listgroup_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listgroup *x = (t_listgroup *)pd_new (listgroup_class);
     
-    listinlet_init (&x->x_listinlet);
+    listinlet_init (&x->x_h.lh_listinlet);
     
     if (argc) { x->x_group = atom_getFloat (argv); argc--; argv++; }
     
@@ -185,7 +187,7 @@ void *listgroup_new (t_symbol *s, int argc, t_atom *argv)
 
 static void listgroup_free (t_listgroup *x)
 {
-    listinlet_clear (&x->x_listinlet);
+    listinlet_clear (&x->x_h.lh_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -212,9 +214,11 @@ void listgroup_setup (void)
     class_addAnything (c, (t_method)listgroup_anything);
     
     class_addMethod (c, (t_method)listgroup_clear,      sym_clear,      A_NULL);
-    class_addMethod (c, (t_method)listgroup_restore,    sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)listgroup_restore,    sym__restore,   A_GIMME, A_NULL);
 
     class_setDataFunction (c, listgroup_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, &s_list);
     
     listgroup_class = c;

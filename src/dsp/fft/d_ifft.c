@@ -53,6 +53,8 @@ static void ifft_tilde_dsp (t_ifft_tilde *x, t_signal **sp)
 {
     int n = sp[0]->s_vectorSize;
     
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     if (n < FFT_MINIMUM || n > FFT_MAXIMUM) { error_invalid (sym_ifft__tilde__, sym_size); }
     else {
     //
@@ -62,8 +64,8 @@ static void ifft_tilde_dsp (t_ifft_tilde *x, t_signal **sp)
     PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
     
-    t_FFTState *t = fftstate_new (n);
-    
+    t_FFTState *t = fftstate_new (cast_gobj (x), n);
+        
     dsp_addCopyPerform (sp[0]->s_vector, sp[2]->s_vector, n);
     dsp_addCopyPerform (sp[1]->s_vector, sp[3]->s_vector, n);
     
@@ -83,7 +85,7 @@ t_buffer *ifft_tilde_functionData (t_gobj *z, int flags)
     t_ifft_tilde *x = (t_ifft_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

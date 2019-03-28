@@ -469,7 +469,7 @@ static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modi
     if (t != old) {
         x->x_position   = t;
         x->x_floatValue = dial_getValue (x);
-        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        IEMGUI_UPDATE (x);
         dial_out (x);
     }
 }
@@ -523,14 +523,14 @@ static void dial_set (t_dial *x, t_float f)
     f = (t_float)PD_CLAMP (f, x->x_minimum, x->x_maximum);
     
     if (x->x_isLogarithmic) { 
-        x->x_position = (int)(log (f / x->x_minimum) / dial_getStepValue (x));
+        x->x_position = (int)((log (f / x->x_minimum) / dial_getStepValue (x)) + 0.5);
     } else {
-        x->x_position = (int)((f - x->x_minimum) / dial_getStepValue (x));
+        x->x_position = (int)(((f - x->x_minimum) / dial_getStepValue (x)) + 0.5);
     }
     
     x->x_floatValue = dial_getValue (x);
     
-    if (x->x_floatValue != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_floatValue != old) { IEMGUI_UPDATE (x); }
 }
 
 static void dial_steps (t_dial *x, t_float f)
@@ -578,6 +578,10 @@ static int dial_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     return 1;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void dial_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_dial *x = (t_dial *)z;
@@ -613,7 +617,7 @@ static void dial_functionSave (t_gobj *z, t_buffer *b, int flags)
     if (SAVED_DEEP (flags)) { buffer_appendFloat (b, 1.0); }
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 static void dial_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -687,6 +691,10 @@ static void dial_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     stub_new (cast_pd (x), (void *)x, t);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void dial_fromValue (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
     dial_float (x, atom_getFloatAtIndex (0, argc, argv));
@@ -741,6 +749,25 @@ static void dial_fromDialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t5 != x->x_maximum);
     
     iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void dial_restore (t_dial *x)
+{
+    t_dial *old = (t_dial *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    iemgui_restore (cast_gobj (x), cast_gobj (old));
+    
+    dial_set (x, old->x_floatValue);
+    
+    iemgui_boxChanged ((void *)x);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -862,12 +889,15 @@ void dial_setup (void)
     class_addMethod (c, (t_method)dial_linear,                  sym_linear,             A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dial_restore,                 sym__restore,           A_NULL);
 
     class_setWidgetBehavior (c, &dial_widgetBehavior);
     class_setSaveFunction (c, dial_functionSave);
+    class_setDataFunction (c, iemgui_functionData);
     class_setValueFunction (c, dial_functionValue);
     class_setUndoFunction (c, dial_functionUndo);
     class_setPropertiesFunction (c, dial_functionProperties);
+    class_requirePending (c);
     
     dial_class = c;
 }

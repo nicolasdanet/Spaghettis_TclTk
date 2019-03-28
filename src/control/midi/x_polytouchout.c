@@ -63,8 +63,10 @@ static t_buffer *polytouchout_functionData (t_gobj *z, int flags)
 
 static void polytouchout_restore (t_polytouchout *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_pitch   = atom_getFloatAtIndex (0, argc, argv);
-    x->x_channel = atom_getFloatAtIndex (1, argc, argv);
+    t_polytouchout *old = (t_polytouchout *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_pitch   = old ? old->x_pitch   : atom_getFloatAtIndex (0, argc, argv);
+    x->x_channel = old ? old->x_channel : atom_getFloatAtIndex (1, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -105,6 +107,8 @@ void polytouchout_setup (void)
     class_addMethod (c, (t_method)polytouchout_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, polytouchout_functionData);
+    class_requirePending (c);
+
     class_setHelpName (c, sym_pgmout);
     
     polytouchout_class = c;

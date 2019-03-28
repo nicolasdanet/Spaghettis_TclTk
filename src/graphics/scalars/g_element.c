@@ -66,12 +66,21 @@ static t_buffer *element_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym_set);
     buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->x_templateIdentifier));
     buffer_appendSymbol (b, x->x_fieldName);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void element_restore (t_element *x)
+{
+    t_element *old = (t_element *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { gpointer_setByCopy (&x->x_gpointer, &old->x_gpointer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -119,9 +128,11 @@ void element_setup (void)
             
     class_addFloat (c, (t_method)element_float);
      
-    class_addMethod (c, (t_method)element_set, sym_set, A_SYMBOL, A_SYMBOL, A_NULL); 
+    class_addMethod (c, (t_method)element_set,      sym_set,        A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)element_restore,  sym__restore,   A_NULL);
     
     class_setDataFunction (c, element_functionData);
+    class_requirePending (c);
     
     element_class = c;
 }

@@ -16,6 +16,8 @@
 
 typedef struct _closure {
     struct _closure     *s_next;
+    t_id                s_id;
+    t_id                s_src;
     int                 s_type;
     } t_closure;
 
@@ -117,16 +119,29 @@ void fft_stateInitialize    (t_FFTState *x, int n);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_space             *space_new          (void);
-t_sfvectors         *sfvectors_new      (void);
-t_FFTState          *fftstate_new       (int n);
+int                 dsp_objectNeedInitializer   (t_gobj *o);
 
-void                garbage_newRaw      (void *m);
-void                garbage_newObject   (t_gobj *o);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-t_blockclosure      *block_newClosure   (void);
-t_vinletclosure     *vinlet_newClosure  (void);
-t_voutletclosure    *voutlet_newClosure (void);
+t_space             *space_fetch                (t_gobj *o);
+t_gobj              *garbage_fetch              (t_gobj *o);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_space             *space_new                  (t_gobj *owner);
+t_sfvectors         *sfvectors_new              (t_gobj *owner);
+t_FFTState          *fftstate_new               (t_gobj *owner, int n);
+
+t_blockclosure      *block_newClosure           (t_gobj *owner);
+t_vinletclosure     *vinlet_newClosure          (t_gobj *owner);
+t_voutletclosure    *voutlet_newClosure         (t_gobj *owner);
+
+void                garbage_newRaw              (void *m);      /* Without DSP chain it is freed. */
+int                 garbage_newObject           (t_gobj *o);    /* Without DSP chain zero is returned. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

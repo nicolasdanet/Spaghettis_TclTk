@@ -83,7 +83,9 @@ t_buffer *micabase_functionData (t_gobj *z, int flags)
 
 void micabase_restore (t_micabase *x, t_symbol *s)
 {
-    x->x_tag = s;
+    t_micabase *old = (t_micabase *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_tag = old ? old->x_tag : s;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -133,6 +135,8 @@ void micaset_setup (void)
     class_addMethod (c, (t_method)micabase_restore, sym__restore, A_SYMBOL, A_NULL);
 
     class_setDataFunction (c, micabase_functionData);
+    class_requirePending (c);
+
     class_setHelpName (c, sym_mica);
     
     micaset_class = c;

@@ -93,7 +93,7 @@ static void *voutlet_newSignal (t_symbol *s)
 {
     t_voutlet *x = (t_voutlet *)pd_new (voutlet_class);
     
-    resample_init (&x->vo_resample, s);
+    resample_init (&x->vo_resample, cast_gobj (x), s);
     
     x->vo_bufferSize = 0;
     x->vo_buffer     = (t_sample *)PD_MEMORY_GET (0);

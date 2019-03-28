@@ -52,9 +52,9 @@ static void arraysize_float (t_arraysize *x, t_float f)
     int n = PD_MAX (1, (int)f);
     
     if (ARRAYCLIENT_HAS_POINTER (&x->x_arrayclient)) {
-        array_resizeAndRedraw (a, arrayclient_fetchView (&x->x_arrayclient), n);
+        array_resizeAndRedraw (a, arrayclient_fetchOwner (&x->x_arrayclient), n);
     } else {
-        garray_resize (arrayclient_fetchOwnerIfName (&x->x_arrayclient), (t_float)n);
+        garray_resize (arrayclient_fetchGraphicArray (&x->x_arrayclient), (t_float)n);
     }
     //
     } else { error_undefined (sym_array__space__size, sym_array); }
@@ -68,10 +68,11 @@ static t_buffer *arraysize_functionData (t_gobj *z, int flags)
 {
     if (SAVED_DEEP (flags)) {
     //
+    t_arraysize *x = (t_arraysize *)z;
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__restore);
-    buffer_appendSymbol (b, arrayclient_getName ((t_arrayclient *)z));
+    buffer_appendSymbol (b, arrayclient_getName (&x->x_arrayclient));
     
     return b;
     //
@@ -82,7 +83,12 @@ static t_buffer *arraysize_functionData (t_gobj *z, int flags)
 
 static void arraysize_restore (t_arraysize *x, t_symbol *s, int argc, t_atom *argv)
 {
-    arrayclient_setName ((t_arrayclient *)x, atom_getSymbolAtIndex (0, argc, argv));
+    t_arraysize *old = (t_arraysize *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { arrayclient_restore (&x->x_arrayclient, &old->x_arrayclient); }
+    else {
+        arrayclient_setName (&x->x_arrayclient, atom_getSymbolAtIndex (0, argc, argv));
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -140,6 +146,8 @@ void arraysize_setup (void)
     class_addMethod (c, (t_method)arraysize_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, arraysize_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_array);
     
     arraysize_class = c;

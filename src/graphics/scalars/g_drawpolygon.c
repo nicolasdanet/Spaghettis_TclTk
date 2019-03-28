@@ -174,7 +174,7 @@ static void drawpolygon_behaviorGetRectangle (t_gobj *z,
     if (visible) {
     //
     int i;
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     t_fielddescriptor *fd = x->x_coordinates;
         
     for (i = 0; i < x->x_size; i += 2) {
@@ -212,7 +212,7 @@ static void drawpolygon_behaviorVisibilityChanged (t_gobj *z,
     if (n > 1) {
     //
     t_word *tag    = gpointer_getElement (gp);
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     t_glist *view  = glist_getView (glist);
     
     if (!isVisible) { gui_vAdd ("%s.c delete %lxCURVE\n", glist_getTagAsString (view), tag); }
@@ -285,7 +285,7 @@ static int drawpolygon_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, 
     
     if (visible) {
     //
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     
     int i;
     int bestField = -1;

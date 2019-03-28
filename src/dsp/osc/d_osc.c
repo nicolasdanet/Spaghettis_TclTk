@@ -68,11 +68,33 @@ static t_int *osc_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+static void osc_tilde_initialize (void *lhs, void *rhs)
+{
+    t_osc_tilde *x   = (t_osc_tilde *)lhs;
+    t_osc_tilde *old = (t_osc_tilde *)rhs;
+    
+    t_float f = PD_ATOMIC_FLOAT64_READ (&old->x_phase); PD_ATOMIC_FLOAT64_WRITE (f, &x->x_phase);
+}
+
 static void osc_tilde_dsp (t_osc_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new(); t->s_float0 = COSINE_TABLE_SIZE / sp[0]->s_sampleRate;
+    t_space *t = space_new (cast_gobj (x)); t->s_float0 = COSINE_TABLE_SIZE / sp[0]->s_sampleRate;
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_osc_tilde *old = (t_osc_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (osc_tilde_initialize, x, old);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
     
     dsp_add (osc_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
@@ -91,7 +113,7 @@ static t_buffer *osc_tilde_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_phase));
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

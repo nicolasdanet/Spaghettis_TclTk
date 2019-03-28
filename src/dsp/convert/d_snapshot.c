@@ -71,6 +71,8 @@ static t_int *snapshot_tilde_perform (t_int *w)
 
 static void snapshot_tilde_dsp (t_snapshot_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    
     dsp_add (snapshot_tilde_perform, 2, sp[0]->s_vector + (sp[0]->s_vectorSize - 1), &x->x_value);
 }
 
@@ -88,7 +90,7 @@ static t_buffer *snapshot_tilde_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym_set);
     buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_value));
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

@@ -283,6 +283,8 @@ void encapsulate_deencapsulate (t_glist *glist)
         
     if (undoable) { glist_undoAppend (parent, undodeencapsulate_new()); }
     
+    instance_pendingBegin();
+    
     {
         int n, state = dsp_suspend();
         t_rectangle r2, r1;
@@ -321,6 +323,8 @@ void encapsulate_deencapsulate (t_glist *glist)
         buffer_free (b);
         glist_setDirty (parent, 1);
     }
+    
+    instance_pendingEnd();
     
     if (undoable) { glist_undoAppendSeparator (parent); }
     //

@@ -100,6 +100,32 @@ static void set_fields (t_set *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *set_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void set_restore (t_set *x)
+{
+    t_set *old = (t_set *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { gpointer_setByCopy (&x->x_gpointer, &old->x_gpointer); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *set_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_set *x = (t_set *)pd_new (set_class);
@@ -174,7 +200,11 @@ void set_setup (void)
     class_addFloat (c, (t_method)set_float); 
     class_addSymbol (c, (t_method)set_symbol); 
 
-    class_addMethod (c, (t_method)set_fields, sym_fields, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)set_fields,   sym_fields,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)set_restore,  sym__restore,   A_NULL);
+
+    class_setDataFunction (c, set_functionData);
+    class_requirePending (c);
     
     set_class = c;
 }

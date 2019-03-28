@@ -419,9 +419,9 @@ static t_float object_getSignalValueAtIndex (t_object *x, int m)
     PD_BUG; return 0.0;
 }
 
-void object_getSignalValues (t_object *x, t_buffer *b, int n)
+void object_getSignalValues (t_object *x, t_buffer *b)
 {
-    int i;
+    int i, n = object_getNumberOfSignalInlets (x);
     
     buffer_appendSymbol (b, sym__signals);
     
@@ -440,6 +440,32 @@ void object_setSignalValues (t_object *x, int argc, t_atom *argv)
     int i;
     
     for (i = 0; i < argc; i++) { object_setSignalValueAtIndex (x, i, atom_getFloatAtIndex (i, argc, argv)); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void object_copySignalValues (t_object *x, t_object *old)
+{
+    int i, n = object_getNumberOfSignalInlets (x);
+    
+    for (i = 0; i < n; i++) { object_setSignalValueAtIndex (x, i, object_getSignalValueAtIndex (old, i)); }
+}
+
+void object_fetchAndCopySignalValuesIfRequired (t_object *x)
+{
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_gobj *old = garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    object_copySignalValues (x, cast_object (old));
+    //
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

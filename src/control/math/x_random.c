@@ -107,7 +107,12 @@ static t_buffer *random_functionData (t_gobj *z, int flags)
 
 static void random_restore (t_random *x, t_float f)
 {
-    x->x_range = f;
+    t_random *old = (t_random *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { x->x_range = old->x_range; x->x_state = old->x_state; }
+    else {
+        x->x_range = f;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -151,7 +156,8 @@ void random_setup (void)
     class_addMethod (c, (t_method)random_restore,   sym__restore,   A_FLOAT, A_NULL);
 
     class_setDataFunction (c, random_functionData);
-    
+    class_requirePending (c);
+
     random_class = c;
 }
 

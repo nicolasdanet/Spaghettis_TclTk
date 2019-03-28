@@ -61,7 +61,9 @@ static t_buffer *pgmout_functionData (t_gobj *z, int flags)
 
 static void pgmout_restore (t_pgmout *x, t_float f)
 {
-    x->x_channel = f;
+    t_pgmout *old = (t_pgmout *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_channel = old ? old->x_channel : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -100,7 +102,8 @@ void pgmout_setup (void)
     class_addMethod (c, (t_method)pgmout_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, pgmout_functionData);
-    
+    class_requirePending (c);
+
     pgmout_class = c;
 }
 

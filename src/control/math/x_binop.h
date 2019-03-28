@@ -15,7 +15,7 @@
 // MARK: -
 
 typedef struct _binop {
-    t_object    bo_obj;         /* MUST be the first. */
+    t_object    bo_obj;             /* MUST be the first. */
     t_float     bo_f1;
     t_float     bo_f2;
     t_outlet    *bo_outlet;
@@ -29,10 +29,11 @@ void        *binop_new              (t_class *c, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 t_buffer    *binop_functionData     (t_gobj *z, int flags);
 
-void        binop_restore           (t_binop *x, t_float f);
+void        binop_restore           (t_binop *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

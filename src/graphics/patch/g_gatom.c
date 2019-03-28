@@ -24,6 +24,7 @@ static void gatom_float                     (t_gatom *, t_float);
 static void gatom_set                       (t_gatom *, t_symbol *, int, t_atom *);
 static void gatom_motion                    (void *, t_float, t_float, t_float);
 static void gatom_behaviorVisibilityChanged (t_gobj *, t_glist *, int);
+static void gatom_restoreProceed            (t_gatom *, t_float, t_float, t_symbol *, t_symbol *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -270,7 +271,22 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b, int flags)
     
     object_serializeWidth (cast_object (x), b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
+}
+
+static t_buffer *gatom_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+
+    return b;
+    //
+    }
+    
+    return NULL;
 }
 
 static void gatom_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)
@@ -370,25 +386,14 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     {
     //
-    t_float width           = atom_getFloatAtIndex (0, argc, argv);
-    t_float lowRange        = atom_getFloatAtIndex (1, argc, argv);
-    t_float highRange       = atom_getFloatAtIndex (2, argc, argv);
-    t_symbol *symSend       = gatom_parse (atom_getSymbolAtIndex (3, argc, argv));
-    t_symbol *symReceive    = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
+    t_float width        = atom_getFloatAtIndex (0, argc, argv);
+    t_float lowRange     = atom_getFloatAtIndex (1, argc, argv);
+    t_float highRange    = atom_getFloatAtIndex (2, argc, argv);
+    t_symbol *symSend    = gatom_parse (atom_getSymbolAtIndex (3, argc, argv));
+    t_symbol *symReceive = gatom_parse (atom_getSymbolAtIndex (4, argc, argv));
 
-    if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
-    
+    gatom_restoreProceed (x, lowRange, highRange, symSend, symReceive);
     object_setWidth (cast_object (x), PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM));
-
-    x->a_lowRange           = PD_MIN (lowRange, highRange);
-    x->a_highRange          = PD_MAX (lowRange, highRange);
-    x->a_unexpandedSend     = symSend;
-    x->a_unexpandedReceive  = symReceive;
-    x->a_send               = dollar_expandSymbol (x->a_unexpandedSend, x->a_owner);
-    x->a_receive            = dollar_expandSymbol (x->a_unexpandedReceive, x->a_owner);
-    
-    if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
-    
     gatom_update (x);
     //
     }
@@ -426,6 +431,42 @@ static void gatom_fromDialog (t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     
     PD_ASSERT (s1 == NULL);
     PD_ASSERT (s2 == NULL);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* Encapsulation. */
+
+static void gatom_restoreProceed (t_gatom *x, t_float low, t_float high, t_symbol *send, t_symbol *receive)
+{
+    if (x->a_receive != &s_) { pd_unbind (cast_pd (x), x->a_receive); }
+
+    x->a_lowRange           = PD_MIN (low, high);
+    x->a_highRange          = PD_MAX (low, high);
+    x->a_unexpandedSend     = send;
+    x->a_unexpandedReceive  = receive;
+    x->a_send               = dollar_expandSymbol (x->a_unexpandedSend, x->a_owner);
+    x->a_receive            = dollar_expandSymbol (x->a_unexpandedReceive, x->a_owner);
+    
+    if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
+}
+
+static void gatom_restore (t_gatom *x)
+{
+    t_gatom *old = (t_gatom *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    t_float low       = old->a_lowRange;
+    t_float high      = old->a_highRange;
+    t_symbol *send    = old->a_unexpandedSend;
+    t_symbol *receive = old->a_unexpandedReceive;
+    
+    gatom_restoreProceed (x, low, high, send, receive); gatom_set (x, NULL, 1, &old->a_atom);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -527,6 +568,8 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     glist_objectAdd (x->a_owner, cast_gobj (x));
     
     if (isMenu) { glist_objectSelect (x->a_owner, cast_gobj (x)); }
+    
+    instance_setBoundA (cast_pd (x));
 }
 
 void gatom_makeObjectFloat (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
@@ -572,12 +615,15 @@ void gatom_setup (void)
     class_addMethod (c, (t_method)gatom_fromValue,  sym__valuedialog,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)gatom_fromDialog, sym__gatomdialog,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)gatom_range,      sym_range,          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)gatom_restore,    sym__restore,       A_NULL);
 
     class_setWidgetBehavior (c, &gatom_widgetBehavior);
     class_setSaveFunction (c, gatom_functionSave);
+    class_setDataFunction (c, gatom_functionData);
     class_setValueFunction (c, gatom_functionValue);
     class_setUndoFunction (c, gatom_functionUndo);
     class_setPropertiesFunction (c, gatom_functionProperties);
+    class_requirePending (c);
     
     gatom_class = c;
 }

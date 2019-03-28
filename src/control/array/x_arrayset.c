@@ -89,6 +89,7 @@ void arrayset_setup (void)
     class_addMethod (c, (t_method)arrayrange_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, arrayrange_functionData);
+    class_requirePending (c);
     class_setHelpName (c, sym_array);
     
     arrayset_class = c;

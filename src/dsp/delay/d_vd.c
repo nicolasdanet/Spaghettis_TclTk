@@ -74,12 +74,14 @@ static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
     if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_vd__tilde__, x->x_name); } }
     else {
     //
-    t_space *t  = space_new();
+    t_space *t  = space_new (cast_gobj (x));
     t_id build  = chain_getIdentifier (instance_chainGetTemporary());
     
     t->s_float0 = (t_float)(sp[0]->s_sampleRate * 0.001);
     t->s_float1 = (m->dw_identifier == build ? 0.0 : sp[0]->s_vectorSize);
     
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_add (vd_tilde_perform, 5, &m->dw_space, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
@@ -96,7 +98,7 @@ static t_buffer *vd_tilde_functionData (t_gobj *z, int flags)
     t_vd_tilde *x = (t_vd_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

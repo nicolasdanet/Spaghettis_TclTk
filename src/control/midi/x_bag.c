@@ -133,6 +133,8 @@ static t_buffer *bag_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, x->x_velocity);
     
+    t_bagelement *e = x->x_elements; while (e) { buffer_appendFloat (b, e->e_value); e = e->e_next; }
+    
     return b;
     //
     }
@@ -140,9 +142,32 @@ static t_buffer *bag_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void bag_restore (t_bag *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void bag_restoreEncapsulation (t_bag *x, t_bag *old)
 {
-    x->x_velocity = f;
+    x->x_velocity = old->x_velocity;
+    x->x_elements = old->x_elements; old->x_elements = NULL;
+}
+
+static void bag_restore (t_bag *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_bag *old = (t_bag *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { bag_restoreEncapsulation (x, old); }
+    else {
+    //
+    x->x_velocity = atom_getFloatAtIndex (0, argc, argv);
+    
+    if (argc > 1) {
+    //
+    int i; for (i = 1; i < argc; i++) { t_float f = atom_getFloat (argv + i); bag_add (x, f); }
+    //
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -188,9 +213,10 @@ void bag_setup (void)
     
     class_addMethod (c, (t_method)bag_flush,    sym_flush,      A_NULL);
     class_addMethod (c, (t_method)bag_clear,    sym_clear,      A_NULL);
-    class_addMethod (c, (t_method)bag_restore,  sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)bag_restore,  sym__restore,   A_GIMME, A_NULL);
 
     class_setDataFunction (c, bag_functionData);
+    class_requirePending (c);
     
     bag_class = c;
 }

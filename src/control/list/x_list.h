@@ -26,6 +26,11 @@ typedef struct _listinlet {
     t_listinletelement  *li_vector;
     } t_listinlet;
 
+typedef struct _listinlethelper {
+    t_object            lh_obj;         /* Must be the first. */
+    t_listinlet         lh_listinlet;
+    } t_listinlethelper;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -36,6 +41,7 @@ void    listinlet_listGet               (t_listinlet *x, t_buffer *b);
 void    listinlet_listSet               (t_listinlet *x, int argc, t_atom *argv);
 void    listinlet_listAppend            (t_listinlet *x, int argc, t_atom *argv);
 void    listinlet_listPrepend           (t_listinlet *x, int argc, t_atom *argv);
+void    listinlet_listSetByCopy         (t_listinlet *x, t_listinlet *toCopy);
 int     listinlet_getSize               (t_listinlet *x);
 int     listinlet_hasPointer            (t_listinlet *x);
 void    listinlet_copyAtomsUnchecked    (t_listinlet *x, t_atom *a);
@@ -55,6 +61,17 @@ void    *listiterate_new                (t_symbol *s, int argc, t_atom *argv);
 void    *listgroup_new                  (t_symbol *s, int argc, t_atom *argv);
 void    *listfromsymbol_new             (t_symbol *s, int argc, t_atom *argv);
 void    *listtosymbol_new               (t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_buffer    *listhelper_functionData    (t_gobj *z, int flags);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void        listhelper_restore          (t_listinlethelper *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

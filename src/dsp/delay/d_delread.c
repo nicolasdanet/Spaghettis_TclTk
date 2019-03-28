@@ -84,12 +84,20 @@ static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
     if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_delread__tilde__, x->x_name); } }
     else {
     //
-    t_space *t  = space_new();
+    t_space *t  = space_new (cast_gobj (x));
     t_id build  = chain_getIdentifier (instance_chainGetTemporary());
     
     t->s_float0 = (t_float)(sp[0]->s_sampleRate * 0.001);
     t->s_float1 = (m->dw_identifier == build ? sp[0]->s_vectorSize : 0.0);
-        
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_delread_tilde *old = (t_delread_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { delread_tilde_float (x, PD_ATOMIC_FLOAT64_READ (&old->x_delayInMilliseconds)); }
+    //
+    }
+    
     dsp_add (delread_tilde_perform, 5, x, &m->dw_space, sp[0]->s_vector, t, sp[0]->s_vectorSize);
     //
     }

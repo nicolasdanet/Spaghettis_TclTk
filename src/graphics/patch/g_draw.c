@@ -658,7 +658,7 @@ void glist_windowOpen (t_glist *glist)
     else {
     //
     t_rectangle *r = glist_getWindowGeometry (glist);
-    int isEditable = !(glist_isGraphicArray (glist) || glist_isAbstraction (glist));
+    int isEditable = glist_isEditable (glist);
     int isEditMode = isEditable && glist_hasEditMode (glist);
     
     gui_vAdd ("::ui_patch::create %s %d %d %d %d %d %d\n",    // --
