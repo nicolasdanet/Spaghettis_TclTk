@@ -372,7 +372,7 @@ void ugen_graphClose (t_dspcontext *context)
     
     t_block *block = ugen_graphGetBlockIfContainsAny (context);
     
-    t_blockclosure *c = block ? block_newClosure() : NULL;
+    t_blockclosure *c = block ? block_newClosure (cast_gobj (block)) : NULL;
     
     t_blockproperties p;
     

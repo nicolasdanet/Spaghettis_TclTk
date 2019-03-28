@@ -210,6 +210,7 @@ extern t_symbol *sym__snap;
 extern t_symbol *sym__sysexin;
 extern t_symbol *sym__tagcanvas;
 extern t_symbol *sym__tagobject;
+extern t_symbol *sym__tagsource;
 extern t_symbol *sym__touchin;
 extern t_symbol *sym__undo;
 extern t_symbol *sym__valuedialog;

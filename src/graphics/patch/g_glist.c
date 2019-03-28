@@ -16,6 +16,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void gobj_changeSource (t_gobj *, t_id);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void glist_taskRedraw (t_glist *glist)
 {
     glist_redraw (glist);
@@ -403,13 +409,13 @@ void glist_setScroll (t_glist *glist, int a, int b)
     glist->gl_scrollX = a; glist->gl_scrollY = b; glist_updatePatchGeometry (glist);
 }
 
-void glist_setUnique (t_glist *glist, int argc, t_atom *argv)
+void glist_setIdentifiers (t_glist *glist, int argc, t_atom *argv)
 {
     t_id u; t_error err = utils_uniqueWithAtoms (argc, argv, &u);
     
     PD_ASSERT (!err); PD_UNUSED (err);
     
-    gobj_changeUnique (cast_gobj (glist), u);
+    gobj_changeIdentifiers (cast_gobj (glist), u);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -720,7 +726,7 @@ void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
     }
 }
 
-void glist_objectSetUniqueOfLast (t_glist *glist, int argc, t_atom *argv)
+void glist_objectSetIdentifiersOfLast (t_glist *glist, int argc, t_atom *argv)
 {
     if (glist->gl_graphics) {
     //
@@ -733,7 +739,25 @@ void glist_objectSetUniqueOfLast (t_glist *glist, int argc, t_atom *argv)
     
     for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
     
-    gobj_changeUnique (g1, u);
+    gobj_changeIdentifiers (g1, u);
+    //
+    }
+}
+
+void glist_objectSetSourceOfLast (t_glist *glist, int argc, t_atom *argv)
+{
+    if (glist->gl_graphics) {
+    //
+    t_gobj *g1 = NULL;
+    t_gobj *g2 = NULL;
+    
+    t_id u; t_error err = utils_uniqueWithAtoms (argc, argv, &u);
+    
+    PD_ASSERT (!err); PD_UNUSED (err);
+    
+    for ((g1 = glist->gl_graphics); (g2 = g1->g_next); (g1 = g2)) { }
+    
+    gobj_changeSource (g1, u);
     //
     }
 }

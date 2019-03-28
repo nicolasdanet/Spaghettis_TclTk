@@ -17,7 +17,8 @@
 // MARK: -
 
 #define INSTANCE_TIME_CLOCKS    1000
-#define INSTANCE_TIME_CHAIN     5000
+
+#define INSTANCE_TIME_CHAIN     PD_SECONDS_TO_MILLISECONDS (30)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -186,6 +187,8 @@ t_chain *instance_chainGetTemporary (void)
 
 static void instance_chainStartTemporary (void)
 {
+    PD_ATOMIC_INT32_WRITE (1, &instance_get()->pd_chainRetain);
+
     PD_ASSERT (instance_get()->pd_build == NULL); instance_get()->pd_build = chain_new();
 }
 
@@ -200,11 +203,14 @@ static void instance_chainPushTemporary (void)
 
 int instance_isChainSafeToDelete (t_chain *chain)
 {
-    int safe = dspthread_isChainSafeToDelete (instance_get()->pd_dsp, chain);
+    if (PD_ATOMIC_INT32_READ (&instance_get()->pd_chainRetain)) { return 0; }
     
-    PD_ASSERT (safe);   /* It should never happened unless DSP stalled. */
-    
-    return safe;
+    return dspthread_isChainSafeToDelete (instance_get()->pd_dsp, chain);
+}
+
+void instance_chainSetInitialized (void)
+{
+    PD_ATOMIC_INT32_WRITE (0, &instance_get()->pd_chainRetain);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -244,7 +250,15 @@ void instance_dspClean (void)
     //
     t_systime t = dspthread_time (instance_get()->pd_dsp);
     
-    if (t && scheduler_getMillisecondsSince (t) > INSTANCE_TIME_CHAIN) { instance_chainSetCurrent (NULL); }
+    if (t && scheduler_getMillisecondsSince (t) > INSTANCE_TIME_CHAIN) {
+    //
+    if (PD_ATOMIC_INT32_READ (&instance_get()->pd_chainRetain) == 0) {
+    //
+    instance_chainSetCurrent (NULL);
+    //
+    }
+    //
+    }
     //
     }
 }

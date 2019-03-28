@@ -146,7 +146,7 @@ void    glist_setBounds                     (t_glist *g, t_bounds *bounds);
 void    glist_setGraphGeometry              (t_glist *g, t_rectangle *r, t_bounds *bounds, int isGOP);
 void    glist_setWindowGeometry             (t_glist *g, t_rectangle *r);
 void    glist_setScroll                     (t_glist *g, int a, int b);
-void    glist_setUnique                     (t_glist *g, int argc, t_atom *argv);
+void    glist_setIdentifiers                (t_glist *g, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -172,7 +172,8 @@ void    glist_undoAppend                    (t_glist *g, t_undoaction *a);
 
 void    glist_objectMake                    (t_glist *g, int a, int b, int w, int selected, t_buffer *t);
 void    glist_objectMakeScalar              (t_glist *g, int argc, t_atom *argv);
-void    glist_objectSetUniqueOfLast         (t_glist *g, int argc, t_atom *argv);
+void    glist_objectSetIdentifiersOfLast    (t_glist *g, int argc, t_atom *argv);
+void    glist_objectSetSourceOfLast         (t_glist *g, int argc, t_atom *argv);
 void    glist_objectSetWidthOfLast          (t_glist *g, int w);
 void    glist_objectAddNext                 (t_glist *g, t_gobj *y, t_gobj *first);
 void    glist_objectAdd                     (t_glist *g, t_gobj *y);

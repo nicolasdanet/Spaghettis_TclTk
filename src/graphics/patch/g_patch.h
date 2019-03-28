@@ -162,9 +162,12 @@ void    gobj_visibilityChanged      (t_gobj *x, t_glist *owner, int isVisible);
 int     gobj_mouse                  (t_gobj *x, t_glist *owner, t_mouse *m);
 
 t_id    gobj_getUnique              (t_gobj *x);
-void    gobj_setUnique              (t_gobj *x, t_id u);
-void    gobj_changeUnique           (t_gobj *x, t_id u);
 void    gobj_serializeUnique        (t_gobj *x, t_symbol *s, t_buffer *b);
+t_id    gobj_getSource              (t_gobj *x);
+void    gobj_serializeSource        (t_gobj *x, t_symbol *s, t_buffer *b);
+t_id    gobj_getNative              (t_gobj *x);
+void    gobj_changeIdentifiers      (t_gobj *x, t_id u);
+int     gobj_identifiersHaveChanged (t_gobj *x);
 
 void    gobj_save                   (t_gobj *x, t_buffer *buffer, int flags);
 int     gobj_hit                    (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r);

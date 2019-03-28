@@ -81,7 +81,7 @@ static void glist_serializeLines (t_glist *glist, t_buffer *b)
 
 static void glist_serializeTag (t_glist *glist, t_buffer *b, int flags)
 {
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (cast_gobj (glist), sym__tagcanvas, b); }
+    if (flags & SAVE_UNDO) { gobj_serializeUnique (cast_gobj (glist), sym__tagcanvas, b); }
 }
 
 /* For compatibility with legacy, top left coordinates must be serialized at last. */

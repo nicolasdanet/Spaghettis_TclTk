@@ -107,7 +107,7 @@ static t_int *tabread4_tilde_perform (t_int *w)
 
 static void tabread4_tilde_dsp (t_tabread4_tilde *x, t_signal **sp)
 {
-    t_space *t  = space_new();
+    t_space *t  = space_new (cast_gobj (x));
     int size    = 0;
     t_word *w   = NULL;
     t_error err = tab_fetchArray (x->x_name, &size, &w);

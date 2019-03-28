@@ -134,6 +134,7 @@
 #include "graphics/g_stub.c"
 #include "graphics/g_proxy.c"
 
+#include "graphics/patch/g_identifiers.c"
 #include "graphics/patch/g_object.c"
 #include "graphics/patch/g_typeset.c"
 #include "graphics/patch/g_box.c"
@@ -347,6 +348,7 @@
 #include "dsp/graph/d_dspthread.c"
 #include "dsp/graph/d_chain.c"
 #include "dsp/graph/d_closures.c"
+#include "dsp/graph/d_initializer.c"
 #include "dsp/graph/d_signal.c"
 #include "dsp/graph/d_ugen.c"
 #include "dsp/graph/d_canvas.c"

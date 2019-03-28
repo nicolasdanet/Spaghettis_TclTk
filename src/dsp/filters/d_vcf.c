@@ -115,7 +115,7 @@ static t_int *vcf_tilde_perform (t_int *w)
 
 static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new(); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
+    t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
    
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[0]->s_vector != sp[3]->s_vector);

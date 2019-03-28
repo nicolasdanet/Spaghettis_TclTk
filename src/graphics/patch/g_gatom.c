@@ -270,7 +270,7 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b, int flags)
     
     object_serializeWidth (cast_object (x), b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    if (flags & SAVE_UNDO) { gobj_serializeUnique (z, sym__tagobject, b); }
 }
 
 static void gatom_functionValue (t_gobj *z, t_glist *owner, t_mouse *dummy)

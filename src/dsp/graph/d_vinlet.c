@@ -102,7 +102,7 @@ void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
     
     x->vi_directSignal = NULL;
     
-    t_vinletclosure *c = x->vi_closure = vinlet_newClosure();
+    t_vinletclosure *c = x->vi_closure = vinlet_newClosure (cast_gobj (x));
     
     if (signals) {
         s = signals[inlet_getIndexAsSignal (x->vi_inlet)];

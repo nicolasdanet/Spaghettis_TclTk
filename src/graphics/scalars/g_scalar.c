@@ -450,7 +450,7 @@ static void scalar_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_serialize (b, t);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    if (flags & SAVE_UNDO) { gobj_serializeUnique (z, sym__tagobject, b); }
     
     buffer_free (t);
 }

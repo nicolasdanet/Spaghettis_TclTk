@@ -186,10 +186,14 @@ static void resample_addResampling (t_resample *x,
     
     switch (type) {
     //
-    case RESAMPLE_DEFAULT : PD_BUG;     /* Falls through. */
-    case RESAMPLE_ZERO    : dsp_add (resample_performUpsamplingZero,    4, in, out, t, inSize); break;
-    case RESAMPLE_HOLD    : dsp_add (resample_performUpsamplingHold,    4, in, out, t, inSize); break;
-    case RESAMPLE_LINEAR  : dsp_add (resample_performUpsamplingLinear,  5, space_new(), in, out, t, inSize);
+    case RESAMPLE_DEFAULT :
+        PD_BUG;                 /* Falls through. */
+    case RESAMPLE_ZERO    :
+        dsp_add (resample_performUpsamplingZero,    4, in, out, t, inSize); break;
+    case RESAMPLE_HOLD    :
+        dsp_add (resample_performUpsamplingHold,    4, in, out, t, inSize); break;
+    case RESAMPLE_LINEAR  :
+        dsp_add (resample_performUpsamplingLinear,  5, space_new (x->r_owner), in, out, t, inSize);
     //
     }
     //
@@ -246,7 +250,7 @@ void resample_set (t_resample *x, int downsample, int upsample)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void resample_init (t_resample *x, t_symbol *type)
+void resample_init (t_resample *x, t_gobj *owner, t_symbol *type)
 {
     x->r_type = RESAMPLE_DEFAULT;
     
@@ -258,6 +262,7 @@ void resample_init (t_resample *x, t_symbol *type)
     x->r_upsample   = 1;
     x->r_allocated  = 0;
     x->r_vector     = NULL;
+    x->r_owner      = owner;
 }
 
 void resample_free (t_resample *x)

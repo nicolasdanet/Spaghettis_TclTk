@@ -124,7 +124,7 @@ static t_int *bp_tilde_perform (t_int *w)
 
 static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new(); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
+    t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
 
     pthread_mutex_lock (&x->x_mutex);
     

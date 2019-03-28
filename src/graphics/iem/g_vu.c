@@ -490,7 +490,7 @@ static void vu_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  0);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    if (flags & SAVE_UNDO) { gobj_serializeUnique (z, sym__tagobject, b); }
 }
 
 static void vu_functionUndo (t_gobj *z, t_buffer *b)

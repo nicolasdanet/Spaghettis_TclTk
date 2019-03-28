@@ -217,12 +217,17 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_tagcanvas (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    glist_setUnique (glist, argc, argv);
+    glist_setIdentifiers (glist, argc, argv);
 }
 
 static void canvas_tagobject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    glist_objectSetUniqueOfLast (glist, argc, argv);
+    glist_objectSetIdentifiersOfLast (glist, argc, argv);
+}
+
+static void canvas_tagsource (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    glist_objectSetSourceOfLast (glist, argc, argv);
 }
 
 static void canvas_connect (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
@@ -539,7 +544,7 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b, int flags)
         buffer_appendSemicolon (b);
         object_serializeWidth (cast_object (x), b);
         
-        if (SAVED_UNDO (flags)) { gobj_serializeUnique (x, sym__tagobject, b); }
+        if (flags & SAVE_UNDO) { gobj_serializeUnique (x, sym__tagobject, b); }
     }
 }
 
@@ -699,6 +704,7 @@ void canvas_setup (void)
     
     class_addMethod (c, (t_method)canvas_tagcanvas,             sym__tagcanvas,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_tagobject,             sym__tagobject,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_tagsource,             sym__tagsource,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_motion,                sym__motion,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseDown,             sym__mousedown,         A_GIMME, A_NULL);

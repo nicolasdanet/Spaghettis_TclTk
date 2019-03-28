@@ -133,7 +133,7 @@ static t_int *threshold_tilde_perform (t_int *w)
 
 void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new();
+    t_space *t = space_new (cast_gobj (x));
     
     t->s_float0 = (t_float)(1000.0 * sp[0]->s_vectorSize / sp[0]->s_sampleRate);
     

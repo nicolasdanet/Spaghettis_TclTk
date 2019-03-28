@@ -233,7 +233,7 @@ static void panel_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendSymbol (b, colors.c_symColorLabel);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    if (flags & SAVE_UNDO) { gobj_serializeUnique (z, sym__tagobject, b); }
 }
 
 static void panel_functionUndo (t_gobj *z, t_buffer *b)

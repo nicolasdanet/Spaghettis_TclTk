@@ -132,7 +132,7 @@ void undosnippet_update (t_undosnippet *x)
 {
     t_gobj *t = instance_registerGetObject (x->us_object);
     
-    if (t) { buffer_clear (x->us_buffer); gobj_save (t, x->us_buffer, SAVE_UNDO); }
+    if (t) { buffer_clear (x->us_buffer); gobj_save (t, x->us_buffer, SAVE_UNDO | SAVE_UPDATE); }
 }
 
 /* MUST have been created with undosnippet_newProperties. */

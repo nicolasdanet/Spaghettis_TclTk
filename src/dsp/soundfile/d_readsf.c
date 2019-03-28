@@ -214,7 +214,7 @@ static void readsf_tilde_dsp (t_readsf_tilde *x, t_signal **sp)
 {
     int i;
     
-    t_sfvectors *t = sfvectors_new(); t->s_size = x->sf_numberOfChannels;
+    t_sfvectors *t = sfvectors_new (cast_gobj (x)); t->s_size = x->sf_numberOfChannels;
     
     PD_ASSERT (t->s_size <= SOUNDFILE_CHANNELS);
     

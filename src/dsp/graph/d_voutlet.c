@@ -95,7 +95,7 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     //
     t_signal *in = sp[0];
     
-    t_voutletclosure *c = x->vo_closure = voutlet_newClosure();
+    t_voutletclosure *c = x->vo_closure = voutlet_newClosure (cast_gobj (x));
     
     if (x->vo_copyOut) {    /* Note that the switch off is proceeded by the "block~" object. */
     

@@ -79,7 +79,7 @@ static void rfft_tilde_dsp (t_rfft_tilde *x, t_signal **sp)
     
     int half = (n >> 1);
     
-    t_FFTState *t = fftstate_new (n);
+    t_FFTState *t = fftstate_new (cast_gobj (x), n);
     
     dsp_addCopyPerform (in1, out1, n);
     

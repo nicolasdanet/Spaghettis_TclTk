@@ -84,7 +84,7 @@ static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
     if (!m) { if (x->x_name != &s_) { error_canNotFind (sym_delread__tilde__, x->x_name); } }
     else {
     //
-    t_space *t  = space_new();
+    t_space *t  = space_new (cast_gobj (x));
     t_id build  = chain_getIdentifier (instance_chainGetTemporary());
     
     t->s_float0 = (t_float)(sp[0]->s_sampleRate * 0.001);

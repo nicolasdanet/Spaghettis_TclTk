@@ -665,7 +665,7 @@ typedef t_class *t_pd;
 
 typedef struct _gobj {
     t_pd            g_pd;                       /* MUST be the first. */
-    t_id            g_id;
+    t_id            g_id[3];
     struct _gobj    *g_next;
     } t_gobj;
 

@@ -210,6 +210,7 @@ t_symbol *sym__snap;
 t_symbol *sym__sysexin;
 t_symbol *sym__tagcanvas;
 t_symbol *sym__tagobject;
+t_symbol *sym__tagsource;
 t_symbol *sym__touchin;
 t_symbol *sym__undo;
 t_symbol *sym__valuedialog;
@@ -934,6 +935,7 @@ void symbols_initialize (void)
     sym__sysexin                                = gensym ("_sysexin");
     sym__tagcanvas                              = gensym ("_tagcanvas");
     sym__tagobject                              = gensym ("_tagobject");
+    sym__tagsource                              = gensym ("_tagsource");
     sym__touchin                                = gensym ("_touchin");
     sym__undo                                   = gensym ("_undo");
     sym__valuedialog                            = gensym ("_valuedialog");

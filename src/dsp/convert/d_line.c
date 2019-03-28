@@ -128,7 +128,7 @@ static t_int *line_tilde_perform (t_int *w)
 
 static void line_tilde_dsp (t_line_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new();
+    t_space *t = space_new (cast_gobj (x));
 
     t->s_float0 = line_tilde_target (x);
     t->s_float1 = (t_float)(sp[0]->s_sampleRate / 1000.0);

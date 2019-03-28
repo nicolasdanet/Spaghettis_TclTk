@@ -457,7 +457,7 @@ static void menubutton_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  (SAVED_DEEP (flags) || x->x_gui.iem_loadbang) ? x->x_index : 0.0);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    if (flags & SAVE_UNDO) { gobj_serializeUnique (z, sym__tagobject, b); }
 }
 
 static t_buffer *menubutton_functionData (t_gobj *z, int flags)

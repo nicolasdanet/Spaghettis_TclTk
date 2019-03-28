@@ -122,7 +122,7 @@ static t_int *tabosc4_tilde_perform (t_int *w)
 
 static void tabosc4_tilde_dsp (t_tabosc4_tilde *x, t_signal **sp)
 {
-    t_space *t   = space_new();
+    t_space *t   = space_new (cast_gobj (x));
     int n        = 0;
     t_word *w    = NULL;
     t_error err1 = tab_fetchArray (x->x_name, &n, &w);

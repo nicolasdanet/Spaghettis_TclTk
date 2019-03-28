@@ -715,7 +715,7 @@ static void garray_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  t);
     buffer_appendSemicolon (b);
     
-    if (SAVED_UNDO (flags)) { gobj_serializeUnique (z, sym__tagobject, b); }
+    if (flags & SAVE_UNDO) { gobj_serializeUnique (z, sym__tagobject, b); }
 }
 
 static t_buffer *garray_functionData (t_gobj *z, int flags)

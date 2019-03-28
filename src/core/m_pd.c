@@ -15,6 +15,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void gobj_setIdentifiers (t_gobj *, t_id);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_pd *pd_new (t_class *c)
 {
     t_pd *x;
@@ -27,7 +33,7 @@ t_pd *pd_new (t_class *c)
     
     *x = c;
     
-    if (!class_isInvisible (c)) { gobj_setUnique (cast_gobj (x), utils_unique()); }
+    if (!class_isInvisible (c)) { gobj_setIdentifiers (cast_gobj (x), utils_unique()); }
     
     return x;
 }

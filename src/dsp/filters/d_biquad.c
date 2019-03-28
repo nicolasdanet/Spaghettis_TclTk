@@ -122,7 +122,7 @@ static t_int *biquad_tilde_perform (t_int *w)
 
 static void biquad_tilde_dsp (t_biquad_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new();
+    t_space *t = space_new (cast_gobj (x));
     
     pthread_mutex_lock (&x->x_mutex);
     

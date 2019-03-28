@@ -9,6 +9,7 @@
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
 #include "../../s_system.h"
+#include "../../g_graphics.h"
 #include "../../d_dsp.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -21,6 +22,8 @@
 // MARK: -
 
 void chain_addClosure (t_chain *, t_closure *);
+
+t_closure *chain_fetchClosure (t_chain *, t_gobj *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -64,10 +67,56 @@ void fft_stateInitialize (t_FFTState *x, int n)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_space *space_new (void)
+/* Return if initialization is required (i.e. encapsulation). */
+
+int dsp_objectNeedInitializer (t_gobj *o)
+{
+    if (gobj_identifiersHaveChanged (o)) { return 1; }
+
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static t_closure *closure_fetch (t_gobj *owner, int type)
+{
+    t_chain *chain = instance_chainGetCurrent();
+    
+    if (chain) {
+    //
+    t_closure *c = chain_fetchClosure (chain, owner);
+    
+    if (c && c->s_type == type) { return c; }
+    //
+    }
+    
+    return NULL;
+}
+
+t_space *space_fetch (t_gobj *o)
+{
+    return (t_space *)closure_fetch (o, CLOSURES_SPACE);
+}
+
+t_gobj *garbage_fetch (t_gobj *o)
+{
+    t_garbage *g = (t_garbage *)closure_fetch (o, CLOSURES_OBJECT);
+    
+    return g ? cast_gobj (g->s_ptr) : NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_space *space_new (t_gobj *owner)
 {
     t_space *x = (t_space *)PD_MEMORY_GET (sizeof (t_space));
     
+    ((t_closure *)x)->s_id   = gobj_getUnique (owner);
+    ((t_closure *)x)->s_src  = gobj_getSource (owner);
     ((t_closure *)x)->s_type = CLOSURES_SPACE;
     
     chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
@@ -75,10 +124,12 @@ t_space *space_new (void)
     return x;
 }
 
-t_sfvectors *sfvectors_new (void)
+t_sfvectors *sfvectors_new (t_gobj *owner)
 {
     t_sfvectors *x = (t_sfvectors *)PD_MEMORY_GET (sizeof (t_sfvectors));
     
+    ((t_closure *)x)->s_id   = gobj_getUnique (owner);
+    ((t_closure *)x)->s_src  = gobj_getSource (owner);
     ((t_closure *)x)->s_type = CLOSURES_VECTORS;
     
     chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
@@ -86,13 +137,58 @@ t_sfvectors *sfvectors_new (void)
     return x;
 }
 
-t_FFTState *fftstate_new (int n)
+t_FFTState *fftstate_new (t_gobj *owner, int n)
 {
     t_FFTState *x = (t_FFTState *)PD_MEMORY_GET (sizeof (t_FFTState));
     
+    ((t_closure *)x)->s_id   = gobj_getUnique (owner);
+    ((t_closure *)x)->s_src  = gobj_getSource (owner);
     ((t_closure *)x)->s_type = CLOSURES_FFT;
     
     fft_stateInitialize (x, n);
+    
+    chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_blockclosure *block_newClosure (t_gobj *owner)
+{
+    t_blockclosure *x = (t_blockclosure *)PD_MEMORY_GET (sizeof (t_blockclosure));
+    
+    ((t_closure *)x)->s_id   = gobj_getUnique (owner);
+    ((t_closure *)x)->s_src  = gobj_getSource (owner);
+    ((t_closure *)x)->s_type = CLOSURES_BLOCK;
+    
+    chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
+    
+    return x;
+}
+
+t_vinletclosure *vinlet_newClosure (t_gobj *owner)
+{
+    t_vinletclosure *x = (t_vinletclosure *)PD_MEMORY_GET (sizeof (t_vinletclosure));
+    
+    ((t_closure *)x)->s_id   = gobj_getUnique (owner);
+    ((t_closure *)x)->s_src  = gobj_getSource (owner);
+    ((t_closure *)x)->s_type = CLOSURES_VINLET;
+    
+    chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
+    
+    return x;
+}
+
+t_voutletclosure *voutlet_newClosure (t_gobj *owner)
+{
+    t_voutletclosure *x = (t_voutletclosure *)PD_MEMORY_GET (sizeof (t_voutletclosure));
+    
+    ((t_closure *)x)->s_id   = gobj_getUnique (owner);
+    ((t_closure *)x)->s_src  = gobj_getSource (owner);
+    ((t_closure *)x)->s_type = CLOSURES_VOUTLET;
     
     chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
     
@@ -114,6 +210,7 @@ void garbage_newRaw (void *m)
     //
     t_garbage *x = (t_garbage *)PD_MEMORY_GET (sizeof (t_garbage));
     
+    ((t_closure *)x)->s_id   = 0;
     ((t_closure *)x)->s_type = CLOSURES_RAW;
     
     x->s_ptr = m;
@@ -134,6 +231,8 @@ void garbage_newObject (t_gobj *o)
     //
     t_garbage *x = (t_garbage *)PD_MEMORY_GET (sizeof (t_garbage));
     
+    ((t_closure *)x)->s_id   = gobj_getUnique (o);
+    ((t_closure *)x)->s_src  = gobj_getSource (o);
     ((t_closure *)x)->s_type = CLOSURES_OBJECT;
     
     x->s_ptr = (void *)o;
@@ -143,43 +242,6 @@ void garbage_newObject (t_gobj *o)
     chain_addClosure (chain, (t_closure *)x);
     //
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_blockclosure *block_newClosure (void)
-{
-    t_blockclosure *x = (t_blockclosure *)PD_MEMORY_GET (sizeof (t_blockclosure));
-    
-    ((t_closure *)x)->s_type = CLOSURES_BLOCK;
-    
-    chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
-    
-    return x;
-}
-
-t_vinletclosure *vinlet_newClosure (void)
-{
-    t_vinletclosure *x = (t_vinletclosure *)PD_MEMORY_GET (sizeof (t_vinletclosure));
-    
-    ((t_closure *)x)->s_type = CLOSURES_VINLET;
-    
-    chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
-    
-    return x;
-}
-
-t_voutletclosure *voutlet_newClosure (void)
-{
-    t_voutletclosure *x = (t_voutletclosure *)PD_MEMORY_GET (sizeof (t_voutletclosure));
-    
-    ((t_closure *)x)->s_type = CLOSURES_VOUTLET;
-    
-    chain_addClosure (instance_chainGetTemporary(), (t_closure *)x);
-    
-    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------

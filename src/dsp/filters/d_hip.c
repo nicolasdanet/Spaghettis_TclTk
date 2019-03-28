@@ -87,7 +87,7 @@ static t_int *hip_tilde_perform (t_int *w)
 
 static void hip_tilde_dsp (t_hip_tilde *x, t_signal **sp)
 {
-    t_space *t = space_new(); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
+    t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     

@@ -54,6 +54,7 @@ typedef struct _pdinstance {
     int             pd_overflowCount;
     int             pd_isLoadingExternal;
     int             pd_isUndoRecursive;
+    t_int32Atomic   pd_chainRetain;
     t_pointerAtomic pd_chain;
     t_chain         *pd_build;
     t_symbol        *pd_loadingAbstraction;

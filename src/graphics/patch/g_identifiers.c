@@ -7,48 +7,109 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef __d_resample_h_
-#define __d_resample_h_
+#include "../../m_spaghettis.h"
+#include "../../m_core.h"
+#include "../../s_system.h"
+#include "../../g_graphics.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_id gobj_getUnique (t_gobj *x)
+{
+    return x->g_id[0];
+}
+
+static void gobj_setUnique (t_gobj *x, t_id u)
+{
+    x->g_id[0] = u;
+}
+
+void gobj_changeUnique (t_gobj *x, t_id u)
+{
+    instance_registerRename (x, u); gobj_setUnique (x, u);
+}
+
+void gobj_serializeUnique (t_gobj *x, t_symbol *s, t_buffer *b)
+{
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, s);
+    utils_appendUnique (b, gobj_getUnique (x));
+    buffer_appendSemicolon (b);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _resample {
-    int         r_type;                 /* Type of upsampling method. */
-    int         r_downsample;           /* Downsampling factor. */
-    int         r_upsample;             /* Upsampling factor. */
-    int         r_allocated;            /* Size of allocated resampled vector signal. */
-    t_sample    *r_vector;              /* Resampled vector signal. */
-    t_gobj      *r_owner;
-    } t_resample;
+t_id gobj_getSource (t_gobj *x)
+{
+    return x->g_id[1];
+}
+
+static void gobj_setSource (t_gobj *x, t_id u)
+{
+    x->g_id[1] = u;
+}
+
+void gobj_changeSource (t_gobj *x, t_id u)
+{
+    gobj_setSource (x, u);
+}
+
+void gobj_serializeSource (t_gobj *x, t_symbol *s, t_buffer *b)
+{
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, s);
+    utils_appendUnique (b, gobj_getSource (x));
+    buffer_appendSemicolon (b);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        resample_init               (t_resample *x, t_gobj *owner, t_symbol *type);
-void        resample_free               (t_resample *x);
+t_id gobj_getNative (t_gobj *x)
+{
+    return x->g_id[2];
+}
+
+static void gobj_setNative (t_gobj *x, t_id u)
+{
+    x->g_id[2] = u;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         resample_isRequired         (t_resample *x);
+void gobj_setIdentifiers (t_gobj *x, t_id u)
+{
+    gobj_setUnique (x, u);
+    gobj_setSource (x, u);
+    gobj_setNative (x, u);
+}
+
+void gobj_changeIdentifiers (t_gobj *x, t_id u)
+{
+    gobj_changeUnique (x, u);
+    gobj_changeSource (x, u);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        resample_set                (t_resample *x, int downsample, int upsample);
+int gobj_identifiersHaveChanged (t_gobj *x)
+{
+    t_id u = gobj_getUnique (x);
+    t_id s = gobj_getSource (x);
+    t_id n = gobj_getNative (x);
+    
+    if (n != u || s != u) { return 1; }
+    
+    return 0;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_sample    *resample_getBufferInlet    (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
-t_sample    *resample_getBufferOutlet   (t_resample *x, t_sample *s, int vectorSize, int resampledSize);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#endif // __d_resample_h_
