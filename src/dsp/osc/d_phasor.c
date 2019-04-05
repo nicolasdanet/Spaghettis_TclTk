@@ -59,11 +59,27 @@ static t_int *phasor_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+static void phasor_tilde_initialize (void *lhs, void *rhs)
+{
+    t_phasor_tilde *x   = (t_phasor_tilde *)lhs;
+    t_phasor_tilde *old = (t_phasor_tilde *)rhs;
+    
+    t_float f = PD_ATOMIC_FLOAT64_READ (&old->x_phase); PD_ATOMIC_FLOAT64_WRITE (f, &x->x_phase);
+}
+
 static void phasor_tilde_dsp (t_phasor_tilde *x, t_signal **sp)
 {
     t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(1.0 / sp[0]->s_sampleRate);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_phasor_tilde *old = (t_phasor_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (phasor_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (phasor_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
