@@ -29,10 +29,10 @@ static t_class *env_tilde_class;        /* Shared. */
 typedef struct _env_tilde {
     t_object            x_obj;          /* Must be the first. */
     t_float64Atomic     x_result;
+    int                 x_dismissed;
     int                 x_phase;
     int                 x_period;
     int                 x_window;
-    int                 x_dismissed;
     t_sample            x_sum[ENV_MAXIMUM_OVERLAP + 1];
     t_sample            *x_vector;
     t_clock             *x_clock;
@@ -107,12 +107,38 @@ static t_int *env_tilde_perform (t_int *w)
     return (w + 4);
 }
 
+static void env_tilde_initialize (void *lhs, void *rhs)
+{
+    t_env_tilde *x   = (t_env_tilde *)lhs;
+    t_env_tilde *old = (t_env_tilde *)rhs;
+    
+    if (x->x_window == old->x_window) {
+    if (x->x_period == old->x_period) {
+    //
+    x->x_phase = old->x_phase;
+    memcpy (x->x_sum, old->x_sum, (ENV_MAXIMUM_OVERLAP + 1) * sizeof (t_sample));
+    memcpy (x->x_vector, old->x_vector, x->x_window * sizeof (t_sample));
+    //
+    }
+    }
+}
+
 static void env_tilde_dsp (t_env_tilde *x, t_signal **sp)
 {
     if (x->x_period % sp[0]->s_vectorSize)      { error_invalid (sym_env__tilde__, sym_period); }
     else if (x->x_window < sp[0]->s_vectorSize) { error_invalid (sym_env__tilde__, sym_window); }
     else {
-        dsp_add (env_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    //
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_env_tilde *old = (t_env_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (env_tilde_initialize, x, old); }
+    //
+    }
+    
+    dsp_add (env_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    //
     }
 }
 
