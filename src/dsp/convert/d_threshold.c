@@ -131,6 +131,15 @@ static t_int *threshold_tilde_perform (t_int *w)
     return (w + 5);
 }
 
+static void threshold_tilde_initialize (void *lhs, void *rhs)
+{
+    t_threshold_tilde *x   = (t_threshold_tilde *)lhs;
+    t_threshold_tilde *old = (t_threshold_tilde *)rhs;
+    
+    x->x_state = old->x_state;
+    x->x_wait  = old->x_wait;
+}
+
 void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
 {
     t_space *t = space_new (cast_gobj (x));
@@ -145,6 +154,14 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
         t->s_float4 = x->x_deadTimeLow;
     
     pthread_mutex_unlock (&x->x_mutex);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_threshold_tilde *old = (t_threshold_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (threshold_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (threshold_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
