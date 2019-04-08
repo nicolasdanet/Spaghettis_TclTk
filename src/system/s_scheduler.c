@@ -106,7 +106,10 @@ static void scheduler_tick (void)
     scheduler_setLogicalTime (t);
     //
     }
-    
+}
+
+static void scheduler_clean (void)
+{
     if (!PD_ATOMIC_INT32_READ (&scheduler_quit) && !audio_isOpened()) {
     //
     instance_clocksClean();
@@ -119,31 +122,49 @@ static void scheduler_tick (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static int scheduler_mainLoopNeedToTick (double realStart, t_systime logicalStart, double *t)
+{
+    if (!PD_ATOMIC_INT32_READ (&scheduler_quit)) {
+    //
+    double now          = clock_getRealTimeInSeconds();
+    double realLapse    = PD_SECONDS_TO_MILLISECONDS (now - realStart);
+    double logicalLapse = scheduler_getMillisecondsSince (logicalStart);
+    
+    if (*t == 0.0) { *t = now; }
+    
+    return (realLapse > logicalLapse);
+    //
+    }
+    
+    return 0;
+}
+
 static void scheduler_mainLoop (void)
 {
-    const double realTimeAtStart       = clock_getRealTimeInSeconds();
-    const t_systime logicalTimeAtStart = scheduler_getLogicalTime();
+    const double realStart       = clock_getRealTimeInSeconds();
+    const t_systime logicalStart = scheduler_getLogicalTime();
     uint64_t count = 0;
     
     midi_start();
     
     while (!PD_ATOMIC_INT32_READ (&scheduler_quit)) {
     //
-    double realTime     = clock_getRealTimeInSeconds();
-    double realLapse    = PD_SECONDS_TO_MILLISECONDS (realTime - realTimeAtStart);
-    double logicalLapse = scheduler_getMillisecondsSince (logicalTimeAtStart);
+    double t = 0.0;
     
-    if (realLapse > logicalLapse) { scheduler_tick(); }
-    
-    if (!PD_ATOMIC_INT32_READ (&scheduler_quit)) {
+    while (scheduler_mainLoopNeedToTick (realStart, logicalStart, &t)) {
+        scheduler_tick();
         midi_poll();
         monitor_nonBlocking();
+    }
+        
+    if (!PD_ATOMIC_INT32_READ (&scheduler_quit)) {
         if (count++ % SCHEDULER_JOB == 0) { gui_jobFlush(); }   // --
         gui_flush();
+        scheduler_clean();
     }
     
     if (!PD_ATOMIC_INT32_READ (&scheduler_quit)) {
-        double elapsed = PD_SECONDS_TO_MILLISECONDS (clock_getRealTimeInSeconds() - realTime);
+        double elapsed = PD_SECONDS_TO_MILLISECONDS (clock_getRealTimeInSeconds() - t);
         double monitor = (0.75 - elapsed);
         if (monitor > 0.0) { monitor_blocking (monitor); }
     //
