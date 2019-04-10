@@ -161,10 +161,6 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     t_space *t          = (t_space *)(w[3]);
     int n = (int)(w[4]);
     
-    /* Fetch old value of the phase at startup if the DSP chain is swapped. */
-    
-    if (!t->s_int4) { if (x->x_cached >= 0) { t->s_int2 = x->x_cached; } t->s_int4 = 1; }
-    
     if (pthread_mutex_trylock (&x->x_mutex) == 0) {
     //
     if (x->x_set) {
@@ -177,6 +173,10 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     pthread_mutex_unlock (&x->x_mutex);
     //
     }
+    
+    /* Fetch old value of the phase at startup if the DSP chain is swapped. */
+    
+    if (!t->s_int4) { if (x->x_cached >= 0) { t->s_int2 = x->x_cached; } t->s_int4 = 1; }
     
     if (t->s_pointer0) {
     //
@@ -216,6 +216,14 @@ static t_int *tabwrite_tilde_perform (t_int *w)
     return (w + 5);
 }
 
+static void tabwrite_tilde_initialize (void *lhs, void *rhs)
+{
+    t_tabwrite_tilde *x   = (t_tabwrite_tilde *)lhs;
+    t_tabwrite_tilde *old = (t_tabwrite_tilde *)rhs;
+    
+    x->x_cached = old->x_cached;
+}
+
 static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
 {
     t_space *t  = space_new (cast_gobj (x));
@@ -229,6 +237,14 @@ static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
     }
     
     if (!x->x_dismissed && x->x_time > 0.0) { clock_delay (x->x_clock, x->x_time); }
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabwrite_tilde *old = (t_tabwrite_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (tabwrite_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (tabwrite_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
