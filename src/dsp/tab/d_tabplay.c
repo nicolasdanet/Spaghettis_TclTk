@@ -122,6 +122,19 @@ static t_int *tabplay_tilde_perform (t_int *w)
     t_space *t         = (t_space *)(w[3]);
     int n = (int)(w[4]);
     
+    if (pthread_mutex_trylock (&x->x_mutex) == 0) {
+    //
+    if (x->x_set) {
+    
+        tabplay_tilde_space (t, x->x_vector, x->x_size, x->x_start, x->x_end, (x->x_set & TAB_ARRAY));
+        
+        x->x_set = 0;
+    }
+    
+    pthread_mutex_unlock (&x->x_mutex);
+    //
+    }
+    
     /* Fetch old value of the phase at startup if the DSP chain is swapped. */
     
     if (!t->s_int4) {
@@ -134,19 +147,6 @@ static t_int *tabplay_tilde_perform (t_int *w)
     }
         
     t->s_int4 = 1;
-    //
-    }
-    
-    if (pthread_mutex_trylock (&x->x_mutex) == 0) {
-    //
-    if (x->x_set) {
-    
-        tabplay_tilde_space (t, x->x_vector, x->x_size, x->x_start, x->x_end, (x->x_set & TAB_ARRAY));
-        
-        x->x_set = 0;
-    }
-    
-    pthread_mutex_unlock (&x->x_mutex);
     //
     }
     
@@ -171,6 +171,15 @@ static t_int *tabplay_tilde_perform (t_int *w)
     return (w + 5);
 }
 
+static void tabwrite_tilde_initialize (void *lhs, void *rhs)
+{
+    t_tabplay_tilde *x   = (t_tabplay_tilde *)lhs;
+    t_tabplay_tilde *old = (t_tabplay_tilde *)rhs;
+    
+    x->x_cachedPhase = old->x_cachedPhase;
+    x->x_cachedEnd   = old->x_cachedEnd;
+}
+
 static void tabplay_tilde_dsp (t_tabplay_tilde *x, t_signal **sp)
 {
     t_space *t  = space_new (cast_gobj (x));
@@ -182,6 +191,14 @@ static void tabplay_tilde_dsp (t_tabplay_tilde *x, t_signal **sp)
     else {
     //
     tabplay_tilde_space (t, w, size, PD_INT_MAX, 0, 1);
+    //
+    }
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabplay_tilde *old = (t_tabplay_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (tabwrite_tilde_initialize, x, old); }
     //
     }
     
