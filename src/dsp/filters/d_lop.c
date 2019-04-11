@@ -78,11 +78,27 @@ static t_int *lop_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+static void lop_tilde_initialize (void *lhs, void *rhs)
+{
+    t_lop_tilde *x   = (t_lop_tilde *)lhs;
+    t_lop_tilde *old = (t_lop_tilde *)rhs;
+    
+    x->x_real = old->x_real;
+}
+
 static void lop_tilde_dsp (t_lop_tilde *x, t_signal **sp)
 {
     t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
 
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_lop_tilde *old = (t_lop_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (lop_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (lop_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
