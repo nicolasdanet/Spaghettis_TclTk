@@ -120,6 +120,14 @@ static t_int *tabosc4_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+static void tabosc4_tilde_initialize (void *lhs, void *rhs)
+{
+    t_tabosc4_tilde *x   = (t_tabosc4_tilde *)lhs;
+    t_tabosc4_tilde *old = (t_tabosc4_tilde *)rhs;
+    
+    x->x_phase = old->x_phase;
+}
+
 static void tabosc4_tilde_dsp (t_tabosc4_tilde *x, t_signal **sp)
 {
     t_space *t   = space_new (cast_gobj (x));
@@ -144,6 +152,14 @@ static void tabosc4_tilde_dsp (t_tabosc4_tilde *x, t_signal **sp)
     t->s_float0 = (t_float)(1.0 / sp[0]->s_sampleRate);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabosc4_tilde *old = (t_tabosc4_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (tabosc4_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (tabosc4_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
