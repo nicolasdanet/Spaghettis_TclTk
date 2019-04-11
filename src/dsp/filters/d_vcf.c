@@ -113,6 +113,15 @@ static t_int *vcf_tilde_perform (t_int *w)
     return (w + 8);
 }
 
+static void vcf_tilde_initialize (void *lhs, void *rhs)
+{
+    t_vcf_tilde *x   = (t_vcf_tilde *)lhs;
+    t_vcf_tilde *old = (t_vcf_tilde *)rhs;
+    
+    x->x_real      = old->x_real;
+    x->x_imaginary = old->x_imaginary;
+}
+
 static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
 {
     t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
@@ -122,6 +131,14 @@ static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_vcf_tilde *old = (t_vcf_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (vcf_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (vcf_tilde_perform, 7, x,
         sp[0]->s_vector,
@@ -169,6 +186,7 @@ static void *vcf_tilde_new (t_float f)
     x->x_outletRight = outlet_newSignal (cast_object (x));
 
     inlet_newSignal (cast_object (x));
+    
     inlet_new2 (x, &s_float);
 
     return x;
