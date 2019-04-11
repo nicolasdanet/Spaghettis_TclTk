@@ -120,6 +120,15 @@ static t_int *biquad_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+static void biquad_tilde_initialize (void *lhs, void *rhs)
+{
+    t_biquad_tilde *x   = (t_biquad_tilde *)lhs;
+    t_biquad_tilde *old = (t_biquad_tilde *)rhs;
+    
+    x->x_real1 = old->x_real1;
+    x->x_real2 = old->x_real2;
+}
+
 static void biquad_tilde_dsp (t_biquad_tilde *x, t_signal **sp)
 {
     t_space *t = space_new (cast_gobj (x));
@@ -131,6 +140,14 @@ static void biquad_tilde_dsp (t_biquad_tilde *x, t_signal **sp)
     pthread_mutex_unlock (&x->x_mutex);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_biquad_tilde *old = (t_biquad_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (biquad_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (biquad_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
