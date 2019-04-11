@@ -122,6 +122,15 @@ static t_int *bp_tilde_perform (t_int *w)
     return (w + 6);
 }
 
+static void bp_tilde_initialize (void *lhs, void *rhs)
+{
+    t_bp_tilde *x   = (t_bp_tilde *)lhs;
+    t_bp_tilde *old = (t_bp_tilde *)rhs;
+    
+    x->x_real1 = old->x_real1;
+    x->x_real2 = old->x_real2;
+}
+
 static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
 {
     t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
@@ -133,6 +142,14 @@ static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
     pthread_mutex_unlock (&x->x_mutex);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
+    
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_bp_tilde *old = (t_bp_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { initializer_new (bp_tilde_initialize, x, old); }
+    //
+    }
     
     dsp_add (bp_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
