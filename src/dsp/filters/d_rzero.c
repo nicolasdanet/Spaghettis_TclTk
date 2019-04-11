@@ -72,6 +72,8 @@ static void rzero_tilde_dsp (t_rzero_tilde *x, t_signal **sp)
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
     
+    real_raw_initializer (cast_gobj (x));
+    
     dsp_add (rzero_tilde_perform, 5, x,
         sp[0]->s_vector,
         sp[1]->s_vector,

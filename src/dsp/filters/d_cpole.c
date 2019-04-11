@@ -79,6 +79,26 @@ static t_int *cpole_tilde_perform (t_int *w)
     return (w + 9);
 }
 
+void complex_raw_initialize (void *lhs, void *rhs)
+{
+    struct _complex_raw_tilde *x   = (struct _complex_raw_tilde *)lhs;
+    struct _complex_raw_tilde *old = (struct _complex_raw_tilde *)rhs;
+    
+    x->x_real      = old->x_real;
+    x->x_imaginary = old->x_imaginary;
+}
+
+void complex_raw_initializer (t_gobj *x)
+{
+    if (dsp_objectNeedInitializer (x)) {
+    //
+    struct _complex_raw_tilde *old = (struct _complex_raw_tilde *)garbage_fetch (x);
+    
+    if (old) { initializer_new (complex_raw_initialize, x, old); }
+    //
+    }
+}
+
 static void cpole_tilde_dsp (t_cpole_tilde *x, t_signal **sp)
 {
     PD_ASSERT (sp[0]->s_vector != sp[4]->s_vector);
@@ -90,7 +110,9 @@ static void cpole_tilde_dsp (t_cpole_tilde *x, t_signal **sp)
     PD_ASSERT (sp[2]->s_vector != sp[5]->s_vector);
     PD_ASSERT (sp[3]->s_vector != sp[5]->s_vector);
     PD_ASSERT (sp[4]->s_vector != sp[5]->s_vector);
-        
+    
+    complex_raw_initializer (cast_gobj (x));
+    
     dsp_add (cpole_tilde_perform, 8, x,
         sp[0]->s_vector,
         sp[1]->s_vector,

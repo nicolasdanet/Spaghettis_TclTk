@@ -35,6 +35,12 @@ struct _complex_raw_tilde {
 t_buffer    *real_raw_functionData      (t_gobj *z, int flags);
 t_buffer    *complex_raw_functionData   (t_gobj *z, int flags);
 
+void        real_raw_initialize         (void *lhs, void *rhs);
+void        complex_raw_initialize      (void *lhs, void *rhs);
+
+void        real_raw_initializer        (t_gobj *x);
+void        complex_raw_initializer     (t_gobj *x);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #endif // __d_filters_h_

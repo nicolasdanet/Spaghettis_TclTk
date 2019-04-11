@@ -91,6 +91,8 @@ static void czero_rev_tilde_dsp (t_czero_rev_tilde *x, t_signal **sp)
     PD_ASSERT (sp[3]->s_vector != sp[5]->s_vector);
     PD_ASSERT (sp[4]->s_vector != sp[5]->s_vector);
     
+    complex_raw_initializer (cast_gobj (x));
+    
     dsp_add (czero_rev_tilde_perform, 8, x,
         sp[0]->s_vector,
         sp[1]->s_vector,
