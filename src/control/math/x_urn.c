@@ -45,6 +45,11 @@ typedef struct _urn {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void urn_range (t_urn *x, t_float f)
+{
+    x->x_range = PD_CLAMP (1, f, URN_LIMIT);
+}
+
 static void urn_set (t_urn *x)
 {
     int i, n = (int)x->x_range;
@@ -83,7 +88,7 @@ static void urn_bang (t_urn *x)
 
 static void urn_float (t_urn *x, t_float f)
 {
-    x->x_range = PD_CLAMP (1, f, URN_LIMIT); urn_set (x);
+    urn_range (x, f); urn_set (x);
     
     if (f > URN_LIMIT) { warning_invalid (sym_urn, sym_range); }
 }
@@ -107,11 +112,31 @@ static t_buffer *urn_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__inlet2);
     buffer_appendFloat (b, x->x_range);
     
+    int n = buffer_getSize (x->x_buffer);
+    
+    if (n) {
+        buffer_appendComma (b);
+        buffer_appendSymbol (b, sym__restore);
+        buffer_appendFloat (b, x->x_index);
+        buffer_appendBuffer (b, x->x_buffer);
+    }
+    
     return b;
     //
     }
     
     return NULL;
+}
+
+void urn_restore (t_urn *x, t_symbol *s, int argc, t_atom *argv)
+{
+    PD_ASSERT (argc > 1);
+    
+    buffer_clear (x->x_buffer);
+    
+    x->x_index = (int)atom_getFloatAtIndex (0, argc, argv);
+    
+    buffer_append (x->x_buffer, argc - 1, argv + 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -156,8 +181,9 @@ void urn_setup (void)
             
     class_addBang (c, (t_method)urn_bang);
     
-    class_addMethod (c, (t_method)urn_clear, sym_clear,     A_NULL);
-    class_addMethod (c, (t_method)urn_float, sym__inlet2,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)urn_clear,    sym_clear,      A_NULL);
+    class_addMethod (c, (t_method)urn_float,    sym__inlet2,    A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)urn_restore,  sym__restore,   A_GIMME, A_NULL);
 
     class_setDataFunction (c, urn_functionData);
     

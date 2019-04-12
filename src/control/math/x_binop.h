@@ -15,7 +15,7 @@
 // MARK: -
 
 typedef struct _binop {
-    t_object    bo_obj;         /* MUST be the first. */
+    t_object    bo_obj;             /* MUST be the first. */
     t_float     bo_f1;
     t_float     bo_f2;
     t_outlet    *bo_outlet;
