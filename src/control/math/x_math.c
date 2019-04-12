@@ -286,32 +286,32 @@ void math_setup (void)
                     CLASS_DEFAULT,
                     A_NULL);
     
-    class_addBang (sin_class,       (t_method)sin_bang);
-    class_addBang (cos_class,       (t_method)cos_bang);
-    class_addBang (tan_class,       (t_method)tan_bang);
-    class_addBang (exp_class,       (t_method)exp_bang);
-    class_addBang (abs_class,       (t_method)abs_bang);
-    class_addBang (wrap_class,      (t_method)wrap_bang);
-    class_addBang (sqrt_class,      (t_method)sqrt_bang);
-    class_addBang (atan_class,      (t_method)atan_bang);
+    class_addBang (sin_class,           (t_method)sin_bang);
+    class_addBang (cos_class,           (t_method)cos_bang);
+    class_addBang (tan_class,           (t_method)tan_bang);
+    class_addBang (exp_class,           (t_method)exp_bang);
+    class_addBang (abs_class,           (t_method)abs_bang);
+    class_addBang (wrap_class,          (t_method)wrap_bang);
+    class_addBang (sqrt_class,          (t_method)sqrt_bang);
+    class_addBang (atan_class,          (t_method)atan_bang);
     
-    class_addFloat (sin_class,      (t_method)sin_float);  
-    class_addFloat (cos_class,      (t_method)cos_float);
-    class_addFloat (tan_class,      (t_method)tan_float);
-    class_addFloat (exp_class,      (t_method)exp_float);
-    class_addFloat (abs_class,      (t_method)abs_float); 
-    class_addFloat (wrap_class,     (t_method)wrap_float);    
-    class_addFloat (sqrt_class,     (t_method)sqrt_float);
-    class_addFloat (atan_class,     (t_method)atan_float);
-            
-    class_setHelpName (sin_class,   sym_math);
-    class_setHelpName (cos_class,   sym_math);
-    class_setHelpName (tan_class,   sym_math);
-    class_setHelpName (exp_class,   sym_math);
-    class_setHelpName (abs_class,   sym_math);
-    class_setHelpName (sqrt_class,  sym_math);
-    class_setHelpName (wrap_class,  sym_math);
-    class_setHelpName (atan_class,  sym_math);
+    class_addFloat (sin_class,          (t_method)sin_float);
+    class_addFloat (cos_class,          (t_method)cos_float);
+    class_addFloat (tan_class,          (t_method)tan_float);
+    class_addFloat (exp_class,          (t_method)exp_float);
+    class_addFloat (abs_class,          (t_method)abs_float);
+    class_addFloat (wrap_class,         (t_method)wrap_float);
+    class_addFloat (sqrt_class,         (t_method)sqrt_float);
+    class_addFloat (atan_class,         (t_method)atan_float);
+    
+    class_setHelpName (sin_class,       sym_math);
+    class_setHelpName (cos_class,       sym_math);
+    class_setHelpName (tan_class,       sym_math);
+    class_setHelpName (exp_class,       sym_math);
+    class_setHelpName (abs_class,       sym_math);
+    class_setHelpName (sqrt_class,      sym_math);
+    class_setHelpName (wrap_class,      sym_math);
+    class_setHelpName (atan_class,      sym_math);
 }
 
 void math_destroy (void)

@@ -591,6 +591,7 @@
 		17CB7645205F8ED400F919E4 /* x_micaitem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micaitem.c; sourceTree = "<group>"; };
 		17CB7647205FABE800F919E4 /* x_micainterval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micainterval.c; sourceTree = "<group>"; };
 		17CC052B205D0DEB0097E417 /* x_micaget.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micaget.c; sourceTree = "<group>"; };
+		17D223DB2260844600DDB6F0 /* x_unop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = x_unop.h; sourceTree = "<group>"; };
 		17D387CF211817790076F41E /* ui_value.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ui_value.tcl; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		17D74F382132E01A00D12F8B /* m_undodeencapsulate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_undodeencapsulate.c; sourceTree = "<group>"; };
 		17D74F392132E01A00D12F8B /* m_undoencapsulate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_undoencapsulate.c; sourceTree = "<group>"; };
@@ -1709,6 +1710,7 @@
 		379079D31D96D7EC0055CBFF /* math */ = {
 			isa = PBXGroup;
 			children = (
+				17D223DB2260844600DDB6F0 /* x_unop.h */,
 				174D8A0C1F0BC09C00C94065 /* x_binop.h */,
 				378972061C4F716700263434 /* x_acoustic.c */,
 				378972071C4F716700263434 /* x_math.c */,
