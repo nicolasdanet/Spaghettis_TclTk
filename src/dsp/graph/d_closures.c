@@ -95,10 +95,14 @@ static t_closure *closure_fetch (t_gobj *owner, int type)
     return NULL;
 }
 
+#if PD_WITH_DEADCODE
+
 t_space *space_fetch (t_gobj *o)
 {
     return (t_space *)closure_fetch (o, CLOSURES_SPACE);
 }
+
+#endif
 
 t_gobj *garbage_fetch (t_gobj *o)
 {
