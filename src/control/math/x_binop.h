@@ -33,7 +33,7 @@ void        *binop_new              (t_class *c, t_float f);
 
 t_buffer    *binop_functionData     (t_gobj *z, int flags);
 
-void        binop_restore           (t_binop *x, t_float f);
+void        binop_restore           (t_binop *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

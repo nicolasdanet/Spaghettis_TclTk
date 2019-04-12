@@ -13,6 +13,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include "x_unop.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *sin_class;          /* Shared. */
 static t_class *cos_class;          /* Shared. */
 static t_class *tan_class;          /* Shared. */
@@ -25,11 +30,7 @@ static t_class *atan_class;         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _math {
-    t_object    x_obj;              /* Must be the first. */
-    t_float     x_f;
-    t_outlet    *x_outlet;
-    } t_math;
+typedef t_unop t_math;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -45,19 +46,19 @@ static void *sin_new (void)
 {
     t_math *x = (t_math *)pd_new (sin_class);
     
-    x->x_outlet = outlet_newFloat (cast_object (x));
+    x->uo_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
 
 static void sin_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, sin (x->x_f));
+    outlet_float (x->uo_outlet, sin (x->uo_f));
 }
 
 static void sin_float (t_math *x, t_float f)
 {
-    x->x_f = f; sin_bang (x);
+    x->uo_f = f; sin_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -68,19 +69,19 @@ static void *cos_new (void)
 {
     t_math *x = (t_math *)pd_new (cos_class);
     
-    x->x_outlet = outlet_newFloat (cast_object (x));
+    x->uo_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
 
 static void cos_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, cos (x->x_f));
+    outlet_float (x->uo_outlet, cos (x->uo_f));
 }
 
 static void cos_float (t_math *x, t_float f)
 {
-    x->x_f = f; cos_bang (x);
+    x->uo_f = f; cos_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -91,22 +92,22 @@ static void *tan_new (void)
 {
     t_math *x = (t_math *)pd_new (tan_class);
     
-    x->x_outlet = outlet_newFloat (cast_object (x));
+    x->uo_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
 
 static void tan_bang (t_math *x)
 {
-    t_float c = cos (x->x_f);
-    t_float t = (t_float)(c == 0.0 ? 0.0 : sin (x->x_f) / c);
+    t_float c = cos (x->uo_f);
+    t_float t = (t_float)(c == 0.0 ? 0.0 : sin (x->uo_f) / c);
     
-    outlet_float (x->x_outlet, t);
+    outlet_float (x->uo_outlet, t);
 }
 
 static void tan_float (t_math *x, t_float f)
 {
-    x->x_f = f; tan_bang (x);
+    x->uo_f = f; tan_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -117,19 +118,19 @@ static void *exp_new (void)
 {
     t_math *x = (t_math *)pd_new (exp_class);
     
-    x->x_outlet = outlet_newFloat (cast_object (x));
+    x->uo_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
 
 static void exp_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, exp ((t_float)PD_MIN (x->x_f, MATH_MAXIMUM_LOGARITHM)));
+    outlet_float (x->uo_outlet, exp ((t_float)PD_MIN (x->uo_f, MATH_MAXIMUM_LOGARITHM)));
 }
 
 static void exp_float (t_math *x, t_float f)
 {
-    x->x_f = f; exp_bang (x);
+    x->uo_f = f; exp_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -140,19 +141,19 @@ static void *abs_new (void)
 {
     t_math *x = (t_math *)pd_new (abs_class);
     
-    x->x_outlet = outlet_newFloat (cast_object (x));
+    x->uo_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
 
 static void abs_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, fabs (x->x_f));
+    outlet_float (x->uo_outlet, fabs (x->uo_f));
 }
 
 static void abs_float (t_math *x, t_float f)
 {
-    x->x_f = f; abs_bang (x);
+    x->uo_f = f; abs_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -163,19 +164,19 @@ static void *sqrt_new (void)
 {
     t_math *x = (t_math *)pd_new (sqrt_class);
     
-    x->x_outlet = outlet_newFloat (cast_object (x));
+    x->uo_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
 
 static void sqrt_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, (t_float)(x->x_f > 0.0 ? sqrt (x->x_f) : 0.0));
+    outlet_float (x->uo_outlet, (t_float)(x->uo_f > 0.0 ? sqrt (x->uo_f) : 0.0));
 }
 
 static void sqrt_float (t_math *x, t_float f)
 {
-    x->x_f = f; sqrt_bang (x);
+    x->uo_f = f; sqrt_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -186,19 +187,19 @@ static void *wrap_new (void)
 {
     t_math *x = (t_math *)pd_new (wrap_class);
     
-    x->x_outlet = outlet_newFloat (cast_object (x));
+    x->uo_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
 
 static void wrap_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, (t_float)(x->x_f - floor (x->x_f)));
+    outlet_float (x->uo_outlet, (t_float)(x->uo_f - floor (x->uo_f)));
 }
 
 static void wrap_float (t_math *x, t_float f)
 {
-    x->x_f = f; wrap_bang (x);
+    x->uo_f = f; wrap_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -209,19 +210,19 @@ static void *atan_new (void)
 {
     t_math *x = (t_math *)pd_new (atan_class);
     
-    x->x_outlet = outlet_newFloat (cast_object (x));
+    x->uo_outlet = outlet_newFloat (cast_object (x));
     
     return x;
 }
 
 static void atan_bang (t_math *x)
 {
-    outlet_float (x->x_outlet, atan (x->x_f));
+    outlet_float (x->uo_outlet, atan (x->uo_f));
 }
 
 static void atan_float (t_math *x, t_float f)
 {
-    x->x_f = f; atan_bang (x);
+    x->uo_f = f; atan_bang (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -303,6 +304,24 @@ void math_setup (void)
     class_addFloat (wrap_class,         (t_method)wrap_float);
     class_addFloat (sqrt_class,         (t_method)sqrt_float);
     class_addFloat (atan_class,         (t_method)atan_float);
+    
+    class_addMethod (sin_class,         (t_method)unop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (cos_class,         (t_method)unop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (tan_class,         (t_method)unop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (exp_class,         (t_method)unop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (abs_class,         (t_method)unop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (wrap_class,        (t_method)unop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (sqrt_class,        (t_method)unop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (atan_class,        (t_method)unop_restore, sym__restore, A_FLOAT, A_NULL);
+    
+    class_setDataFunction (sin_class,   unop_functionData);
+    class_setDataFunction (cos_class,   unop_functionData);
+    class_setDataFunction (tan_class,   unop_functionData);
+    class_setDataFunction (exp_class,   unop_functionData);
+    class_setDataFunction (abs_class,   unop_functionData);
+    class_setDataFunction (wrap_class,  unop_functionData);
+    class_setDataFunction (sqrt_class,  unop_functionData);
+    class_setDataFunction (atan_class,  unop_functionData);
     
     class_setHelpName (sin_class,       sym_math);
     class_setHelpName (cos_class,       sym_math);

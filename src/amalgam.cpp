@@ -250,10 +250,10 @@
 
 #include "control/math/x_acoustic.c"
 #include "control/math/x_math.c"
-#include "control/math/x_atan2.c"
 #include "control/math/x_binop1.c"
 #include "control/math/x_binop2.c"
 #include "control/math/x_binop3.c"
+#include "control/math/x_atan2.c"
 #include "control/math/x_random.c"
 #include "control/math/x_urn.c"
 #include "control/math/x_clip.c"

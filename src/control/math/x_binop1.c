@@ -56,6 +56,7 @@ t_buffer *binop_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->bo_f1);
     buffer_appendFloat (b, x->bo_f2);
     
     return b;
@@ -65,9 +66,10 @@ t_buffer *binop_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-void binop_restore (t_binop *x, t_float f)
+void binop_restore (t_binop *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->bo_f2 = f;
+    x->bo_f1 = atom_getFloatAtIndex (0, argc, argv);
+    x->bo_f2 = atom_getFloatAtIndex (1, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -322,14 +324,14 @@ void binop1_setup (void)
     class_addFloat (binopMaximum_class,         (t_method)binopMaximum_float);
     class_addFloat (binopMinimum_class,         (t_method)binopMinimum_float);
     
-    class_addMethod (binopAdd_class,            (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopSubtract_class,       (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopMultiply_class,       (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopDivide_class,         (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopPower_class,          (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopLog_class,            (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopMaximum_class,        (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
-    class_addMethod (binopMinimum_class,        (t_method)binop_restore, sym__restore, A_FLOAT, A_NULL);
+    class_addMethod (binopAdd_class,            (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopSubtract_class,       (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopMultiply_class,       (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopDivide_class,         (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopPower_class,          (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopLog_class,            (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopMaximum_class,        (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (binopMinimum_class,        (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
     
     class_setDataFunction (binopAdd_class,      binop_functionData);
     class_setDataFunction (binopSubtract_class, binop_functionData);
