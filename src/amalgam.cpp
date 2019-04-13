@@ -262,7 +262,6 @@
 #include "control/time/x_metro.c"
 #include "control/time/x_delay.c"
 #include "control/time/x_line.c"
-#include "control/time/x_timer.c"
 #include "control/time/x_pipe.c"
 
 #include "control/flow/x_send.c"
@@ -299,6 +298,7 @@
 #include "control/miscellaneous/x_freeze.c"
 #include "control/miscellaneous/x_namecanvas.c"
 #include "control/miscellaneous/x_serial.c"
+#include "control/miscellaneous/x_timer.c"
 #include "control/miscellaneous/x_realtime.c"
 #include "control/miscellaneous/x_netsend.c"
 #include "control/miscellaneous/x_netreceive.c"

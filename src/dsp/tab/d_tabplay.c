@@ -171,7 +171,7 @@ static t_int *tabplay_tilde_perform (t_int *w)
     return (w + 5);
 }
 
-static void tabwrite_tilde_initialize (void *lhs, void *rhs)
+static void tabplay_tilde_initialize (void *lhs, void *rhs)
 {
     t_tabplay_tilde *x   = (t_tabplay_tilde *)lhs;
     t_tabplay_tilde *old = (t_tabplay_tilde *)rhs;
@@ -198,7 +198,7 @@ static void tabplay_tilde_dsp (t_tabplay_tilde *x, t_signal **sp)
     //
     t_tabplay_tilde *old = (t_tabplay_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (tabwrite_tilde_initialize, x, old); }
+    if (old) { initializer_new (tabplay_tilde_initialize, x, old); }
     //
     }
     

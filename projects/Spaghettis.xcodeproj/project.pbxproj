@@ -1537,6 +1537,7 @@
 				179E91121F0F6B11009A4FA6 /* x_freeze.c */,
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
 				3702414F1DAB95AC00AB5440 /* x_serial.c */,
+				37D7249F1D92788800408D24 /* x_timer.c */,
 				377CEEAA1DAA7FFE00E60461 /* x_realtime.c */,
 				375BED381DABC801009BFCD7 /* x_netsend.c */,
 				375BED371DABC801009BFCD7 /* x_netreceive.c */,
@@ -1914,7 +1915,6 @@
 				37D724FD1D927AAE00408D24 /* x_metro.c */,
 				37D724FB1D927A9A00408D24 /* x_delay.c */,
 				37D724D31D9279A800408D24 /* x_line.c */,
-				37D7249F1D92788800408D24 /* x_timer.c */,
 				37D724761D92768600408D24 /* x_pipe.c */,
 			);
 			path = time;
