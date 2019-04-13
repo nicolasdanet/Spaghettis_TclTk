@@ -55,6 +55,7 @@ static t_buffer *clip_functionData (t_gobj *z, int flags)
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b, x->x_f1);
     buffer_appendFloat (b, x->x_f2);
     buffer_appendFloat (b, x->x_f3);
     
@@ -67,8 +68,9 @@ static t_buffer *clip_functionData (t_gobj *z, int flags)
 
 static void clip_restore (t_clip *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_f2 = atom_getFloatAtIndex (0, argc, argv);
-    x->x_f3 = atom_getFloatAtIndex (1, argc, argv);
+    x->x_f1 = atom_getFloatAtIndex (0, argc, argv);
+    x->x_f2 = atom_getFloatAtIndex (1, argc, argv);
+    x->x_f3 = atom_getFloatAtIndex (2, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
