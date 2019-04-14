@@ -72,22 +72,31 @@ static t_buffer *timer_functionData (t_gobj *z, int flags)
     if (SAVED_DEEP (flags)) {
     //
     t_timer *x = (t_timer *)z;
-
-    if (x->x_unitName) {
-    //
+    
     t_buffer *b = buffer_new();
     
+    if (x->x_unitName) {
+    //
     buffer_appendSymbol (b, sym_unit);
     buffer_appendFloat (b,  x->x_unitValue);
     buffer_appendSymbol (b, x->x_unitName);
+    buffer_appendComma (b);
+    //
+    }
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendFloat (b,  x->x_start);
     
     return b;
     //
     }
-    //
-    }
     
     return NULL;
+}
+
+static void timer_restore (t_timer *x, t_float f)
+{
+    x->x_start = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -135,7 +144,8 @@ void timer_setup (void)
     
     class_addMethod (c, (t_method)timer_bangElapsed,    sym__inlet2,    A_NULL);
     class_addMethod (c, (t_method)timer_unit,           sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)timer_restore,        sym__restore,   A_FLOAT, A_NULL);
+
     class_setDataFunction (c, timer_functionData);
     
     timer_class = c;
