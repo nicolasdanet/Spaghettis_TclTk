@@ -234,12 +234,21 @@ void clock_unset (t_clock *x)
     instance_clocksRemove (x);
 }
 
-void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or in samples. */
+void clock_set (t_clock *x, t_systime t)
 {
     clock_unset (x);
     
     {
     //
+    PD_ATOMIC_FLOAT64_WRITE (t, &x->c_systime);
+    
+    instance_clocksAdd (x);
+    //
+    }
+}
+
+double clock_quantum (t_clock *x, double t)
+{
     double d = 0.0;
     double u = PD_ATOMIC_FLOAT64_READ (&x->c_unit);
     
@@ -248,13 +257,14 @@ void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or i
         d = -(u * (1000.0 / audio_getSampleRate()));
     }
     
-    d *= PD_MAX (0.0, delay);
+    d *= PD_MAX (0.0, t);
     
-    PD_ATOMIC_FLOAT64_WRITE (scheduler_getLogicalTimeAfter (d), &x->c_systime);
-    
-    instance_clocksAdd (x);
-    //
-    }
+    return d;
+}
+
+void clock_delay (t_clock *x, double delay)             /* Could be in milliseconds or in samples. */
+{
+    clock_set (x, scheduler_getLogicalTimeAfter (clock_quantum (x, delay)));
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -45,12 +45,10 @@ int atomic_int32CompareAndSwap          (int32_t *, int32_t, t_int32Atomic *);
 // -----------------------------------------------------------------------------------------------------------
 
 void        scheduler_setLogicalTime    (t_systime);
-t_systime   clock_getLogicalTime        (t_clock *);
 t_systime   clock_getExecuteTime        (t_clock *);
 void        clock_setExecuteTime        (t_clock *, t_systime);
 int         clock_increment             (t_clock *);
 int         clock_decrement             (t_clock *);
-int         clock_isSet                 (t_clock *);
 void        clock_execute               (t_clock *);
 
 // -----------------------------------------------------------------------------------------------------------
