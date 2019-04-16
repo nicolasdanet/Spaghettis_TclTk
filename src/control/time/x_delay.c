@@ -14,6 +14,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void clock_set (t_clock *, t_systime);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static t_class *delay_class;        /* Shared. */
 
@@ -102,11 +108,22 @@ static t_buffer *delay_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__inlet2);
     buffer_appendFloat (b,  x->x_delay);
     
+    if (clock_isSet (x->x_clock)) {
+        buffer_appendComma (b);
+        buffer_appendSymbol (b, sym__restore);
+        buffer_appendFloat (b,  clock_getLogicalTime (x->x_clock));
+    }
+    
     return b;
     //
     }
     
     return NULL;
+}
+
+static void delay_restore (t_delay *x, t_float f)
+{
+    if (f > scheduler_getLogicalTime()) { clock_set (x->x_clock, f); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -164,7 +181,8 @@ void delay_setup (void)
     class_addMethod (c, (t_method)delay_floatDelay, sym__inlet2,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)delay_stop,       sym_stop,       A_NULL);
     class_addMethod (c, (t_method)delay_unit,       sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)delay_restore,    sym__restore,   A_FLOAT, A_NULL);
+
     class_setDataFunction (c, delay_functionData);
 
     delay_class = c;
