@@ -22,6 +22,7 @@
 #include "core/m_autorelease.c"
 #include "core/m_clocks.c"
 #include "core/m_instance.c"
+#include "core/m_pending.c"
 #include "core/m_stack.c"
 #include "core/m_bind.c"
 #include "core/m_message.c"

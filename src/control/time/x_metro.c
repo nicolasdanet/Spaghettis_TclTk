@@ -41,9 +41,7 @@ typedef struct _metro {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        clock_set                           (t_clock *, t_systime);
-double      clock_quantum                       (t_clock *, double);
-t_systime   scheduler_addMillisecondsToSystime  (t_systime, double);
+t_error clock_reschedule (t_clock *x, double, double, t_systime);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -154,27 +152,9 @@ static t_buffer *metro_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static t_error metro_reschedule (t_clock *x, double delay, double ms, t_systime t)
-{
-    t_systime now = scheduler_getLogicalTime();
-    
-    if (t < now) {
-    //
-    double u = clock_quantum (x, delay);
-        
-    if (now - t > ms) { return PD_ERROR; }      /* Abort if it is too old. */
-    if (u < 1.0)      { return PD_ERROR; }      /* Abort if it is too small. */
-   
-    while (t < now) { t = scheduler_addMillisecondsToSystime (t, u); }
-    //
-    }
-
-    clock_set (x, t); return PD_ERROR_NONE;
-}
-
 static void metro_restore (t_metro *x, t_float f)
 {
-    t_error err = metro_reschedule (x->x_clock, x->x_delay, PD_SECONDS_TO_MILLISECONDS (60), f);
+    t_error err = clock_reschedule (x->x_clock, x->x_delay, PD_SECONDS_TO_MILLISECONDS (60), f);
     
     if (err) { metro_bang (x); }
 }

@@ -54,6 +54,7 @@ typedef struct _pdinstance {
     int             pd_overflowCount;
     int             pd_isLoadingExternal;
     int             pd_isUndoRecursive;
+    int             pd_hasPending;
     t_int32Atomic   pd_chainRetain;
     t_pointerAtomic pd_chain;
     t_chain         *pd_build;
@@ -63,6 +64,7 @@ typedef struct _pdinstance {
     t_glist         *pd_roots;
     t_clock         *pd_polling;
     t_clock         *pd_autorelease;
+    t_gobj          *pd_pending;
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
@@ -220,6 +222,16 @@ int     instance_getDefaultY                    (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_gobj  *instance_pendingFetch                  (t_gobj *y);
+
+int     instance_pendingRequired                (t_gobj *y);
+void    instance_pendingAdd                     (t_gobj *y);
+void    instance_pendingRelease                 (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static inline void instance_contextSetCurrent (t_glist *glist)
 {
     return instance_setBoundX (cast_pd (glist));
@@ -312,6 +324,25 @@ static inline void instance_undoSetRecursive (void)
 static inline void instance_undoUnsetRecursive (void)
 {
     instance_get()->pd_isUndoRecursive--;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline int instance_hasPending (void)
+{
+    return (instance_get()->pd_hasPending != 0);
+}
+
+static inline void instance_pendingBegin (void)
+{
+    instance_get()->pd_hasPending++;
+}
+
+static inline void instance_pendingEnd (void)
+{
+    instance_get()->pd_hasPending--; if (instance_get()->pd_hasPending == 0) { instance_pendingRelease(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

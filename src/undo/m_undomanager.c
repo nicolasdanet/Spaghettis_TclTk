@@ -139,6 +139,8 @@ void undomanager_undo (t_undomanager *x)
 
     {
     //
+    instance_pendingBegin();
+    
     t_undoaction *a = x->um_tail;
     
     while (a && a->ua_previous) {
@@ -151,6 +153,8 @@ void undomanager_undo (t_undomanager *x)
     }
     
     x->um_tail = a;
+    
+    instance_pendingEnd();
     //
     }
     
@@ -173,6 +177,8 @@ void undomanager_redo (t_undomanager *x)
 
     {
     //
+    instance_pendingBegin();
+    
     t_undoaction *a = x->um_tail;
     
     while (a) {
@@ -185,6 +191,8 @@ void undomanager_redo (t_undomanager *x)
     }
     
     x->um_tail = a;
+    
+    instance_pendingEnd();
     //
     }
     

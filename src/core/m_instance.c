@@ -396,6 +396,7 @@ static void instance_free (t_pdinstance *x)
     PD_ASSERT (x->pd_roots       == NULL);
     PD_ASSERT (x->pd_polling     == NULL);
     PD_ASSERT (x->pd_autorelease == NULL);
+    PD_ASSERT (x->pd_pending     == NULL);
     
     register_free (x->pd_register);
     clocks_free (x->pd_clocks);

@@ -14,6 +14,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_systime scheduler_addMillisecondsToSystime    (t_systime, double);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 #if PD_WINDOWS
 
 static LARGE_INTEGER    time_NTTime;            /* Static. */
@@ -265,6 +271,24 @@ double clock_quantum (t_clock *x, double t)
 void clock_delay (t_clock *x, double delay)             /* Could be in milliseconds or in samples. */
 {
     clock_set (x, scheduler_getLogicalTimeAfter (clock_quantum (x, delay)));
+}
+
+t_error clock_reschedule (t_clock *x, double delay, double ms, t_systime t)
+{
+    t_systime now = scheduler_getLogicalTime();
+    
+    if (t < now) {
+    //
+    double u = clock_quantum (x, delay);
+        
+    if (now - t > ms) { return PD_ERROR; }      /* Abort if it is too old. */
+    if (u < 1.0)      { return PD_ERROR; }      /* Abort if it is too small. */
+   
+    while (t < now) { t = scheduler_addMillisecondsToSystime (t, u); }
+    //
+    }
+
+    clock_set (x, t); return PD_ERROR_NONE;
 }
 
 // -----------------------------------------------------------------------------------------------------------

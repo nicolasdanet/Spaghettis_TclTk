@@ -612,6 +612,8 @@ void encapsulate_encapsulate (t_glist *glist)
     //
     if (undoable) { glist_undoAppend (glist, undoencapsulate_new()); }
     
+    instance_pendingBegin();
+    
     {
         t_rectangle r = glist_objectGetBoundingBoxOfSelected (glist);
         int state     = dsp_suspend();
@@ -634,6 +636,8 @@ void encapsulate_encapsulate (t_glist *glist)
         buffer_free (b);
         glist_setDirty (glist, 1);
     }
+    
+    instance_pendingEnd();
     
     if (undoable) { glist_undoAppendSeparator (glist); }
     //

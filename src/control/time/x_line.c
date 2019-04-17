@@ -20,7 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *line_class;         /* Shared. */
+t_class *line_class;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -30,6 +30,7 @@ typedef struct _line {
     t_object    x_obj;              /* Must be the first. */
     t_systime   x_systimeTarget;
     t_systime   x_systimeStart;
+    t_systime   x_systimeNext;
     double      x_timeRamp;
     t_float     x_valueTarget;
     t_float     x_valueStart;
@@ -38,6 +39,12 @@ typedef struct _line {
     t_outlet    *x_outlet;
     t_clock     *x_clock;
     } t_line;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error clock_reschedule (t_clock *x, double, double, t_systime);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -65,13 +72,19 @@ static void line_task (t_line *x)
 {
     double remains = - scheduler_getMillisecondsSince (x->x_systimeTarget);
     
-    if (remains < PD_EPSILON) { outlet_float (x->x_outlet, x->x_valueTarget); }
-    else {
-    //
-    outlet_float (x->x_outlet, line_valueAtTime (x, scheduler_getLogicalTime()));
+    if (remains < PD_EPSILON) {
     
-    clock_delay (x->x_clock, PD_MIN (x->x_grain, remains));
-    //
+        outlet_float (x->x_outlet, x->x_valueTarget);
+        
+        x->x_systimeNext = 0;
+        
+    } else {
+
+        outlet_float (x->x_outlet, line_valueAtTime (x, scheduler_getLogicalTime()));
+    
+        clock_delay (x->x_clock, PD_MIN (x->x_grain, remains));
+    
+        x->x_systimeNext = clock_getLogicalTime (x->x_clock);
     }
 }
 
@@ -100,7 +113,9 @@ static void line_float (t_line *x, t_float f)
         line_task (x);
         
         clock_delay (x->x_clock, PD_MIN (x->x_grain, x->x_timeRamp));
-    
+        
+        x->x_systimeNext = clock_getLogicalTime (x->x_clock);
+        
     } else {
     
         line_set (x, f); outlet_float (x->x_outlet, f);
@@ -137,15 +152,44 @@ static t_buffer *line_functionData (t_gobj *z, int flags)
     //
     t_line *x   = (t_line *)z;
     t_buffer *b = buffer_new();
+
+    if (x->x_hasRamp) {
+        buffer_appendSymbol (b, sym__inlet2);
+        buffer_appendFloat (b,  x->x_timeRamp);
+        buffer_appendComma (b);
+    }
     
     buffer_appendSymbol (b, sym__inlet3);
     buffer_appendFloat (b,  x->x_grain);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void line_restore (t_line *x)
+{
+    t_line *old = (t_line *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    x->x_systimeTarget  = old->x_systimeTarget;
+    x->x_systimeStart   = old->x_systimeStart;
+    x->x_systimeNext    = old->x_systimeNext;
+    x->x_valueTarget    = old->x_valueTarget;
+    x->x_valueStart     = old->x_valueStart;
+    
+    if (x->x_systimeNext) {
+        if (clock_reschedule (x->x_clock, x->x_grain, PD_SECONDS_TO_MILLISECONDS (60), x->x_systimeNext)) {
+            clock_delay (x->x_clock, 0.0); x->x_systimeNext = clock_getLogicalTime (x->x_clock);
+        }
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -200,6 +244,7 @@ void line_setup (void)
     class_addMethod (c, (t_method)line_floatGrain,  sym__inlet3,    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)line_cancel,      sym_cancel,     A_NULL);
     class_addMethod (c, (t_method)line_set,         sym_set,        A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)line_restore,     sym__restore,   A_NULL);
 
     class_setDataFunction (c, line_functionData);
 
