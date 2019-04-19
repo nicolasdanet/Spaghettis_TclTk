@@ -20,7 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *pipe_class;                         /* Shared. */
+t_class *pipe_class;                                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -60,6 +60,11 @@ static void callback_free (t_pipecallback *);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static void callback_ownership (t_pipecallback *h, t_pipe *x)
+{
+    h->h_owner = x;
+}
 
 static void callback_task (t_pipecallback *h)
 {
@@ -155,10 +160,24 @@ static int pipe_unitIsValid (t_float f, t_symbol *unitName, int verbose)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void pipe_list (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
+static void pipe_set (t_pipe *x, int argc, t_atom *argv)
 {
     int i;
     
+    for (i = 0; i < argc; i++) {
+    //
+    if (!atom_typesAreEquals (atomoutlet_getAtom (x->x_vector + i), argv + i)) {
+        error_mismatch (sym_pipe, sym_type);
+        return;
+    }
+    //
+    }
+
+    for (i = 0; i < argc; i++) { atomoutlet_setAtom (x->x_vector + i, argv + i); }
+}
+
+static void pipe_list (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
+{
     if (argc > x->x_size) {
     //
     if (IS_FLOAT (argv + x->x_size)) { x->x_delay = GET_FLOAT (argv + x->x_size); }
@@ -171,18 +190,7 @@ static void pipe_list (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
     
     argc = PD_MIN (argc, x->x_size);
     
-    for (i = 0; i < argc; i++) {
-    //
-    if (!atom_typesAreEquals (atomoutlet_getAtom (x->x_vector + i), argv + i)) {  
-        error_mismatch (sym_pipe, sym_type); 
-        return;
-    }
-    //
-    }
-
-    for (i = 0; i < argc; i++) { atomoutlet_setAtom (x->x_vector + i, argv + i); }
-    
-    callback_new (x, argc, argv);
+    pipe_set (x, argc, argv); callback_new (x, argc, argv);
 }
 
 static void pipe_anything (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
@@ -241,6 +249,14 @@ static t_buffer *pipe_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, x->x_delay);
     
+    int i;
+    
+    for (i = 0; i < x->x_size; i++) {
+        buffer_appendAtom (b, atomoutlet_getAtom (x->x_vector + i));
+    }
+    
+    atom_invalidatePointers (buffer_getSize (b), buffer_getAtoms (b));
+    
     return b;
     //
     }
@@ -248,9 +264,38 @@ static t_buffer *pipe_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void pipe_restore (t_pipe *x, t_float f)
+static void pipe_restoreOwnership (t_pipe *x)
 {
-    x->x_delay = f;
+    t_pipecallback *t = x->x_callbacks; while (t) { callback_ownership (t, x); t = t->h_next; }
+}
+
+static void pipe_restoreEncapsulation (t_pipe *x, t_pipe *old)
+{
+    int i;
+    
+    x->x_delay     = old->x_delay;
+    x->x_unitValue = old->x_unitValue;
+    x->x_unitName  = old->x_unitName;
+    
+    PD_ASSERT (x->x_size == old->x_size);
+    
+    for (i = 0; i < x->x_size; i++) {
+        t_atom *a = atomoutlet_getAtom (old->x_vector + i); atomoutlet_setAtom (x->x_vector + i, a);
+    }
+    
+    x->x_callbacks = old->x_callbacks; old->x_callbacks = NULL; pipe_restoreOwnership (x);
+}
+
+static void pipe_restore (t_pipe *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_pipe *old = (t_pipe *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { pipe_restoreEncapsulation (x, old); }
+    else {
+    //
+    x->x_delay = atom_getFloatAtIndex (0, argc, argv); if (argc > 1) { pipe_set (x, argc - 1, argv + 1); }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -339,7 +384,7 @@ void pipe_setup (void)
     class_addMethod (c, (t_method)pipe_clear,   sym_clear,      A_NULL);
     class_addMethod (c, (t_method)pipe_unit,    sym_unit,       A_FLOAT, A_SYMBOL, A_NULL);
 
-    class_addMethod (c, (t_method)pipe_restore, sym__restore,   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)pipe_restore, sym__restore,   A_GIMME, A_NULL);
 
     class_setDataFunction (c, pipe_functionData);
     

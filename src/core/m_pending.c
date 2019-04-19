@@ -18,7 +18,10 @@ int instance_pendingRequired (t_gobj *y)
 {
     if (instance_hasPending()) {
     //
-    t_class *c = pd_class (y); return (c == line_class);
+    t_class *c = pd_class (y);
+    
+    if (c == line_class)      { return 1; }
+    else if (c == pipe_class) { return 1; }
     //
     }
     
@@ -50,8 +53,6 @@ t_gobj *instance_pendingFetch (t_gobj *y)
 
 void instance_pendingAdd (t_gobj *y)
 {
-    if (class_hasDismissFunction (pd_class (y))) { (*class_getDismissFunction (pd_class (y))) (y); }
-    
     y->g_next = instance_get()->pd_pending; instance_get()->pd_pending = y;
 }
 

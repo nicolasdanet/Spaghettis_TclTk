@@ -118,6 +118,7 @@ extern t_class *inlet_class;
 extern t_class *inlet_class;
 extern t_class *line_class;
 extern t_class *panel_class;
+extern t_class *pipe_class;
 extern t_class *plot_class;
 extern t_class *pointerinlet_class;
 extern t_class *scalar_class;
