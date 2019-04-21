@@ -264,11 +264,15 @@ static t_buffer *pipe_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* In order to fit to principle of least astonishment (POLA) restore everything in case of encapsulation. */
 
 static void pipe_restoreOwnership (t_pipe *x)
 {
-    t_pipecallback *t = x->x_callbacks; while (t) { callback_ownership (t, x); t = t->h_next; }
+    t_pipecallback *h = x->x_callbacks; while (h) { callback_ownership (h, x); h = h->h_next; }
 }
 
 static void pipe_restoreEncapsulation (t_pipe *x, t_pipe *old)

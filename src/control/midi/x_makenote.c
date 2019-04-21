@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *makenote_class;             /* Shared. */
+t_class *makenote_class;             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -38,6 +38,11 @@ typedef struct _makenote {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+static void makenote_ownership (t_hang *h, t_makenote *x)
+{
+    h->h_owner = x;
+}
 
 static void makenote_task (t_hang *h)
 {
@@ -144,10 +149,36 @@ static t_buffer *makenote_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* In order to fit to principle of least astonishment (POLA) restore everything in case of encapsulation. */
+
+static void makenote_restoreOwnership (t_makenote *x)
+{
+    t_hang *h = x->x_hangs; while (h) { makenote_ownership (h, x); h = h->h_next; }
+}
+
+static void makenote_restoreEncapsulation (t_makenote *x, t_makenote *old)
+{
+    x->x_velocity = old->x_velocity;
+    x->x_duration = old->x_duration;
+    
+    x->x_hangs = old->x_hangs; old->x_hangs = NULL; makenote_restoreOwnership (x);
+}
+
 static void makenote_restore (t_makenote *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_makenote *old = (t_makenote *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { makenote_restoreEncapsulation (x, old); }
+    else {
+    //
     x->x_velocity = atom_getFloatAtIndex (0, argc, argv);
     x->x_duration = atom_getFloatAtIndex (1, argc, argv);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

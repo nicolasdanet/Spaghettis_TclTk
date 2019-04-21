@@ -117,6 +117,7 @@ extern t_class *garray_class;
 extern t_class *inlet_class;
 extern t_class *inlet_class;
 extern t_class *line_class;
+extern t_class *makenote_class;
 extern t_class *panel_class;
 extern t_class *pipe_class;
 extern t_class *plot_class;
