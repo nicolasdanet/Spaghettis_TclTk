@@ -171,12 +171,17 @@ static t_buffer *line_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
+/* In order to fit to principle of least astonishment (POLA) restore everything in case of encapsulation. */
+
 static void line_restore (t_line *x)
 {
     t_line *old = (t_line *)instance_pendingFetch (cast_gobj (x));
     
     if (old) {
     //
+    x->x_hasRamp        = old->x_hasRamp;
+    x->x_timeRamp       = old->x_timeRamp;
+    x->x_grain          = old->x_grain;
     x->x_systimeTarget  = old->x_systimeTarget;
     x->x_systimeStart   = old->x_systimeStart;
     x->x_systimeNext    = old->x_systimeNext;
