@@ -23,6 +23,7 @@ int instance_pendingRequired (t_gobj *y)
     if (c == line_class)          { return 1; }
     else if (c == pipe_class)     { return 1; }
     else if (c == makenote_class) { return 1; }
+    else if (c == bag_class)      { return 1; }
     //
     }
     
