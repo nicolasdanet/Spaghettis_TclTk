@@ -123,6 +123,7 @@ extern t_class *panel_class;
 extern t_class *pipe_class;
 extern t_class *plot_class;
 extern t_class *pointerinlet_class;
+extern t_class *poly_class;
 extern t_class *scalar_class;
 extern t_class *send_tilde_class;
 extern t_class *struct_class;

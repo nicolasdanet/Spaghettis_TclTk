@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *poly_class;                 /* Shared. */
+t_class *poly_class;                        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -171,9 +171,31 @@ static t_buffer *poly_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* In order to fit to principle of least astonishment (POLA) restore everything in case of encapsulation. */
+
+static void poly_restoreEncapsulation (t_poly *x, t_poly *old)
+{
+    x->x_velocity     = old->x_velocity;
+    x->x_hasStealMode = old->x_hasStealMode;
+    x->x_serial       = old->x_serial;
+    
+    PD_ASSERT (x->x_size == old->x_size);
+    
+    t_voice *t = x->x_vector; x->x_vector = old->x_vector; old->x_vector = t;           /* Swap. */
+}
+
 static void poly_restore (t_poly *x, t_float f)
 {
-    x->x_velocity = f;
+    t_poly *old = (t_poly *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { poly_restoreEncapsulation (x, old); }
+    else {
+        x->x_velocity = f;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

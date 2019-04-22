@@ -24,6 +24,7 @@ int instance_pendingRequired (t_gobj *y)
     else if (c == pipe_class)     { return 1; }
     else if (c == makenote_class) { return 1; }
     else if (c == bag_class)      { return 1; }
+    else if (c == poly_class)     { return 1; }
     //
     }
     
