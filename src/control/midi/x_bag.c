@@ -146,7 +146,7 @@ static t_buffer *bag_functionData (t_gobj *z, int flags)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* In order to fit to principle of least astonishment (POLA) restore everything in case of encapsulation. */
+/* In order to fit to POLA restore everything in case of encapsulation. */
 
 static void bag_restoreEncapsulation (t_bag *x, t_bag *old)
 {

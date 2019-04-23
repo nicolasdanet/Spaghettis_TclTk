@@ -20,10 +20,11 @@ int instance_pendingRequired (t_gobj *y)
     //
     t_class *c = pd_class (y);
     
-    if (c == line_class)          { return 1; }
-    else if (c == pipe_class)     { return 1; }
+    if (c == bag_class)           { return 1; }
+    else if (c == counter_class)  { return 1; }
+    else if (c == line_class)     { return 1; }
     else if (c == makenote_class) { return 1; }
-    else if (c == bag_class)      { return 1; }
+    else if (c == pipe_class)     { return 1; }
     else if (c == poly_class)     { return 1; }
     //
     }

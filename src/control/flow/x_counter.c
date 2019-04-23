@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *counter_class;          /* Shared. */
+t_class *counter_class;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -78,13 +78,24 @@ static t_buffer *counter_functionData (t_gobj *z, int flags)
     t_buffer *b  = buffer_new();
     
     buffer_appendSymbol (b, sym_set);
-    buffer_appendFloat (b, x->x_count);
+    buffer_appendFloat (b,  x->x_count);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+/* In order to fit to POLA restore everything in case of encapsulation. */
+
+static void counter_restore (t_counter *x)
+{
+    t_counter *old = (t_counter *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { x->x_count = old->x_count; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -125,8 +136,9 @@ void counter_setup (void)
     class_addBang (c, (t_method)counter_bang);
     class_addFloat (c, (t_method)counter_float);
     
-    class_addMethod (c, (t_method)counter_reset,    sym_reset,  A_NULL);
-    class_addMethod (c, (t_method)counter_set,      sym_set,    A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)counter_reset,    sym_reset,      A_NULL);
+    class_addMethod (c, (t_method)counter_set,      sym_set,        A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)counter_restore,  sym__restore,   A_NULL);
     
     class_setDataFunction (c, counter_functionData);
 

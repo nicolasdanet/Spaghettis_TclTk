@@ -171,7 +171,7 @@ static t_buffer *line_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-/* In order to fit to principle of least astonishment (POLA) restore everything in case of encapsulation. */
+/* In order to fit to POLA restore everything in case of encapsulation. */
 
 static void line_restore (t_line *x)
 {
