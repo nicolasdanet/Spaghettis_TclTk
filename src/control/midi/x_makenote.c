@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *makenote_class;             /* Shared. */
+static t_class *makenote_class;             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -153,8 +153,6 @@ static t_buffer *makenote_functionData (t_gobj *z, int flags)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* In order to fit to POLA restore everything in case of encapsulation. */
-
 static void makenote_restoreOwnership (t_makenote *x)
 {
     t_hang *h = x->x_hangs; while (h) { makenote_ownership (h, x); h = h->h_next; }
@@ -231,6 +229,7 @@ void makenote_setup (void)
     class_addMethod (c, (t_method)makenote_restore, sym__restore,   A_GIMME, A_NULL);
 
     class_setDataFunction (c, makenote_functionData);
+    class_requirePending (c);
     
     makenote_class = c;
 }

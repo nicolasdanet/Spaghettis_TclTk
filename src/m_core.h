@@ -105,26 +105,20 @@ int dollar_expandWithArguments (t_atom *dollar, t_atom *a, t_glist *glist, int a
 
 /* Avoid typing. */
 
-extern t_class *bag_class;
 extern t_class *bindlist_class;
 extern t_class *block_class;
 extern t_class *canvas_class;
 extern t_class *catch_tilde_class;
 extern t_class *concept_class;
 extern t_class *constructor_class;
-extern t_class *counter_class;
 extern t_class *delwrite_tilde_class;
 extern t_class *floatinlet_class;
 extern t_class *garray_class;
 extern t_class *inlet_class;
 extern t_class *inlet_class;
-extern t_class *line_class;
-extern t_class *makenote_class;
 extern t_class *panel_class;
-extern t_class *pipe_class;
 extern t_class *plot_class;
 extern t_class *pointerinlet_class;
-extern t_class *poly_class;
 extern t_class *scalar_class;
 extern t_class *send_tilde_class;
 extern t_class *struct_class;

@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *bag_class;                         /* Shared. */
+static t_class *bag_class;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -146,8 +146,6 @@ static t_buffer *bag_functionData (t_gobj *z, int flags)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* In order to fit to POLA restore everything in case of encapsulation. */
-
 static void bag_restoreEncapsulation (t_bag *x, t_bag *old)
 {
     x->x_velocity = old->x_velocity;
@@ -218,6 +216,7 @@ void bag_setup (void)
     class_addMethod (c, (t_method)bag_restore,  sym__restore,   A_GIMME, A_NULL);
 
     class_setDataFunction (c, bag_functionData);
+    class_requirePending (c);
     
     bag_class = c;
 }

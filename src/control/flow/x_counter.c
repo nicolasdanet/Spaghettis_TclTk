@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *counter_class;                 /* Shared. */
+static t_class *counter_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -89,8 +89,6 @@ static t_buffer *counter_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-/* In order to fit to POLA restore everything in case of encapsulation. */
-
 static void counter_restore (t_counter *x)
 {
     t_counter *old = (t_counter *)instance_pendingFetch (cast_gobj (x));
@@ -141,7 +139,8 @@ void counter_setup (void)
     class_addMethod (c, (t_method)counter_restore,  sym__restore,   A_NULL);
     
     class_setDataFunction (c, counter_functionData);
-
+    class_requirePending (c);
+    
     counter_class = c;
 }
 

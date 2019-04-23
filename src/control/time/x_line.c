@@ -20,7 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *line_class;                /* Shared. */
+static t_class *line_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -171,8 +171,6 @@ static t_buffer *line_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-/* In order to fit to POLA restore everything in case of encapsulation. */
-
 static void line_restore (t_line *x)
 {
     t_line *old = (t_line *)instance_pendingFetch (cast_gobj (x));
@@ -252,7 +250,8 @@ void line_setup (void)
     class_addMethod (c, (t_method)line_restore,     sym__restore,   A_NULL);
 
     class_setDataFunction (c, line_functionData);
-
+    class_requirePending (c);
+    
     line_class = c;
 }
 

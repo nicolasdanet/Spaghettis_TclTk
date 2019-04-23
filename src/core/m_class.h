@@ -126,6 +126,7 @@ struct _class {
     t_propertiesfn              c_fnProperties;
     t_valuefn                   c_fnValue;
     t_dismissfn                 c_fnDismiss;
+    int                         c_requirePending;
     int                         c_hasSignal;
     int                         c_hasFirstInlet;
     int                         c_hasDSP;
@@ -196,6 +197,20 @@ static inline int class_hasFirstInlet (t_class *c)
 static inline int class_hasFirstInletAsSignal (t_class *c)
 {
     return (class_hasFirstInlet (c) && c->c_hasSignal);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static inline void class_requirePending (t_class *c)
+{
+    PD_ASSERT (!class_hasDSP (c)); c->c_requirePending = 1;
+}
+
+static inline int class_hasPendingRequired (t_class *c)
+{
+    return (c->c_requirePending != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

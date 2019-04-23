@@ -20,7 +20,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_class *pipe_class;                                /* Shared. */
+static t_class *pipe_class;                         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -268,8 +268,6 @@ static t_buffer *pipe_functionData (t_gobj *z, int flags)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* In order to fit to POLA restore everything in case of encapsulation. */
-
 static void pipe_restoreOwnership (t_pipe *x)
 {
     t_pipecallback *h = x->x_callbacks; while (h) { callback_ownership (h, x); h = h->h_next; }
@@ -393,6 +391,7 @@ void pipe_setup (void)
     class_addMethod (c, (t_method)pipe_restore, sym__restore,   A_GIMME, A_NULL);
 
     class_setDataFunction (c, pipe_functionData);
+    class_requirePending (c);
     
     pipe_class = c;
 }
