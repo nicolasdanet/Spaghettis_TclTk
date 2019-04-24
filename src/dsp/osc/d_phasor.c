@@ -77,7 +77,13 @@ static void phasor_tilde_dsp (t_phasor_tilde *x, t_signal **sp)
     //
     t_phasor_tilde *old = (t_phasor_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (phasor_tilde_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (phasor_tilde_initialize, x, old);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
     //
     }
     
