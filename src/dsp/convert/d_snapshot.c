@@ -71,6 +71,8 @@ static t_int *snapshot_tilde_perform (t_int *w)
 
 static void snapshot_tilde_dsp (t_snapshot_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    
     dsp_add (snapshot_tilde_perform, 2, sp[0]->s_vector + (sp[0]->s_vectorSize - 1), &x->x_value);
 }
 
