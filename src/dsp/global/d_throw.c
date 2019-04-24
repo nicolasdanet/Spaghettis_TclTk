@@ -35,14 +35,24 @@ typedef struct _throw_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void throw_tilde_set (t_throw_tilde *x, t_symbol *s)
+static void throw_tilde_setProceed (t_throw_tilde *x, t_symbol *s, int verbose)
 {
     t_catch_tilde *catcher = (t_catch_tilde *)symbol_getThingByClass ((x->x_name = s), catch_tilde_class);
     t_sample *t = catcher ? catcher->x_vector : NULL;
     
     PD_ATOMIC_POINTER_WRITE (t, &x->x_p);
     
-    if (!t && x->x_name != &s_) { error_canNotFind (sym_throw__tilde__, x->x_name); }
+    if (verbose && !t && x->x_name != &s_) { error_canNotFind (sym_throw__tilde__, x->x_name); }
+}
+
+static void throw_tilde_set (t_throw_tilde *x, t_symbol *s)
+{
+    throw_tilde_setProceed (x, s, 1);
+}
+
+static void throw_tilde_restore (t_throw_tilde *x, t_symbol *s)
+{
+    throw_tilde_setProceed (x, s, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -66,9 +76,21 @@ static void throw_tilde_dsp (t_throw_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_throw__tilde__, sym_size); }
     else {
-        throw_tilde_set (x, x->x_name);
-        PD_ASSERT (sp[0]->s_vector != (t_sample *)PD_ATOMIC_POINTER_READ (&x->x_p));
-        dsp_add (throw_tilde_perform, 2, x, sp[0]->s_vector);
+    //
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_throw_tilde *old = (t_throw_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) { x->x_name = old->x_name; object_copySignalValues (cast_object (x), cast_object (old)); }
+    //
+    }
+    
+    throw_tilde_setProceed (x, x->x_name, 1);
+    
+    PD_ASSERT (sp[0]->s_vector != (t_sample *)PD_ATOMIC_POINTER_READ (&x->x_p));
+    
+    dsp_add (throw_tilde_perform, 2, x, sp[0]->s_vector);
+    //
     }
 }
 
@@ -83,7 +105,7 @@ static t_buffer *throw_tilde_functionData (t_gobj *z, int flags)
     t_throw_tilde *x = (t_throw_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
     object_getSignalValues (cast_object (x), b);
@@ -128,7 +150,8 @@ void throw_tilde_setup (void)
     
     class_addDSP (c, (t_method)throw_tilde_dsp);
     
-    class_addMethod (c, (t_method)throw_tilde_set, sym_set, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)throw_tilde_set,      sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)throw_tilde_restore,  sym__restore,   A_SYMBOL, A_NULL);
     
     class_setDataFunction (c, throw_tilde_functionData);
     
