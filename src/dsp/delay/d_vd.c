@@ -96,7 +96,7 @@ static t_buffer *vd_tilde_functionData (t_gobj *z, int flags)
     t_vd_tilde *x = (t_vd_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

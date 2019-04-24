@@ -48,7 +48,7 @@ t_buffer *mag_tilde_functionData (t_gobj *z, int flags)
     t_mag_tilde *x = (t_mag_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

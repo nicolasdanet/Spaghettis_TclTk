@@ -134,7 +134,7 @@ t_buffer *complex_raw_functionData (t_gobj *z, int flags)
     struct _complex_raw_tilde *x = (struct _complex_raw_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 4);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

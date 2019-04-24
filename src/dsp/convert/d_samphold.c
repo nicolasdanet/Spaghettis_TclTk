@@ -110,7 +110,7 @@ static t_buffer *samphold_tilde_functionData (t_gobj *z, int flags)
     buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_lastOut));
     
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

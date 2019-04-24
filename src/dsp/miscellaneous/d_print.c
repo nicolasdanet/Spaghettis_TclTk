@@ -107,7 +107,7 @@ t_buffer *print_tilde_functionData (t_gobj *z, int flags)
     t_print_tilde *x = (t_print_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

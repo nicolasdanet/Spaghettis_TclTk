@@ -54,7 +54,7 @@ t_buffer *binop_tilde_functionData (t_gobj *z, int flags)
     struct _binop_tilde *x = (struct _binop_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //
@@ -77,7 +77,7 @@ t_buffer *binopScalar_tilde_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__inlet2);
     buffer_appendFloat (b,  PD_ATOMIC_FLOAT64_READ (&x->x_scalar));
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

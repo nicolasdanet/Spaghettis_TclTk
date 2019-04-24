@@ -102,7 +102,7 @@ t_buffer *lrshift_tilde_functionData (t_gobj *z, int flags)
     t_lrshift_tilde *x = (t_lrshift_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

@@ -419,9 +419,9 @@ static t_float object_getSignalValueAtIndex (t_object *x, int m)
     PD_BUG; return 0.0;
 }
 
-void object_getSignalValues (t_object *x, t_buffer *b, int n)
+void object_getSignalValues (t_object *x, t_buffer *b)
 {
-    int i;
+    int i, n = object_getNumberOfSignalInlets (x);
     
     buffer_appendSymbol (b, sym__signals);
     

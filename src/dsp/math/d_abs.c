@@ -62,7 +62,7 @@ t_buffer *unop_tilde_functionData (t_gobj *z, int flags)
     struct _unop_tilde *x = (struct _unop_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

@@ -176,7 +176,7 @@ static t_buffer *bp_tilde_functionData (t_gobj *z, int flags)
     buffer_appendFloat (b, f);
     buffer_appendFloat (b, q);
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

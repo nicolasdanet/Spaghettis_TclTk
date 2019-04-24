@@ -88,7 +88,7 @@ static t_buffer *dac_tilde_functionData (t_gobj *z, int flags)
     t_dac_tilde *x = (t_dac_tilde *)z;
     t_buffer *b = buffer_new();
 
-    object_getSignalValues (cast_object (x), b, x->x_size);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

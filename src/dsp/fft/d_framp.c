@@ -147,7 +147,7 @@ t_buffer *framp_tilde_functionData (t_gobj *z, int flags)
     t_framp_tilde *x = (t_framp_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

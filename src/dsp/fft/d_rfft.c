@@ -100,7 +100,7 @@ static t_buffer *rfft_tilde_functionData (t_gobj *z, int flags)
     t_rfft_tilde *x = (t_rfft_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

@@ -113,7 +113,7 @@ t_buffer *real_raw_functionData (t_gobj *z, int flags)
     
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

@@ -990,7 +990,7 @@ t_buffer *sigmund_tilde_functionData (t_gobj *z, int flags)
     t_sigmund_tilde *x = (t_sigmund_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

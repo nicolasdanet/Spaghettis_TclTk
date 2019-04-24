@@ -98,7 +98,7 @@ t_buffer *rifft_tilde_functionData (t_gobj *z, int flags)
     t_rifft_tilde *x = (t_rifft_tilde *)z;
     t_buffer *b = buffer_new();
     
-    object_getSignalValues (cast_object (x), b, 2);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

@@ -126,7 +126,7 @@ static t_buffer *tabread_tilde_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym_set);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

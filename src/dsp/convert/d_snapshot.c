@@ -88,7 +88,7 @@ static t_buffer *snapshot_tilde_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym_set);
     buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_value));
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

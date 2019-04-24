@@ -195,7 +195,7 @@ static t_buffer *threshold_tilde_functionData (t_gobj *z, int flags)
     buffer_appendFloat (b, f4);
     
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //

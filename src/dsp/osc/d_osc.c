@@ -107,7 +107,7 @@ static t_buffer *osc_tilde_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, PD_ATOMIC_FLOAT64_READ (&x->x_phase));
     buffer_appendComma (b);
-    object_getSignalValues (cast_object (x), b, 1);
+    object_getSignalValues (cast_object (x), b);
     
     return b;
     //
