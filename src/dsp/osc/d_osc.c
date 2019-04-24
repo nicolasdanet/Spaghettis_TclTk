@@ -86,7 +86,13 @@ static void osc_tilde_dsp (t_osc_tilde *x, t_signal **sp)
     //
     t_osc_tilde *old = (t_osc_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (osc_tilde_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (osc_tilde_initialize, x, old);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
     //
     }
     
