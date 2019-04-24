@@ -58,6 +58,8 @@ void    object_setSignalValues              (t_object *x, int argc, t_atom *argv
 
 void    object_copySignalValues             (t_object *x, t_object *old);
 
+void    object_fetchAndCopySignalValuesIfRequired   (t_object *x);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

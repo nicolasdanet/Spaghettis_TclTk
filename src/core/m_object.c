@@ -453,5 +453,20 @@ void object_copySignalValues (t_object *x, t_object *old)
     for (i = 0; i < n; i++) { object_setSignalValueAtIndex (x, i, object_getSignalValueAtIndex (old, i)); }
 }
 
+void object_fetchAndCopySignalValuesIfRequired (t_object *x)
+{
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_gobj *old = garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    object_copySignalValues (x, cast_object (old));
+    //
+    }
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
