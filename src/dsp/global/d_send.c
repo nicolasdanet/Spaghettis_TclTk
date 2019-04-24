@@ -26,7 +26,7 @@ static void send_tilde_dismiss (t_send_tilde *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_class *send_tilde_class;              /* Shared. */
+t_class *send_tilde_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -35,7 +35,11 @@ static void send_tilde_dsp (t_send_tilde *x, t_signal **sp)
 {
     if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_send__tilde__, sym_size); }
     else {
-        dsp_addCopyPerform (sp[0]->s_vector, x->x_vector, INTERNAL_BLOCKSIZE);
+    //
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    
+    dsp_addCopyPerform (sp[0]->s_vector, x->x_vector, INTERNAL_BLOCKSIZE);
+    //
     }
 }
 
