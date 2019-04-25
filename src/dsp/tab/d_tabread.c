@@ -40,7 +40,7 @@ typedef struct _tabread_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void tabread_tilde_set (t_tabread_tilde *x, t_symbol *s)
+static void tabread_tilde_setProceed (t_tabread_tilde *x, t_symbol *s, int verbose)
 {
     pthread_mutex_lock (&x->x_mutex);
     
@@ -50,7 +50,17 @@ static void tabread_tilde_set (t_tabread_tilde *x, t_symbol *s)
     
     pthread_mutex_unlock (&x->x_mutex);
     
-    if (err) { tab_error (sym_tabread__tilde__, s); }
+    if (verbose && err) { tab_error (sym_tabread__tilde__, s); }
+}
+
+static void tabread_tilde_set (t_tabread_tilde *x, t_symbol *s)
+{
+    tabread_tilde_setProceed (x, s, 1);
+}
+
+static void tabread_tilde_restore (t_tabread_tilde *x, t_symbol *s)
+{
+    tabread_tilde_setProceed (x, s, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,6 +107,22 @@ static t_int *tabread_tilde_perform (t_int *w)
 
 static void tabread_tilde_dsp (t_tabread_tilde *x, t_signal **sp)
 {
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabread_tilde *old = (t_tabread_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    if (x->x_name != old->x_name) { tabread_tilde_setProceed (x, old->x_name, 1); }
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+    
+    {
+    //
     t_space *t  = space_new (cast_gobj (x));
     int size    = 0;
     t_word *w   = NULL;
@@ -110,6 +136,8 @@ static void tabread_tilde_dsp (t_tabread_tilde *x, t_signal **sp)
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
     dsp_add (tabread_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -123,7 +151,7 @@ static t_buffer *tabread_tilde_functionData (t_gobj *z, int flags)
     t_tabread_tilde *x = (t_tabread_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
     object_getSignalValues (cast_object (x), b);
@@ -174,8 +202,9 @@ void tabread_tilde_setup (void)
         
     class_addDSP (c, (t_method)tabread_tilde_dsp);
     
-    class_addMethod (c, (t_method)tabread_tilde_set, sym_set, A_SYMBOL, A_NULL);
-
+    class_addMethod (c, (t_method)tabread_tilde_set,     sym_set,       A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabread_tilde_restore, sym__restore,  A_SYMBOL, A_NULL);
+    
     class_setDataFunction (c, tabread_tilde_functionData);
     
     tabread_tilde_class = c;
