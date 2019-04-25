@@ -133,7 +133,13 @@ static void env_tilde_dsp (t_env_tilde *x, t_signal **sp)
     //
     t_env_tilde *old = (t_env_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (env_tilde_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (env_tilde_initialize, x, old);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
     //
     }
     
