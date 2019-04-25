@@ -104,7 +104,13 @@ static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
     //
     t_delwrite_tilde *old = (t_delwrite_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (delwrite_tilde_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (delwrite_tilde_initialize, x, old);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
     //
     }
     
