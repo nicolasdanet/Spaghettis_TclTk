@@ -55,13 +55,12 @@ static void threshold_tilde_taskRight (t_threshold_tilde *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void threshold_tilde_set (t_threshold_tilde *x, t_symbol *s, int argc, t_atom *argv)
+static void threshold_tilde_setProceed (t_threshold_tilde *x,
+    t_float high,
+    t_float highDead,
+    t_float low,
+    t_float lowDead)
 {
-    t_float high      = atom_getFloatAtIndex (0, argc, argv);
-    t_float highDead  = atom_getFloatAtIndex (1, argc, argv);
-    t_float low       = atom_getFloatAtIndex (2, argc, argv);
-    t_float lowDead   = atom_getFloatAtIndex (3, argc, argv);
-    
     pthread_mutex_lock (&x->x_mutex);
     
         x->x_high         = high;
@@ -71,6 +70,16 @@ static void threshold_tilde_set (t_threshold_tilde *x, t_symbol *s, int argc, t_
         x->x_set          = 1;
     
     pthread_mutex_unlock (&x->x_mutex);
+}
+
+static void threshold_tilde_set (t_threshold_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_float high      = atom_getFloatAtIndex (0, argc, argv);
+    t_float highDead  = atom_getFloatAtIndex (1, argc, argv);
+    t_float low       = atom_getFloatAtIndex (2, argc, argv);
+    t_float lowDead   = atom_getFloatAtIndex (3, argc, argv);
+    
+    threshold_tilde_setProceed (x, high, highDead, low, lowDead);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -146,6 +155,22 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
     
     t->s_float0 = (t_float)(1000.0 * sp[0]->s_vectorSize / sp[0]->s_sampleRate);
     
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_threshold_tilde *old = (t_threshold_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (threshold_tilde_initialize, x, old);
+    
+    threshold_tilde_setProceed (x, old->x_high, old->x_deadTimeHigh, old->x_low, old->x_deadTimeLow);
+    
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    //
+    }
+    //
+    }
+    
     pthread_mutex_lock (&x->x_mutex);
     
         t->s_float1 = x->x_high;
@@ -154,14 +179,6 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
         t->s_float4 = x->x_deadTimeLow;
     
     pthread_mutex_unlock (&x->x_mutex);
-    
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
-    //
-    t_threshold_tilde *old = (t_threshold_tilde *)garbage_fetch (cast_gobj (x));
-    
-    if (old) { initializer_new (threshold_tilde_initialize, x, old); }
-    //
-    }
     
     dsp_add (threshold_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
