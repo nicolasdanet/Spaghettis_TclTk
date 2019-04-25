@@ -83,7 +83,13 @@ static void samphold_tilde_dsp (t_samphold_tilde *x, t_signal **sp)
     //
     t_samphold_tilde *old = (t_samphold_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (samphold_tilde_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (samphold_tilde_initialize, x, old);
+    
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    //
+    }
     //
     }
     
