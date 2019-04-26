@@ -33,6 +33,8 @@ typedef struct _unop_tilde t_sqrt_tilde;
 
 static void sqrt_tilde_dsp (t_sqrt_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     dsp_addSquareRootPerform (sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 

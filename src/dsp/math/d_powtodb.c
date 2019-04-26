@@ -44,6 +44,8 @@ static t_int *powtodb_tilde_perform (t_int *w)
 
 static void powtodb_tilde_dsp (t_powtodb_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
     dsp_add (powtodb_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);

@@ -44,6 +44,8 @@ static t_int *dbtopow_tilde_perform (t_int *w)
 
 static void dbtopow_tilde_dsp (t_dbtopow_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
     dsp_add (dbtopow_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);

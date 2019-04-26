@@ -31,6 +31,20 @@ typedef struct _clip_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void clip_tilde_low (t_clip_tilde *x, t_float f)
+{
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_low);
+}
+
+void clip_tilde_high (t_clip_tilde *x, t_float f)
+{
+    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_high);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* No aliasing. */
 
 static t_int *clip_tilde_perform (t_int *w)
@@ -58,23 +72,24 @@ static t_int *clip_tilde_perform (t_int *w)
 
 static void clip_tilde_dsp (t_clip_tilde *x, t_signal **sp)
 {
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_clip_tilde *old = (t_clip_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    clip_tilde_low (x, PD_ATOMIC_FLOAT64_READ (&old->x_low));
+    clip_tilde_high (x, PD_ATOMIC_FLOAT64_READ (&old->x_high));
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+    
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
     dsp_add (clip_tilde_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void clip_tilde_low (t_clip_tilde *x, t_float f)
-{
-    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_low);
-}
-
-void clip_tilde_high (t_clip_tilde *x, t_float f)
-{
-    PD_ATOMIC_FLOAT64_WRITE (f, &x->x_high);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -43,6 +43,7 @@ t_buffer *binopScalar_tilde_functionData    (t_gobj *z, int flags);
 // MARK: -
 
 void binopScalar_tilde_float                (struct _binopscalar_tilde *x, t_float f);
+void binopScalar_tilde_restore              (struct _binopscalar_tilde *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

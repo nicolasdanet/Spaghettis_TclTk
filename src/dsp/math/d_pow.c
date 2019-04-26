@@ -61,6 +61,8 @@ t_int *pow_tilde_perform (t_int *w)
 
 static void pow_tilde_dsp (t_pow_tilde *x, t_signal **sp)
 {
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    
     PD_ASSERT (sp[0]->s_vector != sp[2]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[2]->s_vector);
     
