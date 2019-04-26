@@ -41,7 +41,7 @@ typedef struct _tabosc4_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void tabosc4_tilde_set (t_tabosc4_tilde *x, t_symbol *s)
+static void tabosc4_tilde_setProceed (t_tabosc4_tilde *x, t_symbol *s, int verbose)
 {
     pthread_mutex_lock (&x->x_mutex);
     
@@ -61,7 +61,17 @@ static void tabosc4_tilde_set (t_tabosc4_tilde *x, t_symbol *s)
     
     pthread_mutex_unlock (&x->x_mutex);
     
-    tab_errorProceed (sym_tabosc4__tilde__, s, err1, err2);
+    if (verbose) { tab_errorProceed (sym_tabosc4__tilde__, s, err1, err2); }
+}
+
+static void tabosc4_tilde_set (t_tabosc4_tilde *x, t_symbol *s)
+{
+    tabosc4_tilde_setProceed (x, s, 1);
+}
+
+static void tabosc4_tilde_restore (t_tabosc4_tilde *x, t_symbol *s)
+{
+    tabosc4_tilde_setProceed (x, s, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -130,6 +140,24 @@ static void tabosc4_tilde_initialize (void *lhs, void *rhs)
 
 static void tabosc4_tilde_dsp (t_tabosc4_tilde *x, t_signal **sp)
 {
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_tabosc4_tilde *old = (t_tabosc4_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (tabosc4_tilde_initialize, x, old);
+    
+    if (x->x_name != old->x_name) { tabosc4_tilde_setProceed (x, old->x_name, 1); }
+
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+    
+    {
+    //
     t_space *t   = space_new (cast_gobj (x));
     int n        = 0;
     t_word *w    = NULL;
@@ -153,15 +181,9 @@ static void tabosc4_tilde_dsp (t_tabosc4_tilde *x, t_signal **sp)
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
-    //
-    t_tabosc4_tilde *old = (t_tabosc4_tilde *)garbage_fetch (cast_gobj (x));
-    
-    if (old) { initializer_new (tabosc4_tilde_initialize, x, old); }
+    dsp_add (tabosc4_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
-    
-    dsp_add (tabosc4_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -175,7 +197,7 @@ static t_buffer *tabosc4_tilde_functionData (t_gobj *z, int flags)
     t_tabosc4_tilde *x = (t_tabosc4_tilde *)z;
     t_buffer *b = buffer_new();
     
-    buffer_appendSymbol (b, sym_set);
+    buffer_appendSymbol (b, sym__restore);
     buffer_appendSymbol (b, x->x_name);
     buffer_appendComma (b);
     object_getSignalValues (cast_object (x), b);
@@ -226,7 +248,8 @@ void tabosc4_tilde_setup (void)
             
     class_addDSP (c, (t_method)tabosc4_tilde_dsp);
     
-    class_addMethod (c, (t_method)tabosc4_tilde_set, sym_set, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabosc4_tilde_set,        sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabosc4_tilde_restore,    sym__restore,   A_SYMBOL, A_NULL);
 
     class_setDataFunction (c, tabosc4_tilde_functionData);
     
