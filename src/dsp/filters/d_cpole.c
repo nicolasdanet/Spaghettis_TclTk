@@ -94,7 +94,13 @@ void complex_raw_initializer (t_gobj *x)
     //
     struct _complex_raw_tilde *old = (struct _complex_raw_tilde *)garbage_fetch (x);
     
-    if (old) { initializer_new (complex_raw_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (complex_raw_initialize, x, old);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
     //
     }
 }
