@@ -103,7 +103,15 @@ static void hip_tilde_dsp (t_hip_tilde *x, t_signal **sp)
     //
     t_hip_tilde *old = (t_hip_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (hip_tilde_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (hip_tilde_initialize, x, old);
+    
+    hip_tilde_frequency (x, PD_ATOMIC_FLOAT64_READ (&old->x_frequency));
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
     //
     }
     
