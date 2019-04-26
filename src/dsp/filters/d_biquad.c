@@ -48,18 +48,29 @@ typedef struct biquad_tilde {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void biquad_tilde_list (t_biquad_tilde *x, t_symbol *s, int argc, t_atom *argv)
+static void biquad_tilde_set (t_biquad_tilde *x, t_float a1, t_float a2, t_float b0, t_float b1, t_float b2)
 {
     pthread_mutex_lock (&x->x_mutex);
     
-        x->x_a1  = atom_getFloatAtIndex (0, argc, argv);
-        x->x_a2  = atom_getFloatAtIndex (1, argc, argv);
-        x->x_b0  = atom_getFloatAtIndex (2, argc, argv);
-        x->x_b1  = atom_getFloatAtIndex (3, argc, argv);
-        x->x_b2  = atom_getFloatAtIndex (4, argc, argv);
+        x->x_a1  = a1;
+        x->x_a2  = a2;
+        x->x_b0  = b0;
+        x->x_b1  = b1;
+        x->x_b2  = b2;
         x->x_set = 1;
     
     pthread_mutex_unlock (&x->x_mutex);
+}
+
+static void biquad_tilde_list (t_biquad_tilde *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_float a1 = atom_getFloatAtIndex (0, argc, argv);
+    t_float a2 = atom_getFloatAtIndex (1, argc, argv);
+    t_float b0 = atom_getFloatAtIndex (2, argc, argv);
+    t_float b1 = atom_getFloatAtIndex (3, argc, argv);
+    t_float b2 = atom_getFloatAtIndex (4, argc, argv);
+    
+    biquad_tilde_set (x, a1, a2, b0, b1, b2);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -131,6 +142,24 @@ static void biquad_tilde_initialize (void *lhs, void *rhs)
 
 static void biquad_tilde_dsp (t_biquad_tilde *x, t_signal **sp)
 {
+    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    //
+    t_biquad_tilde *old = (t_biquad_tilde *)garbage_fetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    initializer_new (biquad_tilde_initialize, x, old);
+    
+    biquad_tilde_set (x, old->x_a1, old->x_a2, old->x_b0, old->x_b1, old->x_b2);
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
+    //
+    }
+    
+    {
+    //
     t_space *t = space_new (cast_gobj (x));
     
     pthread_mutex_lock (&x->x_mutex);
@@ -141,15 +170,9 @@ static void biquad_tilde_dsp (t_biquad_tilde *x, t_signal **sp)
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
-    //
-    t_biquad_tilde *old = (t_biquad_tilde *)garbage_fetch (cast_gobj (x));
-    
-    if (old) { initializer_new (biquad_tilde_initialize, x, old); }
+    dsp_add (biquad_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
-    
-    dsp_add (biquad_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
