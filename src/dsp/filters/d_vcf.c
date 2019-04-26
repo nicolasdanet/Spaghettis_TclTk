@@ -136,7 +136,15 @@ static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
     //
     t_vcf_tilde *old = (t_vcf_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (vcf_tilde_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (vcf_tilde_initialize, x, old);
+    
+    vcf_tilde_qFactor (x, PD_ATOMIC_FLOAT64_READ (&old->x_q));
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
     //
     }
     
