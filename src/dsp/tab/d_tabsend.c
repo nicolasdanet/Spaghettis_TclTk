@@ -68,6 +68,8 @@ static void tabsend_tilde_polling (t_tabsend_tilde *x)
 
 static void tabsend_tilde_setProceed (t_tabsend_tilde *x, t_symbol *s, int verbose)
 {
+    tabsend_tilde_polling (x);
+    
     pthread_mutex_lock (&x->x_mutex);
     
         t_error err = tab_fetchArray ((x->x_name = s), &x->x_size, &x->x_vector);
