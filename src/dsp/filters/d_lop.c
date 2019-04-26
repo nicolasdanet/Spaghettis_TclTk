@@ -96,7 +96,15 @@ static void lop_tilde_dsp (t_lop_tilde *x, t_signal **sp)
     //
     t_lop_tilde *old = (t_lop_tilde *)garbage_fetch (cast_gobj (x));
     
-    if (old) { initializer_new (lop_tilde_initialize, x, old); }
+    if (old) {
+    //
+    initializer_new (lop_tilde_initialize, x, old);
+    
+    lop_tilde_frequency (x, PD_ATOMIC_FLOAT64_READ (&old->x_frequency));
+    
+    object_copySignalValues (cast_object (x), cast_object (old));
+    //
+    }
     //
     }
     
