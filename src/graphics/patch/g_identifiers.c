@@ -38,6 +38,13 @@ void gobj_serializeUnique (t_gobj *x, t_symbol *s, t_buffer *b)
     buffer_appendSemicolon (b);
 }
 
+void gobj_saveUniques (t_gobj *x, t_buffer *b, int flags)
+{
+    if (flags & SAVE_UNDO)        { gobj_serializeUnique (x, sym__tagobject, b); }
+    if (flags & SAVE_ENCAPSULATE) { gobj_serializeUnique (x, sym__tagsource, b); }
+    if (flags & SAVE_UPDATE)      { gobj_serializeSource (x, sym__tagsource, b); }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

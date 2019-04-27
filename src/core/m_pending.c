@@ -50,6 +50,8 @@ t_gobj *instance_pendingFetch (t_gobj *y)
 
 void instance_pendingAdd (t_gobj *y)
 {
+    if (class_hasDismissFunction (pd_class (y))) { (*class_getDismissFunction (pd_class (y))) (y); }
+
     y->g_next = instance_get()->pd_pending; instance_get()->pd_pending = y;
 }
 

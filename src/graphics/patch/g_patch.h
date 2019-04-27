@@ -168,6 +168,7 @@ void    gobj_serializeSource        (t_gobj *x, t_symbol *s, t_buffer *b);
 t_id    gobj_getNative              (t_gobj *x);
 void    gobj_changeIdentifiers      (t_gobj *x, t_id u);
 int     gobj_identifiersHaveChanged (t_gobj *x);
+void    gobj_saveUniques            (t_gobj *x, t_buffer *b, int flags);
 
 void    gobj_save                   (t_gobj *x, t_buffer *buffer, int flags);
 int     gobj_hit                    (t_gobj *x, t_glist *owner, int a, int b, int n, t_rectangle *r);
