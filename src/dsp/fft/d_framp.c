@@ -120,7 +120,9 @@ static void framp_tilde_dsp (t_framp_tilde *x, t_signal **sp)
     PD_ASSERT (sp[0]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
-        
+    
+    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    
     if (n < FFT_MINIMUM || n > FFT_MAXIMUM) { error_invalid (sym_framp__tilde__, sym_size); }
     else {
     //
