@@ -224,14 +224,13 @@ void garbage_newRaw (void *m)
     }
 }
 
-void garbage_newObject (t_gobj *o)
+int garbage_newObject (t_gobj *o)
 {
     t_chain *chain = instance_chainGetCurrent();
     
     PD_ASSERT (o);
     
-    if (!chain) { pd_free (cast_pd (o)); }
-    else {
+    if (chain) {
     //
     t_garbage *x = (t_garbage *)PD_MEMORY_GET (sizeof (t_garbage));
     
@@ -244,8 +243,12 @@ void garbage_newObject (t_gobj *o)
     if (class_hasDismissFunction (pd_class (o))) { (*class_getDismissFunction (pd_class (o))) (o); }
     
     chain_addClosure (chain, (t_closure *)x);
+    
+    return 1;
     //
     }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

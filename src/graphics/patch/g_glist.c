@@ -863,8 +863,9 @@ static void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
 
 static void glist_objectRemoveFree (t_gobj *y)
 {
-    if (gobj_hasDSP (y) && !gobj_isCanvas (y)) { garbage_newObject (y);   }
-    else if (instance_pendingRequired (y))     { instance_pendingAdd (y); }
+    if (gobj_hasDSP (y) && !gobj_isCanvas (y)) { if (garbage_newObject (y)) { return; } }
+    
+    if (instance_pendingRequired (y)) { instance_pendingAdd (y); }
     else {
         pd_free (cast_pd (y));
     }

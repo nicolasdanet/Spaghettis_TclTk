@@ -251,6 +251,13 @@ static t_garray *array_getGraphicArray (t_array *x)
     return NULL;
 }
 
+/* Whereas it is thread-safe it can be wrong in case of a concurrent write. */
+
+void array_copyGraphicArray (t_word *dest, t_word *src, int n)
+{
+    int i; for (i = 0; i < n; i++) { w_setFloat (dest + i, w_getFloat (src + i)); }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -260,8 +267,8 @@ void array_resize (t_array *x, int n)
     t_template *tmpl = template_findByIdentifier (x->a_templateIdentifier);
     t_garray *a      = array_getGraphicArray (x);
     
-    int oldSize  = x->a_size;
-    int newSize  = PD_MAX (1, n);
+    int oldSize = x->a_size;
+    int newSize = PD_MAX (1, n);
 
     int m = (int)(x->a_elementSize * sizeof (t_word));
     
@@ -280,8 +287,10 @@ void array_resize (t_array *x, int n)
         t_word *t     = x->a_elements;
         x->a_elements = (t_word *)PD_MEMORY_GET (newSize * m);
         x->a_size     = n;
-
-        memcpy (x->a_elements, t, PD_MIN (oldSize, newSize) * m); garbage_newRaw ((void *)t);
+        
+        PD_ASSERT (x->a_elementSize == 1);
+        
+        array_copyGraphicArray (x->a_elements, t, PD_MIN (oldSize, newSize)); garbage_newRaw ((void *)t);
         
     } else {
     

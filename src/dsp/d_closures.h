@@ -140,8 +140,8 @@ t_blockclosure      *block_newClosure           (t_gobj *owner);
 t_vinletclosure     *vinlet_newClosure          (t_gobj *owner);
 t_voutletclosure    *voutlet_newClosure         (t_gobj *owner);
 
-void                garbage_newRaw              (void *m);
-void                garbage_newObject           (t_gobj *o);
+void                garbage_newRaw              (void *m);      /* Without DSP chain it is freed. */
+int                 garbage_newObject           (t_gobj *o);    /* Without DSP chain zero is returned. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
