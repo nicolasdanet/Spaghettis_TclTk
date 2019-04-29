@@ -420,3 +420,29 @@ void iemgui_dirty (t_iem *iem, int isDirty, int isUndoable, t_undosnippet *s1)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+/* Fake dialog message from interpreter. */
+
+void iemgui_restore (t_gobj *x, t_gobj *old)
+{
+    if (class_hasUndoFunction (pd_class (old))) {
+    //
+    t_buffer *b = buffer_new();
+        
+    (*class_getUndoFunction (pd_class (old))) (old, b);
+    
+    {
+        int argc     = buffer_getSize (b);
+        t_atom *argv = buffer_getAtoms (b);
+    
+        if (argc) { pd_message (cast_pd (x), atom_getSymbol (argv), argc - 1, argv + 1); }
+    }
+    
+    buffer_free (b);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

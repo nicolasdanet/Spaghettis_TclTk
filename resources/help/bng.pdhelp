@@ -30,7 +30,7 @@
 #X obj -60 12 freeze;
 #X msg 36 180 1 2 doublezon;
 #X msg 36 156 butagaz;
-#X obj 36 240 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;
+#X obj 36 240 bng 15 250 50 0 \$0-from \$0-to empty 17 7 0 10 #ffffff #000000 #000000;
 #X obj 180 216 s \$0-to;
 #X obj 180 240 r \$0-from;
 #X obj 180 180 bng 15 250 50 0 empty empty empty 17 7 0 10 #ffffff #000000 #000000;

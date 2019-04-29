@@ -239,6 +239,12 @@ void    iemgui_dirty                        (t_iem *iem, int isDirty, int isUndo
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void    iemgui_restore                      (t_gobj *x, t_gobj *old);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void    iemgui_setSend                      (void *x, t_symbol *s);
 void    iemgui_setReceive                   (void *x, t_symbol *s);
 void    iemgui_setLabel                     (void *x, t_symbol *s);
