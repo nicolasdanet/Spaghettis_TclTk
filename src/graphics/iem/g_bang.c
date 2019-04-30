@@ -354,21 +354,6 @@ static void bng_functionSave (t_gobj *z, t_buffer *b, int flags)
     gobj_saveUniques (z, b, flags);
 }
 
-static t_buffer *bng_functionData (t_gobj *z, int flags)
-{
-    if (SAVED_DEEP (flags)) {
-    //
-    t_buffer *b = buffer_new();
-
-    buffer_appendSymbol (b, sym__restore);
-    
-    return b;
-    //
-    }
-    
-    return NULL;
-}
-
 /* Fake dialog message from interpreter. */
 
 static void bng_functionUndo (t_gobj *z, t_buffer *b)
@@ -571,7 +556,7 @@ void bng_setup (void)
 
     class_setWidgetBehavior (c, &bng_widgetBehavior);
     class_setSaveFunction (c, bng_functionSave);
-    class_setDataFunction (c, bng_functionData);
+    class_setDataFunction (c, iemgui_functionData);
     class_setUndoFunction (c, bng_functionUndo);
     class_setPropertiesFunction (c, bng_functionProperties);
     class_requirePending (c);

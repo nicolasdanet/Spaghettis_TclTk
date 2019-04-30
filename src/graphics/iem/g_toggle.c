@@ -344,21 +344,6 @@ static void toggle_functionSave (t_gobj *z, t_buffer *b, int flags)
     gobj_saveUniques (z, b, flags);
 }
 
-static t_buffer *toggle_functionData (t_gobj *z, int flags)
-{
-    if (SAVED_DEEP (flags)) {
-    //
-    t_buffer *b = buffer_new();
-
-    buffer_appendSymbol (b, sym__restore);
-    
-    return b;
-    //
-    }
-    
-    return NULL;
-}
-
 /* Fake dialog message from interpreter. */
 
 static void toggle_functionUndo (t_gobj *z, t_buffer *b)
@@ -572,7 +557,7 @@ void toggle_setup (void)
 
     class_setWidgetBehavior (c, &toggle_widgetBehavior);
     class_setSaveFunction (c, toggle_functionSave);
-    class_setDataFunction (c, toggle_functionData);
+    class_setDataFunction (c, iemgui_functionData);
     class_setUndoFunction (c, toggle_functionUndo);
     class_setPropertiesFunction (c, toggle_functionProperties);
     class_requirePending (c);
