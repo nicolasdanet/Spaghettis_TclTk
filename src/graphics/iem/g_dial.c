@@ -523,9 +523,9 @@ static void dial_set (t_dial *x, t_float f)
     f = (t_float)PD_CLAMP (f, x->x_minimum, x->x_maximum);
     
     if (x->x_isLogarithmic) { 
-        x->x_position = (int)(log (f / x->x_minimum) / dial_getStepValue (x));
+        x->x_position = (int)((log (f / x->x_minimum) / dial_getStepValue (x)) + 0.5);
     } else {
-        x->x_position = (int)((f - x->x_minimum) / dial_getStepValue (x));
+        x->x_position = (int)(((f - x->x_minimum) / dial_getStepValue (x)) + 0.5);
     }
     
     x->x_floatValue = dial_getValue (x);
