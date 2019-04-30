@@ -548,11 +548,11 @@ void bng_setup (void)
     class_addMethod (c, (t_method)bng_fromDialog,               sym__iemdialog,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_size,                     sym_size,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_flashtime,                sym_flashtime,          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_restore,                  sym__restore,           A_NULL);
     class_addMethod (c, (t_method)iemgui_setBackgroundColor,    sym_backgroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)bng_restore,                  sym__restore,           A_NULL);
 
     class_setWidgetBehavior (c, &bng_widgetBehavior);
     class_setSaveFunction (c, bng_functionSave);
