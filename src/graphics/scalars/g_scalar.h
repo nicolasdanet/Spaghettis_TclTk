@@ -173,6 +173,7 @@ t_scalar    *scalar_new                         (t_glist *owner, t_symbol *templ
 t_word      *scalar_getElement                  (t_scalar *x);
 t_template  *scalar_getTemplate                 (t_scalar *x);
 t_symbol    *scalar_getTemplateIdentifier       (t_scalar *x);
+t_glist     *scalar_getView                     (t_scalar *x);
 t_array     *scalar_getArray                    (t_scalar *x, t_symbol *field);
 
 int         scalar_containsTemplate             (t_scalar *x, t_symbol *templateIdentifier);
@@ -186,7 +187,7 @@ void        scalar_disable                      (t_scalar *x);
 void        scalar_enable                       (t_scalar *x);
 
 void        scalar_serialize                    (t_scalar *x, t_buffer *b);
-void        scalar_deserialize                  (t_scalar *x, t_glist *glist, int argc, t_atom *argv);
+void        scalar_deserialize                  (t_scalar *x, int argc, t_atom *argv);
 void        scalar_properties                   (t_scalar *x, t_glist *glist, int a, int b);
 void        scalar_redraw                       (t_scalar *x, t_glist *glist);
 

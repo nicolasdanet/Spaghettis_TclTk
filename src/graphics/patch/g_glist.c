@@ -712,7 +712,7 @@ void glist_objectMakeScalar (t_glist *glist, int argc, t_atom *argv)
     if (template_isValid (template_findByIdentifier (templateIdentifier))) {
     //
     t_scalar *scalar = scalar_new (glist, templateIdentifier);
-    scalar_deserialize (scalar, glist, argc - 1, expanded + 1);
+    scalar_deserialize (scalar, argc, expanded);
     glist_objectAdd (glist, cast_gobj (scalar));
     //
     } else {
