@@ -123,6 +123,7 @@ static inline int vu_offsetWithStep (t_vu *x, int step)
 // MARK: -
 
 static void vu_behaviorGetRectangle (t_gobj *, t_glist *, t_rectangle *r);
+static void vu_drawUpdateProceed    (t_vu *, t_glist *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -146,7 +147,15 @@ static t_widgetbehavior vu_widgetBehavior =         /* Shared. */
 
 static void vu_drawJob (t_gobj *z, t_glist *glist)
 {
-    t_vu *x = (t_vu *)z;
+    t_vu *x = (t_vu *)z; vu_drawUpdateProceed (x, glist);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void vu_drawUpdateProceed (t_vu *x, t_glist *glist)
+{
     t_glist *view = glist_getView (glist);
 
     int a = glist_getPixelX (glist, cast_object (x));
@@ -160,7 +169,7 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
                     b + 1,
                     a + x->x_gui.iem_width - 1,
                     b + PD_CLAMP (h, 1, (x->x_gui.iem_height - 1)));
-                
+    
     if (x->x_peak) {
     //
     h = vu_offsetWithStep (x, x->x_peak);
@@ -173,7 +182,7 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
                     a + x->x_gui.iem_width,
                     b + h);
     gui_vAdd ("%s.c itemconfigure %lxPEAK -fill #%06x\n",
-                    glist_getTagAsString (view), 
+                    glist_getTagAsString (view),
                     x,
                     vu_colors[x->x_peak]);
     //
@@ -183,22 +192,18 @@ static void vu_drawJob (t_gobj *z, t_glist *glist)
     
     gui_vAdd ("%s.c coords %lxPEAK %d %d %d %d\n",
                     glist_getTagAsString (view),
-                    x, 
+                    x,
                     a + 1,
                     b + h,
                     a + x->x_gui.iem_width,
                     b + h);
     gui_vAdd ("%s.c itemconfigure %lxPEAK -fill #%06x\n",
-                    glist_getTagAsString (view), 
-                    x, 
+                    glist_getTagAsString (view),
+                    x,
                     x->x_gui.iem_colorBackground);
     //
     }
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 static void vu_drawUpdate (t_vu *x, t_glist *glist)
 {
@@ -236,7 +241,7 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
     //
     }
              
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    vu_drawUpdateProceed (x, glist);
 }
 
 static void vu_drawNew (t_vu *x, t_glist *glist)
@@ -294,7 +299,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                     x->x_gui.iem_colorBackground,
                     x);
 
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    vu_drawUpdateProceed (x, glist);
 }
 
 static void vu_drawSelect (t_vu *x, t_glist *glist)
@@ -363,7 +368,7 @@ static void vu_drawConfig (t_vu *x, t_glist *glist)
                     x,
                     x->x_thickness - 1);
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    vu_drawUpdateProceed (x, glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -403,7 +408,7 @@ static void vu_bang (t_vu *x)
     outlet_float (x->x_outletRight, x->x_peakValue);
     outlet_float (x->x_outletLeft, x->x_decibelValue);
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
 }
 
 static void vu_floatPeak (t_vu *x, t_float peak)
@@ -413,7 +418,7 @@ static void vu_floatPeak (t_vu *x, t_float peak)
     x->x_peakValue = peak;
     x->x_peak = vu_stepWithDecibels (peak);
     
-    if (x->x_peak != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_peak != old) { IEMGUI_UPDATE (x); }
         
     outlet_float (x->x_outletRight, peak);
 }
@@ -425,7 +430,7 @@ static void vu_float (t_vu *x, t_float decibel)
     x->x_decibelValue = decibel;
     x->x_decibel = vu_stepWithDecibels (decibel);
     
-    if (x->x_decibel != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_decibel != old) { IEMGUI_UPDATE (x); }
     
     if (x->x_decibelValue > x->x_peakValue) { vu_floatPeak (x, decibel); }
     
@@ -462,6 +467,10 @@ static void vu_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
     rectangle_set (r, a, b, c, d);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void vu_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
     t_vu *x = (t_vu *)z;
@@ -490,7 +499,7 @@ static void vu_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  0);
     buffer_appendSemicolon (b);
     
-    if (flags & SAVE_UNDO) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 static void vu_functionUndo (t_gobj *z, t_buffer *b)
@@ -549,6 +558,10 @@ static void vu_functionProperties (t_gobj *z, t_glist *owner, t_mouse *dummy)
     stub_new (cast_pd (x), (void *)x, t);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void vu_fromDialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
     int isDirty  = 0;
@@ -580,6 +593,28 @@ static void vu_fromDialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
     isDirty |= (t1 != x->x_gui.iem_height);
     
     iemgui_dirty (cast_iem (x), isDirty, undoable, snippet);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void vu_restore (t_vu *x)
+{
+    t_vu *old = (t_vu *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    iemgui_restore (cast_gobj (x), cast_gobj (old));
+    
+    x->x_peak           = old->x_peak;
+    x->x_decibel        = old->x_decibel;
+    x->x_peakValue      = old->x_peakValue;
+    x->x_decibelValue   = old->x_decibelValue;
+    
+    iemgui_boxChanged ((void *)x);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -674,12 +709,15 @@ void vu_setup (void)
     class_addMethod (c, (t_method)iemgui_setForegroundColor,    sym_foregroundcolor,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemgui_setSend,               sym_send,               A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemgui_setReceive,            sym_receive,            A_DEFSYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)vu_restore,                   sym__restore,           A_NULL);
+
     class_setWidgetBehavior (c, &vu_widgetBehavior);
     class_setSaveFunction (c, vu_functionSave);
+    class_setDataFunction (c, iemgui_functionData);
     class_setUndoFunction (c, vu_functionUndo);
     class_setPropertiesFunction (c, vu_functionProperties);
-    
+    class_requirePending (c);
+
     vu_class = c;
 }
 

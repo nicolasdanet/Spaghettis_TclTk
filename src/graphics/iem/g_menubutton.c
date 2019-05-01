@@ -269,7 +269,7 @@ static void menubutton_index (t_menubutton *x, int n)
     
     x->x_index = n;
     
-    if (redraw) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (redraw) { IEMGUI_UPDATE (x); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -308,7 +308,7 @@ static void menubutton_list (t_menubutton *x, t_symbol *s, int argc, t_atom *arg
     
     if (x->x_saveWithParent) { glist_setDirty (cast_iem (x)->iem_owner, 1); }
     
-    if (redraw) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (redraw) { IEMGUI_UPDATE (x); }
     //
     }
 }
@@ -355,7 +355,7 @@ static void menubutton_clear (t_menubutton *x)
     
     if (x->x_saveWithParent) { glist_setDirty (cast_iem (x)->iem_owner, 1); }
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
     //
     }
 }
@@ -626,14 +626,14 @@ static void menubutton_menu (t_menubutton *x, t_symbol *s, int argc, t_atom *arg
     
     if (x->x_saveWithParent) { glist_setDirty (cast_iem (x)->iem_owner, 1); }
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
 }
 
 static void menubutton_restore (t_menubutton *x, t_symbol *s, int argc, t_atom *argv)
 {
     menubutton_clear (x); buffer_deserialize (slots_getRaw (x->x_slots), argc, argv);
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

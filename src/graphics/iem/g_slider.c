@@ -388,7 +388,7 @@ static void slider_click (t_slider *x, t_symbol *s, int argc, t_atom *argv)
         int numberOfSteps = slider_getNumberOfSteps (x);
         x->x_position = PD_CLAMP ((int)t, 0, numberOfSteps);
         x->x_floatValue = slider_getValue (x);
-        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        IEMGUI_UPDATE (x);
     }
     
     glist_setMotion (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)slider_motion, a, b);
@@ -427,7 +427,7 @@ static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float 
     if (t != old) {
         x->x_position   = t;
         x->x_floatValue = slider_getValue (x);
-        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        IEMGUI_UPDATE (x);
         slider_out (x);
     }
     //
@@ -486,7 +486,7 @@ static void slider_set (t_slider *x, t_float f)
         x->x_position = (int)((f - x->x_minimum) / slider_getStepValue (x));
     }
         
-    if (x->x_position != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_position != old) { IEMGUI_UPDATE (x); }
 }
 
 static void slider_steady (t_slider *x, t_float f)

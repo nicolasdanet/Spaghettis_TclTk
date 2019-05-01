@@ -61,9 +61,7 @@ static t_widgetbehavior bng_widgetBehavior =        /* Shared. */
 
 static void bng_taskFlash (t_bng *x)
 {
-    x->x_flashed = 0;
-    
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    x->x_flashed = 0; IEMGUI_UPDATE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -200,9 +198,7 @@ static void bng_draw (t_bng *x, t_glist *glist, int mode)
 
 static void bng_updateFlash (t_bng *x)
 {
-    if (!x->x_flashed) {
-        x->x_flashed = 1; (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
-    }
+    if (!x->x_flashed) { x->x_flashed = 1; IEMGUI_UPDATE (x); }
     
     clock_delay (x->x_clock, x->x_flashTime);
 }

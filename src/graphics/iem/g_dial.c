@@ -469,7 +469,7 @@ static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modi
     if (t != old) {
         x->x_position   = t;
         x->x_floatValue = dial_getValue (x);
-        (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+        IEMGUI_UPDATE (x);
         dial_out (x);
     }
 }
@@ -530,7 +530,7 @@ static void dial_set (t_dial *x, t_float f)
     
     x->x_floatValue = dial_getValue (x);
     
-    if (x->x_floatValue != old) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (x->x_floatValue != old) { IEMGUI_UPDATE (x); }
 }
 
 static void dial_steps (t_dial *x, t_float f)

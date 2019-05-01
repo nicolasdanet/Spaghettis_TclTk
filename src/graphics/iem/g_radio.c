@@ -347,7 +347,7 @@ static void radio_setStateAt (t_radio *x, int position)
     
     x->x_floatValue = x->x_state;
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
 }
 
 static int radio_getStateAt (t_radio *x, int position)
@@ -386,11 +386,9 @@ static void radio_float (t_radio *x, t_float f)
 {
     radio_setState (x, (int64_t)f); x->x_floatValue = f;
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
     
-    if (x->x_gui.iem_goThrough) {
-        radio_out (x); 
-    }
+    if (x->x_gui.iem_goThrough) { radio_out (x); }
 }
 
 static void radio_click (t_radio *x, t_symbol *s, int argc, t_atom *argv)
@@ -436,9 +434,7 @@ static void radio_size (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 
 static void radio_set (t_radio *x, t_float f)
 {
-    radio_setState (x, (int64_t)f); x->x_floatValue = f;
-    
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    radio_setState (x, (int64_t)f); x->x_floatValue = f; IEMGUI_UPDATE (x);
 }
 
 static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
@@ -466,7 +462,7 @@ static void radio_mode (t_radio *x, t_symbol *s)
     
     glist_setDirty (cast_iem (x)->iem_owner, 1);
     
-    (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    IEMGUI_UPDATE (x);
     //
     }
 }

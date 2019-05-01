@@ -277,7 +277,7 @@ static void toggle_set (t_toggle *x, t_float f)
     
     x->x_state = f;
 
-    if (draw) { (*(cast_iem (x)->iem_fnDraw)) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
+    if (draw) { IEMGUI_UPDATE (x); }
 }
 
 static void toggle_nonZero (t_toggle *x, t_float f)
