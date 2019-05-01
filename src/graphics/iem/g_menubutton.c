@@ -408,6 +408,29 @@ static void menubutton_previous (t_menubutton *x)
     menubutton_float (x, x->x_index - 1);
 }
 
+static void menubutton_menu (t_menubutton *x, t_symbol *s, int argc, t_atom *argv)
+{
+    int i;
+    
+    menubutton_clear (x);
+    
+    for (i = 0; i < argc; i++) {
+    //
+    t_atom a;
+    
+    buffer_clear (x->x_cachedBuffer); buffer_append (x->x_cachedBuffer, 1, argv + i);
+    
+    SET_FLOAT (&a, i);
+    
+    slots_set (x->x_slots, &a, x->x_cachedBuffer);
+    //
+    }
+    
+    if (x->x_saveWithParent) { glist_setDirty (cast_iem (x)->iem_owner, 1); }
+    
+    IEMGUI_UPDATE (x);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -430,6 +453,10 @@ static int menubutton_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     
     return 1;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void menubutton_functionSave (t_gobj *z, t_buffer *b, int flags)
 {
@@ -457,7 +484,7 @@ static void menubutton_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  (SAVED_DEEP (flags) || x->x_gui.iem_loadbang) ? x->x_index : 0.0);
     buffer_appendSemicolon (b);
     
-    if (flags & SAVE_UNDO) { gobj_serializeUnique (z, sym__tagobject, b); }
+    gobj_saveUniques (z, b, flags);
 }
 
 static t_buffer *menubutton_functionData (t_gobj *z, int flags)
@@ -561,6 +588,10 @@ static void menubutton_functionProperties (t_gobj *z, t_glist *owner, t_mouse *d
     stub_new (cast_pd (x), (void *)x, t);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void menubutton_fromValue (t_menubutton *x, t_symbol *s, int argc, t_atom *argv)
 {
     menubutton_float (x, atom_getFloatAtIndex (0, argc, argv));
@@ -606,34 +637,21 @@ static void menubutton_fromDialog (t_menubutton *x, t_symbol *s, int argc, t_ato
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void menubutton_menu (t_menubutton *x, t_symbol *s, int argc, t_atom *argv)
+static void menubutton_restore (t_menubutton *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int i;
+    t_menubutton *old = (t_menubutton *)instance_pendingFetch (cast_gobj (x));
     
-    menubutton_clear (x);
+    menubutton_clear (x); buffer_deserialize (slots_getRaw (x->x_slots), argc, argv);
     
-    for (i = 0; i < argc; i++) {
+    if (old) {
     //
-    t_atom a;
+    iemgui_restore (cast_gobj (x), cast_gobj (old));
     
-    buffer_clear (x->x_cachedBuffer); buffer_append (x->x_cachedBuffer, 1, argv + i);
-    
-    SET_FLOAT (&a, i);
-    
-    slots_set (x->x_slots, &a, x->x_cachedBuffer);
+    menubutton_set (x, old->x_index);
     //
     }
     
-    if (x->x_saveWithParent) { glist_setDirty (cast_iem (x)->iem_owner, 1); }
-    
-    IEMGUI_UPDATE (x);
-}
-
-static void menubutton_restore (t_menubutton *x, t_symbol *s, int argc, t_atom *argv)
-{
-    menubutton_clear (x); buffer_deserialize (slots_getRaw (x->x_slots), argc, argv);
-    
-    IEMGUI_UPDATE (x);
+    iemgui_boxChanged ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -741,7 +759,8 @@ void menubutton_setup (void)
     class_setValueFunction (c, menubutton_functionValue);
     class_setUndoFunction (c, menubutton_functionUndo);
     class_setPropertiesFunction (c, menubutton_functionProperties);
-    
+    class_requirePending (c);
+
     menubutton_class = c;
 }
 
