@@ -124,18 +124,22 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
                     b + x->x_gui.iem_height - IEM_SLIDER_PIXEL);
 }
 
+static void slider_drawUpdateProceed (t_slider *x, t_glist *glist)
+{
+    if (x->x_isVertical) {
+        slider_drawUpdateVertical (x, glist);
+    } else {
+        slider_drawUpdateHorizontal (x, glist);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void slider_drawJob (t_gobj *z, t_glist *glist)
 {
-    t_slider *x = (t_slider *)z;
-    
-    if (x->x_isVertical) { slider_drawUpdateVertical (x, glist); }
-    else {
-        slider_drawUpdateHorizontal (x, glist);
-    }
+    t_slider *x = (t_slider *)z; slider_drawUpdateProceed (x, glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -162,7 +166,7 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
                     a + x->x_gui.iem_width, 
                     b + x->x_gui.iem_height);
                 
-    slider_drawUpdate (x, glist);
+    slider_drawUpdateProceed (x, glist);
 }
 
 static void slider_drawNew (t_slider *x, t_glist *glist)
@@ -711,6 +715,8 @@ static void slider_restore (t_slider *x)
     iemgui_restore (cast_gobj (x), cast_gobj (old));
     
     slider_set (x, old->x_floatValue);
+    
+    iemgui_boxChanged ((void *)x);
     //
     }
 }

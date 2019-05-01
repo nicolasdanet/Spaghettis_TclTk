@@ -764,6 +764,8 @@ static void dial_restore (t_dial *x)
     iemgui_restore (cast_gobj (x), cast_gobj (old));
     
     dial_set (x, old->x_floatValue);
+    
+    iemgui_boxChanged ((void *)x);
     //
     }
 }

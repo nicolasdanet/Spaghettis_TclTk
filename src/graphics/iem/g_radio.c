@@ -683,6 +683,8 @@ static void radio_restore (t_radio *x)
     iemgui_restore (cast_gobj (x), cast_gobj (old));
     
     radio_set (x, old->x_floatValue);
+    
+    iemgui_boxChanged ((void *)x);
     //
     }
 }

@@ -452,6 +452,8 @@ static void toggle_restore (t_toggle *x)
     iemgui_restore (cast_gobj (x), cast_gobj (old));
     
     toggle_set (x, old->x_state);
+    
+    iemgui_boxChanged ((void *)x);
     //
     }
 }
