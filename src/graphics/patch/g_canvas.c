@@ -544,7 +544,7 @@ static void canvas_functionSave (t_gobj *x, t_buffer *b, int flags)
         buffer_appendSemicolon (b);
         object_serializeWidth (cast_object (x), b);
         
-        if (flags & SAVE_UNDO) { gobj_serializeUnique (x, sym__tagobject, b); }
+        gobj_saveUniques (x, b, flags);
     }
 }
 
