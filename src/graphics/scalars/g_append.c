@@ -117,6 +117,32 @@ static void append_fields (t_append *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *append_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void append_restore (t_append *x)
+{
+    t_append *old = (t_append *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) { gpointer_setByCopy (&x->x_gpointer, &old->x_gpointer); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void *append_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_append *x = (t_append *)pd_new (append_class);
@@ -166,8 +192,12 @@ void append_setup (void)
     class_addBang (c, (t_method)append_bang);
     class_addFloat (c, (t_method)append_float);
     
-    class_addMethod (c, (t_method)append_fields, sym_fields, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)append_fields,    sym_fields,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)append_restore,   sym__restore,   A_NULL);
 
+    class_setDataFunction (c, append_functionData);
+    class_requirePending (c);
+    
     append_class = c;
 }
 
