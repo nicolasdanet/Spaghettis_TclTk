@@ -62,7 +62,9 @@ static t_buffer *float_functionData (t_gobj *z, int flags)
 
 static void float_restore (t_floatobject *x, t_float f)
 {
-    x->x_f = f;
+    t_floatobject *old = (t_floatobject *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_f = old ? old->x_f : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -114,6 +116,7 @@ void float_setup (void)
     class_addMethod (c, (t_method)float_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, float_functionData);
+    class_requirePending (c);
 
     float_class = c;
 }
