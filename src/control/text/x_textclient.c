@@ -63,13 +63,13 @@ t_buffer *textclient_fetchBuffer (t_textclient *x)
     return NULL;
 }
 
-t_glist *textclient_fetchView (t_textclient *x)
+t_glist *textclient_fetchOwner (t_textclient *x)
 {
     if (x->tc_name) {
     //
     t_textbuffer *y = (t_textbuffer *)symbol_getThingByClass (x->tc_name, textdefine_class);
 
-    if (y) { return textbuffer_getView (y); } else { error_canNotFind (sym_text, x->tc_name); }
+    if (y) { return textbuffer_getOwner (y); } else { error_canNotFind (sym_text, x->tc_name); }
     //
     }
     

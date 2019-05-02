@@ -40,7 +40,7 @@ void textbuffer_free (t_textbuffer *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_glist *textbuffer_getView (t_textbuffer *x)
+t_glist *textbuffer_getOwner (t_textbuffer *x)
 {
     return x->tb_owner;
 }

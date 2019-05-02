@@ -230,18 +230,18 @@ void template_unregisterInstance (t_template *x, t_struct *o)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_glist *template_getInstanceView (t_template *x)
+static t_glist *template_getInstanceOwner (t_template *x)
 {
     PD_ASSERT (x);
     
-    if (!x->tp_instance) { return NULL; } else { return struct_getView (x->tp_instance); }
+    if (!x->tp_instance) { return NULL; } else { return struct_getOwner (x->tp_instance); }
 }
 
 /* Return the instance view if it contains at least one painter. */
 
-t_glist *template_getInstanceViewIfPainters (t_template *x)
+t_glist *template_getInstanceOwnerIfPainters (t_template *x)
 {
-    t_glist *view = template_getInstanceView (x);
+    t_glist *view = template_getInstanceOwner (x);
     
     if (view) {
     
@@ -259,7 +259,7 @@ t_glist *template_getInstanceViewIfPainters (t_template *x)
 
 t_constructor *template_getInstanceConstructorIfAny (t_template *x, t_symbol *field)
 {
-    t_glist *view = template_getInstanceView (x);
+    t_glist *view = template_getInstanceOwner (x);
     
     if (view) {
     

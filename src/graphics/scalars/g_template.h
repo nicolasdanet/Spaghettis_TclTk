@@ -72,7 +72,7 @@ int         template_getRaw                         (t_template *x,
 
 t_symbol      *template_getFieldAtIndex             (t_template *x, int n);
 
-t_glist       *template_getInstanceViewIfPainters   (t_template *x);
+t_glist       *template_getInstanceOwnerIfPainters  (t_template *x);
 t_constructor *template_getInstanceConstructorIfAny (t_template *x, t_symbol *field);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ int         template_fieldIsArrayAndValid           (t_template *x, t_symbol *fi
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_glist     *struct_getView                         (t_struct *x);
+t_glist     *struct_getOwner                        (t_struct *x);
 t_symbol    *struct_getUnexpandedName               (t_struct *x);
 
 // -----------------------------------------------------------------------------------------------------------

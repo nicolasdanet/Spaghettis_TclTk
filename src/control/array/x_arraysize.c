@@ -52,7 +52,7 @@ static void arraysize_float (t_arraysize *x, t_float f)
     int n = PD_MAX (1, (int)f);
     
     if (ARRAYCLIENT_HAS_POINTER (&x->x_arrayclient)) {
-        array_resizeAndRedraw (a, arrayclient_fetchView (&x->x_arrayclient), n);
+        array_resizeAndRedraw (a, arrayclient_fetchOwner (&x->x_arrayclient), n);
     } else {
         garray_resize (arrayclient_fetchOwnerIfName (&x->x_arrayclient), (t_float)n);
     }

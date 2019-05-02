@@ -185,7 +185,7 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
 
@@ -268,7 +268,7 @@ static void scalar_behaviorDeleted (t_gobj *z, t_glist *glist)
 static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *owner = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+    t_glist *owner = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
     t_float baseX  = scalar_getFloat (x, sym_x);
     t_float baseY  = scalar_getFloat (x, sym_y);
 
@@ -323,7 +323,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
     
     if (!x->sc_disable && view) {
     //
@@ -503,7 +503,7 @@ static int scalar_functionValueFetchIfPlotted (t_scalar *x,
     
     if (m->m_clickedRight && template_containsArray (scalar_getTemplate (x))) {
     //
-    t_glist *view = template_getInstanceViewIfPainters (scalar_getTemplate (x));
+    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
 
     if (view) {
     //
@@ -629,7 +629,7 @@ static void scalar_restore (t_scalar *x)
     
     buffer_free (t);
     
-    scalar_redrawProceed (x, scalar_getView (x), 1);
+    scalar_redrawProceed (x, scalar_getOwner (x), 1);
     //
     }
 }
@@ -657,7 +657,7 @@ t_template *scalar_getTemplate (t_scalar *x)
     return tmpl;
 }
 
-t_glist *scalar_getView (t_scalar *x)
+t_glist *scalar_getOwner (t_scalar *x)
 {
     return x->sc_owner;
 }

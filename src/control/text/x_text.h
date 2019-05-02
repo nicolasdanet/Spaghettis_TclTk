@@ -62,7 +62,7 @@ void        textbuffer_read                 (t_textbuffer *x, t_symbol *s);
 void        textbuffer_write                (t_textbuffer *x, t_symbol *s);
 void        textbuffer_addLine              (t_textbuffer *x, t_symbol *s, int argc, t_atom *argv);
 
-t_glist     *textbuffer_getView             (t_textbuffer *x);
+t_glist     *textbuffer_getOwner            (t_textbuffer *x);
 t_buffer    *textbuffer_getBuffer           (t_textbuffer *x);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ t_buffer    *textbuffer_getBuffer           (t_textbuffer *x);
 t_error     textclient_init                 (t_textclient *x, int *argc, t_atom **argv);
 void        textclient_update               (t_textclient *x);
 
-t_glist     *textclient_fetchView           (t_textclient *x);
+t_glist     *textclient_fetchOwner          (t_textclient *x);
 t_buffer    *textclient_fetchBuffer         (t_textclient *x);
 
 // -----------------------------------------------------------------------------------------------------------

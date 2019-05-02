@@ -161,7 +161,7 @@ static void drawcircle_behaviorGetRectangle (t_gobj *z,
     
     if (visible) {
     //
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     
     int width      = (gpointer_getFloatByDescriptor (gp, &x->x_width) / 2.0);
     t_float radius = gpointer_getFloatByDescriptor (gp, &x->x_radius);
@@ -193,7 +193,7 @@ static void drawcircle_behaviorVisibilityChanged (t_gobj *z,
     if (!isVisible || visible) {
     //
     t_word *tag    = gpointer_getElement (gp);
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     t_glist *view  = glist_getView (glist);
     
     if (!isVisible) { gui_vAdd ("%s.c delete %lxCIRCLE\n", glist_getTagAsString (view), tag); }    // --
@@ -324,7 +324,7 @@ static int drawcircle_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t
 
     if (match) {
     //
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     
     PD_ASSERT (drawcircle_side != DRAWCIRCLE_NONE);
     

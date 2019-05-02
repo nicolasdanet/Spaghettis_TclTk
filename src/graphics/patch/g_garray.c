@@ -393,7 +393,7 @@ t_symbol *garray_getUnexpandedName (t_garray *x)
     return x ? x->x_unexpandedName : sym_Patch;     /* Could be NULL in legacy patches. */
 }
 
-t_glist *garray_getView (t_garray *x)
+t_glist *garray_getOwner (t_garray *x)
 {
     return x->x_owner;
 }

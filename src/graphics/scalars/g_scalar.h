@@ -173,7 +173,7 @@ t_scalar    *scalar_new                         (t_glist *owner, t_symbol *templ
 t_word      *scalar_getElement                  (t_scalar *x);
 t_template  *scalar_getTemplate                 (t_scalar *x);
 t_symbol    *scalar_getTemplateIdentifier       (t_scalar *x);
-t_glist     *scalar_getView                     (t_scalar *x);
+t_glist     *scalar_getOwner                    (t_scalar *x);
 t_array     *scalar_getArray                    (t_scalar *x, t_symbol *field);
 
 int         scalar_containsTemplate             (t_scalar *x, t_symbol *templateIdentifier);

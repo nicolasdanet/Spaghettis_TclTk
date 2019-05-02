@@ -47,7 +47,7 @@ static t_error append_proceed (t_append *x, t_float f, int setFields)
     //
     if (gpointer_isValidOrNull (&x->x_gpointer) && gpointer_isScalar (&x->x_gpointer)) {
     //
-    t_scalar *scalar = scalar_new (gpointer_getView (&x->x_gpointer), x->x_templateIdentifier);
+    t_scalar *scalar = scalar_new (gpointer_getOwner (&x->x_gpointer), x->x_templateIdentifier);
     
     if (!scalar) { error_invalid (sym_append, sym_template); }
     else {
@@ -69,7 +69,7 @@ static t_error append_proceed (t_append *x, t_float f, int setFields)
         }
     }
     
-    glist_objectAddNext (gpointer_getView (&x->x_gpointer),
+    glist_objectAddNext (gpointer_getOwner (&x->x_gpointer),
         cast_gobj (scalar),
         cast_gobj (gpointer_getScalar (&x->x_gpointer)));
         

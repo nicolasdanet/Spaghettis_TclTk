@@ -96,7 +96,7 @@ static t_float drawtext_getFactor (t_drawtext *x, t_gpointer *gp, t_rectangle *r
     if (dot != -1) {
     
         int decimals = (int)strlen (s) - (dot + 1);
-        int h = font_getWidth (glist_getFontSize (gpointer_getView (gp)));
+        int h = font_getWidth (glist_getFontSize (gpointer_getOwner (gp)));
         int a = rectangle_getTopRightX (r);
         int b = rectangle_getTopRightY (r);
         int c = rectangle_getBottomRightX (r);
@@ -174,7 +174,7 @@ static void drawtext_behaviorGetRectangle (t_gobj *z,
     
     if (visible) {
     //
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     
     char t[PD_STRING] = { 0 };
         
@@ -216,7 +216,7 @@ static void drawtext_behaviorVisibilityChanged (t_gobj *z,
     if (!isVisible || visible) {
     //
     t_word *tag    = gpointer_getElement (gp);
-    t_glist *glist = gpointer_getView (gp);
+    t_glist *glist = gpointer_getOwner (gp);
     t_glist *view  = glist_getView (glist);
     
     if (!isVisible) { gui_vAdd ("%s.c delete %lxNUMBER\n", glist_getTagAsString (view), tag); }    // --
@@ -275,7 +275,7 @@ static int drawtext_behaviorMouse (t_gobj *z, t_gpointer *gp, t_float baseX, t_f
         
         gpointer_setByCopy (&drawtext_gpointer, gp);
         
-        glist_setMotion (gpointer_getView (gp), z, (t_motionfn)drawtext_motion, a, b);
+        glist_setMotion (gpointer_getOwner (gp), z, (t_motionfn)drawtext_motion, a, b);
     }
     
     return (gpointer_isScalar (gp) ? CURSOR_OVER : CURSOR_ELEMENT_2);

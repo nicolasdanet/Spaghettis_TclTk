@@ -38,7 +38,7 @@ void struct_notify (t_struct *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_glist *struct_getView (t_struct *x)
+t_glist *struct_getOwner (t_struct *x)
 {
     return x->x_owner;
 }

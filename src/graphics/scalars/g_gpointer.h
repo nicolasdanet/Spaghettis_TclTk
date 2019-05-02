@@ -61,7 +61,7 @@ int         gpointer_isValidOrNull              (t_gpointer *gp);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_glist     *gpointer_getView                   (t_gpointer *gp);
+t_glist     *gpointer_getOwner                  (t_gpointer *gp);
 t_word      *gpointer_getElement                (t_gpointer *gp);
 t_symbol    *gpointer_getTemplateIdentifier     (t_gpointer *gp);
 t_template  *gpointer_getTemplate               (t_gpointer *gp);

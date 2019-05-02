@@ -187,7 +187,7 @@ static void textsequence_proceedOutContent (t_textsequence *x,
     int argc,
     t_atom *argv)
 {
-    t_glist *view = textclient_fetchView (&x->x_textclient);
+    t_glist *view = textclient_fetchOwner (&x->x_textclient);
         
     int count = end - start - x->x_waitCount;
     t_atom *a = buffer_getAtomAtIndex (b, start + x->x_waitCount);
