@@ -213,6 +213,7 @@ extern t_symbol *sym__tagobject;
 extern t_symbol *sym__tagsource;
 extern t_symbol *sym__touchin;
 extern t_symbol *sym__undo;
+extern t_symbol *sym__VALUE_;
 extern t_symbol *sym__valuedialog;
 extern t_symbol *sym__window;
 extern t_symbol *sym__SLOT_;

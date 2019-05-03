@@ -213,6 +213,7 @@ t_symbol *sym__tagobject;
 t_symbol *sym__tagsource;
 t_symbol *sym__touchin;
 t_symbol *sym__undo;
+t_symbol *sym__VALUE_;
 t_symbol *sym__valuedialog;
 t_symbol *sym__window;
 t_symbol *sym__SLOT_;
@@ -938,6 +939,7 @@ void symbols_initialize (void)
     sym__tagsource                              = gensym ("_tagsource");
     sym__touchin                                = gensym ("_touchin");
     sym__undo                                   = gensym ("_undo");
+    sym__VALUE_                                 = gensym ("_VALUE_");
     sym__valuedialog                            = gensym ("_valuedialog");
     sym__window                                 = gensym ("_window");
     sym__SLOT_                                  = gensym ("_SLOT_");

@@ -36,15 +36,21 @@ typedef struct _value {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_float *valuecommon_fetch (t_symbol *s)
+static t_symbol *valuecommon_name (t_symbol *s)
 {
-    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (s, valuecommon_class);
+    return symbol_addPrefix (s, sym__VALUE_);
+}
+
+static t_float *valuecommon_fetch (t_symbol *s)
+{
+    t_symbol *name   = valuecommon_name (s);
+    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (name, valuecommon_class);
     
     if (!x) {
         x = (t_valuecommon *)pd_new (valuecommon_class);
         x->x_referenceCount = 0;
         x->x_f = 0;
-        pd_bind (cast_pd (x), s);
+        pd_bind (cast_pd (x), name);
     }
     
     x->x_referenceCount++;
@@ -52,20 +58,22 @@ t_float *valuecommon_fetch (t_symbol *s)
     return (&x->x_f);
 }
 
-void valuecommon_release (t_symbol *s)
+static void valuecommon_release (t_symbol *s)
 {
-    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (s, valuecommon_class);
+    t_symbol *name   = valuecommon_name (s);
+    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (name, valuecommon_class);
     
     PD_ASSERT (x != NULL);
     
     x->x_referenceCount--;
     
-    if (!x->x_referenceCount) { pd_unbind (cast_pd (x), s); pd_free (cast_pd (x)); }
+    if (!x->x_referenceCount) { pd_unbind (cast_pd (x), name); pd_free (cast_pd (x)); }
 }
 
-int valuecommon_count (t_symbol *s)
+static int valuecommon_count (t_symbol *s)
 {
-    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (s, valuecommon_class);
+    t_symbol *name   = valuecommon_name (s);
+    t_valuecommon *x = (t_valuecommon *)symbol_getThingByClass (name, valuecommon_class);
     
     if (x) { return x->x_referenceCount; }
     
@@ -129,6 +137,11 @@ static t_buffer *value_functionData (t_gobj *z, int flags)
 
 static void value_restore (t_value *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_value *old = (t_value *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { value_set (x, old->x_name); }
+    else {
+    //
     value_set (x, atom_getSymbolAtIndex (0, argc, argv));
     
     /* Restore the value if it is the only client. */
@@ -136,6 +149,8 @@ static void value_restore (t_value *x, t_symbol *s, int argc, t_atom *argv)
     if (x->x_raw && valuecommon_count (x->x_name) == 1) {
     //
     value_float (x, atom_getFloatAtIndex (1, argc, argv));
+    //
+    }
     //
     }
 }
@@ -191,6 +206,7 @@ void value_setup (void)
     class_addMethod (value_class, (t_method)value_restore,  sym__restore,   A_GIMME, A_NULL);
 
     class_setDataFunction (value_class, value_functionData);
+    class_requirePending (value_class);
 }
 
 void value_destroy (void)
