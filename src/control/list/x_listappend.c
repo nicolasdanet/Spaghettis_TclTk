@@ -26,9 +26,8 @@ static t_class *listappend_class;           /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _listappend {
-    t_object        x_obj;                  /* Must be the first. */
-    t_listinlet     x_listinlet;
-    t_outlet        *x_outlet;
+    t_listinlethelper   x_h;                /* Must be the first. */
+    t_outlet            *x_outlet;
     } t_listappend;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -38,24 +37,24 @@ typedef struct _listappend {
 static void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom *t = NULL;
-    int count = listinlet_getSize (&x->x_listinlet) + argc;
+    int count = listinlet_getSize (&x->x_h.lh_listinlet) + argc;
     
     PD_ATOMS_ALLOCA (t, count);
     
     atom_copyAtoms (argv, argc, t, argc);
     
-    if (listinlet_hasPointer (&x->x_listinlet)) {
+    if (listinlet_hasPointer (&x->x_h.lh_listinlet)) {
     
         t_listinlet cache;
         listinlet_init (&cache);
-        listinlet_clone (&x->x_listinlet, &cache);
+        listinlet_clone (&x->x_h.lh_listinlet, &cache);
         listinlet_copyAtomsUnchecked (&cache, t + argc);
         outlet_list (x->x_outlet, count, t);
         listinlet_clear (&cache);
         
     } else {
     
-        listinlet_copyAtomsUnchecked (&x->x_listinlet, t + argc);
+        listinlet_copyAtomsUnchecked (&x->x_h.lh_listinlet, t + argc);
         outlet_list (x->x_outlet, count, t);
     }
     
@@ -71,15 +70,15 @@ static void listappend_anything (t_listappend *x, t_symbol *s, int argc, t_atom 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_buffer *listappend_functionData (t_gobj *z, int flags)
+t_buffer *listhelper_functionData (t_gobj *z, int flags)
 {
     if (SAVED_DEEP (flags)) {
     //
-    t_listappend *x = (t_listappend *)z;
+    t_listinlethelper *x = (t_listinlethelper *)z;
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__restore);
-    listinlet_listGet (&x->x_listinlet, b);
+    listinlet_listGet (&x->lh_listinlet, b);
     buffer_invalidatePointers (b);
     
     return b;
@@ -89,13 +88,13 @@ static t_buffer *listappend_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-static void listappend_restore (t_listappend *x, t_symbol *s, int argc, t_atom *argv)
+void listhelper_restore (t_listinlethelper *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_listappend *old = (t_listappend *)instance_pendingFetch (cast_gobj (x));
+    t_listinlethelper *old = (t_listinlethelper *)instance_pendingFetch (cast_gobj (x));
 
-    if (old) { listinlet_copy (&x->x_listinlet, &old->x_listinlet); }
+    if (old) { listinlet_copy (&x->lh_listinlet, &old->lh_listinlet); }
     else {
-        listinlet_listSet (&x->x_listinlet, argc, argv);
+        listinlet_listSet (&x->lh_listinlet, argc, argv);
     }
 }
 
@@ -107,19 +106,19 @@ void *listappend_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listappend *x = (t_listappend *)pd_new (listappend_class);
     
-    listinlet_init (&x->x_listinlet);
-    listinlet_listSet (&x->x_listinlet, argc, argv);
+    listinlet_init (&x->x_h.lh_listinlet);
+    listinlet_listSet (&x->x_h.lh_listinlet, argc, argv);
     
     x->x_outlet = outlet_newList (cast_object (x));
     
-    inlet_new (cast_object (x), cast_pd (&x->x_listinlet), NULL, NULL);
+    inlet_new (cast_object (x), cast_pd (&x->x_h.lh_listinlet), NULL, NULL);
     
     return x;
 }
 
 static void listappend_free (t_listappend *x)
 {
-    listinlet_clear (&x->x_listinlet);
+    listinlet_clear (&x->x_h.lh_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -141,9 +140,9 @@ void listappend_setup (void)
     class_addList (c, (t_method)listappend_list);
     class_addAnything (c, (t_method)listappend_anything);
     
-    class_addMethod (c, (t_method)listappend_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)listhelper_restore, sym__restore, A_GIMME, A_NULL);
 
-    class_setDataFunction (c, listappend_functionData);
+    class_setDataFunction (c, listhelper_functionData);
     class_requirePending (c);
     
     class_setHelpName (c, &s_list);

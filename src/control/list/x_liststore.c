@@ -20,16 +20,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *liststore_class;           /* Shared. */
+static t_class *liststore_class;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _liststore {
-    t_object        x_obj;                  /* Must be the first. */
-    t_listinlet     x_listinlet;
-    t_outlet        *x_outletLeft;
-    t_outlet        *x_outletRight;
+    t_listinlethelper   x_h;                /* Must be the first. */
+    t_outlet            *x_outletLeft;
+    t_outlet            *x_outletRight;
     } t_liststore;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -38,17 +37,17 @@ typedef struct _liststore {
 
 static void liststore_append (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
 {
-    listinlet_listAppend (&x->x_listinlet, argc, argv);
+    listinlet_listAppend (&x->x_h.lh_listinlet, argc, argv);
 }
 
 static void liststore_prepend (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
 {
-    listinlet_listPrepend (&x->x_listinlet, argc, argv);
+    listinlet_listPrepend (&x->x_h.lh_listinlet, argc, argv);
 }
 
 static void liststore_get (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int count = listinlet_getSize (&x->x_listinlet);
+    int count = listinlet_getSize (&x->x_h.lh_listinlet);
     int m = (int)atom_getFloatAtIndex (0, argc, argv);
     int n = (int)atom_getFloatAtIndex (1, argc, argv);
     
@@ -60,18 +59,18 @@ static void liststore_get (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
     
     PD_ATOMS_ALLOCA (t, count);
     
-    if (listinlet_hasPointer (&x->x_listinlet)) {
+    if (listinlet_hasPointer (&x->x_h.lh_listinlet)) {
     
         t_listinlet cache;
         listinlet_init (&cache);
-        listinlet_clone (&x->x_listinlet, &cache);
+        listinlet_clone (&x->x_h.lh_listinlet, &cache);
         listinlet_copyAtomsUnchecked (&cache, t);
         outlet_list (x->x_outletLeft, n, t + m);
         listinlet_clear (&cache);
         
     } else {
     
-        listinlet_copyAtomsUnchecked (&x->x_listinlet, t);
+        listinlet_copyAtomsUnchecked (&x->x_h.lh_listinlet, t);
         outlet_list (x->x_outletLeft, n, t + m);
     }
     
@@ -93,24 +92,24 @@ static void liststore_get (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
 static void liststore_list (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom *t = NULL;
-    int count = listinlet_getSize (&x->x_listinlet) + argc;
+    int count = listinlet_getSize (&x->x_h.lh_listinlet) + argc;
     
     PD_ATOMS_ALLOCA (t, count);
     
     atom_copyAtoms (argv, argc, t, argc);
     
-    if (listinlet_hasPointer (&x->x_listinlet)) {
+    if (listinlet_hasPointer (&x->x_h.lh_listinlet)) {
     
         t_listinlet cache;
         listinlet_init (&cache);
-        listinlet_clone (&x->x_listinlet, &cache);
+        listinlet_clone (&x->x_h.lh_listinlet, &cache);
         listinlet_copyAtomsUnchecked (&cache, t + argc);
         outlet_list (x->x_outletLeft, count, t);
         listinlet_clear (&cache);
         
     } else {
     
-        listinlet_copyAtomsUnchecked (&x->x_listinlet, t + argc);
+        listinlet_copyAtomsUnchecked (&x->x_h.lh_listinlet, t + argc);
         outlet_list (x->x_outletLeft, count, t);
     }
     
@@ -126,51 +125,24 @@ static void liststore_anything (t_liststore *x, t_symbol *s, int argc, t_atom *a
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_buffer *liststore_functionData (t_gobj *z, int flags)
-{
-    if (SAVED_DEEP (flags)) {
-    //
-    t_liststore *x = (t_liststore *)z;
-    t_buffer *b = buffer_new();
-    
-    buffer_appendSymbol (b, sym__restore);
-    listinlet_listGet (&x->x_listinlet, b);
-    buffer_invalidatePointers (b);
-    
-    return b;
-    //
-    }
-    
-    return NULL;
-}
-
-static void liststore_restore (t_liststore *x, t_symbol *s, int argc, t_atom *argv)
-{
-    listinlet_listSet (&x->x_listinlet, argc, argv);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void *liststore_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_liststore *x = (t_liststore *)pd_new (liststore_class);
     
-    listinlet_init (&x->x_listinlet);
-    listinlet_listSet (&x->x_listinlet, argc, argv);
+    listinlet_init (&x->x_h.lh_listinlet);
+    listinlet_listSet (&x->x_h.lh_listinlet, argc, argv);
     
     x->x_outletLeft  = outlet_newList (cast_object (x));
     x->x_outletRight = outlet_newBang (cast_object (x));
     
-    inlet_new (cast_object (x), cast_pd (&x->x_listinlet), NULL, NULL);
+    inlet_new (cast_object (x), cast_pd (&x->x_h.lh_listinlet), NULL, NULL);
     
     return x;
 }
 
 static void liststore_free (t_liststore *x)
 {
-    listinlet_clear (&x->x_listinlet);
+    listinlet_clear (&x->x_h.lh_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -196,9 +168,11 @@ void liststore_setup (void)
     class_addMethod (c, (t_method)liststore_prepend,    sym_prepend,    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)liststore_get,        sym_get,        A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)liststore_restore,    sym__restore,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)listhelper_restore,   sym__restore,   A_GIMME, A_NULL);
 
-    class_setDataFunction (c, liststore_functionData);
+    class_setDataFunction (c, listhelper_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, &s_list);
     
     liststore_class = c;

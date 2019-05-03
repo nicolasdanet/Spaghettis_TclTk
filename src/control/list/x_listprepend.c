@@ -26,9 +26,8 @@ static t_class *listprepend_class;      /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _listprepend {
-    t_object        x_obj;              /* Must be the first. */
-    t_listinlet     x_listinlet;
-    t_outlet        *x_outlet;
+    t_listinlethelper   x_h;            /* Must be the first. */
+    t_outlet            *x_outlet;
     } t_listprepend;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -38,24 +37,24 @@ typedef struct _listprepend {
 static void listprepend_list (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom *t = NULL;
-    int count = listinlet_getSize (&x->x_listinlet) + argc;
+    int count = listinlet_getSize (&x->x_h.lh_listinlet) + argc;
     
     PD_ATOMS_ALLOCA (t, count);
     
-    atom_copyAtoms (argv, argc, t + listinlet_getSize (&x->x_listinlet), argc);
+    atom_copyAtoms (argv, argc, t + listinlet_getSize (&x->x_h.lh_listinlet), argc);
     
-    if (listinlet_hasPointer (&x->x_listinlet)) {
+    if (listinlet_hasPointer (&x->x_h.lh_listinlet)) {
     
         t_listinlet cache;
         listinlet_init (&cache);
-        listinlet_clone (&x->x_listinlet, &cache);
+        listinlet_clone (&x->x_h.lh_listinlet, &cache);
         listinlet_copyAtomsUnchecked (&cache, t);
         outlet_list (x->x_outlet, count, t);
         listinlet_clear (&cache);
         
     } else {
     
-        listinlet_copyAtomsUnchecked (&x->x_listinlet, t);
+        listinlet_copyAtomsUnchecked (&x->x_h.lh_listinlet, t);
         outlet_list (x->x_outlet, count, t);
     }
     
@@ -71,55 +70,23 @@ static void listprepend_anything (t_listprepend *x, t_symbol *s, int argc, t_ato
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_buffer *listprepend_functionData (t_gobj *z, int flags)
-{
-    if (SAVED_DEEP (flags)) {
-    //
-    t_listprepend *x = (t_listprepend *)z;
-    t_buffer *b = buffer_new();
-    
-    buffer_appendSymbol (b, sym__restore);
-    listinlet_listGet (&x->x_listinlet, b);
-    buffer_invalidatePointers (b);
-    
-    return b;
-    //
-    }
-    
-    return NULL;
-}
-
-static void listprepend_restore (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_listprepend *old = (t_listprepend *)instance_pendingFetch (cast_gobj (x));
-
-    if (old) { listinlet_copy (&x->x_listinlet, &old->x_listinlet); }
-    else {
-        listinlet_listSet (&x->x_listinlet, argc, argv);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void *listprepend_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listprepend *x = (t_listprepend *)pd_new (listprepend_class);
     
-    listinlet_init (&x->x_listinlet);
-    listinlet_listSet (&x->x_listinlet, argc, argv);
+    listinlet_init (&x->x_h.lh_listinlet);
+    listinlet_listSet (&x->x_h.lh_listinlet, argc, argv);
     
     x->x_outlet = outlet_newList (cast_object (x));
     
-    inlet_new (cast_object (x), cast_pd (&x->x_listinlet), NULL, NULL);
+    inlet_new (cast_object (x), cast_pd (&x->x_h.lh_listinlet), NULL, NULL);
     
     return x;
 }
 
 static void listprepend_free (t_listprepend *x)
 {
-    listinlet_clear (&x->x_listinlet);
+    listinlet_clear (&x->x_h.lh_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -141,9 +108,9 @@ void listprepend_setup (void)
     class_addList (c, (t_method)listprepend_list);
     class_addAnything (c, (t_method)listprepend_anything);
     
-    class_addMethod (c, (t_method)listprepend_restore, sym__restore, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)listhelper_restore, sym__restore, A_GIMME, A_NULL);
 
-    class_setDataFunction (c, listprepend_functionData);
+    class_setDataFunction (c, listhelper_functionData);
     class_requirePending (c);
     
     class_setHelpName (c, &s_list);
