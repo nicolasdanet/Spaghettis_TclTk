@@ -40,6 +40,7 @@ int     listinlet_getSize               (t_listinlet *x);
 int     listinlet_hasPointer            (t_listinlet *x);
 void    listinlet_copyAtomsUnchecked    (t_listinlet *x, t_atom *a);
 void    listinlet_clone                 (t_listinlet *x, t_listinlet *newList);
+void    listinlet_copy                  (t_listinlet *x, t_listinlet *toCopy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

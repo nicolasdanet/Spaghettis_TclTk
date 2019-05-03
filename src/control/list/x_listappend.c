@@ -91,7 +91,12 @@ static t_buffer *listappend_functionData (t_gobj *z, int flags)
 
 static void listappend_restore (t_listappend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    listinlet_listSet (&x->x_listinlet, argc, argv);
+    t_listappend *old = (t_listappend *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { listinlet_copy (&x->x_listinlet, &old->x_listinlet); }
+    else {
+        listinlet_listSet (&x->x_listinlet, argc, argv);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -139,6 +144,8 @@ void listappend_setup (void)
     class_addMethod (c, (t_method)listappend_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, listappend_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, &s_list);
     
     listappend_class = c;
