@@ -91,7 +91,12 @@ static t_buffer *listprepend_functionData (t_gobj *z, int flags)
 
 static void listprepend_restore (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    listinlet_listSet (&x->x_listinlet, argc, argv);
+    t_listprepend *old = (t_listprepend *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { listinlet_copy (&x->x_listinlet, &old->x_listinlet); }
+    else {
+        listinlet_listSet (&x->x_listinlet, argc, argv);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -139,6 +144,8 @@ void listprepend_setup (void)
     class_addMethod (c, (t_method)listprepend_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, listprepend_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, &s_list);
     
     listprepend_class = c;
