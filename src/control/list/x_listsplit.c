@@ -71,7 +71,9 @@ static t_buffer *listsplit_functionData (t_gobj *z, int flags)
 
 static void listsplit_restore (t_listsplit *x, t_float f)
 {
-    x->x_f = f;
+    t_listsplit *old = (t_listsplit *)instance_pendingFetch (cast_gobj (x));
+    
+    x->x_f = old ? old->x_f : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -117,6 +119,8 @@ void listsplit_setup (void)
     class_addMethod (c, (t_method)listsplit_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, listsplit_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, &s_list);
     
     listsplit_class = c;
