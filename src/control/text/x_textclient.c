@@ -50,6 +50,20 @@ t_error textclient_init (t_textclient *x, int *ac, t_atom **av)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol *textclient_getName (t_textclient *x)
+{
+    return x->tc_name;
+}
+
+void textclient_setName (t_textclient *x, t_symbol *s)
+{
+    x->tc_name = s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_buffer *textclient_fetchBuffer (t_textclient *x)
 {
     if (x->tc_name) {

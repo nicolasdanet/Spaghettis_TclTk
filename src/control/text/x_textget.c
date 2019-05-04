@@ -97,6 +97,7 @@ static t_buffer *textget_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, x->x_fieldStart);
     buffer_appendFloat (b, x->x_fieldCount);
+    buffer_appendSymbol (b, textclient_getName (&x->x_textclient));
     
     return b;
     //
@@ -107,8 +108,16 @@ static t_buffer *textget_functionData (t_gobj *z, int flags)
 
 static void textget_restore (t_textget *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_fieldStart = atom_getFloatAtIndex (0, argc, argv);
-    x->x_fieldCount = atom_getFloatAtIndex (1, argc, argv);
+    t_textget *old = (t_textget *)instance_pendingFetch (cast_gobj (x));
+    
+    t_float start  = old ? old->x_fieldStart : atom_getFloatAtIndex (0, argc, argv);
+    t_float count  = old ? old->x_fieldCount : atom_getFloatAtIndex (1, argc, argv);
+    t_symbol *name = old ? textclient_getName (&old->x_textclient) : atom_getSymbolAtIndex (2, argc, argv);
+    
+    x->x_fieldStart = start;
+    x->x_fieldCount = count;
+    
+    textclient_setName (&x->x_textclient, name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -167,6 +176,8 @@ void textget_setup (void)
     class_addMethod (c, (t_method)textget_restore, sym__restore, A_GIMME, A_NULL);
     
     class_setDataFunction (c, textget_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_text);
     
     textget_class = c;

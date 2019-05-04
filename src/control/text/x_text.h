@@ -75,6 +75,9 @@ void        textclient_update               (t_textclient *x);
 t_glist     *textclient_fetchOwner          (t_textclient *x);
 t_buffer    *textclient_fetchBuffer         (t_textclient *x);
 
+t_symbol    *textclient_getName             (t_textclient *x);
+void        textclient_setName              (t_textclient *x, t_symbol *s);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
