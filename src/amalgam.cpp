@@ -218,9 +218,9 @@
 #include "control/list/x_listfromsymbol.c"
 #include "control/list/x_listtosymbol.c"
 
-#include "control/text/x_text.c"
 #include "control/text/x_textbuffer.c"
 #include "control/text/x_textclient.c"
+#include "control/text/x_text.c"
 #include "control/text/x_textget.c"
 #include "control/text/x_textset.c"
 #include "control/text/x_textinsert.c"

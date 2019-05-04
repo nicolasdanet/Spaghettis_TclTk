@@ -26,10 +26,17 @@ t_class *textdefine_class;                              /* Shared. */
 
 typedef struct _textdefine {
     t_textbuffer    x_textbuffer;                       /* Must be the first. */
+    int             x_dismissed;
     int             x_keep;
     t_symbol        *x_name;
     t_outlet        *x_outlet;
     } t_textdefine;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void textdefine_dismiss (t_textdefine *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -84,12 +91,33 @@ static t_buffer *textdefine_functionData (t_gobj *z, int flags)
     
     buffer_appendSymbol (b, sym_set);
     buffer_serialize (b, textbuffer_getBuffer (&x->x_textbuffer));
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void textdefine_functionDismiss (t_gobj *z)
+{
+    textdefine_dismiss ((t_textdefine *)z);
+}
+
+static void textdefine_restore (t_textdefine *x)
+{
+    t_textdefine *old = (t_textdefine *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) {
+    //
+    t_buffer *b = buffer_new();
+    buffer_serialize (b, textbuffer_getBuffer (&old->x_textbuffer));
+    textdefine_set (x, NULL, buffer_getSize (b), buffer_getAtoms (b));
+    buffer_free (b);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -167,9 +195,18 @@ static void *textdefine_makeObject (t_symbol *s, int argc, t_atom *argv)
     return newest;
 }
 
+static void textdefine_dismiss (t_textdefine *x)
+{
+    textbuffer_close (&x->x_textbuffer);
+    
+    if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
+    
+    x->x_dismissed = 1;
+}
+
 static void textdefine_free (t_textdefine *x)
 {
-    if (x->x_name != &s_) { pd_unbind (cast_pd (x), x->x_name); }
+    if (!x->x_dismissed) { textdefine_dismiss (x); }
     
     textbuffer_free (&x->x_textbuffer);
 }
@@ -205,8 +242,12 @@ void textdefine_setup (void)
     class_addMethod (c, (t_method)textdefine_set,       sym_add,        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textdefine_set,       sym_append,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textdefine_modified,  sym__modified,  A_NULL);
+    class_addMethod (c, (t_method)textdefine_restore,   sym__restore,   A_NULL);
 
     class_setDataFunction (c, textdefine_functionData);
+    class_setDismissFunction (c, textdefine_functionDismiss);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_text);
 
     textdefine_class = c;
