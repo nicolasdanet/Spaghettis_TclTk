@@ -1,4 +1,4 @@
-#N canvas 677 143 379 311 12;
+#N canvas 636 143 379 311 12;
 #X obj 84 276 send;
 #X text 12 276 See also:;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
@@ -32,8 +32,8 @@
 #X obj 36 216 loadbang;
 #X obj 36 324 print;
 #X msg 144 216 \; more Garcimore;
-#X text 12 180 Attach a listener to report by patch name.;
-#X f 44;
+#X text 12 180 Attach a receiver to a patch name.;
+#X f 34;
 #X connect 1 0 4 0;
 #X connect 2 0 1 0;
 #X connect 3 0 1 0;

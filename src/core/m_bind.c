@@ -27,6 +27,7 @@ typedef struct _bindelement {
 
 typedef struct _bindlist {
     t_pd                    b_pd;           /* MUST be the first. */
+    int                     b_used;
     t_bindelement           *b_cached;
     t_bindelement           *b_list;
     } t_bindlist;
@@ -38,6 +39,7 @@ typedef struct _bindlist {
 /* It means therefore that a receiver can unbound itself also during the sender call. */
 /* A bindlist is created to manage multiple binds. */
 /* That bindlist remains until the end. */
+/* Note that traversal is NOT reentrant. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -45,11 +47,14 @@ typedef struct _bindlist {
 
 static t_bindelement *bindlist_traverseStart (t_bindlist *x)
 {
-    x->b_cached = NULL;
-    
-    if (x->b_list) { x->b_cached = x->b_list->e_next; }
+    if (x->b_used) { return NULL; }
+    else {
+    //
+    x->b_used = 1; x->b_cached = x->b_list ? x->b_list->e_next : NULL;
     
     return x->b_list;
+    //
+    }
 }
 
 static t_bindelement *bindlist_traverseNext (t_bindlist *x)
@@ -61,6 +66,11 @@ static t_bindelement *bindlist_traverseNext (t_bindlist *x)
     return e;
 }
 
+static void bindlist_traverseEnd (t_bindlist *x)
+{
+    x->b_used = 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -70,12 +80,6 @@ static int bindlist_isEmpty (t_bindlist *x)
     return (x->b_list == NULL);
 }
 
-static int bindlist_getSize (t_bindlist *x)
-{
-    t_bindelement *e = bindlist_traverseStart (x);
-    int k = 0; while (e) { k++; e = bindlist_traverseNext (x); } return k;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -83,37 +87,55 @@ static int bindlist_getSize (t_bindlist *x)
 static void bindlist_bang (t_bindlist *x)
 {
     t_bindelement *e = bindlist_traverseStart (x);
+    
     while (e) { pd_bang (e->e_what); e = bindlist_traverseNext (x); }
+    
+    bindlist_traverseEnd (x);
 }
 
 static void bindlist_float (t_bindlist *x, t_float f)
 {
     t_bindelement *e = bindlist_traverseStart (x);
+    
     while (e) { pd_float (e->e_what, f); e = bindlist_traverseNext (x); }
+    
+    bindlist_traverseEnd (x);
 }
 
 static void bindlist_symbol (t_bindlist *x, t_symbol *s)
 {
     t_bindelement *e = bindlist_traverseStart (x);
+    
     while (e) { pd_symbol (e->e_what, s); e = bindlist_traverseNext (x); }
+    
+    bindlist_traverseEnd (x);
 }
 
 static void bindlist_pointer (t_bindlist *x, t_gpointer *gp)
 {
     t_bindelement *e = bindlist_traverseStart (x);
+    
     while (e) { pd_pointer (e->e_what, gp); e = bindlist_traverseNext (x); }
+    
+    bindlist_traverseEnd (x);
 }
 
 static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_bindelement *e = bindlist_traverseStart (x);
+    
     while (e) { pd_list (e->e_what, argc, argv); e = bindlist_traverseNext (x); }
+    
+    bindlist_traverseEnd (x);
 }
 
 static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_bindelement *e = bindlist_traverseStart (x);
+    
     while (e) { pd_message (e->e_what, s, argc, argv); e = bindlist_traverseNext (x); }
+    
+    bindlist_traverseEnd (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -285,18 +307,6 @@ int symbol_hasThing (t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-int symbol_getNumberOfThings (t_symbol *s)
-{
-    if (symbol_hasThingQuiet (s)) {
-        if (pd_class (s->s_thing) != bindlist_class) { return 1; }
-        else {
-            return bindlist_getSize ((t_bindlist *)s->s_thing);
-        }
-    }
-    
-    return 0;
-}
 
 t_pd *symbol_getThingByClass (t_symbol *s, t_class *c)
 {
