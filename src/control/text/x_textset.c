@@ -112,6 +112,7 @@ static t_buffer *textset_functionData (t_gobj *z, int flags)
     buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, x->x_line);
     buffer_appendFloat (b, x->x_field);
+    buffer_appendSymbol (b, textclient_getName (&x->x_textclient));
     
     return b;
     //
@@ -122,8 +123,16 @@ static t_buffer *textset_functionData (t_gobj *z, int flags)
 
 static void textset_restore (t_textset *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_line  = atom_getFloatAtIndex (0, argc, argv);
-    x->x_field = atom_getFloatAtIndex (1, argc, argv);
+    t_textset *old = (t_textset *)instance_pendingFetch (cast_gobj (x));
+    
+    t_float line   = old ? old->x_line : atom_getFloatAtIndex (0, argc, argv);
+    t_float field  = old ? old->x_field : atom_getFloatAtIndex (1, argc, argv);
+    t_symbol *name = old ? textclient_getName (&old->x_textclient) : atom_getSymbolAtIndex (2, argc, argv);
+    
+    x->x_line  = line;
+    x->x_field = field;
+    
+    textclient_setName (&x->x_textclient, name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -181,6 +190,8 @@ void textset_setup (void)
     class_addMethod (c, (t_method)textset_restore, sym__restore, A_GIMME, A_NULL);
     
     class_setDataFunction (c, textset_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_text);
     
     textset_class = c;
