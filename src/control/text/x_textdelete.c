@@ -55,6 +55,36 @@ static void textdelete_float (t_textdelete *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *textdelete_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_textdelete *x = (t_textdelete *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, textclient_getName (&x->x_textclient));
+
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void textdelete_restore (t_textdelete *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_textdelete *old = (t_textdelete *)instance_pendingFetch (cast_gobj (x));
+    
+    t_symbol *name = old ? textclient_getName (&old->x_textclient) : atom_getSymbolAtIndex (0, argc, argv);
+    
+    textclient_setName (&x->x_textclient, name);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *textdelete_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textdelete *x = (t_textdelete *)pd_new (textdelete_class);
@@ -92,6 +122,11 @@ void textdelete_setup (void)
             A_NULL);
             
     class_addFloat (c, (t_method)textdelete_float);
+    
+    class_addMethod (c, (t_method)textdelete_restore, sym__restore, A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, textdelete_functionData);
+    class_requirePending (c);
     
     class_setHelpName (c, sym_text);
     
