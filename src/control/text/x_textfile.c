@@ -81,6 +81,11 @@ static void *textfile_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
+static void textfile_free (t_qlist *x)
+{
+    textbuffer_free (&x->ql_textbuffer);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -91,7 +96,7 @@ void textfile_setup (void)
     
     c = class_new (sym_textfile,
             (t_newmethod)textfile_new,
-            (t_method)textbuffer_free,
+            (t_method)textfile_free,
             sizeof (t_qlist),
             CLASS_DEFAULT,
             A_GIMME,
@@ -114,7 +119,10 @@ void textfile_setup (void)
     class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textbuffer_click,     sym__open,      A_GIMME, A_NULL);
 
+    class_addMethod (c, (t_method)qlist_restore,        sym__restore,   A_NULL);
+
     class_setDataFunction (c, qlist_functionData);
+    class_requirePending (c);
     
     textfile_class = c;
 }

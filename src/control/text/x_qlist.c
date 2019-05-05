@@ -25,6 +25,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void qlist_dismiss (t_qlist *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *qlist_class;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -278,12 +283,35 @@ t_buffer *qlist_functionData (t_gobj *z, int flags)
     
     buffer_appendSymbol (b, sym_set);
     buffer_serialize (b, textbuffer_getBuffer (&x->ql_textbuffer));
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void qlist_functionDismiss (t_gobj *z)
+{
+    qlist_dismiss ((t_qlist *)z);
+}
+
+void qlist_restore (t_qlist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_qlist *old = (t_qlist *)instance_pendingFetch (cast_gobj (x));
+    
+    if (old) {
+    //
+    t_buffer *b = buffer_new();
+    buffer_serialize (b, textbuffer_getBuffer (&old->ql_textbuffer));
+    qlist_set (x, NULL, buffer_getSize (b), buffer_getAtoms (b));
+    buffer_free (b);
+    
+    if (old->ql_unitName) { qlist_unit (x, old->ql_unitName, old->ql_unitValue); }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -309,10 +337,14 @@ static void *qlist_new (t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
+static void qlist_dismiss (t_qlist *x)
+{
+    clock_unset (x->ql_clock); textbuffer_close (&x->ql_textbuffer);
+}
+
 static void qlist_free (t_qlist *x)
 {
-    clock_free (x->ql_clock);
-    textbuffer_free (&x->ql_textbuffer);
+    clock_free (x->ql_clock); textbuffer_free (&x->ql_textbuffer);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -348,8 +380,12 @@ void qlist_setup (void)
     class_addMethod (c, (t_method)textbuffer_close,     sym_close,      A_NULL);
     class_addMethod (c, (t_method)textbuffer_addLine,   sym__addline,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textbuffer_click,     sym__open,      A_GIMME, A_NULL);
+    
+    class_addMethod (c, (t_method)qlist_restore,        sym__restore,   A_NULL);
 
     class_setDataFunction (c, qlist_functionData);
+    class_setDismissFunction (c, qlist_functionDismiss);
+    class_requirePending (c);
     
     qlist_class = c;
 }
