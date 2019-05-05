@@ -169,6 +169,36 @@ static void textsearch_anything (t_textsearch *x, t_symbol *s, int argc, t_atom 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static t_buffer *textsearch_functionData (t_gobj *z, int flags)
+{
+    if (SAVED_DEEP (flags)) {
+    //
+    t_textsearch *x = (t_textsearch *)z;
+    t_buffer *b = buffer_new();
+    
+    buffer_appendSymbol (b, sym__restore);
+    buffer_appendSymbol (b, textclient_getName (&x->x_textclient));
+
+    return b;
+    //
+    }
+    
+    return NULL;
+}
+
+static void textsearch_restore (t_textsearch *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_textsearch *old = (t_textsearch *)instance_pendingFetch (cast_gobj (x));
+    
+    t_symbol *name = old ? textclient_getName (&old->x_textclient) : atom_getSymbolAtIndex (0, argc, argv);
+    
+    textclient_setName (&x->x_textclient, name);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_textsearch *x = (t_textsearch *)pd_new (textsearch_class);
@@ -253,6 +283,11 @@ void textsearch_setup (void)
             
     class_addList (c, (t_method)textsearch_list);
     class_addAnything (c, (t_method)textsearch_anything);
+    
+    class_addMethod (c, (t_method)textsearch_restore, sym__restore, A_GIMME, A_NULL);
+    
+    class_setDataFunction (c, textsearch_functionData);
+    class_requirePending (c);
     
     class_setHelpName (c, sym_text);
     
