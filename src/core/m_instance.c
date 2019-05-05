@@ -336,6 +336,27 @@ int instance_getDefaultY (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_error instance_overflowPush (void)
+{
+    int count   = ++instance_get()->pd_overflowCount;
+    t_error err = (count >= INSTANCE_OVERFLOW);
+    
+    if (err && !instance_get()->pd_overflow) { instance_get()->pd_overflow = 1; error_stackOverflow(); }
+    
+    err |= instance_get()->pd_overflow;
+    
+    return err;
+}
+
+void instance_overflowPop (void)
+{
+    int count = --instance_get()->pd_overflowCount; if (count == 0) { instance_get()->pd_overflow = 0; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* Called if no method of the maker object match. */
 
 static void instance_factory (t_pd *x, t_symbol *s, int argc, t_atom *argv)

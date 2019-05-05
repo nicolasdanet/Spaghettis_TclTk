@@ -51,6 +51,7 @@ typedef struct _pdinstance {
     uint64_t        pd_pollingCount;
     uint64_t        pd_autoreleaseCount;
     t_int32Atomic   pd_clocksCount;
+    int             pd_overflow;
     int             pd_overflowCount;
     int             pd_isLoadingExternal;
     int             pd_isUndoRecursive;
@@ -222,6 +223,13 @@ int     instance_getDefaultY                    (t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_error instance_overflowPush                   (void);
+void    instance_overflowPop                    (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_gobj  *instance_pendingFetch                  (t_gobj *y);
 
 int     instance_pendingRequired                (t_gobj *y);
@@ -249,20 +257,6 @@ static inline void instance_ugenSetContext (t_dspcontext *context)
 static inline t_dspcontext *instance_ugenGetContext (void)
 {
     return instance_get()->pd_ugenContext;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static inline t_error instance_overflowPush (void)
-{
-    return (t_error)(++instance_get()->pd_overflowCount >= INSTANCE_OVERFLOW);
-}
-
-static inline void instance_overflowPop (void)
-{
-    instance_get()->pd_overflowCount--;
 }
 
 // -----------------------------------------------------------------------------------------------------------
