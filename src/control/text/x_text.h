@@ -26,6 +26,8 @@ typedef struct _textclient {
     t_symbol        *tc_name;
     } t_textclient;
 
+/* Also used by textfile object. */
+
 typedef struct _qlist {
     t_textbuffer    ql_textbuffer;                  /* Must be the first. */
     int             ql_indexOfMessage;
