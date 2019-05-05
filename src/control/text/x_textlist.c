@@ -57,7 +57,7 @@ void *texttolist_new (t_symbol *s, int argc, t_atom *argv)
         error_invalidArguments (sym_text__space__tolist, argc, argv); pd_free (cast_pd (x)); x = NULL;
     }
     
-    warning_deprecatedObject (sym_text__space__tolist);
+    static int once = 0; if (!once) { warning_deprecatedObject (sym_text__space__tolist); once = 1; }
     
     return x;
 }
@@ -123,7 +123,7 @@ void *textfromlist_new (t_symbol *s, int argc, t_atom *argv)
         pd_free (cast_pd (x)); x = NULL;
     }
     
-    warning_deprecatedObject (sym_text__space__fromlist);
+    static int once = 0; if (!once) { warning_deprecatedObject (sym_text__space__fromlist); once = 1; }
     
     return x;
 }
