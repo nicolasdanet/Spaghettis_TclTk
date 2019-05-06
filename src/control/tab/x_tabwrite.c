@@ -71,7 +71,12 @@ static t_buffer *tabwrite_functionData (t_gobj *z, int flags)
 
 static void tabwrite_restore (t_tabwrite *x, t_float f)
 {
-    x->x_index = f;
+    t_tabwrite *old = (t_tabwrite *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { x->x_index = old->x_index; tabwrite_set (x, old->x_name); }
+    else {
+        x->x_index = f;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -111,6 +116,7 @@ void tabwrite_setup (void)
     class_addMethod (c, (t_method)tabwrite_restore, sym__restore,   A_FLOAT, A_NULL);
 
     class_setDataFunction (c, tabwrite_functionData);
+    class_requirePending (c);
 
     tabwrite_class = c;
 }
