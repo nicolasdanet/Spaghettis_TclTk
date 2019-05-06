@@ -22,11 +22,18 @@ static t_class *tabreceive_class;       /* Shared. */
 
 typedef struct _tabreceive {
     t_object    x_obj;                  /* Must be the first. */
+    int         x_dismissed;
     t_id        x_tag;
     t_buffer    *x_previous;
     t_symbol    *x_name;
     t_outlet    *x_outlet;
     } t_tabreceive;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void tabreceive_dissmiss (t_tabreceive *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -93,12 +100,26 @@ static t_buffer *tabreceive_functionData (t_gobj *z, int flags)
     
     buffer_appendSymbol (b, sym_set);
     buffer_appendSymbol (b, x->x_name);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void tabreceive_functionDismiss (t_gobj *z)
+{
+    tabreceive_dissmiss ((t_tabreceive *)z);
+}
+
+static void tabreceive_restore (t_tabreceive *x)
+{
+    t_tabreceive *old = (t_tabreceive *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { tabreceive_set (x, old->x_name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -118,9 +139,14 @@ static void *tabreceive_new (t_symbol *s)
     return x;
 }
 
+static void tabreceive_dissmiss (t_tabreceive *x)
+{
+    instance_pollingUnregister (cast_pd (x)); x->x_dismissed = 1;
+}
+
 static void tabreceive_free (t_tabreceive *x)
 {
-    instance_pollingUnregister (cast_pd (x));
+    if (!x->x_dismissed) { tabreceive_dissmiss (x); }
     
     buffer_free (x->x_previous);
 }
@@ -144,10 +170,13 @@ void tabreceive_setup (void)
     class_addBang (c, (t_method)tabreceive_bang);
     class_addPolling (c, (t_method)tabreceive_polling);
     
-    class_addMethod (c, (t_method)tabreceive_set, sym_set, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabreceive_set,       sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabreceive_restore,   sym__restore,   A_NULL);
     
     class_setDataFunction (c, tabreceive_functionData);
-
+    class_setDismissFunction (c, tabreceive_functionDismiss);
+    class_requirePending (c);
+    
     tabreceive_class = c;
 }
 
