@@ -53,7 +53,9 @@ t_buffer *unop_functionData (t_gobj *z, int flags)
 
 void unop_restore (t_unop *x, t_float f)
 {
-    x->uo_f = f;
+    t_unop *old = (t_unop *)instance_pendingFetch (cast_gobj (x));
+
+    x->uo_f = old ? old->uo_f : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -269,6 +271,13 @@ void acoustic_setup (void)
     class_setDataFunction (dbtopow_class,   unop_functionData);
     class_setDataFunction (rmstodb_class,   unop_functionData);
     class_setDataFunction (dbtorms_class,   unop_functionData);
+    
+    class_requirePending (mtof_class);
+    class_requirePending (ftom_class);
+    class_requirePending (powtodb_class);
+    class_requirePending (dbtopow_class);
+    class_requirePending (rmstodb_class);
+    class_requirePending (dbtorms_class);
     
     class_setHelpName (mtof_class,          sym_acoustic);
     class_setHelpName (ftom_class,          sym_acoustic);

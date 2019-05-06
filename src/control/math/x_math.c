@@ -323,6 +323,15 @@ void math_setup (void)
     class_setDataFunction (sqrt_class,  unop_functionData);
     class_setDataFunction (atan_class,  unop_functionData);
     
+    class_requirePending (sin_class);
+    class_requirePending (cos_class);
+    class_requirePending (tan_class);
+    class_requirePending (exp_class);
+    class_requirePending (abs_class);
+    class_requirePending (wrap_class);
+    class_requirePending (sqrt_class);
+    class_requirePending (atan_class);
+    
     class_setHelpName (sin_class,       sym_math);
     class_setHelpName (cos_class,       sym_math);
     class_setHelpName (tan_class,       sym_math);
