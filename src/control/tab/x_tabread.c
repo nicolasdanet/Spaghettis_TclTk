@@ -57,12 +57,21 @@ static t_buffer *tabread_functionData (t_gobj *z, int flags)
     
     buffer_appendSymbol (b, sym_set);
     buffer_appendSymbol (b, x->x_name);
+    buffer_appendComma (b);
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
     
     return NULL;
+}
+
+static void tabread_restore (t_tabread *x)
+{
+    t_tabread *old = (t_tabread *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { tabread_set (x, old->x_name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,10 +106,12 @@ void tabread_setup (void)
         
     class_addFloat (c, (t_method)tabread_float);
     
-    class_addMethod (c, (t_method)tabread_set, sym_set, A_SYMBOL, A_NULL);
-    
-    class_setDataFunction (c, tabread_functionData);
+    class_addMethod (c, (t_method)tabread_set,      sym_set,        A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)tabread_restore,  sym__restore,   A_NULL);
 
+    class_setDataFunction (c, tabread_functionData);
+    class_requirePending (c);
+    
     tabread_class = c;
 }
 
