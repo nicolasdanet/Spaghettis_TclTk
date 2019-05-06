@@ -56,7 +56,9 @@ void        arrayclient_setName             (t_arrayclient *x, t_symbol *s);
 t_symbol    *arrayclient_getName            (t_arrayclient *x);
 t_glist     *arrayclient_fetchOwner         (t_arrayclient *x);
 t_array     *arrayclient_fetchArray         (t_arrayclient *x);
-t_garray    *arrayclient_fetchOwnerIfName   (t_arrayclient *x);
+t_garray    *arrayclient_fetchGraphicArray  (t_arrayclient *x);
+
+void        arrayclient_restore             (t_arrayclient *x, t_arrayclient *old);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
