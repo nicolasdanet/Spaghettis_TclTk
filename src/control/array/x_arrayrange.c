@@ -179,12 +179,13 @@ t_buffer *arrayrange_functionData (t_gobj *z, int flags)
 {
     if (SAVED_DEEP (flags)) {
     //
+    t_arrayrange *x = (t_arrayrange *)z;
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__restore);
-    buffer_appendSymbol (b, arrayclient_getName ((t_arrayclient *)z));
-    buffer_appendFloat (b,  arrayrange_getOnset ((t_arrayrange *)z));
-    buffer_appendFloat (b,  arrayrange_getSize ((t_arrayrange *)z));
+    buffer_appendSymbol (b, arrayclient_getName (&x->ar_arrayclient));
+    buffer_appendFloat (b,  arrayrange_getOnset (x));
+    buffer_appendFloat (b,  arrayrange_getSize (x));
     
     return b;
     //
@@ -195,9 +196,19 @@ t_buffer *arrayrange_functionData (t_gobj *z, int flags)
 
 void arrayrange_restore (t_arrayrange *x, t_symbol *s, int argc, t_atom *argv)
 {
-    arrayclient_setName ((t_arrayclient *)x, atom_getSymbolAtIndex (0, argc, argv));
-    arrayrange_setOnset ((t_arrayrange *)x,  atom_getFloatAtIndex (1, argc, argv));
-    arrayrange_setSize ((t_arrayrange *)x,   atom_getFloatAtIndex (2, argc, argv));
+    t_arrayrange *old = (t_arrayrange *)instance_pendingFetch (cast_gobj (x));
+
+    t_symbol *t   = atom_getSymbolAtIndex (0, argc, argv);
+    t_float onset = old ? old->ar_onset : atom_getFloatAtIndex (1, argc, argv);
+    t_float size  = old ? old->ar_size  : atom_getFloatAtIndex (2, argc, argv);
+    
+    arrayrange_setOnset (x, onset);
+    arrayrange_setSize (x,  size);
+    
+    if (old) { arrayclient_restore (&x->ar_arrayclient, &old->ar_arrayclient); }
+    else {
+        arrayclient_setName (&x->ar_arrayclient, t);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
