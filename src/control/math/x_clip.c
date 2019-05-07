@@ -68,9 +68,15 @@ static t_buffer *clip_functionData (t_gobj *z, int flags)
 
 static void clip_restore (t_clip *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_f1 = atom_getFloatAtIndex (0, argc, argv);
-    x->x_f2 = atom_getFloatAtIndex (1, argc, argv);
-    x->x_f3 = atom_getFloatAtIndex (2, argc, argv);
+    t_clip *old = (t_clip *)instance_pendingFetch (cast_gobj (x));
+    
+    t_float f1 = old ? old->x_f1 : atom_getFloatAtIndex (0, argc, argv);
+    t_float f2 = old ? old->x_f2 : atom_getFloatAtIndex (1, argc, argv);
+    t_float f3 = old ? old->x_f3 : atom_getFloatAtIndex (2, argc, argv);
+    
+    x->x_f1 = f1;
+    x->x_f2 = f2;
+    x->x_f3 = f3;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -114,6 +120,8 @@ void clip_setup (void)
     class_addMethod (c, (t_method)clip_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, clip_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_math);
     
     clip_class = c;
