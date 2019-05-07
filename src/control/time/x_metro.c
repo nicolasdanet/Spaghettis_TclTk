@@ -49,7 +49,7 @@ t_error clock_reschedule    (t_clock *x, double, double, t_systime);
 // MARK: -
 
 static void metro_float     (t_metro *, t_float);
-static void metro_dismiss   (t_metro *x);
+static void metro_dismiss   (t_metro *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -140,7 +140,6 @@ static t_buffer *metro_functionData (t_gobj *z, int flags)
     
     buffer_appendSymbol (b, sym__inlet2);
     buffer_appendFloat (b,  x->x_delay);
-    
     buffer_appendComma (b);
     buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b,  clock_isSet (x->x_clock) ? clock_getLogicalTime (x->x_clock) : 0.0);
