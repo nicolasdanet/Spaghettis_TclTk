@@ -343,6 +343,16 @@ void binop3_setup (void)
     class_setDataFunction (binopIntegerModulo_class,    binop_functionData);
     class_setDataFunction (binopIntegerDivide_class,    binop_functionData);
 
+    class_requirePending (binopBitwiseAnd_class);
+    class_requirePending (binopLogicalAnd_class);
+    class_requirePending (binopBitwiseOr_class);
+    class_requirePending (binopLogicalOr_class);
+    class_requirePending (binopShiftLeft_class);
+    class_requirePending (binopShiftRight_class);
+    class_requirePending (binopModulo_class);
+    class_requirePending (binopIntegerModulo_class);
+    class_requirePending (binopIntegerDivide_class);
+
     class_setHelpName (binopBitwiseAnd_class,           sym_bitwise);
     class_setHelpName (binopLogicalAnd_class,           sym_logical);
     class_setHelpName (binopBitwiseOr_class,            sym_bitwise);

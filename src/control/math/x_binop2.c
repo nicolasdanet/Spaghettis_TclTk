@@ -221,6 +221,13 @@ void binop2_setup (void)
     class_setDataFunction (binopGreaterEquals_class,    binop_functionData);
     class_setDataFunction (binopLessEquals_class,       binop_functionData);
     
+    class_requirePending (binopEquals_class);
+    class_requirePending (binopNotEquals_class);
+    class_requirePending (binopGreater_class);
+    class_requirePending (binopLess_class);
+    class_requirePending (binopGreaterEquals_class);
+    class_requirePending (binopLessEquals_class);
+
     class_setHelpName (binopEquals_class,               sym_logical);
     class_setHelpName (binopNotEquals_class,            sym_logical);
     class_setHelpName (binopGreater_class,              sym_logical);

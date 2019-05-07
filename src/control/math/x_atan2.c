@@ -71,6 +71,8 @@ void atan2_setup (void)
     class_addMethod (c, (t_method)binop_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, binop_functionData);
+    class_requirePending (c);
+
     class_setHelpName (c, sym_math);
     
     atan2_class = c;

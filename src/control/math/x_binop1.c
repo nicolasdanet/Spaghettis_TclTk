@@ -68,8 +68,13 @@ t_buffer *binop_functionData (t_gobj *z, int flags)
 
 void binop_restore (t_binop *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->bo_f1 = atom_getFloatAtIndex (0, argc, argv);
-    x->bo_f2 = atom_getFloatAtIndex (1, argc, argv);
+    t_binop *old = (t_binop *)instance_pendingFetch (cast_gobj (x));
+    
+    t_float f1 = old ? old->bo_f1 : atom_getFloatAtIndex (0, argc, argv);
+    t_float f2 = old ? old->bo_f2 : atom_getFloatAtIndex (1, argc, argv);
+    
+    x->bo_f1 = f1;
+    x->bo_f2 = f2;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -341,6 +346,15 @@ void binop1_setup (void)
     class_setDataFunction (binopLog_class,      binop_functionData);
     class_setDataFunction (binopMaximum_class,  binop_functionData);
     class_setDataFunction (binopMinimum_class,  binop_functionData);
+    
+    class_requirePending (binopAdd_class);
+    class_requirePending (binopSubtract_class);
+    class_requirePending (binopMultiply_class);
+    class_requirePending (binopDivide_class);
+    class_requirePending (binopPower_class);
+    class_requirePending (binopLog_class);
+    class_requirePending (binopMaximum_class);
+    class_requirePending (binopMinimum_class);
     
     class_setHelpName (binopAdd_class,          sym_arithmetic);
     class_setHelpName (binopSubtract_class,     sym_arithmetic);
