@@ -92,7 +92,7 @@ void listhelper_restore (t_listinlethelper *x, t_symbol *s, int argc, t_atom *ar
 {
     t_listinlethelper *old = (t_listinlethelper *)instance_pendingFetch (cast_gobj (x));
 
-    if (old) { listinlet_copy (&x->lh_listinlet, &old->lh_listinlet); }
+    if (old) { listinlet_listSetByCopy (&x->lh_listinlet, &old->lh_listinlet); }
     else {
         listinlet_listSet (&x->lh_listinlet, argc, argv);
     }

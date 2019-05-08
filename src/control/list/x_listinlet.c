@@ -87,6 +87,16 @@ void listinlet_listSet (t_listinlet *x, int argc, t_atom *argv)
     }
 }
 
+void listinlet_listSetByCopy (t_listinlet *x, t_listinlet *toCopy)
+{
+    t_buffer *b = buffer_new();
+    
+    listinlet_listGet (toCopy, b);
+    listinlet_listSet (x, buffer_getSize (b), buffer_getAtoms (b));
+    
+    buffer_free (b);
+}
+
 void listinlet_listGet (t_listinlet *x, t_buffer *b)
 {
     int i; for (i = 0; i < x->li_size; i++) { buffer_appendAtom (b, &x->li_vector[i].le_atom); }
@@ -172,16 +182,6 @@ void listinlet_clear (t_listinlet *x)
     if (x->li_vector) { PD_MEMORY_FREE (x->li_vector); }
     
     listinlet_init (x);
-}
-
-void listinlet_copy (t_listinlet *x, t_listinlet *toCopy)
-{
-    t_buffer *b = buffer_new();
-    
-    listinlet_listGet (toCopy, b);
-    listinlet_listSet (x, buffer_getSize (b), buffer_getAtoms (b));
-    
-    buffer_free (b);
 }
 
 void listinlet_clone (t_listinlet *x, t_listinlet *newList)
