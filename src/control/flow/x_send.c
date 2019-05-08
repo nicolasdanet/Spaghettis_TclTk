@@ -80,7 +80,9 @@ static t_buffer *send_functionData (t_gobj *z, int flags)
 
 static void send_restore (t_send *x, t_symbol *s)
 {
-    x->x_name = s;
+    t_send *old = (t_send *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_name = old ? old->x_name : s;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -126,6 +128,7 @@ void send_setup (void)
     class_addMethod (c, (t_method)send_restore, sym__restore, A_SYMBOL, A_NULL);
 
     class_setDataFunction (c, send_functionData);
+    class_requirePending (c);
 
     send_class = c;
 }
