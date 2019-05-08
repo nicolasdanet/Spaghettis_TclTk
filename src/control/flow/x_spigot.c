@@ -82,7 +82,9 @@ static t_buffer *spigot_functionData (t_gobj *z, int flags)
 
 static void spigot_restore (t_spigot *x, t_float f)
 {
-    x->x_state = f;
+    t_spigot *old = (t_spigot *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_state = old ? old->x_state : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -127,7 +129,8 @@ void spigot_setup (void)
     class_addMethod (c, (t_method)spigot_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, spigot_functionData);
-    
+    class_requirePending (c);
+
     spigot_class = c;
 }
 
