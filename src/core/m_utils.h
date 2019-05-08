@@ -38,6 +38,7 @@ t_error     utils_uInt64Deserialize         (int argc, t_atom *argv, uint64_t *n
 // MARK: -
 
 t_symbol    *symbol_withAtoms               (int argc, t_atom *argv);
+t_symbol    *symbol_withAtom                (t_atom *a);
 
 t_symbol    *symbol_nil                     (void);
 t_symbol    *symbol_emptyAsNil              (t_symbol *s);
