@@ -139,13 +139,10 @@ static void value_restore (t_value *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_value *old = (t_value *)instance_pendingFetch (cast_gobj (x));
 
-    if (old) { value_set (x, old->x_name); }
-    else {
+    value_set (x, old ? old->x_name : atom_getSymbolAtIndex (0, argc, argv));
+    
+    if (!old) {     /* Restore the value if it is the only client. */
     //
-    value_set (x, atom_getSymbolAtIndex (0, argc, argv));
-    
-    /* Restore the value if it is the only client. */
-    
     if (x->x_raw && valuecommon_count (x->x_name) == 1) {
     //
     value_float (x, atom_getFloatAtIndex (1, argc, argv));
