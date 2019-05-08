@@ -60,7 +60,9 @@ static t_buffer *moses_functionData (t_gobj *z, int flags)
 
 static void moses_restore (t_moses *x, t_float f)
 {
-    x->x_f = f;
+    t_moses *old = (t_moses *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_f = old ? old->x_f : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -101,7 +103,8 @@ void moses_setup (void)
     class_addMethod (c, (t_method)moses_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, moses_functionData);
-    
+    class_requirePending (c);
+
     moses_class = c;
 }
 
