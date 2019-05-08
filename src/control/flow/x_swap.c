@@ -65,8 +65,13 @@ static t_buffer *swap_functionData (t_gobj *z, int flags)
 
 static void swap_restore (t_swap *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_f1 = atom_getFloatAtIndex (0, argc, argv);
-    x->x_f2 = atom_getFloatAtIndex (1, argc, argv);
+    t_swap *old = (t_swap *)instance_pendingFetch (cast_gobj (x));
+
+    t_float f1 = old ? old->x_f1 : atom_getFloatAtIndex (0, argc, argv);
+    t_float f2 = old ? old->x_f2 : atom_getFloatAtIndex (1, argc, argv);
+    
+    x->x_f1 = f1;
+    x->x_f2 = f2;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -111,7 +116,8 @@ void swap_setup (void)
     class_addMethod (c, (t_method)swap_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, swap_functionData);
-    
+    class_requirePending (c);
+
     swap_class = c;
 }
 
