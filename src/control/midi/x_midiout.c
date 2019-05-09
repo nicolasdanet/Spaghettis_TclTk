@@ -61,7 +61,9 @@ static t_buffer *midiout_functionData (t_gobj *z, int flags)
 
 static void midiout_restore (t_midiout *x, t_float f)
 {
-    x->x_port = f;
+    t_midiout *old = (t_midiout *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_port = old ? old->x_port : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,7 +74,7 @@ static void *midiout_new (t_float port)
 {
     t_midiout *x = (t_midiout *)pd_new (midiout_class);
     
-    x->x_port = PD_ABS (port);
+    x->x_port = port;
     
     inlet_newFloat (cast_object (x), &x->x_port);
     
@@ -100,7 +102,8 @@ void midiout_setup (void)
     class_addMethod (c, (t_method)midiout_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, midiout_functionData);
-    
+    class_requirePending (c);
+
     midiout_class = c;
 }
 
