@@ -63,8 +63,10 @@ static t_buffer *ctlout_functionData (t_gobj *z, int flags)
 
 static void ctlout_restore (t_ctlout *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_control = atom_getFloatAtIndex (0, argc, argv);
-    x->x_channel = atom_getFloatAtIndex (1, argc, argv);
+    t_ctlout *old = (t_ctlout *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_control = old ? old->x_control : atom_getFloatAtIndex (0, argc, argv);
+    x->x_channel = old ? old->x_channel : atom_getFloatAtIndex (1, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -106,7 +108,8 @@ void ctlout_setup (void)
     class_addMethod (c, (t_method)ctlout_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, ctlout_functionData);
-    
+    class_requirePending (c);
+
     ctlout_class = c;
 }
 
