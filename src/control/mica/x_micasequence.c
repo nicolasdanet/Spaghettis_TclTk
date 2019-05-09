@@ -111,6 +111,8 @@ void micasequence_setup (void)
     class_addMethod (c, (t_method)micabase_restore, sym__restore, A_SYMBOL, A_NULL);
 
     class_setDataFunction (c, micabase_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_mica);
     
     micasequence_class = c;
