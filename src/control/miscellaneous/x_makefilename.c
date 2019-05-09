@@ -153,21 +153,36 @@ static t_buffer *makefilename_functionData (t_gobj *z, int flags)
     if (SAVED_DEEP (flags)) {
     //
     t_makefilename *x = (t_makefilename *)z;
-    //
-    if (x->x_typeRequired != A_NULL) {
-    //
     t_buffer *b = buffer_new();
     
+    if (x->x_typeRequired != A_NULL) {
+    //
     buffer_appendSymbol (b, sym_set);
     buffer_appendSymbol (b, x->x_format);
+    buffer_appendComma (b);
+    //
+    }
+    
+    buffer_appendSymbol (b, sym__restore);
     
     return b;
     //
     }
-    //
-    }
     
     return NULL;
+}
+
+static void makefilename_restore (t_makefilename *x)
+{
+    t_makefilename *old = (t_makefilename *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) {
+    //
+    x->x_typeRequired          = old->x_typeRequired;
+    x->x_isIntegerCastRequired = old->x_isIntegerCastRequired;
+    x->x_format                = old->x_format;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -213,9 +228,11 @@ void makefilename_setup (void)
     class_addList (c, (t_method)makefilename_list);
     class_addAnything (c, (t_method)makefilename_anything);
     
-    class_addMethod (c, (t_method)makefilename_set, sym_set, A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)makefilename_set,     sym_set,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)makefilename_restore, sym__restore,   A_NULL);
     
     class_setDataFunction (c, makefilename_functionData);
+    class_requirePending (c);
 
     makefilename_class = c;
 }
