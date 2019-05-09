@@ -148,7 +148,10 @@ static t_buffer *micainterval_functionData (t_gobj *z, int flags)
 
 static void micainterval_restore (t_micainterval *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) {
+    t_micainterval *old = (t_micainterval *)instance_pendingFetch (cast_gobj (x));
+
+    if (old) { x->x_interval = old->x_interval; }
+    else if (argc == 2) {
     //
     mica::Concept a (concept_fetch (atom_getSymbolAtIndex (0, argc, argv)));
     mica::Concept b (concept_fetch (atom_getSymbolAtIndex (1, argc, argv)));
@@ -256,6 +259,8 @@ void micainterval_setup (void)
     class_addMethod (c, (t_method)micainterval_restore,   sym__restore,  A_GIMME, A_NULL);
 
     class_setDataFunction (c, micainterval_functionData);
+    class_requirePending (c);
+
     class_setHelpName (c, sym_mica);
     
     micainterval_class = c;
