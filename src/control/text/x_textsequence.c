@@ -22,8 +22,11 @@
 
 /* Note that for now that object is reset with encapsulation. */
 
+// -- TODO: Fetch states with pending?
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 int atom_copyAtomsExpandedWithArguments (t_atom *, int, t_atom *, int, t_glist *, int, t_atom *);
 
