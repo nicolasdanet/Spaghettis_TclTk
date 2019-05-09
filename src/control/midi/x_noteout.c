@@ -63,8 +63,10 @@ static t_buffer *noteout_functionData (t_gobj *z, int flags)
 
 static void noteout_restore (t_noteout *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->x_velocity = atom_getFloatAtIndex (0, argc, argv);
-    x->x_channel  = atom_getFloatAtIndex (1, argc, argv);
+    t_noteout *old = (t_noteout *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_velocity = old ? old->x_velocity : atom_getFloatAtIndex (0, argc, argv);
+    x->x_channel  = old ? old->x_channel  : atom_getFloatAtIndex (1, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -105,7 +107,8 @@ void noteout_setup (void)
     class_addMethod (c, (t_method)noteout_restore, sym__restore, A_GIMME, A_NULL);
 
     class_setDataFunction (c, noteout_functionData);
-    
+    class_requirePending (c);
+
     noteout_class = c;
 }
 
