@@ -61,7 +61,9 @@ static t_buffer *bendout_functionData (t_gobj *z, int flags)
 
 static void bendout_restore (t_bendout *x, t_float f)
 {
-    x->x_channel = f;
+    t_bendout *old = (t_bendout *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_channel = old ? old->x_channel : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -100,6 +102,8 @@ void bendout_setup (void)
     class_addMethod (c, (t_method)bendout_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, bendout_functionData);
+    class_requirePending (c);
+
     class_setHelpName (c, sym_pgmout);
     
     bendout_class = c;
