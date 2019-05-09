@@ -65,7 +65,9 @@ static t_buffer *realtime_functionData (t_gobj *z, int flags)
 
 static void realtime_restore (t_realtime *x, t_float f)
 {
-    x->x_time = f;
+    t_realtime *old = (t_realtime *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_time = old ? old->x_time : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -108,7 +110,8 @@ void realtime_setup (void)
     class_addMethod (c, (t_method)realtime_restore, sym__restore,   A_FLOAT, A_NULL);
 
     class_setDataFunction (c, realtime_functionData);
-    
+    class_requirePending (c);
+
     realtime_class = c;
 }
 
