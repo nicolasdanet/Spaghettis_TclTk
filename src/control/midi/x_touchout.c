@@ -61,7 +61,9 @@ static t_buffer *touchout_functionData (t_gobj *z, int flags)
 
 static void touchout_restore (t_touchout *x, t_float f)
 {
-    x->x_channel = f;
+    t_touchout *old = (t_touchout *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_channel = old ? old->x_channel : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -100,6 +102,8 @@ void touchout_setup (void)
     class_addMethod (c, (t_method)touchout_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, touchout_functionData);
+    class_requirePending (c);
+    
     class_setHelpName (c, sym_pgmout);
     
     touchout_class = c;
