@@ -96,7 +96,11 @@ static t_buffer *timer_functionData (t_gobj *z, int flags)
 
 static void timer_restore (t_timer *x, t_float f)
 {
-    x->x_start = f;
+    t_timer *old = (t_timer *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_start = old ? old->x_start : f;
+    
+    if (old && old->x_unitName) { timer_unit (x, old->x_unitName, old->x_unitValue); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -147,7 +151,8 @@ void timer_setup (void)
     class_addMethod (c, (t_method)timer_restore,        sym__restore,   A_FLOAT, A_NULL);
 
     class_setDataFunction (c, timer_functionData);
-    
+    class_requirePending (c);
+
     timer_class = c;
 }
 
