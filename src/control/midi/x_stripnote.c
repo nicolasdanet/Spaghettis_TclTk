@@ -60,7 +60,9 @@ static t_buffer *stripnote_functionData (t_gobj *z, int flags)
 
 static void stripnote_restore (t_stripnote *x, t_float f)
 {
-    x->x_velocity = f;
+    t_stripnote *old = (t_stripnote *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_velocity = old ? old->x_velocity : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -99,7 +101,8 @@ void stripnote_setup (void)
     class_addMethod (c, (t_method)stripnote_restore, sym__restore, A_FLOAT, A_NULL);
 
     class_setDataFunction (c, stripnote_functionData);
-    
+    class_requirePending (c);
+
     stripnote_class = c;
 }
 
