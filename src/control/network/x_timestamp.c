@@ -123,7 +123,9 @@ static t_buffer *timestamp_functionData (t_gobj *z, int flags)
 
 static void timestamp_restore (t_timestamp *x, t_float f)
 {
-    int n = (int)f; x->x_mode = PD_CLAMP (n, TIMESTAMP_IMMEDIATELY, TIMESTAMP_ELAPSED);
+    t_timestamp *old = (t_timestamp *)instance_pendingFetch (cast_gobj (x));
+
+    x->x_mode = old ? old->x_mode : PD_CLAMP ((int)f, TIMESTAMP_IMMEDIATELY, TIMESTAMP_ELAPSED);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -189,6 +191,7 @@ void timestamp_setup (void)
     class_addMethod (c, (t_method)timestamp_restore, sym__restore,  A_FLOAT, A_NULL);
 
     class_setDataFunction (c, timestamp_functionData);
+    class_requirePending (c);
 
     timestamp_class = c;
 }
