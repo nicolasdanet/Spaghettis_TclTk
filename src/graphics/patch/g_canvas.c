@@ -225,7 +225,7 @@ static void canvas_tagobject (t_glist *glist, t_symbol *s, int argc, t_atom *arg
     glist_objectSetIdentifiersOfLast (glist, argc, argv);
 }
 
-static void canvas_tagsource (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+static void canvas_tagobjectsource (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     glist_objectSetSourceOfLast (glist, argc, argv);
 }
@@ -704,7 +704,7 @@ void canvas_setup (void)
     
     class_addMethod (c, (t_method)canvas_tagcanvas,             sym__tagcanvas,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_tagobject,             sym__tagobject,         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_tagsource,             sym__tagsource,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_tagobjectsource,       sym__tagobjectsource,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_motion,                sym__motion,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mouseDown,             sym__mousedown,         A_GIMME, A_NULL);

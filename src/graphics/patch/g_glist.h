@@ -99,6 +99,7 @@ t_garray        *glist_getGraphicArray      (t_glist *g);
 int     glist_isRoot                        (t_glist *g);
 int     glist_isTop                         (t_glist *g);
 int     glist_isAbstraction                 (t_glist *g);
+int     glist_isInsideAbstraction           (t_glist *g);
 int     glist_isSubpatchOrGraphicArray      (t_glist *g);
 int     glist_isSubpatch                    (t_glist *g);
 int     glist_isGraphicArray                (t_glist *g);

@@ -184,6 +184,11 @@ int glist_isAbstraction (t_glist *glist)
     return (glist_hasParent (glist) && (glist->gl_environment != NULL));
 }
 
+int glist_isInsideAbstraction (t_glist *g)
+{
+    return (glist_isAbstraction (glist_getTop (g)));
+}
+
 int glist_isSubpatchOrGraphicArray (t_glist *glist)
 {
     return (!glist_isTop (glist));
@@ -861,14 +866,17 @@ static void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
     }
 }
 
-static void glist_objectRemoveFree (t_gobj *y)
+static void glist_objectRemoveFree (t_glist *glist, t_gobj *y)
 {
-    if (gobj_hasDSP (y) && !gobj_isCanvas (y)) { if (garbage_newObject (y)) { return; } }
-    
-    if (instance_pendingRequired (y)) { instance_pendingAdd (y); }
-    else {
-        pd_free (cast_pd (y));
+    if (gobj_hasDSP (y) && !gobj_isCanvas (y)) {
+        if (garbage_newObject (y)) { return; }
     }
+    
+    if (instance_pendingRequired (y)) {
+        if (!glist_isInsideAbstraction (glist)) { instance_pendingAdd (y); return; }
+    }
+
+    pd_free (cast_pd (y));
 }
 
 void glist_objectRemove (t_glist *glist, t_gobj *y)
@@ -909,7 +917,7 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
         }
     
         glist_objectRemoveProceed (glist, y);
-        glist_objectRemoveFree (y);
+        glist_objectRemoveFree (glist, y);
 
         if (box) {
             editor_boxRemove (glist_getEditor (glist), box); 
