@@ -184,7 +184,7 @@ int glist_isAbstraction (t_glist *glist)
     return (glist_hasParent (glist) && (glist->gl_environment != NULL));
 }
 
-int glist_isInsideAbstraction (t_glist *g)
+int glist_isAbstractionOrInside (t_glist *g)
 {
     return (glist_isAbstraction (glist_getTop (g)));
 }
@@ -584,7 +584,7 @@ int glist_fileOpen (t_glist *glist, const char *name, const char *extension, t_f
 
 int glist_undoIsOk (t_glist *glist)
 {
-    if (glist_isAbstraction (glist) || glist_isGraphicArray (glist)) { return 0; }
+    if (glist_isAbstractionOrInside (glist) || glist_isGraphicArray (glist)) { return 0; }
     else if (editor_hasSelectedBox (glist_getEditor (glist))) { return 0; }
     
     return (glist_hasUndo (glist) && !instance_undoIsRecursive());
@@ -873,7 +873,7 @@ static void glist_objectRemoveFree (t_glist *glist, t_gobj *y)
     }
     
     if (instance_pendingRequired (y)) {
-        if (!glist_isInsideAbstraction (glist)) { instance_pendingAdd (y); return; }
+        if (!glist_isAbstractionOrInside (glist)) { instance_pendingAdd (y); return; }
     }
 
     pd_free (cast_pd (y));
