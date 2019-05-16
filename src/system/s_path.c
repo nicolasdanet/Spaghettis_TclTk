@@ -104,5 +104,18 @@ t_error path_withDirectoryAndName (char *dest, size_t size, const char *director
     return err;
 }
 
+t_symbol *path_withDirectoryAndNameAsSymbol (t_symbol *directory, t_symbol *name)
+{
+    char filepath[PD_STRING] = { 0 };
+
+    if (!path_withDirectoryAndName (filepath, PD_STRING, directory->s_name, name->s_name)) {
+    //
+    return gensym (filepath);
+    //
+    }
+    
+    return &s_;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
