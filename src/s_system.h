@@ -205,6 +205,8 @@ t_error     path_withDirectoryAndName               (char *dest,
                                                         const char *directory, 
                                                         const char *name);
 
+t_symbol    *path_withDirectoryAndNameAsSymbol      (t_symbol *directory, t_symbol *name);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
