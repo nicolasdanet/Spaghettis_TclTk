@@ -60,20 +60,28 @@ static void print_pointer (t_print *x, t_gpointer *gp)
 
 static void print_list (t_print *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc < PD_STRING) {
+    //
     char *t = atom_atomsToString (argc, argv);
     
     post ("%s: [ %s ]", x->x_name->s_name, t);                  // --
     
     PD_MEMORY_FREE (t);
+    //
+    } else { warning_tooManyCharacters (sym_print); }
 }
 
 static void print_anything (t_print *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc < PD_STRING) {
+    //
     char *t = atom_atomsToString (argc, argv);
     
     post ("%s: %s [ %s ]", x->x_name->s_name, s->s_name, t);    // --
     
     PD_MEMORY_FREE (t);
+    //
+    } else { warning_tooManyCharacters (sym_print); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

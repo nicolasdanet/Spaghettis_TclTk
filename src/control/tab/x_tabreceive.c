@@ -41,15 +41,19 @@ static void tabreceive_dissmiss (t_tabreceive *);
 
 static void tabreceive_output (t_tabreceive *x, t_garray *garray)
 {
-    int n = garray_getSize (garray);
-    int i, k = 0;
+    int i;
+    int k = 0;
+    int n = 0;
+    t_word *data = NULL;
+    
+    garray_getData (garray, &n, &data);
     
     if (n != buffer_getSize (x->x_previous)) { k = 1; buffer_resize (x->x_previous, n); }
     
     for (i = 0; i < n; i++) {
         t_atom *a = buffer_getAtomAtIndex (x->x_previous, i);
-        t_float v = garray_getDataAtIndex (garray, i);
         t_float f = atom_getFloat (a);
+        t_float v = w_getFloat (data + i);
         if (f != v) { k = 1; }
         SET_FLOAT (a, v);
     }
