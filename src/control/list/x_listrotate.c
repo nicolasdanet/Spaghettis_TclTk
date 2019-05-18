@@ -20,61 +20,69 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *listappend_class;   /* Shared. */
+static t_class *listrotate_class;           /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _listrotate {
+    t_object    x_obj;                      /* MUST be the first. */
+    t_float     x_rotate;
+    t_outlet    *x_outlet;
+    } t_listrotate;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void listappend_list (t_listappend *x, t_symbol *s, int argc, t_atom *argv)
+static void listrotate_list (t_listrotate *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *t = NULL; int count = listinlet_listSize (&x->x_h.lh_listinlet) + argc;
-    
-    if (!count) { outlet_list (x->x_outlet, 0, NULL); }
+    if (!argc) { outlet_list (x->x_outlet, 0, NULL); }
     else {
     //
-    PD_ATOMS_ALLOCA (t, count);
+    t_atom *t = NULL;
     
-    atom_copyAtoms (argv, argc, t, argc);
+    PD_ATOMS_ALLOCA (t, argc);
     
-    if (listinlet_listHasPointer (&x->x_h.lh_listinlet)) {
+    int i, j = x->x_rotate;
     
-        t_listinlet cache; listinlet_initByClone (&x->x_h.lh_listinlet, &cache);
-        listinlet_copyAtomsUnchecked (&cache, t + argc);
-        outlet_list (x->x_outlet, count, t);
-        listinlet_free (&cache);
-        
-    } else {
+    for (i = 0; i < argc; i++) {
+    //
+    while (j < 0)     { j += argc; }
+    while (j >= argc) { j -= argc; }
     
-        listinlet_copyAtomsUnchecked (&x->x_h.lh_listinlet, t + argc);
-        outlet_list (x->x_outlet, count, t);
+    PD_ASSERT (j >= 0 && j < argc); atom_copyAtom (argv + i, t + j);
+    
+    j++;
+    //
     }
     
-    PD_ATOMS_FREEA (t, count);
+    outlet_list (x->x_outlet, argc, t);
+    
+    PD_ATOMS_FREEA (t, argc);
     //
     }
 }
 
-void listappend_anything (t_listappend *x, t_symbol *s, int argc, t_atom *argv)
+static void listrotate_anything (t_listrotate *x, t_symbol *s, int argc, t_atom *argv)
 {
-    utils_anythingToList (cast_pd (x), (t_listmethod)listappend_list, s, argc, argv);
+    utils_anythingToList (cast_pd (x), (t_listmethod)listrotate_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_buffer *listhelper_functionData (t_gobj *z, int flags)
+static t_buffer *listrotate_functionData (t_gobj *z, int flags)
 {
     if (SAVED_DEEP (flags)) {
     //
-    t_listinlethelper *x = (t_listinlethelper *)z;
+    t_listrotate *x = (t_listrotate *)z;
     t_buffer *b = buffer_new();
     
     buffer_appendSymbol (b, sym__restore);
-    listinlet_listGet (&x->lh_listinlet, b);
-    buffer_invalidatePointers (b);
-    
+    buffer_appendFloat (b,  x->x_rotate);
+
     return b;
     //
     }
@@ -82,71 +90,64 @@ t_buffer *listhelper_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
-void listhelper_restore (t_listinlethelper *x, t_symbol *s, int argc, t_atom *argv)
+static void listrotate_restore (t_listrotate *x, t_float f)
 {
-    t_listinlethelper *old = (t_listinlethelper *)instance_pendingFetch (cast_gobj (x));
+    t_listrotate *old = (t_listrotate *)instance_pendingFetch (cast_gobj (x));
 
-    if (old) { listinlet_listSetByCopy (&x->lh_listinlet, &old->lh_listinlet); }
-    else {
-        listinlet_listSet (&x->lh_listinlet, argc, argv);
-    }
+    x->x_rotate = old ? old->x_rotate : f;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *listappend_new (t_symbol *s, int argc, t_atom *argv)
+void *listrotate_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_listappend *x = (t_listappend *)pd_new (listappend_class);
+    t_listrotate *x = (t_listrotate *)pd_new (listrotate_class);
     
-    listinlet_init (&x->x_h.lh_listinlet);
-    listinlet_listSet (&x->x_h.lh_listinlet, argc, argv);
+    if (argc) { x->x_rotate = atom_getFloat (argv); argc--; argv++; }
     
     x->x_outlet = outlet_newList (cast_object (x));
     
-    inlet_new (cast_object (x), cast_pd (&x->x_h.lh_listinlet), NULL, NULL);
+    inlet_newFloat (cast_object (x), &x->x_rotate);
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     return x;
 }
 
-static void listappend_free (t_listappend *x)
-{
-    listinlet_free (&x->x_h.lh_listinlet);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void listappend_setup (void)
+void listrotate_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_list__space__append,
-            (t_newmethod)listappend_new,
-            (t_method)listappend_free,
-            sizeof (t_listappend),
+    c = class_new (sym_list__space__rotate,
+            (t_newmethod)listrotate_new,
+            NULL,
+            sizeof (t_listrotate),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-            
-    class_addList (c, (t_method)listappend_list);
-    class_addAnything (c, (t_method)listappend_anything);
     
-    class_addMethod (c, (t_method)listhelper_restore, sym__restore, A_GIMME, A_NULL);
+    class_addList (c, (t_method)listrotate_list);
+    class_addAnything (c, (t_method)listrotate_anything);
+    
+    class_addMethod (c, (t_method)listrotate_restore, sym__restore, A_FLOAT, A_NULL);
 
-    class_setDataFunction (c, listhelper_functionData);
+    class_setDataFunction (c, listrotate_functionData);
     class_requirePending (c);
     
     class_setHelpName (c, &s_list);
     
-    listappend_class = c;
+    listrotate_class = c;
 }
 
-void listappend_destroy (void)
+void listrotate_destroy (void)
 {
-    class_free (listappend_class);
+    class_free (listrotate_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

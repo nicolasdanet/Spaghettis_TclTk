@@ -66,6 +66,7 @@ t_word      *gpointer_getElement                (t_gpointer *gp);
 t_symbol    *gpointer_getTemplateIdentifier     (t_gpointer *gp);
 t_template  *gpointer_getTemplate               (t_gpointer *gp);
 t_garray    *gpointer_getGraphicArray           (t_gpointer *gp);
+t_scalar    *gpointer_getBase                   (t_gpointer *gp);
 
 int         gpointer_isInstanceOf               (t_gpointer *gp, t_symbol *templateIdentifier);
 int         gpointer_isValidInstanceOf          (t_gpointer *gp, t_symbol *templateIdentifier);

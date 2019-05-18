@@ -202,6 +202,15 @@ static void message_set (t_message *x, t_symbol *s, int argc, t_atom *argv)
     message_dirty (x);
 }
 
+static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
+{
+    buffer_append (object_getBuffer (cast_object (x)), argc, argv);
+    buffer_reparseIfNeeded (object_getBuffer (cast_object (x)));
+    box_retext (box_fetch (x->m_owner, cast_object (x)));
+    glist_updateLinesForObject (x->m_owner, cast_object (x));
+    message_dirty (x);
+}
+
 static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append (object_getBuffer (cast_object (x)), argc, argv);
@@ -212,14 +221,8 @@ static void message_add (t_message *x, t_symbol *s, int argc, t_atom *argv)
     message_dirty (x);
 }
 
-static void message_append (t_message *x, t_symbol *s, int argc, t_atom *argv)
-{
-    buffer_append (object_getBuffer (cast_object (x)), argc, argv);
-    buffer_reparseIfNeeded (object_getBuffer (cast_object (x)));
-    box_retext (box_fetch (x->m_owner, cast_object (x)));
-    glist_updateLinesForObject (x->m_owner, cast_object (x));
-    message_dirty (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static void message_addComma (t_message *x)
 {
@@ -259,6 +262,24 @@ static void message_addDollarSymbol (t_message *x, t_symbol *s)
     box_retext (box_fetch (x->m_owner, cast_object (x)));
     glist_updateLinesForObject (x->m_owner, cast_object (x));
     message_dirty (x);
+}
+
+static void message_put (t_message *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_symbol *t = atom_getSymbolAtIndex (0, argc, argv);
+    
+    if (t == sym_comma)           { message_addComma (x); }
+    else if (t == sym_semicolon)  { message_addSemicolon (x); }
+    else if (t == sym_dollar)     {
+    //
+    if (argc > 1) {
+    //
+    if (IS_SYMBOL (argv + 1))     { message_addDollarSymbol (x, GET_SYMBOL (argv + 1)); }
+    else if (IS_FLOAT (argv + 1)) { message_addDollar (x, GET_FLOAT (argv + 1)); }
+    //
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -379,8 +400,9 @@ void message_setup (void)
     class_addClick (c, (t_method)message_click);
         
     class_addMethod (c, (t_method)message_set,              sym_set,                A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)message_add,              sym_add,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)message_append,           sym_append,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_add,              sym_add,                A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)message_put,              sym_put,                A_GIMME, A_NULL);
     class_addMethod (c, (t_method)message_addComma,         sym_addcomma,           A_NULL);
     class_addMethod (c, (t_method)message_addSemicolon,     sym_addsemicolon,       A_NULL);
     class_addMethod (c, (t_method)message_addDollar,        sym_adddollar,          A_FLOAT, A_NULL);

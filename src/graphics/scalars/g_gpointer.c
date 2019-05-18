@@ -316,7 +316,7 @@ t_template *gpointer_getTemplate (t_gpointer *gp)
     return (tmpl);
 }
 
-static t_scalar *gpointer_getBase (t_gpointer *gp)
+t_scalar *gpointer_getBase (t_gpointer *gp)
 {
     t_scalar *scalar = NULL;
     

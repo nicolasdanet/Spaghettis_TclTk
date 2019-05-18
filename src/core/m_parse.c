@@ -289,22 +289,9 @@ void buffer_invalidatePointers (t_buffer *x)
     atom_invalidatePointers (buffer_getSize (x), buffer_getAtoms (x));
 }
 
-/* < https://en.wikipedia.org/wiki/Fisher-Yates_shuffle > */
-
 void buffer_shuffle (t_buffer *x)
 {
-    int i, size = buffer_getSize (x);
-    t_atom *a = buffer_getAtoms (x);
-    t_rand48 seed;
-
-    PD_RAND48_INIT (seed);
-    
-    for (i = (size - 1); i > 0; i--) {
-        int rnd  = (int)(PD_RAND48_DOUBLE (seed) * (i + 1));
-        t_atom t = a[rnd];
-        a[rnd]   = a[i];
-        a[i]     = t;
-    }
+    atom_shuffle (buffer_getSize (x), buffer_getAtoms (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -35,25 +35,8 @@ typedef struct _prepend {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void prepend_proceed (t_prepend *x, int argc, t_atom *argv)
+static void prepend_proceedOutput (t_prepend *x, t_atom *t, int n)
 {
-    t_atom *t = NULL;
-    int n = listinlet_getSize (&x->x_listinlet) + argc;
-    
-    if (n == 0) { outlet_bang (x->x_outlet); }
-    else {
-    //
-    t_listinlet cache; listinlet_init (&cache);
-    
-    PD_ATOMS_ALLOCA (t, n);
-    
-    atom_copyAtoms (argv, argc, t + listinlet_getSize (&x->x_listinlet), argc);
-    
-    if (!listinlet_hasPointer (&x->x_listinlet)) { listinlet_copyAtomsUnchecked (&x->x_listinlet, t); }
-    else {
-        listinlet_clone (&x->x_listinlet, &cache); listinlet_copyAtomsUnchecked (&cache, t);
-    }
-    
     if (n == 1) {
         if (IS_SYMBOL (t)) { outlet_symbol (x->x_outlet, GET_SYMBOL (t)); }
         else if (IS_POINTER (t)) { outlet_pointer (x->x_outlet, GET_POINTER (t)); }
@@ -66,10 +49,39 @@ static void prepend_proceed (t_prepend *x, int argc, t_atom *argv)
             outlet_list (x->x_outlet, n, t);
         }
     }
+}
+
+static void prepend_proceedCached (t_prepend *x, t_atom *t, int n)
+{
+    t_listinlet cache; listinlet_initByClone (&x->x_listinlet, &cache);
+    
+    listinlet_copyAtomsUnchecked (&cache, t); prepend_proceedOutput (x, t, n);
+    
+    listinlet_free (&cache);
+}
+
+static void prepend_proceedRaw (t_prepend *x, t_atom *t, int n)
+{
+    listinlet_copyAtomsUnchecked (&x->x_listinlet, t); prepend_proceedOutput (x, t, n);
+}
+
+static void prepend_proceed (t_prepend *x, int argc, t_atom *argv)
+{
+    t_atom *t = NULL; int n = listinlet_listSize (&x->x_listinlet) + argc;
+    
+    if (n == 0) { outlet_bang (x->x_outlet); }
+    else {
+    //
+    PD_ATOMS_ALLOCA (t, n);
+    
+    atom_copyAtoms (argv, argc, t + listinlet_listSize (&x->x_listinlet), argc);
+    
+    if (listinlet_listHasPointer (&x->x_listinlet)) { prepend_proceedCached (x, t, n); }
+    else {
+        prepend_proceedRaw (x, t, n);
+    }
     
     PD_ATOMS_FREEA (t, n);
-    
-    listinlet_clear (&cache);
     //
     }
 }
@@ -162,7 +174,7 @@ static void *prepend_new (t_symbol *s, int argc, t_atom *argv)
 
 static void prepend_free (t_prepend *x)
 {
-    listinlet_clear (&x->x_listinlet);
+    listinlet_free (&x->x_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------

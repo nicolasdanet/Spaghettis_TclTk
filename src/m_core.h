@@ -45,10 +45,13 @@ int         atom_copyAtomsExpanded                  (t_atom *src, int m, t_atom 
 
 t_atomtype  atom_getType                            (t_atom *a);
 int         atom_typesAreEquals                     (t_atom *a, t_atom *b);
+int         atom_areEquals                          (t_atom *a, t_atom *b);
 t_error     atom_withStringUnzeroed                 (t_atom *a, const char *s, int size);
 t_error     atom_toString                           (t_atom *a, char *dest, int size);
 
 void        atom_invalidatePointers                 (int argc, t_atom *argv);
+void        atom_shuffle                            (int argc, t_atom *argv);
+void        atom_sort                               (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
