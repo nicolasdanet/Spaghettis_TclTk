@@ -20,6 +20,18 @@ int dollar_getDollarZero (t_glist *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_array *gpointer_getParentForWord (t_gpointer *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static int atom_sortCompare (const void *, const void *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static t_error atom_symbolToBackslashedString (t_atom *a, char *s, int size)
 {
     const char *p = NULL;
@@ -144,13 +156,18 @@ int atom_typesAreEquals (t_atom *a, t_atom *b)
     return (atom_getType (a) == atom_getType (b));
 }
 
+int atom_areEquals (t_atom *a, t_atom *b)
+{
+    return (atom_sortCompare ((const void *)a, (const void *)b) == 0);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void atom_copyAtom (t_atom *src, t_atom *dest)
 {
-    atom_copyAtoms (src, 1, dest, 1);
+    (*dest) = (*src);
 }
 
 void atom_copyAtoms (t_atom *src, int m, t_atom *dest, int n)
@@ -283,6 +300,141 @@ void atom_invalidatePointers (int argc, t_atom *argv)
     if (IS_POINTER (argv + i)) { t_gpointer *gp = gpointer_getEmpty(); SET_POINTER (argv + i, gp); }
     //
     }
+}
+
+/* < https://en.wikipedia.org/wiki/Fisher-Yates_shuffle > */
+
+void atom_shuffle (int argc, t_atom *argv)
+{
+    static int once; static t_rand48 seed;   /* Static. */
+
+    if (!once) { once = 1; PD_RAND48_INIT (seed); }
+    
+    int i;
+    
+    for (i = (argc - 1); i > 0; i--) {
+        int rnd   = (int)(PD_RAND48_DOUBLE (seed) * (i + 1));
+        t_atom t  = argv[rnd];
+        argv[rnd] = argv[i];
+        argv[i]   = t;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static int atom_sortComparePointersElement (t_gpointer *gp1, t_gpointer *gp2)
+{
+    int index1 = gpointer_getIndex (gp1);
+    int index2 = gpointer_getIndex (gp2);
+    
+    if (index1 < index2) { return -1; } else if (index1 > index2) { return 1; }
+    
+    return 0;
+}
+
+static int atom_sortComparePointersArray (t_gpointer *gp1, t_gpointer *gp2)
+{
+    t_id id1 = array_getIdentifier (gpointer_getParentForWord (gp1));
+    t_id id2 = array_getIdentifier (gpointer_getParentForWord (gp2));
+    
+    if (id1 == id2) { return atom_sortComparePointersElement (gp1, gp2); }
+    
+    return (id1 < id2 ? -1 : 1);
+}
+
+static int atom_sortComparePointersValid (t_gpointer *gp1, t_gpointer *gp2)
+{
+    t_scalar *b1 = gpointer_getBase (gp1);
+    t_scalar *b2 = gpointer_getBase (gp2);
+    t_id u1      = gobj_getUnique (cast_gobj (b1));
+    t_id u2      = gobj_getUnique (cast_gobj (b2));
+
+    if (u1 != u2) { return (u1 < u2 ? -1 : 1); }
+    else {
+    //
+    int isArray1 = gpointer_isWord (gp1);
+    int isArray2 = gpointer_isWord (gp2);
+    
+    if (isArray1 || isArray2) {
+    //
+    if (isArray1 == isArray2) { return atom_sortComparePointersArray (gp1, gp2); }
+    else {
+        return (isArray1 < isArray2 ? -1 : 1);
+    }
+    //
+    }
+    //
+    }
+    
+    return 0;
+}
+
+static int atom_sortComparePointersValidOrNull (t_gpointer *gp1, t_gpointer *gp2)
+{
+    int null1 = !gpointer_isValid (gp1);
+    int null2 = !gpointer_isValid (gp2);
+
+    if (null1 || null2) {
+    //
+    if (null1 == null2) { return 0; } else { return (null1 > null2 ? -1 : 1);
+    }
+    //
+    }
+    
+    return atom_sortComparePointersValid (gp1, gp2);
+}
+
+static int atom_sortComparePointers (t_gpointer *gp1, t_gpointer *gp2)
+{
+    int invalid1 = !gpointer_isValidOrNull (gp1);
+    int invalid2 = !gpointer_isValidOrNull (gp2);
+    
+    if (invalid1 || invalid2) {
+    //
+    if (invalid1 == invalid2) { return 0; } else { return (invalid1 > invalid2 ? -1 : 1);
+    }
+    //
+    }
+    
+    return atom_sortComparePointersValidOrNull (gp1, gp2);
+}
+
+static int atom_sortCompareFloats (t_float f1, t_float f2)
+{
+    if (f1 < f2) { return -1; } else if (f1 > f2) { return 1; } return 0;
+}
+
+static int atom_sortCompareDollars (int i1, int i2)
+{
+    if (i1 < i2) { return -1; } else if (i1 > i2) { return 1; } return 0;
+}
+
+static int atom_sortCompare (const void *p1, const void *p2)
+{
+    t_atom *a1 = (t_atom *)p1;
+    t_atom *a2 = (t_atom *)p2;
+    t_atomtype t1 = atom_getType (a1);
+    t_atomtype t2 = atom_getType (a2);
+    
+    if (!atom_typesAreEquals (a1, a2)) { return (t1 < t2 ? -1 : 1); }
+    else {
+    //
+    if (t1 == A_SYMBOL)             { return strcmp (GET_SYMBOL (a1)->s_name, GET_SYMBOL (a2)->s_name);     }
+    else if (t1 == A_FLOAT)         { return atom_sortCompareFloats (GET_FLOAT (a1), GET_FLOAT (a2));       }
+    else if (t1 == A_POINTER)       { return atom_sortComparePointers (GET_POINTER (a1), GET_POINTER (a2)); }
+    else if (t1 == A_DOLLAR)        { return atom_sortCompareDollars (GET_DOLLAR (a1), GET_DOLLAR (a2));    }
+    else if (t1 == A_DOLLARSYMBOL)  { return strcmp (GET_SYMBOL (a1)->s_name, GET_SYMBOL (a2)->s_name);     }
+    //
+    }
+    
+    return 0;
+}
+
+void atom_sort (int argc, t_atom *argv)
+{
+    if (argc) { qsort (argv, argc, sizeof (t_atom), atom_sortCompare); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

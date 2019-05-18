@@ -24,33 +24,25 @@ static t_class *listprepend_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-typedef struct _listprepend {
-    t_listinlethelper   x_h;            /* Must be the first. */
-    t_outlet            *x_outlet;
-    } t_listprepend;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void listprepend_list (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *t = NULL;
-    int count = listinlet_getSize (&x->x_h.lh_listinlet) + argc;
+    t_atom *t = NULL; int count = listinlet_listSize (&x->x_h.lh_listinlet) + argc;
     
+    if (!count) { outlet_list (x->x_outlet, 0, NULL); }
+    else {
+    //
     PD_ATOMS_ALLOCA (t, count);
     
-    atom_copyAtoms (argv, argc, t + listinlet_getSize (&x->x_h.lh_listinlet), argc);
+    atom_copyAtoms (argv, argc, t + listinlet_listSize (&x->x_h.lh_listinlet), argc);
     
-    if (listinlet_hasPointer (&x->x_h.lh_listinlet)) {
+    if (listinlet_listHasPointer (&x->x_h.lh_listinlet)) {
     
-        t_listinlet cache;
-        listinlet_init (&cache);
-        listinlet_clone (&x->x_h.lh_listinlet, &cache);
+        t_listinlet cache; listinlet_initByClone (&x->x_h.lh_listinlet, &cache);
         listinlet_copyAtomsUnchecked (&cache, t);
         outlet_list (x->x_outlet, count, t);
-        listinlet_clear (&cache);
+        listinlet_free (&cache);
         
     } else {
     
@@ -59,6 +51,8 @@ static void listprepend_list (t_listprepend *x, t_symbol *s, int argc, t_atom *a
     }
     
     PD_ATOMS_FREEA (t, count);
+    //
+    }
 }
 
 static void listprepend_anything (t_listprepend *x, t_symbol *s, int argc, t_atom *argv)
@@ -86,7 +80,7 @@ void *listprepend_new (t_symbol *s, int argc, t_atom *argv)
 
 static void listprepend_free (t_listprepend *x)
 {
-    listinlet_clear (&x->x_h.lh_listinlet);
+    listinlet_free (&x->x_h.lh_listinlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------

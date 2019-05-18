@@ -9,52 +9,41 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
-#include "../../s_system.h"
 #include "../../g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *listfromsymbol_class;       /* Shared. */
+static t_class *listsum_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _listfromsymbol {
-    t_object    x_obj;                      /* Must be the first. */
+typedef struct _listsum {
+    t_object    x_obj;                  /* Must be the first. */
     t_outlet    *x_outlet;
-    } t_listfromsymbol;
+    } t_listsum;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-static void listfromsymbol_symbol (t_listfromsymbol *x, t_symbol *s)
+static void listsum_list (t_listsum *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *t = NULL; int n, count = (int)(strlen (s->s_name));
+    int i; t_float f = 0.0; for (i = 0; i < argc; i++) { f += atom_getFloat (argv + i); }
     
-    if (!count) { outlet_list (x->x_outlet, 0, NULL); }
-    else {
-    //
-    PD_ATOMS_ALLOCA (t, count);
-    
-    for (n = 0; n < count; n++) { SET_FLOAT (t + n, (unsigned char)s->s_name[n]); }
-    
-    outlet_list (x->x_outlet, count, t);
-    
-    PD_ATOMS_FREEA (t, count);
-    //
-    }
+    outlet_float (x->x_outlet, f);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *listfromsymbol_new (t_symbol *s, int argc, t_atom *argv)
+void *listsum_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_listfromsymbol *x = (t_listfromsymbol *)pd_new (listfromsymbol_class);
+    t_listsum *x = (t_listsum *)pd_new (listsum_class);
     
-    x->x_outlet = outlet_newList (cast_object (x));
+    x->x_outlet = outlet_newFloat (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
@@ -65,28 +54,28 @@ void *listfromsymbol_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void listfromsymbol_setup (void)
+void listsum_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_list__space__fromsymbol,
-            (t_newmethod)listfromsymbol_new,
+    c = class_new (sym_list__space__sum,
+            (t_newmethod)listsum_new,
             NULL,
-            sizeof (t_listfromsymbol),
+            sizeof (t_listsum),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-            
-    class_addSymbol (c, (t_method)listfromsymbol_symbol);
+        
+    class_addList (c, (t_method)listsum_list);
     
     class_setHelpName (c, &s_list);
     
-    listfromsymbol_class = c;
+    listsum_class = c;
 }
 
-void listfromsymbol_destroy (void)
+void listsum_destroy (void)
 {
-    class_free (listfromsymbol_class);
+    class_free (listsum_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -15,78 +15,89 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *listfromsymbol_class;       /* Shared. */
+#include "x_list.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _listfromsymbol {
-    t_object    x_obj;                      /* Must be the first. */
-    t_outlet    *x_outlet;
-    } t_listfromsymbol;
+static t_class *listchange_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-static void listfromsymbol_symbol (t_listfromsymbol *x, t_symbol *s)
+static void listchange_list (t_listchange *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *t = NULL; int n, count = (int)(strlen (s->s_name));
+    int changed = !listinlet_listIsEqualTo (&x->x_h.lh_listinlet, argc, argv);
     
-    if (!count) { outlet_list (x->x_outlet, 0, NULL); }
-    else {
-    //
-    PD_ATOMS_ALLOCA (t, count);
+    if (changed) { listinlet_listSet (&x->x_h.lh_listinlet, argc, argv); }
     
-    for (n = 0; n < count; n++) { SET_FLOAT (t + n, (unsigned char)s->s_name[n]); }
+    outlet_float (x->x_outletRight, changed);
     
-    outlet_list (x->x_outlet, count, t);
-    
-    PD_ATOMS_FREEA (t, count);
-    //
-    }
+    if (changed) { outlet_list (x->x_outlet, argc, argv); }
+}
+
+static void listchange_anything (t_listchange *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)listchange_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *listfromsymbol_new (t_symbol *s, int argc, t_atom *argv)
+void *listchange_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_listfromsymbol *x = (t_listfromsymbol *)pd_new (listfromsymbol_class);
+    t_listchange *x = (t_listchange *)pd_new (listchange_class);
     
-    x->x_outlet = outlet_newList (cast_object (x));
+    listinlet_init (&x->x_h.lh_listinlet);
+    listinlet_listSet (&x->x_h.lh_listinlet, argc, argv);
     
-    if (argc) { warning_unusedArguments (s, argc, argv); }
+    x->x_outlet      = outlet_newList (cast_object (x));
+    x->x_outletRight = outlet_newFloat (cast_object (x));
+    
+    inlet_new (cast_object (x), cast_pd (&x->x_h.lh_listinlet), NULL, NULL);
     
     return x;
 }
 
+static void listchange_free (t_listchange *x)
+{
+    listinlet_free (&x->x_h.lh_listinlet);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void listfromsymbol_setup (void)
+void listchange_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_list__space__fromsymbol,
-            (t_newmethod)listfromsymbol_new,
-            NULL,
-            sizeof (t_listfromsymbol),
+    c = class_new (sym_list__space__change,
+            (t_newmethod)listchange_new,
+            (t_method)listchange_free,
+            sizeof (t_listchange),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
             
-    class_addSymbol (c, (t_method)listfromsymbol_symbol);
+    class_addList (c, (t_method)listchange_list);
+    class_addAnything (c, (t_method)listchange_anything);
+    
+    class_addMethod (c, (t_method)listhelper_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, listhelper_functionData);
+    class_requirePending (c);
     
     class_setHelpName (c, &s_list);
     
-    listfromsymbol_class = c;
+    listchange_class = c;
 }
 
-void listfromsymbol_destroy (void)
+void listchange_destroy (void)
 {
-    class_free (listfromsymbol_class);
+    class_free (listchange_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

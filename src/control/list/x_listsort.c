@@ -15,46 +15,57 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *listfromsymbol_class;       /* Shared. */
+#include "x_list.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _listfromsymbol {
+static t_class *listsort_class;         /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _listsort {
     t_object    x_obj;                      /* Must be the first. */
     t_outlet    *x_outlet;
-    } t_listfromsymbol;
+    } t_listsort;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-static void listfromsymbol_symbol (t_listfromsymbol *x, t_symbol *s)
+static void listsort_list (t_listsort *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *t = NULL; int n, count = (int)(strlen (s->s_name));
-    
-    if (!count) { outlet_list (x->x_outlet, 0, NULL); }
+    if (!argc) { outlet_list (x->x_outlet, 0, NULL); }
     else {
     //
-    PD_ATOMS_ALLOCA (t, count);
+    t_atom *t = NULL;
     
-    for (n = 0; n < count; n++) { SET_FLOAT (t + n, (unsigned char)s->s_name[n]); }
+    PD_ATOMS_ALLOCA (t, argc);
     
-    outlet_list (x->x_outlet, count, t);
+    atom_copyAtoms (argv, argc, t, argc); atom_sort (argc, t);
     
-    PD_ATOMS_FREEA (t, count);
+    outlet_list (x->x_outlet, argc, t);
+    
+    PD_ATOMS_FREEA (t, argc);
     //
     }
+}
+
+static void listsort_anything (t_listsort *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)listsort_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *listfromsymbol_new (t_symbol *s, int argc, t_atom *argv)
+void *listsort_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_listfromsymbol *x = (t_listfromsymbol *)pd_new (listfromsymbol_class);
+    t_listsort *x = (t_listsort *)pd_new (listsort_class);
     
-    x->x_outlet = outlet_newList (cast_object (x));
+    x->x_outlet = outlet_newAnything (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
@@ -65,28 +76,29 @@ void *listfromsymbol_new (t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void listfromsymbol_setup (void)
+void listsort_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_list__space__fromsymbol,
-            (t_newmethod)listfromsymbol_new,
+    c = class_new (sym_list__space__sort,
+            (t_newmethod)listsort_new,
             NULL,
-            sizeof (t_listfromsymbol),
+            sizeof (t_listsort),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
             
-    class_addSymbol (c, (t_method)listfromsymbol_symbol);
+    class_addList (c, (t_method)listsort_list);
+    class_addAnything (c, (t_method)listsort_anything);
     
     class_setHelpName (c, &s_list);
     
-    listfromsymbol_class = c;
+    listsort_class = c;
 }
 
-void listfromsymbol_destroy (void)
+void listsort_destroy (void)
 {
-    class_free (listfromsymbol_class);
+    class_free (listsort_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -15,78 +15,84 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *listfromsymbol_class;       /* Shared. */
+#include "x_list.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _listfromsymbol {
-    t_object    x_obj;                      /* Must be the first. */
-    t_outlet    *x_outlet;
-    } t_listfromsymbol;
+static t_class *listequal_class;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
-static void listfromsymbol_symbol (t_listfromsymbol *x, t_symbol *s)
+static void listequal_list (t_listequal *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *t = NULL; int n, count = (int)(strlen (s->s_name));
+    int equal = listinlet_listIsEqualTo (&x->x_h.lh_listinlet, argc, argv);
     
-    if (!count) { outlet_list (x->x_outlet, 0, NULL); }
-    else {
-    //
-    PD_ATOMS_ALLOCA (t, count);
-    
-    for (n = 0; n < count; n++) { SET_FLOAT (t + n, (unsigned char)s->s_name[n]); }
-    
-    outlet_list (x->x_outlet, count, t);
-    
-    PD_ATOMS_FREEA (t, count);
-    //
-    }
+    outlet_float (x->x_outlet, equal);
+}
+
+static void listequal_anything (t_listequal *x, t_symbol *s, int argc, t_atom *argv)
+{
+    utils_anythingToList (cast_pd (x), (t_listmethod)listequal_list, s, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void *listfromsymbol_new (t_symbol *s, int argc, t_atom *argv)
+void *listequal_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_listfromsymbol *x = (t_listfromsymbol *)pd_new (listfromsymbol_class);
+    t_listequal *x = (t_listequal *)pd_new (listequal_class);
     
-    x->x_outlet = outlet_newList (cast_object (x));
+    listinlet_init (&x->x_h.lh_listinlet);
+    listinlet_listSet (&x->x_h.lh_listinlet, argc, argv);
     
-    if (argc) { warning_unusedArguments (s, argc, argv); }
+    x->x_outlet = outlet_newFloat (cast_object (x));
+    
+    inlet_new (cast_object (x), cast_pd (&x->x_h.lh_listinlet), NULL, NULL);
     
     return x;
 }
 
+static void listequal_free (t_listequal *x)
+{
+    listinlet_free (&x->x_h.lh_listinlet);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void listfromsymbol_setup (void)
+void listequal_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_list__space__fromsymbol,
-            (t_newmethod)listfromsymbol_new,
-            NULL,
-            sizeof (t_listfromsymbol),
+    c = class_new (sym_list__space__equal,
+            (t_newmethod)listequal_new,
+            (t_method)listequal_free,
+            sizeof (t_listequal),
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
             
-    class_addSymbol (c, (t_method)listfromsymbol_symbol);
+    class_addList (c, (t_method)listequal_list);
+    class_addAnything (c, (t_method)listequal_anything);
+    
+    class_addMethod (c, (t_method)listhelper_restore, sym__restore, A_GIMME, A_NULL);
+
+    class_setDataFunction (c, listhelper_functionData);
+    class_requirePending (c);
     
     class_setHelpName (c, &s_list);
     
-    listfromsymbol_class = c;
+    listequal_class = c;
 }
 
-void listfromsymbol_destroy (void)
+void listequal_destroy (void)
 {
-    class_free (listfromsymbol_class);
+    class_free (listequal_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

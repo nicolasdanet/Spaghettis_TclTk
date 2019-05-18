@@ -33,15 +33,23 @@ static void *list_makeObject (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     t_symbol *t = atom_getSymbol (argv);
     
     if (t == sym_append)            { newest = (t_pd *)listappend_new (s,       argc - 1, argv + 1); }
-    else if (t == sym_prepend)      { newest = (t_pd *)listprepend_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_split)        { newest = (t_pd *)listsplit_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_trim)         { newest = (t_pd *)listtrim_new (s,         argc - 1, argv + 1); }
-    else if (t == sym_length)       { newest = (t_pd *)listlength_new (s,       argc - 1, argv + 1); }
-    else if (t == sym_store)        { newest = (t_pd *)liststore_new (s,        argc - 1, argv + 1); }
-    else if (t == sym_iterate)      { newest = (t_pd *)listiterate_new (s,      argc - 1, argv + 1); }
-    else if (t == sym_group)        { newest = (t_pd *)listgroup_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_change)       { newest = (t_pd *)listchange_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_equal)        { newest = (t_pd *)listequal_new (s,        argc - 1, argv + 1); }
     else if (t == sym_fromsymbol)   { newest = (t_pd *)listfromsymbol_new (s,   argc - 1, argv + 1); }
+    else if (t == sym_group)        { newest = (t_pd *)listgroup_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_iterate)      { newest = (t_pd *)listiterate_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_length)       { newest = (t_pd *)listlength_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_prepend)      { newest = (t_pd *)listprepend_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_reverse)      { newest = (t_pd *)listreverse_new (s,      argc - 1, argv + 1); }
+    else if (t == sym_rotate)       { newest = (t_pd *)listrotate_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_scramble)     { newest = (t_pd *)listscramble_new (s,     argc - 1, argv + 1); }
+    else if (t == sym_sort)         { newest = (t_pd *)listsort_new (s,         argc - 1, argv + 1); }
+    else if (t == sym_split)        { newest = (t_pd *)listsplit_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_store)        { newest = (t_pd *)liststore_new (s,        argc - 1, argv + 1); }
+    else if (t == sym_stream)       { newest = (t_pd *)liststream_new (s,       argc - 1, argv + 1); }
+    else if (t == sym_sum)          { newest = (t_pd *)listsum_new (s,          argc - 1, argv + 1); }
     else if (t == sym_tosymbol)     { newest = (t_pd *)listtosymbol_new (s,     argc - 1, argv + 1); }
+    else if (t == sym_trim)         { newest = (t_pd *)listtrim_new (s,         argc - 1, argv + 1); }
     else {
         error_unexpected (&s_list, t);
     }
