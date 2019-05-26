@@ -9,8 +9,8 @@
 #X text 24 24 key;
 #X text 12 288 See also:;
 #X f 9;
-#X obj 84 288 select;
-#X obj 144 288 trigger;
+#X obj 132 288 select;
+#X obj 192 288 trigger;
 #X text 12 72 Grab the keyboard events.;
 #X f 25;
 #X floatatom 36 144 5 0 0 1 - - -;
@@ -22,6 +22,7 @@
 #X obj 36 180 sel 32;
 #X obj 36 252 print;
 #X msg 36 216 The space bar launch the MOAB.;
+#X obj 84 288 mouse;
 #X connect 0 0 11 0;
 #X connect 1 0 12 0;
 #X connect 2 0 13 0;

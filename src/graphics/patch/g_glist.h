@@ -334,6 +334,8 @@ void    glist_getRectangleOnParent          (t_glist *g, t_rectangle *r);
 t_point glist_getPositionForNewObject       (t_glist *g);
 t_point glist_getPositionMiddle             (t_glist *g);
 
+t_error glist_convertPixelFromParent        (t_glist *g, t_point *pt);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -484,6 +486,11 @@ static inline int glist_getMapped (t_glist *g)
 static inline int glist_getDirty (t_glist *g)
 {
     return g->gl_isDirty;
+}
+
+static inline t_symbol *glist_getTag (t_glist *g)
+{
+    return editor_getTag (glist_getEditor (g));
 }
 
 static inline const char *glist_getTagAsString (t_glist *g)

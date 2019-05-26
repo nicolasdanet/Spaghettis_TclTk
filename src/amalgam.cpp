@@ -291,6 +291,7 @@
 #include "control/flow/x_counter.c"
 
 #include "control/miscellaneous/x_print.c"
+#include "control/miscellaneous/x_mouse.c"
 #include "control/miscellaneous/x_key.c"
 #include "control/miscellaneous/x_keyup.c"
 #include "control/miscellaneous/x_keyname.c"

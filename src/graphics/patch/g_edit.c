@@ -569,10 +569,10 @@ static void glist_mouseOverRun (t_glist *glist, int a, int b, int m, int clicked
         
         t.m_x       = a;
         t.m_y       = b;
-        t.m_shift   = (m & MODIFIER_SHIFT);
-        t.m_ctrl    = (m & MODIFIER_CTRL);
-        t.m_alt     = (m & MODIFIER_ALT);
-        t.m_dbl     = (m & MODIFIER_DOUBLE);
+        t.m_shift   = ((m & MODIFIER_SHIFT)  != 0);
+        t.m_ctrl    = ((m & MODIFIER_CTRL)   != 0);
+        t.m_alt     = ((m & MODIFIER_ALT)    != 0);
+        t.m_dbl     = ((m & MODIFIER_DOUBLE) != 0);
         t.m_clicked = clicked;
     
         k = gobj_mouse (y, glist, &t);

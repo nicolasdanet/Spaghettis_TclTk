@@ -73,8 +73,7 @@ static void select1_list (t_select1 *x, t_symbol *s, int argc, t_atom *argv)
     t_error err = PD_ERROR_NONE;
     
     if (argc > 1) {
-        err = !atom_typesAreEquals (&x->x_atom, argv + 1);
-        if (!err) { x->x_atom = *(argv + 1); }
+        err = !atom_typesAreEquals (argv + 1, &x->x_atom); if (!err) { atom_copyAtom (argv + 1, &x->x_atom); }
     }
     
     if (argc) {
@@ -181,7 +180,8 @@ static void *select1_new (int argc, t_atom *argv)
 {
     t_select1 *x = (t_select1 *)pd_new (select1_class);
     
-    x->x_atom = *argv;
+    atom_copyAtom (argv, &x->x_atom);
+    
     x->x_outletLeft = outlet_newBang (cast_object (x));
     
     if (IS_FLOAT (argv)) { x->x_outletRight = outlet_newAnything (cast_object (x)); }

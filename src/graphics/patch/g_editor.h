@@ -158,6 +158,11 @@ static inline int editor_getAction (t_editor *x)
     return x->e_action;
 }
 
+static inline t_symbol *editor_getTag (t_editor *x)
+{
+    return proxy_getTag (x->e_proxy);
+}
+
 static inline const char *editor_getTagAsString (t_editor *x)
 {
     return proxy_getTagAsString (x->e_proxy);
