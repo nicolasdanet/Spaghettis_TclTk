@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17019CA2229A726A00C33471 /* x_mouse.c in Sources */ = {isa = PBXBuildFile; fileRef = 17019CA1229A726A00C33471 /* x_mouse.c */; };
 		17039C6D20597DE000C86496 /* x_mica.c in Sources */ = {isa = PBXBuildFile; fileRef = 17039C6C20597DE000C86496 /* x_mica.c */; };
 		17073FB61F398EE2004042C0 /* x_textdelete.c in Sources */ = {isa = PBXBuildFile; fileRef = 17073FB51F398EE2004042C0 /* x_textdelete.c */; };
 		17110F4C2125CDAE0050FC67 /* x_tralala.c in Sources */ = {isa = PBXBuildFile; fileRef = 17110F3F2125CDAE0050FC67 /* x_tralala.c */; };
@@ -473,6 +474,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		17019CA1229A726A00C33471 /* x_mouse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_mouse.c; sourceTree = "<group>"; };
 		17039C6B20597DE000C86496 /* x_mica.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = x_mica.hpp; sourceTree = "<group>"; };
 		17039C6C20597DE000C86496 /* x_mica.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_mica.c; sourceTree = "<group>"; };
 		17073FB51F398EE2004042C0 /* x_textdelete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_textdelete.c; sourceTree = "<group>"; };
@@ -1555,6 +1557,7 @@
 			isa = PBXGroup;
 			children = (
 				3789720B1C4F716800263434 /* x_print.c */,
+				17019CA1229A726A00C33471 /* x_mouse.c */,
 				374D7B2F1DA3E1E900FECF8F /* x_key.c */,
 				374D7B051DA3E0A500FECF8F /* x_keyup.c */,
 				374D7AD51DA3DEFF00FECF8F /* x_keyname.c */,
@@ -2332,6 +2335,7 @@
 				3716C79D1D6335C400022709 /* m_iterator.c in Sources */,
 				3744481A1D66000B00E54A0D /* m_math.c in Sources */,
 				3744493A1D66154D00E54A0D /* m_rectangle.c in Sources */,
+				17019CA2229A726A00C33471 /* x_mouse.c in Sources */,
 				17CB7648205FABE800F919E4 /* x_micainterval.c in Sources */,
 				1739F7451FFCE902004656C4 /* s_ringbuffer.c in Sources */,
 				17B1B572215FB9AB0067D398 /* m_encapsulate.c in Sources */,

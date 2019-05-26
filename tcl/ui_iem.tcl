@@ -42,6 +42,7 @@ variable  iemBackgroundColor
 variable  iemFrontColor
 variable  iemSteady
 variable  iemSave
+variable  iemFocused
 
 array set iemType               {}
 array set iemWidth              {}
@@ -63,9 +64,19 @@ array set iemBackgroundColor    {}
 array set iemFrontColor         {}
 array set iemSteady             {}
 array set iemSave               {}
+array set iemFocused            {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+proc _focus {top item} {
+    
+    variable iemFocused
+    
+    if {$iemFocused($top) == 0} { focus $item; after idle "$item selection range 0 end"; }
+    
+    set iemFocused($top) 1
+}
 
 proc create {top type
              width widthMinimum widthLabel height heightMinimum heightLabel
@@ -98,6 +109,7 @@ proc create {top type
     variable iemFrontColor
     variable iemSteady
     variable iemSave
+    variable iemFocused
 
     set iemType($top)               $type
     set iemWidth($top)              $width
@@ -119,6 +131,7 @@ proc create {top type
     set iemFrontColor($top)         $frontColor
     set iemSteady($top)             $steady
     set iemSave($top)               $save
+    set iemFocused($top)            0
 
     set iemWidth(${top}.old)        $width
     set iemHeight(${top}.old)       $height
@@ -161,9 +174,7 @@ proc create {top type
 
         bind $top.f.properties.width <Return>           { ::nextEntry %W }
         
-        focus $top.f.properties.width
-        
-        after idle "$top.f.properties.width selection range 0 end" 
+        ::ui_iem::_focus $top $top.f.properties.width
     }
     
     if {$heightLabel ne $::var(nil)}    {
@@ -192,6 +203,8 @@ proc create {top type
         grid $top.f.properties.option1                  -row $row       -column 2 -sticky ew
         
         bind  $top.f.properties.option1 <Return>        { ::nextEntry %W }
+        
+        ::ui_iem::_focus $top $top.f.properties.option1
     }
     
     if {$option2Label ne $::var(nil)}   {
@@ -347,6 +360,7 @@ proc released {top} {
     variable iemFrontColor
     variable iemSteady
     variable iemSave
+    variable iemFocused
     
     unset iemType($top)
     unset iemWidth($top)
@@ -368,6 +382,7 @@ proc released {top} {
     unset iemFrontColor($top)
     unset iemSteady($top)
     unset iemSave($top)
+    unset iemFocused($top)
     
     unset iemWidth(${top}.old)
     unset iemHeight(${top}.old)

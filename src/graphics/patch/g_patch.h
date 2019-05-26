@@ -46,18 +46,6 @@ enum {
     };
 
 enum {
-    MODIFIER_NONE       = 0,
-    MODIFIER_SHIFT      = 1,
-    MODIFIER_CTRL       = 2,        /* On macOS, the Command key. */
-    MODIFIER_ALT        = 4,        /* On macOS, the Option key. */
-    MODIFIER_RIGHT      = 8,
-    MODIFIER_DOUBLE     = 16,
-    MODIFIER_EXTENDED   = 32,       /* On macOS, the Control key. */
-    MODIFIER_INSIDE_X   = 64,
-    MODIFIER_INSIDE_Y   = 128
-    };
-
-enum {
     BOX_DOWN            = 1,
     BOX_DRAG            = 2,
     BOX_DOUBLE          = 3,

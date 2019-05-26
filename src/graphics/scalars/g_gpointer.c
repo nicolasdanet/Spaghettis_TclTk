@@ -394,7 +394,7 @@ void gpointer_notify (t_gpointer *gp, t_symbol *s, int argc, t_atom *argv)
     
     gpointer_setByCopy (&copy, gp);
     SET_POINTER (a, &copy);
-    for (i = 0; i < argc; i++) { *(a + i + 1) = *(argv + i); }
+    for (i = 0; i < argc; i++) { atom_copyAtom (argv + i, a + i + 1); }
     if (x->tp_instance) { struct_notify (x->tp_instance, s, n, a); }
     gpointer_unset (&copy);
     

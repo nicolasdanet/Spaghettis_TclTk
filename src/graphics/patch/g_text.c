@@ -143,6 +143,21 @@ void text_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
     }
 }
 
+/* Mouse up message is never sent to window that lose the focus. */
+/* Below a workaround. */
+/* It uses another bind name because a bind list cannot be called recursively. */
+
+static void text_behaviorMouseCancel (t_gobj *z, t_glist *glist)
+{
+    if (symbol_hasThingQuiet (sym__mousecancel)) {
+    //
+    t_atom t;
+    SET_SYMBOL (&t, glist_getTag (glist));
+    pd_message (symbol_getThing (sym__mousecancel), sym__mousecancel, 1, &t);
+    //
+    }
+}
+
 int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_object *x = cast_object (z);
@@ -151,7 +166,10 @@ int text_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
     
     if (k || (object_isObject (x) && class_hasMethod (pd_class (x), sym_click))) { 
         if (m->m_clicked) {
-            pd_message (cast_pd (x), sym_click, mouse_argc (m), mouse_argv (m)); 
+            pd_message (cast_pd (x), sym_click, mouse_argc (m), mouse_argv (m));
+            if (gobj_isCanvas (z)) {
+                text_behaviorMouseCancel (z, glist);
+            }
         }
         
         return CURSOR_CLICK;

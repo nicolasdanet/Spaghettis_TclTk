@@ -125,6 +125,32 @@ void glist_getRectangleOnParent (t_glist *glist, t_rectangle *r)
     rectangle_set (r, a, b, c, d);
 }
 
+t_error glist_convertPixelFromParent (t_glist *glist, t_point *pt)
+{
+    if (!glist_isWindowable (glist)) {
+    //
+    t_rectangle r; glist_getRectangleOnParent (glist, &r);
+    
+    if (rectangle_containsPoint (&r, pt)) {
+    //
+    int a = rectangle_getTopLeftX (&r);
+    int b = rectangle_getTopLeftY (&r);
+    int c = rectangle_getTopLeftX (glist_getGraphGeometry (glist));
+    int d = rectangle_getTopLeftY (glist_getGraphGeometry (glist));
+    int m = point_getX (pt) - a + c;
+    int n = point_getY (pt) - b + d;
+    
+    point_set (pt, m, n);
+    
+    return PD_ERROR_NONE;
+    //
+    }
+    //
+    }
+    
+    return PD_ERROR;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

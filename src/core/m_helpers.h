@@ -30,6 +30,22 @@ typedef struct _mouse {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+enum {
+    MODIFIER_NONE       = 0,
+    MODIFIER_SHIFT      = 1,
+    MODIFIER_CTRL       = 2,        /* On macOS, the Command key. */
+    MODIFIER_ALT        = 4,        /* On macOS, the Option key. */
+    MODIFIER_RIGHT      = 8,
+    MODIFIER_DOUBLE     = 16,
+    MODIFIER_EXTENDED   = 32,       /* On macOS, the Control key. */
+    MODIFIER_INSIDE_X   = 64,
+    MODIFIER_INSIDE_Y   = 128
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static inline void mouse_init (t_mouse *m)
 {
     m->m_x              = 0;
@@ -49,6 +65,24 @@ static inline void mouse_init (t_mouse *m)
     SET_FLOAT (m->m_atoms + 5, 0);
     SET_FLOAT (m->m_atoms + 6, 0);
     SET_FLOAT (m->m_atoms + 7, 0);
+}
+
+static inline void mouse_parsed (t_mouse *m, int clicked, int argc, t_atom *argv)
+{
+    int a = (int)atom_getFloatAtIndex (0, argc, argv);
+    int b = (int)atom_getFloatAtIndex (1, argc, argv);
+    int t = (int)atom_getFloatAtIndex (2, argc, argv);
+    
+    mouse_init (m);
+    
+    m->m_x              = a;
+    m->m_y              = b;
+    m->m_shift          = ((t & MODIFIER_SHIFT)  != 0);
+    m->m_ctrl           = ((t & MODIFIER_CTRL)   != 0);
+    m->m_alt            = ((t & MODIFIER_ALT)    != 0);
+    m->m_dbl            = ((t & MODIFIER_DOUBLE) != 0);
+    m->m_clicked        = clicked;
+    m->m_clickedRight   = ((t & MODIFIER_RIGHT)  != 0);;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -79,16 +113,16 @@ static inline t_atom *mouse_argv (t_mouse *m)
 // MARK: -
 
 typedef struct _drag {
-    int d_originX;
-    int d_originY;
-    int d_startX;
-    int d_startY;
-    int d_endX;
-    int d_endY;
-    int d_accumulateX;
-    int d_accumulateY;
-    int d_movedOnce;
-    t_gobj *d_object;
+    int     d_originX;
+    int     d_originY;
+    int     d_startX;
+    int     d_startY;
+    int     d_endX;
+    int     d_endY;
+    int     d_accumulateX;
+    int     d_accumulateY;
+    int     d_movedOnce;
+    t_gobj  *d_object;
     } t_drag;
 
 // -----------------------------------------------------------------------------------------------------------
