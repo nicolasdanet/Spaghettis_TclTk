@@ -336,6 +336,64 @@ int instance_getDefaultY (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void instance_openedWindowInEditModeCountCheck (t_glist *glist)
+{
+    if (!glist_isAbstraction (glist) && glist_isWindowable (glist) && glist_isOnScreen (glist)) {
+    //
+    if (glist_hasEditMode (glist)) { instance_get()->pd_openedWindowInEditMode++; }
+    //
+    }
+}
+
+static void instance_openedWindowInEditModeCountRecursive (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    
+    instance_openedWindowInEditModeCountCheck (glist);
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (gobj_isCanvas (y)) { instance_openedWindowInEditModeCountRecursive (cast_glist (y)); }
+    }
+}
+
+static void instance_openedWindowInEditModeCount (void)
+{
+    t_glist *glist = instance_get()->pd_roots;
+    
+    instance_get()->pd_openedWindowInEditMode = 0;
+    
+    while (glist) { instance_openedWindowInEditModeCountRecursive (glist); glist = glist_getNext (glist); }
+}
+
+static int instance_openedWindowInEditMode (void)
+{
+    if (instance_get()->pd_openedWindowInEditMode == -1) { instance_openedWindowInEditModeCount(); }
+    
+    PD_ASSERT (instance_get()->pd_openedWindowInEditMode >= 0);
+    
+    return instance_get()->pd_openedWindowInEditMode;
+}
+
+int instance_hasOpenedWindowInEditMode (void)
+{
+    return (instance_openedWindowInEditMode() != 0);
+}
+
+void instance_openedWindowInEditModeReset (void)
+{
+    instance_get()->pd_openedWindowInEditMode = -1;
+    
+    if (symbol_hasThingQuiet (sym__editmode)) {
+    //
+    pd_message (symbol_getThing (sym__editmode), sym_set, 0, NULL);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_error instance_overflowPush (void)
 {
     int count   = ++instance_get()->pd_overflowCount;
@@ -404,6 +462,8 @@ static t_pdinstance *instance_new()
     x->pd_clocks      = clocks_new();
     x->pd_register    = register_new();
     x->pd_dsp         = dspthread_new();
+    
+    x->pd_openedWindowInEditMode = -1;
     
     class_addAnything (x->pd_objectMaker, (t_method)instance_factory);
     

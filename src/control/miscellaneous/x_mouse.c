@@ -30,6 +30,7 @@ typedef struct _mouseproxy {
 
 typedef struct _mouseobject {
     t_object            x_obj;              /* Must be the first. */
+    int                 x_edit;
     t_mouseproxy        *x_proxy;
     t_glist             *x_owner;
     t_symbol            *x_tag;
@@ -48,6 +49,8 @@ typedef struct _mouseobject {
 
 static void mouseproxy_anything (t_mouseproxy *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (x->x_master->x_edit || !glist_hasEditMode (x->x_owner)) {
+    //
     if (argc > 1 && (s == sym__motion || s == sym__mousedown || s == sym__mouseup)) {
     //
     t_glist *glist = x->x_master->x_owner;
@@ -69,6 +72,8 @@ static void mouseproxy_anything (t_mouseproxy *x, t_symbol *s, int argc, t_atom 
     pd_message (cast_pd (x->x_master), s, argc, t);
     
     PD_ATOMS_FREEA (t, argc);
+    //
+    }
     //
     }
     //
@@ -138,16 +143,28 @@ static void mouse_cancel (t_mouseobject *x, int argc, t_atom *argv)
 
 static void mouse_anything (t_mouseobject *x, t_symbol *s, int argc, t_atom *argv)
 {
+    int inhibit = glist_isWindowable (x->x_owner) ? glist_hasEditMode (x->x_owner) : 0;
+    
+    if (x->x_edit || !inhibit)  {
+    //
     if (s == sym__motion)           { mouse_motion (x, argc, argv); }
     else if (s == sym__mousedown)   { mouse_down (x,   argc, argv); }
     else if (s == sym__mouseup)     { mouse_up (x,     argc, argv); }
     else if (s == sym__scroll)      { mouse_scroll (x, argc, argv); }
     else if (s == sym__mousecancel) { mouse_cancel (x, argc, argv); }
+    //
+    }
 }
 
-static void *mouse_new (void)
+static void *mouse_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_mouseobject *x = (t_mouseobject *)pd_new (mouse_class);
+    
+    if (argc && atom_getSymbol (argv) == sym___dash__editmode) { x->x_edit = 1; argc--; argv++; }
+
+    error__options (s, argc, argv);
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     x->x_owner              = instance_contextGetCurrent();
     x->x_tag                = glist_getTag (x->x_owner);
@@ -187,6 +204,7 @@ void mouse_setup (void)
                         (t_method)mouse_free,
                         sizeof (t_mouseobject),
                         CLASS_DEFAULT | CLASS_NOINLET,
+                        A_GIMME,
                         A_NULL);
     
     mouseproxy_class = class_new (sym_mouseproxy,

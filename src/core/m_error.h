@@ -29,6 +29,7 @@ int  error__options                         (t_symbol *s, int argc, t_atom *argv
 
 void error_dspLoop                          (void);
 void error_stackOverflow                    (void);
+void error_recursiveCall                    (void);
 void error_stubNotFound                     (void);
 void error_searchPathOverflow               (void);
 

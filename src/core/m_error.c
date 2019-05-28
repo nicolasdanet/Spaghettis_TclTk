@@ -80,6 +80,11 @@ void error_stackOverflow (void)
     post_error (PD_TRANSLATE ("%s: stack overflow"), PD_NAME_LOWERCASE);
 }
 
+void error_recursiveCall (void)
+{
+    post_warning (PD_TRANSLATE ("%s: recursive call"), PD_NAME_LOWERCASE);
+}
+
 void error_stubNotFound (void)
 {
     post_error (PD_TRANSLATE ("loader: stub not found"));
@@ -248,6 +253,10 @@ void warning_unusedOption (t_symbol *s1, t_symbol *s2)
     post_warning (PD_TRANSLATE ("%s: unused option %s"), s1->s_name, error__empty (s2));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void warning_unusedArguments (t_symbol *s, int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);
@@ -256,6 +265,10 @@ void warning_unusedArguments (t_symbol *s, int argc, t_atom *argv)
     
     PD_MEMORY_FREE (t);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void warning_tooManyCharacters (t_symbol *s) 
 { 
@@ -276,6 +289,10 @@ void warning_deprecatedObject (t_symbol *s)
 {
     post_warning (PD_TRANSLATE ("%s: deprecated object"), s->s_name);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void warning_containsDuplicates (void)
 {

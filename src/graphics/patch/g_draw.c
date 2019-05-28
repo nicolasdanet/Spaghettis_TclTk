@@ -580,6 +580,8 @@ void glist_windowEdit (t_glist *glist, int isEditMode)
     if (hasEditMode) { gui_vAdd ("::ui_patch::askForUpdateMenu %s\n", glist_getTagAsString (glist)); }
     //
     }
+    
+    instance_openedWindowInEditModeReset();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -673,6 +675,8 @@ void glist_windowOpen (t_glist *glist)
     glist_setWindow (glist, 1); glist_updateTitle (glist);
     //
     }
+    
+    instance_openedWindowInEditModeReset();
 }
 
 void glist_windowClose (t_glist *glist)
@@ -700,6 +704,8 @@ void glist_windowClose (t_glist *glist)
     }
     
     glist_setWindow (glist, 0);
+    
+    instance_openedWindowInEditModeReset();
 }
 
 // -----------------------------------------------------------------------------------------------------------

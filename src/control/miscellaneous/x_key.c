@@ -20,6 +20,7 @@ static t_class *key_class;          /* Shared. */
 
 typedef struct _key {
     t_object    x_obj;              /* Must be the first. */
+    int         x_edit;
     t_outlet    *x_outlet;
     } t_key;
 
@@ -29,16 +30,22 @@ typedef struct _key {
 
 static void key_float (t_key *x, t_float f)
 {
-    outlet_float (x->x_outlet, f);
+    if (x->x_edit || !instance_hasOpenedWindowInEditMode()) { outlet_float (x->x_outlet, f); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *key_new (void)
+static void *key_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_key *x = (t_key *)pd_new (key_class);
+    
+    if (argc && atom_getSymbol (argv) == sym___dash__editmode) { x->x_edit = 1; argc--; argv++; }
+
+    error__options (s, argc, argv);
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     x->x_outlet = outlet_newFloat (cast_object (x));
     
@@ -65,6 +72,7 @@ void key_setup (void)
             (t_method)key_free,
             sizeof (t_key),
             CLASS_DEFAULT | CLASS_NOINLET,
+            A_GIMME,
             A_NULL);
         
     class_addFloat (c, (t_method)key_float);

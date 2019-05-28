@@ -56,6 +56,7 @@ typedef struct _pdinstance {
     int             pd_isLoadingExternal;
     int             pd_isUndoRecursive;
     int             pd_hasPending;
+    int             pd_openedWindowInEditMode;
     t_int32Atomic   pd_chainRetain;
     t_pointerAtomic pd_chain;
     t_chain         *pd_build;
@@ -218,6 +219,14 @@ void    instance_environmentResetArguments      (void);
 void    instance_setDefaultCoordinates          (t_glist *glist, int a, int b);
 int     instance_getDefaultX                    (t_glist *glist);
 int     instance_getDefaultY                    (t_glist *glist);
+
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int     instance_hasOpenedWindowInEditMode      (void);
+void    instance_openedWindowInEditModeReset    (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

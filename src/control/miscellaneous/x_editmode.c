@@ -9,111 +9,102 @@
 
 #include "../../m_spaghettis.h"
 #include "../../m_core.h"
+#include "../../g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class *int_class;          /* Shared. */
+static t_class *editmode_class;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _intobject {
-    t_object    x_obj;              /* Must be the first. */
-    t_float     x_f;
+typedef struct _editmode {
+    t_object    x_obj;                  /* Must be the first. */
+    int         x_editmode;
+    int         x_global;
+    t_glist     *x_owner;
     t_outlet    *x_outlet;
-    } t_intobject;
+    } t_editmode;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void int_bang (t_intobject *x)
+static void editmode_setProceed (t_editmode *x)
 {
-    outlet_float (x->x_outlet, trunc (x->x_f));
-}
-
-static void int_float (t_intobject *x, t_float f)
-{
-    x->x_f = f; int_bang (x);
+    x->x_editmode = x->x_global ? instance_hasOpenedWindowInEditMode() : glist_hasEditMode (x->x_owner);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_buffer *int_functionData (t_gobj *z, int flags)
+static void editmode_bang (t_editmode *x)
 {
-    if (SAVED_DEEP (flags)) {
-    //
-    t_intobject *x = (t_intobject *)z;
-    t_buffer *b = buffer_new();
-    
-    buffer_appendSymbol (b, sym__restore);
-    buffer_appendFloat (b, x->x_f);
-    
-    return b;
-    //
-    }
-    
-    return NULL;
+    outlet_float (x->x_outlet, (t_float)x->x_editmode);
 }
 
-static void int_restore (t_intobject *x, t_float f)
+static void editmode_set (t_editmode *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_intobject *old = (t_intobject *)instance_pendingFetch (cast_gobj (x));
-
-    x->x_f = old ? old->x_f : f;
+    int old = x->x_editmode; editmode_setProceed (x); if (x->x_editmode != old) { editmode_bang (x); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *int_new (t_float f)
+static void *editmode_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_intobject *x = (t_intobject *)pd_new (int_class);
+    t_editmode *x = (t_editmode *)pd_new (editmode_class);
     
-    x->x_f = f;
+    if (argc && atom_getSymbol (argv) == sym___dash__global) { x->x_global = 1; argc--; argv++; }
+
+    error__options (s, argc, argv);
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
+    
+    x->x_owner  = instance_contextGetCurrent();
     x->x_outlet = outlet_newFloat (cast_object (x));
     
-    inlet_newFloat (cast_object (x), &x->x_f);
+    pd_bind (cast_pd (x), sym__editmode);
+    
+    editmode_setProceed (x);
     
     return x;
 }
 
+static void editmode_free (t_editmode *x)
+{
+    pd_unbind (cast_pd (x), sym__editmode);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void int_setup (void)
+void editmode_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (sym_int,
-            (t_newmethod)int_new,
-            NULL,
-            sizeof (t_intobject),
+    c = class_new (sym_editmode,
+            (t_newmethod)editmode_new,
+            (t_method)editmode_free,
+            sizeof (t_editmode),
             CLASS_DEFAULT,
-            A_DEFFLOAT,
+            A_GIMME,
             A_NULL);
-            
-    class_addCreator ((t_newmethod)int_new, sym_i, A_DEFFLOAT, A_NULL);
-    
-    class_addBang (c, (t_method)int_bang);
-    class_addFloat (c, (t_method)int_float);
-    
-    class_addMethod (c, (t_method)int_restore, sym__restore, A_FLOAT, A_NULL);
 
-    class_setDataFunction (c, int_functionData);
-    class_requirePending (c);
+    class_addBang (c, (t_method)editmode_bang);
     
-    int_class = c;
+    class_addMethod (c, (t_method)editmode_set, sym_set, A_GIMME, A_NULL);
+
+    editmode_class = c;
 }
 
-void int_destroy (void)
+void editmode_destroy (void)
 {
-    class_free (int_class);
+    class_free (editmode_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

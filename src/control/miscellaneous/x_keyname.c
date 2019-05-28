@@ -20,6 +20,7 @@ static t_class *keyname_class;          /* Shared. */
 
 typedef struct _keyname {
     t_object    x_obj;                  /* Must be the first. */
+    int         x_edit;
     t_outlet    *x_outletLeft;
     t_outlet    *x_outletRight;
     } t_keyname;
@@ -30,17 +31,27 @@ typedef struct _keyname {
 
 static void keyname_list (t_keyname *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (x->x_edit || !instance_hasOpenedWindowInEditMode()) {
+    //
     outlet_symbol (x->x_outletRight, atom_getSymbolAtIndex (1, argc, argv));
     outlet_float (x->x_outletLeft, atom_getFloatAtIndex (0, argc, argv));
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *keyname_new (void)
+static void *keyname_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_keyname *x = (t_keyname *)pd_new (keyname_class);
+    
+    if (argc && atom_getSymbol (argv) == sym___dash__editmode) { x->x_edit = 1; argc--; argv++; }
+
+    error__options (s, argc, argv);
+    
+    if (argc) { warning_unusedArguments (s, argc, argv); }
     
     x->x_outletLeft  = outlet_newFloat (cast_object (x));
     x->x_outletRight = outlet_newSymbol (cast_object (x));
@@ -68,6 +79,7 @@ void keyname_setup (void)
             (t_method)keyname_free,
             sizeof (t_keyname),
             CLASS_DEFAULT | CLASS_NOINLET,
+            A_GIMME,
             A_NULL);
             
     class_addList (c, (t_method)keyname_list);
