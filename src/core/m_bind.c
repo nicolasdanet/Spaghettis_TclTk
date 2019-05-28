@@ -47,7 +47,7 @@ typedef struct _bindlist {
 
 static t_bindelement *bindlist_traverseStart (t_bindlist *x)
 {
-    if (x->b_used) { return NULL; }
+    if (x->b_used) { error_recursiveCall(); return NULL; }
     else {
     //
     x->b_used = 1; x->b_cached = x->b_list ? x->b_list->e_next : NULL;

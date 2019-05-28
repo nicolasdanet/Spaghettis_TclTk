@@ -289,7 +289,7 @@ static void canvas_scroll (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 
 static void canvas_map (t_glist *glist, t_float f)
 {
-    glist_windowMapped (glist, (f != 0.0));
+    glist_windowMapped (glist, (f != 0.0)); instance_openedWindowInEditModeReset();
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -303,6 +303,7 @@
 #include "control/miscellaneous/x_samplerate.c"
 #include "control/miscellaneous/x_blocksize.c"
 #include "control/miscellaneous/x_dspstatus.c"
+#include "control/miscellaneous/x_editmode.c"
 #include "control/miscellaneous/x_arguments.c"
 #include "control/miscellaneous/x_title.c"
 #include "control/miscellaneous/x_freeze.c"
