@@ -16,6 +16,7 @@
 		171A165C229EC8960080755A /* x_editmode.c in Sources */ = {isa = PBXBuildFile; fileRef = 171A165B229EC8960080755A /* x_editmode.c */; };
 		171F2EA61FCC70DB00E3E53E /* d_mag.c in Sources */ = {isa = PBXBuildFile; fileRef = 171F2EA51FCC70DB00E3E53E /* d_mag.c */; };
 		17241D931FD6D9BD009C91D2 /* x_tabreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 17241D921FD6D9BD009C91D2 /* x_tabreceive.c */; };
+		17289D0422A152E0000C4D9B /* x_directories.c in Sources */ = {isa = PBXBuildFile; fileRef = 17289D0322A152E0000C4D9B /* x_directories.c */; };
 		172AEEAC21621E2000505238 /* m_point.c in Sources */ = {isa = PBXBuildFile; fileRef = 172AEEAB21621E2000505238 /* m_point.c */; };
 		172BB35D2078C79800874B8F /* pa_mac_hostapis.c in Sources */ = {isa = PBXBuildFile; fileRef = 172BB35C2078C79800874B8F /* pa_mac_hostapis.c */; };
 		172BB35F2078C7DD00874B8F /* belle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 172BB35E2078C7DD00874B8F /* belle.cpp */; };
@@ -501,6 +502,7 @@
 		171C4FE22152A084002F9376 /* m_unique.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m_unique.h; sourceTree = "<group>"; };
 		171F2EA51FCC70DB00E3E53E /* d_mag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = d_mag.c; sourceTree = "<group>"; };
 		17241D921FD6D9BD009C91D2 /* x_tabreceive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_tabreceive.c; sourceTree = "<group>"; };
+		17289D0322A152E0000C4D9B /* x_directories.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_directories.c; sourceTree = "<group>"; };
 		172AEEAB21621E2000505238 /* m_point.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_point.c; sourceTree = "<group>"; };
 		172BB35C2078C79800874B8F /* pa_mac_hostapis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pa_mac_hostapis.c; sourceTree = "<group>"; };
 		172BB35E2078C7DD00874B8F /* belle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = belle.cpp; sourceTree = "<group>"; };
@@ -1573,6 +1575,7 @@
 				17304EBC1F77DA3E00DCA7EC /* x_dspstatus.c */,
 				171A165B229EC8960080755A /* x_editmode.c */,
 				17C15CE91F8E4EF7000695B7 /* x_arguments.c */,
+				17289D0322A152E0000C4D9B /* x_directories.c */,
 				17CA45371FB188CF0054245C /* x_title.c */,
 				179E91121F0F6B11009A4FA6 /* x_freeze.c */,
 				377CEF151DAA820C00E60461 /* x_namecanvas.c */,
@@ -2332,6 +2335,7 @@
 				37D643361D47955B00071C3C /* g_element.c in Sources */,
 				37D643541D4795ED00071C3C /* g_set.c in Sources */,
 				37D643761D4796C700071C3C /* g_get.c in Sources */,
+				17289D0422A152E0000C4D9B /* x_directories.c in Sources */,
 				1799A4451F3C2C2600D23070 /* x_liststore.c in Sources */,
 				17B7C281213BD2ED0095D248 /* m_undoduplicate.c in Sources */,
 				37C41F4F1D5B240000DC9C3E /* m_heapstring.c in Sources */,
