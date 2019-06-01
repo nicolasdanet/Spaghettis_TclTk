@@ -881,10 +881,11 @@ static void glist_objectRemoveFree (t_glist *glist, t_gobj *y)
 
 void glist_objectRemove (t_glist *glist, t_gobj *y)
 {
-    int needToRebuild = gobj_hasDSP (y);
-    int needToRepaint = class_hasPainterBehavior (pd_class (y)) || (pd_class (y) == struct_class);
-    int undoable      = glist_undoIsOk (glist);
-    int state         = 0;
+    int needToInvalidate = gobj_isScalar (y);
+    int needToRebuild    = gobj_hasDSP (y);
+    int needToRepaint    = class_hasPainterBehavior (pd_class (y)) || (pd_class (y) == struct_class);
+    int undoable         = glist_undoIsOk (glist);
+    int state            = 0;
     
     glist_deleteBegin (glist);
     
@@ -924,11 +925,10 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
         }
     }
     
-    if (needToRebuild) { dsp_resume (state); }
-    if (needToRepaint) { paint_draw(); }
-    
-    glist->gl_uniqueIdentifier = utils_unique();    /* Invalidate all pointers. */
-    
+    if (needToRebuild)    { dsp_resume (state); }
+    if (needToRepaint)    { paint_draw(); }
+    if (needToInvalidate) { glist->gl_uniqueIdentifier = utils_unique(); }  /* Invalidate all pointers. */
+
     glist_deleteEnd (glist);
 }
 
