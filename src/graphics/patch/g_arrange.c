@@ -77,7 +77,7 @@ void canvas_paste (t_glist *glist)
     if (editor_hasSelectedBox (glist_getEditor (glist))) {
         gui_vAdd ("::ui_bind::pasteText %s\n", glist_getTagAsString (glist));
     } else {
-        clipboard_paste (glist, 0);
+        clipboard_paste (glist);
     }
     //
     }
@@ -88,8 +88,8 @@ void canvas_duplicate (t_glist *glist)
     if (glist_hasEditMode (glist)) {
     //
     glist_cancelEditingBox (glist);
-    canvas_copy (glist);
-    clipboard_paste (glist, 1);
+    clipboard_copyDuplicate (glist);
+    clipboard_pasteDuplicate (glist);
     //
     }
 }

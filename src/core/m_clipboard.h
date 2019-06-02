@@ -15,7 +15,10 @@
 // MARK: -
 
 void clipboard_copy                     (t_glist *glist);
-void clipboard_paste                    (t_glist *glist, int isDuplicate);
+void clipboard_paste                    (t_glist *glist);
+
+void clipboard_copyDuplicate            (t_glist *glist);
+void clipboard_pasteDuplicate           (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
