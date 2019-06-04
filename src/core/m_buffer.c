@@ -60,7 +60,7 @@ t_atom *buffer_getAtomAtIndex (t_buffer *x, int n)
 
 t_atom *buffer_getAtomAtIndexChecked (t_buffer *x, int n)
 {
-    if (n >= 0 && n < buffer_getSize (x)) { return x->b_vector + n; }
+    if (n >= 0 && n < x->b_size) { return x->b_vector + n; }
     
     return NULL;
 }
@@ -83,6 +83,26 @@ t_error buffer_setAtIndex (t_buffer *x, int n, t_atom *a)
     return PD_ERROR;
 }
 
+t_error buffer_insertAtIndex (t_buffer *x, int n, t_atom *a)
+{
+    if (n >= 0 && n <= x->b_size) {
+    //
+    if (n == 0)         { buffer_prepend (x, 1, a); return PD_ERROR_NONE; }
+    if (n == x->b_size) { buffer_append (x, 1, a);  return PD_ERROR_NONE; }
+    
+    buffer_extend (x, n, n, 1);
+    
+    return buffer_setAtIndex (x, n, a);
+    //
+    }
+    
+    return PD_ERROR;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_error buffer_setFloatAtIndex (t_buffer *x, int n, t_float f)
 {
     t_atom a; SET_FLOAT (&a, f); return buffer_setAtIndex (x, n, &a);
@@ -91,6 +111,16 @@ t_error buffer_setFloatAtIndex (t_buffer *x, int n, t_float f)
 t_error buffer_setSymbolAtIndex (t_buffer *x, int n, t_symbol *s)
 {
     t_atom a; SET_SYMBOL (&a, s); return buffer_setAtIndex (x, n, &a);
+}
+
+t_float buffer_getFloatAtIndex (t_buffer *x, int n)
+{
+    return atom_getFloatAtIndex (n, buffer_getSize (x), buffer_getAtoms (x));
+}
+
+t_symbol *buffer_getSymbolAtIndex (t_buffer *x, int n)
+{
+    return atom_getSymbolAtIndex (n, buffer_getSize (x), buffer_getAtoms (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -151,6 +181,18 @@ t_error buffer_extend (t_buffer *x, int start, int end, int n)
     }
     
     return PD_ERROR_NONE;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void buffer_prepend (t_buffer *x, int argc, t_atom *argv)
+{
+    if (argc && x->b_size) { buffer_extend (x, 0, 0, argc); atom_copyAtoms (argv, argc, x->b_vector, argc); }
+    else {
+        buffer_append (x, argc, argv);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -54,6 +54,7 @@
 #include "core/m_pathlist.c"
 #include "core/m_heapstring.c"
 #include "core/m_register.c"
+#include "core/m_items.c"
 #include "core/m_utils.c"
 #include "core/m_symbol.c"
 #include "core/m_color.c"
@@ -135,6 +136,7 @@
 #include "graphics/g_stub.c"
 #include "graphics/g_proxy.c"
 
+#include "graphics/patch/g_sorter.c"
 #include "graphics/patch/g_identifiers.c"
 #include "graphics/patch/g_object.c"
 #include "graphics/patch/g_typeset.c"

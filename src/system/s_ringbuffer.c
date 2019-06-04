@@ -34,7 +34,7 @@ struct _ringbuffer {
 // MARK: -
 
 int32_t atomic_int32ReadRelaxed     (t_int32Atomic *);
-void    atomic_int32WriteRelaxed    (int32_t , t_int32Atomic *);
+void    atomic_int32WriteRelaxed    (int32_t, t_int32Atomic *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -54,6 +54,8 @@ t_undoaction *undodelete_new (t_gobj *o, t_undosnippet *snippet)
     x->ua_type  = UNDO_DELETE;
     x->ua_label = sym_delete;
     
+    undoaction_setInletsAndOutlets (x, o);
+
     PD_ASSERT (snippet);
     
     z->x_snippet = snippet;

@@ -93,6 +93,39 @@ t_buffer *t = buffer_new();
     PD_MEMORY_FREE (s);
 }
 
+{
+    char *s = NULL;
+    
+    t_atom menu[4];
+    
+    SET_SYMBOL (menu + 0, gensym ("spam"));
+    SET_SYMBOL (menu + 1, gensym ("bacon"));
+    SET_SYMBOL (menu + 2, gensym ("egg"));
+    SET_SYMBOL (menu + 3, gensym ("and"));
+    
+    buffer_clear (b);
+    
+    buffer_prepend (b, 1,       menu + 1);
+    buffer_append (b, 1,        menu + 2);
+    buffer_prepend (b, 1,       menu + 0);
+    buffer_insertAtIndex (b, 2, menu + 3);
+    
+    s = buffer_toString (b);
+    TTT_EXPECT (!strcmp (s, "spam bacon and egg"));
+    
+    buffer_insertAtIndex (b, 0, menu + 0);
+    buffer_insertAtIndex (b, 3, menu + 0);
+    
+    PD_MEMORY_FREE (s); s = buffer_toString (b);
+    TTT_EXPECT (!strcmp (s, "spam spam bacon spam and egg"));
+    
+    buffer_prepend (b, 4, menu);
+    
+    PD_MEMORY_FREE (s); s = buffer_toString (b);
+    TTT_EXPECT (!strcmp (s, "spam bacon egg and spam spam bacon spam and egg"));
+    PD_MEMORY_FREE (s);
+}
+
 buffer_free (t);
 buffer_free (b);
     

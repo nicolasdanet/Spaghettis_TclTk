@@ -32,6 +32,24 @@ typedef struct _undodisconnect {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int undodisconnect_match (t_undoaction *a, t_id u, t_items *i, t_items *o)
+{
+    if (undoaction_getType (a) == UNDO_DISCONNECT) {
+    //
+    t_undodisconnect *z = (t_undodisconnect *)a;
+    
+    if (z->x_dest == u)     { if (items_isSetAtIndex (i, z->x_n)) { return 1; } }
+    else if (z->x_src == u) { if (items_isSetAtIndex (o, z->x_m)) { return 1; } }
+    //
+    }
+    
+    return 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void undodisconnect_undo (t_undodisconnect *z, t_symbol *s, int argc, t_atom *argv)
 {
     glist_lineConnectByUnique (z->x_src, z->x_m, z->x_dest, z->x_n);

@@ -341,11 +341,13 @@ void glist_objectRemoveSelectedProceed (t_glist *glist)
         if (!gobj_isScalar (t1)) {
             onlyScalars = 0;
         }
-        glist_objectRemove (glist, t1);
+        glist_objectRemoveCacheInlets (glist, t1);
     }
     //
     }
 
+    glist_objectRemovePurgeInlets (glist);
+    
     if (!onlyScalars) { glist_setDirty (glist, 1); }
     
     if (dspSuspended) { dsp_resume (dspState); }

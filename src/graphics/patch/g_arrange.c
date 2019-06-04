@@ -17,12 +17,36 @@
 
 void canvas_undo (t_glist *glist)
 {
-    if (glist_undoIsOk (glist)) { undomanager_undo (glist_getUndoManager (glist)); glist_updateUndo (glist); }
+    PD_ASSERT (glist);
+    
+    if (glist_undoIsOk (glist)) {
+    //
+    t_undomanager *m = glist_getUndoManager (glist);
+    t_items i; items_init (&i);
+    t_items o; items_init (&o);
+    int t = undomanager_undoNeedToTriggerParent (m, &i, &o);
+    undomanager_undo (m);
+    glist_updateUndo (glist);
+    if (t && undomanager_triggerParentIsPossible (glist, &i, &o)) { canvas_undo (glist_getParent (glist)); }
+    //
+    }
 }
 
 void canvas_redo (t_glist *glist)
 {
-    if (glist_undoIsOk (glist)) { undomanager_redo (glist_getUndoManager (glist)); glist_updateUndo (glist); }
+    PD_ASSERT (glist);
+    
+    if (glist_undoIsOk (glist)) {
+    //
+    t_undomanager *m = glist_getUndoManager (glist);
+    t_items i; items_init (&i);
+    t_items o; items_init (&o);
+    int t = undomanager_redoNeedToTriggerParent (m, &i, &o);
+    undomanager_redo (m);
+    glist_updateUndo (glist);
+    if (t && undomanager_triggerParentIsPossible (glist, &i, &o)) { canvas_redo (glist_getParent (glist)); }
+    //
+    }
 }
 
 void canvas_update (t_glist *glist)
