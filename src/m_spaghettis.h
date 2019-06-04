@@ -561,7 +561,8 @@ enum {
     A_DOLLAR,
     A_DOLLARSYMBOL,
     A_GIMME,
-    A_CANT
+    A_VOID,
+    A_CANT,
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -646,6 +647,7 @@ typedef struct _atom {
         int         a_index;
         t_symbol    *a_symbol;
         t_gpointer  *a_gpointer;
+        void        *a_void;
     } a_w;
     } t_atom;
 
@@ -914,10 +916,15 @@ PD_DLL void     buffer_resize                   (t_buffer *x, int n);
 PD_DLL t_error  buffer_extend                   (t_buffer *x, int start, int end, int n);
 PD_DLL t_error  buffer_getAtIndex               (t_buffer *x, int n, t_atom *a);
 PD_DLL t_error  buffer_setAtIndex               (t_buffer *x, int n, t_atom *a);
+PD_DLL t_error  buffer_insertAtIndex            (t_buffer *x, int n, t_atom *a);
 
 PD_DLL t_error  buffer_setFloatAtIndex          (t_buffer *x, int n, t_float f);
 PD_DLL t_error  buffer_setSymbolAtIndex         (t_buffer *x, int n, t_symbol *s);
 
+PD_DLL t_float  buffer_getFloatAtIndex          (t_buffer *x, int n);
+PD_DLL t_symbol *buffer_getSymbolAtIndex        (t_buffer *x, int n);
+
+PD_DLL void     buffer_prepend                  (t_buffer *x, int argc, t_atom *argv);
 PD_DLL void     buffer_append                   (t_buffer *x, int argc, t_atom *argv);
 PD_DLL void     buffer_appendAtom               (t_buffer *x, t_atom *a);
 PD_DLL void     buffer_appendBuffer             (t_buffer *x, t_buffer *y);

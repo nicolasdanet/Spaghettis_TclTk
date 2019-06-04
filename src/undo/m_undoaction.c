@@ -9,6 +9,7 @@
 #include "../m_spaghettis.h"
 #include "../m_core.h"
 #include "../s_system.h"
+#include "../g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -37,6 +38,26 @@ void undoaction_release (t_undoaction *a, t_undomanager *x)
     a->ua_next     = NULL;
     
     undoaction_releaseAllFrom (a, x);
+}
+
+void undoaction_setInletsAndOutlets (t_undoaction *a, t_gobj *y)
+{
+    if (pd_class (y) == vinlet_class) {
+        a->ua_inlet       = 1;
+        a->ua_inletIndex  = vinlet_getIndex ((t_vinlet *)y);
+
+    } else if (pd_class (y) == voutlet_class) {
+        a->ua_outlet      = 1;
+        a->ua_outletIndex = voutlet_getIndex ((t_voutlet *)y);
+    }
+}
+
+int undoaction_getInletsAndOutlets (t_undoaction *a, t_items *i, t_items *o)
+{
+    if (a->ua_inlet == 1)       { items_setAtIndex (i, a->ua_inletIndex);  return 1; }
+    else if (a->ua_outlet == 1) { items_setAtIndex (o, a->ua_outletIndex); return 1; }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

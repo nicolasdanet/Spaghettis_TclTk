@@ -33,6 +33,8 @@ struct _glist {
     t_undomanager       *gl_undomanager;
     t_symbol            *gl_name;
     t_editor            *gl_editor;
+    t_buffer            *gl_sorterObjects;
+    t_buffer            *gl_sorterIndexes;
     t_clock             *gl_clockRedraw;
     t_clock             *gl_clockUndo;
     t_id                gl_uniqueIdentifier;
@@ -179,6 +181,8 @@ void    glist_objectSetWidthOfLast          (t_glist *g, int w);
 void    glist_objectAddNext                 (t_glist *g, t_gobj *y, t_gobj *first);
 void    glist_objectAdd                     (t_glist *g, t_gobj *y);
 void    glist_objectRemove                  (t_glist *g, t_gobj *y);
+void    glist_objectRemoveCacheInlets       (t_glist *g, t_gobj *y);
+void    glist_objectRemovePurgeInlets       (t_glist *g);
 void    glist_objectRemoveAllByTemplate     (t_glist *g, t_template *tmpl);
 void    glist_objectRemoveAllScalars        (t_glist *g);
 void    glist_objectRemoveAll               (t_glist *g);

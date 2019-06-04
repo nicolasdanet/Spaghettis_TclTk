@@ -175,6 +175,7 @@ t_seed time_makeRandomSeed (void);
 #define IS_SYMBOL(atom)                     ((atom)->a_type == A_SYMBOL)
 #define IS_DOLLAR(atom)                     ((atom)->a_type == A_DOLLAR)
 #define IS_DOLLARSYMBOL(atom)               ((atom)->a_type == A_DOLLARSYMBOL)
+#define IS_VOID(atom)                       ((atom)->a_type == A_VOID)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -188,6 +189,8 @@ t_seed time_makeRandomSeed (void);
 #define SET_SYMBOL(atom, s)                 ((atom)->a_type = A_SYMBOL, (atom)->a_w.a_symbol = (s))
 #define SET_DOLLAR(atom, n)                 ((atom)->a_type = A_DOLLAR, (atom)->a_w.a_index = (n))
 #define SET_DOLLARSYMBOL(atom, s)           ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.a_symbol = (s))
+#define SET_VOID(atom, p)                   ((atom)->a_type = A_VOID, (atom)->a_w.a_void = (p))
+#define SET_OBJECT(atom, p)                 SET_VOID (atom, (t_gobj *)(p))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -197,6 +200,8 @@ t_seed time_makeRandomSeed (void);
 #define GET_FLOAT(atom)                     ((atom)->a_w.a_float)
 #define GET_SYMBOL(atom)                    ((atom)->a_w.a_symbol)
 #define GET_DOLLAR(atom)                    ((atom)->a_w.a_index)
+#define GET_VOID(atom)                      ((atom)->a_w.a_void)
+#define GET_OBJECT(atom)                    (t_gobj *)GET_VOID (atom)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

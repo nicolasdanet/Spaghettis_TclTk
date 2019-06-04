@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_undosnippet *undosnippet_newProceed (t_gobj *gobj, t_glist *owner)
+static t_undosnippet *undosnippet_newProceed (t_gobj *gobj, t_glist *owner)
 {
     t_undosnippet *x = (t_undosnippet *)PD_MEMORY_GET (sizeof (t_undosnippet));
     

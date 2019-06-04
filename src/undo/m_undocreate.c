@@ -55,6 +55,8 @@ t_undoaction *undocreate_new (t_gobj *o, t_undosnippet *snippet)
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_CREATE;
     x->ua_label = sym_create;
+
+    undoaction_setInletsAndOutlets (x, o);
     
     PD_ASSERT (snippet);
     

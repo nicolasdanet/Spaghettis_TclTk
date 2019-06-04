@@ -44,6 +44,10 @@ typedef struct _undoaction {
     t_pd                ua_pd;              /* Must be the first. */
     t_id                ua_id;
     t_undotype          ua_type;
+    int                 ua_inlet;           /* Inlet created or deleted. */
+    int                 ua_inletIndex;      /* Inlet index. */
+    int                 ua_outlet;
+    int                 ua_outletIndex;
     t_symbol            *ua_label;
     struct _undoaction  *ua_next;
     struct _undoaction  *ua_previous;
@@ -63,8 +67,11 @@ typedef struct _undomanager {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void undoaction_releaseAllFrom  (t_undoaction *a, t_undomanager *x);
-void undoaction_release         (t_undoaction *a, t_undomanager *x);
+void    undoaction_releaseAllFrom           (t_undoaction *a, t_undomanager *x);
+void    undoaction_release                  (t_undoaction *a, t_undomanager *x);
+
+void    undoaction_setInletsAndOutlets      (t_undoaction *a, t_gobj *y);
+int     undoaction_getInletsAndOutlets      (t_undoaction *a, t_items *i, t_items *o);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -103,6 +110,11 @@ void    undomanager_redo                    (t_undomanager *x);
 
 t_symbol    *undomanager_getUndoLabel       (t_undomanager *x);
 t_symbol    *undomanager_getRedoLabel       (t_undomanager *x);
+
+int undomanager_undoNeedToTriggerParent     (t_undomanager *x, t_items *inlets, t_items *outlets);
+int undomanager_redoNeedToTriggerParent     (t_undomanager *x, t_items *inlets, t_items *outlets);
+
+int undomanager_triggerParentIsPossible     (t_glist *glist, t_items *inlets, t_items *outlets);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

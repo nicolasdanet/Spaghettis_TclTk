@@ -48,11 +48,13 @@ static t_glist *glist_new (t_glist *owner,
     x->gl_undomanager       = undomanager_new();
     x->gl_name              = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_editor            = editor_new (x);
+    x->gl_sorterObjects     = buffer_new();
+    x->gl_sorterIndexes     = buffer_new();
     x->gl_clockRedraw       = clock_new ((void *)x, (t_method)glist_taskRedraw);
     x->gl_clockUndo         = clock_new ((void *)x, (t_method)glist_updateUndo);
     x->gl_uniqueIdentifier  = utils_unique();
     
-    glist_setFontSize (x , (owner ? glist_getFontSize (owner) : font_getDefaultSize()));
+    glist_setFontSize (x, (owner ? glist_getFontSize (owner) : font_getDefaultSize()));
 
     if (bounds) { bounds_setCopy (&x->gl_bounds, bounds);            }
     if (graph)  { rectangle_setCopy (&x->gl_geometryGraph, graph);   }
@@ -77,6 +79,8 @@ void glist_free (t_glist *glist)
     
     clock_free (glist->gl_clockRedraw);
     clock_free (glist->gl_clockUndo);
+    buffer_free (glist->gl_sorterIndexes);
+    buffer_free (glist->gl_sorterObjects);
     editor_free (glist_getEditor (glist));
     environment_free (glist->gl_environment);
     gmaster_reset (glist_getMaster (glist));
@@ -932,6 +936,48 @@ void glist_objectRemove (t_glist *glist, t_gobj *y)
     glist_deleteEnd (glist);
 }
 
+/* Inlets and outlets must be deleted from right to left to handle Undo/Redo properly. */
+
+static void glist_objectRemoveCacheInletsProceed (t_glist *glist, t_gobj *y, int isVinlet)
+{
+    int i, n = isVinlet ? vinlet_getIndex ((t_vinlet *)y) : voutlet_getIndex ((t_voutlet *)y);
+    
+    t_atom a;
+    
+    for (i = 0; i < buffer_getSize (glist->gl_sorterIndexes); i++) {
+        if (buffer_getFloatAtIndex (glist->gl_sorterIndexes, i) < n) { break; }
+    }
+    
+    SET_FLOAT (&a, n);  buffer_insertAtIndex (glist->gl_sorterIndexes, i, &a);
+    SET_OBJECT (&a, y); buffer_insertAtIndex (glist->gl_sorterObjects, i, &a);
+}
+
+void glist_objectRemoveCacheInlets (t_glist *glist, t_gobj *y)
+{
+    if (pd_class (y) == vinlet_class)       { glist_objectRemoveCacheInletsProceed (glist, y, 1); }
+    else if (pd_class (y) == voutlet_class) { glist_objectRemoveCacheInletsProceed (glist, y, 0); }
+    else {
+        glist_objectRemove (glist, y);
+    }
+}
+
+void glist_objectRemovePurgeInlets (t_glist *glist)
+{
+    int i;
+    
+    for (i = 0; i < buffer_getSize (glist->gl_sorterObjects); i++) {
+    //
+    t_atom *a = buffer_getAtomAtIndex (glist->gl_sorterObjects, i);
+    t_gobj *o = GET_OBJECT (a);
+    
+    glist_objectRemove (glist, o);
+    //
+    }
+    
+    buffer_clear (glist->gl_sorterIndexes);
+    buffer_clear (glist->gl_sorterObjects);
+}
+
 t_error glist_objectRemoveByUnique (t_id u)
 {
     t_gobj *object = instance_registerGetObject (u);
@@ -946,23 +992,29 @@ t_error glist_objectRemoveByUnique (t_id u)
     return PD_ERROR;
 }
 
-/* If needed the DSP is suspended to avoid multiple rebuilds. */
+/* If needed the DSP is suspended to avoid multiple rebuilds of DSP graph. */
 
 void glist_objectRemoveAll (t_glist *glist)
 {
+    t_gobj *t1 = NULL;
+    t_gobj *t2 = NULL;
+    
     int dspState = 0;
     int dspSuspended = 0;
-    t_gobj *y = NULL;
-    
-    while ((y = glist->gl_graphics)) {
+
+    for (t1 = glist->gl_graphics; t1; t1 = t2) {
     //
-    if (!dspSuspended) { 
-        if (gobj_hasDSP (y)) { dspState = dsp_suspend(); dspSuspended = 1; }
+    t2 = t1->g_next;
+    
+    if (!dspSuspended) {
+        if (gobj_hasDSP (t1)) { dspState = dsp_suspend(); dspSuspended = 1; }
     }
 
-    glist_objectRemove (glist, y);
+    glist_objectRemoveCacheInlets (glist, t1);
     //
     }
+    
+    glist_objectRemovePurgeInlets (glist);
     
     if (dspSuspended) { dsp_resume (dspState); }
 }
@@ -1010,11 +1062,15 @@ void glist_objectRemoveInletsAndOutlets (t_glist *glist)
 
     for (t1 = glist->gl_graphics; t1; t1 = t2) {
     //
+    t_class *c = pd_class (t1);
+    
     t2 = t1->g_next;
     
-    if (pd_class (t1) == vinlet_class || pd_class (t1) == voutlet_class) { glist_objectRemove (glist, t1); }
+    if (c == vinlet_class || c == voutlet_class) { glist_objectRemoveCacheInlets (glist, t1); }
     //
     }
+    
+    glist_objectRemovePurgeInlets (glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
