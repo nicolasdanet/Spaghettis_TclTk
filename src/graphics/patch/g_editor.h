@@ -82,6 +82,7 @@ int         editor_graphHit                     (t_editor *x, int a, int b);
 int         editor_graphHitRightSide            (t_editor *x, int a, int b);
 void        editor_graphDeplace                 (t_editor *x, int a, int b);
 void        editor_graphSetBottomRight          (t_editor *x, int a, int b);
+void        editor_graphSetRectangle            (t_editor *x, t_rectangle *r);
 void        editor_graphSnap                    (t_editor *x);
 
 void        editor_motionProceed                (t_editor *x, int deltaX, int deltaY, int m);
