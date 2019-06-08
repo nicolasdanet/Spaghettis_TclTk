@@ -25,7 +25,7 @@ t_error     glist_lineConnectByUnique               (t_id u, int m, t_id v, int 
 t_error     glist_lineDisconnectByUnique            (t_id u, int m, t_id v, int n);
 
 t_error     glist_resizeBoxByUnique                 (t_id u, int n);
-t_error     glist_resizeGraphByUnique               (t_id u, int deltaX, int deltaY);
+t_error     glist_setGraphByUnique                  (t_id u, t_rectangle *r);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

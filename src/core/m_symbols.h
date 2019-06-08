@@ -498,6 +498,7 @@ extern t_symbol *sym_moses;
 extern t_symbol *sym_motion;
 extern t_symbol *sym_mouse;
 extern t_symbol *sym_mouseproxy;
+extern t_symbol *sym_move;
 extern t_symbol *sym_msg;
 extern t_symbol *sym_mtof;
 extern t_symbol *sym_mtof__tilde__;

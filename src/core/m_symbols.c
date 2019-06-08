@@ -498,6 +498,7 @@ t_symbol *sym_moses;
 t_symbol *sym_motion;
 t_symbol *sym_mouse;
 t_symbol *sym_mouseproxy;
+t_symbol *sym_move;
 t_symbol *sym_msg;
 t_symbol *sym_mtof;
 t_symbol *sym_mtof__tilde__;
@@ -1253,6 +1254,7 @@ void symbols_initialize (void)
     sym_motion                                  = gensym ("motion");
     sym_mouse                                   = gensym ("mouse");
     sym_mouseproxy                              = gensym ("mouseproxy");
+    sym_move                                    = gensym ("move");
     sym_msg                                     = gensym ("msg");
     sym_mtof                                    = gensym ("mtof");
     sym_mtof__tilde__                           = gensym ("mtof~");

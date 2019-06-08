@@ -260,6 +260,13 @@ void editor_graphSetBottomRight (t_editor *x, int c, int d)
     glist_updateRectangle (x->e_owner);
 }
 
+void editor_graphSetRectangle (t_editor *x, t_rectangle *r)
+{
+    rectangle_setCopy (glist_getGraphGeometry (x->e_owner), r);
+    
+    glist_updateRectangle (x->e_owner);
+}
+
 void editor_graphSnap (t_editor *x)
 {
     t_rectangle *r = glist_getGraphGeometry (x->e_owner);

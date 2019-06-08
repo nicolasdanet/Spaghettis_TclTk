@@ -178,20 +178,35 @@ static void glist_actionMoveRectangle (t_glist *glist)
     int deltaX  = drag_getMoveX (editor_getDrag (e));
     int deltaY  = drag_getMoveY (editor_getDrag (e));
     
+    t_rectangle old; rectangle_setCopy (&old, glist_getGraphGeometry (glist));
+    
     if (snap_hasSnapToGrid()) { if (drag_hasMovedOnce (editor_getDrag (e))) { editor_graphSnap (e); } }
     
     editor_graphDeplace (e, deltaX, deltaY);
     
     drag_close (editor_getDrag (e));
+    
+    if (glist_undoIsOk (glist)) {
+    if (!rectangle_areEquals (&old, glist_getGraphGeometry (glist))) {
+    //
+    glist_undoAppend (glist, undomovegraph_new (cast_gobj (glist), &old, glist_getGraphGeometry (glist)));
+    //
+    }
+    }
 }
 
-static void glist_actionResizeRectangle (t_glist *glist, int a, int b)
+static void glist_actionResizeRectangleProceed (t_glist *glist, t_glist *undo, int a, int b, t_rectangle *r)
 {
     t_glist *parent = glist_getParent (glist) ? glist_getView (glist_getParent (glist)) : NULL;
     
+    t_rectangle old; rectangle_setCopy (&old, glist_getGraphGeometry (glist));
+    
     if (parent) { glist_behaviorVisibilityChangedProceed (glist, parent, 0, 1); }
     
-    editor_graphSetBottomRight (glist_getEditor (glist), a, b);
+    if (r == NULL) { editor_graphSetBottomRight (glist_getEditor (glist), a, b); }
+    else {
+        editor_graphSetRectangle (glist_getEditor (glist), r);
+    }
     
     if (parent) {
     //
@@ -201,6 +216,26 @@ static void glist_actionResizeRectangle (t_glist *glist, int a, int b)
     glist_redrawRequired (parent);
     //
     }
+    
+    if (glist_undoIsOk (undo)) {
+    if (!rectangle_areEquals (&old, glist_getGraphGeometry (glist))) {
+    //
+    glist_undoAppend (undo, undoresizegraph_new (cast_gobj (glist), &old, glist_getGraphGeometry (glist)));
+    //
+    }
+    }
+}
+
+/* Resized from inside. */
+
+static void glist_actionResizeRectangle (t_glist *glist, int a, int b)
+{
+    glist_actionResizeRectangleProceed (glist, glist, a, b, NULL);
+}
+
+static void glist_actionSetRectangle (t_glist *glist, t_rectangle *r)
+{
+    glist_actionResizeRectangleProceed (glist, glist, 0, 0, r);
 }
 
 static void glist_actionResizeBoxProceed (t_glist *glist, t_gobj *y, int n)
@@ -223,33 +258,21 @@ static void glist_actionResizeBox (t_glist *glist, t_gobj *y, int width)
     glist_actionResizeBoxProceed (glist, y, PD_MAX (1, n));
 }
 
+/* Resized from outside. */
+
 static void glist_actionResizeGraphProceed (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
 {
-    t_rectangle *r = glist_getGraphGeometry (cast_glist (y));
+    t_rectangle t; rectangle_setCopy (&t, glist_getGraphGeometry (cast_glist (y)));
     
-    int w = rectangle_getWidth (r) + deltaX;
-    int h = rectangle_getHeight (r) + deltaY;
-    
-    PD_ASSERT (glist_isGraphOnParent (cast_glist (y)));
-    
-    glist_behaviorVisibilityChangedProceed (cast_glist (y), glist, 0, 1);
-    rectangle_setWidth (r, PD_MAX (EDIT_GRIP_SIZE, w));
-    rectangle_setHeight (r, PD_MAX (EDIT_GRIP_SIZE, h));
-    glist_updateRectangle (cast_glist (y));
-    glist_behaviorVisibilityChangedProceed (cast_glist (y), glist, 1, 1);
-    glist_updateLinesForObject (glist, cast_object (y));
-    glist_setDirty (glist, 1);
-    glist_redrawRequired (glist);
-    
-    if (glist_undoIsOk (glist)) { glist_undoAppend (glist, undoresizegraph_new (y, deltaX, deltaY)); }
+    int w = rectangle_getWidth (&t) + deltaX;   rectangle_setWidth (&t, PD_MAX (EDIT_GRIP_SIZE, w));
+    int h = rectangle_getHeight (&t) + deltaY;  rectangle_setHeight (&t, PD_MAX (EDIT_GRIP_SIZE, h));
+
+    glist_actionResizeRectangleProceed (cast_glist (y), glist, 0, 0, &t);
 }
 
 static void glist_actionResizeGraph (t_glist *glist, t_gobj *y, int deltaX, int deltaY)
 {
-    if (!gobj_isCanvas (y)) { PD_BUG; }
-    else {
-        glist_actionResizeGraphProceed (glist, y, deltaX, deltaY);
-    }
+    if (!gobj_isCanvas (y)) { PD_BUG; } else { glist_actionResizeGraphProceed (glist, y, deltaX, deltaY); }
 }
 
 static void glist_actionResize (t_glist *glist, int a, int b)
@@ -349,20 +372,15 @@ t_error glist_resizeBoxByUnique (t_id u, int n)
     return PD_ERROR;
 }
 
-t_error glist_resizeGraphByUnique (t_id u, int deltaX, int deltaY)
+t_error glist_setGraphByUnique (t_id u, t_rectangle *r)
 {
-    if (deltaX || deltaY) {
-    //
     t_gobj *object = instance_registerGetObject (u);
-    t_glist *glist = instance_registerGetOwner (u);
 
-    if (object && glist) {
+    if (object) {
     //
     if (gobj_isCanvas (object)) {
-        glist_actionResizeGraphProceed (glist, object, deltaX, deltaY);
+        glist_actionSetRectangle (cast_glist (object), r);
         return PD_ERROR_NONE;
-    }
-    //
     }
     //
     }

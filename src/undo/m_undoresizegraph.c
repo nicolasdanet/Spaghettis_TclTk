@@ -22,24 +22,23 @@ t_class *undoresizegraph_class;         /* Shared. */
 
 typedef struct _undoresizegraph {
     t_undoaction    x_undo;             /* Must be the first. */
-    int             x_deltaX;
-    int             x_deltaY;
+    t_rectangle     x_old;
+    t_rectangle     x_resized;
     } t_undoresizegraph;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void undoresizegraph_collapse (t_undoaction *kept, t_undoaction *deleted)
+void undoresizegraph_collapse (t_undoaction *newestKept, t_undoaction *olderDeleted)
 {
-    t_undoresizegraph *a = (t_undoresizegraph *)kept;
-    t_undoresizegraph *b = (t_undoresizegraph *)deleted;
+    t_undoresizegraph *a = (t_undoresizegraph *)newestKept;
+    t_undoresizegraph *b = (t_undoresizegraph *)olderDeleted;
     
-    PD_ASSERT (pd_class (kept)    == undoresizegraph_class);
-    PD_ASSERT (pd_class (deleted) == undoresizegraph_class);
+    PD_ASSERT (pd_class (newestKept)   == undoresizegraph_class);
+    PD_ASSERT (pd_class (olderDeleted) == undoresizegraph_class);
     
-    a->x_deltaX += b->x_deltaX;
-    a->x_deltaY += b->x_deltaY;
+    rectangle_setCopy (&a->x_old, &b->x_old);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -49,38 +48,44 @@ void undoresizegraph_collapse (t_undoaction *kept, t_undoaction *deleted)
 void undoresizegraph_undo (t_undoresizegraph *z, t_symbol *s, int argc, t_atom *argv)
 {
     t_undoaction *x = (t_undoaction *)z;
-    int m = -(z->x_deltaX);
-    int n = -(z->x_deltaY);
     
-    glist_resizeGraphByUnique (undoaction_getUnique (x), m, n);
+    glist_setGraphByUnique (undoaction_getUnique (x), &z->x_old);
 }
 
 void undoresizegraph_redo (t_undoresizegraph *z, t_symbol *s, int argc, t_atom *argv)
 {
     t_undoaction *x = (t_undoaction *)z;
-    int m = z->x_deltaX;
-    int n = z->x_deltaY;
     
-    glist_resizeGraphByUnique (undoaction_getUnique (x), m, n);
+    glist_setGraphByUnique (undoaction_getUnique (x), &z->x_resized);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_undoaction *undoresizegraph_new (t_gobj *o, int deltaX, int deltaY)
+t_undoaction *undoresizegraph_proceed (t_gobj *o, t_rectangle *old, t_rectangle *resized, t_symbol *label)
 {
     t_undoaction *x = (t_undoaction *)pd_new (undoresizegraph_class);
     t_undoresizegraph *z = (t_undoresizegraph *)x;
     
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_RESIZE_GRAPH;
-    x->ua_label = sym_resize;
+    x->ua_label = label;
     
-    z->x_deltaX = deltaX;
-    z->x_deltaY = deltaY;
+    rectangle_setCopy (&z->x_old, old);
+    rectangle_setCopy (&z->x_resized, resized);
     
     return x;
+}
+
+t_undoaction *undoresizegraph_new (t_gobj *o, t_rectangle *old, t_rectangle *resized)
+{
+    return undoresizegraph_proceed (o, old, resized, sym_resize);
+}
+
+t_undoaction *undomovegraph_new (t_gobj *o, t_rectangle *old, t_rectangle *moved)
+{
+    return undoresizegraph_proceed (o, old, moved, sym_move);
 }
 
 // -----------------------------------------------------------------------------------------------------------
