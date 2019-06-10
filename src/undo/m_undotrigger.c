@@ -8,8 +8,6 @@
 
 #include "../m_spaghettis.h"
 #include "../m_core.h"
-#include "../s_system.h"
-#include "../d_dsp.h"
 #include "../g_graphics.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -21,6 +19,7 @@ t_undoaction *undomanager_getRedoAction (t_undomanager *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 int undodisconnect_match (t_undoaction *, t_id, t_items *, t_items *);
 
@@ -55,6 +54,10 @@ int undomanager_undoNeedToTriggerParent (t_undomanager *x, t_items *i, t_items *
     return 0;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static int undomanager_redoContainsCreate (t_undomanager *x, t_items *i, t_items *o)
 {
     int k = 0;
@@ -81,6 +84,10 @@ int undomanager_redoNeedToTriggerParent (t_undomanager *x, t_items *i, t_items *
     
     return 0;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static int undomanager_undoContainsDisconnect (t_undomanager *x, t_glist *glist, t_items *i, t_items *o)
 {

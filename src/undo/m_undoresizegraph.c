@@ -70,6 +70,7 @@ t_undoaction *undoresizegraph_proceed (t_gobj *o, t_rectangle *old, t_rectangle 
     
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_RESIZE_GRAPH;
+    x->ua_safe  = 1;
     x->ua_label = label;
     
     rectangle_setCopy (&z->x_old, old);

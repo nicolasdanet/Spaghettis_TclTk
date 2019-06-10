@@ -51,7 +51,10 @@ t_undoaction *undoconnect_new (t_object *src, int m, t_object *dest, int n)
     t_undoaction *x  = (t_undoaction *)pd_new (undoconnect_class);
     t_undoconnect *z = (t_undoconnect *)x;
     
+    int safe = (object_isSignalOutlet (src, m) == 0);
+    
     x->ua_type  = UNDO_CONNECT;
+    x->ua_safe  = safe;
     x->ua_label = sym_connect;
     
     z->x_src    = gobj_getUnique (cast_gobj (src));

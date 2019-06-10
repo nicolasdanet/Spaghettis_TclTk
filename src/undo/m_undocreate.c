@@ -29,6 +29,12 @@ typedef struct _undocreate {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int gobj_hasDSPOrIsGraphicArray (t_gobj *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void undocreate_undo (t_undocreate *z, t_symbol *s, int argc, t_atom *argv)
 {
     t_undoaction *x = (t_undoaction *)z;
@@ -52,8 +58,13 @@ t_undoaction *undocreate_new (t_gobj *o, t_undosnippet *snippet)
     t_undoaction *x = (t_undoaction *)pd_new (undocreate_class);
     t_undocreate *z = (t_undocreate *)x;
     
+    // -- TODO: Consider if arrays always require to rebuild the graph?
+    
+    int safe = (gobj_hasDSPOrIsGraphicArray (o) == 0);
+    
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_CREATE;
+    x->ua_safe  = safe;
     x->ua_label = sym_create;
 
     undoaction_setInletsAndOutlets (x, o);

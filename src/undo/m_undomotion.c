@@ -75,6 +75,7 @@ t_undoaction *undomotion_new (t_gobj *o, int deltaX, int deltaY)
     
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_MOTION;
+    x->ua_safe  = 1;
     x->ua_label = sym_motion;
     
     z->x_deltaX = deltaX;

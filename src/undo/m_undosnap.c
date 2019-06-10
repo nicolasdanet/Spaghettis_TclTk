@@ -31,6 +31,7 @@ t_undoaction *undosnap_new (void)
     t_undoaction *x = (t_undoaction *)pd_new (undosnap_class);
     
     x->ua_type  = UNDO_SNAP;
+    x->ua_safe  = 1;
     x->ua_label = sym_snap;
     
     return x;

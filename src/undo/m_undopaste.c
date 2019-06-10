@@ -31,6 +31,7 @@ t_undoaction *undopaste_new (void)
     t_undoaction *x = (t_undoaction *)pd_new (undopaste_class);
     
     x->ua_type  = UNDO_PASTE;
+    x->ua_safe  = 1;
     x->ua_label = sym_paste;
     
     return x;

@@ -31,6 +31,7 @@ t_undoaction *undoencapsulate_new (void)
     t_undoaction *x = (t_undoaction *)pd_new (undoencapsulate_class);
     
     x->ua_type  = UNDO_ENCAPSULATE;
+    x->ua_safe  = 0;
     x->ua_label = sym_encapsulate;
     
     return x;

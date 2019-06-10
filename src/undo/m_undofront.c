@@ -48,9 +48,10 @@ t_undoaction *undofront_new (t_gobj *o, t_undosnippet *snippet)
     t_undoaction *x = (t_undoaction *)pd_new (undofront_class);
     t_undofront *z  = (t_undofront *)x;
     
-    x->ua_id     = gobj_getUnique (o);
-    x->ua_type   = UNDO_FRONT;
-    x->ua_label  = sym_front;
+    x->ua_id    = gobj_getUnique (o);
+    x->ua_type  = UNDO_FRONT;
+    x->ua_safe  = 1;
+    x->ua_label = sym_front;
     
     PD_ASSERT (snippet);
     

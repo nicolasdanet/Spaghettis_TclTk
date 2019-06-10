@@ -44,6 +44,7 @@ typedef struct _undoaction {
     t_pd                ua_pd;              /* Must be the first. */
     t_id                ua_id;
     t_undotype          ua_type;
+    int                 ua_safe;            /* Don't need to suspend DSP. */
     int                 ua_inlet;           /* Inlet created or deleted. */
     int                 ua_inletIndex;      /* Inlet index. */
     int                 ua_outlet;
@@ -88,6 +89,11 @@ static inline t_undotype undoaction_getType (t_undoaction *a)
     return a->ua_type;
 }
 
+static inline int undoaction_suspend (t_undoaction *a)
+{
+    return (a->ua_safe == 0);
+}
+
 static inline t_symbol *undoaction_getLabel (t_undoaction *a)
 {
     return a->ua_label;
@@ -111,6 +117,13 @@ void    undomanager_redo                    (t_undomanager *x);
 
 t_symbol    *undomanager_getUndoLabel       (t_undomanager *x);
 t_symbol    *undomanager_getRedoLabel       (t_undomanager *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int undomanager_undoNeedToSuspend           (t_undomanager *x);
+int undomanager_redoNeedToSuspend           (t_undomanager *x);
 
 int undomanager_undoNeedToTriggerParent     (t_undomanager *x, t_items *inlets, t_items *outlets);
 int undomanager_redoNeedToTriggerParent     (t_undomanager *x, t_items *inlets, t_items *outlets);

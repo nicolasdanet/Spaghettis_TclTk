@@ -31,6 +31,7 @@ t_undoaction *undoremove_new (void)
     t_undoaction *x = (t_undoaction *)pd_new (undoremove_class);
     
     x->ua_type  = UNDO_REMOVE;
+    x->ua_safe  = 1;
     x->ua_label = sym_remove;
     
     return x;

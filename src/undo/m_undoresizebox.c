@@ -70,6 +70,7 @@ t_undoaction *undoresizebox_new (t_gobj *o, int m, int n)
     
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_RESIZE_BOX;
+    x->ua_safe  = 1;
     x->ua_label = sym_resize;
     
     z->x_old    = m;

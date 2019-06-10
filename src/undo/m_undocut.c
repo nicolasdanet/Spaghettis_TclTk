@@ -31,6 +31,7 @@ t_undoaction *undocut_new (void)
     t_undoaction *x = (t_undoaction *)pd_new (undocut_class);
     
     x->ua_type  = UNDO_CUT;
+    x->ua_safe  = 1;
     x->ua_label = sym_cut;
     
     return x;
