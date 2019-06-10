@@ -49,8 +49,15 @@ t_undoaction *undoproperties_new (t_gobj *o, t_undosnippet *s1, t_undosnippet *s
     t_undoaction *x = (t_undoaction *)pd_new (undoproperties_class);
     t_undoproperties *z = (t_undoproperties *)x;
     
+    /* Changing garray's size in property window requires to rebuild the graph. */
+    /* Assume it is rarely the case, optimistically set the undo action as safe. */
+    /* Note that the rebuild will be properly handled in the resizing function anyway. */
+    
+    int safe = 1;
+    
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_PROPERTIES;
+    x->ua_safe  = safe;
     x->ua_label = sym_properties;
     
     PD_ASSERT (s1);

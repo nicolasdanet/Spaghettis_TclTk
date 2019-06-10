@@ -25,7 +25,7 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int gobj_hasDSP (t_gobj *x)
+static int gobj_hasDSPProceed (t_gobj *x, int k)
 {
     t_garray *a = NULL;
     
@@ -35,10 +35,20 @@ int gobj_hasDSP (t_gobj *x)
     }
     
     if (a) {
-        return garray_isUsedInDSP (a);
+        return k ? 1 : garray_isUsedInDSP (a);
     }
     
     return class_hasDSP (pd_class (x));
+}
+
+int gobj_hasDSPOrIsGraphicArray (t_gobj *x)
+{
+    return gobj_hasDSPProceed (x, 1);
+}
+
+int gobj_hasDSP (t_gobj *x)
+{
+    return gobj_hasDSPProceed (x, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

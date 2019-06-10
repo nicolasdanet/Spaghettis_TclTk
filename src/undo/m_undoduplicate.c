@@ -31,6 +31,7 @@ t_undoaction *undoduplicate_new (void)
     t_undoaction *x = (t_undoaction *)pd_new (undoduplicate_class);
     
     x->ua_type  = UNDO_DUPLICATE;
+    x->ua_safe  = 1;
     x->ua_label = sym_duplicate;
     
     return x;

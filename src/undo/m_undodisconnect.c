@@ -69,7 +69,10 @@ t_undoaction *undodisconnect_new (t_object *src, int m, t_object *dest, int n)
     t_undoaction *x = (t_undoaction *)pd_new (undodisconnect_class);
     t_undodisconnect *z = (t_undodisconnect *)x;
     
+    int safe = (object_isSignalOutlet (src, m) == 0);
+
     x->ua_type  = UNDO_DISCONNECT;
+    x->ua_safe  = safe;
     x->ua_label = sym_disconnect;
     
     z->x_src    = gobj_getUnique (cast_gobj (src));

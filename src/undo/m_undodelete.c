@@ -29,6 +29,12 @@ typedef struct _undodelete {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int gobj_hasDSPOrIsGraphicArray (t_gobj *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void undodelete_undo (t_undodelete *z, t_symbol *s, int argc, t_atom *argv)
 {
     undosnippet_load (z->x_snippet); undosnippet_z (z->x_snippet);
@@ -50,8 +56,13 @@ t_undoaction *undodelete_new (t_gobj *o, t_undosnippet *snippet)
     t_undoaction *x = (t_undoaction *)pd_new (undodelete_class);
     t_undodelete *z = (t_undodelete *)x;
     
+    // -- TODO: Consider if arrays always require to rebuild the graph?
+    
+    int safe = (gobj_hasDSPOrIsGraphicArray (o) == 0);
+
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_DELETE;
+    x->ua_safe  = safe;
     x->ua_label = sym_delete;
     
     undoaction_setInletsAndOutlets (x, o);

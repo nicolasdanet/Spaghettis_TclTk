@@ -51,6 +51,7 @@ t_undoaction *undotyping_new (t_gobj *o, t_undosnippet *s1, t_undosnippet *s2)
     
     x->ua_id    = gobj_getUnique (o);
     x->ua_type  = UNDO_TYPING;
+    x->ua_safe  = 1;
     x->ua_label = sym_typing;
     
     PD_ASSERT (s1);

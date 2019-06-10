@@ -151,13 +151,17 @@ void undomanager_append (t_undomanager *x, t_undoaction *a)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Notice that DSP is suspended globally only to avoid unnecessary consecutive rebuilds. */
+
 void undomanager_undo (t_undomanager *x)
 {
     clock_unset (x->um_clock);
     
     if (!instance_undoIsRecursive()) {
     //
-    int state = dsp_suspend();
+    int dspState, dspSuspended = undomanager_undoNeedToSuspend (x);
+    
+    if (dspSuspended) { dspState = dsp_suspend(); }
     
     instance_undoSetRecursive();
 
@@ -184,7 +188,7 @@ void undomanager_undo (t_undomanager *x)
     
     instance_undoUnsetRecursive();
     
-    dsp_resume (state);
+    if (dspSuspended) { dsp_resume (dspState); }
     //
     }
 }
@@ -195,7 +199,9 @@ void undomanager_redo (t_undomanager *x)
     
     if (!instance_undoIsRecursive()) {
     //
-    int state = dsp_suspend();
+    int dspState, dspSuspended = undomanager_redoNeedToSuspend (x);
+    
+    if (dspSuspended) { dspState = dsp_suspend(); }
     
     instance_undoSetRecursive();
 
@@ -222,7 +228,7 @@ void undomanager_redo (t_undomanager *x)
     
     instance_undoUnsetRecursive();
     
-    dsp_resume (state);
+    if (dspSuspended) { dsp_resume (dspState); }
     //
     }
 }

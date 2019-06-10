@@ -32,6 +32,7 @@ t_undoaction *undoseparator_new (void)
     
     x->ua_id    = 0;
     x->ua_type  = UNDO_SEPARATOR;
+    x->ua_safe  = 1;
     x->ua_label = sym_separator;
     
     return x;
