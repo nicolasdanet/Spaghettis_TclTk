@@ -66,6 +66,7 @@
 #include "undo/m_undosnippet.c"
 #include "undo/m_undoaction.c"
 #include "undo/m_undomanager.c"
+#include "undo/m_undotrigger.c"
 #include "undo/m_undocollapse.c"
 #include "undo/m_undoseparator.c"
 #include "undo/m_undoadd.c"

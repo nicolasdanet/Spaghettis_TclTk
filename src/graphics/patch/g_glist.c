@@ -45,7 +45,7 @@ static t_glist *glist_new (t_glist *owner,
     x->gl_holder            = gmaster_createWithGlist (x);
     x->gl_parent            = owner;
     x->gl_environment       = instance_environmentFetchIfAny();
-    x->gl_undomanager       = undomanager_new();
+    x->gl_undomanager       = undomanager_new (x);
     x->gl_name              = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_editor            = editor_new (x);
     x->gl_sorterObjects     = buffer_new();

@@ -24,22 +24,23 @@
 
 void undomanager_collapse (t_undomanager *);
 
-int  undodisconnect_match (t_undoaction *, t_id, t_items *, t_items *);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void undomanager_task (t_undomanager *x)
 {
-    undomanager_appendSeparator (x);
+    if (editor_getAction (glist_getEditor (x->um_owner)) == ACTION_NONE) { undomanager_appendSeparator (x); }
+    else {
+        clock_delay (x->um_clock, UNDOMANAGER_DELAY);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_undoaction *undomanager_getUndoAction (t_undomanager *x)
+t_undoaction *undomanager_getUndoAction (t_undomanager *x)
 {
     t_undoaction *a = x->um_tail;
     
@@ -54,7 +55,7 @@ static t_undoaction *undomanager_getUndoAction (t_undomanager *x)
     return NULL;
 }
 
-static t_undoaction *undomanager_getRedoAction (t_undomanager *x)
+t_undoaction *undomanager_getRedoAction (t_undomanager *x)
 {
     t_undoaction *a = x->um_tail;
     
@@ -150,103 +151,6 @@ void undomanager_append (t_undomanager *x, t_undoaction *a)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static int undomanager_undoContainsDelete (t_undomanager *x, t_items *i, t_items *o)
-{
-    int k = 0;
-    
-    t_undoaction *a = x->um_tail;
-
-    while (a && a->ua_previous) {
-    
-        if (undoaction_getType (a) == UNDO_DELETE) { k |= undoaction_getInletsAndOutlets (a, i, o); }
-        
-        a = a->ua_previous;
-        
-        if (undoaction_getType (a) == UNDO_SEPARATOR) { break; }
-    }
-    
-    return k;
-}
-
-int undomanager_undoNeedToTriggerParent (t_undomanager *x, t_items *i, t_items *o)
-{
-    t_undoaction *a = undomanager_getUndoAction (x);
-    
-    if (a && undoaction_getType (a) == UNDO_REMOVE) { return undomanager_undoContainsDelete (x, i, o); }
-    
-    return 0;
-}
-
-static int undomanager_redoContainsCreate (t_undomanager *x, t_items *i, t_items *o)
-{
-    int k = 0;
-    
-    t_undoaction *a = x->um_tail;
-    
-    while (a) {
-    
-        if (undoaction_getType (a) == UNDO_CREATE) { k |= undoaction_getInletsAndOutlets (a, i, o); }
-        
-        if (a->ua_next == NULL) { break; } else { a = a->ua_next; }
-        
-        if (undoaction_getType (a) == UNDO_SEPARATOR) { break; }
-    }
-    
-    return k;
-}
-
-int undomanager_redoNeedToTriggerParent (t_undomanager *x, t_items *i, t_items *o)
-{
-    t_undoaction *a = undomanager_getRedoAction (x);
-    
-    if (a && undoaction_getType (a) == UNDO_ADD) { return undomanager_redoContainsCreate (x, i, o); }
-    
-    return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static int undomanager_undoContainsDisconnect (t_undomanager *x, t_glist *glist, t_items *i, t_items *o)
-{
-    t_id u = gobj_getUnique (cast_gobj (glist));
-    
-    t_undoaction *a = x->um_tail;
-
-    while (a && a->ua_previous) {
-    
-        if (undodisconnect_match (a, u, i, o)) { } else if (undoaction_getType (a) != UNDO_SEPARATOR) {
-            return 0;
-        }
-        
-        a = a->ua_previous;
-        
-        if (undoaction_getType (a) == UNDO_SEPARATOR) { break; }
-    }
-    
-    return 1;
-}
-
-int undomanager_triggerParentIsPossible (t_glist *glist, t_items *i, t_items *o)
-{
-    if (glist_hasParent (glist)) {
-    //
-    t_glist *parent = glist_getParent (glist);
-    
-    if (undomanager_undoContainsDisconnect (glist_getUndoManager (parent), glist, i, o)) {
-        return 1;
-    }
-    //
-    }
-    
-    return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void undomanager_undo (t_undomanager *x)
 {
     clock_unset (x->um_clock);
@@ -327,10 +231,11 @@ void undomanager_redo (t_undomanager *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_undomanager *undomanager_new (void)
+t_undomanager *undomanager_new (t_glist *owner)
 {
     t_undomanager *x = (t_undomanager *)PD_MEMORY_GET (sizeof (t_undomanager));
     
+    x->um_owner = owner;
     x->um_clock = clock_new ((void *)x, (t_method)undomanager_task);
 
     undomanager_appendProceed (x, undoseparator_new());

@@ -58,6 +58,7 @@ typedef struct _undoaction {
 
 typedef struct _undomanager {
     int                 um_count;
+    t_glist             *um_owner;
     t_clock             *um_clock;
     t_undoaction        *um_head;
     t_undoaction        *um_tail;
@@ -96,7 +97,7 @@ static inline t_symbol *undoaction_getLabel (t_undoaction *a)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_undomanager   *undomanager_new            (void);
+t_undomanager   *undomanager_new            (t_glist *owner);
 
 void    undomanager_free                    (t_undomanager *x);
 
