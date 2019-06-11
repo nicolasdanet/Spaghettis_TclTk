@@ -38,7 +38,11 @@ static int gobj_hasDSPProceed (t_gobj *x, int k)
         return k ? 1 : garray_isUsedInDSP (a);
     }
     
-    return class_hasDSP (pd_class (x));
+    if (pd_class (x) == vinlet_class)       { return vinlet_isSignal ((t_vinlet *)x);   }
+    else if (pd_class (x) == voutlet_class) { return voutlet_isSignal ((t_voutlet *)x); }
+    else {
+        return class_hasDSP (pd_class (x));
+    }
 }
 
 int gobj_hasDSPOrIsGraphicArray (t_gobj *x)
