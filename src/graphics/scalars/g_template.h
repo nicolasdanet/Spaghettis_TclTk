@@ -27,6 +27,7 @@ typedef struct _dataslot {
 struct _template {
     t_pd        tp_pd;                              /* MUST be the first. */
     t_error     tp_error;
+    int         tp_pending;
     int         tp_size;    
     t_dataslot  *tp_slots;   
     t_symbol    *tp_templateIdentifier;
@@ -53,8 +54,10 @@ void        template_free                           (t_template *x);
 // MARK: -
 
 int         template_hasInstance                    (t_template *x);
+int         template_hasPending                     (t_template *x);
 void        template_registerInstance               (t_template *x, t_struct *o);
 void        template_unregisterInstance             (t_template *x, t_struct *o);
+void        template_forgetPendingInstance          (t_template *x, t_struct *o);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
