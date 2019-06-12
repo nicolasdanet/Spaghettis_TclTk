@@ -205,25 +205,47 @@ static void template_anything (t_template *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void template_registerInstanceProceed (t_template *x, t_struct *o, int release)
+{
+    paint_erase();
+    
+    x->tp_pending = 0; x->tp_instance = o;
+    
+    if (!o) {
+        if (release) { instance_destroyAllScalarsByTemplate (x); }
+        else {
+            x->tp_pending = 1;
+        }
+    }
+    
+    paint_draw();
+}
+
+void template_registerInstance (t_template *x, t_struct *o)
+{
+    template_registerInstanceProceed (x, o, 1);
+}
+
+void template_unregisterInstance (t_template *x, t_struct *o)
+{
+    template_registerInstanceProceed (x, NULL, 1);
+    
+    pd_free (cast_pd (x));
+}
+
+void template_forgetPendingInstance (t_template *x, t_struct *o)
+{
+    template_registerInstanceProceed (x, NULL, 0);
+}
+
 int template_hasInstance (t_template *x)
 {
     return (x->tp_instance != NULL);
 }
 
-void template_registerInstance (t_template *x, t_struct *o)
+int template_hasPending (t_template *x)
 {
-    paint_erase();
-    
-    x->tp_instance = o; if (!o) { instance_destroyAllScalarsByTemplate (x); }
-    
-    paint_draw();
-}
-
-void template_unregisterInstance (t_template *x, t_struct *o)
-{
-    template_registerInstance (x, NULL);
-    
-    pd_free (cast_pd (x));
+    return (x->tp_pending != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

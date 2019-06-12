@@ -14,14 +14,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that for now that object is reset with encapsulation. */
-
-// -- TODO: Fetch states with pending?
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 t_class *struct_class;                          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -33,6 +25,12 @@ struct _struct {
     t_glist     *x_owner;
     t_outlet    *x_outlet;
     };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void struct_dismiss (t_struct *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -68,6 +66,11 @@ t_symbol *struct_getUnexpandedName (t_struct *x)
     }
     
     return NULL;
+}
+
+static void struct_functionDismiss (t_gobj *z)
+{
+    struct_dismiss ((t_struct *)z);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -125,6 +128,11 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+static void struct_dismiss (t_struct *x)
+{
+    if (x->x_template) { template_forgetPendingInstance (x->x_template, x); x->x_template = NULL; }
+}
+
 static void struct_free (t_struct *x)
 {
     if (x->x_template) { template_unregisterInstance (x->x_template, x); }
@@ -145,7 +153,10 @@ void struct_setup (void)
             CLASS_DEFAULT | CLASS_NOINLET,
             A_GIMME,
             A_NULL);
-                
+    
+    class_setDismissFunction (c, struct_functionDismiss);
+    class_requirePending (c);
+    
     struct_class = c;
 }
 

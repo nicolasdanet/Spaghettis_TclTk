@@ -281,8 +281,11 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
             int a = glist_valueToPixelX (glist, baseX);
             int b = glist_valueToPixelY (glist, baseY);
             
+            int pending = template_hasPending (scalar_getTemplate (x));
+            
             gui_vAdd ("%s.c create rectangle %d %d %d %d"
                             " -outline #%06x"
+                            " -state %s"
                             " -tags %lxSCALAR\n",
                             glist_getTagAsString (view),
                             a,
@@ -290,6 +293,7 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
                             a + SCALAR_WRONG_SIZE,
                             b + SCALAR_WRONG_SIZE,
                             COLOR_SCALAR_WRONG,
+                            pending ? "hidden" : "normal",
                             x);
         } else {
             gui_vAdd ("%s.c delete %lxSCALAR\n", glist_getTagAsString (view), x);
