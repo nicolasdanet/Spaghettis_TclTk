@@ -374,30 +374,33 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
 // MARK: -
 
 static void plot_behaviorGetRectangleRecursive (t_plot *x,
-    t_glist *view,
+    t_buffer *o,
     t_array *array,
-    int i,
+    int index,
     t_float relativeX,
     t_float relativeY,
     t_rectangle *r)
 {
-    t_gobj *y = NULL;
-                        
-    for (y = view->gl_graphics; y; y = y->g_next) {
+    int i;
     
-        t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
+    for (i = 0; i < buffer_getSize (o); i++) {
+    //
+    t_gobj *y = buffer_getObjectAt (o, i);
+    
+    t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
+    
+    if (behavior) {
+    
+        t_rectangle t;
         
-        if (behavior) {
+        t_gpointer gp; gpointer_init (&gp);
+        gpointer_setAsWord (&gp, array, index);
+        (*behavior->w_fnPainterGetRectangle) (y, &gp, relativeX, relativeY, &t);
+        gpointer_unset (&gp);
         
-            t_rectangle t;
-            
-            t_gpointer gp; gpointer_init (&gp);
-            gpointer_setAsWord (&gp, array, i);
-            (*behavior->w_fnPainterGetRectangle) (y, &gp, relativeX, relativeY, &t);
-            gpointer_unset (&gp);
-            
-            rectangle_addRectangle (r, &t);
-        }
+        rectangle_addRectangle (r, &t);
+    }
+    //
     }
 }
 
@@ -418,10 +421,10 @@ static void plot_behaviorGetRectangle (t_gobj *z,
     
     if (!plot_fetchProperties (x, gp, &p) && (p.p_visible != 0)) {
     //
+    t_buffer *o = template_getInstancePaintersIfAny (array_getTemplate (p.p_array));
+
     int i;
-    
-    t_glist *view = template_getInstanceOwnerIfPainters (array_getTemplate (p.p_array));
-    
+        
     for (i = 0; i < array_getSize (p.p_array); i += p.p_step) {
 
         t_plotpixels c;
@@ -437,8 +440,10 @@ static void plot_behaviorGetRectangle (t_gobj *z,
         rectangle_add (r, c.p_pixelX, c.p_pixelY - c.p_pixelW);
         rectangle_add (r, c.p_pixelX, c.p_pixelY + c.p_pixelW);
         
-        if (view) { plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, r); }
+        if (o) { plot_behaviorGetRectangleRecursive (x, o, p.p_array, i, c.p_x, c.p_y, r); }
     }
+    
+    if (o) { buffer_free (o); }
     //
     }
     //
@@ -633,20 +638,21 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     t_float relativeY, 
     int isVisible)
 {
-    t_glist *view = template_getInstanceOwnerIfPainters (array_getTemplate (p->p_array));
+    t_template *tmpl = array_getTemplate (p->p_array);
+    t_buffer *o      = template_getInstancePaintersIfAny (tmpl);
+    t_glist *view    = template_getInstanceOwner (tmpl);
     
-    if (view) {
+    if (o && view) {
     //
-    int i;
-        
+    int i, j;
+    
     for (i = 0; i < array_getSize (p->p_array); i++) {
     //
-    t_gobj *y = NULL;
-    
     t_plotpixels c; plot_getPixelsAtIndex (p, relativeX, relativeY, i, view, p->p_width, &c);
     
-    for (y = view->gl_graphics; y; y = y->g_next) {
+    for (j = 0; j < buffer_getSize (o); j++) {
 
+        t_gobj *y = buffer_getObjectAt (o, j);
         t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
         
         if (behavior) {
@@ -661,6 +667,8 @@ static void plot_behaviorVisibilityChangedRecursive (t_plot *x,
     }
     //
     }
+    
+    if (o) { buffer_free (o); }
 }
 
 static void plot_behaviorVisibilityChanged (t_gobj *z,
@@ -730,30 +738,30 @@ static void plot_behaviorVisibilityChanged (t_gobj *z,
 // MARK: -
 
 static int plot_behaviorMouseRecursive (t_plot *x,
-    t_glist *view,
+    t_buffer *o,
     t_array *array,
-    int i,
+    int index,
     t_float relativeX,
     t_float relativeY,
     t_mouse *m)
 {
-    t_gobj *y = NULL;
+    int i, k = 0;
     
-    int k = 0;
+    for (i = 0; i < buffer_getSize (o); i++) {
+    //
+    t_gobj *y = buffer_getObjectAt (o, i);
+    t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
+ 
+    if (behavior) {
+ 
+        t_gpointer gp; gpointer_init (&gp);
+        gpointer_setAsWord (&gp, array, index);
+        k = (*behavior->w_fnPainterMouse) (y, &gp, relativeX, relativeY, m);
+        gpointer_unset (&gp);
+    }
     
-    for (y = view->gl_graphics; y; y = y->g_next) {
-    
-        t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
-     
-        if (behavior) {
-     
-            t_gpointer gp; gpointer_init (&gp);
-            gpointer_setAsWord (&gp, array, i);
-            k = (*behavior->w_fnPainterMouse) (y, &gp, relativeX, relativeY, m);
-            gpointer_unset (&gp);
-        }
-        
-        if (k) { break; }
+    if (k) { break; }
+    //
     }
 
     return k;
@@ -825,9 +833,11 @@ static int plot_behaviorMouseMatch (t_plot *x,
 
 static int plot_behaviorMouseGrabRecursive (t_plot *x, t_plotproperties *p, t_mouse *m)
 {
-    t_glist *view = template_getInstanceOwnerIfPainters (array_getTemplate (p->p_array));
+    t_buffer *o = template_getInstancePaintersIfAny (array_getTemplate (p->p_array));
     
-    if (view) {
+    int k = 0;
+    
+    if (o) {
     //
     int i;
     
@@ -843,15 +853,17 @@ static int plot_behaviorMouseGrabRecursive (t_plot *x, t_plotproperties *p, t_mo
         plot_width,
         &c);
     
-    int k = plot_behaviorMouseRecursive (x, view, p->p_array, i, c.p_x, c.p_y, m);
+    k = plot_behaviorMouseRecursive (x, o, p->p_array, i, c.p_x, c.p_y, m);
     
-    if (k) { return k; }
-    //
-    }
+    if (k) { break; }
     //
     }
     
-    return 0;
+    buffer_free (o);
+    //
+    }
+    
+    return k;
 }
 
 static int plot_behaviorMouseGrab (t_plot *x, t_plotproperties *p, t_mouse *m)
@@ -993,13 +1005,15 @@ int plot_hitElement (t_gobj *z,
     
     PD_ASSERT (!glist_isGraphicArray (glist));
     
+    int k = -1;
+    
     if (!plot_fetchProperties (x, gp, &p) && (p.p_visible != 0)) {
     //
-    t_glist *view = template_getInstanceOwnerIfPainters (array_getTemplate (p.p_array));
+    t_buffer *o = template_getInstancePaintersIfAny (array_getTemplate (p.p_array));
     
-    if (view) {
+    if (o) {
     //
-    int i, k = -1;
+    int i;
     double f = PD_FLT_MAX;
     int t, d = PD_INT_MAX;
     
@@ -1045,7 +1059,7 @@ int plot_hitElement (t_gobj *z,
             p.p_width,
             &c);
         
-        plot_behaviorGetRectangleRecursive (x, view, p.p_array, i, c.p_x, c.p_y, &r);
+        plot_behaviorGetRectangleRecursive (x, o, p.p_array, i, c.p_x, c.p_y, &r);
         
         if (rectangle_contains (&r, m->m_x, m->m_y)) {
             double g = rectangle_getArea (&r);
@@ -1060,13 +1074,13 @@ int plot_hitElement (t_gobj *z,
     //
     }
     
-    return k;
+    buffer_free (o);
     //
     }
     //
     }
     
-    return -1;
+    return k;
 }
 
 // -----------------------------------------------------------------------------------------------------------

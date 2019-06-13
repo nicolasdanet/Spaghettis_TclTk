@@ -66,6 +66,7 @@ typedef struct _pdinstance {
     t_glist         *pd_roots;
     t_clock         *pd_polling;
     t_clock         *pd_autorelease;
+    t_clock         *pd_paint;
     t_gobj          *pd_pending;
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
@@ -178,6 +179,9 @@ void    instance_autoreleaseRun                 (void);
 void    instance_autoreleaseStop                (void);
 void    instance_autoreleaseRegister            (t_pd *x);
 void    instance_autoreleaseProceed             (t_pd *x);
+
+void    instance_paintRun                       (void);
+void    instance_paintStop                      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

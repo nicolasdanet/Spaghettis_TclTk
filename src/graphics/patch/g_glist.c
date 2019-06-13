@@ -966,12 +966,7 @@ void glist_objectRemovePurgeInlets (t_glist *glist)
     int i;
     
     for (i = 0; i < buffer_getSize (glist->gl_sorterObjects); i++) {
-    //
-    t_atom *a = buffer_getAtomAtIndex (glist->gl_sorterObjects, i);
-    t_gobj *o = GET_OBJECT (a);
-    
-    glist_objectRemove (glist, o);
-    //
+        glist_objectRemove (glist, buffer_getObjectAt (glist->gl_sorterObjects, i));
     }
     
     buffer_clear (glist->gl_sorterIndexes);

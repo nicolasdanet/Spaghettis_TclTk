@@ -69,6 +69,15 @@ t_atom *buffer_getAtomAtIndexChecked (t_buffer *x, int n)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_gobj *buffer_getObjectAt (t_buffer *x, int n)
+{
+    t_atom *a = buffer_getAtomAtIndex (x, n); return GET_OBJECT (a);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_error buffer_getAtIndex (t_buffer *x, int n, t_atom *a)
 {
     t_atom *t = buffer_getAtomAtIndexChecked (x, n); if (t && a) { *a = *t; return PD_ERROR_NONE; }
