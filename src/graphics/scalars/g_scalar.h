@@ -196,6 +196,7 @@ void        scalar_redraw                       (t_scalar *x, t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void        paint_redraw                        (void);
 void        paint_erase                         (void);
 void        paint_draw                          (void);
 

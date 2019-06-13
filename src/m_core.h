@@ -59,6 +59,8 @@ void        atom_sort                               (int argc, t_atom *argv);
 
 char        *buffer_toString                        (t_buffer *x);      /* Caller acquires ownership. */
 
+t_gobj      *buffer_getObjectAt                     (t_buffer *x, int n);
+
 void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed               (t_buffer *x, const char *s, int size);
 

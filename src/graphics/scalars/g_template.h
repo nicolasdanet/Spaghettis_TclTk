@@ -75,7 +75,8 @@ int         template_getRaw                         (t_template *x,
 
 t_symbol      *template_getFieldAtIndex             (t_template *x, int n);
 
-t_glist       *template_getInstanceOwnerIfPainters  (t_template *x);
+t_glist       *template_getInstanceOwner            (t_template *x);
+t_buffer      *template_getInstancePaintersIfAny    (t_template *x);
 t_constructor *template_getInstanceConstructorIfAny (t_template *x, t_symbol *field);
 
 // -----------------------------------------------------------------------------------------------------------

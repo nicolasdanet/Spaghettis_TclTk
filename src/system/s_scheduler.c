@@ -187,9 +187,11 @@ t_error scheduler_main (void)
     
         instance_autoreleaseRun();
         instance_pollingRun();
+        instance_paintRun();
     
             scheduler_mainLoop(); dsp_close();
     
+        instance_paintStop();
         instance_pollingStop();
         instance_autoreleaseStop();
     

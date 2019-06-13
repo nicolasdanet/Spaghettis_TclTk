@@ -185,34 +185,36 @@ void scalar_redraw (t_scalar *x, t_glist *glist)
 static void scalar_behaviorGetRectangle (t_gobj *z, t_glist *glist, t_rectangle *r)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
+    t_buffer *o = template_getInstancePaintersIfAny (scalar_getTemplate (x));
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
 
     rectangle_setNothing (r);
     
-    if (view) {
+    if (o) {
     
-        t_gobj *y = NULL;
+        int i;
         
-        for (y = view->gl_graphics; y; y = y->g_next) {
-        //
-        t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
+        for (i = 0; i < buffer_getSize (o); i++) {
         
-        if (behavior) {
-        //
-        t_rectangle t;
-        t_gpointer gp; gpointer_init (&gp);
-        
-        gpointer_setAsScalar (&gp, x);
-        (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &t);
-        gpointer_unset (&gp);
-        
-        rectangle_addRectangle (r, &t);
-        //
+            t_gobj *y = buffer_getObjectAt (o, i);
+            t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
+            
+            if (behavior) {
+            //
+            t_rectangle t;
+            
+            t_gpointer gp; gpointer_init (&gp);
+            gpointer_setAsScalar (&gp, x);
+            (*behavior->w_fnPainterGetRectangle) (y, &gp, baseX, baseY, &t);
+            gpointer_unset (&gp);
+            
+            rectangle_addRectangle (r, &t);
+            //
+            }
         }
-        //
-        }
+    
+        buffer_free (o);
     }
     
     if (rectangle_isNothing (r)) {
@@ -268,11 +270,11 @@ static void scalar_behaviorDeleted (t_gobj *z, t_glist *glist)
 static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isVisible)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *owner = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
+    t_buffer *o = template_getInstancePaintersIfAny (scalar_getTemplate (x));
     t_float baseX  = scalar_getFloat (x, sym_x);
     t_float baseY  = scalar_getFloat (x, sym_y);
 
-    if (!owner) {
+    if (!o) {
         
         t_glist *view = glist_getView (glist);
         
@@ -301,21 +303,23 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
         
     } else {
     
-        t_gobj *y = NULL;
+        int i;
         
-        for (y = owner->gl_graphics; y; y = y->g_next) {
+        for (i = 0; i < buffer_getSize (o); i++) {
         
+            t_gobj *y = buffer_getObjectAt (o, i);
             t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
             
             if (behavior) {
                 
                 t_gpointer gp; gpointer_init (&gp);
-                
                 gpointer_setAsScalar (&gp, x);
                 (*behavior->w_fnPainterVisibilityChanged) (y, &gp, baseX, baseY, isVisible);
                 gpointer_unset (&gp);
             }
         }
+        
+        buffer_free (o);
     }
     
     if (glist_objectIsSelected (glist, cast_gobj (x))) {
@@ -327,38 +331,41 @@ static void scalar_behaviorVisibilityChanged (t_gobj *z, t_glist *glist, int isV
 static int scalar_behaviorMouse (t_gobj *z, t_glist *glist, t_mouse *m)
 {
     t_scalar *x = cast_scalar (z);
-    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
+    t_buffer *o = template_getInstancePaintersIfAny (scalar_getTemplate (x));
     
-    if (!x->sc_disable && view) {
+    int k = 0;
+    
+    if (!x->sc_disable && o) {
     //
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
-    t_gobj *y = NULL;
         
     if (m->m_clicked) { scalar_notifyClicked (x, baseX, baseY, (t_float)m->m_x, (t_float)m->m_y); }
             
-    for (y = view->gl_graphics; y; y = y->g_next) {
+    int i;
+        
+    for (i = 0; i < buffer_getSize (o); i++) {
     //
+    t_gobj *y = buffer_getObjectAt (o, i);
     t_painterbehavior *behavior = class_getPainterBehavior (pd_class (y));
     
     if (behavior) { 
         
         t_gpointer gp; gpointer_init (&gp);
-        
         gpointer_setAsScalar (&gp, x);
-        int k = (*behavior->w_fnPainterMouse) (y, &gp, baseX, baseY, m);
+        k = (*behavior->w_fnPainterMouse) (y, &gp, baseX, baseY, m);
         gpointer_unset (&gp);
         
-        if (k) {
-            return k;
-        }
+        if (k) { break; }
     }
     //
     }
     //
     }
     
-    return 0;
+    if (o) { buffer_free (o); }
+    
+    return k;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -503,40 +510,43 @@ static int scalar_functionValueFetchIfPlotted (t_scalar *x,
     t_symbol **s,
     t_gpointer *e)
 {
-    int i = -1;
+    int k = -1;
     
     if (m->m_clickedRight && template_containsArray (scalar_getTemplate (x))) {
     //
-    t_glist *view = template_getInstanceOwnerIfPainters (scalar_getTemplate (x));
+    t_buffer *o = template_getInstancePaintersIfAny (scalar_getTemplate (x));
 
-    if (view) {
+    if (o) {
     //
-    t_gobj *y = NULL;
+    int i;
+        
+    for (i = 0; i < buffer_getSize (o); i++) {
+    //
+    t_gobj *y = buffer_getObjectAt (o, i);
     
-    for (y = view->gl_graphics; y; y = y->g_next) {
-    //
     if (pd_class (y) == plot_class) {
     //
     t_float baseX = scalar_getFloat (x, sym_x);
     t_float baseY = scalar_getFloat (x, sym_y);
     
     t_gpointer gp; gpointer_init (&gp);
-
     gpointer_setAsScalar (&gp, x);
-    i = plot_hitElement (y, &gp, baseX, baseY, m, s, e);
+    k = plot_hitElement (y, &gp, baseX, baseY, m, s, e);
     gpointer_unset (&gp);
     
-    if (i >= 0) { break; }
-    //
-    }
-    //
-    }
+    if (k >= 0) { break; }
     //
     }
     //
     }
     
-    return i;
+    buffer_free (o);
+    //
+    }
+    //
+    }
+    
+    return k;
 }
 
 void scalar_functionValue (t_gobj *z, t_glist *glist, t_mouse *m)

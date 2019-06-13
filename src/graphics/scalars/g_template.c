@@ -252,29 +252,53 @@ int template_hasPending (t_template *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_glist *template_getInstanceOwner (t_template *x)
+static void template_getInstancePaintersAppend (t_buffer *b, t_gobj *y)
 {
-    PD_ASSERT (x);
+    int m = object_getY (cast_object (y));
+    int n = object_getX (cast_object (y));
+    int i;
     
-    if (!x->tp_instance) { return NULL; } else { return struct_getOwner (x->tp_instance); }
-}
-
-/* Return the instance view if it contains at least one painter. */
-
-t_glist *template_getInstanceOwnerIfPainters (t_template *x)
-{
-    t_glist *view = template_getInstanceOwner (x);
+    t_atom a; SET_OBJECT (&a, y);
     
-    if (view) {
+    for (i = 0; i < buffer_getSize (b); i++) {
+    //
+    int tY = object_getY (cast_object (buffer_getObjectAt (b, i)));
+    int tX = object_getX (cast_object (buffer_getObjectAt (b, i)));
     
-        t_gobj *y = NULL;
-        
-        for (y = view->gl_graphics; y; y = y->g_next) {
-            if (class_hasPainterBehavior (pd_class (y))) { return view; }
-        }
+    if (tY > m) { break; } else if (tY == m && tX > n) { break; }
+    //
     }
     
-    return NULL;
+    buffer_insertAtIndex (b, i, &a);
+}
+
+/* Return the painters ordered if it contains at least one painter. */
+/* Return NULL otherwise. */
+/* Note that caller must free the buffer in the first case. */
+
+t_buffer *template_getInstancePaintersIfAny (t_template *x)
+{
+    t_buffer *painters = NULL;
+    
+    t_glist *view = template_getInstanceOwner (x);
+
+    if (view) {
+    //
+    t_gobj *y = NULL;
+        
+    for (y = view->gl_graphics; y; y = y->g_next) {
+    //
+    if (class_hasPainterBehavior (pd_class (y))) {
+    //
+    if (painters == NULL) { painters = buffer_new(); } template_getInstancePaintersAppend (painters, y);
+    //
+    }
+    //
+    }
+    //
+    }
+    
+    return painters;
 }
 
 /* Return the instance default contructor for a given field. */
@@ -296,6 +320,13 @@ t_constructor *template_getInstanceConstructorIfAny (t_template *x, t_symbol *fi
     }
     
     return NULL;
+}
+
+t_glist *template_getInstanceOwner (t_template *x)
+{
+    PD_ASSERT (x);
+    
+    if (!x->tp_instance) { return NULL; } else { return struct_getOwner (x->tp_instance); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

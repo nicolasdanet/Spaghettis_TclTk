@@ -362,11 +362,14 @@ void glist_objectRemoveSelected (t_glist *glist)
 
 static void glist_objectDisplaceProceed (t_glist *glist, t_gobj *object, int deltaX, int deltaY)
 {
+    int needToRepaint = class_hasPainterBehavior (pd_class (object));
+    
     gobj_displaced (object, glist, deltaX, deltaY);
     
     if (pd_class (object) == vinlet_class)  { glist_inletSort (glist);   }
     if (pd_class (object) == voutlet_class) { glist_outletSort (glist);  }
     if (!gobj_isScalar (object))            { glist_setDirty (glist, 1); }
+    if (needToRepaint)                      { paint_redraw();            }
     
     if (glist_undoIsOk (glist)) { glist_undoAppend (glist, undomotion_new (object, deltaX, deltaY)); }
 }
