@@ -34,12 +34,12 @@ typedef struct _inlethelper {
     int                     x_srcOutlet;
     t_id                    x_destId;
     int                     x_destInlet;
-    int                     x_destIndex;
-    t_rectangle             x_destRectangle;
+    int                     x_destIndex;            /* Index among selected objects. */
+    t_rectangle             x_destRectangle;        /* Rectangle of the object before encapsulation. */
     int                     x_isDsp;
-    int                     x_assigned;
-    int                     x_assignedIndex;
-    int                     x_create;
+    int                     x_assigned;             /* Number of the inlet. */
+    int                     x_assignedIndex;        /* Index of this inlet in the new subpatch. */
+    int                     x_create;               /* Create the inlet. */
     struct _inlethelper     *x_next;
     } t_inlethelper;
 
@@ -50,14 +50,14 @@ typedef struct _inlethelper {
 typedef struct _outlethelper {
     t_id                    x_srcId;
     int                     x_srcOutlet;
-    int                     x_srcIndex;
-    t_rectangle             x_srcRectangle;
+    int                     x_srcIndex;             /* Index among selected objects. */
+    t_rectangle             x_srcRectangle;         /* Rectangle of the object before encapsulation. */
     t_id                    x_destId;
     int                     x_destInlet;
     int                     x_isDsp;
-    int                     x_assigned;
-    int                     x_assignedIndex;
-    int                     x_create;
+    int                     x_assigned;             /* Number of the outlet. */
+    int                     x_assignedIndex;        /* Index of this outlet in the new subpatch. */
+    int                     x_create;               /* Create the outlet. */
     struct _outlethelper    *x_next;
     } t_outlethelper;
 
@@ -290,11 +290,11 @@ static t_inlethelper *encapsulate_addInletsToSnippetFetch (t_glist *glist)
     return inlets;
 }
 
-static int encapsulate_addInletsToSnippetAssign (t_glist *glist, t_inlethelper *inlets)
+static void encapsulate_addInletsToSnippetAssign (t_glist *glist, t_inlethelper *inlets, int *index)
 {
     t_inlethelper *t = inlets;
     
-    int n = glist_objectGetNumberOfSelected (glist);
+    int n = (*index);
     int k = 0;
     
     while (t) {
@@ -309,7 +309,7 @@ static int encapsulate_addInletsToSnippetAssign (t_glist *glist, t_inlethelper *
     //
     }
     
-    return (n + k);
+    (*index) = (n + k);
 }
 
 static void encapsulate_addInletsToSnippetCreate (t_glist *glist,
@@ -411,10 +411,11 @@ static t_outlethelper *encapsulate_addOutletsToSnippetFetch (t_glist *glist)
     return outlets;
 }
 
-static void encapsulate_addOutletsToSnippetAssign (t_glist *glist, t_outlethelper *outlets, int n)
+static void encapsulate_addOutletsToSnippetAssign (t_glist *glist, t_outlethelper *outlets, int *index)
 {
     t_outlethelper *t = outlets;
     
+    int n = (*index);
     int k = 0;
     
     while (t) {
@@ -428,6 +429,8 @@ static void encapsulate_addOutletsToSnippetAssign (t_glist *glist, t_outlethelpe
     t = t->x_next;
     //
     }
+    
+    (*index) = (n + k);
 }
 
 static void encapsulate_addOutletsToSnippetCreate (t_glist *glist,
@@ -508,11 +511,13 @@ static void encapsulate_encapsulateAddInletsAndOutlets (t_glist *glist,
     t_inlethelper *inlets   = encapsulate_addInletsToSnippetFetch (glist);
     t_outlethelper *outlets = encapsulate_addOutletsToSnippetFetch (glist);
     
-    int n = encapsulate_addInletsToSnippetAssign (glist, inlets);
+    int n = glist_objectGetNumberOfSelected (glist);
+    
+    encapsulate_addInletsToSnippetAssign (glist, inlets, &n);
     encapsulate_addInletsToSnippetCreate (glist, inlets, b, r);
     encapsulate_addInletsToSnippetConnect (glist, inlets, b);
     
-    encapsulate_addOutletsToSnippetAssign (glist, outlets, n);
+    encapsulate_addOutletsToSnippetAssign (glist, outlets, &n);
     encapsulate_addOutletsToSnippetCreate (glist, outlets, b, r);
     encapsulate_addOutletsToSnippetConnect (glist, outlets, b);
     
