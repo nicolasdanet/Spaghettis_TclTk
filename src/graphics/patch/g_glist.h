@@ -29,6 +29,7 @@ struct _glist {
     t_gmaster           *gl_holder;
     t_glist             *gl_parent;
     t_glist             *gl_next;
+    t_abstractions      *gl_abstractions;
     t_environment       *gl_environment;
     t_undomanager       *gl_undomanager;
     t_symbol            *gl_name;
@@ -93,6 +94,8 @@ t_environment   *glist_getEnvironment       (t_glist *g);
 t_undomanager   *glist_getUndoManager       (t_glist *g);
 t_glist         *glist_getView              (t_glist *g);
 t_garray        *glist_getGraphicArray      (t_glist *g);
+t_symbol        *glist_getUnexpandedName    (t_glist *g);
+t_abstractions  *glist_getAbstractions      (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -127,7 +130,7 @@ void    glist_closebang                     (t_glist *g);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void    glist_serialize                     (t_glist *g, t_buffer *b, int flags);
+void    glist_serialize                     (t_glist *g, t_buffer *b, int flags, int isAbstraction);
 void    glist_rename                        (t_glist *g, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -150,6 +153,13 @@ void    glist_setGraphGeometry              (t_glist *g, t_rectangle *r, t_bound
 void    glist_setWindowGeometry             (t_glist *g, t_rectangle *r);
 void    glist_setScroll                     (t_glist *g, int a, int b);
 void    glist_setIdentifiers                (t_glist *g, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void    glist_setDollarZero                 (t_glist *g, int n);
+int     glist_getDollarZero                 (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

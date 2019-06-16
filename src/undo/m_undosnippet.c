@@ -98,7 +98,7 @@ void undosnippet_paste (t_undosnippet *x)
     
     if (object_isMessage (o) || object_isComment (o)) {
     //
-    t_buffer *b = buffer_new(); buffer_appendBuffer (b, x->us_buffer);
+    t_buffer *b = buffer_newCopy (x->us_buffer);
     
     object_setBuffer (o, b);    /* Takes ownership of the buffer. */
     

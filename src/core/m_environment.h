@@ -29,6 +29,7 @@ typedef struct _environment {
 void environment_free               (t_environment *e);
 void environment_setFileName        (t_environment *e, t_symbol *name);
 void environment_setDirectory       (t_environment *e, t_symbol *directory);
+void environment_setDollarZero      (t_environment *e, int n);
 
 t_symbol *environment_getFilePath   (t_environment *e);
 

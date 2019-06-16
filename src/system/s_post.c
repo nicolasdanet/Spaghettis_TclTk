@@ -107,6 +107,8 @@ void post_log (const char *fmt, ...)
     
     if (k >= 0 && k < PD_STRING) {
         post_syslog (t);
+    } else {
+        post_syslog ("...");
     }
 }
 

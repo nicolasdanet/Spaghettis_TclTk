@@ -150,40 +150,39 @@ void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static t_error eval_fileProceed (t_symbol *name, t_symbol *directory, const char *s)
+void eval_fileByBuffer (t_symbol *name, t_symbol *directory, t_buffer *b)
 {
-    t_error err = PD_ERROR_NONE;
-    
     int state = dsp_suspend();
     
-    t_buffer *t = buffer_new();
-        
-        instance_environmentSetFile (name, directory);
-        
-        if (s == NULL) { err = buffer_fromFile (t, name->s_name, directory->s_name); }
-        else {
-            buffer_withStringUnzeroed (t, s, (int)strlen (s));
-        }
-        
-        if (err) { error_failsToRead (name); } else { eval_buffer (t, NULL, 0, NULL); }
-        
-        instance_environmentResetFile();
+    instance_environmentSetFile (name, directory);
     
-    buffer_free (t);
+    eval_buffer (b, NULL, 0, NULL);
+    
+    instance_environmentResetFile();
     
     dsp_resume (state);
+}
+
+void eval_fileByString (t_symbol *name, t_symbol *directory, const char *s)
+{
+    t_buffer *t = buffer_new();
     
-    return err;
+    buffer_withStringUnzeroed (t, s, (int)strlen (s));
+    
+    eval_fileByBuffer (name, directory, t);
+    
+    buffer_free (t);
 }
 
-t_error eval_fileByString (t_symbol *name, t_symbol *directory, const char *s)
+void eval_file (t_symbol *name, t_symbol *directory)
 {
-    return eval_fileProceed (name, directory, s);
-}
-
-t_error eval_file (t_symbol *name, t_symbol *directory)
-{
-    return eval_fileProceed (name, directory, NULL);
+    t_buffer *t = buffer_new();
+    
+    t_error err = buffer_fromFile (t, name->s_name, directory->s_name);
+    
+    if (err) { error_failsToRead (name); } else { eval_fileByBuffer (name, directory, t); }
+    
+    buffer_free (t);
 }
 
 // -----------------------------------------------------------------------------------------------------------

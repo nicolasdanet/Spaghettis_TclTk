@@ -20,9 +20,6 @@ void        utils_anythingToList            (t_pd *x, t_listmethod fn, t_symbol 
 
 t_symbol    *utils_getUnusedBindName        (t_class *c, t_symbol *prefix);
 
-t_symbol    *utils_getFirstAtomOfObject     (t_object *x);
-t_symbol    *utils_getFirstAtomOfBuffer     (t_buffer *x);
-
 int         utils_isNameAllowedForWindow    (t_symbol *s);
 
 t_id        utils_unique                    (void);
@@ -32,6 +29,12 @@ void        utils_appendUnique              (t_buffer *b, t_id u);
 int         utils_uInt64IsElement           (t_symbol *s);
 t_error     utils_uInt64Serialize           (int argc, t_atom *argv, uint64_t *n);
 t_error     utils_uInt64Deserialize         (int argc, t_atom *argv, uint64_t *n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_symbol    *utils_getFirstAtomOfObjectAsSymbol     (t_object *x);
+t_symbol    *utils_getFirstAtomOfBufferAsSymbol     (t_buffer *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -53,6 +56,8 @@ t_symbol    *symbol_hashToDollar            (t_symbol *s);
 t_symbol    *symbol_replaceDoubleDollar     (t_symbol *s);
 t_symbol    *symbol_decode                  (t_symbol *s);
 t_symbol    *symbol_removeExtension         (t_symbol *s);
+t_symbol    *symbol_appendExtensionPatch    (t_symbol *s);
+t_symbol    *symbol_appendExtensionHelp     (t_symbol *s);
 
 t_symbol    *symbol_addPrefix               (t_symbol *s, t_symbol *prefix);
 t_symbol    *symbol_addSuffix               (t_symbol *s, t_symbol *suffix);

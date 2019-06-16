@@ -461,6 +461,7 @@ static t_pdinstance *instance_new()
     
     x->pd_clocks      = clocks_new();
     x->pd_register    = register_new();
+    x->pd_pool        = buffer_new();
     x->pd_dsp         = dspthread_new();
     
     x->pd_openedWindowInEditMode = -1;
@@ -480,6 +481,9 @@ static void instance_free (t_pdinstance *x)
     PD_ASSERT (x->pd_paint       == NULL);
     PD_ASSERT (x->pd_pending     == NULL);
     
+    PD_ASSERT (buffer_getSize (x->pd_pool) == x->pd_poolCount);
+    
+    buffer_free (x->pd_pool);
     register_free (x->pd_register);
     clocks_free (x->pd_clocks);
     

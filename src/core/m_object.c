@@ -56,8 +56,8 @@ t_object *object_setFromEntry (t_object *x, t_glist *glist, t_box *z)
     
     {
     //
-    int m = ((utils_getFirstAtomOfObject (x) == sym_pd) && (gobj_isCanvas (cast_gobj (x))));
-    int n = ((utils_getFirstAtomOfBuffer (t) == sym_pd));
+    int m = ((utils_getFirstAtomOfObjectAsSymbol (x) == sym_pd) && (gobj_isCanvas (cast_gobj (x))));
+    int n = ((utils_getFirstAtomOfBufferAsSymbol (t) == sym_pd));
     
     if (m && n) {
         

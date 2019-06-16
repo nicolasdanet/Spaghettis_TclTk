@@ -17,10 +17,12 @@
 
 #include "core/m_macros.h"
 #include "core/m_symbols.h"
+#include "core/m_pool.h"
 #include "core/m_snap.h"
 #include "core/m_helpers.h"
 #include "core/m_clipboard.h"
 #include "core/m_environment.h"
+#include "core/m_abstractions.h"
 #include "core/m_clocks.h"
 #include "core/m_instance.h"
 #include "core/m_class.h"
@@ -57,9 +59,14 @@ void        atom_sort                               (int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-char        *buffer_toString                        (t_buffer *x);      /* Caller acquires ownership. */
+/* Caller acquires ownership. */
 
-t_gobj      *buffer_getObjectAt                     (t_buffer *x, int n);
+char        *buffer_toString                        (t_buffer *x);
+
+t_symbol    *buffer_getSymbolAt                     (t_buffer *x, int n);       /* Not checked. */
+t_gobj      *buffer_getObjectAt                     (t_buffer *x, int n);       /* Not checked. */
+t_buffer    *buffer_getBufferAt                     (t_buffer *x, int n);       /* Not checked. */
+t_float     buffer_getFloatAt                       (t_buffer *x, int n);       /* Not checked. */
 
 void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed               (t_buffer *x, const char *s, int size);
@@ -67,7 +74,6 @@ void        buffer_withStringUnzeroed               (t_buffer *x, const char *s,
 void        buffer_reparseIfNeeded                  (t_buffer *x);
 void        buffer_reparse                          (t_buffer *x);
 void        buffer_invalidatePointers               (t_buffer *x);
-void        buffer_shuffle                          (t_buffer *x);
 
 int         buffer_isLastMessageProperlyEnded       (t_buffer *x);
 int         buffer_getNumberOfMessages              (t_buffer *x);
@@ -80,14 +86,17 @@ void        buffer_deserialize                      (t_buffer *x, int argc, t_at
 t_error     buffer_fileRead                         (t_buffer *x, t_symbol *name, t_glist *glist);
 t_error     buffer_fileWrite                        (t_buffer *x, t_symbol *name, t_symbol *directory);
 
+void        buffer_log                              (t_buffer *x);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void        eval_buffer                             (t_buffer *x, t_pd *object, int argc, t_atom *argv);
 
-t_error     eval_file                               (t_symbol *name, t_symbol *directory);
-t_error     eval_fileByString                       (t_symbol *name, t_symbol *directory, const char *s);
+void        eval_file                               (t_symbol *name, t_symbol *directory);
+void        eval_fileByString                       (t_symbol *name, t_symbol *directory, const char *s);
+void        eval_fileByBuffer                       (t_symbol *name, t_symbol *directory, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

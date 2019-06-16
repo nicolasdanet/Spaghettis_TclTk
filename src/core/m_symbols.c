@@ -214,6 +214,7 @@ t_symbol *sym__signoff;
 t_symbol *sym__snap;
 t_symbol *sym__sysexin;
 t_symbol *sym__tagcanvas;
+t_symbol *sym__tagdollarzero;
 t_symbol *sym__tagobject;
 t_symbol *sym__tagobjectsource;
 t_symbol *sym__touchin;
@@ -970,6 +971,7 @@ void symbols_initialize (void)
     sym__snap                                   = gensym ("_snap");
     sym__sysexin                                = gensym ("_sysexin");
     sym__tagcanvas                              = gensym ("_tagcanvas");
+    sym__tagdollarzero                          = gensym ("_tagdollarzero");
     sym__tagobject                              = gensym ("_tagobject");
     sym__tagobjectsource                        = gensym ("_tagobjectsource");
     sym__touchin                                = gensym ("_touchin");

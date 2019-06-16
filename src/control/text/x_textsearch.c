@@ -64,7 +64,7 @@ static int textsearch_listIsMatch (t_textsearch *x, t_buffer *b, int start, int 
     if (field < count && atom_typesAreEquals (buffer_getAtomAtIndex (b, start + field), argv + j)) {
     //
     if (IS_FLOAT (argv + j)) {
-        t_float f1 = GET_FLOAT (buffer_getAtomAtIndex (b, start + field));
+        t_float f1 = buffer_getFloatAt (b, start + field);
         t_float f2 = GET_FLOAT (argv + j);
         switch (type) {
             case TEXTSEARCH_EQUAL           : if (f1 != f2) { return 0; } break;
@@ -112,8 +112,8 @@ static int textsearch_listIsBetter (t_textsearch *x,
     if (IS_FLOAT (argv + j)) {
     //
     t_float f            = GET_FLOAT (argv + j);
-    t_float bestValue    = GET_FLOAT (buffer_getAtomAtIndex (b, bestLineStart + field));
-    t_float thisValue    = GET_FLOAT (buffer_getAtomAtIndex (b, start + field)); 
+    t_float bestValue    = buffer_getFloatAt (b, bestLineStart + field);
+    t_float thisValue    = buffer_getFloatAt (b, start + field); 
     t_float bestDistance = math_euclideanDistance (f, 0.0, bestValue, 0.0);
     t_float thisDistance = math_euclideanDistance (f, 0.0, thisValue, 0.0);
     

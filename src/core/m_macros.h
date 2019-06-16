@@ -190,7 +190,8 @@ t_seed time_makeRandomSeed (void);
 #define SET_DOLLAR(atom, n)                 ((atom)->a_type = A_DOLLAR, (atom)->a_w.a_index = (n))
 #define SET_DOLLARSYMBOL(atom, s)           ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.a_symbol = (s))
 #define SET_VOID(atom, p)                   ((atom)->a_type = A_VOID, (atom)->a_w.a_void = (p))
-#define SET_OBJECT(atom, p)                 SET_VOID (atom, (t_gobj *)(p))
+#define SET_OBJECT(atom, p)                 SET_VOID (atom, (void *)(p))
+#define SET_BUFFER(atom, p)                 SET_VOID (atom, (void *)(p))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -202,6 +203,7 @@ t_seed time_makeRandomSeed (void);
 #define GET_DOLLAR(atom)                    ((atom)->a_w.a_index)
 #define GET_VOID(atom)                      ((atom)->a_w.a_void)
 #define GET_OBJECT(atom)                    (t_gobj *)GET_VOID (atom)
+#define GET_BUFFER(atom)                    (t_buffer *)GET_VOID (atom)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

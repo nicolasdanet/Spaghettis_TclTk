@@ -51,6 +51,7 @@ typedef struct _pdinstance {
     uint64_t        pd_pollingCount;
     uint64_t        pd_autoreleaseCount;
     t_int32Atomic   pd_clocksCount;
+    int             pd_poolCount;
     int             pd_overflow;
     int             pd_overflowCount;
     int             pd_isLoadingExternal;
@@ -72,6 +73,7 @@ typedef struct _pdinstance {
     t_class         *pd_objectMaker;
     t_class         *pd_canvasMaker;
     t_register      *pd_register;
+    t_buffer        *pd_pool;
     t_dspthread     *pd_dsp;
     } t_pdinstance;
 
@@ -198,7 +200,7 @@ void    instance_patchNew                       (t_symbol *name, t_symbol *direc
 t_error instance_patchOpen                      (t_symbol *name, t_symbol *directory);
 
 void    instance_loadAbstraction                (t_symbol *name, int argc, t_atom *argv);
-void    instance_loadInvisible                  (t_symbol *name, const char *s);
+void    instance_loadBuiltIn                    (t_symbol *name, const char *s);
 void    instance_loadSnippet                    (t_glist *glist, t_buffer *b);
 
 void    instance_stackPush                      (t_glist *glist);

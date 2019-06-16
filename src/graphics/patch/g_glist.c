@@ -45,6 +45,7 @@ static t_glist *glist_new (t_glist *owner,
     x->gl_holder            = gmaster_createWithGlist (x);
     x->gl_parent            = owner;
     x->gl_environment       = instance_environmentFetchIfAny();
+    x->gl_abstractions      = NULL;
     x->gl_undomanager       = undomanager_new (x);
     x->gl_name              = (name != &s_ ? name : environment_getFileName (x->gl_environment));
     x->gl_editor            = editor_new (x);
@@ -61,6 +62,8 @@ static t_glist *glist_new (t_glist *owner,
     if (window) { rectangle_setCopy (&x->gl_geometryWindow, window); }
     
     rectangle_setNothing (&x->gl_geometryPatch);
+    
+    if (glist_isRoot (x)) { x->gl_abstractions = abstractions_new(); }
     
     glist_bind (x);
     
@@ -86,6 +89,7 @@ void glist_free (t_glist *glist)
     gmaster_reset (glist_getMaster (glist));
     
     undomanager_free (glist->gl_undomanager);
+    abstractions_free (glist->gl_abstractions);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -217,7 +221,7 @@ int glist_isSubpatch (t_glist *glist)
 
 int glist_isGraphicArray (t_glist *glist)
 {
-    return (utils_getFirstAtomOfObject (cast_object (glist)) == sym_graph);
+    return (utils_getFirstAtomOfObjectAsSymbol (cast_object (glist)) == sym_graph);
 }
 
 int glist_isDirty (t_glist *glist)
@@ -284,6 +288,23 @@ t_garray *glist_getGraphicArray (t_glist *glist)
     else {
         return NULL;    /* Could be NULL in legacy patches or at release time. */
     }
+}
+
+/* Code below is required to fetch the unexpanded form. */
+
+t_symbol *glist_getUnexpandedName (t_glist *glist)
+{
+    t_buffer *z = buffer_new();
+    buffer_serialize (z, object_getBuffer (cast_object (glist)));
+    t_symbol *s = atom_getSymbolAtIndex (1, buffer_getSize (z), buffer_getAtoms (z));
+    buffer_free (z);
+    
+    return s;
+}
+
+t_abstractions *glist_getAbstractions (t_glist *glist)
+{
+    return glist_getRoot (glist)->gl_abstractions;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -425,6 +446,20 @@ void glist_setIdentifiers (t_glist *glist, int argc, t_atom *argv)
     PD_ASSERT (!err); PD_UNUSED (err);
     
     gobj_changeIdentifiers (cast_gobj (glist), u);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void glist_setDollarZero (t_glist *glist, int n)
+{
+    environment_setDollarZero (glist_getEnvironment (glist), n);
+}
+
+int glist_getDollarZero (t_glist *glist)
+{
+    return environment_getDollarZero (glist_getEnvironment (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -671,6 +706,22 @@ void glist_objectMake (t_glist *glist, int a, int b, int w, int isSelected, t_bu
         }
     }
 
+    /* Replace original name of an abstraction created from snippet (e.g. encapsulation). */
+    
+    if (buffer_getSize (t) && IS_SYMBOL (buffer_getAtomAtIndex (t, 0))) {
+    //
+    t_symbol *key  = buffer_getSymbolAt (t, 0);
+    
+    if (pool_check (key)) {
+    //
+    t_symbol *name = abstractions_getName (glist_getAbstractions (instance_contextGetCurrent()), key);
+    
+    if (name) { buffer_setSymbolAtIndex (t, 0, name); }
+    //
+    }
+    //
+    }
+    
     object_setBuffer (x, t);
     
     if (isSelected) {
@@ -876,9 +927,7 @@ static void glist_objectRemoveFree (t_glist *glist, t_gobj *y)
         if (garbage_newObject (y)) { return; }
     }
     
-    if (instance_pendingRequired (y)) {
-        if (!glist_isAbstractionOrInside (glist)) { instance_pendingAdd (y); return; }
-    }
+    if (instance_pendingRequired (y)) { instance_pendingAdd (y); return; }
 
     pd_free (cast_pd (y));
 }
