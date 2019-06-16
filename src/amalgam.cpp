@@ -18,12 +18,14 @@
 /* Core. */
 
 #include "core/m_symbols.c"
+#include "core/m_pool.c"
 #include "core/m_environment.c"
 #include "core/m_autorelease.c"
 #include "core/m_clocks.c"
 #include "core/m_instance.c"
 #include "core/m_pending.c"
 #include "core/m_stack.c"
+#include "core/m_abstractions.c"
 #include "core/m_bind.c"
 #include "core/m_message.c"
 #include "core/m_pd.c"

@@ -106,7 +106,7 @@ static int textsequence_proceedSetWaitRange (t_textsequence *x, t_buffer *b, int
 static void textsequence_proceedOutWaitForSymbol (t_textsequence *x, t_buffer *b, int start, int end)
 {
     if (x->x_isAutomatic && x->x_waitCount == 2 && IS_FLOAT (buffer_getAtomAtIndex (b, start + 1))) {
-        x->x_delay = GET_FLOAT (buffer_getAtomAtIndex (b, start + 1));
+        x->x_delay = buffer_getFloatAt (b, start + 1);
         
     } else {
         PD_ASSERT (x->x_outletWait);
@@ -119,7 +119,7 @@ static void textsequence_proceedOutWaitForSymbol (t_textsequence *x, t_buffer *b
 static void textsequence_proceedOutWaitForFloat (t_textsequence *x, t_buffer *b, int start, int end)
 {
     if (x->x_isAutomatic && x->x_waitCount == 1) { 
-        x->x_delay = GET_FLOAT (buffer_getAtomAtIndex (b, start));
+        x->x_delay = buffer_getFloatAt (b, start);
         
     } else {
         PD_ASSERT (x->x_outletWait);

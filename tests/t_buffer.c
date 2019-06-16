@@ -124,6 +124,21 @@ t_buffer *t = buffer_new();
     PD_MEMORY_FREE (s); s = buffer_toString (b);
     TTT_EXPECT (!strcmp (s, "spam bacon egg and spam spam bacon spam and egg"));
     PD_MEMORY_FREE (s);
+    
+    t_atom a;
+    
+    TTT_EXPECT (buffer_pop (b, &a)  == PD_ERROR_NONE);
+    TTT_EXPECT (atom_getSymbol (&a) == GET_SYMBOL (menu + 2));
+    TTT_EXPECT (buffer_pop (b, &a)  == PD_ERROR_NONE);
+    TTT_EXPECT (atom_getSymbol (&a) == GET_SYMBOL (menu + 3));
+    TTT_EXPECT (buffer_pop (b, &a)  == PD_ERROR_NONE);
+    TTT_EXPECT (atom_getSymbol (&a) == GET_SYMBOL (menu + 0));
+    TTT_EXPECT (buffer_pop (b, &a)  == PD_ERROR_NONE);
+    TTT_EXPECT (atom_getSymbol (&a) == GET_SYMBOL (menu + 1));
+    
+    buffer_clear (b);
+    
+    TTT_EXPECT (buffer_pop (b, &a) == PD_ERROR);
 }
 
 buffer_free (t);

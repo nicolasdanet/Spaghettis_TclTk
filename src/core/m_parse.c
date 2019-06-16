@@ -284,26 +284,14 @@ void buffer_reparse (t_buffer *x)
     PD_MEMORY_FREE (s);
 }
 
-void buffer_invalidatePointers (t_buffer *x)
-{
-    atom_invalidatePointers (buffer_getSize (x), buffer_getAtoms (x));
-}
-
-void buffer_shuffle (t_buffer *x)
-{
-    atom_shuffle (buffer_getSize (x), buffer_getAtoms (x));
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void buffer_serialize (t_buffer *x, t_buffer *y)
 {
-    t_buffer *copy = buffer_new();
+    t_buffer *copy = buffer_newCopy (y);
     int i;
-
-    buffer_appendBuffer (copy, y);
     
     for (i = 0; i < buffer_getSize (copy); i++) {
     //
@@ -340,6 +328,35 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
     }
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void buffer_invalidatePointers (t_buffer *x)
+{
+    atom_invalidatePointers (buffer_getSize (x), buffer_getAtoms (x));
+}
+
+void buffer_shuffle (t_buffer *x)
+{
+    atom_shuffle (buffer_getSize (x), buffer_getAtoms (x));
+}
+
+t_error buffer_pop (t_buffer *x, t_atom *a)
+{
+    int n = buffer_getSize (x);
+    
+    if (n > 0) {
+    //
+    atom_copyAtom (buffer_getAtomAtIndex (x, n - 1), a);
+    buffer_resize (x, n - 1);
+    return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -412,6 +429,31 @@ t_error buffer_getMessageAtWithTypeOfEnd (t_buffer *x, int n, int *start, int *e
     
     return err;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#if PD_WITH_DEBUG
+
+void buffer_log (t_buffer *x)
+{
+    t_iterator *iter = iterator_new (buffer_getSize (x), buffer_getAtoms (x), 1);
+    t_atom *atoms = NULL;
+    int count;
+    
+    while ((count = iterator_next (iter, &atoms))) {
+    //
+    char *t = atom_atomsToString (count, atoms);
+    post_log ("%s", t);
+    PD_MEMORY_FREE (t);
+    //
+    }
+    
+    iterator_free (iter);
+}
+
+#endif // PD_WITH_DEBUG
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

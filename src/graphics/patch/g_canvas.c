@@ -220,6 +220,11 @@ static void canvas_tagcanvas (t_glist *glist, t_symbol *s, int argc, t_atom *arg
     glist_setIdentifiers (glist, argc, argv);
 }
 
+static void canvas_tagdollarzero (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
+{
+    glist_setDollarZero (glist, atom_getFloatAtIndex (0, argc, argv));
+}
+
 static void canvas_tagobject (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     glist_objectSetIdentifiersOfLast (glist, argc, argv);
@@ -530,21 +535,56 @@ static void canvas_fromDialog (t_glist *glist, t_symbol *s, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void canvas_functionSaveAbstraction (t_gobj *x, t_buffer *b, int flags, t_buffer *o)
+{
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym_obj);
+    buffer_appendFloat (b,  object_getX (cast_object (x)));
+    buffer_appendFloat (b,  object_getY (cast_object (x)));
+    buffer_serialize (b,    o);
+    buffer_appendSemicolon (b);
+    object_serializeWidth (cast_object (x), b);
+    
+    gobj_saveUniques (x, b, flags);
+}
+
+static void canvas_functionSaveAsSnippet (t_gobj *x, t_buffer *b, int flags)
+{
+    t_buffer *t = buffer_newCopy (object_getBuffer (cast_object (x)));
+    
+    if (buffer_getSize (t) && IS_SYMBOL (buffer_getAtomAtIndex (t, 0))) {
+    //
+    t_glist *glist    = cast_glist (x);
+    t_symbol *name    = buffer_getSymbolAt (t, 0);
+    t_buffer *snippet = buffer_new();
+    
+    glist_serialize (glist, snippet, flags, 1);
+    
+    buffer_setSymbolAtIndex (t, 0, abstractions_cache (glist_getAbstractions (glist), glist, name, snippet));
+    //
+    } else { PD_BUG; }
+    
+    canvas_functionSaveAbstraction (x, b, flags, t);
+    
+    buffer_free (t);
+}
+
+static void canvas_functionSaveAsObject (t_gobj *x, t_buffer *b, int flags)
+{
+    canvas_functionSaveAbstraction (x, b, flags, object_getBuffer (cast_object (x)));
+}
+
 static void canvas_functionSave (t_gobj *x, t_buffer *b, int flags)
 {
-    int saveContents = !(glist_isAbstraction (cast_glist (x)));
-    
-    if (saveContents) { glist_serialize (cast_glist (x), b, flags); }
+    if (!glist_isAbstraction (cast_glist (x))) { glist_serialize (cast_glist (x), b, flags, 0); }
     else {
-        buffer_appendSymbol (b, sym___hash__X);
-        buffer_appendSymbol (b, sym_obj);
-        buffer_appendFloat (b,  object_getX (cast_object (x)));
-        buffer_appendFloat (b,  object_getY (cast_object (x)));
-        buffer_serialize (b,    object_getBuffer (cast_object (x)));
-        buffer_appendSemicolon (b);
-        object_serializeWidth (cast_object (x), b);
-        
-        gobj_saveUniques (x, b, flags);
+    //
+    if (SAVED_DEEP (flags)) {
+        canvas_functionSaveAsSnippet (x, b, flags);
+    } else {
+        canvas_functionSaveAsObject (x, b, flags);
+    }
+    //
     }
 }
 
@@ -703,6 +743,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_makeDial,              sym_nbx,                A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_tagcanvas,             sym__tagcanvas,         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_tagdollarzero,         sym__tagdollarzero,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_tagobject,             sym__tagobject,         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_tagobjectsource,       sym__tagobjectsource,   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_key,                   sym__key,               A_GIMME, A_NULL);

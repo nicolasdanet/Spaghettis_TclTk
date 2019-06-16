@@ -569,23 +569,18 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-struct _array;
+#if PD_BUILDING_APPLICATION
+
+struct _abstractions;
 struct _box;
-struct _chain;
-struct _class;
-struct _clock;
 struct _clocks;
 struct _constructor;
 struct _dspcontext;
 struct _dspthread;
 struct _garray;
 struct _gatom;
-struct _glist;
 struct _gmaster;
-struct _gpointer;
-struct _inlet;
 struct _outconnect;
-struct _outlet;
 struct _receiver;
 struct _ringbuffer;
 struct _sfthread;
@@ -594,23 +589,29 @@ struct _template;
 struct _vinlet;
 struct _voutlet;
 
-#define t_array                     struct _array
+#endif // PD_BUILDING_APPLICATION
+
+struct _array;
+struct _chain;
+struct _class;
+struct _clock;
+struct _glist;
+struct _gpointer;
+struct _inlet;
+struct _outlet;
+
+#if PD_BUILDING_APPLICATION
+
+#define t_abstractions              struct _abstractions
 #define t_box                       struct _box
-#define t_chain                     struct _chain
-#define t_class                     struct _class
-#define t_clock                     struct _clock
 #define t_clocks                    struct _clocks
 #define t_constructor               struct _constructor
 #define t_dspcontext                struct _dspcontext
 #define t_dspthread                 struct _dspthread
 #define t_garray                    struct _garray
 #define t_gatom                     struct _gatom
-#define t_glist                     struct _glist
 #define t_gmaster                   struct _gmaster
-#define t_gpointer                  struct _gpointer
-#define t_inlet                     struct _inlet
 #define t_outconnect                struct _outconnect
-#define t_outlet                    struct _outlet
 #define t_receiver                  struct _receiver
 #define t_ringbuffer                struct _ringbuffer
 #define t_sfthread                  struct _sfthread
@@ -618,6 +619,17 @@ struct _voutlet;
 #define t_template                  struct _template
 #define t_vinlet                    struct _vinlet
 #define t_voutlet                   struct _voutlet
+
+#endif // PD_BUILDING_APPLICATION
+
+#define t_array                     struct _array
+#define t_chain                     struct _chain
+#define t_class                     struct _class
+#define t_clock                     struct _clock
+#define t_glist                     struct _glist
+#define t_gpointer                  struct _gpointer
+#define t_inlet                     struct _inlet
+#define t_outlet                    struct _outlet
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -903,6 +915,7 @@ PD_DLL char     *atom_atomsToString             (int argc, t_atom *argv);   /* C
 // MARK: -
 
 PD_DLL t_buffer *buffer_new                     (void);
+PD_DLL t_buffer *buffer_newCopy                 (t_buffer *toCopy);
 PD_DLL t_atom   *buffer_getAtoms                (t_buffer *x);
 PD_DLL t_atom   *buffer_getAtomAtIndex          (t_buffer *x, int n);
 PD_DLL t_atom   *buffer_getAtomAtIndexChecked   (t_buffer *x, int n);
@@ -910,6 +923,7 @@ PD_DLL t_atom   *buffer_getAtomAtIndexChecked   (t_buffer *x, int n);
 PD_DLL int      buffer_getSize                  (t_buffer *x);
 PD_DLL void     buffer_free                     (t_buffer *x);
 PD_DLL void     buffer_clear                    (t_buffer *x);
+PD_DLL void     buffer_shuffle                  (t_buffer *x);
 
 PD_DLL void     buffer_reserve                  (t_buffer *x, int n);
 PD_DLL void     buffer_resize                   (t_buffer *x, int n);
@@ -917,6 +931,7 @@ PD_DLL t_error  buffer_extend                   (t_buffer *x, int start, int end
 PD_DLL t_error  buffer_getAtIndex               (t_buffer *x, int n, t_atom *a);
 PD_DLL t_error  buffer_setAtIndex               (t_buffer *x, int n, t_atom *a);
 PD_DLL t_error  buffer_insertAtIndex            (t_buffer *x, int n, t_atom *a);
+PD_DLL t_error  buffer_pop                      (t_buffer *x, t_atom *a);
 
 PD_DLL t_error  buffer_setFloatAtIndex          (t_buffer *x, int n, t_float f);
 PD_DLL t_error  buffer_setSymbolAtIndex         (t_buffer *x, int n, t_symbol *s);

@@ -105,24 +105,22 @@ static int instance_loadAbstractionIsValid (t_symbol *filename)
     return 1;
 }
 
-void instance_loadAbstraction (t_symbol *name, int argc, t_atom *argv)
+static void instance_loadAbstractionProceed (t_symbol *filename,
+    t_symbol *directory,
+    int argc,
+    t_atom *argv,
+    t_buffer *b)
 {
-    t_fileproperties p; fileproperties_initAbstraction (&p, name);
-    
-    if (glist_fileExist (instance_contextGetCurrent(), name->s_name, PD_PATCH, &p)) {
-    //
-    t_symbol *filename = gensym (fileproperties_getName (&p));
-    
     if (instance_loadAbstractionIsValid (filename)) {
     //
     instance_environmentSetArguments (argc, argv);
     
-    eval_file (filename, gensym (fileproperties_getDirectory (&p)));
+    if (b) { eval_fileByBuffer (filename, directory, b); } else { eval_file (filename, directory); }
     
     if (instance_contextGetCurrent() != instance_contextGetStored()) {
     
         instance_setNewestObject (cast_pd (instance_contextGetCurrent()));
-        instance_stackPopPatch (instance_contextGetCurrent(), 0); 
+        instance_stackPopPatch (instance_contextGetCurrent(), 0);
     }
     
     instance_environmentResetArguments();
@@ -130,8 +128,49 @@ void instance_loadAbstraction (t_symbol *name, int argc, t_atom *argv)
     } else {
         error_recursiveInstantiation (filename);
     }
+}
+
+static void instance_loadAbstractionFile (t_symbol *name, int argc, t_atom *argv)
+{
+    t_fileproperties p; fileproperties_initAbstraction (&p, name);
+    
+    if (glist_fileExist (instance_contextGetCurrent(), name->s_name, PD_PATCH, &p)) {
+    //
+    t_symbol *filename  = gensym (fileproperties_getName (&p));
+    t_symbol *directory = gensym (fileproperties_getDirectory (&p));
+    
+    instance_loadAbstractionProceed (filename, directory, argc, argv, NULL);
     //
     }
+}
+
+static t_error instance_loadAbstractionSnippet (t_symbol *key, int argc, t_atom *argv)
+{
+    t_abstractions *t   = glist_getAbstractions (instance_contextGetCurrent());
+    t_symbol *filename  = NULL;
+    t_symbol *directory = NULL;
+    t_buffer *snippet   = abstractions_getSnippet (t, key, &filename, &directory);
+    
+    if (snippet) {
+    //
+    instance_loadAbstractionProceed (filename, directory, argc, argv, snippet);
+    
+    return PD_ERROR_NONE;
+    //
+    }
+    
+    return PD_ERROR;
+}
+
+void instance_loadAbstraction (t_symbol *name, int argc, t_atom *argv)
+{
+    if (pool_check (name)) {    /* Abstraction cached (e.g. encapsulation)? */
+    //
+    if (instance_loadAbstractionSnippet (name, argc, argv) == PD_ERROR_NONE) { return; }
+    //
+    }
+    
+    instance_loadAbstractionFile (name, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -176,9 +215,9 @@ static int instance_loadPatch (t_symbol *name, t_symbol *directory)
     return instance_loadPatchProceed (name, directory, NULL, 1);
 }
 
-/* Load invisible patches (mainly used for built-in templates). */
+/* Load invisible patches used for built-in templates. */
 
-void instance_loadInvisible (t_symbol *name, const char *s)
+void instance_loadBuiltIn (t_symbol *name, const char *s)
 {
     instance_loadPatchProceed (name, sym___dot__, s, 0);
 }

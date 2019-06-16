@@ -33,6 +33,11 @@ t_buffer *buffer_new (void)
     return x;
 }
 
+t_buffer *buffer_newCopy (t_buffer *toCopy)
+{
+    t_buffer *x = buffer_new(); if (toCopy) { buffer_appendBuffer (x, toCopy); } return x;
+}
+
 void buffer_free (t_buffer *x)
 {
     PD_MEMORY_FREE (x->b_vector);
@@ -69,9 +74,24 @@ t_atom *buffer_getAtomAtIndexChecked (t_buffer *x, int n)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol *buffer_getSymbolAt (t_buffer *x, int n)
+{
+    t_atom *a = buffer_getAtomAtIndex (x, n); PD_ASSERT (IS_SYMBOL (a)); return GET_SYMBOL (a);
+}
+
 t_gobj *buffer_getObjectAt (t_buffer *x, int n)
 {
-    t_atom *a = buffer_getAtomAtIndex (x, n); return GET_OBJECT (a);
+    t_atom *a = buffer_getAtomAtIndex (x, n); PD_ASSERT (IS_VOID (a));   return GET_OBJECT (a);
+}
+
+t_buffer *buffer_getBufferAt (t_buffer *x, int n)
+{
+    t_atom *a = buffer_getAtomAtIndex (x, n); PD_ASSERT (IS_VOID (a));   return GET_BUFFER (a);
+}
+
+t_float buffer_getFloatAt (t_buffer *x, int n)
+{
+    t_atom *a = buffer_getAtomAtIndex (x, n); PD_ASSERT (IS_FLOAT (a));  return GET_FLOAT (a);
 }
 
 // -----------------------------------------------------------------------------------------------------------

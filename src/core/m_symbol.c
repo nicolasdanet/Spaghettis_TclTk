@@ -201,6 +201,16 @@ t_symbol *symbol_removeExtension (t_symbol *s)
     return s;
 }
 
+t_symbol *symbol_appendExtensionPatch (t_symbol *s)
+{
+    return symbol_addSuffix (s, gensym (PD_PATCH));
+}
+
+t_symbol *symbol_appendExtensionHelp (t_symbol *s)
+{
+    return symbol_addSuffix (s, gensym (PD_HELP));
+}
+
 t_symbol *symbol_addPrefix (t_symbol *s, t_symbol *prefix)
 {
     if (prefix == &s_) { return s; }

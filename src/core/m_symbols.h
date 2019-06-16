@@ -214,6 +214,7 @@ extern t_symbol *sym__signoff;
 extern t_symbol *sym__snap;
 extern t_symbol *sym__sysexin;
 extern t_symbol *sym__tagcanvas;
+extern t_symbol *sym__tagdollarzero;
 extern t_symbol *sym__tagobject;
 extern t_symbol *sym__tagobjectsource;
 extern t_symbol *sym__touchin;

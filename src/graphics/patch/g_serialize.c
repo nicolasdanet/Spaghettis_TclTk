@@ -30,14 +30,10 @@ static void glist_serializeHeader (t_glist *glist, t_buffer *b)
     t_symbol *s = &s_;
     
     /* Note that the name of a subpatch or an array could be expanded. */
-    /* Code below is required to fetch the unexpanded form. */
     
     if (glist_isGraphicArray (glist)) { s = garray_getUnexpandedName (glist_getGraphicArray (glist)); }
     else {
-        t_buffer *z = buffer_new();
-        buffer_serialize (z, object_getBuffer (cast_object (glist)));
-        s = atom_getSymbolAtIndex (1, buffer_getSize (z), buffer_getAtoms (z));
-        buffer_free (z);
+        s = glist_getUnexpandedName (glist);
     }
     
     buffer_appendSymbol (b, (s != &s_ ? s : sym_Patch));
@@ -84,6 +80,16 @@ static void glist_serializeTag (t_glist *glist, t_buffer *b, int flags)
     if (flags & SAVE_UNDO) { gobj_serializeUnique (cast_gobj (glist), sym__tagcanvas, b); }
 }
 
+static void glist_serializeDollarZero (t_glist *glist, t_buffer *b)
+{
+    int n = glist_getDollarZero (glist);
+    
+    buffer_appendSymbol (b, sym___hash__X);
+    buffer_appendSymbol (b, sym__tagdollarzero);
+    buffer_appendFloat (b, n);
+    buffer_appendSemicolon (b);
+}
+
 /* For compatibility with legacy, top left coordinates must be serialized at last. */
 
 static void glist_serializeGraph (t_glist *glist, t_buffer *b)
@@ -127,14 +133,26 @@ static void glist_serializeFooter (t_glist *glist, t_buffer *b)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void glist_serialize (t_glist *glist, t_buffer *b, int flags)
+void glist_serialize (t_glist *glist, t_buffer *b, int flags, int isAbstraction)
 {
+    if (isAbstraction) {
+
+    glist_serializeHeader (glist, b);
+    glist_serializeDollarZero (glist, b);
+    glist_serializeObjects (glist, b, flags);
+    glist_serializeLines (glist, b);
+    glist_serializeGraph (glist, b);
+        
+    } else {
+    
     glist_serializeHeader (glist, b);
     glist_serializeObjects (glist, b, flags);
     glist_serializeLines (glist, b);
     glist_serializeTag (glist, b, flags);
     glist_serializeGraph (glist, b);
     glist_serializeFooter (glist, b);
+    
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

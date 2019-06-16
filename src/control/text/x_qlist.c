@@ -48,7 +48,7 @@ static void qlist_proceedWait (t_qlist *x, int doNotSend, int isAutomatic, int s
     
     x->ql_waitCount = i - start;
     
-    if (isAutomatic) { clock_delay (x->ql_clock, (double)GET_FLOAT (buffer_getAtomAtIndex (b, start))); }
+    if (isAutomatic) { clock_delay (x->ql_clock, buffer_getFloatAt (b, start)); }
     else {
         outlet_list (x->ql_outletLeft, x->ql_waitCount, buffer_getAtomAtIndex (b, start));
     }

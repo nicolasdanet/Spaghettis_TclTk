@@ -101,13 +101,10 @@ void environment_setFileName (t_environment *e, t_symbol *name)
         e->env_fileName = name;
         
     } else {
-
-        char t[PD_STRING] = { 0 };
-        const char *extension = PD_PATCH;
-        
-        if (string_endWith (e->env_fileName->s_name, PD_HELP)) { extension = PD_HELP; }
-        if (!string_sprintf (t, PD_STRING, "%s%s", name->s_name, extension)) {
-            e->env_fileName = gensym (t);
+        if (string_endWith (e->env_fileName->s_name, PD_HELP)) {
+            e->env_fileName = symbol_appendExtensionHelp (name);
+        } else {
+            e->env_fileName = symbol_appendExtensionPatch (name);
         }
     }
 }
@@ -115,6 +112,15 @@ void environment_setFileName (t_environment *e, t_symbol *name)
 void environment_setDirectory (t_environment *e, t_symbol *directory)
 {
     e->env_directory = directory;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void environment_setDollarZero (t_environment *e, int n)
+{
+    e->env_dollarZeroValue = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------

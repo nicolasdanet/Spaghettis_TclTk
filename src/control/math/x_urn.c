@@ -115,7 +115,7 @@ static t_buffer *urn_functionData (t_gobj *z, int flags)
     buffer_appendComma (b);
     buffer_appendSymbol (b, sym__restore);
         
-    if (n) { buffer_appendFloat (b,  x->x_index); buffer_appendBuffer (b, x->x_buffer); }
+    if (n) { buffer_appendFloat (b, x->x_index); buffer_appendBuffer (b, x->x_buffer); }
     
     return b;
     //
