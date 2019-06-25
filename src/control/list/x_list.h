@@ -59,6 +59,8 @@ void    listinlet_initByClone           (t_listinlet *x, t_listinlet *newList);
 void    listinlet_free                  (t_listinlet *x);
 void    listinlet_copyAtomsUnchecked    (t_listinlet *x, t_atom *a);
 
+t_atom  *listinlet_getAtomAtIndex       (t_listinlet *x, int i);
+
 void    listinlet_listClear             (t_listinlet *x);
 void    listinlet_listSet               (t_listinlet *x, int argc, t_atom *argv);
 void    listinlet_listAppend            (t_listinlet *x, int argc, t_atom *argv);
