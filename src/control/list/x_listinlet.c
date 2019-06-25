@@ -256,6 +256,13 @@ void listinlet_copyAtomsUnchecked (t_listinlet *x, t_atom *a)
     int i; for (i = 0; i < x->li_size; i++) { a[i] = x->li_vector[i].le_atom; }
 }
 
+t_atom *listinlet_getAtomAtIndex (t_listinlet *x, int i)
+{
+    PD_ASSERT (i >= 0); if (i < x->li_size) { return &x->li_vector[i].le_atom; }
+    
+    return NULL;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

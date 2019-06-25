@@ -273,6 +273,7 @@
 #include "control/math/x_urn.c"
 #include "control/math/x_clip.c"
 #include "control/math/x_expr.c"
+#include "control/math/x_vexpr.c"
 
 #include "control/time/x_metro.c"
 #include "control/time/x_delay.c"

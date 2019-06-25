@@ -209,6 +209,7 @@ t_symbol *sym__scalar;
 t_symbol *sym__scalardialog;
 t_symbol *sym__scroll;
 t_symbol *sym__selectall;
+t_symbol *sym__set;
 t_symbol *sym__signals;
 t_symbol *sym__signoff;
 t_symbol *sym__snap;
@@ -966,6 +967,7 @@ void symbols_initialize (void)
     sym__scalardialog                           = gensym ("_scalardialog");
     sym__scroll                                 = gensym ("_scroll");
     sym__selectall                              = gensym ("_selectall");
+    sym__set                                    = gensym ("_set");
     sym__signals                                = gensym ("_signals");
     sym__signoff                                = gensym ("_signoff");
     sym__snap                                   = gensym ("_snap");
