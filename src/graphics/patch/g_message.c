@@ -26,7 +26,12 @@ static t_class *messageresponder_class;                 /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int atom_copyAtomsExpandedWithArguments (t_atom *, int, t_atom *, int, t_glist *, int, t_atom *);
+int  atom_copyAtomsExpandedWithArguments (t_atom *, int, t_atom *, int, t_glist *, int, t_atom *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void eval_bufferProceed (int, t_atom *, t_pd *, int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -110,12 +115,7 @@ static void message_eval (t_message *x, int argc, t_atom *argv)
     PD_ATOMS_ALLOCA (a, n);
     
     if (atom_copyAtomsExpandedWithArguments (buffer_getAtoms (b), n, a, n, x->m_owner, argc, argv)) {
-
-        t_buffer *t = buffer_new();
-        buffer_append (t, n, a);
-        eval_buffer (t, cast_pd (&x->m_responder), argc, argv);
-        buffer_free (t);
-        
+        eval_bufferProceed (n, a, cast_pd (&x->m_responder), argc, argv);
     } else {
         eval_buffer (b, cast_pd (&x->m_responder), argc, argv);
     }

@@ -67,54 +67,53 @@ static int eval_bufferGetMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *
     return end;
 }
 
-void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
+void eval_bufferProceed (int size, t_atom *v, t_pd *object, int argc, t_atom *argv)
 {
-    int size  = buffer_getSize (x);
-    t_atom *v = buffer_getAtoms (x);
     t_atom *message = NULL;
     t_atom *m = NULL;
     t_pd *next = NULL;
     int args = 0;
+    int n = size;
     
     instance_setBoundA (NULL);
     
-    PD_ATOMS_ALLOCA (message, buffer_getSize (x));
+    PD_ATOMS_ALLOCA (message, size);
     
     while (1) {
     //
-    while (!object) {  
-         
+    while (!object) {
+        
         t_symbol *s = NULL;
         
-        while (size && IS_SEMICOLON_OR_COMMA (v)) { size--; v++; }
+        while (n && IS_SEMICOLON_OR_COMMA (v)) { n--; v++; }
         
-        if (size) { s = eval_bufferGetObject (v, argc, argv); }
+        if (n) { s = eval_bufferGetObject (v, argc, argv); }
         else {
             break;
         }
         
         if (s == NULL || !(object = symbol_getThing (s))) {
             if (!s) { error_invalid (&s_, sym_expansion); }
-            else { 
-                symbol_hasThing (s); 
+            else {
+                symbol_hasThing (s);
             }
-            do { size--; v++; } while (size && !IS_SEMICOLON (v));
+            do { n--; v++; } while (n && !IS_SEMICOLON (v));
             
         } else {
-            size--; v++; break;
+            n--; v++; break;
         }
     }
     
-    PD_ASSERT ((object != NULL) || (size == 0));
+    PD_ASSERT ((object != NULL) || (n == 0));
     
-    m    = message; 
+    m    = message;
     args = 0;
     next = object;
         
     while (1) {
-        if (!size || eval_bufferGetMessage (v, object, &next, m, argc, argv)) { break; }
+        if (!n || eval_bufferGetMessage (v, object, &next, m, argc, argv)) { break; }
         else {
-            m++; args++; size--; v++;
+            m++; args++; n--; v++;
         }
     }
     
@@ -122,28 +121,33 @@ void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
         if (IS_SYMBOL (message))     { pd_message (object, GET_SYMBOL (message), args - 1, message + 1); }
         else if (IS_FLOAT (message)) {
             if (args == 1) { pd_float (object, GET_FLOAT (message)); }
-            else { 
-                pd_list (object, args, message); 
+            else {
+                pd_list (object, args, message);
             }
         } else if (IS_POINTER (message)) {
             if (args == 1) { pd_pointer (object, GET_POINTER (message)); }
-            else { 
-                pd_list (object, args, message); 
+            else {
+                pd_list (object, args, message);
             }
         } else {
             PD_BUG;
         }
     }
     
-    if (!size) { break; }
+    if (!n) { break; }
     
     object = next;
-    size--;
+    n--;
     v++;
     //
     }
     
-    PD_ATOMS_FREEA (message, buffer_getSize (x));
+    PD_ATOMS_FREEA (message, size);
+}
+
+void eval_buffer (t_buffer *x, t_pd *object, int argc, t_atom *argv)
+{
+    eval_bufferProceed (buffer_getSize (x), buffer_getAtoms (x), object, argc, argv);
 }
 
 // -----------------------------------------------------------------------------------------------------------
