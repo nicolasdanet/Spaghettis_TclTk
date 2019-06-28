@@ -257,7 +257,7 @@ static void gobj_openHelp (const char *directory, const char *name)
         t_symbol *s1 = gensym (fileproperties_getName (&p));
         t_symbol *s2 = gensym (fileproperties_getDirectory (&p));
         close (f); 
-        instance_patchOpen (s1, s2);
+        instance_patchOpen (s1, s2, 1);
     }
 }
 

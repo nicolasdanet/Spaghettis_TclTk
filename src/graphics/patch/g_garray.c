@@ -106,15 +106,17 @@ static t_widgetbehavior garray_widgetBehavior =             /* Shared. */
 void garray_initialize (void)
 {
     static const char *floatTemplate =              /* Static. */
-        "#N canvas 0 22 450 300 12;\n"
-        "#X obj 39 26 struct float float y;\n";
+        "#N canvas 500 75 300 100 12;\n"
+        "#X obj 24 24 struct float float y;\n"
+        "#X coords 0 0 1 1 250 175 0 0 0;\n";
 
     static const char *floatArrayTemplate =         /* Static. */
-        "#N canvas 0 22 950 300 12;\n"
-        "#X obj 43 31 struct float-array array z float float style float linewidth float color;\n"
+        "#N canvas 500 200 600 100 12;\n"
+        "#X obj 24 24 struct float-array array z float float style float linewidth float color;\n"
         "#X f 74;"
-        "#X obj 43 70 plot z color linewidth 0 0 1 style;\n";
-    
+        "#X obj 24 60 plot z color linewidth 0 0 1 style;\n"
+        "#X coords 0 0 1 1 250 175 0 0 0;\n";
+
     instance_loadBuiltIn (sym__floattemplate, floatTemplate);
     instance_loadBuiltIn (sym__floatarraytemplate, floatArrayTemplate);
 }

@@ -130,6 +130,7 @@ extern t_class *floatinlet_class;
 extern t_class *garray_class;
 extern t_class *inlet_class;
 extern t_class *inlet_class;
+extern t_class *namecanvas_class;
 extern t_class *panel_class;
 extern t_class *plot_class;
 extern t_class *pointerinlet_class;

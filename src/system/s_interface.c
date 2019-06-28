@@ -255,15 +255,6 @@ static t_error interface_startGui (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_APPLE
-
-void interface_openPendedFiles (void)
-{
-    gui_vAdd ("::openPendedFiles\n");
-}
-
-#endif // PD_APPLE
-
 t_error interface_start (void)
 {
     t_error err = interface_startGui();

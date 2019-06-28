@@ -41,7 +41,7 @@ void global_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 
 static void global_open (void *dummy, t_symbol *name, t_symbol *directory)
 {
-    if (!instance_patchOpen (name, directory)) { recentfiles_add (name, directory, 0); }
+    if (!instance_patchOpen (name, directory, 1)) { recentfiles_add (name, directory, 0); }
 }
 
 static void global_scan (void *dummy, t_symbol *s, int argc, t_atom *argv)

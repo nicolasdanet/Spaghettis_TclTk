@@ -58,6 +58,7 @@ struct _glist {
     int                 gl_isSelected;
     int                 gl_isGraphOnParent;
     int                 gl_isOpenedAtLoad;
+    int                 gl_isInvisible;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -105,6 +106,7 @@ int     glist_isRoot                        (t_glist *g);
 int     glist_isTop                         (t_glist *g);
 int     glist_isAbstraction                 (t_glist *g);
 int     glist_isAbstractionOrInside         (t_glist *g);
+int     glist_isInvisibleOrInside           (t_glist *g);
 int     glist_isSubpatchOrGraphicArray      (t_glist *g);
 int     glist_isSubpatch                    (t_glist *g);
 int     glist_isGraphicArray                (t_glist *g);
@@ -147,6 +149,7 @@ void    glist_setName                       (t_glist *g, t_symbol *name);
 void    glist_setDirty                      (t_glist *g, int n);
 void    glist_setFrozen                     (t_glist *g, int n);
 void    glist_setFontSize                   (t_glist *g, int n);
+void    glist_setInvisible                  (t_glist *g);
 void    glist_setMotion                     (t_glist *g, t_gobj *y, t_motionfn fn, int a, int b);
 void    glist_setBounds                     (t_glist *g, t_bounds *bounds);
 void    glist_setGraphGeometry              (t_glist *g, t_rectangle *r, t_bounds *bounds, int isGOP);
@@ -376,17 +379,17 @@ static inline void glist_setNext (t_glist *g, t_glist *next)
 
 static inline void glist_setSelected (t_glist *g, int n)
 {
-    g->gl_isSelected = n;
+    g->gl_isSelected = (n != 0);
 }
 
 static inline void glist_setGraphOnParent (t_glist *g, int n)
 {
-    g->gl_isGraphOnParent = n;
+    g->gl_isGraphOnParent = (n != 0);
 }
 
 static inline void glist_setOpenedAtLoad (t_glist *g, int n)
 {
-    g->gl_isOpenedAtLoad = n;
+    g->gl_isOpenedAtLoad = (n != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

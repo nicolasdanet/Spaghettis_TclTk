@@ -45,6 +45,16 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>pdtemplate</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Spaghettis Template</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>pdbundle32</string>
 			</array>
 			<key>CFBundleTypeName</key>

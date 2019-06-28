@@ -13,6 +13,11 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+extern t_symbol *main_directorySupport;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void path_slashToBackslashIfNecessary (char *s)
@@ -54,16 +59,45 @@ int path_isFileExistAsDirectory (const char *filepath)
     struct stat t; return ((stat (filepath, &t) == 0) && S_ISDIR (t.st_mode));
 }
 
-int path_containsHiddenDirectory (const char *filepath)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static int path_containsHiddenDirectory (const char *filepath)
 {
     return string_contains (filepath, "/.");
 }
+
+static int path_isInsideSupport (const char *filepath)
+{
+    return string_startWith (filepath, main_directorySupport->s_name);
+}
+
+int path_isValid (const char *filepath)
+{
+    if (path_containsHiddenDirectory (filepath) && !path_isInsideSupport (filepath)) { return 0; }
+    
+    return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 /* Note that it fails in case of missing directory in path. */
 
 t_error path_createDirectory (const char *filepath)
 {
     return (mkdir (filepath, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0);
+}
+
+t_error path_createDirectoryIfNeeded (const char *filepath)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    if (!path_isFileExistAsDirectory (filepath)) { err = path_createDirectory (filepath); }
+    
+    return err;
 }
 
 #else   
@@ -115,6 +149,49 @@ t_symbol *path_withDirectoryAndNameAsSymbol (t_symbol *directory, t_symbol *name
     }
     
     return &s_;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error path_toDirectoryAndName (char *dest, size_t size, const char *filepath, char **directory, char **name)
+{
+    t_error err = string_copy (dest, size, filepath);
+    
+    if (!err) {
+    //
+    int n = string_indexOfFirstOccurrenceFromEnd (dest, "/");
+    
+    err = (n < 0);
+    
+    if (!err) { dest[n] = 0; (*directory) = dest; (*name) = dest + n + 1; }
+    //
+    }
+    
+    if (err)  { dest[0] = 0; (*directory) = dest; (*name) = dest; }
+    
+    return err;
+}
+
+t_error path_toDirectoryAndNameAsSymbol (const char *filepath, t_symbol **directory, t_symbol **name)
+{
+    char t[PD_STRING] = { 0 };
+    
+    char *d = NULL;
+    char *n = NULL;
+    
+    t_error err = path_toDirectoryAndName (t, PD_STRING, filepath, &d, &n);
+    
+    if (err) { (*directory) = &s_; (*name) = &s_; }
+    else {
+    //
+    (*directory) = gensym (d);
+    (*name)      = gensym (n);
+    //
+    }
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -195,8 +195,16 @@ static int instance_loadPatchProceed (t_symbol *name, t_symbol *directory, const
     if (s) { eval_fileByString (name, directory, s); }
     else   { eval_file (name, directory); }
     
-    if (instance_contextGetCurrent() != NULL) { 
-        instance_stackPopPatch (instance_contextGetCurrent(), visible); done = 1;
+    if (instance_contextGetCurrent() != NULL) {
+    //
+    t_glist *glist = instance_contextGetCurrent();
+    
+    if (!visible) { glist_setInvisible (glist); }
+    
+    instance_stackPopPatch (glist, visible);
+    
+    done = 1;
+    //
     }
     
     PD_ASSERT (instance_contextGetCurrent() == NULL);
@@ -210,9 +218,9 @@ static int instance_loadPatchProceed (t_symbol *name, t_symbol *directory, const
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int instance_loadPatch (t_symbol *name, t_symbol *directory)
+static int instance_loadPatch (t_symbol *name, t_symbol *directory, int visible)
 {
-    return instance_loadPatchProceed (name, directory, NULL, 1);
+    return instance_loadPatchProceed (name, directory, NULL, visible);
 }
 
 /* Load invisible patches used for built-in templates. */
@@ -248,10 +256,10 @@ void instance_patchNew (t_symbol *name, t_symbol *directory)
     instance_environmentResetFile();
 }
 
-t_error instance_patchOpen (t_symbol *name, t_symbol *directory)
+t_error instance_patchOpen (t_symbol *name, t_symbol *directory, int visible)
 {
     int state = dsp_suspend();
-    int done  = instance_loadPatch (name, directory);
+    int done  = instance_loadPatch (name, directory, visible);
     
     dsp_resume (state);
     

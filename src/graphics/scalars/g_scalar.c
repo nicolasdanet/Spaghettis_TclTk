@@ -425,10 +425,21 @@ void scalar_deserialize (t_scalar *x, int argc, t_atom *argv)
     PD_ASSERT (argc > 0); scalar_deserializeProceed (x, argc - 1, argv + 1);
 }
 
+/* Does the environment of the scalar the same as the template instance? */
+
+static int scalar_serializeCanExpand (t_scalar *x, t_template *tmpl)
+{
+    t_environment *e1 = glist_getEnvironment (x->sc_owner);
+    t_environment *e2 = glist_getEnvironment (template_getInstanceOwner (tmpl));
+    
+    return (e1 == e2);
+}
+
 void scalar_serialize (t_scalar *x, t_buffer *b)
 {
     t_template *tmpl = scalar_getTemplate (x);
-    t_symbol *s = template_getUnexpandedName (tmpl);
+    int expandable   = scalar_serializeCanExpand (x, tmpl);
+    t_symbol *s = expandable ? template_getUnexpandedName (tmpl) : NULL;
     int i;
     
     if (!s) { buffer_appendSymbol (b, symbol_stripTemplateIdentifier (x->sc_templateIdentifier)); }

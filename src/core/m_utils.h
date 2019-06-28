@@ -58,6 +58,7 @@ t_symbol    *symbol_decode                  (t_symbol *s);
 t_symbol    *symbol_removeExtension         (t_symbol *s);
 t_symbol    *symbol_appendExtensionPatch    (t_symbol *s);
 t_symbol    *symbol_appendExtensionHelp     (t_symbol *s);
+t_symbol    *symbol_appendExtensionTemplate (t_symbol *s);
 
 t_symbol    *symbol_addPrefix               (t_symbol *s, t_symbol *prefix);
 t_symbol    *symbol_addSuffix               (t_symbol *s, t_symbol *suffix);
