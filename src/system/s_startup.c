@@ -5,95 +5,108 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
-#include "../../m_spaghettis.h"
-#include "../../m_core.h"
-#include "../../g_graphics.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_class *namecanvas_class;          /* Shared. */
+#include "../m_spaghettis.h"
+#include "../m_core.h"
+#include "../s_system.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _namecanvas {
-    t_object    x_obj;              /* Must be the first. */
-    t_symbol    *x_name;
-    t_glist     *x_owner;
-    } t_namecanvas;
+extern t_symbol *main_directoryTemplates;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void namecanvas_bind (t_namecanvas *x, t_symbol *s)
-{
-    x->x_name = s; if (x->x_name != &s_) { pd_bind (cast_pd (x->x_owner), x->x_name); }
-}
-
-static void namecanvas_unbind (t_namecanvas *x)
-{
-    if (x->x_name != &s_) { pd_unbind (cast_pd (x->x_owner), x->x_name); x->x_name = &s_; }
-}
+#define STARTUP_LEVELS  10
+#define STARTUP_FDOPEN  15
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Only used in invisible patches to force to unbind. */
-
-void namecanvas_set (t_namecanvas *x, t_symbol *s, int argc, t_atom *argv)
-{
-    namecanvas_unbind (x);
-}
+static t_pathlist *startup_templates;       /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
-static void *namecanvas_new (t_symbol *s)
+#if ! ( PD_WINDOWS )
+
+static int startup_fetchAllTemplatesRecursive (const char *path,
+    const struct stat *b,
+    int flag,
+    struct FTW *f)
 {
-    t_namecanvas *x = (t_namecanvas *)pd_new (namecanvas_class);
+    int abort = 0;
     
-    x->x_owner = instance_contextGetCurrent();
+    if (flag == FTW_D) { abort = (f->level > STARTUP_LEVELS); }
+    if (flag == FTW_F) {
+    //
+    if (string_endWith (path, PD_TEMPLATE)) {
+        startup_templates = pathlist_newAppend (startup_templates, NULL, path);
+    }
+    //
+    }
     
-    namecanvas_bind (x, s);
-    
-    return x;
+    if (abort) { return 1; } else { return scheduler_isExiting(); }
 }
 
-static void namecanvas_free (t_namecanvas *x)
+static t_pathlist *startup_fetchAllTemplates (const char *path)
 {
-    namecanvas_unbind (x);
+    startup_templates = NULL;
+    
+    if (nftw (path, startup_fetchAllTemplatesRecursive, STARTUP_FDOPEN, FTW_MOUNT | FTW_PHYS) == 0) {
+        return startup_templates;
+    }
+    
+    PD_BUG; return NULL;
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void startup_openFilesTemplatesProceed (t_pathlist *l)
+{
+    t_symbol *filename  = NULL;
+    t_symbol *directory = NULL;
+    
+    while (l) {
+    //
+    t_error err = path_toDirectoryAndNameAsSymbol (pathlist_getPath (l), &directory, &filename);
+    
+    if (!err && instance_patchOpen (filename, directory, 0) == PD_ERROR_NONE) {
+        post_log ("Open %s", pathlist_getPath (l));
+    }
+    
+    l = pathlist_getNext (l);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void namecanvas_setup (void)
+void startup_openFilesTemplates (void)
 {
-    t_class *c = NULL;
+    t_pathlist *l = startup_fetchAllTemplates (main_directoryTemplates->s_name);
     
-    c = class_new (sym_namecanvas,
-            (t_newmethod)namecanvas_new,
-            (t_method)namecanvas_free,
-            sizeof (t_namecanvas),
-            CLASS_DEFAULT | CLASS_NOINLET,
-            A_DEFSYMBOL,
-            A_NULL);
-
-    class_addMethod (c, (t_method)namecanvas_set, sym_set, A_GIMME, A_NULL);
-
-    namecanvas_class = c;
+    startup_openFilesTemplatesProceed (l);
+    
+    pathlist_free (l);
 }
 
-void namecanvas_destroy (void)
+void startup_openFilesPended (void)
 {
-    class_free (namecanvas_class);
+    #if PD_APPLE
+    
+        gui_vAdd ("::openPendedFiles\n");
+    
+    #endif // PD_APPLE
 }
 
 // -----------------------------------------------------------------------------------------------------------

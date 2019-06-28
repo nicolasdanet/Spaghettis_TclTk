@@ -106,11 +106,8 @@ void instance_autoreleaseProceed (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_APPLE
-
-void interface_openPendedFiles (void);
-
-#endif // PD_APPLE
+void startup_openFilesTemplates (void);
+void startup_openFilesPended (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -122,13 +119,12 @@ static void instance_pollingTask (void *dummy)
         pd_message (symbol_getThing (sym__polling), sym__polling, 0, NULL);
     }  
     
-    #if PD_APPLE
-
     instance_get()->pd_pollingCount++;
     
-    if (instance_get()->pd_pollingCount == 10) { interface_openPendedFiles(); }
-
-    #endif // PD_APPLE
+    if (instance_get()->pd_pollingCount == 10) {
+        startup_openFilesTemplates();
+        startup_openFilesPended();
+    }
 
     clock_delay (instance_get()->pd_polling, POLLING_PERIOD);
 }

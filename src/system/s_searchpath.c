@@ -51,7 +51,7 @@ static int searchpath_scanProceed (const char *path, const struct stat *b, int f
     
     if (flag == FTW_D) {
     //
-    if (!path_containsHiddenDirectory (path)) {
+    if (path_isValid (path)) {
     //
     abort |= (searchpath_countDirectories >= SEARCHPATH_MAXIMUM);
     abort |= (f->level > SEARCHPATH_LEVELS);
@@ -67,7 +67,7 @@ static int searchpath_scanProceed (const char *path, const struct stat *b, int f
     
     if (flag == FTW_F) {
     //
-    if (!path_containsHiddenDirectory (path)) {
+    if (path_isValid (path)) {
     //
     const char *filename = path + f->base;
     

@@ -97,15 +97,23 @@ void environment_free (t_environment *e)
 
 void environment_setFileName (t_environment *e, t_symbol *name)
 {
-    if (string_endWith (name->s_name, PD_PATCH) || string_endWith (name->s_name, PD_HELP)) {
-        e->env_fileName = name;
-        
-    } else {
-        if (string_endWith (e->env_fileName->s_name, PD_HELP)) {
-            e->env_fileName = symbol_appendExtensionHelp (name);
-        } else {
-            e->env_fileName = symbol_appendExtensionPatch (name);
-        }
+    int hasExtension = 0;
+    
+    hasExtension |= string_endWith (name->s_name, PD_PATCH);
+    hasExtension |= string_endWith (name->s_name, PD_HELP);
+    hasExtension |= string_endWith (name->s_name, PD_TEMPLATE);
+    
+    if (hasExtension) { e->env_fileName = name; }
+    else {
+    //
+    const char *t = e->env_fileName->s_name;        /* Previous. */
+    
+    if (string_endWith (t, PD_HELP))          { e->env_fileName = symbol_appendExtensionHelp (name);     }
+    else if (string_endWith (t, PD_TEMPLATE)) { e->env_fileName = symbol_appendExtensionTemplate (name); }
+    else {
+        e->env_fileName = symbol_appendExtensionPatch (name);
+    }
+    //
     }
 }
 

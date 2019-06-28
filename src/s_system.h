@@ -197,8 +197,9 @@ void        path_backslashToSlashIfNecessary        (char *s);
 int         path_isFileExist                        (const char *filepath);
 int         path_isFileExistAsRegularFile           (const char *filepath);
 int         path_isFileExistAsDirectory             (const char *filepath);
-int         path_containsHiddenDirectory            (const char *filepath);
+int         path_isValid                            (const char *filepath);
 t_error     path_createDirectory                    (const char *filepath);
+t_error     path_createDirectoryIfNeeded            (const char *filepath);
 
 t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 
@@ -206,6 +207,10 @@ t_error     path_withDirectoryAndName               (char *dest,
                                                         const char *name);
 
 t_symbol    *path_withDirectoryAndNameAsSymbol      (t_symbol *directory, t_symbol *name);
+
+t_error     path_toDirectoryAndNameAsSymbol         (const char *filepath,
+                                                        t_symbol **directory,
+                                                        t_symbol **name);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

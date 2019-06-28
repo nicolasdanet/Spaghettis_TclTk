@@ -19,6 +19,7 @@ t_symbol    *main_directoryBin;                         /* Static. */
 t_symbol    *main_directoryTcl;                         /* Static. */
 t_symbol    *main_directoryHelp;                        /* Static. */
 t_symbol    *main_directorySupport;                     /* Static. */
+t_symbol    *main_directoryTemplates;                   /* Static. */
 
 int         main_portNumber;                            /* Static. */
 
@@ -224,6 +225,20 @@ static t_error main_getRootDirectory (void)
     return err;
 }
 
+static t_error main_setPathsTemplates (t_symbol *support)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    char t[PD_STRING] = { 0 };
+    
+    err |= string_sprintf (t, PD_STRING, "%s/templates", support->s_name);
+    
+    if (!err) { err |= path_createDirectoryIfNeeded (t); }
+    if (!err) { main_directoryTemplates = gensym (t); }
+    
+    return err;
+}
+
 static t_error main_setPaths (t_symbol *root)
 {
     if (root == NULL) { PD_BUG; return PD_ERROR; }
@@ -248,25 +263,21 @@ static t_error main_setPaths (t_symbol *root)
     
     err |= string_sprintf (t, PD_STRING, "%s/.config", home);
     
-    if (!err && !path_isFileExistAsDirectory (t)) {
-        err |= path_createDirectory (t);
-    }
+    if (!err) { err |= path_createDirectoryIfNeeded (t); }
     
     err |= string_sprintf (t, PD_STRING, "%s/.config/" PD_NAME_LOWERCASE, home);
     
     #endif
     
-    if (!err && !path_isFileExistAsDirectory (t)) {
-        err |= path_createDirectory (t);
-    }
+    if (!err) { err |= path_createDirectoryIfNeeded (t); }
     
+    if (!err) { main_directorySupport = gensym (t); }
+    if (!err) { err |= main_setPathsTemplates (main_directorySupport); }
     if (!err) {
-        main_directorySupport = gensym (t);
-    }
-    
     if (!(err |= string_sprintf (t, PD_STRING, "%s/bin",  s))) { main_directoryBin  = gensym (t); }
     if (!(err |= string_sprintf (t, PD_STRING, "%s/tcl",  s))) { main_directoryTcl  = gensym (t); }
     if (!(err |= string_sprintf (t, PD_STRING, "%s/help", s))) { main_directoryHelp = gensym (t); }
+    }
     //
     }
     
@@ -335,11 +346,12 @@ int main_entry (int argc, char **argv)
     err |= main_parseArguments (argc - 1, argv + 1);
     err |= main_setPaths (main_directoryRoot);
 
-    PD_ASSERT (main_directoryRoot    != NULL);
-    PD_ASSERT (main_directoryBin     != NULL);
-    PD_ASSERT (main_directoryTcl     != NULL);
-    PD_ASSERT (main_directoryHelp    != NULL);
-    PD_ASSERT (main_directorySupport != NULL);
+    PD_ASSERT (main_directoryRoot       != NULL);
+    PD_ASSERT (main_directoryBin        != NULL);
+    PD_ASSERT (main_directoryTcl        != NULL);
+    PD_ASSERT (main_directoryHelp       != NULL);
+    PD_ASSERT (main_directorySupport    != NULL);
+    PD_ASSERT (main_directoryTemplates  != NULL);
     
     if (!err) {
     //

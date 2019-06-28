@@ -96,6 +96,7 @@
 /* System. */
 
 #include "system/s_entry.c"
+#include "system/s_startup.c"
 #include "system/s_main.c"
 #include "system/s_scheduler.c"
 #include "system/s_priority.c"

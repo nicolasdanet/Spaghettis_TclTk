@@ -153,16 +153,12 @@ void canvas_quit (void)
 
 void canvas_closeProceed (t_glist *glist)
 {
-    t_environment *e    = glist_getEnvironment (glist);
-    t_symbol *filename  = environment_getFileName (e);
-    t_symbol *directory = environment_getDirectory (e);
+    if (!glist_isInvisibleOrInside (glist)) {
+    //
+    t_environment *e = glist_getEnvironment (glist);
     
-    if (filename != sym__floatarraytemplate) {  /* Invisible patches. */
-    if (filename != sym__floattemplate) {
+    recentfiles_add (environment_getFileName (e), environment_getDirectory (e), 1);
     //
-    recentfiles_add (filename, directory, 1);
-    //
-    }
     }
     
     glist_closebang (glist); pd_free (cast_pd (glist));

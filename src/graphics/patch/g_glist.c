@@ -20,6 +20,11 @@ void gobj_changeSource (t_gobj *, t_id);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static void glist_unbindAll (t_glist *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static void glist_taskRedraw (t_glist *glist)
@@ -192,9 +197,14 @@ int glist_isAbstraction (t_glist *glist)
     return (glist_hasParent (glist) && (glist->gl_environment != NULL));
 }
 
-int glist_isAbstractionOrInside (t_glist *g)
+int glist_isAbstractionOrInside (t_glist *glist)
 {
-    return (glist_isAbstraction (glist_getTop (g)));
+    return (glist_isAbstraction (glist_getTop (glist)));
+}
+
+int glist_isInvisibleOrInside (t_glist *glist)
+{
+    return (glist_getRoot (glist)->gl_isInvisible);
 }
 
 int glist_isSubpatchOrGraphicArray (t_glist *glist)
@@ -392,6 +402,11 @@ void glist_setFrozen (t_glist *glist, int n)
     glist_getTop (glist)->gl_isFrozen = (n != 0);
 }
 
+void glist_setInvisible (t_glist *glist)
+{
+    glist->gl_isInvisible = 1; glist_unbindAll (glist);
+}
+
 void glist_setFontSize (t_glist *g, int n)
 {
     if (n > 0) { g->gl_fontSize = font_getValidSize (n); }
@@ -466,7 +481,7 @@ int glist_getDollarZero (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void glist_bind (t_glist *glist)
+static void glist_bindProceed (t_glist *glist)
 {
     t_symbol *s = symbol_removeExtension (glist_getName (glist));
     
@@ -475,13 +490,42 @@ void glist_bind (t_glist *glist)
     }
 }
 
-void glist_unbind (t_glist *glist)
+void glist_bind (t_glist *glist)
+{
+    if (!glist_isInvisibleOrInside (glist)) { glist_bindProceed (glist); }
+}
+
+static void glist_unbindProceed (t_glist *glist)
 {
     t_symbol *s = symbol_removeExtension (glist_getName (glist));
     
     if (utils_isNameAllowedForWindow (s)) {
         pd_unbind (cast_pd (glist), symbol_makeBind (s));
     }
+}
+
+void glist_unbind (t_glist *glist)
+{
+    if (!glist_isInvisibleOrInside (glist)) { glist_unbindProceed (glist); }
+}
+
+static void glist_unbindAllRecursive (t_glist *glist)
+{
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (gobj_isCanvas (y)) { glist_unbindAllRecursive (cast_glist (y)); }
+        else if (pd_class (y) == namecanvas_class) {
+            pd_message (cast_pd (y), sym_set, 0, NULL);
+        }
+    }
+    
+    glist_unbindProceed (cast_glist (glist));
+}
+
+static void glist_unbindAll (t_glist *glist)
+{
+    glist_unbindAllRecursive (glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
