@@ -32,6 +32,9 @@ static t_class *scalars_class;          /* Shared. */
 typedef struct _scalars {
     t_object    x_obj;                  /* Must be the first. */
     int         x_keep;
+    int         x_automatic;
+    int         x_dismissed;
+    t_id        x_tag;
     t_symbol    *x_target;
     t_slots     *x_slots;
     t_glist     *x_owner;
@@ -42,6 +45,12 @@ typedef struct _scalars {
 // MARK: -
 
 void canvas_clear (t_glist *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void scalars_dismiss (t_scalars *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -63,41 +72,45 @@ static t_glist *scalars_fetch (t_scalars *x)
     return x->x_owner;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-static void scalars_save (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
+static void scalars_saveProceed (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_glist *glist = scalars_fetch (x);
     
     if (glist) {
     //
-    t_gobj *y   = NULL;
-    t_buffer *b = buffer_new();
+    t_id tag = glist_getChangeTag (glist);
     
-    for (y = glist->gl_graphics; y; y = y->g_next) {
-        if (gobj_isScalar (y)) {
-            t_buffer *t = buffer_new();
-            scalar_serialize (cast_scalar (y), t);
-            buffer_appendSymbol (b, sym_scalar);
-            buffer_appendFloat (b, buffer_getSize (t));
-            buffer_appendSemicolon (b);
-            buffer_appendBuffer (b, t);
-            buffer_free (t);
+    if (s == sym__polling && x->x_tag == tag) { return; }
+
+    {
+        t_gobj *y   = NULL;
+        t_buffer *b = buffer_new();
+    
+        for (y = glist->gl_graphics; y; y = y->g_next) {
+            if (gobj_isScalar (y)) {
+                t_buffer *t = buffer_new();
+                scalar_serialize (cast_scalar (y), t);
+                buffer_appendSymbol (b, sym_scalar);
+                buffer_appendFloat (b, buffer_getSize (t));
+                buffer_appendSemicolon (b);
+                buffer_appendBuffer (b, t);
+                buffer_free (t);
+            }
         }
+    
+        slots_set (x->x_slots, argc ? argv : NULL, b);
+    
+        buffer_free (b);
+    
+        if (x->x_keep) { glist_setDirty (x->x_owner, 1); }
+    
+        x->x_tag = tag;
     }
-    
-    slots_set (x->x_slots, argc ? argv : NULL, b);
-    
-    buffer_free (b);
-    
-    if (x->x_keep) { glist_setDirty (x->x_owner, 1); }
     //
     }
 }
 
-static void scalars_load (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
+static void scalars_loadProceed (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_glist *glist = scalars_fetch (x);
 
@@ -131,11 +144,25 @@ static void scalars_load (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
     
     iterator_free (iter);
     //
-    } else { error_canNotFind (sym_scalars, sym_slot); }
+    } else if (s != sym_loadbang) { error_canNotFind (sym_scalars, sym_slot); }
     
     buffer_free (b);
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void scalars_save (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
+{
+    scalars_saveProceed (x, s, argc, argv);
+}
+
+static void scalars_load (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
+{
+    scalars_loadProceed (x, s, argc, argv);
 }
 
 static void scalars_remove (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
@@ -149,6 +176,28 @@ static void scalars_clear (t_scalars *x)
 {
     if (!slots_isEmpty (x->x_slots)) {
         slots_clear (x->x_slots); if (x->x_keep) { glist_setDirty (x->x_owner, 1); }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void scalars_loadbang (t_scalars *x)
+{
+    if (x->x_automatic) {
+    //
+    t_atom a; SET_SYMBOL (&a, sym__automatic); scalars_loadProceed (x, sym_loadbang, 1, &a);
+    //
+    }
+}
+
+static void scalars_polling (t_scalars *x)
+{
+    if (x->x_automatic) {
+    //
+    t_atom a; SET_SYMBOL (&a, sym__automatic); scalars_saveProceed (x, sym__polling, 1, &a);
+    //
     }
 }
 
@@ -194,6 +243,11 @@ static t_buffer *scalars_functionData (t_gobj *z, int flags)
     return NULL;
 }
 
+static void scalars_functionDismiss (t_gobj *z)
+{
+    scalars_dismiss ((t_scalars *)z);
+}
+
 static void scalars_restore (t_scalars *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_scalars *old = (t_scalars *)instance_pendingFetch (cast_gobj (x));
@@ -223,7 +277,8 @@ static void *scalars_new (t_symbol *s, int argc, t_atom *argv)
     
         t_symbol *t = GET_SYMBOL (argv);
         
-        if (t == sym___dash__keep) { x->x_keep = 1; argc--; argv++; }
+        if (t == sym___dash__keep)           { x->x_keep = 1; argc--; argv++; }
+        else if (t == sym___dash__automatic) { x->x_keep = 1; x->x_automatic = 1; argc--; argv++; }
         else {
             break;
         }
@@ -245,11 +300,26 @@ static void *scalars_new (t_symbol *s, int argc, t_atom *argv)
     x->x_slots = slots_new();
     x->x_owner = instance_contextGetCurrent();
     
+    if (x->x_automatic) { instance_pollingRegister (cast_pd (x)); }
+    
     return x;
+}
+
+static void scalars_dismiss (t_scalars *x)
+{
+    if (!x->x_dismissed) {
+    //
+    x->x_dismissed = 1;
+    
+    if (x->x_automatic) { instance_pollingUnregister (cast_pd (x)); }
+    //
+    }
 }
 
 static void scalars_free (t_scalars *x)
 {
+    scalars_dismiss (x);
+    
     slots_free (x->x_slots);
 }
 
@@ -268,7 +338,10 @@ void scalars_setup (void)
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-   
+    
+    class_addLoadbang (c, (t_method)scalars_loadbang);
+    class_addPolling (c, (t_method)scalars_polling);
+
     class_addMethod (c, (t_method)scalars_read,     sym_read,       A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)scalars_write,    sym_write,      A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)scalars_save,     sym_save,       A_GIMME, A_NULL);
@@ -278,6 +351,8 @@ void scalars_setup (void)
     class_addMethod (c, (t_method)scalars_restore,  sym__restore,   A_GIMME, A_NULL);
     
     class_setDataFunction (c, scalars_functionData);
+    class_setDismissFunction (c, scalars_functionDismiss);
+    
     class_requirePending (c);
 
     scalars_class = c;

@@ -454,17 +454,17 @@ int garray_isNameShown (t_garray *x)
 
 void garray_redraw (t_garray *x)
 {
-    garray_setNextTag (x);
+    garray_setChangeTag (x);
     
     gui_jobAdd ((void *)x, x->x_owner, garray_drawJob);
 }
 
-void garray_setNextTag (t_garray *x)
+void garray_setChangeTag (t_garray *x)
 {
     x->x_redrawn = utils_unique();
 }
 
-t_id garray_getTag (t_garray *x)
+t_id garray_getChangeTag (t_garray *x)
 {
     return x->x_redrawn;
 }

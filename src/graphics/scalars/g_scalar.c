@@ -429,10 +429,18 @@ void scalar_deserialize (t_scalar *x, int argc, t_atom *argv)
 
 static int scalar_serializeCanExpand (t_scalar *x, t_template *tmpl)
 {
+    t_glist *g = template_getInstanceOwner (tmpl);
+    
+    if (g) {
+    //
     t_environment *e1 = glist_getEnvironment (x->sc_owner);
-    t_environment *e2 = glist_getEnvironment (template_getInstanceOwner (tmpl));
+    t_environment *e2 = glist_getEnvironment (g);
     
     return (e1 == e2);
+    //
+    }
+    
+    return 0;
 }
 
 void scalar_serialize (t_scalar *x, t_buffer *b)

@@ -85,8 +85,8 @@ static void tabreceive_polling (t_tabreceive *x)
 {
     t_garray *garray = (t_garray *)symbol_getThingByClass (x->x_name, garray_class);
     
-    if (garray && (x->x_tag != garray_getTag (garray))) {
-        x->x_tag = garray_getTag (garray);
+    if (garray && (x->x_tag != garray_getChangeTag (garray))) {
+        x->x_tag = garray_getChangeTag (garray);
         tabreceive_output (x, garray);
     }
 }

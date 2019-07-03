@@ -38,6 +38,7 @@ struct _glist {
     t_buffer            *gl_sorterIndexes;
     t_clock             *gl_clockRedraw;
     t_clock             *gl_clockUndo;
+    t_id                gl_redrawn;
     t_id                gl_uniqueIdentifier;
     t_bounds            gl_bounds;
     t_rectangle         gl_geometryGraph;
@@ -319,6 +320,13 @@ void    glist_windowEdit                    (t_glist *g, int isEditMode);
 void    glist_windowMapped                  (t_glist *g, int isMapped);
 void    glist_windowOpen                    (t_glist *g);
 void    glist_windowClose                   (t_glist *g);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_id    glist_getChangeTag                  (t_glist *g);
+void    glist_setChangeTag                  (t_glist *g);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
