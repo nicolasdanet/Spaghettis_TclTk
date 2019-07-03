@@ -712,6 +712,22 @@ void glist_windowClose (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Used to track modifications of scalars. */
+
+t_id glist_getChangeTag (t_glist *glist)
+{
+    return glist->gl_redrawn;
+}
+
+void glist_setChangeTag (t_glist *glist)
+{
+    glist->gl_redrawn = utils_unique();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* To maintain z order consistency, redraw everything is needed. */
 
 void glist_redrawRequired (t_glist *glist)
@@ -721,6 +737,8 @@ void glist_redrawRequired (t_glist *glist)
 
 void glist_redraw (t_glist *glist)
 {
+    glist_setChangeTag (glist);
+    
     clock_unset (glist->gl_clockRedraw);
     
     if (glist_isOnScreen (glist)) {

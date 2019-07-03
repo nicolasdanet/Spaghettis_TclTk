@@ -956,6 +956,8 @@ static void glist_objectRemoveProceed (t_glist *glist, t_gobj *y)
 {
     instance_registerRemove (y);
     
+    if (gobj_isScalar (y)) { glist_setChangeTag (glist); }
+    
     if (glist->gl_graphics == y) { glist->gl_graphics = y->g_next; }
     else {
         t_gobj *t = NULL;

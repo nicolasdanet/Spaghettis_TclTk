@@ -360,7 +360,7 @@ static void plot_motion (void *dummy, t_float deltaX, t_float deltaY, t_float mo
             
             PD_ASSERT (a);
             
-            if (a) { garray_setNextTag (a); }
+            if (a) { garray_setChangeTag (a); }
         }
     }
     //
@@ -946,7 +946,7 @@ static int plot_behaviorMouseArray (t_plot *x, t_plotproperties *p, t_mouse *m)
         
         PD_ASSERT (a);
         
-        if (a) { garray_setNextTag (a); }
+        if (a) { garray_setChangeTag (a); }
         
         gpointer_redraw (&plot_gpointer);
     }
