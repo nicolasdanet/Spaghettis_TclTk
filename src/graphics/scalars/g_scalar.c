@@ -568,20 +568,25 @@ static int scalar_functionValueFetchIfPlotted (t_scalar *x,
     return k;
 }
 
-void scalar_functionValue (t_gobj *z, t_glist *glist, t_mouse *m)
+int scalar_functionValueProceed (t_gobj *z, t_glist *glist, t_mouse *m, int fake)
 {
     t_scalar *x = cast_scalar (z);
     t_gpointer gp; gpointer_init (&gp);
     t_symbol *s = sym_invalid;
     int i = scalar_functionValueFetchIfPlotted (x, glist, m, &s, &gp);
+    
+    int check = 1;
+    
+    if (i < 0) { gpointer_setAsScalar (&gp, x); }
+    
+    if (!fake) {
+    //
     t_heapstring *h = heapstring_new (0);
     
     if (i >= 0) { heapstring_addSprintf (h, "::ui_scalar::show %%s element %d %s ", i, s->s_name); }
     else {
     //
     heapstring_addSprintf (h, "::ui_scalar::show %%s scalar %d %s ", i, s->s_name);
-    
-    gpointer_setAsScalar (&gp, x);
     //
     }
     
@@ -597,7 +602,31 @@ void scalar_functionValue (t_gobj *z, t_glist *glist, t_mouse *m)
     //
     }
     
-    heapstring_free (h); gpointer_unset (&gp);
+    heapstring_free (h);
+    //
+    }
+    
+    if (gpointer_isValid (&gp)) { check = !template_hasInhibit (gpointer_getTemplate (&gp)); }
+    
+    gpointer_unset (&gp);
+    
+    return check;
+}
+
+int scalar_functionValueCheck (t_gobj *z, t_glist *glist, int a, int b)
+{
+    t_mouse m; mouse_init (&m);
+    
+    m.m_x = a;
+    m.m_y = b;
+    m.m_clickedRight = 1;
+    
+    return scalar_functionValueProceed (z, glist, &m, 1);
+}
+
+void scalar_functionValue (t_gobj *z, t_glist *glist, t_mouse *m)
+{
+    scalar_functionValueProceed (z, glist, m, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

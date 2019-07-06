@@ -21,6 +21,7 @@ t_class *struct_class;                          /* Shared. */
 
 struct _struct {
     t_object    x_obj;                          /* MUST be the first. */
+    int         x_inhibit;
     t_template  *x_template;
     t_glist     *x_owner;
     t_outlet    *x_outlet;
@@ -58,8 +59,8 @@ t_symbol *struct_getUnexpandedName (t_struct *x)
     
     if (buffer_getSize (b) > 1) {
     //
-    t_atom *a = buffer_getAtomAtIndex (b, 1);
-    if (IS_DOLLARSYMBOL (a)) {
+    t_atom *a = x->x_inhibit ? buffer_getAtomAtIndexChecked (b, 2) : buffer_getAtomAtIndexChecked (b, 1);
+    if (a && IS_DOLLARSYMBOL (a)) {
         char t[PD_STRING] = { 0 }; if (!(atom_toString (a, t, PD_STRING))) { return gensym (t); }
     }
     //
@@ -67,6 +68,19 @@ t_symbol *struct_getUnexpandedName (t_struct *x)
     
     return NULL;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int struct_hasInhibit (t_struct *x)
+{
+    return x->x_inhibit;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 static void struct_functionDismiss (t_gobj *z)
 {
@@ -77,7 +91,7 @@ static void struct_functionDismiss (t_gobj *z)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void *struct_newInstance (t_template *tmpl)
+static t_struct *struct_newInstance (t_template *tmpl)
 {
     t_struct *x = (t_struct *)pd_new (struct_class);
     
@@ -90,7 +104,7 @@ static void *struct_newInstance (t_template *tmpl)
     return x;
 }
 
-static void *struct_newEmpty (void)
+static t_struct *struct_newEmpty (void)
 {
     t_struct *x = (t_struct *)pd_new (struct_class);
     
@@ -101,7 +115,7 @@ static void *struct_newEmpty (void)
     return x;
 }
 
-static void *struct_new (t_symbol *s, int argc, t_atom *argv)
+static t_struct *struct_newProceed (int argc, t_atom *argv)
 {
     t_symbol *templateName = atom_getSymbolAtIndex (0, argc, argv);
     
@@ -124,6 +138,24 @@ static void *struct_new (t_symbol *s, int argc, t_atom *argv)
         
         return NULL;
     }
+    //
+    }
+}
+
+static void *struct_new (t_symbol *s, int argc, t_atom *argv)
+{
+    int inhibit = 0;    /* Disable the value entry in the popup menu. */
+    
+    if (atom_getSymbolAtIndex (0, argc, argv) == sym___dash__inhibit) { inhibit = 1; argc--; argv++; }
+    
+    if (error__options (s, argc, argv)) { return NULL; }
+    else {
+    //
+    t_struct *x = struct_newProceed (argc, argv);
+    
+    if (x) { x->x_inhibit = inhibit; }
+    
+    return x;
     //
     }
 }

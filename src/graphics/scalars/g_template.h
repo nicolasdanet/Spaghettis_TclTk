@@ -55,6 +55,7 @@ void        template_free                           (t_template *x);
 
 int         template_hasInstance                    (t_template *x);
 int         template_hasPending                     (t_template *x);
+int         template_hasInhibit                     (t_template *x);
 void        template_registerInstance               (t_template *x, t_struct *o);
 void        template_unregisterInstance             (t_template *x, t_struct *o);
 void        template_forgetPendingInstance          (t_template *x, t_struct *o);
@@ -94,6 +95,8 @@ int         template_fieldIsArrayAndValid           (t_template *x, t_symbol *fi
 
 t_glist     *struct_getOwner                        (t_struct *x);
 t_symbol    *struct_getUnexpandedName               (t_struct *x);
+
+int         struct_hasInhibit                       (t_struct *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

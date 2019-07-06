@@ -89,6 +89,7 @@ t_symbol *sym___dash__global;
 t_symbol *sym___dash__growth;
 t_symbol *sym___dash__hop;
 t_symbol *sym___dash__increment;
+t_symbol *sym___dash__inhibit;
 t_symbol *sym___dash__keep;
 t_symbol *sym___dash__label;
 t_symbol *sym___dash__little;
@@ -849,6 +850,7 @@ void symbols_initialize (void)
     sym___dash__growth                          = gensym ("-growth");
     sym___dash__hop                             = gensym ("-hop");
     sym___dash__increment                       = gensym ("-increment");
+    sym___dash__inhibit                         = gensym ("-inhibit");
     sym___dash__keep                            = gensym ("-keep");
     sym___dash__label                           = gensym ("-label");
     sym___dash__little                          = gensym ("-little");
