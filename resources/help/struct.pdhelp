@@ -17,9 +17,9 @@
 #X obj 36 24 draw polygon -fill -- -5 0 0 5 5 0 0 -5;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 156 pd \$0-element;
-#N canvas 718 314 379 111 \$0-another 0;
+#N canvas 684 323 447 114 \$0-another 0;
 #X obj 36 24 draw text -color 800 -y -30 -- s;
-#X obj 36 60 struct \$0-another float x float y symbol s;
+#X obj 36 60 struct -inhibit \$0-another float x float y symbol s;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 36 204 pd \$0-another;
 #X text 12 120 Only the beside painters are used for rendering.;

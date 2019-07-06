@@ -19,6 +19,11 @@ void glist_behaviorVisibilityChangedProceed (t_glist *, t_glist *, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+int scalar_functionValueCheck (t_gobj *, t_glist *, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static t_gobj *glist_objectHit (t_glist *glist, int a, int b, t_rectangle *r)
@@ -401,6 +406,8 @@ static void glist_popUp (t_glist *glist, t_gobj *y, int a, int b)
     int canHelp       = (y != NULL);
     int canObject     = editMode;
 
+    if (canValue && gobj_isScalar (y)) { canValue = scalar_functionValueCheck (y, glist, a, b); }
+    
     if (y && gobj_isCanvas (y)) {
     //
     if (glist_isAbstractionOrInside (cast_glist (y))) { canProperties = 0; }

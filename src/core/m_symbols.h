@@ -89,6 +89,7 @@ extern t_symbol *sym___dash__global;
 extern t_symbol *sym___dash__growth;
 extern t_symbol *sym___dash__hop;
 extern t_symbol *sym___dash__increment;
+extern t_symbol *sym___dash__inhibit;
 extern t_symbol *sym___dash__keep;
 extern t_symbol *sym___dash__label;
 extern t_symbol *sym___dash__little;

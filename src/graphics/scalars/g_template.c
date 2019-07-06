@@ -248,6 +248,13 @@ int template_hasPending (t_template *x)
     return (x->tp_pending != 0);
 }
 
+int template_hasInhibit (t_template *x)
+{
+    if (x->tp_instance) { return struct_hasInhibit (x->tp_instance); }
+    
+    return 0;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
