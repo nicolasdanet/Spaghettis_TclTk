@@ -228,7 +228,7 @@ static void readsf_tilde_dsp (t_readsf_tilde *x, t_signal **sp)
     
     for (i = 0; i < t->s_size; i++) { t->s_v[i] = sp[i]->s_vector; }
     
-    dsp_add (readsf_tilde_perform, 3, x, t, sp[0]->s_vectorSize);
+    dsp_add3 (readsf_tilde_perform, x, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -162,7 +162,7 @@ void vinlet_dspPrologue (t_vinlet *x, t_signal **signals, t_blockproperties *p)
         c->s_in = resample_getBufferInlet (&x->vi_resample, s->s_vector, parentVectorSize, vectorSize);
     }
 
-    dsp_add (vinlet_performPrologue, 1, c);     /* Must be after resampling above. */
+    dsp_add1 (vinlet_performPrologue, c);       /* Must be after resampling above. */
     //
     }
     //
@@ -195,7 +195,7 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
     //
     }
     
-    dsp_add (vinlet_perform, 3, c, out->s_vector, out->s_vectorSize);
+    dsp_add3 (vinlet_perform, c, out->s_vector, out->s_vectorSize);
     //
     }
     //

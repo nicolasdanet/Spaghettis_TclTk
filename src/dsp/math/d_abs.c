@@ -50,7 +50,7 @@ static void abs_tilde_dsp (t_abs_tilde *x, t_signal **sp)
     
     object_fetchAndCopySignalValuesIfRequired (cast_object (x));
 
-    dsp_add (abs_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (abs_tilde_perform, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

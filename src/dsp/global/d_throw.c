@@ -89,7 +89,7 @@ static void throw_tilde_dsp (t_throw_tilde *x, t_signal **sp)
     
     PD_ASSERT (sp[0]->s_vector != (t_sample *)PD_ATOMIC_POINTER_READ (&x->x_p));
     
-    dsp_add (throw_tilde_perform, 2, x, sp[0]->s_vector);
+    dsp_add2 (throw_tilde_perform, x, sp[0]->s_vector);
     //
     }
 }

@@ -93,7 +93,7 @@ static void czero_rev_tilde_dsp (t_czero_rev_tilde *x, t_signal **sp)
     
     complex_raw_initializer (cast_gobj (x));
     
-    dsp_add (czero_rev_tilde_perform, 8, x,
+    dsp_add8 (czero_rev_tilde_perform, x,
         sp[0]->s_vector,
         sp[1]->s_vector,
         sp[2]->s_vector,

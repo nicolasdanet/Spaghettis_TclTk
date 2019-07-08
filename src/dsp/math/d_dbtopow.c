@@ -48,7 +48,7 @@ static void dbtopow_tilde_dsp (t_dbtopow_tilde *x, t_signal **sp)
 
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (dbtopow_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (dbtopow_tilde_perform, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

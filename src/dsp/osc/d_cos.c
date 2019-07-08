@@ -114,7 +114,7 @@ static void cos_tilde_dsp (t_cos_tilde *x, t_signal **sp)
     
     object_fetchAndCopySignalValuesIfRequired (cast_object (x));
 
-    dsp_add (cos_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (cos_tilde_perform, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

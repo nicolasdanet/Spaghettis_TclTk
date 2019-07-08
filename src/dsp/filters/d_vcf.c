@@ -148,7 +148,7 @@ static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
     //
     }
     
-    dsp_add (vcf_tilde_perform, 7, x,
+    dsp_add7 (vcf_tilde_perform, x,
         sp[0]->s_vector,
         sp[1]->s_vector,
         sp[2]->s_vector,

@@ -943,7 +943,7 @@ static void sigmund_tilde_dsp (t_sigmund_tilde *x, t_signal **sp)
     
     object_fetchAndCopySignalValuesIfRequired (cast_object (x));
 
-    dsp_add (sigmund_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (sigmund_tilde_perform, x, sp[0]->s_vector, sp[0]->s_vectorSize);
     //
     }
 }

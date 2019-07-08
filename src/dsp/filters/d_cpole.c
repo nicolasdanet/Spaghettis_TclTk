@@ -119,7 +119,7 @@ static void cpole_tilde_dsp (t_cpole_tilde *x, t_signal **sp)
     
     complex_raw_initializer (cast_gobj (x));
     
-    dsp_add (cpole_tilde_perform, 8, x,
+    dsp_add8 (cpole_tilde_perform, x,
         sp[0]->s_vector,
         sp[1]->s_vector,
         sp[2]->s_vector,

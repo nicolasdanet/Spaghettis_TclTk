@@ -93,7 +93,7 @@ static void receive_tilde_dsp (t_receive_tilde *x, t_signal **sp)
     
     PD_ASSERT ((t_sample *)PD_ATOMIC_POINTER_READ (&x->x_p) != sp[0]->s_vector);
     
-    dsp_add (receive_tilde_perform, 2, x, sp[0]->s_vector);
+    dsp_add2 (receive_tilde_perform, x, sp[0]->s_vector);
     //
     }
 }

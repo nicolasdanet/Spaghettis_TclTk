@@ -74,7 +74,7 @@ static void rzero_rev_tilde_dsp (t_rzero_rev_tilde *x, t_signal **sp)
     
     real_raw_initializer (cast_gobj (x));
     
-    dsp_add (rzero_rev_tilde_perform, 5, x,
+    dsp_add5 (rzero_rev_tilde_perform, x,
         sp[0]->s_vector,
         sp[1]->s_vector,
         sp[2]->s_vector, 

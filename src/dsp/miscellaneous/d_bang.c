@@ -53,7 +53,7 @@ static t_int *bang_tilde_perform (t_int *w)
 
 static void bang_tilde_dsp (t_bang_tilde *x, t_signal **sp)
 {
-    dsp_add (bang_tilde_perform, 1, x);
+    dsp_add1 (bang_tilde_perform, x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
