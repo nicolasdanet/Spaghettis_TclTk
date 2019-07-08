@@ -128,7 +128,7 @@ static void framp_tilde_dsp (t_framp_tilde *x, t_signal **sp)
     //
     int half = (n >> 1);
     
-    dsp_add (framp_tilde_perform, 5,
+    dsp_add5 (framp_tilde_perform,
         sp[0]->s_vector,
         sp[1]->s_vector,
         sp[2]->s_vector,

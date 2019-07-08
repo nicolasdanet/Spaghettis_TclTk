@@ -114,7 +114,7 @@ static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
     //
     }
     
-    dsp_add (delwrite_tilde_perform, 3, &x->dw_space, sp[0]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (delwrite_tilde_perform, &x->dw_space, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -200,7 +200,7 @@ static void writesf_tilde_dsp (t_writesf_tilde *x, t_signal **sp)
     
     for (i = 0; i < t->s_size; i++) { t->s_v[i] = sp[i]->s_vector; }
 
-    dsp_add (writesf_tilde_perform, 3, x, t, sp[0]->s_vectorSize);
+    dsp_add3 (writesf_tilde_perform, x, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

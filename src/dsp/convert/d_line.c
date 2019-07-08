@@ -169,7 +169,7 @@ static void line_tilde_dsp (t_line_tilde *x, t_signal **sp)
     //
     }
     
-    dsp_add (line_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add4 (line_tilde_perform, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

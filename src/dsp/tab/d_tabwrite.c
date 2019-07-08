@@ -268,7 +268,7 @@ static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
         tabwrite_tilde_space (t, w, size, PD_INT_MAX, 1);
     }
     
-    dsp_add (tabwrite_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add4 (tabwrite_tilde_perform, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
 }

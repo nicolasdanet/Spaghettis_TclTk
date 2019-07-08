@@ -223,7 +223,7 @@ static void tabplay_tilde_dsp (t_tabplay_tilde *x, t_signal **sp)
     //
     }
 
-    dsp_add (tabplay_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add4 (tabplay_tilde_perform, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
 }

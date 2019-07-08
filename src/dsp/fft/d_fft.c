@@ -69,7 +69,7 @@ static void fft_tilde_dsp (t_fft_tilde *x, t_signal **sp)
     dsp_addCopyPerform (sp[0]->s_vector, sp[2]->s_vector, n);
     dsp_addCopyPerform (sp[1]->s_vector, sp[3]->s_vector, n);
     
-    dsp_add (fft_tilde_perform, 4, t, sp[2]->s_vector, sp[3]->s_vector, n);
+    dsp_add4 (fft_tilde_perform, t, sp[2]->s_vector, sp[3]->s_vector, n);
     //
     }
 }

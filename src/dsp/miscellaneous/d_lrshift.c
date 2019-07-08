@@ -77,7 +77,7 @@ static void lrshift_tilde_dsp (t_lrshift_tilde *x, t_signal **sp)
     
     if (shift < 0) {
     
-        dsp_add (lrshift_tilde_peformShiftRight, 4, 
+        dsp_add4 (lrshift_tilde_peformShiftRight,
             sp[0]->s_vector + size,
             sp[1]->s_vector + size,
             size,
@@ -85,7 +85,7 @@ static void lrshift_tilde_dsp (t_lrshift_tilde *x, t_signal **sp)
             
     } else {
     
-        dsp_add (lrshift_tilde_peformShiftLeft, 4,
+        dsp_add4 (lrshift_tilde_peformShiftLeft,
             sp[0]->s_vector,
             sp[1]->s_vector,
             size,

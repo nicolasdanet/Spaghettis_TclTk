@@ -48,7 +48,7 @@ static void powtodb_tilde_dsp (t_powtodb_tilde *x, t_signal **sp)
 
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (powtodb_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (powtodb_tilde_perform, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

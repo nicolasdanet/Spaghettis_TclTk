@@ -115,7 +115,7 @@ static void hip_tilde_dsp (t_hip_tilde *x, t_signal **sp)
     //
     }
     
-    dsp_add (hip_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add5 (hip_tilde_perform, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

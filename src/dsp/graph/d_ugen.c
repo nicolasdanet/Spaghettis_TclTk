@@ -398,11 +398,11 @@ void ugen_graphClose (t_dspcontext *context)
     
     chainBegin = chain_getSize (instance_chainGetTemporary());
     
-    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performPrologue, 2, block, c); }
+    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add2 (block_performPrologue, block, c); }
 
     ugen_graphMain (context);
 
-    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add (block_performEpilogue, 2, block, c); }
+    if (block && (p.bp_switchable || p.bp_reblocked)) { dsp_add2 (block_performEpilogue, block, c); }
     
     chainEnd = chain_getSize (instance_chainGetTemporary());
 

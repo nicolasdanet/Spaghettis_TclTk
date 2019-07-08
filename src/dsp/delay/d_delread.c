@@ -98,7 +98,7 @@ static void delread_tilde_dsp (t_delread_tilde *x, t_signal **sp)
     //
     }
     
-    dsp_add (delread_tilde_perform, 5, x, &m->dw_space, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add5 (delread_tilde_perform, x, &m->dw_space, sp[0]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
 }

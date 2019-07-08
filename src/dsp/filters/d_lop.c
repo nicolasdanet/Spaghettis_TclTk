@@ -108,7 +108,7 @@ static void lop_tilde_dsp (t_lop_tilde *x, t_signal **sp)
     //
     }
     
-    dsp_add (lop_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add5 (lop_tilde_perform, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

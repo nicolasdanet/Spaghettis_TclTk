@@ -147,7 +147,7 @@ static void tabread4_tilde_dsp (t_tabread4_tilde *x, t_signal **sp)
 
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (tabread4_tilde_perform, 5, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add5 (tabread4_tilde_perform, x, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
 }

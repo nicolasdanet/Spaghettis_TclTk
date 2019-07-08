@@ -129,7 +129,7 @@ static void tabreceive_tilde_dsp (t_tabreceive_tilde *x, t_signal **sp)
         t->s_int0 = size; t->s_pointer0 = (void *)w;
     }
     
-    dsp_add (tabreceive_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add4 (tabreceive_tilde_perform, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
 }

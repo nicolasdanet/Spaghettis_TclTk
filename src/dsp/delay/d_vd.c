@@ -82,7 +82,7 @@ static void vd_tilde_dsp (t_vd_tilde *x, t_signal **sp)
     
     object_fetchAndCopySignalValuesIfRequired (cast_object (x));
 
-    dsp_add (vd_tilde_perform, 5, &m->dw_space, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add5 (vd_tilde_perform, &m->dw_space, sp[0]->s_vector, sp[1]->s_vector, t, sp[0]->s_vectorSize);
     //
     }
 }

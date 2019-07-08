@@ -89,7 +89,7 @@ static void clip_tilde_dsp (t_clip_tilde *x, t_signal **sp)
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (clip_tilde_perform, 4, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add4 (clip_tilde_perform, x, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

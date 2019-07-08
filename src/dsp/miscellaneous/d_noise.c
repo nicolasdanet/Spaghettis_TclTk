@@ -51,7 +51,7 @@ static t_int *noise_tilde_perform (t_int *w)
 
 static void noise_tilde_dsp (t_noise_tilde *x, t_signal **sp)
 {
-    dsp_add (noise_tilde_perform, 3, &x->x_state, sp[0]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (noise_tilde_perform, &x->x_state, sp[0]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

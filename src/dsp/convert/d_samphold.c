@@ -93,7 +93,7 @@ static void samphold_tilde_dsp (t_samphold_tilde *x, t_signal **sp)
     //
     }
     
-    dsp_add (samphold_tilde_perform, 5, x,
+    dsp_add5 (samphold_tilde_perform, x,
         sp[0]->s_vector,
         sp[1]->s_vector,
         sp[2]->s_vector, 

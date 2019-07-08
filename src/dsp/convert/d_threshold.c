@@ -180,7 +180,7 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
     
     pthread_mutex_unlock (&x->x_mutex);
     
-    dsp_add (threshold_tilde_perform, 4, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
+    dsp_add4 (threshold_tilde_perform, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

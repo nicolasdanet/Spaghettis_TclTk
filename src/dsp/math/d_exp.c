@@ -50,7 +50,7 @@ static void exp_tilde_dsp (t_exp_tilde *x, t_signal **sp)
 
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    dsp_add (exp_tilde_perform, 3, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (exp_tilde_perform, sp[0]->s_vector, sp[1]->s_vector, sp[0]->s_vectorSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

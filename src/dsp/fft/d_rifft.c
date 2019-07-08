@@ -83,8 +83,8 @@ static void rifft_tilde_dsp (t_rifft_tilde *x, t_signal **sp)
         
     dsp_addCopyPerform (in1, out1, half + 1);
     
-    dsp_add (rifft_tilde_performFlip, 3, in2 + 1, out1 + n, half - 1);
-    dsp_add (rifft_tilde_perform, 3, t, out1, n);
+    dsp_add3 (rifft_tilde_performFlip, in2 + 1, out1 + n, half - 1);
+    dsp_add3 (rifft_tilde_perform, t, out1, n);
     //
     }
 }

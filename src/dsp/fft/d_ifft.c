@@ -69,7 +69,7 @@ static void ifft_tilde_dsp (t_ifft_tilde *x, t_signal **sp)
     dsp_addCopyPerform (sp[0]->s_vector, sp[2]->s_vector, n);
     dsp_addCopyPerform (sp[1]->s_vector, sp[3]->s_vector, n);
     
-    dsp_add (ifft_tilde_perform, 4, t, sp[2]->s_vector, sp[3]->s_vector, n);
+    dsp_add4 (ifft_tilde_perform, t, sp[2]->s_vector, sp[3]->s_vector, n);
     //
     }
 }

@@ -143,7 +143,7 @@ static void env_tilde_dsp (t_env_tilde *x, t_signal **sp)
     //
     }
     
-    dsp_add (env_tilde_perform, 3, x, sp[0]->s_vector, sp[0]->s_vectorSize);
+    dsp_add3 (env_tilde_perform, x, sp[0]->s_vector, sp[0]->s_vectorSize);
     //
     }
 }

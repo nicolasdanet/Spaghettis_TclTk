@@ -132,7 +132,7 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     //
     }
         
-    dsp_add (voutlet_perform, 3, c, in->s_vector, in->s_vectorSize);        /* Reblocked. */
+    dsp_add3 (voutlet_perform, c, in->s_vector, in->s_vectorSize);      /* Reblocked. */
     //
     }
     //
@@ -187,7 +187,7 @@ void voutlet_dspEpilogue (t_voutlet *x, t_signal **signals, t_blockproperties *p
     
     if (signals) {
     //
-    dsp_add (voutlet_performEpilogue, 1, c);    /* Must be before resampling below. */
+    dsp_add1 (voutlet_performEpilogue, c);      /* Must be before resampling below. */
     
     c->s_outSize = vectorSize;
     c->s_out     = s->s_vector;
