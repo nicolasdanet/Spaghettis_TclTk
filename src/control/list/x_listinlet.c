@@ -263,6 +263,11 @@ t_atom *listinlet_getAtomAtIndex (t_listinlet *x, int i)
     return NULL;
 }
 
+t_atom *listinlet_getAtomAtIndexUnchecked (t_listinlet *x, int i)
+{
+    return &x->li_vector[i].le_atom;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
