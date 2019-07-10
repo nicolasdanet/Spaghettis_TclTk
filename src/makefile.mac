@@ -48,9 +48,9 @@ LDFLAGS  = -framework CoreAudio \
 CPPFLAGS = -DNDEBUG \
     -DPD_BUILDING_APPLICATION \
     -I$(BELLE_DIR)/Source \
+    -I$(PM_DIR)/porttime \
     -I$(PM_DIR)/pm_common \
     -I$(PM_DIR)/pm_mac \
-    -I$(PM_DIR)/porttime \
     -I$(PA_DIR)/include \
     -I$(PA_DIR)/src/common \
     -DPA_USE_COREAUDIO \
@@ -61,13 +61,13 @@ CXXFLAGS = -std=c++11 $(CFLAGS)
 
 # PortMidi.
 
-PORTMIDI_SRC = $(PM_DIR)/pm_mac/pmmac.c \
-    $(PM_DIR)/pm_mac/pmmacosxcm.c \
-    $(PM_DIR)/pm_mac/finddefault.c \
-    $(PM_DIR)/pm_mac/readbinaryplist.c \
+PORTMIDI_SRC = $(PM_DIR)/pm_common/portmidi.c \
     $(PM_DIR)/pm_common/pmutil.c \
-    $(PM_DIR)/pm_common/portmidi.c \
-    $(PM_DIR)/porttime/ptmacosx_cf.c
+    $(PM_DIR)/pm_mac/pmmac.c \
+    $(PM_DIR)/pm_mac/pmmacosxcm.c \
+    $(PM_DIR)/porttime/ptmacosx_cf.c \
+    $(PM_DIR)/pm_mac/finddefault.c \
+    $(PM_DIR)/pm_mac/readbinaryplist.c
 
 # PortAudio.
 
@@ -78,7 +78,6 @@ PORTAUDIO_SRC = $(PA_DIR)/src/common/pa_allocation.c \
     $(PA_DIR)/src/common/pa_front.c \
     $(PA_DIR)/src/common/pa_process.c \
     $(PA_DIR)/src/common/pa_stream.c \
-    $(PA_DIR)/src/common/pa_trace.c \
     $(PA_DIR)/src/common/pa_debugprint.c \
     $(PA_DIR)/src/common/pa_ringbuffer.c \
     $(PA_DIR)/src/os/unix/pa_unix_util.c \

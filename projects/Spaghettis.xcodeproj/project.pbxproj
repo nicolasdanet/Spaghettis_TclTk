@@ -161,7 +161,6 @@
 		371655571BA3456300ABDE22 /* pa_front.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655561BA3456300ABDE22 /* pa_front.c */; settings = {COMPILER_FLAGS = "-x c -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		371655671BA3457600ABDE22 /* pa_process.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655661BA3457600ABDE22 /* pa_process.c */; settings = {COMPILER_FLAGS = "-x c -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		371655691BA3458300ABDE22 /* pa_stream.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655681BA3458300ABDE22 /* pa_stream.c */; settings = {COMPILER_FLAGS = "-x c -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		3716556B1BA3458D00ABDE22 /* pa_trace.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556A1BA3458D00ABDE22 /* pa_trace.c */; settings = {COMPILER_FLAGS = "-x c -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		3716556D1BA3459F00ABDE22 /* pa_debugprint.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556C1BA3459F00ABDE22 /* pa_debugprint.c */; settings = {COMPILER_FLAGS = "-x c -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		3716556F1BA345AD00ABDE22 /* pa_ringbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716556E1BA345AD00ABDE22 /* pa_ringbuffer.c */; settings = {COMPILER_FLAGS = "-x c -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		371655711BA345C100ABDE22 /* pa_unix_util.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655701BA345C100ABDE22 /* pa_unix_util.c */; settings = {COMPILER_FLAGS = "-x c -w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -587,6 +586,8 @@
 		17B0BDD122A6B3D6004C0C29 /* m_items.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_items.c; sourceTree = "<group>"; };
 		17B168F722672256009EDB39 /* m_pending.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_pending.c; sourceTree = "<group>"; };
 		17B1B571215FB9AB0067D398 /* m_encapsulate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_encapsulate.c; sourceTree = "<group>"; };
+		17B3494522D61E5A0074025A /* pa_gitrevision.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = pa_gitrevision.h; path = libraries/portaudio/src/common/pa_gitrevision.h; sourceTree = "<group>"; };
+		17B3494622D61E640074025A /* pa_trace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = pa_trace.h; path = libraries/portaudio/src/common/pa_trace.h; sourceTree = "<group>"; };
 		17B52BE42142B3DB0002F71A /* m_register.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_register.c; sourceTree = "<group>"; };
 		17B7C280213BD2ED0095D248 /* m_undoduplicate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_undoduplicate.c; sourceTree = "<group>"; };
 		17B8503C21536DB800CB7A8F /* m_undoresizebox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_undoresizebox.c; sourceTree = "<group>"; };
@@ -695,7 +696,6 @@
 		371655561BA3456300ABDE22 /* pa_front.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_front.c; path = libraries/portaudio/src/common/pa_front.c; sourceTree = "<group>"; };
 		371655661BA3457600ABDE22 /* pa_process.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_process.c; path = libraries/portaudio/src/common/pa_process.c; sourceTree = "<group>"; };
 		371655681BA3458300ABDE22 /* pa_stream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_stream.c; path = libraries/portaudio/src/common/pa_stream.c; sourceTree = "<group>"; };
-		3716556A1BA3458D00ABDE22 /* pa_trace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_trace.c; path = libraries/portaudio/src/common/pa_trace.c; sourceTree = "<group>"; };
 		3716556C1BA3459F00ABDE22 /* pa_debugprint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_debugprint.c; path = libraries/portaudio/src/common/pa_debugprint.c; sourceTree = "<group>"; };
 		3716556E1BA345AD00ABDE22 /* pa_ringbuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_ringbuffer.c; path = libraries/portaudio/src/common/pa_ringbuffer.c; sourceTree = "<group>"; };
 		371655701BA345C100ABDE22 /* pa_unix_util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_unix_util.c; path = libraries/portaudio/src/os/unix/pa_unix_util.c; sourceTree = "<group>"; };
@@ -840,7 +840,6 @@
 		37877DB11C89E62000E1777D /* pa_process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_process.h; path = libraries/portaudio/src/common/pa_process.h; sourceTree = "<group>"; };
 		37877DB21C89E62000E1777D /* pa_ringbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_ringbuffer.h; path = libraries/portaudio/src/common/pa_ringbuffer.h; sourceTree = "<group>"; };
 		37877DB31C89E62000E1777D /* pa_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_stream.h; path = libraries/portaudio/src/common/pa_stream.h; sourceTree = "<group>"; };
-		37877DB41C89E62000E1777D /* pa_trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_trace.h; path = libraries/portaudio/src/common/pa_trace.h; sourceTree = "<group>"; };
 		37877DB51C89E62000E1777D /* pa_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_types.h; path = libraries/portaudio/src/common/pa_types.h; sourceTree = "<group>"; };
 		37877DB61C89E62000E1777D /* pa_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_util.h; path = libraries/portaudio/src/common/pa_util.h; sourceTree = "<group>"; };
 		37877DBD1C89E6FF00E1777D /* pa_unix_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_unix_util.h; path = libraries/portaudio/src/os/unix/pa_unix_util.h; sourceTree = "<group>"; };
@@ -1275,6 +1274,7 @@
 			isa = PBXGroup;
 			children = (
 				37877DC51C89E7A600E1777D /* portaudio.h */,
+				37877DC71C89E7CA00E1777D /* pa_mac_core.h */,
 				37877DAF1C89E62000E1777D /* pa_hostapi.h */,
 				37877DB51C89E62000E1777D /* pa_types.h */,
 				37877DB61C89E62000E1777D /* pa_util.h */,
@@ -1286,11 +1286,11 @@
 				37877DAD1C89E62000E1777D /* pa_dither.h */,
 				37877DB11C89E62000E1777D /* pa_process.h */,
 				37877DB31C89E62000E1777D /* pa_stream.h */,
-				37877DB41C89E62000E1777D /* pa_trace.h */,
+				17B3494622D61E640074025A /* pa_trace.h */,
+				17B3494522D61E5A0074025A /* pa_gitrevision.h */,
 				37877DAC1C89E62000E1777D /* pa_debugprint.h */,
 				37877DB21C89E62000E1777D /* pa_ringbuffer.h */,
 				37877DBD1C89E6FF00E1777D /* pa_unix_util.h */,
-				37877DC71C89E7CA00E1777D /* pa_mac_core.h */,
 				37877DC11C89E75B00E1777D /* pa_mac_core_blocking.h */,
 				37877DC21C89E75B00E1777D /* pa_mac_core_internal.h */,
 				37877DC41C89E78900E1777D /* pa_mac_core_utilities.h */,
@@ -1301,7 +1301,6 @@
 				371655561BA3456300ABDE22 /* pa_front.c */,
 				371655661BA3457600ABDE22 /* pa_process.c */,
 				371655681BA3458300ABDE22 /* pa_stream.c */,
-				3716556A1BA3458D00ABDE22 /* pa_trace.c */,
 				3716556C1BA3459F00ABDE22 /* pa_debugprint.c */,
 				3716556E1BA345AD00ABDE22 /* pa_ringbuffer.c */,
 				371655701BA345C100ABDE22 /* pa_unix_util.c */,
@@ -2211,7 +2210,6 @@
 				371655711BA345C100ABDE22 /* pa_unix_util.c in Sources */,
 				3716556F1BA345AD00ABDE22 /* pa_ringbuffer.c in Sources */,
 				3716556D1BA3459F00ABDE22 /* pa_debugprint.c in Sources */,
-				3716556B1BA3458D00ABDE22 /* pa_trace.c in Sources */,
 				371655691BA3458300ABDE22 /* pa_stream.c in Sources */,
 				371655671BA3457600ABDE22 /* pa_process.c in Sources */,
 				371655571BA3456300ABDE22 /* pa_front.c in Sources */,
