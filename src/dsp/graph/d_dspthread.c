@@ -116,9 +116,11 @@ static void dspthread_proceed (t_dspthread *x)
     //
     t_chain *chain = (t_chain *)PD_ATOMIC_POINTER_READ (&x->x_chain);
     
+    int stuck = 0;
+    
     do {
     //
-    t_time t = 0.0; int stuck = 0; int dacs = audio_poll();
+    t_time t = 0.0; int dacs = audio_poll();
     
     #if PD_WITH_DEBUG
     
