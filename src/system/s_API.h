@@ -29,6 +29,7 @@ void        midi_pollNative                     (void);
 // MARK: -
 
 const char  *audio_nameNative                   (void);
+int         audio_getVectorSizeNative           (void);
 t_error     audio_getListsNative                (t_deviceslist *);
 t_error     audio_initializeNative              (void);
 void        audio_releaseNative                 (void);
@@ -97,6 +98,11 @@ static inline void midi_initialize (void)
 static inline void midi_release (void)
 {
     return midi_releaseNative();
+}
+
+static inline int audio_getVectorSize (void)
+{
+    return audio_getVectorSizeNative();
 }
 
 // -----------------------------------------------------------------------------------------------------------
