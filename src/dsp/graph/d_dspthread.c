@@ -128,9 +128,12 @@ static void dspthread_proceed (t_dspthread *x)
     
     #endif
     
-    if (dacs == DACS_YES) { time_set (&t); time_addNanoseconds (&t, audio_getNanosecondsToSleep() * 0.9); }
-    if (dacs != DACS_NO)  { chain_tick (chain); stuck = 0; } else { stuck++; }
-    if (dacs == DACS_YES) { time_wait (&t); }
+    int work = (dacs != DACS_NO);
+    int wait = (dacs == DACS_YES) && (audio_getVectorSize() != INTERNAL_BLOCKSIZE);
+    
+    if (wait) { time_set (&t); time_addNanoseconds (&t, audio_getNanosecondsToSleep() * 0.9); }
+    if (work) { chain_tick (chain); stuck = 0; } else { stuck++; }
+    if (wait) { time_wait (&t); }
     
     if (stuck > 10 || PD_ATOMIC_UINT32_TRUE (DSP_EXIT, &x->x_flag)) { break; }
     //
