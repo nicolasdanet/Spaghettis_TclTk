@@ -156,9 +156,7 @@ static int jack_pollCallback (jack_nframes_t framesCount, void *dummy)
 
 static void jack_shutdownCallback (void *dummy)
 {
-    jack_client = NULL;
-    jack_buffersFree();
-    scheduler_needToExitWithError();
+    jack_client = NULL; scheduler_needToExitWithError();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -177,6 +175,7 @@ t_error audio_initializeNative (void)
 
 void audio_releaseNative (void)
 {
+    jack_buffersFree();
 }
 
 // -----------------------------------------------------------------------------------------------------------

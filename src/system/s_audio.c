@@ -31,6 +31,83 @@ static t_float64Atomic  audio_sampleRate;           /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static int              audio_state;                /* Static. */
+pthread_mutex_t         audio_mutex;                /* Static. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void audio_vectorInitialize (t_float, int, int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int audio_isOpened (void)
+{
+    return (audio_state != 0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error audio_open (void)
+{
+    t_error err = PD_ERROR;
+    
+    t_devicesproperties audio; devices_initAsAudio (&audio);
+    
+    audio_getDevices (&audio);
+    
+    devices_checkDisabled (&audio);
+    
+    pthread_mutex_lock (&audio_mutex);
+    
+    if (devices_getInSize (&audio) || devices_getOutSize (&audio)) {
+        int m = audio_getTotalOfChannelsIn();
+        int n = audio_getTotalOfChannelsOut();
+        audio_vectorInitialize (devices_getSampleRate (&audio), m, n);
+        err = audio_openNative (&audio);
+    }
+
+    audio_state = err ? 0 : 1;
+    
+    pthread_mutex_unlock (&audio_mutex);
+    
+    if (err) { error_canNotOpen (sym_audio); }
+    
+    return err;
+}
+
+void audio_close (void)
+{
+    pthread_mutex_lock (&audio_mutex);
+    
+    if (audio_isOpened()) { audio_closeNative(); } audio_state = 0;
+    
+    pthread_mutex_unlock (&audio_mutex);
+}
+
+int audio_poll (void)
+{
+    int k = DACS_NO;
+    
+    if (pthread_mutex_trylock (&audio_mutex) == 0) {
+    //
+    if (audio_isOpened()) { k = audio_pollNative(); }
+    
+    pthread_mutex_unlock (&audio_mutex);
+    //
+    }
+    
+    return k;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 t_error audio_stop (void)
@@ -41,15 +118,6 @@ t_error audio_stop (void)
 t_error audio_start (void)
 {
     if (!audio_isOpened()) { return audio_open(); } else { return PD_ERROR_NONE; }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int audio_poll (void)
-{
-    return audio_pollNative();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -126,7 +194,7 @@ void audio_vectorShrinkOut (int totalOfChannelsOut)
 
 t_error audio_initialize (void)
 {
-    return audio_initializeNative();
+    pthread_mutex_init (&audio_mutex, NULL); return audio_initializeNative();
 }
 
 void audio_release (void)
@@ -140,6 +208,8 @@ void audio_release (void)
     if (audio_soundOut) {
         PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; 
     }
+    
+    pthread_mutex_destroy (&audio_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
