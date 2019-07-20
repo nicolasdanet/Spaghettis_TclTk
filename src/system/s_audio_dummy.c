@@ -36,9 +36,9 @@ void audio_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error audio_openNative (t_devicesproperties *p) 
+t_error audio_openNative (t_devices *p) 
 {
-    return PD_ERROR_NONE;
+    return PD_ERROR;
 }
 
 void audio_closeNative() 
@@ -56,7 +56,7 @@ int audio_pollNative()
 
 int audio_getVectorSizeNative (void)
 {
-    return INTERNAL_BLOCKSIZE;
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

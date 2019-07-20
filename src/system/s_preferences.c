@@ -16,8 +16,8 @@
 
 void preferences_load (void)
 {
-    t_devicesproperties midi;    
-    t_devicesproperties audio;   
+    t_devices midi;    
+    t_devices audio;   
 
     devices_initAsMidi (&midi);
     devices_initAsAudio (&audio);
@@ -125,8 +125,8 @@ void preferences_load (void)
     //
     }
     
-    devices_setDefaults (&midi);
-    devices_setDefaults (&audio);
+    devices_setDefaultsIfRequired (&midi);
+    devices_setDefaultsIfRequired (&audio);
     
     midi_setDevices (&midi);
     audio_setDevices (&audio);
@@ -140,8 +140,8 @@ void preferences_load (void)
 
 void preferences_save (void)
 {
-    t_devicesproperties midi;    
-    t_devicesproperties audio;   
+    t_devices midi;    
+    t_devices audio;   
 
     devices_initAsMidi (&midi);
     devices_initAsAudio (&audio);

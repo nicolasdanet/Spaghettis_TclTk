@@ -54,29 +54,33 @@ int audio_isOpened (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Notice that for now only the first device is opened. */
+
 t_error audio_open (void)
 {
     t_error err = PD_ERROR;
     
-    t_devicesproperties audio; devices_initAsAudio (&audio);
+    t_devices audio; devices_initAsAudio (&audio);
     
     audio_getDevices (&audio);
     
-    devices_checkDisabled (&audio);
-    
+    if (devices_check (&audio) == PD_ERROR_NONE) {
+    //
     pthread_mutex_lock (&audio_mutex);
     
-    if (devices_getInSize (&audio) || devices_getOutSize (&audio)) {
-        int m = audio_getTotalOfChannelsIn();
-        int n = audio_getTotalOfChannelsOut();
-        audio_vectorInitialize (devices_getSampleRate (&audio), m, n);
-        err = audio_openNative (&audio);
-    }
+        if (devices_getInSize (&audio) || devices_getOutSize (&audio)) {
+            int m = audio_getTotalOfChannelsIn();
+            int n = audio_getTotalOfChannelsOut();
+            audio_vectorInitialize (devices_getSampleRate (&audio), m, n);
+            err = audio_openNative (&audio);
+        }
 
-    audio_state = err ? 0 : 1;
+        audio_state = err ? 0 : 1;
     
     pthread_mutex_unlock (&audio_mutex);
-    
+    //
+    }
+
     if (err) { error_canNotOpen (sym_audio); }
     
     return err;

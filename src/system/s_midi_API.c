@@ -35,7 +35,7 @@ static t_deviceslist    midi_devices;       /* Static. */
 
 /* The APIs provided detect devices only at startup thus it can be cached. */
 
-static t_error midi_getLists (t_deviceslist *l)
+static t_error midi_getDevicesList (t_deviceslist *l)
 {
     static int cacheLoaded = 0;     /* Static. */
     static t_deviceslist cache;     /* Static. */
@@ -59,7 +59,7 @@ static t_error midi_getLists (t_deviceslist *l)
 
 #if 0
 
-static t_error midi_getLists (t_deviceslist *l)
+static t_error midi_getDevicesList (t_deviceslist *l)
 {
     deviceslist_init (l); return midi_getListsNative (l);
 }
@@ -72,7 +72,7 @@ static t_error midi_getLists (t_deviceslist *l)
 
 void midi_open (void)
 {
-    t_devicesproperties midi; devices_initAsMidi (&midi);
+    t_devices midi; devices_initAsMidi (&midi);
      
     midi_getDevices (&midi);
     midi_openNative (&midi);
@@ -87,12 +87,12 @@ void midi_close (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void midi_getDevices (t_devicesproperties *p)
+void midi_getDevices (t_devices *p)
 {
     deviceslist_getDevices (&midi_devices, p);
 }
 
-void midi_setDevices (t_devicesproperties *p)
+void midi_setDevices (t_devices *p)
 {
     deviceslist_setDevices (&midi_devices, p);
 }
@@ -105,7 +105,7 @@ int midi_deviceAsNumberWithString (int isOutput, char *name)
 {
     t_deviceslist l;
     
-    if (!midi_getLists (&l)) {
+    if (!midi_getDevicesList (&l)) {
         if (isOutput) { return deviceslist_containsOutWithString (&l, name); }
         else { 
             return deviceslist_containsInWithString (&l, name);
@@ -121,7 +121,7 @@ t_error midi_deviceAsStringWithNumber (int isOutput, int k, char *dest, size_t s
     
     t_deviceslist l;
     
-    if (k >= 0 && !midi_getLists (&l)) {
+    if (k >= 0 && !midi_getDevicesList (&l)) {
     //
     char *t = isOutput ? deviceslist_getOutAtIndexAsString (&l, k) : deviceslist_getInAtIndexAsString (&l, k);
     if (t) { err = string_copy (dest, size, t); }
@@ -141,7 +141,7 @@ static t_error midi_requireDialogInitialize (void)
 {
     t_deviceslist l;
     
-    t_error err = midi_getLists (&l);
+    t_error err = midi_getDevicesList (&l);
     
     if (!err) {
     //
@@ -178,7 +178,7 @@ void midi_requireDialog (void)
     
     if (!err) {
     //
-    t_devicesproperties midi; devices_initAsMidi (&midi);
+    t_devices midi; devices_initAsMidi (&midi);
     
     midi_getDevices (&midi);
     
@@ -230,7 +230,7 @@ void midi_requireDialog (void)
 
 void midi_fromDialog (int argc, t_atom *argv)
 {
-    t_devicesproperties midi; devices_initAsMidi (&midi);
+    t_devices midi; devices_initAsMidi (&midi);
     
     int t = argc / 2;
     int j;

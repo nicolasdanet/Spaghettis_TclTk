@@ -178,7 +178,7 @@ void audio_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error audio_openNative (t_devicesproperties *p)
+t_error audio_openNative (t_devices *p)
 {
     int deviceIn            = devices_getInSize (p)  ? devices_getInAtIndexAsNumber (p, 0)  : 0;
     int deviceOut           = devices_getOutSize (p) ? devices_getOutAtIndexAsNumber (p, 0) : 0;
