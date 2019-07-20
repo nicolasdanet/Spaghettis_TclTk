@@ -31,7 +31,7 @@ void midi_releaseNative (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void midi_openNative (t_devicesproperties *p)
+void midi_openNative (t_devices *p)
 {
 }
 

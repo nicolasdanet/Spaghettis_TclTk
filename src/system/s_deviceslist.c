@@ -62,15 +62,17 @@ int deviceslist_getOutSize (t_deviceslist *p)
     return p->d_outSize;
 }
 
-static int deviceslist_getInChannelsAtIndex (t_deviceslist *p, int i)
+int deviceslist_getInChannelsAtIndex (t_deviceslist *p, int i)
 {
+    PD_ASSERT (i >= 0);
     PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     return p->d_inChannels[i];
 }
 
-static int deviceslist_getOutChannelsAtIndex (t_deviceslist *p, int i)
+int deviceslist_getOutChannelsAtIndex (t_deviceslist *p, int i)
 {
+    PD_ASSERT (i >= 0);
     PD_ASSERT (i < DEVICES_MAXIMUM_IO);
     
     return p->d_outChannels[i];
@@ -246,7 +248,7 @@ char *deviceslist_getOutAtIndexAsString (t_deviceslist *p, int i)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
+void deviceslist_setDevices (t_deviceslist *l, t_devices *p)
 {
     int i;
     
@@ -280,7 +282,7 @@ void deviceslist_setDevices (t_deviceslist *l, t_devicesproperties *p)
     }
 }
 
-void deviceslist_getDevices (t_deviceslist *l, t_devicesproperties *p)
+void deviceslist_getDevices (t_deviceslist *l, t_devices *p)
 {
     int i;
     

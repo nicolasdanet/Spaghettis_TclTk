@@ -40,7 +40,7 @@ void audio_vectorInitialize (t_float, int, int);
 
 /* The APIs provided detect devices only at startup thus it can be cached. */
 
-static t_error audio_getLists (t_deviceslist *l)
+static t_error audio_getDevicesList (t_deviceslist *l)
 {
     static int cacheLoaded = 0;     /* Static. */
     static t_deviceslist cache;     /* Static. */
@@ -64,7 +64,7 @@ static t_error audio_getLists (t_deviceslist *l)
 
 #if 0
 
-static t_error audio_getLists (t_deviceslist *l)
+static t_error audio_getDevicesList (t_deviceslist *l)
 {
     deviceslist_init (l); return audio_getListsNative (l);
 }
@@ -75,12 +75,12 @@ static t_error audio_getLists (t_deviceslist *l)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void audio_getDevices (t_devicesproperties *p)
+void audio_getDevices (t_devices *p)
 {
     deviceslist_getDevices (&audio_devices, p);
 }
 
-void audio_setDevices (t_devicesproperties *p)
+void audio_setDevices (t_devices *p)
 {
     int m, n;
     
@@ -96,11 +96,58 @@ void audio_setDevices (t_devicesproperties *p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Check maximum device channels (if defined) before to open stream. */
+
+t_error audio_checkDevices (t_devices *p)
+{
+    t_deviceslist l; t_error err = audio_getDevicesList (&l);
+    
+    if (!err) {
+    //
+    int i;
+    
+    for (i = 0; i < devices_getInSize (p); i++) {
+    //
+    int m = devices_getInChannelsAtIndex (p, i);
+    int n = deviceslist_getInChannelsAtIndex (&l, devices_getInAtIndexAsNumber (p, i));
+    if (n > 0 && m > n) {
+        err = PD_ERROR; break;
+    }
+    //
+    }
+    //
+    }
+    
+    if (!err) {
+    //
+    int i;
+    
+    for (i = 0; i < devices_getOutSize (p); i++) {
+    //
+    int m = devices_getOutChannelsAtIndex (p, i);
+    int n = deviceslist_getOutChannelsAtIndex (&l, devices_getOutAtIndexAsNumber (p, i));
+    if (n > 0 && m > n) {
+        err = PD_ERROR; break;
+    }
+    //
+    }
+    //
+    }
+    
+    if (err) { error_mismatch (sym_audio, sym_channels); }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 int audio_deviceAsNumberWithString (int isOutput, char *name)
 {
     t_deviceslist l;
     
-    if (!audio_getLists (&l)) {
+    if (!audio_getDevicesList (&l)) {
         if (isOutput) { return deviceslist_containsOutWithString (&l, name); }
         else { 
             return deviceslist_containsInWithString (&l, name);
@@ -116,7 +163,7 @@ t_error audio_deviceAsStringWithNumber (int isOutput, int k, char *dest, size_t 
     
     t_deviceslist l;
     
-    if (k >= 0 && !audio_getLists (&l)) {
+    if (k >= 0 && !audio_getDevicesList (&l)) {
     //
     char *t = isOutput ? deviceslist_getOutAtIndexAsString (&l, k) : deviceslist_getInAtIndexAsString (&l, k);
     if (t) { err = string_copy (dest, size, t); }
@@ -136,7 +183,7 @@ static t_error audio_requireDialogInitialize (void)
 {
     t_deviceslist l;
     
-    t_error err = audio_getLists (&l);
+    t_error err = audio_getDevicesList (&l);
     
     if (!err) {
     //
@@ -173,7 +220,7 @@ void audio_requireDialog (void)
     
     if (!err) {
     //
-    t_devicesproperties audio; devices_initAsAudio (&audio);
+    t_devices audio; devices_initAsAudio (&audio);
     
     audio_getDevices (&audio);
     
@@ -232,7 +279,7 @@ void audio_requireDialog (void)
 
 void audio_fromDialog (int argc, t_atom *argv)
 {
-    t_devicesproperties audio; devices_initAsAudio (&audio);
+    t_devices audio; devices_initAsAudio (&audio);
     
     int i;
     

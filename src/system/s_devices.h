@@ -7,21 +7,21 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#ifndef __s_devicesproperties_h_
-#define __s_devicesproperties_h_
+#ifndef __s_devices_h_
+#define __s_devices_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define DEVICES_MAXIMUM_IO                  8
-#define DEVICES_MAXIMUM_CHANNELS            32
+#define DEVICES_MAXIMUM_IO          8
+#define DEVICES_MAXIMUM_CHANNELS    32
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef struct _devicesproperties {
+typedef struct _devices {
     int d_sampleRate;
     int d_inSize;
     int d_outSize;
@@ -30,55 +30,55 @@ typedef struct _devicesproperties {
     int d_inChannels  [DEVICES_MAXIMUM_IO]; // --
     int d_outChannels [DEVICES_MAXIMUM_IO]; // --
     int d_isMidi;
-    } t_devicesproperties;
+    } t_devices;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    devices_initAsAudio                 (t_devicesproperties *p);
-void    devices_initAsMidi                  (t_devicesproperties *p);
-void    devices_setDefaults                 (t_devicesproperties *p);
+void        devices_initAsAudio                 (t_devices *p);
+void        devices_initAsMidi                  (t_devices *p);
+void        devices_setDefaultsIfRequired       (t_devices *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    devices_setSampleRate               (t_devicesproperties *p, int n);
-int     devices_getSampleRate               (t_devicesproperties *p);
-int     devices_getInSize                   (t_devicesproperties *p);
-int     devices_getOutSize                  (t_devicesproperties *p);
-int     devices_getInAtIndexAsNumber        (t_devicesproperties *p, int i);
-int     devices_getOutAtIndexAsNumber       (t_devicesproperties *p, int i);
-int     devices_getInChannelsAtIndex        (t_devicesproperties *p, int i);
-int     devices_getOutChannelsAtIndex       (t_devicesproperties *p, int i);
-t_error devices_getInAtIndexAsString        (t_devicesproperties *p, int i, char *dest, size_t size);
-t_error devices_getOutAtIndexAsString       (t_devicesproperties *p, int i, char *dest, size_t size);
+void        devices_setSampleRate               (t_devices *p, int n);
+int         devices_getSampleRate               (t_devices *p);
+int         devices_getInSize                   (t_devices *p);
+int         devices_getOutSize                  (t_devices *p);
+int         devices_getInAtIndexAsNumber        (t_devices *p, int i);
+int         devices_getOutAtIndexAsNumber       (t_devices *p, int i);
+int         devices_getInChannelsAtIndex        (t_devices *p, int i);
+int         devices_getOutChannelsAtIndex       (t_devices *p, int i);
+t_error     devices_getInAtIndexAsString        (t_devices *p, int i, char *dest, size_t size);
+t_error     devices_getOutAtIndexAsString       (t_devices *p, int i, char *dest, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    devices_checkDisabled               (t_devicesproperties *p);
+t_error     devices_check                       (t_devices *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error devices_appendMidiInWithString      (t_devicesproperties *p, char *device);
-t_error devices_appendMidiOutWithString     (t_devicesproperties *p, char *device);
-t_error devices_appendAudioInWithString     (t_devicesproperties *p, char *device, int channels);
-t_error devices_appendAudioOutWithString    (t_devicesproperties *p, char *device, int channels);
+t_error     devices_appendMidiInWithString      (t_devices *p, char *device);
+t_error     devices_appendMidiOutWithString     (t_devices *p, char *device);
+t_error     devices_appendAudioInWithString     (t_devices *p, char *device, int channels);
+t_error     devices_appendAudioOutWithString    (t_devices *p, char *device, int channels);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error devices_appendMidiInWithNumber      (t_devicesproperties *p, int n);
-t_error devices_appendMidiOutWithNumber     (t_devicesproperties *p, int n);
-t_error devices_appendAudioInWithNumber     (t_devicesproperties *p, int n, int channels);
-t_error devices_appendAudioOutWithNumber    (t_devicesproperties *p, int n, int channels);
+t_error     devices_appendMidiInWithNumber      (t_devices *p, int n);
+t_error     devices_appendMidiOutWithNumber     (t_devices *p, int n);
+t_error     devices_appendAudioInWithNumber     (t_devices *p, int n, int channels);
+t_error     devices_appendAudioOutWithNumber    (t_devices *p, int n, int channels);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // __s_devicesproperties_h_
+#endif // __s_devices_h_
