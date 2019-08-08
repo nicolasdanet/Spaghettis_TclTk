@@ -30,10 +30,6 @@ t_error utils_version (char *dest, size_t size)
         err |= string_add (dest, size, " / 64-bit");
     #endif
     
-    #if PD_WITH_DEBUG
-        err |= string_add (dest, size, " / DEBUG");
-    #endif
-
     return err;
 }
 

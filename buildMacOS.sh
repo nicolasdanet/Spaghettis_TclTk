@@ -24,16 +24,14 @@ rep=$(pwd)
 
 # ActiveTcl ( http://wiki.tcl.tk/1875 ).
 
-wish="/Library/Frameworks/Tk.framework/Versions/8.6/Resources/Wish.app"
+wish="${rep}/wish/embedded/Applications/Utilities/Wish.app"
 
 if [ -e "${wish}" ]; then
-    echo "Build with ActiveTcl 8.6 ..."
+    echo "Build with embedded Wish.app ..."
 else
-    wish="/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
+    wish="/Library/Frameworks/Tk.framework/Versions/8.6/Resources/Wish.app"
     if [ -e "${wish}" ]; then
-        echo "Build with ActiveTcl 8.5 ..."
-    else
-        wish="/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
+        echo "Build with ActiveTcl 8.6 ..."
     fi
 fi
 
@@ -110,26 +108,6 @@ echo "Clean ..."
 cd "${rep}/src"                                                         || exit 1
 make -f makefile.mac clean                                              || exit 1
 cd "${rep}"                                                             || exit 1
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Codesign with a pseudo-identity.
-
-echo "Codesign ..."
-codesign -s "-" -f "${app}"                                             || exit 1
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Build and launch the tests.
-
-echo "Build tests ..."
-cd "${rep}/tests"                                                       || exit 1
-./build.sh                                                              || exit 1
-
-echo "Launch tests ..."
-./tests                                                                 || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
