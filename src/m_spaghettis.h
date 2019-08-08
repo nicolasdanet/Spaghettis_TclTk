@@ -502,7 +502,7 @@ typedef uint32_t                    t_keycode;
 typedef uint64_t                    t_rand48;
 typedef uint64_t                    t_seed;
 typedef uint64_t                    t_id;
-typedef int64_t                     t_phase;        /* Assumed two's complement. */
+typedef int64_t                     t_phase;            /* Assumed two's complement. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

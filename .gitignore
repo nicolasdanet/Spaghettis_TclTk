@@ -16,3 +16,7 @@ tests/tests
 libraries/belle/Belle
 libraries/belle/Resources/MICA/MicaData*.hpp
 libraries/T/foo
+wish/embedded/
+wish/tk/
+wish/tcl/
+
