@@ -16,14 +16,20 @@
 
 static void devices_init (t_devices *p)
 {
-    p->d_sampleRate = AUDIO_DEFAULT_SAMPLERATE;
-    p->d_inSize     = 0;
-    p->d_outSize    = 0;
+    int i;
+    
+    p->d_sampleRate     = AUDIO_DEFAULT_SAMPLERATE;
+    p->d_inSize         = 0;
+    p->d_outSize        = 0;
 
-    memset (p->d_in,            0, DEVICES_MAXIMUM_IO * sizeof (int));
-    memset (p->d_out,           0, DEVICES_MAXIMUM_IO * sizeof (int));
-    memset (p->d_inChannels,    0, DEVICES_MAXIMUM_IO * sizeof (int));
-    memset (p->d_outChannels,   0, DEVICES_MAXIMUM_IO * sizeof (int));
+    for (i = 0; i < DEVICES_MAXIMUM_IO; i++) {
+    //
+    p->d_in[i]          = 0;
+    p->d_out[i]         = 0;
+    p->d_inChannels[i]  = 0;
+    p->d_outChannels[i] = 0;
+    //
+    }
 }
 
 void devices_initAsAudio (t_devices *p)
@@ -72,7 +78,7 @@ static void devices_setDefaultsMidi (t_devices *p)
     }
 }
 
-void devices_setDefaultsIfRequired (t_devices *p)
+void devices_setDefaultsIfNone (t_devices *p)
 {
     if (p->d_isMidi) { devices_setDefaultsMidi (p); }
     else {
@@ -108,12 +114,12 @@ int devices_getOutSize (t_devices *p)
     return p->d_outSize;
 }
 
-int devices_getInAtIndexAsNumber (t_devices *p, int i)
+int devices_getInAtIndex (t_devices *p, int i)
 {
     return (i < p->d_inSize) ? p->d_in[i] : -1;
 }
 
-int devices_getOutAtIndexAsNumber (t_devices *p, int i)
+int devices_getOutAtIndex (t_devices *p, int i)
 {
     return (i < p->d_outSize) ? p->d_out[i] : -1;
 }
@@ -138,7 +144,7 @@ int devices_getOutChannelsAtIndex (t_devices *p, int i)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error devices_check (t_devices *p)
+void devices_check (t_devices *p)
 {
     int i;
     
@@ -148,15 +154,13 @@ t_error devices_check (t_devices *p)
         p->d_inChannels[i]  = PD_MAX (0, p->d_inChannels[i]);
         p->d_outChannels[i] = PD_MAX (0, p->d_outChannels[i]);
     }
-    
-    return audio_checkDevices (p);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_error devices_appendMidiInWithNumber (t_devices *p, int n)
+t_error devices_appendMidiIn (t_devices *p, int n)
 {
     PD_ASSERT (p->d_isMidi);
     
@@ -169,7 +173,7 @@ t_error devices_appendMidiInWithNumber (t_devices *p, int n)
     return PD_ERROR_NONE;
 }
 
-t_error devices_appendMidiOutWithNumber (t_devices *p, int n)
+t_error devices_appendMidiOut (t_devices *p, int n)
 {
     PD_ASSERT (p->d_isMidi);
     
@@ -182,7 +186,7 @@ t_error devices_appendMidiOutWithNumber (t_devices *p, int n)
     return PD_ERROR_NONE;
 }
 
-t_error devices_appendAudioInWithNumber (t_devices *p, int n, int channels)
+t_error devices_appendAudioIn (t_devices *p, int n, int channels)
 {
     PD_ASSERT (!p->d_isMidi);
     
@@ -198,7 +202,7 @@ t_error devices_appendAudioInWithNumber (t_devices *p, int n, int channels)
     return PD_ERROR_NONE;
 }
 
-t_error devices_appendAudioOutWithNumber (t_devices *p, int n, int channels)
+t_error devices_appendAudioOut (t_devices *p, int n, int channels)
 {
     PD_ASSERT (!p->d_isMidi);
     
@@ -212,52 +216,6 @@ t_error devices_appendAudioOutWithNumber (t_devices *p, int n, int channels)
     }
     
     return PD_ERROR_NONE;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error devices_appendMidiInWithString (t_devices *p, char *device)
-{
-    return devices_appendMidiInWithNumber (p, midi_deviceAsNumberWithString (0, device));
-}
-
-t_error devices_appendMidiOutWithString (t_devices *p, char *device)
-{
-    return devices_appendMidiOutWithNumber (p, midi_deviceAsNumberWithString (1, device));
-}
-
-t_error devices_appendAudioInWithString (t_devices *p, char *device, int channels)
-{
-    return devices_appendAudioInWithNumber (p, audio_deviceAsNumberWithString (0, device), channels);
-}
-
-t_error devices_appendAudioOutWithString (t_devices *p, char *device, int channels)
-{
-    return devices_appendAudioOutWithNumber (p, audio_deviceAsNumberWithString (1, device), channels);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-t_error devices_getInAtIndexAsString (t_devices *p, int i, char *dest, size_t size)
-{
-    if (p->d_isMidi) {
-        return midi_deviceAsStringWithNumber (0,  devices_getInAtIndexAsNumber (p, i), dest, size);
-    } else {
-        return audio_deviceAsStringWithNumber (0, devices_getInAtIndexAsNumber (p, i), dest, size);
-    }
-}
-
-t_error devices_getOutAtIndexAsString (t_devices *p, int i, char *dest, size_t size)
-{
-    if (p->d_isMidi) { 
-        return midi_deviceAsStringWithNumber (1,  devices_getOutAtIndexAsNumber (p, i), dest, size);
-    } else {
-        return audio_deviceAsStringWithNumber (1, devices_getOutAtIndexAsNumber (p, i), dest, size);
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -64,7 +64,7 @@ t_error audio_open (void)
     
     audio_getDevices (&audio);
     
-    if (devices_check (&audio) == PD_ERROR_NONE) {
+    if (audio_check (&audio) == PD_ERROR_NONE) {
     //
     pthread_mutex_lock (&audio_mutex);
     

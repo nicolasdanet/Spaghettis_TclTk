@@ -63,30 +63,25 @@ int         audio_isOpened                      (void);
 void        audio_getDevices                    (t_devices *p);
 void        audio_setDevices                    (t_devices *p);
 
-t_error     audio_checkDevices                  (t_devices *p);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* Properties are used temporarily to pass informations. */
-/* Whereas lists truly manage devices (used and available). */
-/* A device can be referred by its position in the list or by its name. */
-/* It is stored literally to avoid any ambiguous situation. */
-/* Functions below achieves the look-up. */
+t_error     audio_check                         (t_devices *p);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         midi_deviceAsNumberWithString       (int isOutput, char *name);
-t_error     midi_deviceAsStringWithNumber       (int isOutput, int k, char *dest, size_t size);
+int         midi_deviceAsNumber                 (int isOutput, t_symbol *name);
+t_error     midi_deviceAsString                 (int isOutput, int k, char *dest, size_t size);
+
+t_symbol    *midi_deviceAsSymbol                (int isOutput, int k);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int         audio_deviceAsNumberWithString      (int isOutput, char *name);
-t_error     audio_deviceAsStringWithNumber      (int isOutput, int k, char *dest, size_t size);
+int         audio_deviceAsNumber                (int isOutput, t_symbol *name);
+t_error     audio_deviceAsString                (int isOutput, int k, char *dest, size_t size);
+
+t_symbol    *audio_deviceAsSymbol               (int isOutput, int k);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
