@@ -98,10 +98,12 @@ void audio_setDevices (t_devices *p)
 
 /* Check maximum device channels (if defined) before to open stream. */
 
-t_error audio_checkDevices (t_devices *p)
+t_error audio_check (t_devices *p)
 {
     t_deviceslist l; t_error err = audio_getDevicesList (&l);
     
+    devices_check (p);
+
     if (!err) {
     //
     int i;
@@ -109,7 +111,7 @@ t_error audio_checkDevices (t_devices *p)
     for (i = 0; i < devices_getInSize (p); i++) {
     //
     int m = devices_getInChannelsAtIndex (p, i);
-    int n = deviceslist_getInChannelsAtIndex (&l, devices_getInAtIndexAsNumber (p, i));
+    int n = deviceslist_getInChannelsAtIndex (&l, devices_getInAtIndex (p, i));
     if (n > 0 && m > n) {
         err = PD_ERROR; break;
     }
@@ -125,7 +127,7 @@ t_error audio_checkDevices (t_devices *p)
     for (i = 0; i < devices_getOutSize (p); i++) {
     //
     int m = devices_getOutChannelsAtIndex (p, i);
-    int n = deviceslist_getOutChannelsAtIndex (&l, devices_getOutAtIndexAsNumber (p, i));
+    int n = deviceslist_getOutChannelsAtIndex (&l, devices_getOutAtIndex (p, i));
     if (n > 0 && m > n) {
         err = PD_ERROR; break;
     }
@@ -143,36 +145,42 @@ t_error audio_checkDevices (t_devices *p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int audio_deviceAsNumberWithString (int isOutput, char *name)
+int audio_deviceAsNumber (int isOutput, t_symbol *name)
 {
     t_deviceslist l;
     
     if (!audio_getDevicesList (&l)) {
-        if (isOutput) { return deviceslist_containsOutWithString (&l, name); }
+        if (isOutput) { return deviceslist_containsOut (&l, name); }
         else { 
-            return deviceslist_containsInWithString (&l, name);
+            return deviceslist_containsIn (&l, name);
         }
     }
     
     return -1;
 }
 
-t_error audio_deviceAsStringWithNumber (int isOutput, int k, char *dest, size_t size)
+t_error audio_deviceAsString (int isOutput, int k, char *dest, size_t size)
 {
     t_error err = PD_ERROR;
+    t_symbol *t = audio_deviceAsSymbol (isOutput, k);
     
+    if (t) { err = string_copy (dest, size, t->s_name); }
+    if (err) { *dest = 0; }
+    
+    return err;
+}
+
+t_symbol *audio_deviceAsSymbol (int isOutput, int k)
+{
     t_deviceslist l;
     
     if (k >= 0 && !audio_getDevicesList (&l)) {
     //
-    char *t = isOutput ? deviceslist_getOutAtIndexAsString (&l, k) : deviceslist_getInAtIndexAsString (&l, k);
-    if (t) { err = string_copy (dest, size, t); }
+    return isOutput ? deviceslist_getOutAtIndex (&l, k) : deviceslist_getInAtIndex (&l, k);
     //
     }
     
-    if (err) { *dest = 0; }
-    
-    return err;
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -191,14 +199,18 @@ static t_error audio_requireDialogInitialize (void)
     char t2[PD_STRING] = { 0 };
     int i;
     
-    err |= string_copy (t1, PD_STRING, "set ::ui_audio::audioIn [list ");                               // --
-    err |= string_copy (t2, PD_STRING, "set ::ui_audio::audioOut [list ");                              // --
+    err |= string_copy (t1, PD_STRING, "set ::ui_audio::audioIn [list ");       // --
+    err |= string_copy (t2, PD_STRING, "set ::ui_audio::audioOut [list ");      // --
     
     for (i = 0; i < deviceslist_getInSize (&l); i++) {
-        err |= string_addSprintf (t1, PD_STRING, " {%s}", deviceslist_getInAtIndexAsString (&l, i));    // --
+        t_symbol *t = deviceslist_getInAtIndex (&l, i);
+        PD_ASSERT (t);
+        err |= string_addSprintf (t1, PD_STRING, " {%s}", t->s_name);           // --
     }
     for (i = 0; i < deviceslist_getOutSize (&l); i++) {
-        err |= string_addSprintf (t2, PD_STRING, " {%s}", deviceslist_getOutAtIndexAsString (&l, i));   // --
+        t_symbol *t = deviceslist_getOutAtIndex (&l, i);
+        PD_ASSERT (t);
+        err |= string_addSprintf (t2, PD_STRING, " {%s}", t->s_name);           // --
     }
     
     err |= string_add (t1, PD_STRING, "]\n");
@@ -235,13 +247,13 @@ void audio_requireDialog (void)
         int k;
         
         for (j = 0; j < 4; j++) {
-            k = devices_getInAtIndexAsNumber (&audio, j); 
+            k = devices_getInAtIndex (&audio, j); 
             i[j] = (k >= 0) ? k : 0;
             m[j] = (k >= 0) ? devices_getInChannelsAtIndex (&audio, j) : 0;
         } 
         
         for (j = 0; j < 4; j++) {
-            k = devices_getOutAtIndexAsNumber (&audio, j);
+            k = devices_getOutAtIndex (&audio, j);
             o[j] = (k >= 0) ? k : 0;
             n[j] = (k >= 0) ? devices_getOutChannelsAtIndex (&audio, j) : 0;
         } 
@@ -289,14 +301,14 @@ void audio_fromDialog (int argc, t_atom *argv)
     for (i = 0; i < 4; i++) {
         int t = (int)atom_getFloatAtIndex (i + 4,  argc, argv);
         if (t != 0) {
-            devices_appendAudioInWithNumber (&audio, (int)atom_getFloatAtIndex (i + 0,  argc, argv), t);
+            devices_appendAudioIn (&audio, (int)atom_getFloatAtIndex (i + 0,  argc, argv), t);
         }
     }
     
     for (i = 0; i < 4; i++) {
         int t = (int)atom_getFloatAtIndex (i + 12, argc, argv);
         if (t != 0) {
-            devices_appendAudioOutWithNumber (&audio, (int)atom_getFloatAtIndex (i + 8,  argc, argv), t);
+            devices_appendAudioOut (&audio, (int)atom_getFloatAtIndex (i + 8,  argc, argv), t);
         }
     }
     

@@ -125,8 +125,8 @@ void preferences_load (void)
     //
     }
     
-    devices_setDefaultsIfRequired (&midi);
-    devices_setDefaultsIfRequired (&audio);
+    devices_setDefaultsIfNone (&midi);
+    devices_setDefaultsIfNone (&audio);
     
     midi_setDevices (&midi);
     audio_setDevices (&audio);

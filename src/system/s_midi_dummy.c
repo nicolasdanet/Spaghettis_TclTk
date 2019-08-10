@@ -67,8 +67,8 @@ t_error midi_getListsNative (t_deviceslist *p)
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= deviceslist_appendMidiInWithString (p, "Dummy");
-    err |= deviceslist_appendMidiOutWithString (p, "Dummy");
+    err |= deviceslist_appendMidiIn (p, gensym ("Dummy"));
+    err |= deviceslist_appendMidiOut (p, gensym ("Dummy"));
   
     return err;
 }

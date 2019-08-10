@@ -101,36 +101,43 @@ void midi_setDevices (t_devices *p)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int midi_deviceAsNumberWithString (int isOutput, char *name)
+int midi_deviceAsNumber (int isOutput, t_symbol *name)
 {
     t_deviceslist l;
     
     if (!midi_getDevicesList (&l)) {
-        if (isOutput) { return deviceslist_containsOutWithString (&l, name); }
+        if (isOutput) { return deviceslist_containsOut (&l, name); }
         else { 
-            return deviceslist_containsInWithString (&l, name);
+            return deviceslist_containsIn (&l, name);
         }
     }
     
     return -1;
 }
 
-t_error midi_deviceAsStringWithNumber (int isOutput, int k, char *dest, size_t size)
+t_error midi_deviceAsString (int isOutput, int k, char *dest, size_t size)
 {
     t_error err = PD_ERROR;
+    t_symbol *t = midi_deviceAsSymbol (isOutput, k);
     
-    t_deviceslist l;
-    
-    if (k >= 0 && !midi_getDevicesList (&l)) {
-    //
-    char *t = isOutput ? deviceslist_getOutAtIndexAsString (&l, k) : deviceslist_getInAtIndexAsString (&l, k);
-    if (t) { err = string_copy (dest, size, t); }
-    //
-    }
+    if (t) { err = string_copy (dest, size, t->s_name); }
     
     if (err) { *dest = 0; }
     
     return err;
+}
+
+t_symbol *midi_deviceAsSymbol (int isOutput, int k)
+{
+    t_deviceslist l;
+    
+    if (k >= 0 && !midi_getDevicesList (&l)) {
+    //
+    return isOutput ? deviceslist_getOutAtIndex (&l, k) : deviceslist_getInAtIndex (&l, k);
+    //
+    }
+    
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -149,14 +156,18 @@ static t_error midi_requireDialogInitialize (void)
     char t2[PD_STRING] = { 0 };
     int i;
     
-    err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");                           // --
-    err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");                          // --
+    err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");       // --
+    err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");      // --
     
     for (i = 0; i < deviceslist_getInSize (&l); i++) {
-        err |= string_addSprintf (t1, PD_STRING, " {%s}", deviceslist_getInAtIndexAsString (&l, i));    // --
+        t_symbol *t = deviceslist_getInAtIndex (&l, i);
+        PD_ASSERT (t);
+        err |= string_addSprintf (t1, PD_STRING, " {%s}", t->s_name);               // --
     }
     for (i = 0; i < deviceslist_getOutSize (&l); i++) {
-        err |= string_addSprintf (t2, PD_STRING, " {%s}", deviceslist_getOutAtIndexAsString (&l, i));   // --
+        t_symbol *t = deviceslist_getOutAtIndex (&l, i);
+        PD_ASSERT (t);
+        err |= string_addSprintf (t2, PD_STRING, " {%s}", t->s_name);               // --
     }
     
     err |= string_add (t1, PD_STRING, "]\n");
@@ -190,11 +201,11 @@ void midi_requireDialog (void)
         int j;
         
         for (j = 0; j < 8; j++) {
-            int k = devices_getInAtIndexAsNumber (&midi, j);  i[j] = (k >= 0) ? k + MIDI_SOMETHING : 0;
+            int k = devices_getInAtIndex (&midi, j);  i[j] = (k >= 0) ? k + MIDI_SOMETHING : 0;
         } 
         
         for (j = 0; j < 8; j++) {
-            int k = devices_getOutAtIndexAsNumber (&midi, j); o[j] = (k >= 0) ? k + MIDI_SOMETHING : 0;
+            int k = devices_getOutAtIndex (&midi, j); o[j] = (k >= 0) ? k + MIDI_SOMETHING : 0;
         } 
 
         err = string_sprintf (t, PD_STRING,
@@ -242,8 +253,8 @@ void midi_fromDialog (int argc, t_atom *argv)
     int i = (int)atom_getFloatAtIndex (j, argc, argv);
     int o = (int)atom_getFloatAtIndex (j + t, argc, argv);
     
-    if (i > 0) { devices_appendMidiInWithNumber (&midi,  i - MIDI_SOMETHING); }
-    if (o > 0) { devices_appendMidiOutWithNumber (&midi, o - MIDI_SOMETHING); }
+    if (i > 0) { devices_appendMidiIn (&midi,  i - MIDI_SOMETHING); }
+    if (o > 0) { devices_appendMidiOut (&midi, o - MIDI_SOMETHING); }
     //
     }
 

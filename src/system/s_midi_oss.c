@@ -131,7 +131,7 @@ void midi_openNative (t_devices *p)
     
     for (i = 0; i < devices_getInSize (p); i++) {
     //
-    int f, n = devices_getInAtIndexAsNumber (p, i);
+    int f, n = devices_getInAtIndex (p, i);
     
     if (n >= 0 && n < midioss_numberOfDetectedIn) {
         char t[PD_STRING] = { 0 };
@@ -145,7 +145,7 @@ void midi_openNative (t_devices *p)
     
     for (i = 0; i < devices_getOutSize (p); i++) {
     //
-    int f, n = devices_getOutAtIndexAsNumber (p, i);
+    int f, n = devices_getOutAtIndex (p, i);
     
     if (n >= 0 && n < midioss_numberOfDetectedOut) {
         char t[PD_STRING] = { 0 };
@@ -238,15 +238,15 @@ t_error midi_getListsNative (t_deviceslist *p)
     t_error err = PD_ERROR_NONE;
     
     for (i = 0; i < m; i++) {
-        char t[DEVICES_DESCRIPTION] = { 0 };
-        err |= string_sprintf (t, DEVICES_DESCRIPTION, "/dev/midi%s", midioss_detectedInNames[i]);
-        deviceslist_appendMidiInWithString (p, t);
+        char t[PD_STRING] = { 0 };
+        err |= string_sprintf (t, PD_STRING, "/dev/midi%s", midioss_detectedInNames[i]);
+        deviceslist_appendMidiIn (p, gensym (t));
     }
     
     for (i = 0; i < n; i++) {
-        char t[DEVICES_DESCRIPTION] = { 0 };
-        err |= string_sprintf (t, DEVICES_DESCRIPTION, "/dev/midi%s", midioss_detectedOutNames[i]);
-        deviceslist_appendMidiOutWithString (p, t);
+        char t[PD_STRING] = { 0 };
+        err |= string_sprintf (t, PD_STRING, "/dev/midi%s", midioss_detectedOutNames[i]);
+        deviceslist_appendMidiOut (p, gensym (t));
     }
     
     return err;
