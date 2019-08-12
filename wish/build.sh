@@ -34,11 +34,8 @@ embedded="${rep}/embedded"
 
 # Get the sources.
 
-# [ -e "${tcl}" ] || { git clone --depth 1 "https://github.com/tcltk/tcl.git"; }
-# [ -e "${tk}" ]  || { git clone --depth 1 "https://github.com/tcltk/tk.git"; }
-
-[ -e "${tcl}" ] || { git clone --depth 1 "https://github.com/Spaghettis/tcl.git"; }
-[ -e "${tk}" ]  || { git clone --depth 1 "https://github.com/Spaghettis/tk.git"; }
+[ -e "${tcl}" ] || { git clone --depth 1 "https://github.com/tcltk/tcl.git"; }
+[ -e "${tk}" ]  || { git clone --depth 1 "https://github.com/tcltk/tk.git"; }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
