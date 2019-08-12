@@ -641,6 +641,7 @@ t_symbol *sym_serial;
 t_symbol *sym_set;
 t_symbol *sym_setsize;
 t_symbol *sym_sfthread;
+t_symbol *sym_shutdown;
 t_symbol *sym_sig__tilde__;
 t_symbol *sym_sigmund__tilde__;
 t_symbol *sym_signal;
@@ -1402,6 +1403,7 @@ void symbols_initialize (void)
     sym_set                                     = gensym ("set");
     sym_setsize                                 = gensym ("setsize");
     sym_sfthread                                = gensym ("sfthread");
+    sym_shutdown                                = gensym ("shutdown");
     sym_sig__tilde__                            = gensym ("sig~");
     sym_sigmund__tilde__                        = gensym ("sigmund~");
     sym_signal                                  = gensym ("signal");

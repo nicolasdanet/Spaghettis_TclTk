@@ -48,6 +48,8 @@ static t_ringbuffer         *jack_ringOut[JACK_MAXIMUM_PORTS];                  
 static int                  jack_numberOfPortsIn;                               /* Static. */
 static int                  jack_numberOfPortsOut;                              /* Static. */
 
+static t_uint32Atomic       jack_bufferSize;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -154,9 +156,25 @@ static int jack_pollCallback (jack_nframes_t framesCount, void *dummy)
     return 0;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static int jack_bufferSizeCallback (jack_nframes_t n, void *dummy)
+{
+    PD_ATOMIC_UINT32_WRITE (n, &jack_bufferSize);
+    
+    return 0;
+}
+
+static int jack_sampleRateCallback (jack_nframes_t n, void *dummy)
+{
+    return 0;
+}
+
 static void jack_shutdownCallback (void *dummy)
 {
-    jack_client = NULL; scheduler_needToExitWithError();
+    jack_client = NULL; instance_audioCloseWithError();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -207,7 +225,7 @@ t_error audio_openNative (t_devices *p)
     if (jack_get_sample_rate (jack_client) != (jack_nframes_t)sampleRate) {
         jack_client_close (jack_client);
         jack_client = NULL;
-        error_invalid (sym_JACK, sym_samplerate);
+        error_invalid (sym_audio, sym_samplerate);
     }
     //
     }
@@ -219,6 +237,8 @@ t_error audio_openNative (t_devices *p)
     jack_buffersAllocate (numberOfChannelsIn, numberOfChannelsOut);
 
     jack_set_process_callback (jack_client, jack_pollCallback, NULL);
+    jack_set_buffer_size_callback (jack_client, jack_bufferSizeCallback, NULL);
+    jack_set_sample_rate_callback (jack_client, jack_sampleRateCallback, NULL);
     jack_on_shutdown (jack_client, jack_shutdownCallback, NULL);
 
     for (i = 0; i < numberOfChannelsIn; i++) {
@@ -353,11 +373,9 @@ int audio_pollNative (void)
     return status;
 }
 
-// --TODO: Implement it properly.
-
 int audio_getVectorSizeNative (void)
 {
-    return 0;
+    return PD_ATOMIC_UINT32_READ (&jack_bufferSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
