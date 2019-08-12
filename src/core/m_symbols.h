@@ -641,6 +641,7 @@ extern t_symbol *sym_serial;
 extern t_symbol *sym_set;
 extern t_symbol *sym_setsize;
 extern t_symbol *sym_sfthread;
+extern t_symbol *sym_shutdown;
 extern t_symbol *sym_sig__tilde__;
 extern t_symbol *sym_sigmund__tilde__;
 extern t_symbol *sym_signal;

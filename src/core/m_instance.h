@@ -68,6 +68,7 @@ typedef struct _pdinstance {
     t_clock         *pd_polling;
     t_clock         *pd_autorelease;
     t_clock         *pd_paint;
+    t_clock         *pd_stop;
     t_gobj          *pd_pending;
     t_pd            *pd_newest;
     t_class         *pd_objectMaker;
@@ -156,6 +157,12 @@ void    instance_dspStart                       (void);
 void    instance_dspStop                        (void);
 void    instance_dspClean                       (void);
 void    instance_dspFree                        (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+void    instance_audioCloseWithError            (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

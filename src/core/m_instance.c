@@ -272,6 +272,20 @@ void instance_dspFree (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void instance_audioCloseTask (void *dummy)
+{
+    dsp_setState (0); error_unexpected (sym_audio, sym_shutdown);
+}
+
+void instance_audioCloseWithError (void)
+{
+    clock_delay (instance_get()->pd_stop, 0.0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void instance_deselectAllObjects (void)
 {
     t_glist *glist = instance_get()->pd_roots;
@@ -463,6 +477,7 @@ static t_pdinstance *instance_new()
     x->pd_register    = register_new();
     x->pd_pool        = buffer_new();
     x->pd_dsp         = dspthread_new();
+    x->pd_stop        = clock_new ((void *)x, (t_method)instance_audioCloseTask);
     
     x->pd_openedWindowInEditMode = -1;
     
@@ -482,6 +497,8 @@ static void instance_free (t_pdinstance *x)
     PD_ASSERT (x->pd_pending     == NULL);
     
     PD_ASSERT (buffer_getSize (x->pd_pool) == x->pd_poolCount);
+    
+    clock_free (x->pd_stop);
     
     buffer_free (x->pd_pool);
     register_free (x->pd_register);
