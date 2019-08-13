@@ -36,6 +36,7 @@
 #define MIDI_START              0xfa    // 250
 #define MIDI_CONTINUE           0xfb    // 251
 #define MIDI_STOP               0xfc    // 252
+#define MIDI_RESERVED3          0xfd    // 253
 #define MIDI_ACTIVESENSE        0xfe    // 254
 #define MIDI_RESET              0xff    // 255
 
@@ -43,37 +44,40 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define MIDI_BYTES(x)           (((x) < MIDI_PROGRAMCHANGE) ? 2 : \
-                                    ((x) < MIDI_PITCHBEND)  ? 1 : \
-                                    ((x) < MIDI_STARTSYSEX) ? 2 : \
-                                    ((x) == MIDI_SONGPOS)   ? 2 : \
-                                    ((x) < MIDI_RESERVED1)  ? 1 : \
-                                    0)
+#define MIDI_IS_STATUS(b)       (((b) & 0x80) != 0)
+
+#define MIDI_IS_VOICE(b)        (MIDI_IS_STATUS (b) && ((b) <  MIDI_STARTSYSEX))
+#define MIDI_IS_SYSEX(b)        (MIDI_IS_STATUS (b) && ((b) == MIDI_STARTSYSEX || (b) == MIDI_ENDSYSEX))
+#define MIDI_IS_COMMON(b)       (MIDI_IS_STATUS (b) && ((b) >= MIDI_TIMECODE   && (b) <= MIDI_TUNEREQUEST))
+#define MIDI_IS_REALTIME(b)     (MIDI_IS_STATUS (b) && ((b) >= MIDI_CLOCK))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void inmidi_noteOn              (int port, int channel, int pitch, int velocity);
+void inmidi_polyPressure        (int port, int channel, int pitch, int value);
 void inmidi_controlChange       (int port, int channel, int control, int value);
 void inmidi_programChange       (int port, int channel, int value);
-void inmidi_pitchBend           (int port, int channel, int value);
 void inmidi_afterTouch          (int port, int channel, int value);
-void inmidi_polyPressure        (int port, int channel, int pitch, int value);
-void inmidi_byte                (int port, int byte);
-void inmidi_sysex               (int port, int byte);
-void inmidi_realTime            (int port, int byte);
+void inmidi_pitchBend           (int port, int channel, int value);
+
+void inmidi_sysex               (int port, int argc, t_atom *argv);
+void inmidi_system              (int port, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 void outmidi_noteOn             (int channel, int pitch, int velocity);
+void outmidi_polyPressure       (int channel, int pitch, int value);
 void outmidi_controlChange      (int channel, int control, int value);
 void outmidi_programChange      (int channel, int value);
-void outmidi_pitchBend          (int channel, int value);
 void outmidi_afterTouch         (int channel, int value);
-void outmidi_polyPressure       (int channel, int pitch, int value);
+void outmidi_pitchBend          (int channel, int value);
+
+void outmidi_sysex              (int port, int argc, t_atom *argv);
+void outmidi_system             (int port, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

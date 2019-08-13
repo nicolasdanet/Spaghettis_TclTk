@@ -150,8 +150,6 @@ static void scheduler_mainLoop (void)
     const t_systime logicalStart = scheduler_getLogicalTime();
     uint64_t count = 0;
     
-    midi_start();
-    
     while (!PD_ATOMIC_INT32_READ (&scheduler_quit)) {
     //
     double t = 0.0;

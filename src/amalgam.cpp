@@ -142,7 +142,6 @@
 #include "graphics/g_stub.c"
 #include "graphics/g_proxy.c"
 
-#include "graphics/patch/g_sorter.c"
 #include "graphics/patch/g_identifiers.c"
 #include "graphics/patch/g_object.c"
 #include "graphics/patch/g_typeset.c"
@@ -330,12 +329,11 @@
 #include "control/network/x_oscstream.c"
 #include "control/network/x_timestamp.c"
 
+#include "control/midi/x_midiports.c"
 #include "control/midi/x_makenote.c"
 #include "control/midi/x_stripnote.c"
 #include "control/midi/x_bag.c"
 #include "control/midi/x_poly.c"
-#include "control/midi/x_midiin.c"
-#include "control/midi/x_midiout.c"
 #include "control/midi/x_notein.c"
 #include "control/midi/x_noteout.c"
 #include "control/midi/x_ctlin.c"
@@ -349,7 +347,9 @@
 #include "control/midi/x_polytouchin.c"
 #include "control/midi/x_polytouchout.c"
 #include "control/midi/x_sysexin.c"
-#include "control/midi/x_midirealtimein.c"
+#include "control/midi/x_sysexout.c"
+#include "control/midi/x_midisystemin.c"
+#include "control/midi/x_midisystemout.c"
 
 #include "control/mica/x_mica.c"
 #include "control/mica/x_micaset.c"
@@ -475,7 +475,7 @@
 #include "dsp/d_fftOOURA.c"
 #include "dsp/fftsg.c"
 
-/* Audio / MIDI backends. */
+/* Audio / MIDI. */
 
 #if PD_WITH_DUMMY
 
@@ -485,14 +485,26 @@
 #else
 
 #if PD_APPLE
-    #include "system/s_midi_pm.c"
-    #include "system/s_audio_pa.c"
-    #include "libs/pa_mac_hostapis.c"
+
+    #include "system/s_midi_mac.c"
+    #include "system/s_audio_mac.c"
+
+    #include "libs/core/core_audiodevice.c"
+    #include "libs/core/core_audiodevicelist.c"
+    #include "libs/core/core_audiocallbacks.c"
+    #include "libs/core/core_audiostream.c"
+    #include "libs/core/core_audiograph.c"
+    
+    #include "libs/core/core_midiname.c"
+    #include "libs/core/core_mididevicelist.c"
+    #include "libs/core/core_midiclient.c"
+    #include "libs/core/core_midiport.c"
+
 #endif
 
 #if PD_LINUX
-    #include "system/s_midi_alsa.c"
-    #include "system/s_audio_jack.c"
+    #include "system/s_midi_linux.c"
+    #include "system/s_audio_linux.c"
 #endif
 
 #endif // PD_WITH_DUMMY

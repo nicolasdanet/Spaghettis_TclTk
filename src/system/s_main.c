@@ -14,8 +14,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_symbol    *main_directoryRoot;                        /* Static. */
-t_symbol    *main_directoryBin;                         /* Static. */
 t_symbol    *main_directoryTcl;                         /* Static. */
 t_symbol    *main_directoryHelp;                        /* Static. */
 t_symbol    *main_directorySupport;                     /* Static. */
@@ -35,29 +33,14 @@ t_error     audio_initialize    (void);
 void        audio_release       (void);
 void        message_initialize  (void);
 void        message_release     (void);
+void        midi_initialize     (void);
+void        midi_release        (void);
 void        setup_initialize    (void);
 void        setup_release       (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-static void main_entryNative (void)
-{
-    #if PD_WINDOWS
-    
-    #if PD_MSVC
-        _set_fmode (_O_BINARY);
-    #else
-        { extern int _fmode; _fmode = _O_BINARY; }
-    #endif
-    
-    SetConsoleOutputCP (CP_UTF8);
-    
-    #endif
-    
-    sys_setSignalHandlers();
-}
 
 static t_error main_entryVersion (int console)
 {
@@ -110,13 +93,13 @@ static t_error main_parseArguments (int argc, char **argv)
 // -----------------------------------------------------------------------------------------------------------
 
 /* 
-    In "simple" installations, the layout is
+    Simple layout is:
     
         .../bin/spaghettis
         .../tcl/ui_main.tcl
         .../help/
         
-    In "complexe" installations, the layout is
+    Complexe layout is:
     
         .../bin/spaghettis
         .../lib/spaghettis/tcl/ui_main.tcl
@@ -131,16 +114,7 @@ static t_error main_parseArguments (int argc, char **argv)
 /* < https://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe > */
 /* < https://stackoverflow.com/questions/933850/how-to-find-the-location-of-the-executable-in-c > */
 
-#if PD_WINDOWS
-
-static t_error main_getExecutablePathNative (char *dest, size_t length)
-{
-    GetModuleFileName (NULL, dest, length); dest[length - 1] = 0;
-        
-    return PD_ERROR_NONE;
-}
-
-#elif PD_APPLE
+#if PD_APPLE
 
 static t_error main_getExecutablePathNative (char *dest, size_t length)
 {
@@ -159,7 +133,12 @@ static t_error main_getExecutablePathNative (char *dest, size_t length)
     return err;
 }
 
-#elif PD_LINUX
+#endif // PD_APPLE
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_LINUX
 
 static t_error main_getExecutablePathNative (char *dest, size_t length)
 {
@@ -178,27 +157,20 @@ static t_error main_getExecutablePathNative (char *dest, size_t length)
     return err;
 }
 
-#else
-    #error
-#endif
+#endif // PD_LINUX
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_error main_getRootDirectory (void)
+static t_symbol *main_getRootDirectory (void)
 {
     t_error err = PD_ERROR_NONE;
     char t1[PD_STRING] = { 0 };
     char t2[PD_STRING] = { 0 };
     char *slash = NULL; 
     
-    #if PD_WINDOWS
-        err |= main_getExecutablePathNative (t1, PD_STRING);
-        path_backslashToSlashIfNecessary (t1);
-    #else
-        err |= main_getExecutablePathNative (t1, PD_STRING);
-    #endif
-    
+    err |= main_getExecutablePathNative (t1, PD_STRING);
+
     /* Name of the executable's parent directory. */
     
     if (!err) { 
@@ -208,21 +180,19 @@ static t_error main_getRootDirectory (void)
 
     if (!err) {
     //
-    #if PD_WINDOWS
-        main_directoryRoot = gensym (t1);
-    #else
-        err = string_copy (t2, PD_STRING, t1);
-        err |= string_add (t2, PD_STRING, "/lib/" PD_NAME_LOWERCASE);
-        
-        if (!err && path_isFileExist (t2)) { main_directoryRoot = gensym (t2); }    /* Complexe. */
+    err = string_copy (t2, PD_STRING, t1);
+    err |= string_add (t2, PD_STRING, "/lib/" PD_NAME_LOWERCASE);
+    
+    if (!err) {
+        if (path_isFileExist (t2)) { return gensym (t2); }      /* Complexe. */
         else {
-            main_directoryRoot = gensym (t1);   /* Simple. */
+            return gensym (t1);                                 /* Simple. */
         }
-    #endif
+    }
     //
     }
     
-    return err;
+    return NULL;
 }
 
 static t_error main_setPathsTemplates (t_symbol *support)
@@ -274,7 +244,6 @@ static t_error main_setPaths (t_symbol *root)
     if (!err) { main_directorySupport = gensym (t); }
     if (!err) { err |= main_setPathsTemplates (main_directorySupport); }
     if (!err) {
-    if (!(err |= string_sprintf (t, PD_STRING, "%s/bin",  s))) { main_directoryBin  = gensym (t); }
     if (!(err |= string_sprintf (t, PD_STRING, "%s/tcl",  s))) { main_directoryTcl  = gensym (t); }
     if (!(err |= string_sprintf (t, PD_STRING, "%s/help", s))) { main_directoryHelp = gensym (t); }
     }
@@ -295,7 +264,7 @@ static int main_alreadyExists (void)
     
     char path[PD_STRING] = { 0 };
     
-    t_error err = string_sprintf (path, PD_STRING, "%s/ui_lock.tcl", main_directoryTcl->s_name);
+    t_error err = string_sprintf (path, PD_STRING, "%s/spaghettis.lock", main_directorySupport->s_name);
 
     if (!err) {
     //
@@ -334,7 +303,7 @@ int main_entry (int argc, char **argv)
     
     if (!err && !(err = privilege_drop())) {
     //
-    main_entryNative();
+    sys_setSignalHandlers();
     
     #if PD_WITH_DEBUG
         leak_initialize();
@@ -342,12 +311,9 @@ int main_entry (int argc, char **argv)
     
     message_initialize();   /* Preallocate symbols and binding mechanism first. */
     
-    err |= main_getRootDirectory();
     err |= main_parseArguments (argc - 1, argv + 1);
-    err |= main_setPaths (main_directoryRoot);
+    err |= main_setPaths (main_getRootDirectory());
 
-    PD_ASSERT (main_directoryRoot       != NULL);
-    PD_ASSERT (main_directoryBin        != NULL);
     PD_ASSERT (main_directoryTcl        != NULL);
     PD_ASSERT (main_directoryHelp       != NULL);
     PD_ASSERT (main_directorySupport    != NULL);

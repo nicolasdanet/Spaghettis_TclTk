@@ -86,8 +86,6 @@ static t_symbol *canvas_getSymbolWithKeyCode (t_keycode n)
 
 void canvas_key (t_glist *glist, t_symbol *dummy, int argc, t_atom *argv)
 {
-    PD_ASSERT (sizeof (t_keycode) == sizeof (UCS4_CODE_POINT));
-    
     if (argc > 1) { 
     //
     int isDown = ((int)(atom_getFloat (argv + 0)) != 0);

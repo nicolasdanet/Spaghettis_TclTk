@@ -34,6 +34,21 @@ void inmidi_noteOn (int port, int channel, int pitch, int velocity)
     }
 }
 
+void inmidi_polyPressure (int port, int channel, int pitch, int value)
+{
+    if (symbol_hasThingQuiet (sym__polytouchin)) {
+    //
+    t_atom a[3];
+    
+    SET_FLOAT (a + 0, pitch);
+    SET_FLOAT (a + 1, value);
+    SET_FLOAT (a + 2, channel + 1 + (port << 4));
+    
+    pd_list (symbol_getThing (sym__polytouchin), 3, a);
+    //
+    }
+}
+
 void inmidi_controlChange (int port, int channel, int control, int value)
 {
     if (symbol_hasThingQuiet (sym__ctlin)) {
@@ -63,20 +78,6 @@ void inmidi_programChange (int port, int channel, int value)
     }
 }
 
-void inmidi_pitchBend (int port, int channel, int value)
-{
-    if (symbol_hasThingQuiet (sym__bendin)) {
-    //
-    t_atom a[2];
-    
-    SET_FLOAT (a + 0, value);
-    SET_FLOAT (a + 1, channel + 1 + (port << 4));
-    
-    pd_list (symbol_getThing (sym__bendin), 2, a);
-    //
-    }
-}
-
 void inmidi_afterTouch (int port, int channel, int value)
 {
     if (symbol_hasThingQuiet (sym__touchin)) {
@@ -91,68 +92,41 @@ void inmidi_afterTouch (int port, int channel, int value)
     }
 }
 
-void inmidi_polyPressure (int port, int channel, int pitch, int value)
+void inmidi_pitchBend (int port, int channel, int value)
 {
-    if (symbol_hasThingQuiet (sym__polytouchin)) {
-    //
-    t_atom a[3];
-    
-    SET_FLOAT (a + 0, pitch);
-    SET_FLOAT (a + 1, value);
-    SET_FLOAT (a + 2, channel + 1 + (port << 4));
-    
-    pd_list (symbol_getThing (sym__polytouchin), 3, a);
-    //
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void inmidi_byte (int port, int byte)
-{
-    if (symbol_hasThingQuiet (sym__midiin)) {
+    if (symbol_hasThingQuiet (sym__bendin)) {
     //
     t_atom a[2];
-        
-    SET_FLOAT (a + 0, byte);
-    SET_FLOAT (a + 1, port);
     
-    pd_list (symbol_getThing (sym__midiin), 2, a);
+    SET_FLOAT (a + 0, value);
+    SET_FLOAT (a + 1, channel + 1 + (port << 4));
+    
+    pd_list (symbol_getThing (sym__bendin), 2, a);
     //
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-void inmidi_sysex (int port, int byte)
+void inmidi_sysex (int port, int argc, t_atom *argv)
 {
     if (symbol_hasThingQuiet (sym__sysexin)) {
+    if (symbol_hasThingQuiet (sym__sysexportin)) {
     //
-    t_atom a[2];
-            
-    SET_FLOAT (a + 0, byte);
-    SET_FLOAT (a + 1, port);
-    
-    pd_list (symbol_getThing (sym__sysexin), 2, a);
+    pd_float (symbol_getThing (sym__sysexportin), (t_float)port);
+    pd_list (symbol_getThing (sym__sysexin), argc, argv);
     //
+    }
     }
 }
 
-void inmidi_realTime (int port, int byte)
+void inmidi_system (int port, int argc, t_atom *argv)
 {
-    if (symbol_hasThingQuiet (sym__midirealtimein)) {
+    if (symbol_hasThingQuiet (sym__midisystemin)) {
+    if (symbol_hasThingQuiet (sym__midisystemportin)) {
     //
-    t_atom a[2];
-    
-    SET_FLOAT (a + 0, byte);
-    SET_FLOAT (a + 1, port);
-    
-    pd_list (symbol_getThing (sym__midirealtimein), 2, a);
+    pd_float (symbol_getThing (sym__midisystemportin), (t_float)port);
+    pd_list (symbol_getThing (sym__midisystemin), argc, argv);
     //
+    }
     }
 }
 

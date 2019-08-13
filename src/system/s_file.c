@@ -14,25 +14,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WINDOWS
-
-static int file_openRawNative (const char *filepath, int oflag)
-{
-    char t[PD_STRING]           = { 0 };
-    wchar_t ucs2path[PD_STRING] = { 0 };
-    
-    if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
-    path_slashToBackslashIfNecessary (t);
-    u8_utf8toucs2 (ucs2path, PD_STRING, t, -1);
-
-    if (oflag & O_CREAT) { return _wopen (ucs2path, oflag | O_BINARY, _S_IREAD | _S_IWRITE); }
-    else {
-        return _wopen (ucs2path, oflag | O_BINARY);
-    }
-}
-
-#else
-
 static int file_openRawNative (const char *filepath, int oflag)
 {
     if (oflag & O_CREAT) { return open (filepath, oflag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); }
@@ -40,8 +21,6 @@ static int file_openRawNative (const char *filepath, int oflag)
         return open (filepath, oflag);
     } 
 }
-
-#endif // PD_WINDOWS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

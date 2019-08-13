@@ -19,157 +19,74 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* < http://sourceforge.net/p/predef/wiki/OperatingSystems/ > */
-
-#if defined ( _WIN32 ) || defined ( _WIN64 )
-    #define     PD_WINDOWS          1
-#elif defined ( __CYGWIN__ ) 
-    #define     PD_CYGWIN           1
-#elif defined ( __ANDROID__ )
-    #define     PD_ANDROID          1
-#elif defined ( __linux__ )
+#if defined ( __linux__ )
     #define     PD_LINUX            1
 #elif defined ( __APPLE__ )
     #define     PD_APPLE            1
-    #if defined ( TARGET_OS_IPHONE ) || defined ( TARGET_IPHONE_SIMULATOR )
-        #define PD_IOS              1
-    #else
-        #define PD_OSX              1
-    #endif
-#elif defined ( __FreeBSD__ ) || defined ( __FreeBSD_kernel__ )
-    #define     PD_BSD              1
-#elif defined ( __GNU__ )
-    #define     PD_HURD             1
 #else
-    #error "Unknown platform!"
+    #error "Unsupported platform!"
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-/* < http://sourceforge.net/p/predef/wiki/Compilers/ > */
 
 #if defined ( __clang__ )
     #define     PD_CLANG            1
-    #define     PD_GCC              1
 #elif defined ( __GNUC__ )
     #define     PD_GCC              1
-#elif defined ( _MSC_VER )
-    #define     PD_MSVC             1
-#elif defined ( __MINGW32__ ) || defined ( __MINGW64__ )
-    #define     PD_MINGW            1
 #else
-  #error "Unknown compiler!"
+  #error "Unsupported compiler!"
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* < http://sourceforge.net/p/predef/wiki/Architectures/ > */
-
-#if defined ( __i386__ )
-    #define     PD_CPU_x86          1
-#elif defined ( __x86_64__ )
-    #define     PD_CPU_AMD64        1
-#elif defined ( __arm__ )
-    #define     PD_CPU_ARM          1
-#else
-    #error "Unknown processor!"
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-/* < http://en.cppreference.com/w/cpp/language/types > */
-
-#if defined ( __linux__ ) && defined ( __i386__ )
-    #define     PD_ILP32            1
-#elif defined ( _ILP32 ) || defined ( __ILP32__ )
-    #define     PD_ILP32            1
-#elif defined ( __LP64__ ) || defined ( _LP64 )
-    #define     PD_LP64             1
-#elif defined ( _WIN64 )
-    #define     PD_LLP64            1
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* Type int must be at least 32-bit. */
-
-#ifdef PD_LP64
-#else
-#ifdef PD_LLP64
-#else
-#ifdef PD_ILP32
-#else
-    #error "Unsupported data model!"
-#endif
-#endif
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#if PD_WINDOWS
-
-    #if PD_MSVC
-    #ifdef _WIN64
-        #define PD_64BIT            1
-    #else
-        #define PD_32BIT            1
-    #endif
-    #endif
-
-    #if PD_MINGW
-    #ifdef __MINGW64__
-        #define PD_64BIT            1
-    #else
-        #define PD_32BIT            1
-    #endif
-    #endif
+#if defined ( __LP64__ ) || \
+    defined ( _LP64 ) || \
+    defined ( _WIN64 ) || \
+    defined ( __MINGW64__ ) || \
+    defined ( __arm64__ )
     
+    #define PD_64BIT                1
+
 #else
-
-    #if defined ( __LP64__ ) || defined ( _LP64 ) || defined ( __arm64__ )
-        #define PD_64BIT            1
-    #else
-        #define PD_32BIT            1
-    #endif
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#ifdef PD_64BIT
-#else
-#ifdef PD_32BIT
-#else
-    #error "Unknown architecture!"
-#endif
+    #define PD_32BIT                1
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if defined ( _BIG_ENDIAN ) || defined ( __BIG_ENDIAN__ )
+/* < https://stackoverflow.com/a/27054190 > */
+
+#if defined ( __BIG_ENDIAN__ )
     #define PD_BIG_ENDIAN           1
-#else
-#if defined ( PD_WINDOWS ) || defined ( __LITTLE_ENDIAN__ )
+#elif defined ( __LITTLE_ENDIAN__ )
     #define PD_LITTLE_ENDIAN        1
 #else
-    #include <endian.h>
-    #if ( BYTE_ORDER == LITTLE_ENDIAN )
-    #define PD_LITTLE_ENDIAN        1
-    #else
+
+#include <endian.h>
+
+#if defined ( __BYTE_ORDER ) && ( __BYTE_ORDER == __BIG_ENDIAN ) || \
+    defined ( __BIG_ENDIAN__ ) || \
+    defined ( __ARMEB__ ) || \
+    defined ( __THUMBEB__ ) || \
+    defined ( __AARCH64EB__ ) || \
+    defined ( _MIBSEB ) || defined ( __MIBSEB ) || defined ( __MIBSEB__ )
+
     #define PD_BIG_ENDIAN           1
-    #endif
+    
+#elif defined ( __BYTE_ORDER ) && ( __BYTE_ORDER == __LITTLE_ENDIAN ) || \
+    defined ( __LITTLE_ENDIAN__ ) || \
+    defined ( __ARMEL__ ) || \
+    defined ( __THUMBEL__ ) || \
+    defined ( __AARCH64EL__ ) || \
+    defined ( _MIPSEL ) || defined ( __MIPSEL ) || defined ( __MIPSEL__ )
+
+    #define PD_LITTLE_ENDIAN        1
+    
 #endif
 #endif
 
@@ -187,6 +104,22 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
+
+/* Check POSIX atomic and time availability. */
+
+#if PD_APPLE
+
+#include "Availability.h"
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
+#else
+    #error "Unsupported platform!"
+#endif
+
+#endif // PD_APPLE
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #if PD_GCC
     #define PD_GCC_VERSION          (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
@@ -225,25 +158,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-#if PD_APPLE
-
-#include "Availability.h"
-
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
-#else
-    #error "Unsupported platform!"
-#endif
-
-#else
-#if PD_LINUX
-#else
-    #error "Unsupported platform!"
-#endif // PD_LINUX
-#endif // PD_APPLE
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 #if defined ( __cplusplus )
     #define PD_CPP                  1
@@ -289,14 +203,6 @@
     #else
         #define PD_PLUGIN           ".pdbundle32"
     #endif
-#elif PD_WINDOWS
-    #if PD_64BIT
-        #define PD_PLUGIN           ".pdlibrary64"
-    #else
-        #define PD_PLUGIN           ".pdlibrary32"
-    #endif
-#else
-    #define PD_PLUGIN               ".so"
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -309,15 +215,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WINDOWS
-#if PD_BUILDING_APPLICATION
-    #define PD_DLL                  __declspec(dllexport)
-#else
-    #define PD_DLL                  __declspec(dllimport)
-#endif
-#else
-    #define PD_DLL                  __attribute__((visibility ("default")))
-#endif
+#define PD_DLL                      __attribute__((visibility ("default")))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -325,26 +223,18 @@
 
 #if defined ( __cplusplus )
 
-#if PD_WINDOWS
-    #define PD_STUB                 extern "C" __declspec(dllexport)
-#else
-    #define PD_STUB                 extern "C" __attribute__((visibility ("default")))
-#endif
+#define PD_STUB                     extern "C" __attribute__((visibility ("default")))
 
 #else
 
-#if PD_WINDOWS
-    #define PD_STUB                 __declspec(dllexport)
-#else
-    #define PD_STUB                 __attribute__((visibility ("default")))
-#endif
+#define PD_STUB                     __attribute__((visibility ("default")))
 
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if ! ( PD_BUILDING_APPLICATION )               /* Avoid namespace pollution. */
+#if ! ( PD_BUILDING_APPLICATION )   /* Avoid namespace pollution. */
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -375,20 +265,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WINDOWS
-
-#include <io.h>
-#include <process.h>
-#include <sys/timeb.h> 
-#include <tchar.h>
-#include <time.h>
-#include <windows.h>
-#include <winbase.h>
-#include <winsock.h>
-#include <wtypes.h>
-    
-#else
-
 #include <ftw.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -403,8 +279,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
-    
-#endif // PD_WINDOWS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -478,12 +352,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_LLP64
-    typedef long long               t_int;              /* A pointer-size integer (LLP64). */
-#else
-    typedef long                    t_int;              /* Ditto (LP64 / ILP64). */
-#endif
-
+typedef intptr_t                    t_int;
 typedef double                      t_float;
 typedef float                       t_sample;
 
@@ -502,7 +371,6 @@ typedef uint32_t                    t_keycode;
 typedef uint64_t                    t_rand48;
 typedef uint64_t                    t_seed;
 typedef uint64_t                    t_id;
-typedef int64_t                     t_phase;            /* Assumed two's complement. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -636,9 +504,14 @@ struct _outlet;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+typedef t_class *t_pd;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 typedef struct _symbol {
     const char      *s_name;
-    t_class         **s_thing;
+    t_pd            *s_thing;
     struct _symbol  *s_next;
     } t_symbol;
 
@@ -675,8 +548,6 @@ typedef struct _buffer {
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-typedef t_class *t_pd;
 
 typedef struct _gobj {
     t_pd            g_pd;                       /* MUST be the first. */

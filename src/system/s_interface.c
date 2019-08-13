@@ -14,7 +14,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_symbol *main_directoryTcl;
-extern t_symbol *main_directoryBin;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -75,41 +74,6 @@ static t_error interface_fetchGui (struct sockaddr_in *server)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WINDOWS
-
-static t_error interface_launchGuiSpawnProcess (void) 
-{
-    t_error err = PD_ERROR_NONE;
-    
-    char path[PD_STRING] = { 0 };
-    char port[PD_STRING] = { 0 };
-    char wish[PD_STRING] = { 0 };
-
-    int spawned;
-
-    err |= string_copy (path, PD_STRING, "\"");
-    err |= string_add (path, PD_STRING, main_directoryTcl->s_name);
-    err |= string_add (path, PD_STRING, "/ui_main.tcl\"");
-    
-    err |= string_sprintf (port, PD_STRING, "%d", port);
-    
-    err |= string_copy (wish, PD_STRING, "\"");
-    err |= string_add (wish, PD_STRING, main_directoryBin->s_name);
-    err |= string_add (wish, PD_STRING, "/wish85.exe\"");
-    
-    if (!err) {
-        path_slashToBackslashIfNecessary (path);
-        path_slashToBackslashIfNecessary (wish);
-        err |= ((spawned = _spawnl (P_NOWAIT, wish, "wish85.exe", path, port, 0)) < 0);
-    }
-    
-    PD_ASSERT (!err);
-    
-    return err;
-}
-
-#else
-
 static t_error interface_launchGuiSpawnProcess (void) 
 {
     char path[PD_STRING]    = { 0 };
@@ -144,24 +108,14 @@ static t_error interface_launchGuiSpawnProcess (void)
     return err;
 }
 
-#endif // PD_WINDOWS
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_error interface_launchGuiSocket (struct sockaddr_in *server, int *fd)
 {
     int f = -1;
     t_error err = ((f = socket (AF_INET, SOCK_STREAM, 0)) < 0);
     err |= (fcntl (f, F_SETFD, FD_CLOEXEC | O_NONBLOCK) == -1);
     
-    #if PD_WINDOWS
-        char arg = 1;
-        err |= (setsockopt (f, IPPROTO_TCP, TCP_NODELAY, &arg, sizeof (char)) < 0);
-    #else
-        int arg = 1;
-        err |= (setsockopt (f, IPPROTO_TCP, TCP_NODELAY, &arg, sizeof (int)) < 0);
-    #endif
+    int arg = 1;
+    err |= (setsockopt (f, IPPROTO_TCP, TCP_NODELAY, &arg, sizeof (int)) < 0);
 
     if (err) { PD_BUG; }
     else {
@@ -175,11 +129,7 @@ static t_error interface_launchGuiSocket (struct sockaddr_in *server, int *fd)
 
     while (bind (f, (struct sockaddr *)server, sizeof (struct sockaddr_in)) < 0) {
     //
-    #if PD_WINDOWS
-        int e = WSAGetLastError();
-    #else
-        int e = errno;
-    #endif
+    int e = errno;
 
     if ((n > 20) || (e != EADDRINUSE)) { err |= PD_ERROR; PD_BUG; break; } 
     else {
@@ -282,14 +232,6 @@ void interface_quit (void)
 
 void interface_initialize (void)
 {
-    #if PD_WINDOWS
-
-    WSADATA d;
-    short version = MAKEWORD (2, 0);
-    
-    if (WSAStartup (version, &d)) { PD_BUG; }
-    
-    #endif
 }
 
 void interface_release (void)

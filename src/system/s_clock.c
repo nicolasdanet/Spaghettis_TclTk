@@ -20,45 +20,6 @@ t_systime scheduler_addMillisecondsToSystime    (t_systime, double);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WINDOWS
-
-static LARGE_INTEGER    time_NTTime;            /* Static. */
-static double           time_NTFrequency;       /* Static. */
-
-static void time_initializeClock (void)
-{
-    LARGE_INTEGER f1;
-    LARGE_INTEGER now;
-    
-    QueryPerformanceCounter (&now);
-    
-    if (!QueryPerformanceFrequency (&f1)) { PD_BUG; f1.QuadPart = 1; }
-    
-    time_NTTime = now;
-    time_NTFrequency = f1.QuadPart;
-}
-
-/*
-double clock_getRealTimeInSeconds (void)
-{
-    LARGE_INTEGER now;
- 
-    QueryPerformanceCounter (&now);
- 
-    if (time_NTFrequency == 0) { time_initializeClock(); }
- 
-    return (((double)(now.QuadPart - time_NTTime.QuadPart)) / time_NTFrequency);
-}
-*/
-
-#endif // PD_WINDOWS
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#if ( PD_APPLE || PD_LINUX )
-
 /* MUST be thread-safe (after initialization). */
 
 double clock_getRealTimeInSeconds (void)
@@ -76,21 +37,6 @@ double clock_getRealTimeInSeconds (void)
     
     return PD_NANOSECONDS_TO_SECONDS (elapsed);
 }
-
-/*
-double clock_getRealTimeInSeconds (void)
-{
-    static struct timeval start;
-    struct timeval now;
-    
-    gettimeofday (&now, NULL);
-    if (start.tv_sec == 0 && start.tv_usec == 0) { start = now; }
-    
-    return ((now.tv_sec - start.tv_sec) + (1.0 / 1000000.0) * (now.tv_usec - start.tv_usec));
-}
-*/
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

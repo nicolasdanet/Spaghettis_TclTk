@@ -1,4 +1,4 @@
-#N canvas 673 102 356 244 12;
+#N canvas 673 102 358 208 12;
 #X obj 36 132 adc~ 5;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
@@ -7,10 +7,6 @@
 #X text 24 24 audio I/O;
 #X text 144 132 Input from '5' only.;
 #X text 144 156 Output to '1' \, '2' and '5'.;
-#X text 12 204 See also:;
-#X obj 84 204 midiin;
-#X f 6;
-#X obj 144 204 midiout;
 #X text 12 72 Provide real-time audio input and output.;
 #X f 41;
 #X text 144 108 Default is stereo.;

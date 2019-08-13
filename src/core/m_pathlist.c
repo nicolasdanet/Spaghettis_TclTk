@@ -110,7 +110,7 @@ t_pathlist *pathlist_newAppend (t_pathlist *x, t_pathlist **duplicates, const ch
     l2->pl_string   = (char *)PD_MEMORY_GET (strlen (s) + 1);
     l2->pl_hash     = hash;
     
-    strcpy (l2->pl_string, s); path_backslashToSlashIfNecessary (l2->pl_string);
+    strcpy (l2->pl_string, s);
     
     pathregister_add (l2->pl_register, hash);
     

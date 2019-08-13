@@ -19,7 +19,7 @@
 struct _chain {
     t_pd            x_pd;               /* Must be the first. */
     t_id            x_identifier;
-    t_phase         x_phase;
+    int64_t         x_phase;
     int             x_quantum;
     int             x_size;
     t_int           *x_chain;

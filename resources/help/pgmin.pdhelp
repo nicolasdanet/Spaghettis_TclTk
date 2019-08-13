@@ -1,15 +1,13 @@
 #N canvas 869 127 323 254 12;
 #X obj 36 108 pgmin;
-#X obj 84 216 midiin;
 #X obj -60 12 freeze;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X text 24 24 pgmin;
 #X text 12 216 See also:;
 #X obj 84 144 print channel;
 #X text 12 72 Report various MIDI messages.;
-#X obj 144 216 sysexin;
-#X obj 204 216 notein;
-#X obj 264 216 ctlin;
+#X obj 84 216 notein;
+#X obj 144 216 ctlin;
 #X obj 36 180 print program change;
 #N canvas 744 153 300 213 again 0;
 #X text 12 12 Listen to a specific channel.;
@@ -44,6 +42,7 @@
 #X connect 7 2 6 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 228 120 pd more;
-#X connect 0 0 11 0;
-#X connect 0 1 6 0;
+#X obj 192 216 sysexin;
+#X connect 0 0 9 0;
+#X connect 0 1 5 0;
 #X coords 0 0 1 1 250 175 0 0 0;

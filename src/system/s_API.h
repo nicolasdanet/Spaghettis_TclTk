@@ -20,8 +20,8 @@ void        midi_initializeNative               (void);
 void        midi_releaseNative                  (void);
 void        midi_openNative                     (t_devices *);
 void        midi_closeNative                    (void);
-void        midi_pushNextMessageNative          (int, int, int, int);
-void        midi_pushNextByteNative             (int, int);
+void        midi_pushNative                     (int port, int status, int a, int b);
+void        midi_pushSysexNative                (int port, int argc, t_atom *argv);
 void        midi_pollNative                     (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -86,16 +86,6 @@ t_symbol    *audio_deviceAsSymbol               (int isOutput, int k);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-static inline void midi_initialize (void)
-{
-    return midi_initializeNative();
-}
-
-static inline void midi_release (void)
-{
-    return midi_releaseNative();
-}
 
 static inline int audio_getVectorSize (void)
 {

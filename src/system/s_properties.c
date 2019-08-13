@@ -17,11 +17,6 @@ extern t_symbol *main_directorySupport;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#if ! ( PD_WINDOWS )
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 static char *properties_loadBuffer;     /* Static. */
@@ -142,71 +137,6 @@ void properties_setKey (const char *key, const char *value)
 {
     if (properties_saveFile) { fprintf (properties_saveFile, "%s: %s\n", key, value); }   // --
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#else
-
-t_error properties_loadBegin (void)
-{
-    return PD_ERROR_NONE;
-}
-
-void properties_loadClose (void)
-{
-}
-
-t_error properties_saveBegin (void)
-{
-    return PD_ERROR_NONE;
-}
-
-void properties_saveClose (void)
-{
-}
-
-int properties_getKey (const char *key, char *value, int size)
-{
-    HKEY hkey;
-    DWORD n = size;
-    LONG err = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "Software\\" PD_NAME, 0, KEY_QUERY_VALUE, &hkey);
-    
-    if (err != ERROR_SUCCESS) { return 0; }
-    
-    err = RegQueryValueEx (hkey, key, 0, 0, value, &n);
-    
-    if (err != ERROR_SUCCESS) { RegCloseKey (hkey); return 0; }
-    
-    RegCloseKey (hkey);
-    
-    return 1;
-}
-
-void properties_setKey (const char *key, const char *value)
-{
-    HKEY hkey;
-    LONG err = RegCreateKeyEx (HKEY_LOCAL_MACHINE,
-                                "Software\\" PD_NAME,
-                                0,
-                                NULL,
-                                REG_OPTION_NON_VOLATILE,
-                                KEY_SET_VALUE,
-                                NULL,
-                                &hkey,
-                                NULL);
-                                
-    if (err != ERROR_SUCCESS) { PD_BUG; return; }
-    
-    err = RegSetValueEx (hkey, key, 0, REG_EXPAND_SZ, value, strlen (value) + 1);
-    
-    if (err != ERROR_SUCCESS) { PD_BUG; }
-    
-    RegCloseKey (hkey);
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

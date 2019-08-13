@@ -20,30 +20,6 @@ extern t_symbol *main_directorySupport;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void path_slashToBackslashIfNecessary (char *s)
-{
-    #if PD_WINDOWS
-    
-    string_replaceCharacter (s, '/', '\\');
-    
-    #endif
-}
-
-void path_backslashToSlashIfNecessary (char *s)
-{
-    #if PD_WINDOWS
-    
-    string_replaceCharacter (s, '\\', '/');
-    
-    #endif
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#if !PD_WINDOWS
-
 int path_isFileExist (const char *filepath)
 {
     return (access (filepath, F_OK) == 0);
@@ -100,11 +76,6 @@ t_error path_createDirectoryIfNeeded (const char *filepath)
     return err;
 }
 
-#else   
-    /* < https://msdn.microsoft.com/en-us/library/aa364944%28v=vs.85%29.aspx > */
-    #error
-#endif
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -118,11 +89,7 @@ t_error path_withDirectoryAndName (char *dest, size_t size, const char *director
     
     if (*name) {
     //
-    #if PD_WINDOWS 
-        int absolute = (!(*directory) || (name[0] && name[1] == ':'));
-    #else 
-        int absolute = (!(*directory) || (name[0] == '/'));
-    #endif
+    int absolute = (!(*directory) || (name[0] == '/'));
     
     err = PD_ERROR_NONE;
     

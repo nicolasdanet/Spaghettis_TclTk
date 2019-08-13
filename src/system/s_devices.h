@@ -59,6 +59,8 @@ int         devices_getOutChannelsAtIndex       (t_devices *p, int i);
 
 void        devices_check                       (t_devices *p);
 
+int         devices_areEquals                   (t_devices *p, t_devices *q);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -74,6 +76,9 @@ t_error     devices_appendAudioOut              (t_devices *p, int n, int channe
 
 t_error     devices_getInAtIndexAsString        (t_devices *p, int i, char *dest, size_t size);
 t_error     devices_getOutAtIndexAsString       (t_devices *p, int i, char *dest, size_t size);
+
+t_symbol    *devices_getInAtIndexAsSymbol       (t_devices *p, int i);
+t_symbol    *devices_getOutAtIndexAsSymbol      (t_devices *p, int i);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

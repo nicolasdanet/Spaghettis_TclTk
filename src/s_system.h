@@ -124,10 +124,12 @@ t_error     interface_start                         (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        midi_start                              (void);
 void        midi_poll                               (void);
-void        midi_receive                            (int port, int byte);
-void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
+void        midi_receive                            (int port, int status, int a, int b);
+void        midi_send                               (int port, int status, int a, int b);
+
+void        midi_receiveSysex                       (int port, uint8_t byte);
+void        midi_sendSysex                          (int port, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -192,8 +194,6 @@ int         searchpath_hasDuplicates                (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        path_slashToBackslashIfNecessary        (char *s);
-void        path_backslashToSlashIfNecessary        (char *s);
 int         path_isFileExist                        (const char *filepath);
 int         path_isFileExistAsRegularFile           (const char *filepath);
 int         path_isFileExistAsDirectory             (const char *filepath);
@@ -292,11 +292,7 @@ int         sys_isMainThread                        (void);
 
 static inline void sys_closeSocket (int fd)
 {
-    #if PD_WINDOWS
-        closesocket (fd);
-    #else
-        close (fd);
-    #endif
+    close (fd);
 }
 
 // -----------------------------------------------------------------------------------------------------------

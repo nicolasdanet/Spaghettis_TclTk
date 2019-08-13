@@ -27,6 +27,7 @@
 #X connect 5 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 192 168 pd more;
+#X obj 180 264 directories;
 #X connect 0 0 1 0;
 #X connect 0 1 10 0;
 #X connect 7 0 0 0;

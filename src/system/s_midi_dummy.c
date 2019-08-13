@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2010-2017 Peter Brinkmann. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -43,11 +43,11 @@ void midi_closeNative (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void midi_pushNextMessageNative (int port, int a, int b, int c)
+void midi_pushSysexNative (int port, int argc, t_atom *argv)
 {
 }
 
-void midi_pushNextByteNative (int port, int a)
+void midi_pushNative (int port, int status, int a, int b)
 {
 }
 
@@ -67,8 +67,8 @@ t_error midi_getListsNative (t_deviceslist *p)
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= deviceslist_appendMidiIn (p, gensym ("Dummy"));
-    err |= deviceslist_appendMidiOut (p, gensym ("Dummy"));
+    err |= deviceslist_appendMidiIn (p, gensym ("Dummy Input"));
+    err |= deviceslist_appendMidiOut (p, gensym ("Dummy Output"));
   
     return err;
 }

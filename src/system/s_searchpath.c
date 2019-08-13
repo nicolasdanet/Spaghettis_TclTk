@@ -43,8 +43,6 @@ static int searchpath_countDirectories;         /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if ! ( PD_WINDOWS )
-
 static int searchpath_scanProceed (const char *path, const struct stat *b, int flag, struct FTW *f)
 {
     int abort = 0;
@@ -113,8 +111,6 @@ t_error searchpath_scan (void)
     
     return err;
 }
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

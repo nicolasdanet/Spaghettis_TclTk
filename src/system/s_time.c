@@ -102,16 +102,7 @@ t_seed time_makeRandomSeed (void)
     static uint64_t seed = 0;   /* Static. */
     static uint64_t base = 0;   /* Static. */
     
-    if (!once) {
-        
-        #if PD_WINDOWS
-            base = _getpid();
-        #else
-            base = getpid();
-        #endif
-    
-        once = 1;
-    }
+    if (!once) { base = getpid(); once = 1; }
     
     seed ^= base;
     
