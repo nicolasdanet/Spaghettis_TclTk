@@ -108,8 +108,10 @@ static void dspthread_wait (t_dspthread *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void dspthread_proceed (t_dspthread *x)
+static int dspthread_proceed (t_dspthread *x)
 {
+    int done = 1;
+    
     PD_ATOMIC_POINTER_WRITE (instance_chainGetCurrent(), &x->x_chain);
     
     if (PD_ATOMIC_POINTER_READ (&x->x_chain) && PD_ATOMIC_UINT32_TRUE (DSP_RUN, &x->x_flag)) {
@@ -117,6 +119,8 @@ static void dspthread_proceed (t_dspthread *x)
     t_chain *chain = (t_chain *)PD_ATOMIC_POINTER_READ (&x->x_chain);
     
     int stuck = 0;
+    
+    done = 0;
     
     do {
     //
@@ -134,7 +138,7 @@ static void dspthread_proceed (t_dspthread *x)
     int wait = (dacs == DACS_YES) && (audio_getVectorSize() != INTERNAL_BLOCKSIZE);
     
     if (wait) { time_set (&t); time_addNanoseconds (&t, audio_getNanosecondsToSleep() * 0.9); }
-    if (work) { chain_tick (chain); stuck = 0; } else { stuck++; }
+    if (work) { chain_tick (chain); stuck = 0; done = 1; } else { stuck++; }
     if (wait) { time_wait (&t); }
     
     if (stuck > 10 || PD_ATOMIC_UINT32_TRUE (DSP_EXIT, &x->x_flag)) { break; }
@@ -144,6 +148,8 @@ static void dspthread_proceed (t_dspthread *x)
     }
     
     PD_ATOMIC_POINTER_WRITE (NULL, &x->x_chain);
+    
+    return done;
 }
 
 static void *dspthread_thread (void *z)
@@ -158,7 +164,9 @@ static void *dspthread_thread (void *z)
     //
     PD_ATOMIC_FLOAT64_WRITE (0, &x->x_time);
     
-    dspthread_proceed (x); instance_clocksClean();
+    if (!dspthread_proceed (x)) { nano_sleep (audio_getNanosecondsToSleep()); }
+    
+    instance_clocksClean();
     //
     }
     

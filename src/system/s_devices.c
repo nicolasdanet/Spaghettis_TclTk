@@ -156,6 +156,31 @@ void devices_check (t_devices *p)
     }
 }
 
+int devices_areEquals (t_devices *p, t_devices *q)
+{
+    if (p->d_sampleRate     != q->d_sampleRate)     { return 0; }
+    if (p->d_inSize         != q->d_inSize)         { return 0; }
+    if (p->d_outSize        != q->d_outSize)        { return 0; }
+    
+    int i;
+    
+    for (i = 0; i < p->d_inSize; i++) {
+    //
+    if (p->d_in[i]          != q->d_in[i])          { return 0; }
+    if (p->d_inChannels[i]  != q->d_inChannels[i])  { return 0; }
+    //
+    }
+    
+    for (i = 0; i < p->d_outSize; i++) {
+    //
+    if (p->d_out[i]         != q->d_out[i])         { return 0; }
+    if (p->d_outChannels[i] != q->d_outChannels[i]) { return 0; }
+    //
+    }
+    
+    return 1;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -

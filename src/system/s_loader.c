@@ -28,11 +28,7 @@ typedef void (*t_dtor) (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WINDOWS
-    typedef HMODULE t_handle;
-#else
-    typedef void *t_handle;
-#endif
+typedef void *t_handle;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -105,33 +101,6 @@ static t_error loader_makeStubName (char *dest, size_t size, t_symbol *name, con
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WINDOWS
-
-static t_handle loader_externalOpenNative (char *filepath, char *stub, t_symbol *root)
-{
-    t_handle handle;
-    
-    path_slashToBackslashIfNecessary (filepath);
-
-    handle = LoadLibrary (filepath);
-    
-    if (!handle) { error__error2 (filepath, dlerror()); }
-    else {
-        t_ctor ctor = (t_ctor)GetProcAddress (handle, stub);
-    
-        if (!ctor) { error_stubNotFound(); }
-        else {
-            (*ctor) (root); return handle;
-        }
-    }
-    
-    if (handle) { loader_externalClose (handle, NULL); }
-    
-    return NULL;
-}
-
-#else
-
 static t_handle loader_externalOpenNative (char *filepath, char *stub, t_symbol *root)
 {
     t_handle handle = dlopen (filepath, RTLD_NOW | RTLD_GLOBAL);
@@ -151,21 +120,8 @@ static t_handle loader_externalOpenNative (char *filepath, char *stub, t_symbol 
     return NULL;
 }
 
-#endif // PD_WINDOWS
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#if PD_WINDOWS
-
-static void loader_externalCloseNative (t_handle handle, char *stub)
-{
-    t_dtor dtor = (t_dtor)GetProcAddress (handle, stub);
-    
-    if (dtor) { (*dtor)(); }
-}
-
-#else
 
 static void loader_externalCloseNative (t_handle handle, char *stub)
 {
@@ -173,8 +129,6 @@ static void loader_externalCloseNative (t_handle handle, char *stub)
     
     if (dtor) { (*dtor)(); }
 }
-
-#endif // PD_WINDOWS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -225,11 +179,7 @@ static void loader_externalClose (t_handle handle, t_symbol *name)
     //
     }
     
-    #if PD_WINDOWS
-        FreeLibrary (handle);
-    #else
-        dlclose (handle);
-    #endif
+    dlclose (handle);
 }
 
 // -----------------------------------------------------------------------------------------------------------

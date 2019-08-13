@@ -32,7 +32,7 @@ typedef struct _bendin {
 
 static void bendin_list (t_bendin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_float value   = atom_getFloatAtIndex (0, argc, argv);
+    t_float value   = atom_getFloatAtIndex (0, argc, argv) - 8192;
     t_float channel = atom_getFloatAtIndex (1, argc, argv);
     
     if (x->x_channel) {

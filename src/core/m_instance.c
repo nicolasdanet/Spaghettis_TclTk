@@ -274,7 +274,7 @@ void instance_dspFree (void)
 
 static void instance_audioCloseTask (void *dummy)
 {
-    dsp_setState (0); error_unexpected (sym_audio, sym_shutdown);
+    int old = dsp_getState(); dsp_setState (0); if (old) { error_unexpected (sym_audio, sym_shutdown); }
 }
 
 void instance_audioCloseWithError (void)

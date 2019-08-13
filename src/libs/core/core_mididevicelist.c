@@ -1,0 +1,98 @@
+
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#include "core_midi.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error mididevicelist_getSources (t_deviceslist *list)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    ItemCount i, n = MIDIGetNumberOfSources();
+
+    for (i = 0; i < n; i++) {
+    //
+    t_symbol *name = midiname_get (MIDIGetSource (i));
+    
+    if (name) { err |= deviceslist_appendMidiIn (list, name); }
+    //
+    }
+
+    return err;
+}
+
+t_error mididevicelist_getDestinations (t_deviceslist *list)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    ItemCount i, n = MIDIGetNumberOfDestinations();
+
+    for (i = 0; i < n; i++) {
+    //
+    t_symbol *name = midiname_get (MIDIGetDestination (i));
+    
+    if (name) { err |= deviceslist_appendMidiOut (list, name); }
+    //
+    }
+
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+t_error mididevicelist_get (t_deviceslist *list)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    err |= mididevicelist_getSources (list);
+    err |= mididevicelist_getDestinations (list);
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+MIDIEndpointRef mididevicelist_fetchSource (t_symbol *name)
+{
+    ItemCount i, n = MIDIGetNumberOfSources();
+
+    for (i = 0; i < n; i++) {
+    //
+    MIDIEndpointRef t = MIDIGetSource (i);
+    
+    if (t && midiname_get (t) == name) { return t; }
+    //
+    }
+    
+    return (MIDIEndpointRef)NULL;
+}
+
+MIDIEndpointRef mididevicelist_fetchDestination (t_symbol *name)
+{
+    ItemCount i, n = MIDIGetNumberOfDestinations();
+
+    for (i = 0; i < n; i++) {
+    //
+    MIDIEndpointRef t = MIDIGetDestination (i);
+    
+    if (t && midiname_get (t) == name) { return t; }
+    //
+    }
+    
+    return (MIDIEndpointRef)NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

@@ -31,9 +31,9 @@ static t_deviceslist    midi_devices;       /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if 1
-
 /* The APIs provided detect devices only at startup thus it can be cached. */
+
+/* < https://forum.juce.com/t/how-to-update-midi-device/14851/18 > */
 
 static t_error midi_getDevicesList (t_deviceslist *l)
 {
@@ -54,17 +54,6 @@ static t_error midi_getDevicesList (t_deviceslist *l)
     
     return err;
 }
-
-#endif
-
-#if 0
-
-static t_error midi_getDevicesList (t_deviceslist *l)
-{
-    deviceslist_init (l); return midi_getListsNative (l);
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -94,7 +83,16 @@ void midi_getDevices (t_devices *p)
 
 void midi_setDevices (t_devices *p)
 {
+    t_devices old; devices_initAsMidi (&old);
+    
+    deviceslist_getDevices (&midi_devices, &old);
     deviceslist_setDevices (&midi_devices, p);
+    
+    if (!devices_areEquals (&old, p) && symbol_hasThingQuiet (sym__midiports)) {
+    //
+    pd_message (symbol_getThing (sym__midiports), sym__midiports, 0, NULL);
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

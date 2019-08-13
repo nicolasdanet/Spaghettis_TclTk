@@ -1,7 +1,4 @@
-#N canvas 551 154 315 254 12;
-#X obj 132 216 pgmin;
-#X obj 180 216 bendin;
-#X obj 240 216 touchin;
+#N canvas 551 154 302 255 12;
 #X text 12 216 See also:;
 #X obj 12 12 cnv 15 275 45 empty empty empty 0 -7 0 10 #ffd300 #000000;
 #X obj -60 12 freeze;
@@ -18,6 +15,8 @@
 #X text 12 12 E.g. modulation wheel on channel '2'.;
 #X coords 0 0 1 1 250 175 0 0 0;
 #X restore 156 144 pd more;
-#X connect 8 0 9 0;
-#X connect 9 0 7 0;
+#X obj 132 216 pgmout;
+#X obj 192 216 sysexout;
+#X connect 5 0 6 0;
+#X connect 6 0 4 0;
 #X coords 0 0 1 1 250 175 0 0 0;

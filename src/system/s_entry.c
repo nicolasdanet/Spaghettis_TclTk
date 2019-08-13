@@ -12,6 +12,11 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+#include "s_utf8.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 int sys_isMainThread (void)
@@ -37,28 +42,33 @@ int sys_isMainThread (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WINDOWS
-
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{ 
-    __try {
-        main_entry (__argc, __argv);
-    }
-    __finally { }
-    
-    return 0;
-}
-
-#else
 #if PD_WITH_MAIN
+
+/* Runtime check. */
+
+t_error main_assert (void)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    err |= (sizeof (int)        < 4);
+    err |= (sizeof (t_keycode)  != sizeof (UCS4_CODE_POINT));
+    err |= (sizeof (t_word)     != sizeof (t_float));
+    err |= (sizeof (t_word)     != sizeof (double));
+    err |= (sizeof (t_word)     != sizeof (t_float64Atomic));
+    err |= (sizeof (t_word)     != 8);
+    
+    return err;
+}
 
 int main (int argc, char **argv)
 {
-    PD_ASSERT (sys_isMainThread()); return main_entry (argc, argv);
+    if (main_assert()) { PD_BUG; return EXIT_FAILURE; }
+    else {
+        PD_ASSERT (sys_isMainThread()); return main_entry (argc, argv);
+    }
 }
 
 #endif // PD_WITH_MAIN
-#endif // PD_WINDOWS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

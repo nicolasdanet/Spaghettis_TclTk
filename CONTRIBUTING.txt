@@ -10,6 +10,7 @@ Any contributions are welcomed:
     - Use Spaghettis and open a feature request.
     - Improve tutorials and/or help patches.
     - Start a wiki.
+    - Write a documentation.
     - Improve the code.
     - Ask (don't be shy).
 

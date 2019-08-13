@@ -36,8 +36,6 @@ void audio_vectorInitialize (t_float, int, int);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if 1
-
 /* The APIs provided detect devices only at startup thus it can be cached. */
 
 static t_error audio_getDevicesList (t_deviceslist *l)
@@ -59,17 +57,6 @@ static t_error audio_getDevicesList (t_deviceslist *l)
     
     return err;
 }
-
-#endif
-
-#if 0
-
-static t_error audio_getDevicesList (t_deviceslist *l)
-{
-    deviceslist_init (l); return audio_getListsNative (l);
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

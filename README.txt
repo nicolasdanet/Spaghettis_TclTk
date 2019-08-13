@@ -11,8 +11,6 @@ Remark:
 
 Build:
 
-    On macOS install ActiveTcl first < https://www.activestate.com/activetcl >.
-    Alternatively compile the Wish.app by yourself ("wish/build.sh").
     Download this repository.
     Open a terminal and go to the "Spaghettis/build.sh" script.
     Run the "./build.sh" command.
@@ -32,8 +30,6 @@ Credits:
     Lewis Van Winkle < https://github.com/codeplea/tinyexpr >
     T. Nishimura & M. Matsumoto < http://www.math.sci.hiroshima-u.ac.jp/~m-mat >
     Takuya Ooura < http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html >
-    PortMidi < https://sourceforge.net/p/portmedia >
-    PortAudio < http://www.portaudio.com >
     
 License:
     

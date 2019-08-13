@@ -38,7 +38,9 @@ static t_error priority_setRTNative (pthread_t thread)
     return err;
 }
 
-#elif PD_LINUX
+#endif // PD_APPLE
+
+#if PD_LINUX
 
 static t_error priority_setRTNative (pthread_t thread)
 {
@@ -64,14 +66,7 @@ static t_error priority_setRTNative (pthread_t thread)
     return PD_ERROR_NONE;
 }
 
-#else
-
-static t_error priority_setRTNative (pthread_t thread)
-{
-    PD_BUG; return PD_ERROR_NONE;
-}
-
-#endif
+#endif // PD_LINUX
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -14,6 +14,28 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_symbol *devices_getInAtIndexAsSymbol (t_devices *p, int i)
+{
+    if (p->d_isMidi) {
+        return midi_deviceAsSymbol (0,  devices_getInAtIndex (p, i));
+    } else {
+        return audio_deviceAsSymbol (0, devices_getInAtIndex (p, i));
+    }
+}
+
+t_symbol *devices_getOutAtIndexAsSymbol (t_devices *p, int i)
+{
+    if (p->d_isMidi) {
+        return midi_deviceAsSymbol (1,  devices_getOutAtIndex (p, i));
+    } else {
+        return audio_deviceAsSymbol (1, devices_getOutAtIndex (p, i));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_error devices_getInAtIndexAsString (t_devices *p, int i, char *dest, size_t size)
 {
     if (p->d_isMidi) {

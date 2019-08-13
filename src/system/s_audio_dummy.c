@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2010-2017 Peter Brinkmann. */
+/* Copyright (c) 1997-2019 Miller Puckette and others. */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
 
@@ -67,8 +67,8 @@ t_error audio_getListsNative (t_deviceslist *p)
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= deviceslist_appendAudioIn (p,  gensym ("Dummy"), 0);
-    err |= deviceslist_appendAudioOut (p, gensym ("Dummy"), 0);
+    err |= deviceslist_appendAudioIn (p,  gensym ("Dummy Input"),  0);
+    err |= deviceslist_appendAudioOut (p, gensym ("Dummy Output"), 0);
   
     return err;
 }
