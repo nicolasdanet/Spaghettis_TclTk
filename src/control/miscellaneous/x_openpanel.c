@@ -151,7 +151,7 @@ static void *openpanel_new (t_symbol *s, int argc, t_atom *argv)
     
     x->x_owner       = instance_contextGetCurrent();
     x->x_proxy       = proxy_new (cast_pd (x));
-    x->x_outletLeft  = outlet_newAnything (cast_object (x));
+    x->x_outletLeft  = outlet_newMixed (cast_object (x));
     x->x_outletRight = outlet_newBang (cast_object (x));
     
     if (x->x_directory) { x->x_last = environment_getFilePath (glist_getEnvironment (x->x_owner)); }

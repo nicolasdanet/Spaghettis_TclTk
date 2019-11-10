@@ -337,7 +337,7 @@ static void *pipe_new (t_symbol *s, int argc, t_atom *argv)
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
     if (!argc) {
-        atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), ATOMOUTLET_OUTLET, NULL, 0.0);
+        atomoutlet_makeFloat (x->x_vector + 0, cast_object (x), ATOMOUTLET_OUTLET, 0.0);
         
     } else {
 

@@ -207,7 +207,7 @@ static void *value_new (t_symbol *s)
     t_value *x = (t_value *)pd_new (value_class);
     
     x->x_name   = &s_;
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newList (cast_object (x));
     
     value_set (x, s);
     

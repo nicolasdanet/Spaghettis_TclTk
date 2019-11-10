@@ -264,14 +264,14 @@ static void *route_newProceed (int argc, t_atom *argv)
     for (i = 0; i < argc; i++) {
         if (IS_SYMBOL (argv + i)) {
             t_symbol *t = atomoutlet_parseAbbreviated (atom_getSymbol (argv + i));
-            atomoutlet_makeSymbol (x->x_vector + i, cast_object (x), create, &s_anything, t);
+            atomoutlet_makeSymbol (x->x_vector + i, cast_object (x), create, t);
         } else {
             t_float t = atom_getFloat (argv + i);
-            atomoutlet_makeFloat (x->x_vector + i,  cast_object (x), create, &s_anything, t);
+            atomoutlet_makeFloat (x->x_vector + i,  cast_object (x), create, t);
         }
     }
     
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newMixed (cast_object (x));
     
     return x;
 }

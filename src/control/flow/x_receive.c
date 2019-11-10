@@ -117,7 +117,7 @@ static void *receive_new (t_symbol *s)
     t_receive *x = (t_receive *)pd_new (receive_class);
     
     x->x_name   = &s_;
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newMixed (cast_object (x));
     
     receive_bind (x, s);
     

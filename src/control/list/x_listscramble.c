@@ -65,7 +65,7 @@ void *listscramble_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listscramble *x = (t_listscramble *)pd_new (listscramble_class);
     
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newList (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     

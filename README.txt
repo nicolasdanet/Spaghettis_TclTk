@@ -14,8 +14,8 @@ Build:
     Download this repository.
     Open a terminal and go to the "Spaghettis/build.sh" script.
     Run the "./build.sh" command.
-    Notice that to avoid conflicts nothing is installed.
     On GNU/Linux execute "Spaghettis/build/bin/spaghettis".
+    Notice that nothing is installed.
     Launch the "Application/Spaghettis.app" on macOS.
 
 Residual:

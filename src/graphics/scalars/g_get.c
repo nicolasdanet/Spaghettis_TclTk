@@ -72,7 +72,7 @@ static void *get_new (t_symbol *s, int argc, t_atom *argv)
     
     for (i = 0; i < x->x_fieldsSize; i++) {
         x->x_fields[i].gv_fieldName = atom_getSymbolAtIndex (i + 1, argc, argv);
-        x->x_fields[i].gv_outlet    = outlet_newAnything (cast_object (x));
+        x->x_fields[i].gv_outlet    = outlet_newMixed (cast_object (x));
     }
     
     return x;

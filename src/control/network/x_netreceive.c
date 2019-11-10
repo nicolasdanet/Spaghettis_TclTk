@@ -305,7 +305,7 @@ static void *netreceive_new (t_symbol *s, int argc, t_atom *argv)
     x->nr_isBinary    = 0;
     x->nr_size        = NETRECEIVE_LISTEN_BACKLOG;
     x->nr_vector      = (t_receiver **)PD_MEMORY_GET (sizeof (t_receiver *) * x->nr_size);
-    x->nr_outletLeft  = outlet_newAnything (cast_object (x));
+    x->nr_outletLeft  = outlet_newMixed (cast_object (x));
         
     while (argc > 0) {
     //

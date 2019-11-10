@@ -75,13 +75,13 @@ t_error atomoutlet_broadcastIfTypeMatch (t_atomoutlet *x, t_atom *a);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void    atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, int n, t_symbol *type, t_float f);
-void    atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int n, t_symbol *type, t_symbol *s);
-void    atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int n, t_symbol *type, t_gpointer *gp);
-void    atomoutlet_make                 (t_atomoutlet *x, t_object *o, int n, t_symbol *type, t_atom *a);
+void    atomoutlet_makeFloat            (t_atomoutlet *x, t_object *o, int flags, t_float f);
+void    atomoutlet_makeSymbol           (t_atomoutlet *x, t_object *o, int flags, t_symbol *s);
+void    atomoutlet_makePointer          (t_atomoutlet *x, t_object *o, int flags, t_gpointer *gp);
+void    atomoutlet_make                 (t_atomoutlet *x, t_object *o, int flags, t_atom *a);
 
-void    atomoutlet_makeSymbolParsed     (t_atomoutlet *x, t_object *o, int n, t_atom *a);
-void    atomoutlet_makeParsed           (t_atomoutlet *x, t_object *o, int n, t_atom *a);
+void    atomoutlet_makeSymbolParsed     (t_atomoutlet *x, t_object *o, int flags, t_atom *a);
+void    atomoutlet_makeParsed           (t_atomoutlet *x, t_object *o, int flags, t_atom *a);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

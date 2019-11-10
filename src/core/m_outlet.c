@@ -81,10 +81,53 @@ t_error outlet_removeConnection (t_outlet *x, t_pd *receiver)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static int outlet_isBang (t_outlet *x)
+{
+    return (x->o_type == &s_bang);
+}
+
+static int outlet_isPointer (t_outlet *x)
+{
+    return (x->o_type == &s_pointer);
+}
+
+static int outlet_isFloat (t_outlet *x)
+{
+    return (x->o_type == &s_float);
+}
+
+static int outlet_isSymbol (t_outlet *x)
+{
+    return (x->o_type == &s_symbol);
+}
+
+static int outlet_isList (t_outlet *x)
+{
+    return (x->o_type == &s_list);
+}
+
+static int outlet_isAnything (t_outlet *x)
+{
+    return (x->o_type == &s_anything);
+}
+
+#if PD_WITH_DEBUG
+
+static int outlet_isMixed (t_outlet *x)
+{
+    return (x->o_type == sym_mixed);
+}
+
+#endif // PD_WITH_DEBUG
+
 int outlet_isSignal (t_outlet *x)
 {
     return (x->o_type == &s_signal);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void outlet_moveFirst (t_outlet *x)
 {
@@ -136,8 +179,29 @@ int outlet_getIndexAsSignal (t_outlet *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Note that it doesn't matter, but it could in the futur. */
+
+static void outlet_checkType (t_outlet *x, int match)
+{
+    #if PD_WITH_DEBUG
+    
+    if (!match && !outlet_isMixed (x)) {
+    //
+    PD_BUG; post_log ("*** Type / %s", class_getNameAsString (pd_class (x->o_owner)));
+    //
+    }
+    
+    #endif // PD_WITH_DEBUG
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void outlet_bang (t_outlet *x)
 {
+    outlet_checkType (x, outlet_isBang (x));
+    
     if (!instance_overflowPush()) {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_bang (oc->oc_receiver); }
@@ -148,6 +212,8 @@ void outlet_bang (t_outlet *x)
 
 void outlet_pointer (t_outlet *x, t_gpointer *gp)
 {
+    outlet_checkType (x, outlet_isPointer (x));
+        
     if (!instance_overflowPush()) {
     //
     t_outconnect *oc = NULL;
@@ -169,6 +235,8 @@ void outlet_pointer (t_outlet *x, t_gpointer *gp)
 
 void outlet_float (t_outlet *x, t_float f)
 {
+    outlet_checkType (x, outlet_isFloat (x));
+        
     if (!instance_overflowPush()) {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_float (oc->oc_receiver, f); }
@@ -179,6 +247,8 @@ void outlet_float (t_outlet *x, t_float f)
 
 void outlet_symbol (t_outlet *x, t_symbol *s)
 {
+    outlet_checkType (x, outlet_isSymbol (x));
+        
     if (!instance_overflowPush()) {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_symbol (oc->oc_receiver, s); }
@@ -189,6 +259,8 @@ void outlet_symbol (t_outlet *x, t_symbol *s)
 
 void outlet_list (t_outlet *x, int argc, t_atom *argv)
 {
+    outlet_checkType (x, outlet_isList (x));
+        
     if (!instance_overflowPush()) {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_list (oc->oc_receiver, argc, argv); }
@@ -199,6 +271,8 @@ void outlet_list (t_outlet *x, int argc, t_atom *argv)
 
 void outlet_anything (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 {
+    outlet_checkType (x, outlet_isAnything (x));
+        
     if (!instance_overflowPush()) {
         t_outconnect *oc = NULL;
         for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_message (oc->oc_receiver, s, argc, argv); }
@@ -251,6 +325,11 @@ void outlet_free (t_outlet *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+t_outlet *outlet_newUndefined (t_object *owner)
+{
+    return outlet_new (owner, NULL);
+}
+
 t_outlet *outlet_newBang (t_object *owner)
 {
     return outlet_new (owner, &s_bang);
@@ -279,6 +358,11 @@ t_outlet *outlet_newList (t_object *owner)
 t_outlet *outlet_newAnything (t_object *owner)
 {
     return outlet_new (owner, &s_anything);
+}
+
+t_outlet *outlet_newMixed (t_object *owner)
+{
+    return outlet_new (owner, sym_mixed);
 }
 
 t_outlet *outlet_newSignal (t_object *owner)

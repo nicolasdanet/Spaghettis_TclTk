@@ -183,7 +183,7 @@ static void *vexpr_new (t_symbol *s, int argc, t_atom *argv)
     if (x->x_expression) {
         
         int i;
-        x->x_outlet = outlet_new (cast_object (x), &s_list);
+        x->x_outlet = outlet_newList (cast_object (x));
         x->x_vector = buffer_new();
         for (i = 0; i < (x->x_count - 1); i++) {
             listinlet_init (x->x_listinlets + i);

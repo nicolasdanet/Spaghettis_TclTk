@@ -502,6 +502,7 @@ t_symbol *sym_millisecond;
 t_symbol *sym_min;
 t_symbol *sym_min__tilde__;
 t_symbol *sym_minute;
+t_symbol *sym_mixed;
 t_symbol *sym_mod;
 t_symbol *sym_mode;
 t_symbol *sym_moses;
@@ -1276,6 +1277,7 @@ void symbols_initialize (void)
     sym_min                                     = gensym ("min");
     sym_min__tilde__                            = gensym ("min~");
     sym_minute                                  = gensym ("minute");
+    sym_mixed                                   = gensym ("mixed");
     sym_mod                                     = gensym ("mod");
     sym_mode                                    = gensym ("mode");
     sym_moses                                   = gensym ("moses");

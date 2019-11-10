@@ -65,7 +65,7 @@ void *listreverse_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listreverse *x = (t_listreverse *)pd_new (listreverse_class);
     
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newList (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     

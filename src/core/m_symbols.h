@@ -502,6 +502,7 @@ extern t_symbol *sym_millisecond;
 extern t_symbol *sym_min;
 extern t_symbol *sym_min__tilde__;
 extern t_symbol *sym_minute;
+extern t_symbol *sym_mixed;
 extern t_symbol *sym_mod;
 extern t_symbol *sym_mode;
 extern t_symbol *sym_moses;
