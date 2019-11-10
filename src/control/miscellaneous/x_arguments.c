@@ -50,7 +50,7 @@ static void *arguments_new (void)
     t_arguments *x = (t_arguments *)pd_new (arguments_class);
     
     x->x_owner       = instance_contextGetCurrent();
-    x->x_outletLeft  = outlet_newAnything (cast_object (x));
+    x->x_outletLeft  = outlet_newList (cast_object (x));
     x->x_outletRight = outlet_newSymbol (cast_object (x));
     
     return x;

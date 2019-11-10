@@ -98,7 +98,7 @@ static void *voutlet_newSignal (t_symbol *s)
     x->vo_bufferSize = 0;
     x->vo_buffer     = (t_sample *)PD_MEMORY_GET (0);
     x->vo_owner      = instance_contextGetCurrent();
-    x->vo_outlet     = glist_outletAdd (x->vo_owner, &s_signal);
+    x->vo_outlet     = glist_outletAddSignal (x->vo_owner);
     
     inlet_newSignal (cast_object (x));
 
@@ -110,7 +110,7 @@ static void *voutlet_new (t_symbol *s)
     t_voutlet *x = (t_voutlet *)pd_new (voutlet_class);
     
     x->vo_owner  = instance_contextGetCurrent();
-    x->vo_outlet = glist_outletAdd (x->vo_owner, &s_anything);
+    x->vo_outlet = glist_outletAdd (x->vo_owner);
     
     inlet_new (cast_object (x), cast_pd (x), NULL, NULL);
 

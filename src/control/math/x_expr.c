@@ -142,7 +142,7 @@ static void *expr_new (t_symbol *s, int argc, t_atom *argv)
     if (x->x_expression) {
         
         int i;
-        x->x_outlet = outlet_new (cast_object (x), &s_float);
+        x->x_outlet = outlet_newFloat (cast_object (x));
         for (i = 1; i < x->x_count; i++) { inlet_newFloat (cast_object (x), &x->x_f[i]); }
     
     } else {

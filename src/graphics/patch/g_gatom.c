@@ -558,8 +558,8 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
         gatom_makeObjectFile (x, argc, argv);
     }
     
-    x->a_outlet = outlet_new (cast_object (x), gatom_isFloat (x) ? &s_float : &s_symbol);
-
+    x->a_outlet = gatom_isFloat (x) ? outlet_newFloat (cast_object (x)) : outlet_newSymbol (cast_object (x));
+    
     glist_objectAdd (x->a_owner, cast_gobj (x));
     
     if (isMenu) { glist_objectSelect (x->a_owner, cast_gobj (x)); }

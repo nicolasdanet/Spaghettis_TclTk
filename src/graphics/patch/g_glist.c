@@ -16,6 +16,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_outlet *outlet_newUndefined (t_object *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 void gobj_changeSource (t_gobj *, t_id);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -1471,10 +1476,8 @@ void glist_inletSort (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
+static t_outlet *glist_outletAddProceed (t_glist *glist, t_outlet *outlet)
 {
-    t_outlet *outlet = outlet_new (cast_object (glist), s);
-    
     if (!glist_isLoading (glist)) {
     //
     if (glist_isParentOnScreen (glist)) {
@@ -1488,6 +1491,16 @@ t_outlet *glist_outletAdd (t_glist *glist, t_symbol *s)
     }
     
     return outlet;
+}
+
+t_outlet *glist_outletAddSignal (t_glist *glist)
+{
+    return glist_outletAddProceed (glist, outlet_newSignal (cast_object (glist)));
+}
+
+t_outlet *glist_outletAdd (t_glist *glist)
+{
+    return glist_outletAddProceed (glist, outlet_newMixed (cast_object (glist)));
 }
 
 void glist_outletRemove (t_glist *glist, t_outlet *outlet)
@@ -1639,7 +1652,7 @@ t_error glist_lineConnect (t_glist *glist,
     
     if (object_isDummy (srcObject)) {
         while (m >= object_getNumberOfOutlets (srcObject)) {
-            outlet_new (srcObject, NULL);
+            outlet_newUndefined (srcObject);
         }
     }
     

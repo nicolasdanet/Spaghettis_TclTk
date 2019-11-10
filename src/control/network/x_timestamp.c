@@ -136,7 +136,7 @@ static void *timestamp_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_timestamp *x = (t_timestamp *)pd_new (timestamp_class);
     
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newMixed (cast_object (x));
     
     while (argc > 0) {
     //

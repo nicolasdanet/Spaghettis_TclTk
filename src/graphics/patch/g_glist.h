@@ -244,7 +244,8 @@ void        glist_inletSort                 (t_glist *g);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_outlet    *glist_outletAdd                (t_glist *g, t_symbol *s);
+t_outlet    *glist_outletAddSignal          (t_glist *g);
+t_outlet    *glist_outletAdd                (t_glist *g);
 
 void        glist_outletRemove              (t_glist *g, t_outlet *outlet);
 int         glist_outletNumberOf            (t_glist *g);

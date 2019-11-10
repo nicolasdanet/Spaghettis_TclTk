@@ -179,7 +179,7 @@ void *micainterval_new (t_symbol *s, int argc, t_atom *argv)
     
     try { new (x) t_micainterval; } catch (...) { PD_BUG; }
     
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newMixed (cast_object (x));
     
     if (argc) {
     //

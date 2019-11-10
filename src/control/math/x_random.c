@@ -124,7 +124,7 @@ static void *random_new (t_float f)
     t_random *x = (t_random *)pd_new (random_class);
     
     x->x_range  = f;
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newMixed (cast_object (x));
     
     PD_RAND48_INIT (x->x_state);
     

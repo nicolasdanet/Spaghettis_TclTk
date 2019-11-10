@@ -110,7 +110,7 @@ static void *vinlet_new (t_symbol *s)
     t_vinlet *x = (t_vinlet *)pd_new (vinlet_class);
     
     x->vi_owner  = instance_contextGetCurrent();
-    x->vi_outlet = outlet_newAnything (cast_object (x));
+    x->vi_outlet = outlet_newMixed (cast_object (x));
     x->vi_inlet  = glist_inletAdd (x->vi_owner, cast_pd (x), 0);
     
     return x;

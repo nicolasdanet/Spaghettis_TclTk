@@ -822,6 +822,7 @@ PD_DLL t_outlet *outlet_newFloat                (t_object *owner);
 PD_DLL t_outlet *outlet_newSymbol               (t_object *owner);
 PD_DLL t_outlet *outlet_newList                 (t_object *owner);
 PD_DLL t_outlet *outlet_newAnything             (t_object *owner);
+PD_DLL t_outlet *outlet_newMixed                (t_object *owner);
 PD_DLL t_outlet *outlet_newSignal               (t_object *owner);
 
 // -----------------------------------------------------------------------------------------------------------

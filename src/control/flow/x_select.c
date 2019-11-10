@@ -184,9 +184,9 @@ static void *select1_new (int argc, t_atom *argv)
     
     x->x_outletLeft = outlet_newBang (cast_object (x));
     
-    if (IS_FLOAT (argv)) { x->x_outletRight = outlet_newAnything (cast_object (x)); }
+    if (IS_FLOAT (argv)) { x->x_outletRight = outlet_newMixed (cast_object (x)); }
     else {
-        x->x_outletRight = outlet_newAnything (cast_object (x));
+        x->x_outletRight = outlet_newMixed (cast_object (x));
     }
     
     if (IS_FLOAT (argv)) { inlet_newFloat (cast_object (x), ADDRESS_FLOAT (&x->x_atom)); } 
@@ -206,10 +206,10 @@ static void *select2_new (int argc, t_atom *argv)
     x->x_vector = (t_atomoutlet *)PD_MEMORY_GET (x->x_size * sizeof (t_atomoutlet));
 
     for (i = 0; i < argc; i++) {
-        atomoutlet_make (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, &s_bang, argv + i);
+        atomoutlet_make (x->x_vector + i, cast_object (x), ATOMOUTLET_OUTLET, argv + i);
     }
     
-    x->x_outlet = outlet_newAnything (cast_object (x));
+    x->x_outlet = outlet_newMixed (cast_object (x));
 
     return x;
 }
