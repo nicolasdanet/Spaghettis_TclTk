@@ -15,7 +15,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int dsp_status;      /* Static. */
+static int dsp_status;          /* Static. */
+static int dsp_suspended;       /* Static. */
+static int dsp_count;           /* Static. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -73,17 +75,29 @@ void dsp_update (void)
 
 int dsp_suspend (void)
 {
-    int n = dsp_status; dsp_status = 0; return n;
+    dsp_count++;    /* Check that each suspend and resume calls are balanced. */
+    
+    if (dsp_status && !dsp_suspended) { dsp_suspended = 1; PD_ASSERT (dsp_count == 1); return 1; }
+    else {
+        PD_ASSERT (!dsp_status || dsp_suspended);
+    }
+    
+    return 0;
 }
 
 void dsp_resume (int n)
 {
-    if (n) { instance_dspStart(); dsp_status = 1; }
+    dsp_count--; PD_ASSERT (dsp_count >= 0);
+    
+    if (n) { dsp_suspended = 0; PD_ASSERT (dsp_count == 0); instance_dspStart(); }
+    else {
+        PD_ASSERT (!dsp_status || dsp_suspended);
+    }
 }
 
 void dsp_close (void)
 {
-    instance_dspStop(); dsp_status = 0; instance_dspFree();
+    PD_ASSERT (dsp_count == 0); instance_dspStop(); dsp_status = 0; instance_dspFree();
 }
 
 // -----------------------------------------------------------------------------------------------------------
