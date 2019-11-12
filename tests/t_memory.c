@@ -66,14 +66,23 @@ void test51__cast() {
 
 TTT_BEGIN (MemoryCast, 51, "Memory - Cast")
     
-    t_rawcast64 z;
+    {
+        t_rawcast32 z;
+        
+        z.z_f = 3.14159274101;
+        TTT_EXPECT (z.z_i == 0x40490fdb);
+    }
     
-    z.z_d = DSP_UNITBIT + 0.5;
-    TTT_EXPECT ((z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
-    TTT_EXPECT ((z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT_MSB));
-    
-    z.z_d = COSINE_UNITBIT;
-    TTT_EXPECT ((z.z_i[PD_RAWCAST64_MSB] == COSINE_UNITBIT_MSB));
+    {
+        t_rawcast64 z;
+        
+        z.z_d = DSP_UNITBIT + 0.5;
+        TTT_EXPECT ((z.z_i[PD_RAWCAST64_LSB] == 0x80000000));
+        TTT_EXPECT ((z.z_i[PD_RAWCAST64_MSB] == DSP_UNITBIT_MSB));
+        
+        z.z_d = COSINE_UNITBIT;
+        TTT_EXPECT ((z.z_i[PD_RAWCAST64_MSB] == COSINE_UNITBIT_MSB));
+    }
     
 TTT_END
 
