@@ -54,6 +54,21 @@ int audio_isOpened (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+static void audio_error (void)
+{
+    t_symbol *i = NULL;
+    t_symbol *o = NULL;
+    
+    if (deviceslist_getInSize (&audio_devices))  { i = deviceslist_getInAtIndex (&audio_devices, 0);  }
+    if (deviceslist_getOutSize (&audio_devices)) { o = deviceslist_getOutAtIndex (&audio_devices, 0); }
+    
+    error_failsToOpen (sym_audio, i ? i : &s_, o ? o : &s_);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* Notice that for now only the first device is opened. */
 
 t_error audio_open (void)
@@ -81,7 +96,7 @@ t_error audio_open (void)
     //
     }
 
-    if (err) { error_canNotOpen (sym_audio); }
+    if (err) { audio_error(); }
     
     return err;
 }

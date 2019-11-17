@@ -12,38 +12,61 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* < https://stackoverflow.com/a/20368001 > */
+/* < https://github.com/thestk/rtmidi/blob/master/RtMidi.cpp > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void core_pump (void)
+{
+    while (CFRunLoopRunInMode (kCFRunLoopDefaultMode, 0, true) == kCFRunLoopRunHandledSource) { }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 t_error mididevicelist_getSources (t_deviceslist *list)
 {
-    t_error err = PD_ERROR_NONE;
+    core_pump();
     
-    ItemCount i, n = MIDIGetNumberOfSources();
+    {
+        t_error err = PD_ERROR_NONE;
+        
+        ItemCount i, n = MIDIGetNumberOfSources();
 
-    for (i = 0; i < n; i++) {
-    //
-    t_symbol *name = midiname_get (MIDIGetSource (i));
-    
-    if (name) { err |= deviceslist_appendMidiIn (list, name); }
-    //
+        for (i = 0; i < n; i++) {
+        //
+        t_symbol *name = midiname_get (MIDIGetSource (i));
+        
+        if (name) { err |= deviceslist_appendMidiIn (list, name); }
+        //
+        }
+
+        return err;
     }
-
-    return err;
 }
 
 t_error mididevicelist_getDestinations (t_deviceslist *list)
 {
-    t_error err = PD_ERROR_NONE;
+    core_pump();
     
-    ItemCount i, n = MIDIGetNumberOfDestinations();
+    {
+        t_error err = PD_ERROR_NONE;
+        
+        ItemCount i, n = MIDIGetNumberOfDestinations();
 
-    for (i = 0; i < n; i++) {
-    //
-    t_symbol *name = midiname_get (MIDIGetDestination (i));
-    
-    if (name) { err |= deviceslist_appendMidiOut (list, name); }
-    //
+        for (i = 0; i < n; i++) {
+        //
+        t_symbol *name = midiname_get (MIDIGetDestination (i));
+        
+        if (name) { err |= deviceslist_appendMidiOut (list, name); }
+        //
+        }
+
+        return err;
     }
-
-    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -66,32 +89,40 @@ t_error mididevicelist_get (t_deviceslist *list)
 
 MIDIEndpointRef mididevicelist_fetchSource (t_symbol *name)
 {
-    ItemCount i, n = MIDIGetNumberOfSources();
+    core_pump();
+    
+    {
+        ItemCount i, n = MIDIGetNumberOfSources();
 
-    for (i = 0; i < n; i++) {
-    //
-    MIDIEndpointRef t = MIDIGetSource (i);
-    
-    if (t && midiname_get (t) == name) { return t; }
-    //
+        for (i = 0; i < n; i++) {
+        //
+        MIDIEndpointRef t = MIDIGetSource (i);
+        
+        if (t && midiname_get (t) == name) { return t; }
+        //
+        }
+        
+        return (MIDIEndpointRef)NULL;
     }
-    
-    return (MIDIEndpointRef)NULL;
 }
 
 MIDIEndpointRef mididevicelist_fetchDestination (t_symbol *name)
 {
-    ItemCount i, n = MIDIGetNumberOfDestinations();
+    core_pump();
+    
+    {
+        ItemCount i, n = MIDIGetNumberOfDestinations();
 
-    for (i = 0; i < n; i++) {
-    //
-    MIDIEndpointRef t = MIDIGetDestination (i);
-    
-    if (t && midiname_get (t) == name) { return t; }
-    //
+        for (i = 0; i < n; i++) {
+        //
+        MIDIEndpointRef t = MIDIGetDestination (i);
+        
+        if (t && midiname_get (t) == name) { return t; }
+        //
+        }
+        
+        return (MIDIEndpointRef)NULL;
     }
-    
-    return (MIDIEndpointRef)NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

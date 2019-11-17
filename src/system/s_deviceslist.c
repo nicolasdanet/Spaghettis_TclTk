@@ -54,6 +54,33 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int deviceslist_areEquals (t_deviceslist *p, t_deviceslist *q)
+{
+    if (p->d_sampleRate             != q->d_sampleRate)     { return 0; }
+    else if (p->d_inSize            != q->d_inSize)         { return 0; }
+    else if (p->d_outSize           != q->d_outSize)        { return 0; }
+    else {
+    //
+    int i;
+    
+    for (i = 0; i < DEVICES_MAXIMUM_IO; i++) {
+    //
+    if (p->d_inChannels[i]          != q->d_inChannels[i])  { return 0; }
+    else if (p->d_outChannels[i]    != q->d_outChannels[i]) { return 0; }
+    else if (p->d_inNames[i]        != q->d_inNames[i])     { return 0; }
+    else if (p->d_outNames[i]       != q->d_outNames[i])    { return 0; }
+    //
+    }
+    //
+    }
+    
+    return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 int deviceslist_containsIn (t_deviceslist *p, t_symbol *device)
 {
     PD_ASSERT (device);
