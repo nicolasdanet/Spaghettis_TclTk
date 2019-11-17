@@ -36,14 +36,22 @@ void audio_vectorInitialize (t_float, int, int);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* The APIs provided detect devices only at startup thus it can be cached. */
-
-static t_error audio_getDevicesList (t_deviceslist *l)
+static t_error audio_getDevicesList (t_deviceslist *l, int reload)
 {
     static int cacheLoaded = 0;     /* Static. */
     static t_deviceslist cache;     /* Static. */
     
     t_error err = PD_ERROR_NONE;
+    
+    if (reload) {
+    //
+    #if PD_APPLE
+    
+    cacheLoaded = 0;
+    
+    #endif
+    //
+    }
     
     if (!cacheLoaded) {
     //
@@ -87,7 +95,7 @@ void audio_setDevices (t_devices *p)
 
 t_error audio_check (t_devices *p)
 {
-    t_deviceslist l; t_error err = audio_getDevicesList (&l);
+    t_deviceslist l; t_error err = audio_getDevicesList (&l, 0);
     
     devices_check (p);
 
@@ -136,7 +144,7 @@ int audio_deviceAsNumber (int isOutput, t_symbol *name)
 {
     t_deviceslist l;
     
-    if (!audio_getDevicesList (&l)) {
+    if (!audio_getDevicesList (&l, 0)) {
         if (isOutput) { return deviceslist_containsOut (&l, name); }
         else { 
             return deviceslist_containsIn (&l, name);
@@ -161,7 +169,7 @@ t_symbol *audio_deviceAsSymbol (int isOutput, int k)
 {
     t_deviceslist l;
     
-    if (k >= 0 && !audio_getDevicesList (&l)) {
+    if (k >= 0 && !audio_getDevicesList (&l, 0)) {
     //
     return isOutput ? deviceslist_getOutAtIndex (&l, k) : deviceslist_getInAtIndex (&l, k);
     //
@@ -178,7 +186,7 @@ static t_error audio_requireDialogInitialize (void)
 {
     t_deviceslist l;
     
-    t_error err = audio_getDevicesList (&l);
+    t_error err = audio_getDevicesList (&l, 1);
     
     if (!err) {
     //
@@ -222,6 +230,12 @@ void audio_requireDialog (void)
     t_devices audio; devices_initAsAudio (&audio);
     
     audio_getDevices (&audio);
+    
+    #if PD_APPLE
+    
+    devices_setDefaultsIfNone (&audio);     /* For instance if a device is unplugged. */
+    
+    #endif
     
     {
         char t[PD_STRING] = { 0 };

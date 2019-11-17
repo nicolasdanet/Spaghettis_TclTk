@@ -35,6 +35,12 @@ void        deviceslist_copy                        (t_deviceslist *dest, t_devi
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+int         deviceslist_areEquals                   (t_deviceslist *p, t_deviceslist *q);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void        deviceslist_setSampleRate               (t_deviceslist *p, int n);
 int         deviceslist_getSampleRate               (t_deviceslist *p);
 int         deviceslist_getInSize                   (t_deviceslist *p);

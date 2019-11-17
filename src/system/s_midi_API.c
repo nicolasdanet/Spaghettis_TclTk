@@ -31,16 +31,22 @@ static t_deviceslist    midi_devices;       /* Static. */
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* The APIs provided detect devices only at startup thus it can be cached. */
-
-/* < https://forum.juce.com/t/how-to-update-midi-device/14851/18 > */
-
-static t_error midi_getDevicesList (t_deviceslist *l)
+static t_error midi_getDevicesList (t_deviceslist *l, int reload)
 {
     static int cacheLoaded = 0;     /* Static. */
     static t_deviceslist cache;     /* Static. */
     
     t_error err = PD_ERROR_NONE;
+    
+    if (reload) {
+    //
+    #if PD_APPLE
+    
+    cacheLoaded = 0;
+    
+    #endif
+    //
+    }
     
     if (!cacheLoaded) {
     //
@@ -83,12 +89,11 @@ void midi_getDevices (t_devices *p)
 
 void midi_setDevices (t_devices *p)
 {
-    t_devices old; devices_initAsMidi (&old);
+    t_deviceslist old; deviceslist_copy (&old, &midi_devices);
     
-    deviceslist_getDevices (&midi_devices, &old);
     deviceslist_setDevices (&midi_devices, p);
     
-    if (!devices_areEquals (&old, p) && symbol_hasThingQuiet (sym__midiports)) {
+    if (!deviceslist_areEquals (&old, &midi_devices) && symbol_hasThingQuiet (sym__midiports)) {
     //
     pd_message (symbol_getThing (sym__midiports), sym__midiports, 0, NULL);
     //
@@ -103,7 +108,7 @@ int midi_deviceAsNumber (int isOutput, t_symbol *name)
 {
     t_deviceslist l;
     
-    if (!midi_getDevicesList (&l)) {
+    if (!midi_getDevicesList (&l, 0)) {
         if (isOutput) { return deviceslist_containsOut (&l, name); }
         else { 
             return deviceslist_containsIn (&l, name);
@@ -129,7 +134,7 @@ t_symbol *midi_deviceAsSymbol (int isOutput, int k)
 {
     t_deviceslist l;
     
-    if (k >= 0 && !midi_getDevicesList (&l)) {
+    if (k >= 0 && !midi_getDevicesList (&l, 0)) {
     //
     return isOutput ? deviceslist_getOutAtIndex (&l, k) : deviceslist_getInAtIndex (&l, k);
     //
@@ -146,7 +151,7 @@ static t_error midi_requireDialogInitialize (void)
 {
     t_deviceslist l;
     
-    t_error err = midi_getDevicesList (&l);
+    t_error err = midi_getDevicesList (&l, 1);
     
     if (!err) {
     //
