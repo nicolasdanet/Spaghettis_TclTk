@@ -218,6 +218,7 @@ t_error audio_openNative (t_devices *p)
     int channelsIn      = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
     int channelsOut     = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
     int sampleRate      = devices_getSampleRate (p);
+    int vectorSize      = devices_getVectorSize (p);
     
     PD_ASSERT (sizeof (t_sample) == sizeof (Float32));
     PD_ABORT  (sizeof (t_sample) != sizeof (Float32));
@@ -228,7 +229,7 @@ t_error audio_openNative (t_devices *p)
     //
     core_buffersAllocate (channelsIn, channelsOut);
     
-    err = audiograph_open (&core_graph, deviceIn, deviceOut, channelsIn, channelsOut, sampleRate);
+    err = audiograph_open (&core_graph, deviceIn, deviceOut, channelsIn, channelsOut, sampleRate, vectorSize);
     
     if (err) { audiograph_close (&core_graph); }
     //

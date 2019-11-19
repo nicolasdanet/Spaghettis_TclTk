@@ -75,11 +75,11 @@ void audio_getDevices (t_devices *p)
     deviceslist_getDevices (&audio_devices, p);
 }
 
-void audio_setDevices (t_devices *p)
+void audio_setDevices (t_devices *p, int setParameters)
 {
     int m, n;
     
-    deviceslist_setDevices (&audio_devices, p);
+    deviceslist_setDevices (&audio_devices, p, setParameters);
     
     m = deviceslist_getTotalOfChannelsIn (&audio_devices);
     n = deviceslist_getTotalOfChannelsOut (&audio_devices);
@@ -314,7 +314,7 @@ void audio_fromDialog (int argc, t_atom *argv)
     }
     
     audio_close();
-    audio_setDevices (&audio);
+    audio_setDevices (&audio, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

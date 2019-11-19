@@ -35,6 +35,24 @@ struct _dspthread {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Arbitrary (based on experiments) sleep ratio (for audio vector size greater than 64). */
+
+#if PD_APPLE
+
+#define DSPTHREAD_SLEEP     0.8
+
+#endif
+
+#if PD_LINUX
+
+#define DSPTHREAD_SLEEP     0.9
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 enum {
     DSP_NONE    = 0,
     DSP_RUN     = 1,
@@ -135,9 +153,9 @@ static int dspthread_proceed (t_dspthread *x)
     #endif
     
     int work = (dacs != DACS_NO);
-    int wait = (dacs == DACS_YES) && (audio_getVectorSize() != INTERNAL_BLOCKSIZE);
+    int wait = (dacs == DACS_YES) && (audio_getVectorSize() > INTERNAL_BLOCKSIZE);
     
-    if (wait) { time_set (&t); time_addNanoseconds (&t, audio_getNanosecondsToSleep() * 0.9); }
+    if (wait) { time_set (&t); time_addNanoseconds (&t, audio_getNanosecondsToSleep() * DSPTHREAD_SLEEP); }
     if (work) { chain_tick (chain); stuck = 0; done = 1; } else { stuck++; }
     if (wait) { time_wait (&t); }
     

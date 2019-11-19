@@ -87,11 +87,11 @@ void midi_getDevices (t_devices *p)
     deviceslist_getDevices (&midi_devices, p);
 }
 
-void midi_setDevices (t_devices *p)
+void midi_setDevices (t_devices *p, int setParameters)
 {
     t_deviceslist old; deviceslist_copy (&old, &midi_devices);
     
-    deviceslist_setDevices (&midi_devices, p);
+    deviceslist_setDevices (&midi_devices, p, setParameters);
     
     if (!deviceslist_areEquals (&old, &midi_devices) && symbol_hasThingQuiet (sym__midiports)) {
     //
@@ -262,7 +262,7 @@ void midi_fromDialog (int argc, t_atom *argv)
     }
 
     midi_close();
-    midi_setDevices (&midi);
+    midi_setDevices (&midi, 0);
     midi_open();
 }
 

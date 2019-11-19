@@ -162,11 +162,11 @@ static t_error deviceslist_appendAudioOutAsNumber (t_deviceslist *p, int n, int 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void deviceslist_setDevices (t_deviceslist *l, t_devices *p)
+void deviceslist_setDevices (t_deviceslist *l, t_devices *p, int setParameters)
 {
     int i;
     
-    deviceslist_init (l);
+    if (setParameters) { deviceslist_init (l); } else { deviceslist_reset (l); }
     
     if (p->d_isMidi) {
     
@@ -180,8 +180,9 @@ void deviceslist_setDevices (t_deviceslist *l, t_devices *p)
     
     } else {
         
-        deviceslist_setSampleRate (l, devices_getSampleRate (p));
-        
+        if (setParameters) { deviceslist_setSampleRate (l, devices_getSampleRate (p)); }
+        if (setParameters) { deviceslist_setVectorSize (l, devices_getVectorSize (p)); }
+
         for (i = 0; i < devices_getInSize (p); i++) {
             deviceslist_appendAudioInAsNumber (l,
                 devices_getInAtIndex (p, i),
@@ -213,6 +214,7 @@ void deviceslist_getDevices (t_deviceslist *l, t_devices *p)
     } else {
     
         devices_setSampleRate (p, deviceslist_getSampleRate (l));
+        devices_setVectorSize (p, deviceslist_getVectorSize (l));
         
         for (i = 0; i < deviceslist_getInSize (l); i++) {
             devices_appendAudioInWithSymbol (p,

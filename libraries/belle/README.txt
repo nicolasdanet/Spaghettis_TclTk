@@ -1,7 +1,7 @@
 
 # Belle
 
-A fork of "Belle, Bonne, Sage" < https://github.com/burnson/belle >.
+A fork of < https://github.com/burnson/belle >.
 
 Credits:
 

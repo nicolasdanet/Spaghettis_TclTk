@@ -17,7 +17,7 @@ rep=$(pwd)
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Test depedencies ( http://stackoverflow.com/a/22592801 ).
+# Test dependencies ( http://stackoverflow.com/a/22592801 ).
 
 hasTk=$(dpkg-query   -W -f='${Status}' tk8.6 2>/dev/null              | grep -c "ok installed")
 hasTcl=$(dpkg-query  -W -f='${Status}' tcl8.6 2>/dev/null             | grep -c "ok installed")

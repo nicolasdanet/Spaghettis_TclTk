@@ -41,7 +41,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define COREAUDIO_BLOCKSIZE                 INTERNAL_BLOCKSIZE
 #define COREAUDIO_BLOCKSIZE_MAXIMUM         4096
 
 // -----------------------------------------------------------------------------------------------------------
@@ -108,6 +107,7 @@ typedef struct _audiograph {
     t_audiodevice       g_deviceOut;
     t_audiodevice       g_deviceDuplex;
     int                 g_sampleRate;
+    int                 g_vectorSize;
     int                 g_channelsIn;
     int                 g_channelsOut;
     int                 g_hasInput;
@@ -173,7 +173,8 @@ t_error         audiograph_open                         (t_audiograph *graph,
                                                             t_symbol *deviceOut,
                                                             int numberOfChannelsIn,
                                                             int numberOfChannelsOut,
-                                                            int sampleRate);
+                                                            int sampleRate,
+                                                            int vectorSize);
 
 void            audiograph_close                        (t_audiograph *graph);
 

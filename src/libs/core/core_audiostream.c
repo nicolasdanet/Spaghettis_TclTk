@@ -144,7 +144,7 @@ static t_error audiodevice_openSetFormatProceed (t_audiodevice *device, t_audiog
     
     if (!err) {
     //
-    UInt32 frames = COREAUDIO_BLOCKSIZE;
+    UInt32 frames = graph->g_vectorSize;
     
     err = coreaudio_error (AudioUnitSetProperty (device->d_unit,
                                 kAudioUnitProperty_MaximumFramesPerSlice,
@@ -218,7 +218,7 @@ t_error audiodevice_open (t_audiodevice *device, t_audiograph *graph)
                                     sizeof (device->d_ID)));
     }
     {
-        err |= audiodevice_setBufferSize (device, COREAUDIO_BLOCKSIZE);
+        err |= audiodevice_setBufferSize (device, graph->g_vectorSize);
     }
     if (!isDuplex) { err |= audiodevice_openSetFormatProceed (device, graph, isInput); }
     else {

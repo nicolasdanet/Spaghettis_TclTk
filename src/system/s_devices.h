@@ -23,6 +23,7 @@
 
 typedef struct _devices {
     int d_sampleRate;
+    int d_vectorSize;
     int d_inSize;
     int d_outSize;
     int d_in          [DEVICES_MAXIMUM_IO];     // --
@@ -46,6 +47,8 @@ void        devices_setDefaultsIfNone           (t_devices *p);
 
 void        devices_setSampleRate               (t_devices *p, int n);
 int         devices_getSampleRate               (t_devices *p);
+void        devices_setVectorSize               (t_devices *p, int n);
+int         devices_getVectorSize               (t_devices *p);
 int         devices_getInSize                   (t_devices *p);
 int         devices_getOutSize                  (t_devices *p);
 int         devices_getInAtIndex                (t_devices *p, int i);
