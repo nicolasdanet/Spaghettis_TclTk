@@ -50,7 +50,7 @@ void        midi_open                           (void);
 void        midi_close                          (void);
 
 void        midi_getDevices                     (t_devices *p);
-void        midi_setDevices                     (t_devices *p);
+void        midi_setDevices                     (t_devices *p, int setParameters);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void        audio_close                         (void);
 int         audio_isOpened                      (void);
 
 void        audio_getDevices                    (t_devices *p);
-void        audio_setDevices                    (t_devices *p);
+void        audio_setDevices                    (t_devices *p, int setParameters);
 
 t_error     audio_check                         (t_devices *p);
 

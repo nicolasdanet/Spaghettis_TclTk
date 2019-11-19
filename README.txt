@@ -1,22 +1,33 @@
 
 # Spaghettis
 
-Yet another fork of Pure Data < https://puredata.info/ >.
-
-< http://msp.ucsd.edu/ >
+Yet another fork of Pure Data < http://msp.ucsd.edu/ >.
 
 Remark:
 
     This is an (AT YOUR OWN RISK) experimental work-in-progress.
 
+Platforms:
+
+    Tested on Ubuntu 18.04 (LTS) and macOS 10.14 (Mojave).
+    
+Dependencies:
+
+    On GNU/Linux following packages are required:
+    
+    - tk8.6
+    - tcl8.6
+    - libasound2-dev
+    - libjack-jackd2-dev
+
 Build:
 
-    Download this repository.
-    Open a terminal and go to the "Spaghettis/build.sh" script.
-    Run the "./build.sh" command.
-    On GNU/Linux execute "Spaghettis/build/bin/spaghettis".
-    Notice that nothing is installed.
+    Open a terminal and run the "Spaghettis/build.sh" script.
+
+Run:
+
     Launch the "Application/Spaghettis.app" on macOS.
+    On GNU/Linux execute "Spaghettis/build/bin/spaghettis".
 
 Residual:
 

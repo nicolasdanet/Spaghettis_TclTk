@@ -54,15 +54,34 @@ int audio_isOpened (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static void audio_error (void)
+static void audio_report (t_error err, t_devices *p)
 {
-    t_symbol *i = NULL;
-    t_symbol *o = NULL;
+    t_symbol *i     = devices_getInSize (p)  ? devices_getInAtIndexAsSymbol (p, 0)  : &s_;
+    t_symbol *o     = devices_getOutSize (p) ? devices_getOutAtIndexAsSymbol (p, 0) : &s_;
+    int m           = devices_getInSize (p)  ? devices_getInChannelsAtIndex (p, 0)  : 0;
+    int n           = devices_getOutSize (p) ? devices_getOutChannelsAtIndex (p, 0) : 0;
+    int sampleRate  = devices_getSampleRate (p);
     
-    if (deviceslist_getInSize (&audio_devices))  { i = deviceslist_getInAtIndex (&audio_devices, 0);  }
-    if (deviceslist_getOutSize (&audio_devices)) { o = deviceslist_getOutAtIndex (&audio_devices, 0); }
+    #if PD_APPLE
     
-    error_failsToOpen (sym_audio, i ? i : &s_, o ? o : &s_);
+    int vectorSize  = devices_getVectorSize (p);
+    
+    #endif
+    
+    void (*f)(const char *fmt, ...) = err ? post_error : post;
+    
+    (f) (PD_TRANSLATE ("dsp: %s / %d channels"), i->s_name, m);                 // --
+    (f) (PD_TRANSLATE ("dsp: %s / %d channels"), o->s_name, n);                 // --
+    
+    #if PD_APPLE
+    
+    (f) (PD_TRANSLATE ("dsp: %d Hz / %d frames"), sampleRate, vectorSize);      // --
+    
+    #else 
+    
+    (f) (PD_TRANSLATE ("dsp: %d Hz"), sampleRate);                              // --
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -96,7 +115,7 @@ t_error audio_open (void)
     //
     }
 
-    if (err) { audio_error(); }
+    audio_report (err, &audio);
     
     return err;
 }

@@ -202,18 +202,6 @@ void error_undefined (t_symbol *s1, t_symbol *s2)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void error_failsToOpen (t_symbol *s, t_symbol *s1, t_symbol *s2)
-{
-    const char *i = error__empty (s1);
-    const char *o = error__empty (s2);
-    
-    post_error (PD_TRANSLATE ("%s: fails to open / %s / %s"), s->s_name, i, o);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 void error_canNotMake (int argc, t_atom *argv)
 {
     char *t = atom_atomsToString (argc, argv);

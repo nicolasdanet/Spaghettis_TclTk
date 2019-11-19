@@ -35,6 +35,14 @@ void preferences_load (void)
         if (sscanf (v, "%d", &t) == 1) { devices_setSampleRate (&audio, t); }
     }
     
+    #if PD_APPLE
+    
+    if (properties_getKey ("VectorSize", v, PD_STRING)) {
+        if (sscanf (v, "%d", &t) == 1) { devices_setVectorSize (&audio, t); }
+    }
+    
+    #endif
+    
     /* GUI settings. */
     
     if (properties_getKey ("SnapToGrid", v, PD_STRING)) {
@@ -128,8 +136,8 @@ void preferences_load (void)
     devices_setDefaultsIfNone (&midi);
     devices_setDefaultsIfNone (&audio);
     
-    midi_setDevices (&midi);
-    audio_setDevices (&audio);
+    midi_setDevices (&midi, 1);
+    audio_setDevices (&audio, 1);
     
     properties_loadClose();
 }
@@ -161,6 +169,13 @@ void preferences_save (void)
     
     string_sprintf (v, PD_STRING, "%d", devices_getSampleRate (&audio));
     properties_setKey ("SampleRate", v);
+    
+    #if PD_APPLE
+    
+    string_sprintf (v, PD_STRING, "%d", devices_getVectorSize (&audio));
+    properties_setKey ("VectorSize", v);
+    
+    #endif
     
     /* GUI settings. */
     

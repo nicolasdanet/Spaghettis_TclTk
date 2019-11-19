@@ -105,7 +105,7 @@ t_error audiograph_check (t_audiograph *graph, int close)
     }
     {
         t_error err = PD_ERROR_NONE;
-        int t = COREAUDIO_BLOCKSIZE;
+        int t = graph->g_vectorSize;
     
         err |= (graph->g_hasInput  && audiodevice_getBufferSize (&graph->g_deviceIn)     != t);
         err |= (graph->g_hasOutput && audiodevice_getBufferSize (&graph->g_deviceOut)    != t);
@@ -131,7 +131,8 @@ static t_error audiograph_openSimple (t_audiograph *graph,
     AudioObjectID objectOut,
     int channelsIn,
     int channelsOut,
-    int sampleRate)
+    int sampleRate,
+    int vectorSize)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -161,6 +162,7 @@ static t_error audiograph_openSimple (t_audiograph *graph,
     audio_vectorShrinkOut (channelsOut);
     
     graph->g_sampleRate  = sampleRate;
+    graph->g_vectorSize  = vectorSize;
     graph->g_channelsIn  = channelsIn;
     graph->g_channelsOut = channelsOut;
     graph->g_hasInput    = hasInput;
@@ -199,7 +201,8 @@ static t_error audiograph_openDuplex (t_audiograph *graph,
     AudioObjectID objectOut,
     int channelsIn,
     int channelsOut,
-    int sampleRate)
+    int sampleRate,
+    int vectorSize)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -228,6 +231,7 @@ static t_error audiograph_openDuplex (t_audiograph *graph,
     audio_vectorShrinkOut (channelsOut);
     
     graph->g_sampleRate  = sampleRate;
+    graph->g_vectorSize  = vectorSize;
     graph->g_channelsIn  = channelsIn;
     graph->g_channelsOut = channelsOut;
     graph->g_hasDuplex   = 1;
@@ -262,21 +266,30 @@ t_error audiograph_open (t_audiograph *graph,
     t_symbol *deviceOut,
     int channelsIn,
     int channelsOut,
-    int sampleRate)
+    int sampleRate,
+    int vectorSize)
 {
     t_error err = PD_ERROR;
     
     audiograph_reset (graph);
     
+    if (vectorSize > 0) {
+    if (vectorSize <= COREAUDIO_BLOCKSIZE_MAXIMUM) {
+    if (PD_IS_POWER_2 (vectorSize)) {
+    //
     AudioObjectID objectIn  = audiodevicelist_fetch (deviceIn);
     AudioObjectID objectOut = audiodevicelist_fetch (deviceOut);
     
     if (objectIn != kAudioObjectUnknown && objectIn == objectOut) {
-        err = audiograph_openDuplex (graph, objectIn, objectOut, channelsIn, channelsOut, sampleRate);
+    err = audiograph_openDuplex (graph, objectIn, objectOut, channelsIn, channelsOut, sampleRate, vectorSize);
     } else {
-        err = audiograph_openSimple (graph, objectIn, objectOut, channelsIn, channelsOut, sampleRate);
+    err = audiograph_openSimple (graph, objectIn, objectOut, channelsIn, channelsOut, sampleRate, vectorSize);
     }
-   
+    //
+    }
+    }
+    }
+    
     return err;
 }
 

@@ -16,6 +16,7 @@
 
 typedef struct _deviceslist {
     int         d_sampleRate;
+    int         d_vectorSize;
     int         d_inSize;
     int         d_outSize;
     int         d_inChannels  [DEVICES_MAXIMUM_IO];     // --
@@ -29,6 +30,7 @@ typedef struct _deviceslist {
 // MARK: -
 
 void        deviceslist_init                        (t_deviceslist *p);
+void        deviceslist_reset                       (t_deviceslist *p);
 void        deviceslist_copy                        (t_deviceslist *dest, t_deviceslist *src);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -43,6 +45,8 @@ int         deviceslist_areEquals                   (t_deviceslist *p, t_devices
 
 void        deviceslist_setSampleRate               (t_deviceslist *p, int n);
 int         deviceslist_getSampleRate               (t_deviceslist *p);
+void        deviceslist_setVectorSize               (t_deviceslist *p, int n);
+int         deviceslist_getVectorSize               (t_deviceslist *p);
 int         deviceslist_getInSize                   (t_deviceslist *p);
 int         deviceslist_getOutSize                  (t_deviceslist *p);
 
@@ -79,7 +83,7 @@ t_error     deviceslist_appendAudioOut              (t_deviceslist *p, t_symbol 
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void        deviceslist_setDevices                  (t_deviceslist *l, t_devices *p);
+void        deviceslist_setDevices                  (t_deviceslist *l, t_devices *p, int setParameters);
 void        deviceslist_getDevices                  (t_deviceslist *l, t_devices *p);
 
 // -----------------------------------------------------------------------------------------------------------

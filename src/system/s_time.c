@@ -23,26 +23,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if 0
-
-static mach_timebase_info_data_t time_baseInfo;       /* Static. */
-
-static void time_initialize (void)
-{
-    if (time_baseInfo.denom == 0) {
-        mach_timebase_info (&time_baseInfo);          /* Must be initialized first (not thread-safe). */
-    }
-}
-
-void time_ctor (void)  __attribute__ ((constructor));
-void time_ctor (void)  { time_initialize(); }
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
 /* < http://graphics.stanford.edu/~seander/bithacks.html > */
 /* < http://aggregate.org/MAGIC/ > */
 
@@ -118,40 +98,6 @@ t_seed time_makeRandomSeed (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if 0
-
-void time_set (t_time *t)
-{
-    (*t) = mach_absolute_time();
-}
-
-/* < https://developer.apple.com/library/mac/qa/qa1398/_index.html > */ 
-
-void time_addNanoseconds (t_time *t, t_nano ns)
-{
-    (*t) += ns * time_baseInfo.denom / time_baseInfo.numer;
-}
-
-t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
-{
-    (*r) = 0ULL;
-    
-    if ((*t1) > (*t0)) {
-        uint64_t elapsed = (*t1) - (*t0);
-        (*r) = elapsed * time_baseInfo.numer / time_baseInfo.denom;
-        return PD_ERROR_NONE;
-    }
-
-    return PD_ERROR;
-}
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if 1
-
 void time_set (t_time *t)
 {
     struct timespec time;
@@ -177,8 +123,6 @@ t_error time_elapsedNanoseconds (const t_time *t0, const t_time *t1, t_nano *r)
 
     return PD_ERROR;
 }
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

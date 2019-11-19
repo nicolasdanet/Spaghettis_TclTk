@@ -14,11 +14,17 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void deviceslist_init (t_deviceslist *p)
+static void deviceslist_initProceed (t_deviceslist *p, int k)
 {
     int i;
 
+    if (k) {
+    //
     p->d_sampleRate         = AUDIO_DEFAULT_SAMPLERATE;
+    p->d_vectorSize         = INTERNAL_BLOCKSIZE;
+    //
+    }
+    
     p->d_inSize             = 0;
     p->d_outSize            = 0;
 
@@ -32,11 +38,22 @@ void deviceslist_init (t_deviceslist *p)
     }
 }
 
+void deviceslist_init (t_deviceslist *p)
+{
+    deviceslist_initProceed (p, 1);
+}
+
+void deviceslist_reset (t_deviceslist *p)
+{
+    deviceslist_initProceed (p, 0);
+}
+
 void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 {
     int i;
     
     dest->d_sampleRate      = src->d_sampleRate;
+    dest->d_vectorSize      = src->d_vectorSize;
     dest->d_inSize          = src->d_inSize;
     dest->d_outSize         = src->d_outSize;
     
@@ -57,6 +74,7 @@ void deviceslist_copy (t_deviceslist *dest, t_deviceslist *src)
 int deviceslist_areEquals (t_deviceslist *p, t_deviceslist *q)
 {
     if (p->d_sampleRate             != q->d_sampleRate)     { return 0; }
+    else if (p->d_vectorSize        != q->d_vectorSize)     { return 0; }
     else if (p->d_inSize            != q->d_inSize)         { return 0; }
     else if (p->d_outSize           != q->d_outSize)        { return 0; }
     else {
@@ -111,6 +129,16 @@ void deviceslist_setSampleRate (t_deviceslist *p, int n)
 int deviceslist_getSampleRate (t_deviceslist *p)
 {
     return p->d_sampleRate;
+}
+
+void deviceslist_setVectorSize (t_deviceslist *p, int n)
+{
+    p->d_vectorSize = n;
+}
+
+int deviceslist_getVectorSize (t_deviceslist *p)
+{
+    return p->d_vectorSize;
 }
 
 int deviceslist_getInSize (t_deviceslist *p)
