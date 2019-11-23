@@ -77,10 +77,7 @@ int dsp_suspend (void)
 {
     dsp_count++;    /* Check that each suspend and resume calls are balanced. */
     
-    if (dsp_status && !dsp_suspended) { dsp_suspended = 1; PD_ASSERT (dsp_count == 1); return 1; }
-    else {
-        PD_ASSERT (!dsp_status || dsp_suspended);
-    }
+    if (dsp_status && !dsp_suspended) { dsp_suspended = 1; return 1; }
     
     return 0;
 }
@@ -89,10 +86,7 @@ void dsp_resume (int n)
 {
     dsp_count--; PD_ASSERT (dsp_count >= 0);
     
-    if (n) { dsp_suspended = 0; PD_ASSERT (dsp_count == 0); instance_dspStart(); }
-    else {
-        PD_ASSERT (!dsp_status || dsp_suspended);
-    }
+    if (n) { dsp_suspended = 0; if (dsp_status) { instance_dspStart(); } }
 }
 
 void dsp_close (void)
