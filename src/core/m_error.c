@@ -296,7 +296,7 @@ void warning_deprecatedObject (t_symbol *s)
 
 void warning_containsDuplicates (void)
 {
-    post_error (PD_TRANSLATE ("scan: contains duplicates"));
+    post_warning (PD_TRANSLATE ("scan: contains duplicates"));
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -346,7 +346,7 @@ typedef union {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
- /* True if zero, denormal, infinite, or NaN. */
+/* True if zero, denormal, infinite, or NaN. */
 
 static inline int PD_FLOAT32_IS_INVALID_OR_ZERO (float f)
 {
@@ -369,6 +369,7 @@ static inline int PD_FLOAT64_IS_INVALID_OR_ZERO (double f)
 // MARK: -
 
 /* True if exponent falls out (-64, 64) range. */
+/* Also true if zero, denormal, infinite, or NaN. */
 
 static inline int PD_FLOAT32_IS_BIG_OR_SMALL (float f)
 {

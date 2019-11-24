@@ -99,6 +99,7 @@
 #include "system/s_startup.c"
 #include "system/s_main.c"
 #include "system/s_scheduler.c"
+#include "system/s_denormal.c"
 #include "system/s_priority.c"
 #include "system/s_privilege.c"
 #include "system/s_handlers.c"
