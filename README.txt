@@ -1,11 +1,7 @@
 
 # Spaghettis
 
-Yet another fork of Pure Data < http://msp.ucsd.edu/ >.
-
-Remark:
-
-    This is an (AT YOUR OWN RISK) experimental work-in-progress.
+    Yet another (AT YOUR OWN RISK) fork of Pure Data < http://msp.ucsd.edu/ >.
 
 Platforms:
 
@@ -23,9 +19,6 @@ Dependencies:
 Build:
 
     Open a terminal and run the "Spaghettis/build.sh" script.
-
-Run:
-
     Launch the "Application/Spaghettis.app" on macOS.
     On GNU/Linux execute "Spaghettis/build/bin/spaghettis".
 
