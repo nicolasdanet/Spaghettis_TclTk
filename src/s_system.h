@@ -76,6 +76,8 @@ t_error     privilege_restore                       (void);
 t_error     privilege_relinquish                    (void);     /* Error MUST lead to stop execution. */
 void        privilege_check                         (void);
 
+void        denormal_setPolicy                      (void);
+
 t_error     priority_setPolicy                      (pthread_t thread);
 
 // -----------------------------------------------------------------------------------------------------------

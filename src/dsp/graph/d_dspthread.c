@@ -176,6 +176,8 @@ static void *dspthread_thread (void *z)
     
     privilege_check();
     
+    denormal_setPolicy();   /* If inheritance is broken. */
+    
     while (PD_ATOMIC_UINT32_FALSE (DSP_EXIT, &x->x_flag)) {
     //
     while (PD_ATOMIC_UINT32_FALSE (DSP_EXIT, &x->x_flag) && PD_ATOMIC_UINT32_TRUE (DSP_RUN, &x->x_flag)) {
@@ -220,7 +222,7 @@ t_error dspthread_create (t_dspthread *x)
     
     if (!err) { err = (pthread_create (&x->x_thread, NULL, dspthread_thread, (void *)x) != 0); }
     if (!err) { priority_setPolicy (x->x_thread); }
-    
+
     x->x_error = err;
     
     return err;

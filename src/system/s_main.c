@@ -303,7 +303,7 @@ int main_entry (int argc, char **argv)
     
     if (!err && !(err = privilege_drop())) {
     //
-    sys_setSignalHandlers();
+    denormal_setPolicy(); sys_setSignalHandlers();
     
     #if PD_WITH_DEBUG
         leak_initialize();

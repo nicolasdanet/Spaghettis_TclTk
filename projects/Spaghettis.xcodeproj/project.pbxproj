@@ -133,6 +133,7 @@
 		17DD0B4520611A5E00E79C0D /* x_micaspell.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DD0B4420611A5E00E79C0D /* x_micaspell.c */; };
 		17DDB369232E798400D6D7AF /* core_midiport.c in Sources */ = {isa = PBXBuildFile; fileRef = 17DDB368232E798400D6D7AF /* core_midiport.c */; };
 		17E2A05820E11D610031D4AD /* g_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 17E2A05720E11D610031D4AD /* g_draw.c */; };
+		17E9CE3F238A7CDA00751166 /* s_denormal.c in Sources */ = {isa = PBXBuildFile; fileRef = 17E9CE3E238A7CDA00751166 /* s_denormal.c */; };
 		17EB5F88218D8C000031F580 /* x_urn.c in Sources */ = {isa = PBXBuildFile; fileRef = 17EB5F87218D8C000031F580 /* x_urn.c */; };
 		17F45C86213E843D005A8364 /* m_undocollapse.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F45C85213E843D005A8364 /* m_undocollapse.c */; };
 		17F6BD3C1F110686001E602C /* m_snap.c in Sources */ = {isa = PBXBuildFile; fileRef = 17F6BD3B1F110686001E602C /* m_snap.c */; };
@@ -619,6 +620,7 @@
 		17DD0B4420611A5E00E79C0D /* x_micaspell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_micaspell.c; sourceTree = "<group>"; };
 		17DDB368232E798400D6D7AF /* core_midiport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = core_midiport.c; sourceTree = "<group>"; };
 		17E2A05720E11D610031D4AD /* g_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = g_draw.c; sourceTree = "<group>"; };
+		17E9CE3E238A7CDA00751166 /* s_denormal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = s_denormal.c; sourceTree = "<group>"; };
 		17EB5F87218D8C000031F580 /* x_urn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x_urn.c; sourceTree = "<group>"; };
 		17F45C85213E843D005A8364 /* m_undocollapse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_undocollapse.c; sourceTree = "<group>"; };
 		17F6BD3B1F110686001E602C /* m_snap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m_snap.c; sourceTree = "<group>"; };
@@ -1280,6 +1282,7 @@
 				1753EF4E22C7B11300E7C9D9 /* s_startup.c */,
 				378971F61C4F716700263434 /* s_main.c */,
 				378971E41C4F716700263434 /* s_scheduler.c */,
+				17E9CE3E238A7CDA00751166 /* s_denormal.c */,
 				37E3E9651C5E1EDE00D9717B /* s_priority.c */,
 				17C9E4E921F59F090092E102 /* s_privilege.c */,
 				37C76DA41C5CF20D00AE4CBF /* s_handlers.c */,
@@ -2089,6 +2092,7 @@
 				37BA30821CD1DB0F0091113F /* g_object.c in Sources */,
 				379920481CD2649B00750527 /* g_select.c in Sources */,
 				3791F2E21CDF064000F7481C /* m_symbols.c in Sources */,
+				17E9CE3F238A7CDA00751166 /* s_denormal.c in Sources */,
 				374A76331CF5FA81001A57EB /* g_serialize.c in Sources */,
 				17BED6BA213127F60083E127 /* m_undosnap.c in Sources */,
 				17BB34C7232A9555004D97CA /* s_midi_mac.c in Sources */,

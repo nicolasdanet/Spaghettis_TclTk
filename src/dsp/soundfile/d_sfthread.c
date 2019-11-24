@@ -64,6 +64,8 @@ static void *sfthread_readerThread (void *z)
 {
     t_sfthread *x = (t_sfthread *)z;
     
+    denormal_setPolicy();   /* If inheritance is broken. */
+    
     while (!PD_ATOMIC_INT32_READ (&x->sft_flag)) {
     //
     while (ringbuffer_getAvailableWrite (x->sft_buffer) > SFTHREAD_CHUNK) {
@@ -96,6 +98,8 @@ static void *sfthread_readerThread (void *z)
 static void *sfthread_writerThread (void *z)
 {
     t_sfthread *x = (t_sfthread *)z;
+    
+    denormal_setPolicy();   /* If inheritance is broken. */
     
     while (1) {
     //

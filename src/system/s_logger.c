@@ -43,6 +43,8 @@ static t_int32Atomic            logger_quit;                    /* Static. */
 
 void *logger_task (void *dummy)
 {
+    denormal_setPolicy();   /* If inheritance is broken. */
+    
     while (PD_ATOMIC_INT32_READ (&logger_quit) == 0) {
     //
     nano_sleep (PD_MILLISECONDS_TO_NANOSECONDS (LOGGER_SLEEP));
