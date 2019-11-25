@@ -14,7 +14,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_int *perform_clip                     (t_int *);
 t_int *perform_zero                     (t_int *);
 t_int *perform_scalar                   (t_int *);
 t_int *perform_copy                     (t_int *);
@@ -44,7 +43,6 @@ t_int *perform_inverseMagnitude         (t_int *);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_int *vPerform_clip                    (t_int *);
 t_int *vPerform_zero                    (t_int *);
 t_int *vPerform_scalar                  (t_int *);
 t_int *vPerform_copy                    (t_int *);
@@ -73,18 +71,6 @@ t_int *vPerform_inverseMagnitude        (t_int *);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-void dsp_addClipPerform (PD_RESTRICTED dest, int n)
-{
-    PD_ASSERT (n > 0);
-    
-    PD_ASSERT (!PD_MALLOC_ALIGNED || PD_IS_ALIGNED_16 (dest));
-    
-    if (n & 7) { dsp_add2 (perform_clip, dest, n); }
-    else {
-        dsp_add2 (vPerform_clip, dest, n);
-    }
-}
 
 void dsp_addZeroPerform (PD_RESTRICTED dest, int n)
 {

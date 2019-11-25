@@ -17,18 +17,6 @@
 
 /* No aliasing. */
 
-t_int *perform_clip (t_int *w)
-{
-    PD_RESTRICTED s = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    int n = (int)(w[2]);
-    
-    while (n--) { t_sample f = *s; *s++ = PD_CLAMP (f, (t_sample)-1.0, (t_sample)1.0); }
-    
-    return (w + 3);
-}
-
-/* No aliasing. */
-
 t_int *perform_zero (t_int *w)
 {
     PD_RESTRICTED s = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));

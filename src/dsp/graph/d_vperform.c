@@ -17,41 +17,6 @@
 
 /* No aliasing. */
 
-t_int *vPerform_clip (t_int *w)
-{
-    PD_RESTRICTED s = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));
-    int n = (int)(w[2]);
-    
-    while (n) {
-    //
-    t_sample f0 = s[0];
-    t_sample f1 = s[1];
-    t_sample f2 = s[2];
-    t_sample f3 = s[3];
-    t_sample f4 = s[4];
-    t_sample f5 = s[5];
-    t_sample f6 = s[6];
-    t_sample f7 = s[7];
-    
-    s[0] = PD_CLAMP (f0, (t_sample)-1.0, (t_sample)1.0);
-    s[1] = PD_CLAMP (f1, (t_sample)-1.0, (t_sample)1.0);
-    s[2] = PD_CLAMP (f2, (t_sample)-1.0, (t_sample)1.0);
-    s[3] = PD_CLAMP (f3, (t_sample)-1.0, (t_sample)1.0);
-    s[4] = PD_CLAMP (f4, (t_sample)-1.0, (t_sample)1.0);
-    s[5] = PD_CLAMP (f5, (t_sample)-1.0, (t_sample)1.0);
-    s[6] = PD_CLAMP (f6, (t_sample)-1.0, (t_sample)1.0);
-    s[7] = PD_CLAMP (f7, (t_sample)-1.0, (t_sample)1.0);
-    
-    n -= 8;
-    s += 8;
-    //
-    }
-    
-    return (w + 3);
-}
-
-/* No aliasing. */
-
 t_int *vPerform_zero (t_int *w)
 {
     PD_RESTRICTED s = (t_sample *)PD_ALIGNED ((t_sample *)(w[1]));

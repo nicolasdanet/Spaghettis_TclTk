@@ -361,6 +361,7 @@ int audio_pollNative (void)
     sound = audio_soundOut;
         
     for (i = 0; i < jack_numberOfPortsOut; i++) {
+        audio_clip (sound, INTERNAL_BLOCKSIZE);
         ringbuffer_write (jack_ringOut[i], (const void *)sound, INTERNAL_BLOCKSIZE);
         memset ((void *)sound, 0, INTERNAL_BLOCKSIZE * sizeof (t_sample));                  /* Zeroed. */
         sound += INTERNAL_BLOCKSIZE;
