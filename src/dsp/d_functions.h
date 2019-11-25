@@ -14,7 +14,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-void dsp_addClipPerform                 (PD_RESTRICTED dest, int n);
 void dsp_addZeroPerform                 (PD_RESTRICTED dest, int n);
 void dsp_addScalarPerform               (t_float64Atomic *f, PD_RESTRICTED dest, int n);
 
