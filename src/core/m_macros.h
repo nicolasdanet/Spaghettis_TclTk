@@ -322,6 +322,7 @@ typedef union {
 typedef union {
     double      z_d;
     uint32_t    z_i[2];
+    uint64_t    z_u;
     } t_rawcast64;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -368,8 +369,29 @@ static inline int PD_FLOAT64_IS_INVALID_OR_ZERO (double f)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Workaround required with ffast-math flag. */
+
+static inline int PD_FLOAT64_IS_INF (double f)
+{
+    t_rawcast64 z;
+    z.z_d = f;
+    return (z.z_u == 0x7ff0000000000000UL || z.z_u == 0xfff0000000000000UL);
+}
+
+static inline int PD_FLOAT64_IS_NAN (double f)
+{
+    t_rawcast64 z;
+    z.z_d = f;
+    z.z_i[PD_RAWCAST64_MSB] &= 0x7ff00000;
+    return ((z.z_i[PD_RAWCAST64_MSB] == 0x7ff00000) && !PD_FLOAT64_IS_INF (f));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 /* True if exponent falls out (-64, 64) range. */
-/* Also true if zero, denormal, infinite, or NaN. */
+/* Notice that it is also true for zero, denormal, infinite, or NaN. */
 
 static inline int PD_FLOAT32_IS_BIG_OR_SMALL (float f)
 {

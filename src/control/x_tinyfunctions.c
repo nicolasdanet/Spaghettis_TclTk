@@ -126,17 +126,32 @@ static double fn_fmod (double f, double g)
     return fmod (f, g);
 }
 
-double fn_ge (double f, double g)
+static double fn_ftz (double f)
+{
+    if (PD_FLOAT64_IS_INVALID_OR_ZERO (f)) { return 0.0; } else { return f; }
+}
+
+static double fn_ge (double f, double g)
 {
     return (f >= g);
 }
 
-double fn_gt (double f, double g)
+static double fn_gt (double f, double g)
 {
     return (f > g);
 }
 
-double fn_le (double f, double g)
+static double fn_isinf (double f)
+{
+    return (double)PD_FLOAT64_IS_INF (f);
+}
+
+static double fn_isnan (double f)
+{
+    return (double)PD_FLOAT64_IS_NAN (f);
+}
+
+static double fn_le (double f, double g)
 {
     return (f <= g);
 }
@@ -151,17 +166,17 @@ static double fn_log10 (double f)
     return log10 (f);
 }
 
-double fn_lt (double f, double g)
+static double fn_lt (double f, double g)
 {
     return (f < g);
 }
 
-double fn_max (double f, double g)
+static double fn_max (double f, double g)
 {
     return PD_MAX (f, g);
 }
 
-double fn_min (double f, double g)
+static double fn_min (double f, double g)
 {
     return PD_MIN (f, g);
 }
@@ -192,7 +207,7 @@ static double fn_ncr (double f, double g)
     }
 }
 
-double fn_ne (double f, double g)
+static double fn_ne (double f, double g)
 {
     return (f != g);
 }
@@ -212,7 +227,7 @@ static double fn_pow (double f, double g)
     return pow (f, g);
 }
 
-double fn_rand (void)
+static double fn_rand (void)
 {
     static int once = 0;                /* Static. */
     static t_rand48 seed = 0;           /* Static. */
@@ -222,7 +237,7 @@ double fn_rand (void)
     return PD_RAND48_DOUBLE (seed);
 }
 
-double fn_randmt (void)
+static double fn_randmt (void)
 {
     PD_ASSERT (fn_randMT); return randMT_getDouble (fn_randMT);
 }
