@@ -194,6 +194,53 @@ TTT_BEGIN (exprBase, 80, "Expr - Base")
     TTT_EXPECT (PD_FLOAT64_IS_INVALID_OR_ZERO (te_interpret ("npr(-2, 4)")));
     TTT_EXPECT (PD_FLOAT64_IS_INVALID_OR_ZERO (te_interpret ("npr(2, -4)")));
     
+    /* Classify. */
+    
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(1/0)"),                        1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(log(0))"),                     1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(pow(2,10000000))"),            1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(fac(300))"),                   1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(ncr(300,100))"),               1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(ncr(300000,100))"),            1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(ncr(300000,100)*8)"),          1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(npr(3,2)*ncr(300000,100))"),   1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(npr(100,90))"),                1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(npr(30,25))"),                 1));
+    
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(0)"),                          0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isinf(3.14)"),                       0));
+    
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(0/0)"),                        1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(1%0)"),                        1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(1%(1%0))"),                    1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan((1%0)%1)"),                    1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(fac(-1))"),                    1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(ncr(2, 4))"),                  1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(ncr(-2, 4))"),                 1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(ncr(2, -4))"),                 1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(npr(2, 4))"),                  1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(npr(-2, 4))"),                 1));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(npr(2, -4))"),                 1));
+    
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(0)"),                          0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("isnan(3.14)"),                       0));
+    
+    /* FTZ. */
+    
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(1/0)"),                          0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(log(0))"),                       0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(pow(2,10000000))"),              0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(fac(300))"),                     0));
+
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(0/0)"),                          0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(1%0)"),                          0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(1%(1%0))"),                      0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz((1%0)%1)"),                      0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(fac(-1))"),                      0));
+    
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(0)"),                            0));
+    TTT_EXPECT (math_areEquivalent (te_interpret ("ftz(3.14)"),                         3.14));
+    
 TTT_END
 
 // -----------------------------------------------------------------------------------------------------------

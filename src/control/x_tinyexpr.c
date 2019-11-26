@@ -146,7 +146,7 @@ static int te_arity (int type)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define TE_BUILTINS 34
+#define TE_BUILTINS 37
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -167,8 +167,11 @@ static const te_variable te_functions[TE_BUILTINS] =  /* Static. */
         { "exp",    (const void *)fn_exp,       TE_FUNCTION1 | TE_PURE },
         { "fac",    (const void *)fn_fac,       TE_FUNCTION1 | TE_PURE },
         { "floor",  (const void *)fn_floor,     TE_FUNCTION1 | TE_PURE },
+        { "ftz",    (const void *)fn_ftz,       TE_FUNCTION1 | TE_PURE },
         { "ge",     (const void *)fn_ge,        TE_FUNCTION2 | TE_PURE },
         { "gt",     (const void *)fn_gt,        TE_FUNCTION2 | TE_PURE },
+        { "isinf",  (const void *)fn_isinf,     TE_FUNCTION1 | TE_PURE },
+        { "isnan",  (const void *)fn_isnan,     TE_FUNCTION1 | TE_PURE },
         { "le",     (const void *)fn_le,        TE_FUNCTION2 | TE_PURE },
         { "ln",     (const void *)fn_log,       TE_FUNCTION1 | TE_PURE },
         { "log",    (const void *)fn_log10,     TE_FUNCTION1 | TE_PURE },
