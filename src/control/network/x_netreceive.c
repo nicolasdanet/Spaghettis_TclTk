@@ -169,7 +169,7 @@ void netreceive_callbackClosed (t_netreceive *x, int fd)
     outlet_float (x->nr_outletRight, x->nr_numberOfConnections);
 }
 
-static void netreceive_callbackConnected (t_netreceive *x)
+static void netreceive_callbackConnected (t_netreceive *x, int dummy)
 {
     int fd = accept (x->nr_fd, 0, 0);
     

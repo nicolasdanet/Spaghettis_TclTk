@@ -63,11 +63,9 @@ font="${rep}/resources/font"
 
 # Build the binaries.
 
-if [ -n "${PD_OPTIONS}" ]; then
-    echo "Build ${PD_OPTIONS} ..."
-else
-    echo "Build ..."
-fi
+echo "Build ..."
+
+export CPUFLAGS="-march=native"
 
 cd "${rep}/src"                                                         || exit 1
 make -f makefile.mac                                                    || exit 1

@@ -45,6 +45,12 @@ t_receiver  *interface_guiReceiver;             /* Static. */
     #define INTERFACE_LOCALHOST                 "localhost"
 #endif
 
+#if PD_LINUX
+    #define INTERFACE_WISH                      "wish8.6"
+#else
+    #define INTERFACE_WISH                      "wish"
+#endif
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -82,7 +88,7 @@ static t_error interface_launchGuiSpawnProcess (void)
     t_error err = string_sprintf (path, PD_STRING, "%s/ui_main.tcl", main_directoryTcl->s_name);
     
     err |= string_sprintf (command, PD_STRING,
-            "wish \"%s\" %d\n",
+            INTERFACE_WISH " \"%s\" %d\n",
             path, 
             main_portNumber);
     

@@ -45,7 +45,7 @@ typedef struct _space {
 typedef struct _sfvectors {
     t_closure           s_closure;                  /* Must be the first. */
     int                 s_size;
-    t_sample            *(s_v[SOUNDFILE_CHANNELS]);
+    t_sample            *s_v[SOUNDFILE_CHANNELS];
     } t_sfvectors;
 
 // -----------------------------------------------------------------------------------------------------------

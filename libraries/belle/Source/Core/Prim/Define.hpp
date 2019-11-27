@@ -9,6 +9,11 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+// ====================================
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
 #if defined ( _WIN32 ) || defined ( _WIN64 )
@@ -19,43 +24,34 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if defined ( __LP64__ ) || defined ( _LP64 )
-    #define PRIM_64BIT              1
-    #define PRIM_LP64               1
-#elif defined ( _WIN64 )
-    #define PRIM_64BIT              1
-    #define PRIM_LLP64              1
-#else 
-    #define PRIM_32BIT              1
-#endif
+/* < https://stackoverflow.com/a/27054190 > */
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-#ifdef PRIM_64BIT
-#else
-#ifdef PRIM_32BIT
-#else
-    #error "Unknown architecture!"
-#endif
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if defined ( _BIG_ENDIAN ) || defined ( __BIG_ENDIAN__ )
+#if defined ( __BIG_ENDIAN__ )
     #define PRIM_BIG_ENDIAN         1
-#else
-#if defined ( PRIM_WINDOWS ) || defined ( __LITTLE_ENDIAN__ )
+#elif defined ( __LITTLE_ENDIAN__ )
     #define PRIM_LITTLE_ENDIAN      1
 #else
-    #include <endian.h>
-    #if ( BYTE_ORDER == LITTLE_ENDIAN )
-    #define PRIM_LITTLE_ENDIAN      1
-    #else
+
+#include <endian.h>
+
+#if defined ( __BYTE_ORDER ) && ( __BYTE_ORDER == __BIG_ENDIAN ) || \
+    defined ( __BIG_ENDIAN__ ) || \
+    defined ( __ARMEB__ ) || \
+    defined ( __THUMBEB__ ) || \
+    defined ( __AARCH64EB__ ) || \
+    defined ( _MIBSEB ) || defined ( __MIBSEB ) || defined ( __MIBSEB__ )
+
     #define PRIM_BIG_ENDIAN         1
-    #endif
+    
+#elif defined ( __BYTE_ORDER ) && ( __BYTE_ORDER == __LITTLE_ENDIAN ) || \
+    defined ( __LITTLE_ENDIAN__ ) || \
+    defined ( __ARMEL__ ) || \
+    defined ( __THUMBEL__ ) || \
+    defined ( __AARCH64EL__ ) || \
+    defined ( _MIPSEL ) || defined ( __MIPSEL ) || defined ( __MIPSEL__ )
+
+    #define PRIM_LITTLE_ENDIAN      1
+    
 #endif
 #endif
 

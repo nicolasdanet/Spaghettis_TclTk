@@ -14,15 +14,6 @@
             "name": "Release",
             "working_dir": "${project_path}/../",
             "shell_cmd": "./build.sh"
-        },
-        {
-            "name": "Debug",
-            "working_dir": "${project_path}/../",
-            "shell_cmd": "./build.sh",
-            "env":
-            {
-                "PD_OPTIONS": "-DPD_WITH_DEBUG=1"
-            },
         }
     ]
 }

@@ -100,10 +100,14 @@ t_error heapstring_append (t_heapstring *x, const char *src, int n)
         const char *t = src; while (*t && size < (size_t)n) { size++; t++; }
     }
     
+    if (size) {
+    //
     heapstring_reserve (x, x->hs_size + size + 1);
-    
-    strncat (x->hs_raw + x->hs_size, src, size);
+    memmove (x->hs_raw + x->hs_size, src, size);
     x->hs_size += size;
+    x->hs_raw[x->hs_size] = 0;
+    //
+    }
     
     return PD_ERROR_NONE;
 }

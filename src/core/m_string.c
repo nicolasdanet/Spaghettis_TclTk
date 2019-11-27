@@ -28,7 +28,9 @@ static t_error string_appendProceed (char *dest, size_t size, const char *src, i
         const char *t = src; while (*t && s < (size_t)n) { s++; t++; }
     }
     
-    strncat (dest, src, PD_MIN (s, k));
+    {
+        size_t t = PD_MIN (s, k); if (t) { memmove (dest + d, src, t); } dest[d + t] = 0;
+    }
     
     if (s <= k) { return PD_ERROR_NONE; }
     else {
@@ -43,11 +45,11 @@ static t_error string_appendProceed (char *dest, size_t size, const char *src, i
 t_error string_copy (char *dest, size_t size, const char *src)
 {
     size_t s = strlen (src);
+    size_t n = PD_MIN (s, size - 1);
     
     PD_ASSERT (size > 0);
     
-    strncpy (dest, src, PD_MIN (s, size));
-    dest[PD_MIN (size - 1, s)] = 0;
+    if (n > 0) { memmove (dest, src, n); } dest[n] = 0;
     
     if (s < size) { return PD_ERROR_NONE; }
     else {
@@ -62,10 +64,12 @@ t_error string_add (char *dest, size_t size, const char *src)
 
 t_error string_append (char *dest, size_t size, const char *src, int n)
 {
-    if (n < 0) { PD_BUG; return PD_ERROR; }
-    else {
-        return string_appendProceed (dest, size, src, n);
+    if (n > 0) { return string_appendProceed (dest, size, src, n); }
+    else if (n < 0) {
+        PD_BUG; return PD_ERROR;
     }
+    
+    return PD_ERROR_NONE;
 }
 
 t_error string_sprintf (char *dest, size_t size, const char *format, ...)
@@ -115,10 +119,14 @@ t_error string_addAtom (char *dest, size_t size, t_atom *a)
     return err;
 }
 
-t_error string_clear (char *dest, size_t size)
+#if PD_WITH_DEADCODE
+
+void string_clear (char *dest, size_t size)
 {
-    size_t i; for (i = 0; i < size; i++) { dest[i] = 0; } return PD_ERROR_NONE;
+    (void)size; dest[0] = 0;
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
