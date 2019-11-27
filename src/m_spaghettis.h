@@ -43,16 +43,23 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if defined ( __LP64__ ) || \
-    defined ( _LP64 ) || \
-    defined ( _WIN64 ) || \
-    defined ( __MINGW64__ ) || \
-    defined ( __arm64__ )
-    
+#if defined ( __LP64__ ) || defined ( _LP64 ) || defined ( __arm64__ )
     #define PD_64BIT                1
 
 #else
     #define PD_32BIT                1
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+#if defined ( __arm__ ) || defined ( __arm64__ )
+    #define PD_ARM                  1
+#elif defined ( __i386__ ) || defined ( __x86_64__ )
+    #define PD_INTEL                1
+#else
+    #error "Unsupported processor!"
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -236,8 +243,8 @@
 
 #if ! ( PD_BUILDING_APPLICATION )   /* Avoid namespace pollution. */
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #else 
 
@@ -590,8 +597,14 @@ typedef struct _object {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef void    (*t_method)     (void *);
-typedef void    *(*t_newmethod) (void);
+/* Use the form (*)(void) to avoid warnings with the Wcast-function-type GCC flag. */
+
+typedef void    (*t_method)     (void);         /* Generic function. */
+typedef void    (*t_newmethod)  (void);         /* Generic function that return a pointer. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 typedef t_int   *(*t_perform)   (t_int *);
 
 // -----------------------------------------------------------------------------------------------------------

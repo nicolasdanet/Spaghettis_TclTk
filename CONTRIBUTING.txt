@@ -11,6 +11,7 @@ Any contributions are welcomed:
     - Improve tutorials and/or help patches.
     - Start a wiki.
     - Write a documentation.
+    - Add regression tests.
     - Improve the code.
     - Ask (don't be shy).
 

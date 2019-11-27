@@ -49,11 +49,18 @@ help="${rep}/resources/help"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Build the binaries.
+# Build the binaries (check model of the Raspberry Pi first).
 
 echo "Build ..."
 
-export CPUFLAGS="-march=native"
+CPUTYPE="`lscpu`"
+
+if [[ $CPUTYPE =~ "Cortex-A72" ]]; then
+    echo "Build RPI4 ..."
+    export CPUFLAGS="-mcpu=cortex-a72 -mtune=cortex-a72 -mfpu=neon-fp-armv8"
+else
+    export CPUFLAGS="-march=native"
+fi
 
 cd "${rep}/src"                                                     || exit 1
 make -f makefile.linux                                              || exit 1
@@ -85,12 +92,12 @@ cd "${rep}"                                                         || exit 1
 
 # Build and launch the tests.
 
-echo "Build tests ..."
-cd "${rep}/tests"                                                   || exit 1
-./build.sh                                                          || exit 1
+# echo "Build tests ..."
+# cd "${rep}/tests"                                                 || exit 1
+# ./build.sh                                                        || exit 1
 
-echo "Launch tests ..."
-./tests                                                             || exit 1
+# echo "Launch tests ..."
+# ./tests                                                           || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

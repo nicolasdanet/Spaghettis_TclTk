@@ -37,6 +37,7 @@
 #include "t_benchmark.c"
 #include "t_hoeldrich.c"
 #include "t_buffer.c"
+#include "t_utils.c"
 #include "t_expr.c"
 #include "t_prim.cpp"
 #include "t_MICA.cpp"

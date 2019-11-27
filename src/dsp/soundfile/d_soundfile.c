@@ -524,19 +524,19 @@ static t_error soundfile_writeFileHeaderWAVE (t_headerhelper *t, t_audioproperti
     h.w_bitsPerSample    = soundfile_swap2Integer ((uint16_t)(8 * args->ap_bytesPerSample), swap);
     h.w_dataChunkSize    = soundfile_swap4Integer ((uint32_t)dataSize, swap);
     
-    strncpy (t->h_c + 0,  "RIFF", 4);
-    memcpy  (t->h_c + 4,  &h.w_chunkSize, 4);
-    strncpy (t->h_c + 8,  "WAVE", 4);
-    strncpy (t->h_c + 12, "fmt ", 4);
-    memcpy  (t->h_c + 16, &h.w_fmtChunkSize, 4);
-    memcpy  (t->h_c + 20, &h.w_audioFormat, 2);
-    memcpy  (t->h_c + 22, &h.w_numberOfChannels, 2);
-    memcpy  (t->h_c + 24, &h.w_samplesPerSecond, 4);
-    memcpy  (t->h_c + 28, &h.w_bytesPerSecond, 4);
-    memcpy  (t->h_c + 32, &h.w_blockAlign, 2);
-    memcpy  (t->h_c + 34, &h.w_bitsPerSample, 2);
-    strncpy (t->h_c + 36, "data", 4);
-    memcpy  (t->h_c + 40, &h.w_dataChunkSize, 4);
+    memcpy (t->h_c + 0,  "RIFF", 4);
+    memcpy (t->h_c + 4,  &h.w_chunkSize, 4);
+    memcpy (t->h_c + 8,  "WAVE", 4);
+    memcpy (t->h_c + 12, "fmt ", 4);
+    memcpy (t->h_c + 16, &h.w_fmtChunkSize, 4);
+    memcpy (t->h_c + 20, &h.w_audioFormat, 2);
+    memcpy (t->h_c + 22, &h.w_numberOfChannels, 2);
+    memcpy (t->h_c + 24, &h.w_samplesPerSecond, 4);
+    memcpy (t->h_c + 28, &h.w_bytesPerSecond, 4);
+    memcpy (t->h_c + 32, &h.w_blockAlign, 2);
+    memcpy (t->h_c + 34, &h.w_bitsPerSample, 2);
+    memcpy (t->h_c + 36, "data", 4);
+    memcpy (t->h_c + 40, &h.w_dataChunkSize, 4);
 
     t->h_bytesSet = SOUNDFILE_HEADER_WAVE;
     
@@ -564,19 +564,19 @@ static t_error soundfile_writeFileHeaderAIFF (t_headerhelper *t, t_audioproperti
     h.a_dataOffset          = (uint32_t)(0);
     h.a_dataBlock           = (uint32_t)(0);
     
-    strncpy (t->h_c + 0,  "FORM", 4);
-    memcpy  (t->h_c + 4,  &h.a_chunkSize, 4);
-    strncpy (t->h_c + 8,  "AIFF", 4);
-    strncpy (t->h_c + 12, "COMM", 4);
-    memcpy  (t->h_c + 16,  &h.a_commChunkSize, 4);
-    memcpy  (t->h_c + 20,  &h.a_numberOfChannels, 2);
-    memcpy  (t->h_c + 22,  &h.a_numberOfFrames, 4);
-    memcpy  (t->h_c + 26,  &h.a_bitsPerSample, 2);
+    memcpy (t->h_c + 0,  "FORM", 4);
+    memcpy (t->h_c + 4,  &h.a_chunkSize, 4);
+    memcpy (t->h_c + 8,  "AIFF", 4);
+    memcpy (t->h_c + 12, "COMM", 4);
+    memcpy (t->h_c + 16,  &h.a_commChunkSize, 4);
+    memcpy (t->h_c + 20,  &h.a_numberOfChannels, 2);
+    memcpy (t->h_c + 22,  &h.a_numberOfFrames, 4);
+    memcpy (t->h_c + 26,  &h.a_bitsPerSample, 2);
     soundfile_setAiff80BitFloat (args->ap_sampleRate, t->h_c + 28);
-    strncpy (t->h_c + 38, "SSND", 4);
-    memcpy  (t->h_c + 42,  &h.a_dataChunkSize, 4);
-    memcpy  (t->h_c + 46,  &h.a_dataOffset, 4);
-    memcpy  (t->h_c + 50,  &h.a_dataBlock, 4);
+    memcpy (t->h_c + 38, "SSND", 4);
+    memcpy (t->h_c + 42,  &h.a_dataChunkSize, 4);
+    memcpy (t->h_c + 46,  &h.a_dataOffset, 4);
+    memcpy (t->h_c + 50,  &h.a_dataBlock, 4);
     
     t->h_bytesSet = SOUNDFILE_HEADER_AIFF;
 
@@ -606,9 +606,9 @@ static t_error soundfile_writeFileHeaderNEXT (t_headerhelper *t, t_audioproperti
     h.ns_channelCount = soundfile_swap4Integer ((uint32_t)args->ap_numberOfChannels, swap);
     
     if (args->ap_isBigEndian) { 
-        strncpy (t->h_c + 0, ".snd", 4); 
+        memcpy (t->h_c + 0, ".snd", 4);
     } else {
-        strncpy (t->h_c + 0, "dns.", 4);
+        memcpy (t->h_c + 0, "dns.", 4);
     }
     
     memcpy (t->h_c + 4,  &h.ns_dataLocation, 4);

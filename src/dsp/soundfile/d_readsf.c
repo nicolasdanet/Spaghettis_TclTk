@@ -46,7 +46,7 @@ typedef struct _readsf_tilde {
     unsigned char       *sf_cached;
     t_glist             *sf_owner;
     t_clock             *sf_clock;
-    t_outlet            *(sf_audioOutlets[SOUNDFILE_CHANNELS]);
+    t_outlet            *sf_audioOutlets[SOUNDFILE_CHANNELS];
     t_outlet            *sf_outletTopRight;
     } t_readsf_tilde;
 
