@@ -5,7 +5,7 @@
 
 Platforms:
 
-    Tested on Ubuntu 18.04 (LTS) and macOS 10.14 (Mojave).
+    Tested on Ubuntu 18.04, macOS 10.14, and Raspbian (RPI4).
     
 Dependencies:
 
