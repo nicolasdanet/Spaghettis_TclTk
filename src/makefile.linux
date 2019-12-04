@@ -28,7 +28,7 @@ HELP_DIR  = ../resources/help
 
 # Flags.
 
-WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-strict-overflow
+WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 LIB      = -ldl -lpthread -lm -lasound -ljack
 LDFLAGS  = -rdynamic
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION -I$(BELLE_DIR)/Source

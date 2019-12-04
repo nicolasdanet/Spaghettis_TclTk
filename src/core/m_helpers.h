@@ -296,11 +296,11 @@ t_float point_euclideanDistance (t_point *a, t_point *b);
 // MARK: -
 
 typedef struct _rectangle {
-    int rect_topLeftX;
-    int rect_topLeftY;
-    int rect_bottomRightX;
-    int rect_bottomRightY;
-    int rect_isNothing;
+    int64_t rect_topLeftX;                      /* Use int64_t to avoid Wstrict-overflow warnings. */
+    int64_t rect_topLeftY;
+    int64_t rect_bottomRightX;
+    int64_t rect_bottomRightY;
+    int     rect_isNothing;
     } t_rectangle;
 
 // -----------------------------------------------------------------------------------------------------------
