@@ -500,45 +500,49 @@ proc _arrange {m} {
 
 proc _object {m} {
 
+    # For now on macOS, accelerator has a weird behavior with SHIFT key pressed.
+    
+    # TODO: Check if it is fixed later.
+    
     variable accelerator
     
     $m add command \
         -label [_ "Object"] \
-        -accelerator "${accelerator}+1" \
+        -accelerator [::ifAqua "" "${accelerator}+1"] \
         -command { ::ui_menu::_handle 1 "obj menu" }
     $m add command \
         -label [_ "Message"] \
-        -accelerator "${accelerator}+2" \
+        -accelerator [::ifAqua "" "${accelerator}+2"] \
         -command { ::ui_menu::_handle 1 "msg menu" }
     $m add command \
         -label [_ "Atom"] \
-        -accelerator "${accelerator}+3" \
+        -accelerator [::ifAqua "" "${accelerator}+3"] \
         -command { ::ui_menu::_handleDirty 1 "floatatom menu" }
     $m add command \
         -label [_ "Symbol"] \
-        -accelerator "${accelerator}+4" \
+        -accelerator [::ifAqua "" "${accelerator}+4"] \
         -command { ::ui_menu::_handleDirty 1 "symbolatom menu" }
     $m add command \
         -label [_ "Comment"] \
-        -accelerator "${accelerator}+5" \
+        -accelerator [::ifAqua "" "${accelerator}+5"] \
         -command { ::ui_menu::_handle 1 "comment menu" }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
-        -accelerator "${accelerator}+6" \
+        -accelerator [::ifAqua "" "${accelerator}+6"] \
         -command { ::ui_menu::_handleDirty 1 "bng menu" }
     $m add command \
         -label [_ "Toggle"] \
-        -accelerator "${accelerator}+7" \
+        -accelerator [::ifAqua "" "${accelerator}+7"] \
         -command { ::ui_menu::_handleDirty 1 "tgl menu" }
     $m add command \
         -label [_ "Dial"] \
-        -accelerator "${accelerator}+8" \
+        -accelerator [::ifAqua "" "${accelerator}+8"] \
         -command { ::ui_menu::_handleDirty 1 "nbx menu" }
     $m add command \
         -label [_ "Array"] \
-        -accelerator "${accelerator}+9" \
+        -accelerator [::ifAqua "" "${accelerator}+9"] \
         -command { ::ui_menu::_handle 1 "_array menu" }
     $m add separator
     
