@@ -91,18 +91,7 @@ proc initialize {} {
     
     # ( http://wiki.tcl.tk/1435 ).
     
-    event add <<NewObject>>                 <$mod-ampersand>
-    event add <<NewMessage>>                <$mod-eacute>
-    event add <<NewAtom>>                   <$mod-quotedbl>
-    event add <<NewSymbol>>                 <$mod-quoteright>
-    event add <<NewComment>>                <$mod-parenleft>
-    event add <<NewBang>>                   <$mod-minus>
-    event add <<NewToggle>>                 <$mod-egrave>
-    event add <<NewDial>>                   <$mod-underscore>
-    event add <<NewArray>>                  <$mod-ccedilla>
-    
-    event add <<NewBang>>                   <$mod-section>
-    event add <<NewDial>>                   <$mod-exclam>
+    # On QWERTY keyboards.
     
     event add <<NewObject>>                 <Shift-$mod-Key-1>
     event add <<NewMessage>>                <Shift-$mod-Key-2>
@@ -113,6 +102,35 @@ proc initialize {} {
     event add <<NewToggle>>                 <Shift-$mod-Key-7>
     event add <<NewDial>>                   <Shift-$mod-Key-8>
     event add <<NewArray>>                  <Shift-$mod-Key-9>
+    
+    event add <<NewObject>>                 <$mod-Key-1>
+    event add <<NewMessage>>                <$mod-Key-2>
+    event add <<NewAtom>>                   <$mod-Key-3>
+    event add <<NewSymbol>>                 <$mod-Key-4>
+    event add <<NewComment>>                <$mod-Key-5>
+    event add <<NewBang>>                   <$mod-Key-6>
+    event add <<NewToggle>>                 <$mod-Key-7>
+    event add <<NewDial>>                   <$mod-Key-8>
+    event add <<NewArray>>                  <$mod-Key-9>
+    
+    # Avoid the SHIFT key on AZERTY keyboards.
+    
+    # On my T430 laptop.
+    
+    event add <<NewObject>>                 <$mod-ampersand>
+    event add <<NewMessage>>                <$mod-eacute>
+    event add <<NewAtom>>                   <$mod-quotedbl>
+    event add <<NewSymbol>>                 <$mod-quoteright>
+    event add <<NewComment>>                <$mod-parenleft>
+    event add <<NewBang>>                   <$mod-minus>
+    event add <<NewToggle>>                 <$mod-egrave>
+    event add <<NewDial>>                   <$mod-underscore>
+    event add <<NewArray>>                  <$mod-ccedilla>
+    
+    # On my MacBook laptop.
+    
+    event add <<NewBang>>                   <$mod-section>
+    event add <<NewDial>>                   <$mod-exclam>
     
     event add <<Motion1>>                   <Motion>
     event add <<Motion2>>                   <Shift-Motion>
@@ -168,15 +186,15 @@ proc initialize {} {
     bind all <<SaveAs>>                     { .menubar.file     invoke "Save As..."     }
     bind all <<Close>>                      { .menubar.file     invoke "Close"          }
     
-    bind all <<NewObject>>                  { .popup.object     invoke "Object"         }
-    bind all <<NewMessage>>                 { .popup.object     invoke "Message"        }
-    bind all <<NewAtom>>                    { .popup.object     invoke "Atom"           }
-    bind all <<NewSymbol>>                  { .popup.object     invoke "Symbol"         }
-    bind all <<NewComment>>                 { .popup.object     invoke "Comment"        }
-    bind all <<NewBang>>                    { .popup.object     invoke "Bang"           }
-    bind all <<NewToggle>>                  { .popup.object     invoke "Toggle"         }
-    bind all <<NewDial>>                    { .popup.object     invoke "Dial"           }
-    bind all <<NewArray>>                   { .popup.object     invoke "Array"          }
+    bind all <<NewObject>>                  { .popup.object     invoke "Object"         ; break }
+    bind all <<NewMessage>>                 { .popup.object     invoke "Message"        ; break }
+    bind all <<NewAtom>>                    { .popup.object     invoke "Atom"           ; break }
+    bind all <<NewSymbol>>                  { .popup.object     invoke "Symbol"         ; break }
+    bind all <<NewComment>>                 { .popup.object     invoke "Comment"        ; break }
+    bind all <<NewBang>>                    { .popup.object     invoke "Bang"           ; break }
+    bind all <<NewToggle>>                  { .popup.object     invoke "Toggle"         ; break }
+    bind all <<NewDial>>                    { .popup.object     invoke "Dial"           ; break }
+    bind all <<NewArray>>                   { .popup.object     invoke "Array"          ; break }
     
     bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"        }
     
