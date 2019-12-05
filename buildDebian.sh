@@ -17,21 +17,6 @@ rep=$(pwd)
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Test dependencies ( http://stackoverflow.com/a/22592801 ).
-
-hasTk=$(dpkg-query   -W -f='${Status}' tk8.6 2>/dev/null              | grep -c "ok installed")
-hasTcl=$(dpkg-query  -W -f='${Status}' tcl8.6 2>/dev/null             | grep -c "ok installed")
-hasAlsa=$(dpkg-query -W -f='${Status}' libasound2-dev 2>/dev/null     | grep -c "ok installed")
-hasJack=$(dpkg-query -W -f='${Status}' libjack-jackd2-dev 2>/dev/null | grep -c "ok installed")
-
-[ ${hasTk}   -eq 1 ] || { echo >&2 "${0##*/}: tk8.6 package required";                  exit 1; }
-[ ${hasTcl}  -eq 1 ] || { echo >&2 "${0##*/}: tcl8.6 package required";                 exit 1; }
-[ ${hasAlsa} -eq 1 ] || { echo >&2 "${0##*/}: libasound2-dev package required";         exit 1; }
-[ ${hasJack} -eq 1 ] || { echo >&2 "${0##*/}: libjack-jackd2-dev package required";     exit 1; }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 # Paths.
 
 destination="${rep}/build"
