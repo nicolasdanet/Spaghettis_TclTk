@@ -382,11 +382,13 @@ TTT_BEGIN (PrimMath, 102, "Prim - Math")
     
     {
     //
+    const double kEpsilonRoot = 1E-5;       /* When "a" is close to zero, precision is rather bad. */
+        
     double dummy;
     
     TTT_EXPECT (prim::Math::roots (0.0, 0.0, 0.0, dummy, dummy) == 0);
     
-    for (int i = 0; i < kAgain; ++i) {   /* Linear equation. */
+    for (int i = 0; i < kAgain; ++i) {      /* Linear equation. */
     //
     double a = (getRandomDouble() * 200.0) - 100.0;
     double b = (getRandomDouble() * 200.0) - 100.0;
@@ -395,11 +397,11 @@ TTT_BEGIN (PrimMath, 102, "Prim - Math")
     /* Substitution test. */
     
     int k = prim::Math::roots (a, b, root);
-    if (k != 0) { TTT_EXPECT (prim::Math::abs (a * root + b) < kEpsilon); }
+    if (k != 0) { TTT_EXPECT (prim::Math::abs (a * root + b) < kEpsilonRoot); }
     //
     }
     
-    for (int i = 0; i < kAgain; ++i) {   /* Quadratic equation. */
+    for (int i = 0; i < kAgain; ++i) {      /* Quadratic equation. */
     //
     double a = (getRandomDouble() * 200.0) - 100.0;
     double b = (getRandomDouble() * 200.0) - 100.0;
@@ -410,8 +412,8 @@ TTT_BEGIN (PrimMath, 102, "Prim - Math")
     /* Substitution test. */
     
     int k = prim::Math::roots (a, b, c, root1, root2);
-    if (k != 0) { TTT_EXPECT (prim::Math::abs (a * (root1 * root1) + b * root1 + c) < kEpsilon); }
-    if (k == 2) { TTT_EXPECT (prim::Math::abs (a * (root2 * root2) + b * root2 + c) < kEpsilon); }
+    if (k != 0) { TTT_EXPECT (prim::Math::abs (a * (root1 * root1) + b * root1 + c) < kEpsilonRoot); }
+    if (k == 2) { TTT_EXPECT (prim::Math::abs (a * (root2 * root2) + b * root2 + c) < kEpsilonRoot); }
     //
     }
     
