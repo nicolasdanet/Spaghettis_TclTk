@@ -44,33 +44,26 @@ proc _create {} {
     wm group .path .
         
     wm minsize  .path {*}[::styleMinimumSize]
-    wm geometry .path [format "=500x300%s" [::rightNextTo .console]]
+    wm geometry .path [format "=500x150%s" [::rightNextTo .console]]
     
-    ttk::frame      .path.f             {*}[::styleFrame]
-    ttk::labelframe .path.f.paths       {*}[::styleLabelFrame] \
-                                            -text [_ [::ifAqua "Folders" "Directories"]]
-    
-    pack            .path.f             {*}[::packMain]
-    pack            .path.f.paths       {*}[::packCategory]
-    
-    listbox         .path.f.paths.list  -selectmode extended \
-                                            -activestyle none \
-                                            -borderwidth 0 \
-                                            -background white
+    listbox     .path.list  -selectmode extended \
+                                -activestyle none \
+                                -borderwidth 0 \
+                                -background white
                                         
-    label           .path.f.paths.info  -text [_ "Double-click to add a path"] \
-                                            -anchor center \
-                                            -foreground DarkGrey \
-                                            -background white
+    label       .path.info  -text [_ "Double-click to add a path"] \
+                                -anchor center \
+                                -foreground DarkGrey \
+                                -background white
                                             
-    pack            .path.f.paths.list  -side top -fill both -expand 1
+    pack        .path.list  -side top -fill both -expand 1
 
-    foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
+    foreach item $::var(searchPath) { .path.list insert end $item }
     
-    bind .path.f.paths.list <BackSpace>             "::ui_path::_deleteItems"
-    bind .path.f.paths.list <Double-Button-1>       "::ui_path::_addItem"
-    bind .path.f.paths.list <Triple-Button-1>       { ::ui_interface::pdsend "pd _dummy" }
-    bind .path.f.paths.list <Quadruple-Button-1>    { ::ui_interface::pdsend "pd _dummy" }
+    bind .path.list <BackSpace>             "::ui_path::_deleteItems"
+    bind .path.list <Double-Button-1>       "::ui_path::_addItem"
+    bind .path.list <Triple-Button-1>       { ::ui_interface::pdsend "pd _dummy" }
+    bind .path.list <Quadruple-Button-1>    { ::ui_interface::pdsend "pd _dummy" }
     
     wm protocol .path WM_DELETE_WINDOW { ::ui_path::closed }
 }
@@ -89,11 +82,11 @@ proc closed {{top {}}} {
 
 proc _addItem {} {
 
-    .path.f.paths.list selection clear 0 end
+    .path.list selection clear 0 end
     
     set item [tk_chooseDirectory -title [_ "Add a Directory"]]
     
-    if {$item ne ""} { .path.f.paths.list insert end $item; .path.f.paths.list selection set end }
+    if {$item ne ""} { .path.list insert end $item; .path.list selection set end }
     
     ::ui_path::_apply
     ::ui_path::_updateInfo
@@ -103,7 +96,7 @@ proc _deleteItems {} {
 
     set i 0
     
-    foreach item [.path.f.paths.list curselection] { .path.f.paths.list delete [expr {$item - $i}]; incr i }
+    foreach item [.path.list curselection] { .path.list delete [expr {$item - $i}]; incr i }
     
     ::ui_path::_apply
     ::ui_path::_updateInfo
@@ -116,7 +109,7 @@ proc _apply {} {
 
     set ::var(searchPath) {}
     
-    foreach path [.path.f.paths.list get 0 end] { lappend ::var(searchPath) [::encoded $path] }
+    foreach path [.path.list get 0 end] { lappend ::var(searchPath) [::encoded $path] }
 
     ::ui_interface::pdsend "pd _path $::var(searchPath)"
     ::ui_interface::pdsend "pd _savepreferences"
@@ -127,13 +120,13 @@ proc _apply {} {
 
 proc _updateInfo {} {
     
-    if {[.path.f.paths.list size] == 0} {
+    if {[.path.list size] == 0} {
     
-        place .path.f.paths.info -relwidth .8 -relheight .3 -relx .1 -rely .35
+        place .path.info -relwidth .8 -relheight .3 -relx .1 -rely .35
     
     } else {
     
-        place forget .path.f.paths.info
+        place forget .path.info
     }
 }
 
