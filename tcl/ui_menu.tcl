@@ -500,9 +500,7 @@ proc _arrange {m} {
 
 proc _object {m} {
 
-    # For now on macOS, accelerator has a weird behavior with SHIFT key pressed.
-    
-    # TODO: Check if it is fixed later.
+    # ( https://core.tcl-lang.org/tk/tktview?name=ead70921a9 ).
     
     variable accelerator
     
@@ -618,34 +616,47 @@ proc _tools {m} {
 
 proc _popupObject {m} {
 
+    # ( https://core.tcl-lang.org/tk/tktview?name=ead70921a9 ).
+    
+    variable accelerator
+    
     $m.object add command \
         -label [_ "Object"] \
+        -accelerator [::ifAqua "${accelerator}+1" ""] \
         -command { ::ui_menu::_handle 1 obj }
     $m.object add command \
+        -accelerator [::ifAqua "${accelerator}+2" ""] \
         -label [_ "Message"] \
         -command { ::ui_menu::_handle 1 msg }
     $m.object add command \
         -label [_ "Atom"] \
+        -accelerator [::ifAqua "${accelerator}+3" ""] \
         -command { ::ui_menu::_handleDirty 1 floatatom }
     $m.object add command \
         -label [_ "Symbol"] \
+        -accelerator [::ifAqua "${accelerator}+4" ""] \
         -command { ::ui_menu::_handleDirty 1 symbolatom }
     $m.object add command \
         -label [_ "Comment"] \
+        -accelerator [::ifAqua "${accelerator}+5" ""] \
         -command { ::ui_menu::_handle 1 comment }
     $m.object add separator
     
     $m.object add command \
         -label [_ "Bang"] \
+        -accelerator [::ifAqua "${accelerator}+6" ""] \
         -command { ::ui_menu::_handleDirty 1 bng }
     $m.object add command \
         -label [_ "Toggle"] \
+        -accelerator [::ifAqua "${accelerator}+7" ""] \
         -command { ::ui_menu::_handleDirty 1 tgl }
     $m.object add command \
         -label [_ "Dial"] \
+        -accelerator [::ifAqua "${accelerator}+8" ""] \
         -command { ::ui_menu::_handleDirty 1 nbx }
     $m.object add command \
         -label [_ "Array"] \
+        -accelerator [::ifAqua "${accelerator}+9" ""] \
         -command { ::ui_menu::_handle 1 _array }
     $m.object add separator
     
