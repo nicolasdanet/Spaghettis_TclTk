@@ -6,6 +6,8 @@
 // MARK: -
 
 #define TEST_CLOCKS_SIZE    32
+#define TEST_CLOCKS_MORE    4096
+#define TEST_CLOCKS_LESS    2
 #define TEST_CLOCKS_LOOP    100000
 
 // -----------------------------------------------------------------------------------------------------------
@@ -13,13 +15,31 @@
 
 static t_int32Atomic        test_clocksWait;
 static t_int32Atomic        test_clocksStop;
-static int                  test_clocksCounter;
+static int                  test_clocksCounterB;
+static int                  test_clocksCounterC;
+static int                  test_clocksCounterD;
+static int                  test_clocksIndex;
 static t_float64Atomic      test_clocksSystime;
 static int                  test_clocksFails;
 static t_clock              test_clocksA[TEST_CLOCKS_SIZE];
 static t_clock              test_clocksB[TEST_CLOCKS_SIZE];
+static t_clock              test_clocksC[TEST_CLOCKS_MORE];
+static t_clock              test_clocksD[TEST_CLOCKS_LESS];
 
 static t_clocks             *test_clocksManager;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int test_clocksRandom (int n)
+{
+    static t_rand48 seed; static int once = 0; if (!once) { PD_RAND48_INIT (seed); once = 1; }
+    
+    int k = (int)(PD_RAND48_DOUBLE (seed) * n);
+    
+    return k;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -41,6 +61,20 @@ void test_clocksDelay (t_clock *x, double delay)
     clocks_add (test_clocksManager, x);
 }
 
+void test_clocksTick (t_systime t)
+{
+    clocks_tick (test_clocksManager, t);
+}
+
+int test_clocksClean (void)
+{
+    return clocks_clean (test_clocksManager);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void test_clocksTaskA (void *x)
 {
     t_systime t = scheduler_getLogicalTime();
@@ -52,20 +86,46 @@ void test_clocksTaskA (void *x)
 
 void test_clocksTaskB (void *x)
 {
-    test_clocksCounter++;
+    test_clocksCounterB++;
 }
 
-void test_clocksTick (t_systime t)
+void test_clocksTaskC (void *x)
 {
-    clocks_tick (test_clocksManager, t);
+    test_clocksCounterC++;
 }
 
-int test_clocksClean (void)
+void test_clocksTaskD (void *x)
 {
-    return clocks_clean (test_clocksManager);
+    test_clocksCounterD++; test_clocksDelay ((t_clock *)x, test_clocksRandom (500));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
 
 void test_clocksInitialize (void)
+{
+    int i;
+    
+    test_clocksManager = clocks_new();
+
+    for (i = 0; i < TEST_CLOCKS_MORE; i++) {
+    //
+    t_clock *c = NULL;
+    
+    if (i < TEST_CLOCKS_SIZE) {
+        c = &test_clocksA[i]; c->c_fn = test_clocksTaskA;
+        c = &test_clocksB[i]; c->c_fn = test_clocksTaskB;
+    }
+    if (i < TEST_CLOCKS_LESS) {
+        c = &test_clocksD[i]; c->c_fn = test_clocksTaskD; c->c_owner = c; test_clocksDelay (c, 500.0);
+    }
+        c = &test_clocksC[i]; c->c_fn = test_clocksTaskC;
+    //
+    }
+}
+
+int test_clocksCheck (void)
 {
     int i;
     
@@ -73,12 +133,18 @@ void test_clocksInitialize (void)
     //
     t_clock *c = NULL;
     
-    c = &test_clocksA[i]; c->c_fn = test_clocksTaskA;
-    c = &test_clocksB[i]; c->c_fn = test_clocksTaskB;
+    if (i < TEST_CLOCKS_SIZE) {
+        c = &test_clocksA[i]; if (!clock_isGood (c)) { return 0; }
+        c = &test_clocksB[i]; if (!clock_isGood (c)) { return 0; }
+    }
+    if (i < TEST_CLOCKS_LESS) {
+        c = &test_clocksD[i]; if (!clock_isSet (c))  { return 0; }
+    }
+        c = &test_clocksB[i]; if (!clock_isGood (c)) { return 0; }
     //
     }
     
-    test_clocksManager = clocks_new();
+    return 1;
 }
 
 void test_clocksRelease (void)
@@ -102,15 +168,6 @@ void test_clocksDebug (int n)
     ttt_stdout (TTT_COLOR_BLUE, "%s", clocks_debug (test_clocksManager, n));
 }
 
-int test_clocksRandom (int n)
-{
-    static t_rand48 seed; static int once = 0; if (!once) { PD_RAND48_INIT (seed); once = 1; }
-    
-    int k = (int)(PD_RAND48_DOUBLE (seed) * n);
-    
-    return k;
-}
-
 void test_clocksDoSomething (t_clock *x, double delay)
 {
     if (test_clocksRandom (2)) { test_clocksDelay (x, delay); } else { test_clocksUnset (x); }
@@ -124,6 +181,11 @@ t_clock *test_clocksGetRandomA (void)
 t_clock *test_clocksGetB (int i)
 {
     return &test_clocksB[i];
+}
+
+t_clock *test_clocksGetC (int i)
+{
+    return &test_clocksC[i];
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -149,6 +211,12 @@ void *test_clocksAtomicTask (void *x)
                 ttt_wasteTime (&w);
             }
             
+            if (test_clocksIndex < TEST_CLOCKS_MORE) {
+                if (!test_clocksRandom (100)) {
+                    test_clocksDelay (test_clocksGetC (test_clocksIndex++), test_clocksRandom (500));
+                }
+            }
+            
             if (++i % 10 == 0) { test_clocksClean(); }
         }
     }
@@ -163,6 +231,8 @@ void *test_clocksAtomicTask (void *x)
             
             PD_ATOMIC_FLOAT64_WRITE (0, &test_clocksSystime); test_clocksTick (250.0);
             PD_ATOMIC_FLOAT64_WRITE (0, &test_clocksSystime); test_clocksTick (750.0);
+            
+            // if (i % 1000 == 0) { test_clocksDebug (128); }
         }
         
         PD_ATOMIC_INT32_WRITE (1, &test_clocksStop);
@@ -190,8 +260,13 @@ TTT_BEGIN (ClocksAtomic, 16, "Atomic - Clocks")
     if (ttt_testThreadsLaunch (test_clocksAtomicTask) != TTT_GOOD) { TTT_FAIL; }
     else {
     //
-    TTT_EXPECT (test_clocksCounter == TEST_CLOCKS_SIZE * TEST_CLOCKS_LOOP);
-    TTT_EXPECT (test_clocksFails   == 0);
+    PD_ATOMIC_FLOAT64_WRITE (0, &test_clocksSystime); test_clocksTick (1000.0);
+    
+    TTT_EXPECT (test_clocksCounterB == TEST_CLOCKS_SIZE * TEST_CLOCKS_LOOP);
+    TTT_EXPECT (test_clocksFails    == 0);
+    TTT_EXPECT (test_clocksCheck()  == 1);
+    TTT_EXPECT (test_clocksCounterC == test_clocksIndex);
+    TTT_EXPECT (test_clocksCounterD >= TEST_CLOCKS_LOOP * TEST_CLOCKS_LESS);
     //
     }
     

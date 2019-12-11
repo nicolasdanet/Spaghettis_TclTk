@@ -120,27 +120,45 @@ void clock_setExecuteTime (t_clock *x, t_systime t)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-int clock_increment (t_clock *x)
+/* Proper order of operation for increment and decrement is not guaranted. */
+
+/* For instance: */
+
+/* 1. Clock is removed while consumed in thread A. */
+/* 2. Clock is added by thread B. */
+/* 3. Counter is incremented by thread B (it is equal to  2). */
+/* 4. Counter is decremented by thread A (it is equal to  1). */
+
+/* 1. Clock is added by thread B. */
+/* 2. Clock is removed while consumed in thread A. */
+/* 3. Counter is decremented by thread A (it is equal to -1). */
+/* 4. Counter is incremented by thread B (it is equal to  0). */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void clock_increment (t_clock *x)
 {
     int t = PD_ATOMIC_INT32_INCREMENT (&x->c_count);
     
-    PD_ASSERT (t == 1);
-    
-    return t;
+    PD_UNUSED (t); PD_ASSERT (t == 0 || t == 1 || t == 2);
 }
 
-int clock_decrement (t_clock *x)
+void clock_decrement (t_clock *x)
 {
     int t = PD_ATOMIC_INT32_DECREMENT (&x->c_count);
     
-    PD_ASSERT (t == 0);
-    
-    return t;
+    PD_UNUSED (t); PD_ASSERT (t == 1 || t == 0 || t == -1);
 }
 
 int clock_isSet (t_clock *x)
 {
     return (PD_ATOMIC_INT32_READ (&x->c_count) > 0);
+}
+
+int clock_isGood (t_clock *x)
+{
+    return (PD_ATOMIC_INT32_READ (&x->c_count) == 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -172,7 +190,7 @@ void clock_free (t_clock *x)
 {
     clock_unset (x);
     
-    PD_ASSERT (!clock_isSet (x));
+    PD_ASSERT (clock_isGood (x));
     
     PD_MEMORY_FREE (x);
 }
