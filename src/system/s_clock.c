@@ -122,17 +122,17 @@ void clock_setExecuteTime (t_clock *x, t_systime t)
 
 /* Proper order of operation for increment and decrement is not guaranted. */
 
-/* For instance: */
+// -- For instance:
 
-/* 1. Clock is removed while consumed in thread A. */
-/* 2. Clock is added by thread B. */
-/* 3. Counter is incremented by thread B (it is equal to  2). */
-/* 4. Counter is decremented by thread A (it is equal to  1). */
+// -- 1. Clock is removed while consumed in thread A.
+// -- 2. Clock is added by thread B.
+// -- 3. Counter is incremented by thread B (it is equal to  2).
+// -- 4. Counter is decremented by thread A (it is equal to  1).
 
-/* 1. Clock is added by thread B. */
-/* 2. Clock is removed while consumed in thread A. */
-/* 3. Counter is decremented by thread A (it is equal to -1). */
-/* 4. Counter is incremented by thread B (it is equal to  0). */
+// -- 1. Clock is added by thread B.
+// -- 2. Clock is removed while consumed in thread A.
+// -- 3. Counter is decremented by thread A (it is equal to -1).
+// -- 4. Counter is incremented by thread B (it is equal to  0).
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -165,6 +165,11 @@ int clock_isGood (t_clock *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void clock_inhibit (t_clock *x)
+{
+    x->c_fn = NULL;
+}
+
 void clock_execute (t_clock *x)
 {
     if (x->c_fn) { (*x->c_fn)(x->c_owner); }
@@ -188,11 +193,7 @@ t_clock *clock_new (void *owner, t_method fn)
 
 void clock_free (t_clock *x)
 {
-    clock_unset (x);
-    
-    PD_ASSERT (clock_isGood (x));
-    
-    PD_MEMORY_FREE (x);
+    instance_clocksDestroy (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

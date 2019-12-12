@@ -89,6 +89,11 @@ t_buffer *buffer_getBufferAt (t_buffer *x, int n)
     t_atom *a = buffer_getAtomAtIndex (x, n); PD_ASSERT (IS_VOID (a));   return GET_BUFFER (a);
 }
 
+t_clock *buffer_getClockAt (t_buffer *x, int n)
+{
+    t_atom *a = buffer_getAtomAtIndex (x, n); PD_ASSERT (IS_VOID (a));   return GET_CLOCK (a);
+}
+
 t_float buffer_getFloatAt (t_buffer *x, int n)
 {
     t_atom *a = buffer_getAtomAtIndex (x, n); PD_ASSERT (IS_FLOAT (a));  return GET_FLOAT (a);

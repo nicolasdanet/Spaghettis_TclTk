@@ -177,6 +177,7 @@ t_chain *instance_chainGetCurrent               (void);
 void    instance_clocksClean                    (void);
 void    instance_clocksAdd                      (t_clock *c);
 void    instance_clocksRemove                   (t_clock *c);
+void    instance_clocksDestroy                  (t_clock *c);
 void    instance_clocksTick                     (t_systime systime);
 
 void    instance_pollingRun                     (void);
