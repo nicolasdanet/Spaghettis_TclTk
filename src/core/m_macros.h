@@ -192,6 +192,7 @@ t_seed time_makeRandomSeed (void);
 #define SET_VOID(atom, p)                   ((atom)->a_type = A_VOID, (atom)->a_w.a_void = (p))
 #define SET_OBJECT(atom, p)                 SET_VOID (atom, (void *)(p))
 #define SET_BUFFER(atom, p)                 SET_VOID (atom, (void *)(p))
+#define SET_CLOCK(atom, p)                  SET_VOID (atom, (void *)(p))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -204,6 +205,7 @@ t_seed time_makeRandomSeed (void);
 #define GET_VOID(atom)                      ((atom)->a_w.a_void)
 #define GET_OBJECT(atom)                    (t_gobj *)GET_VOID (atom)
 #define GET_BUFFER(atom)                    (t_buffer *)GET_VOID (atom)
+#define GET_CLOCK(atom)                     (t_clock *)GET_VOID (atom)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

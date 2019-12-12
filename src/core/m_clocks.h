@@ -29,6 +29,7 @@ int         clocks_clean    (t_clocks *x);      /* Block other threads. */
 
 void        clocks_add      (t_clocks *x, t_clock *c);
 void        clocks_remove   (t_clocks *x, t_clock *c);
+void        clocks_destroy  (t_clocks *x, t_clock *c);
 void        clocks_tick     (t_clocks *x, t_systime systime);
 
 // -----------------------------------------------------------------------------------------------------------

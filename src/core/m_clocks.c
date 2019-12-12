@@ -21,6 +21,7 @@ struct _clocks {
     int                 x_size;
     t_clock             **x_cache;
     t_pointerAtomic     *x_clocks;
+    t_buffer            *x_garbage;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -49,7 +50,9 @@ t_systime   clock_getExecuteTime        (t_clock *);
 void        clock_setExecuteTime        (t_clock *, t_systime);
 void        clock_increment             (t_clock *);
 void        clock_decrement             (t_clock *);
+void        clock_inhibit               (t_clock *);
 void        clock_execute               (t_clock *);
+int         clock_isGood                (t_clock *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -136,6 +139,32 @@ void clocks_remove (t_clocks *x, t_clock *c)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* Clocks are temporary stored before to be freed. */
+/* Unset a clock doesn't remove it form the clocks cached while executed. */
+/* Theoritically a clock could trigger deletion of another one already in cached. */
+/* Wait that all clocks have fired before to remove them. */
+
+void clocks_destroy (t_clocks *x, t_clock *c)
+{
+    t_atom a;
+    SET_CLOCK (&a, c);
+    clocks_remove (x, c);
+    clock_inhibit (c);
+    PD_ASSERT (clock_isGood (c));
+    buffer_appendAtom (x->x_garbage, &a);
+}
+
+void clocks_purge (t_clocks *x)
+{
+    int i, n = buffer_getSize (x->x_garbage);
+    for (i = 0; i < n; i++) { t_clock *c = buffer_getClockAt (x->x_garbage, i); PD_MEMORY_FREE (c); }
+    buffer_clear (x->x_garbage);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 static void clocks_tickCheck (t_clocks *x, t_systime systime, int i)
 {
     void *t = PD_ATOMIC_POINTER_READ (x->x_clocks + i);
@@ -206,7 +235,7 @@ void clocks_tick (t_clocks *x, t_systime systime)
     
     pthread_rwlock_unlock (&x->x_lock);                 PD_MEMORY_BARRIER;
     
-    clocks_tickExecute (x);
+    clocks_tickExecute (x); clocks_purge (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -285,14 +314,19 @@ t_clocks *clocks_new (void)
     
     pthread_rwlock_init (&x->x_lock, NULL);
     
-    x->x_cache  = (t_clock **)PD_MEMORY_GET (sizeof (t_clock *) * CLOCKS_SIZE);
-    x->x_clocks = (t_pointerAtomic *)PD_MEMORY_GET (sizeof (t_pointerAtomic) * (CLOCKS_SIZE + 1));
+    x->x_cache   = (t_clock **)PD_MEMORY_GET (sizeof (t_clock *) * CLOCKS_SIZE);
+    x->x_clocks  = (t_pointerAtomic *)PD_MEMORY_GET (sizeof (t_pointerAtomic) * (CLOCKS_SIZE + 1));
+    x->x_garbage = buffer_new();
     
     return x;
 }
 
 void clocks_free (t_clocks *x)
 {
+    clocks_purge (x);
+    
+    buffer_free (x->x_garbage);
+    
     PD_MEMORY_FREE (x->x_clocks);
     PD_MEMORY_FREE (x->x_cache);
     

@@ -909,9 +909,9 @@ PD_DLL void     buffer_appendComma              (t_buffer *x);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Notice that all clock functions MUST be called only by one (and the same) thread. */
-/* The new and free functions might be called NON-CONCURRENTLY in other thread. */
-/* E.g. constructed in the main thread with delay and unset in the DSP perform. */
+/* Notice that unset and delay a clock MUST be done only in one (and always the same) thread. */
+/* It can be inside the DSP perform. */
+/* The new and free functions must be called NON-CONCURRENTLY in the main thread. */
 
 PD_DLL t_clock  *clock_new                      (void *owner, t_method fn);
 

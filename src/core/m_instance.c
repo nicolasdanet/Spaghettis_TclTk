@@ -144,6 +144,13 @@ void instance_clocksRemove (t_clock *c)
     clocks_remove (instance_get()->pd_clocks, c);
 }
 
+void instance_clocksDestroy (t_clock *c)
+{
+    PD_ASSERT (sys_isMainThread());
+    
+    clocks_destroy (instance_get()->pd_clocks, c);
+}
+
 void instance_clocksTick (t_systime t)
 {
     PD_ASSERT (sys_isMainThread());

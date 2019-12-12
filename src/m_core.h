@@ -59,14 +59,13 @@ void        atom_sort                               (int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* Caller acquires ownership. */
+char        *buffer_toString                        (t_buffer *x);          /* Caller acquires ownership. */
 
-char        *buffer_toString                        (t_buffer *x);
-
-t_symbol    *buffer_getSymbolAt                     (t_buffer *x, int n);       /* Not checked. */
-t_gobj      *buffer_getObjectAt                     (t_buffer *x, int n);       /* Not checked. */
-t_buffer    *buffer_getBufferAt                     (t_buffer *x, int n);       /* Not checked. */
-t_float     buffer_getFloatAt                       (t_buffer *x, int n);       /* Not checked. */
+t_symbol    *buffer_getSymbolAt                     (t_buffer *x, int n);   /* Not checked. */
+t_gobj      *buffer_getObjectAt                     (t_buffer *x, int n);   /* Not checked. */
+t_buffer    *buffer_getBufferAt                     (t_buffer *x, int n);   /* Not checked. */
+t_clock     *buffer_getClockAt                      (t_buffer *x, int n);   /* Not checked. */
+t_float     buffer_getFloatAt                       (t_buffer *x, int n);   /* Not checked. */
 
 void        buffer_toStringUnzeroed                 (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed               (t_buffer *x, const char *s, int size);
