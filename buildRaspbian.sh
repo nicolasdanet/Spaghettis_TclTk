@@ -77,12 +77,12 @@ cd "${rep}"                                                         || exit 1
 
 # Build and launch the tests.
 
-# echo "Build tests ..."
-# cd "${rep}/tests"                                                 || exit 1
-# ./build.sh                                                        || exit 1
+echo "Build tests ..."
+cd "${rep}/tests"                                                   || exit 1
+./build.sh                                                          || exit 1
 
-# echo "Launch tests ..."
-# ./tests                                                           || exit 1
+echo "Launch tests ..."
+./tests                                                             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
