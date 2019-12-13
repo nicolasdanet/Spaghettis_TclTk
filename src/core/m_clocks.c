@@ -140,7 +140,7 @@ void clocks_remove (t_clocks *x, t_clock *c)
 // MARK: -
 
 /* Clocks are temporary stored before to be freed. */
-/* Unset a clock doesn't remove it form the clocks cached while executed. */
+/* Unset a clock doesn't remove it from the clocks cached while executed. */
 /* Theoritically a clock could trigger deletion of another one already in cached. */
 /* Wait that all clocks have fired before to remove them. */
 
