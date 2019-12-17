@@ -12,7 +12,7 @@ Any contributions are welcomed:
     - Start a wiki.
     - Write a documentation.
     - Add regression tests.
-    - Improve the code.
+    - Improve the code (consider to discuss first).
     - Ask (don't be shy).
 
     ...
