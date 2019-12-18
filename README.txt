@@ -19,9 +19,9 @@ Dependencies:
 Build:
 
     Open a terminal and run the "Spaghettis/build.sh" script.
-    Notice that a properly set toolchain is required.
+    Nothing will be installed in your system.
+    Note that a properly set toolchain is required.
     On macOS the easy way is to get Xcode.
-    Nothing is installed in your system.
 
 Run:
 
