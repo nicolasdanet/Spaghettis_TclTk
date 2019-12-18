@@ -25,7 +25,6 @@ Build:
 
 Run:
 
-    Launch the "Application/Spaghettis.app" on macOS.
     On GNU/Linux execute "Spaghettis/build/bin/spaghettis".
 
 Residual:
