@@ -44,12 +44,10 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-typedef void        (*t_savefn)             (t_gobj *x, t_buffer *b, int flags);
-typedef t_buffer    *(*t_datafn)            (t_gobj *x, int flags);
-typedef void        (*t_undofn)             (t_gobj *x, t_buffer *b);
-typedef void        (*t_propertiesfn)       (t_gobj *x, t_glist *glist, t_mouse *m);
-typedef void        (*t_valuefn)            (t_gobj *x, t_glist *glist, t_mouse *m);
-typedef void        (*t_dismissfn)          (t_gobj *x);
+typedef void (*t_savefn)                    (t_gobj *x, t_buffer *b, int flags);
+typedef void (*t_undofn)                    (t_gobj *x, t_buffer *b);
+typedef void (*t_propertiesfn)              (t_gobj *x, t_glist *glist, t_mouse *m);
+typedef void (*t_valuefn)                   (t_gobj *x, t_glist *glist, t_mouse *m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -202,11 +200,6 @@ static inline int class_hasFirstInletAsSignal (t_class *c)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
-
-static inline void class_requirePending (t_class *c)
-{
-    PD_ASSERT (!class_hasDSP (c)); c->c_requirePending = 1;
-}
 
 static inline int class_hasPendingRequired (t_class *c)
 {
@@ -388,11 +381,6 @@ static inline void class_setSaveFunction (t_class *c, t_savefn f)
     c->c_fnSave = f;
 }
 
-static inline void class_setDataFunction (t_class *c, t_datafn f)
-{
-    c->c_fnData = f;
-}
-
 static inline void class_setUndoFunction (t_class *c, t_undofn f)
 {
     c->c_fnUndo = f;
@@ -406,11 +394,6 @@ static inline void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
 static inline void class_setValueFunction (t_class *c, t_valuefn f)
 {
     c->c_fnValue = f;
-}
-
-static inline void class_setDismissFunction (t_class *c, t_dismissfn f)
-{
-    c->c_fnDismiss = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

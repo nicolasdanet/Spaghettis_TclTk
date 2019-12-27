@@ -371,6 +371,7 @@
 #include "dsp/graph/d_dspthread.c"
 #include "dsp/graph/d_chain.c"
 #include "dsp/graph/d_closures.c"
+#include "dsp/graph/d_space.c"
 #include "dsp/graph/d_initializer.c"
 #include "dsp/graph/d_signal.c"
 #include "dsp/graph/d_ugen.c"

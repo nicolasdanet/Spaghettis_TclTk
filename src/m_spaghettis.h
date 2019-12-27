@@ -475,6 +475,7 @@ struct _glist;
 struct _gpointer;
 struct _inlet;
 struct _outlet;
+struct _space;
 
 #if PD_BUILDING_APPLICATION
 
@@ -506,6 +507,7 @@ struct _outlet;
 #define t_gpointer                  struct _gpointer
 #define t_inlet                     struct _inlet
 #define t_outlet                    struct _outlet
+#define t_space                     struct _space
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -599,13 +601,24 @@ typedef struct _object {
 
 /* Use the form (*)(void) to avoid warnings with the Wcast-function-type GCC flag. */
 
-typedef void    (*t_method)     (void);         /* Generic function. */
-typedef void    (*t_newmethod)  (void);         /* Generic function that return a pointer. */
+typedef void        (*t_method)         (void);     /* Generic function. */
+typedef void        (*t_newmethod)      (void);     /* Generic function that return a pointer. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef t_int   *(*t_perform)   (t_int *);
+typedef t_int       *(*t_perform)       (t_int *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef t_buffer    *(*t_datafn)        (t_gobj *, int);
+typedef void        (*t_dismissfn)      (t_gobj *);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef void        (*t_initializerfn)  (void *dest, void *src);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -640,14 +653,25 @@ typedef t_int   *(*t_perform)   (t_int *);
 // MARK: -
 
 typedef struct _signal {
-    t_float         s_sampleRate;
-    int             s_vectorSize;
-    int             s_overlap;
-    int             s_hasBorrowed;
-    t_sample        *s_vector;
-    t_sample        *s_unused;
-    struct _signal  *s_next;
+    t_float             s_sampleRate;
+    int                 s_vectorSize;
+    int                 s_overlap;
+    int                 s_hasBorrowed;
+    t_sample            *s_vector;
+    t_sample            *s_unused;
+    struct _signal      *s_next;
     } t_signal;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+typedef struct _initializer {
+    struct _initializer *s_next;
+    void                *s_lhs;
+    void                *s_rhs;
+    t_initializerfn     s_fn;
+    } t_initializer;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -816,6 +840,24 @@ PD_DLL void     class_addAnything               (t_class *c, t_method fn);
 PD_DLL void     class_setHelpName               (t_class *c, t_symbol *s);
 PD_DLL void     class_setHelpDirectory          (t_class *c, t_symbol *s);
 
+PD_DLL void     class_setDataFunction           (t_class *c, t_datafn f);
+PD_DLL void     class_setDismissFunction        (t_class *c, t_dismissfn f);
+
+PD_DLL void     class_requirePending            (t_class *c);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+PD_DLL int      object_isUndoOrEncaspulate      (int flags);
+
+PD_DLL int      object_dspNeedInitializer       (t_object *x);
+
+PD_DLL void     object_getSignalValues          (t_object *x, t_buffer *b);
+PD_DLL void     object_copySignalValues         (t_object *x, t_object *old);
+
+PD_DLL void     object_fetchAndCopySignalValuesIfRequired   (t_object *x);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -869,6 +911,7 @@ PD_DLL char     *atom_atomsToString             (int argc, t_atom *argv);   /* C
 // MARK: -
 
 PD_DLL t_buffer *buffer_new                     (void);
+PD_DLL t_buffer *buffer_newData                 (void);
 PD_DLL t_buffer *buffer_newCopy                 (t_buffer *toCopy);
 PD_DLL t_atom   *buffer_getAtoms                (t_buffer *x);
 PD_DLL t_atom   *buffer_getAtomAtIndex          (t_buffer *x, int n);
@@ -933,6 +976,8 @@ PD_DLL void     post_error                      (const char *fmt, ...);
 
 PD_DLL t_glist  *instance_contextGetCurrent     (void);
 PD_DLL t_chain  *instance_chainGetTemporary     (void);
+PD_DLL t_object *instance_objectGetTemporary    (t_object *x);
+PD_DLL t_space  *instance_objectGetNewSpace     (t_object *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -949,7 +994,35 @@ PD_DLL int      signal_getOverlap               (t_signal *s);
 // MARK: -
 
 PD_DLL void     chain_append                    (t_chain *x, t_perform f, int n, ...);
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+PD_DLL t_initializer    *initializer_new        (t_initializerfn fn, void *lhs, void *rhs);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+PD_DLL t_float  space_getFloat0                 (t_space *space);
+PD_DLL t_float  space_getFloat1                 (t_space *space);
+PD_DLL t_float  space_getFloat2                 (t_space *space);
+PD_DLL t_float  space_getFloat3                 (t_space *space);
+PD_DLL t_float  space_getFloat4                 (t_space *space);
+PD_DLL t_float  space_getFloat5                 (t_space *space);
+PD_DLL t_float  space_getFloat6                 (t_space *space);
+PD_DLL t_float  space_getFloat7                 (t_space *space);
+
+PD_DLL void     space_setFloat0                 (t_space *space, t_float f);
+PD_DLL void     space_setFloat1                 (t_space *space, t_float f);
+PD_DLL void     space_setFloat2                 (t_space *space, t_float f);
+PD_DLL void     space_setFloat3                 (t_space *space, t_float f);
+PD_DLL void     space_setFloat4                 (t_space *space, t_float f);
+PD_DLL void     space_setFloat5                 (t_space *space, t_float f);
+PD_DLL void     space_setFloat6                 (t_space *space, t_float f);
+PD_DLL void     space_setFloat7                 (t_space *space, t_float f);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -978,6 +1051,7 @@ PD_DLL void     chain_append                    (t_chain *x, t_perform f, int n,
 #define class_addClick(c, m)        class_addMethod ((c), (t_method)(m), gensym ("click"), A_GIMME, A_NULL)
 #define class_addLoadbang(c, m)     class_addMethod ((c), (t_method)(m), gensym ("loadbang"), A_NULL)
 #define class_addClosebang(c, m)    class_addMethod ((c), (t_method)(m), gensym ("closebang"), A_NULL)
+#define class_addRestore(c, m)      class_addMethod ((c), (t_method)(m), gensym ("_restore"), A_GIMME, A_NULL)
 
 #endif
 

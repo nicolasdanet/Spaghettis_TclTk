@@ -444,6 +444,18 @@ int class_hasOverrideAnythingMethod (t_class *c)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+void class_requirePending (t_class *c)
+{
+    if (!class_hasDSP (c)) { c->c_requirePending = 1; }
+    else {
+        PD_BUG;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void class_setHelpName (t_class *c, t_symbol *s)
 {
     c->c_helpName = s;
@@ -452,6 +464,16 @@ void class_setHelpName (t_class *c, t_symbol *s)
 void class_setHelpDirectory (t_class *c, t_symbol *s)
 {
     c->c_helpDirectory = s;
+}
+
+void class_setDataFunction (t_class *c, t_datafn f)
+{
+    c->c_fnData = f;
+}
+
+void class_setDismissFunction (t_class *c, t_dismissfn f)
+{
+    c->c_fnDismiss = f;
 }
 
 // -----------------------------------------------------------------------------------------------------------

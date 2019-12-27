@@ -81,7 +81,7 @@ static void receive_tilde_dsp (t_receive_tilde *x, t_signal **sp)
     if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_receive__tilde__, sym_size); }
     else {
     //
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_receive_tilde *old = (t_receive_tilde *)garbage_fetch (cast_gobj (x));
     

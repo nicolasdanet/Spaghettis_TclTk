@@ -90,7 +90,7 @@ void complex_raw_initialize (void *lhs, void *rhs)
 
 void complex_raw_initializer (t_gobj *x)
 {
-    if (dsp_objectNeedInitializer (x)) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     struct _complex_raw_tilde *old = (struct _complex_raw_tilde *)garbage_fetch (x);
     

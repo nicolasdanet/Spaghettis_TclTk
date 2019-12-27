@@ -55,6 +55,30 @@ t_glist *instance_contextGetCurrent (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+/* For external objects. */
+
+t_object *instance_objectGetTemporary (t_object *x)
+{
+    t_gobj *old = NULL;
+    
+    if (class_hasDSP (pd_class (x))) {
+        old = garbage_fetch (cast_gobj (x));
+    } else {
+        old = instance_pendingFetch (cast_gobj (x));
+    }
+    
+    return cast_object (old);
+}
+
+t_space *instance_objectGetNewSpace (t_object *x)
+{
+    return space_new (cast_gobj (x));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void instance_rootsAdd (t_glist *glist)
 {
     glist_setNext (glist, instance_get()->pd_roots); instance_get()->pd_roots = glist;

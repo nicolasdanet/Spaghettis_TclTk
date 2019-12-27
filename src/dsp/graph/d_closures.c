@@ -69,9 +69,9 @@ void fft_stateInitialize (t_FFTState *x, int n)
 
 /* Return if initialization is required (i.e. encapsulation). */
 
-int dsp_objectNeedInitializer (t_gobj *o)
+int object_dspNeedInitializer (t_object *x)
 {
-    if (gobj_identifiersHaveChanged (o)) { return 1; }
+    if (gobj_identifiersHaveChanged (cast_gobj (x))) { return 1; }
 
     return 0;
 }

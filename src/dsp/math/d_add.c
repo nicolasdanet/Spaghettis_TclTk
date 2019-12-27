@@ -92,7 +92,7 @@ t_buffer *binopScalar_tilde_functionData (t_gobj *z, int flags)
 
 void binopScalar_tilde_restore (struct _binopscalar_tilde *x)
 {
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     struct _binopscalar_tilde *old = (struct _binopscalar_tilde *)garbage_fetch (cast_gobj (x));
     

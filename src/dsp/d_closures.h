@@ -24,20 +24,33 @@ typedef struct _closure {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _space {
+struct _space {
     t_closure           s_closure;                  /* Must be the first. */
     t_float             s_float0;
     t_float             s_float1;
     t_float             s_float2;
     t_float             s_float3;
     t_float             s_float4;
+    t_float             s_float5;
+    t_float             s_float6;
+    t_float             s_float7;
     int                 s_int0;
     int                 s_int1;
     int                 s_int2;
     int                 s_int3;
     int                 s_int4;
+    int                 s_int5;
+    int                 s_int6;
+    int                 s_int7;
     void                *s_pointer0;
-    } t_space;
+    // void             *s_pointer1;
+    // void             *s_pointer2;
+    // void             *s_pointer3;
+    // void             *s_pointer4;
+    // void             *s_pointer5;
+    // void             *s_pointer6;
+    // void             *s_pointer7;
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -114,12 +127,6 @@ typedef struct _voutletclosure {
 
 void fft_stateRelease       (t_FFTState *x);
 void fft_stateInitialize    (t_FFTState *x, int n);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-// MARK: -
-
-int                 dsp_objectNeedInitializer   (t_gobj *o);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

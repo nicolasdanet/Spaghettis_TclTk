@@ -124,7 +124,7 @@ void voutlet_dsp (t_voutlet *x, t_signal **sp)
     if (x->vo_directSignal) { signal_borrow (x->vo_directSignal, in); }     /* By-pass the outlet. */
     else {
     //
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_voutlet *old = (t_voutlet *)garbage_fetch (cast_gobj (x));
             

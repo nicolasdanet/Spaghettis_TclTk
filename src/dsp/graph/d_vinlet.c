@@ -187,7 +187,7 @@ void vinlet_dsp (t_vinlet *x, t_signal **sp)
     
     c->s_bufferRead = x->vi_buffer;
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_vinlet *old = (t_vinlet *)garbage_fetch (cast_gobj (x));
     

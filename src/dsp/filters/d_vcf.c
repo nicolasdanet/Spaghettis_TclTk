@@ -132,7 +132,7 @@ static void vcf_tilde_dsp (t_vcf_tilde *x, t_signal **sp)
     PD_ASSERT (sp[1]->s_vector != sp[3]->s_vector);
     PD_ASSERT (sp[2]->s_vector != sp[3]->s_vector);
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_vcf_tilde *old = (t_vcf_tilde *)garbage_fetch (cast_gobj (x));
     

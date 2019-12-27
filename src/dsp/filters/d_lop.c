@@ -92,7 +92,7 @@ static void lop_tilde_dsp (t_lop_tilde *x, t_signal **sp)
 
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_lop_tilde *old = (t_lop_tilde *)garbage_fetch (cast_gobj (x));
     

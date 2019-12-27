@@ -161,7 +161,7 @@ static void line_tilde_dsp (t_line_tilde *x, t_signal **sp)
 
     t->s_float0 = (t_float)(sp[0]->s_sampleRate / 1000.0);
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_line_tilde *old = (t_line_tilde *)garbage_fetch (cast_gobj (x));
     
