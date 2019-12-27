@@ -129,7 +129,7 @@ static void env_tilde_dsp (t_env_tilde *x, t_signal **sp)
     else if (x->x_window < sp[0]->s_vectorSize) { error_invalid (sym_env__tilde__, sym_window); }
     else {
     //
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_env_tilde *old = (t_env_tilde *)garbage_fetch (cast_gobj (x));
     

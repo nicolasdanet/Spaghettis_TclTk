@@ -240,7 +240,7 @@ static void tabwrite_tilde_dsp (t_tabwrite_tilde *x, t_signal **sp)
 {
     if (!x->x_dismissed && x->x_time > 0.0) { clock_delay (x->x_clock, x->x_time); }
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_tabwrite_tilde *old = (t_tabwrite_tilde *)garbage_fetch (cast_gobj (x));
     

@@ -100,7 +100,7 @@ static void delwrite_tilde_dsp (t_delwrite_tilde *x, t_signal **sp)
 {
     x->dw_identifier = chain_getIdentifier (instance_chainGetTemporary());
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_delwrite_tilde *old = (t_delwrite_tilde *)garbage_fetch (cast_gobj (x));
     

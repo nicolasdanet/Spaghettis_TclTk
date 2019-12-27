@@ -77,7 +77,7 @@ static void throw_tilde_dsp (t_throw_tilde *x, t_signal **sp)
     if (sp[0]->s_vectorSize != INTERNAL_BLOCKSIZE) { error_mismatch (sym_throw__tilde__, sym_size); }
     else {
     //
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_throw_tilde *old = (t_throw_tilde *)garbage_fetch (cast_gobj (x));
     

@@ -140,7 +140,7 @@ static void tabosc4_tilde_initialize (void *lhs, void *rhs)
 
 static void tabosc4_tilde_dsp (t_tabosc4_tilde *x, t_signal **sp)
 {
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_tabosc4_tilde *old = (t_tabosc4_tilde *)garbage_fetch (cast_gobj (x));
     

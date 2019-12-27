@@ -455,7 +455,7 @@ void object_copySignalValues (t_object *x, t_object *old)
 
 void object_fetchAndCopySignalValuesIfRequired (t_object *x)
 {
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (x)) {
     //
     t_gobj *old = garbage_fetch (cast_gobj (x));
     

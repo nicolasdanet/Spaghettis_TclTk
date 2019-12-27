@@ -105,7 +105,7 @@ static t_int *tabreceive_tilde_perform (t_int *w)
 
 static void tabreceive_tilde_dsp (t_tabreceive_tilde *x, t_signal **sp)
 {
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_tabreceive_tilde *old = (t_tabreceive_tilde *)garbage_fetch (cast_gobj (x));
     

@@ -155,7 +155,7 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
     
     t->s_float0 = (t_float)(1000.0 * sp[0]->s_vectorSize / sp[0]->s_sampleRate);
     
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_threshold_tilde *old = (t_threshold_tilde *)garbage_fetch (cast_gobj (x));
     
@@ -165,7 +165,7 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
     
     threshold_tilde_setProceed (x, old->x_high, old->x_deadTimeHigh, old->x_low, old->x_deadTimeLow);
     
-    object_fetchAndCopySignalValuesIfRequired (cast_object (x));
+    object_copySignalValues (cast_object (x), cast_object (old));
     //
     }
     //

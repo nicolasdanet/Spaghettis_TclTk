@@ -72,7 +72,7 @@ static t_int *clip_tilde_perform (t_int *w)
 
 static void clip_tilde_dsp (t_clip_tilde *x, t_signal **sp)
 {
-    if (dsp_objectNeedInitializer (cast_gobj (x))) {
+    if (object_dspNeedInitializer (cast_object (x))) {
     //
     t_clip_tilde *old = (t_clip_tilde *)garbage_fetch (cast_gobj (x));
     
