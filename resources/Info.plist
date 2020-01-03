@@ -74,7 +74,7 @@
 		</dict>
 	</array>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright (c) 1997-2019 Miller Puckette and others.</string>
+	<string>Copyright (c) 1997-2020 Miller Puckette and others.</string>
 	<key>CFBundleIconFile</key>
 	<string>Wish.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>

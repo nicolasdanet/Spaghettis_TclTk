@@ -1,7 +1,7 @@
 
 # Copyright
 
-    Copyright (c) 1997-2019 Miller Puckette and others.
+    Copyright (c) 1997-2020 Miller Puckette and others.
 
 Excluding:
 
@@ -40,5 +40,5 @@ Excluding:
     belle.cpp
 
         Copyright (c) 2007-2013 William Andrew Burnson.
-        Copyright (c) 2013-2019 Nicolas Danet.
+        Copyright (c) 2013-2020 Nicolas Danet.
 
