@@ -171,14 +171,14 @@ void threshold_tilde_dsp (t_threshold_tilde *x, t_signal **sp)
     //
     }
     
-    pthread_mutex_lock (&x->x_mutex);
+    // pthread_mutex_lock (&x->x_mutex);
     
         t->s_float1 = x->x_high;
         t->s_float2 = x->x_low;
         t->s_float3 = x->x_deadTimeHigh;
         t->s_float4 = x->x_deadTimeLow;
     
-    pthread_mutex_unlock (&x->x_mutex);
+    // pthread_mutex_unlock (&x->x_mutex);
     
     dsp_add4 (threshold_tilde_perform, x, sp[0]->s_vector, t, sp[0]->s_vectorSize);
 }
@@ -196,14 +196,14 @@ static t_buffer *threshold_tilde_functionData (t_gobj *z, int flags)
     
     t_float f1, f2, f3, f4;
     
-    pthread_mutex_lock (&x->x_mutex);
+    // pthread_mutex_lock (&x->x_mutex);
     
         f1 = x->x_high;
         f2 = x->x_deadTimeHigh;
         f3 = x->x_low;
         f4 = x->x_deadTimeLow;
     
-    pthread_mutex_unlock (&x->x_mutex);
+    // pthread_mutex_unlock (&x->x_mutex);
     
     buffer_appendSymbol (b, sym_set);
     buffer_appendFloat (b, f1);

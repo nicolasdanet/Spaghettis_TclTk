@@ -159,11 +159,11 @@ static void bp_tilde_dsp (t_bp_tilde *x, t_signal **sp)
     //
     t_space *t = space_new (cast_gobj (x)); t->s_float0 = (t_float)(PD_TWO_PI / sp[0]->s_sampleRate);
 
-    pthread_mutex_lock (&x->x_mutex);
+    // pthread_mutex_lock (&x->x_mutex);
     
         bp_tilde_space (t, x->x_frequency, x->x_q);
     
-    pthread_mutex_unlock (&x->x_mutex);
+    // pthread_mutex_unlock (&x->x_mutex);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
@@ -183,12 +183,12 @@ static t_buffer *bp_tilde_functionData (t_gobj *z, int flags)
     t_bp_tilde *x = (t_bp_tilde *)z;
     t_buffer *b = buffer_new();
     
-    pthread_mutex_lock (&x->x_mutex);
+    // pthread_mutex_lock (&x->x_mutex);
     
         t_float f = x->x_frequency;
         t_float q = x->x_q;
     
-    pthread_mutex_unlock (&x->x_mutex);
+    // pthread_mutex_unlock (&x->x_mutex);
     
     buffer_appendSymbol (b, sym__restore);
     buffer_appendFloat (b, f);
