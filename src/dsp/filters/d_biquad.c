@@ -162,11 +162,11 @@ static void biquad_tilde_dsp (t_biquad_tilde *x, t_signal **sp)
     //
     t_space *t = space_new (cast_gobj (x));
     
-    pthread_mutex_lock (&x->x_mutex);
+    // pthread_mutex_lock (&x->x_mutex);
     
         biquad_tilde_space (t, x->x_a1, x->x_a2, x->x_b0, x->x_b1, x->x_b2);
     
-    pthread_mutex_unlock (&x->x_mutex);
+    // pthread_mutex_unlock (&x->x_mutex);
     
     PD_ASSERT (sp[0]->s_vector != sp[1]->s_vector);
     
@@ -186,7 +186,7 @@ static t_buffer *biquad_tilde_functionData (t_gobj *z, int flags)
     t_biquad_tilde *x = (t_biquad_tilde *)z;
     t_buffer *b = buffer_new();
     
-    pthread_mutex_lock (&x->x_mutex);
+    // pthread_mutex_lock (&x->x_mutex);
     
         t_float a1 = x->x_a1;
         t_float a2 = x->x_a2;
@@ -194,7 +194,7 @@ static t_buffer *biquad_tilde_functionData (t_gobj *z, int flags)
         t_float b1 = x->x_b1;
         t_float b2 = x->x_b2;
         
-    pthread_mutex_unlock (&x->x_mutex);
+    // pthread_mutex_unlock (&x->x_mutex);
     
     buffer_appendSymbol (b, &s_list);
     buffer_appendFloat (b,  a1);
