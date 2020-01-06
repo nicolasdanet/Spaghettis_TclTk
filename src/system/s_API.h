@@ -96,7 +96,7 @@ static inline int audio_getVectorSize (void)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-static inline void audio_clip (t_sample *sound, int size)
+static inline void audio_safe (t_sample *sound, int size, int clamp)
 {
     t_sample *s = sound; int n = size;
     
@@ -106,7 +106,7 @@ static inline void audio_clip (t_sample *sound, int size)
     
     if (PD_FLOAT32_IS_INVALID_OR_ZERO (f)) { f = (t_sample)0.0; }
 
-    *s++ = PD_CLAMP (f, (t_sample)-1.0, (t_sample)1.0);
+    *s++ = clamp ? PD_CLAMP (f, (t_sample)-1.0, (t_sample)1.0) : f;
     //
     }
 }

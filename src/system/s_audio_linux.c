@@ -15,6 +15,8 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "jack/jack.h"
+#include "jack/metadata.h"
+#include "jack/uuid.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -25,25 +27,21 @@ double audio_getNanosecondsToSleep (void);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#define JACK_MAXIMUM_PORTS  DEVICES_MAXIMUM_CHANNELS
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 extern t_sample *audio_soundIn;
 extern t_sample *audio_soundOut;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-// MARK: -
 
 static jack_client_t        *jack_client;                                       /* Static. */
 
-static jack_port_t          *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Static. */
-static jack_port_t          *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Static. */
+static jack_port_t          *jack_portsIn[DEVICES_MAXIMUM_CHANNELS];            /* Static. */
+static jack_port_t          *jack_portsOut[DEVICES_MAXIMUM_CHANNELS];           /* Static. */
 
-static t_ringbuffer         *jack_ringIn[JACK_MAXIMUM_PORTS];                   /* Static. */
-static t_ringbuffer         *jack_ringOut[JACK_MAXIMUM_PORTS];                  /* Static. */
+static t_ringbuffer         *jack_ringIn[DEVICES_MAXIMUM_CHANNELS];             /* Static. */
+static t_ringbuffer         *jack_ringOut[DEVICES_MAXIMUM_CHANNELS];            /* Static. */
+
+static int                  jack_cvOut[DEVICES_MAXIMUM_CHANNELS];               /* Static. */
 
 static int                  jack_numberOfPortsIn;                               /* Static. */
 static int                  jack_numberOfPortsOut;                              /* Static. */
@@ -65,8 +63,86 @@ static t_uint32Atomic       jack_bufferSize;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
+#define METADATA_TYPE_TEXT              "text/plain"
+#define METADATA_TYPE_INTEGER           "http://www.w3.org/2001/XMLSchema#integer"      // --
+#define METADATA_PRETTY_NAME            "http://jackaudio.org/metadata/pretty-name"     // --
+#define METADATA_SIGNAL_TYPE            "http://jackaudio.org/metadata/signal-type"     // --
+#define METADATA_ORDER                  "http://jackaudio.org/metadata/order"           // --
+#define METADATA_LV2_MINIMUM            "http://lv2plug.in/ns/lv2core#minimum"          // --
+#define METADATA_LV2_MAXIMUM            "http://lv2plug.in/ns/lv2core#maximum"          // --
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
 void audio_vectorShrinkIn   (int);
 void audio_vectorShrinkOut  (int);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+int  metadata_getCV         (int isOutput, int n);
+int  metadata_getMinimum    (int isOutput, int n);
+int  metadata_getMaximum    (int isOutput, int n);
+
+t_symbol *metadata_getName  (int isOutput, int n);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// MARK: -
+
+static void jack_setMetadataName (jack_client_t *client, jack_uuid_t uuid, int isOutput, int n)
+{
+    t_symbol *s = metadata_getName (isOutput, n);
+    
+    if (s) {
+        jack_set_property (client, uuid, METADATA_PRETTY_NAME, s->s_name, METADATA_TYPE_TEXT);
+    }
+}
+
+static void jack_setMetadataCV (jack_client_t *client, jack_uuid_t uuid, int isOutput, int n)
+{
+    int cv = metadata_getCV (isOutput, n);
+    
+    if (cv) {
+        jack_set_property (client, uuid, METADATA_SIGNAL_TYPE, "CV", METADATA_TYPE_TEXT);
+    }
+}
+
+static void jack_setMetadataLV2 (jack_client_t *client, jack_uuid_t uuid, int isOutput, int n)
+{
+    int min = metadata_getMinimum (isOutput, n);
+    int max = metadata_getMaximum (isOutput, n);
+    
+    if (min != max) {
+
+        char t0[PD_STRING] = { 0 }; string_sprintf (t0, PD_STRING, "%d", PD_MIN (min, max));
+        char t1[PD_STRING] = { 0 }; string_sprintf (t1, PD_STRING, "%d", PD_MAX (min, max));
+    
+        jack_set_property (client, uuid, METADATA_LV2_MINIMUM, t0, METADATA_TYPE_INTEGER);
+        jack_set_property (client, uuid, METADATA_LV2_MAXIMUM, t1, METADATA_TYPE_INTEGER);
+    }
+}
+
+static void jack_setMetadata (jack_client_t *client, jack_port_t *port, int isOutput, int n)
+{
+    const jack_uuid_t uuid = jack_port_uuid (port);
+
+    if (!jack_uuid_empty (uuid)) {
+
+        jack_setMetadataName (client, uuid, isOutput, n);
+        jack_setMetadataCV (client, uuid, isOutput, n);
+        jack_setMetadataLV2 (client, uuid, isOutput, n);
+    }
+}
+
+static void jack_removeMetadata (jack_client_t *client, jack_port_t *port)
+{
+    const jack_uuid_t uuid = jack_port_uuid (port);
+
+    if (!jack_uuid_empty (uuid)) { jack_remove_properties (client, uuid); }
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -76,7 +152,7 @@ static void jack_buffersFree (void)
 {
     int i;
 
-    for (i = 0; i < JACK_MAXIMUM_PORTS; i++) {
+    for (i = 0; i < DEVICES_MAXIMUM_CHANNELS; i++) {
         if (jack_ringIn[i])  { ringbuffer_free (jack_ringIn[i]);  jack_ringIn[i]  = NULL; }
         if (jack_ringOut[i]) { ringbuffer_free (jack_ringOut[i]); jack_ringOut[i] = NULL; }
     }
@@ -213,8 +289,8 @@ t_error audio_openNative (t_devices *p)
     //
     jack_status_t status;
     
-    numberOfChannelsIn  = PD_MIN (numberOfChannelsIn, JACK_MAXIMUM_PORTS);
-    numberOfChannelsOut = PD_MIN (numberOfChannelsOut, JACK_MAXIMUM_PORTS);
+    numberOfChannelsIn  = PD_MIN (numberOfChannelsIn, DEVICES_MAXIMUM_CHANNELS);
+    numberOfChannelsOut = PD_MIN (numberOfChannelsOut, DEVICES_MAXIMUM_CHANNELS);
  
     PD_ASSERT (!jack_client);
 
@@ -246,7 +322,8 @@ t_error audio_openNative (t_devices *p)
     char t[PD_STRING] = { 0 };
     string_sprintf (t, PD_STRING, "input_%d", i + 1);
     jack_portsIn[i] = jack_port_register (jack_client, t, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-    if (!jack_portsIn[i]) {
+    if (jack_portsIn[i]) { jack_setMetadata (jack_client, jack_portsIn[i], 0, i); }
+    else {
         error_failed (sym_JACK);
         break;
     }
@@ -260,7 +337,9 @@ t_error audio_openNative (t_devices *p)
     char t[PD_STRING] = { 0 };
     string_sprintf (t, PD_STRING, "output_%d", i + 1);
     jack_portsOut[i] = jack_port_register (jack_client, t, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-    if (!jack_portsOut[i]) {
+    jack_cvOut[i]    = metadata_getCV (1, i);
+    if (jack_portsOut[i]) { jack_setMetadata (jack_client, jack_portsOut[i], 1, i); }
+    else {
         error_failed (sym_JACK);
         break;  
     }
@@ -284,11 +363,13 @@ void audio_closeNative (void)
     //
     int i;
     jack_deactivate (jack_client);
-    for (i = 0; i < jack_numberOfPortsIn; i++)  { 
+    for (i = 0; i < jack_numberOfPortsIn; i++)  {
+        jack_removeMetadata (jack_client, jack_portsIn[i]);
         jack_port_unregister (jack_client, jack_portsIn[i]); 
         jack_portsIn[i] = NULL;
     }
-    for (i = 0; i < jack_numberOfPortsOut; i++) { 
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+        jack_removeMetadata (jack_client, jack_portsOut[i]);
         jack_port_unregister (jack_client, jack_portsOut[i]);
         jack_portsOut[i] = NULL;
     }
@@ -361,7 +442,7 @@ int audio_pollNative (void)
     sound = audio_soundOut;
         
     for (i = 0; i < jack_numberOfPortsOut; i++) {
-        audio_clip (sound, INTERNAL_BLOCKSIZE);
+        audio_safe (sound, INTERNAL_BLOCKSIZE, (jack_cvOut[i] == 0));
         ringbuffer_write (jack_ringOut[i], (const void *)sound, INTERNAL_BLOCKSIZE);
         memset ((void *)sound, 0, INTERNAL_BLOCKSIZE * sizeof (t_sample));                  /* Zeroed. */
         sound += INTERNAL_BLOCKSIZE;
