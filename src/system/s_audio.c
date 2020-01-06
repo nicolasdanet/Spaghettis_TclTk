@@ -41,6 +41,8 @@ pthread_mutex_t         audio_mutex;                /* Static. */
 
 void audio_vectorInitialize (t_float, int, int);
 
+void metadata_report        (t_error err);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -115,7 +117,7 @@ t_error audio_open (void)
     //
     }
 
-    audio_report (err, &audio);
+    metadata_report (err); audio_report (err, &audio);
     
     return err;
 }

@@ -24,6 +24,7 @@ void audio_fromDialog           (int, t_atom *);
 void midi_requireDialog         (void);
 void midi_fromDialog            (int, t_atom *);
 void canvas_quit                (void);
+void metadata_setParsed         (int, t_atom *);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -68,6 +69,11 @@ static void global_clear (void *dummy, t_symbol *s, int argc, t_atom *argv)
 static void global_dsp (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) { dsp_setState ((int)atom_getFloatAtIndex (0, argc, argv)); }
+}
+
+static void global_metadata (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) { metadata_setParsed (argc, argv); }
 }
 
 static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
@@ -158,12 +164,13 @@ void global_setup (void)
             CLASS_ABSTRACT,
             A_NULL);
 
-    class_addMethod (c, (t_method)global_newPatch,              sym_new,    A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)global_open,                  sym_open,   A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)global_scan,                  sym_scan,   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)global_clear,                 sym_clear,  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)global_dsp,                   sym_dsp,    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)global_quit,                  sym_quit,   A_NULL);
+    class_addMethod (c, (t_method)global_newPatch,              sym_new,        A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)global_open,                  sym_open,       A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)global_scan,                  sym_scan,       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_clear,                 sym_clear,      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_dsp,                   sym_dsp,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_metadata,              sym_metadata,   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_quit,                  sym_quit,       A_NULL);
     
     class_addMethod (c, (t_method)global_key,                   sym__key,               A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_font,                  sym__font,              A_GIMME, A_NULL);

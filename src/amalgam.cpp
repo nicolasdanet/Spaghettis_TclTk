@@ -135,6 +135,7 @@
 #include "system/s_devices.c"
 #include "system/s_deviceslist.c"
 #include "system/s_devicesfetch.c"
+#include "system/s_metadata.c"
 #include "system/s_midi_API.c"
 #include "system/s_audio_API.c"
 
