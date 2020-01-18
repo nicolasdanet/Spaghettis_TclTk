@@ -65,8 +65,6 @@ font="${rep}/resources/font"
 
 echo "Build ..."
 
-export CPUFLAGS="-march=native"
-
 cd "${rep}/src"                                                         || exit 1
 make -f makefile.mac                                                    || exit 1
 cd "${rep}"                                                             || exit 1
@@ -118,18 +116,6 @@ codesign    --options runtime \
             --entitlements ./resources/Entitlements.plist \
             --deep \
             -f -s "-" "${app}"                                          || exit 1
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Build and launch the tests.
-
-echo "Build tests ..."
-cd "${rep}/tests"                                                       || exit 1
-./build.sh                                                              || exit 1
-
-echo "Launch tests ..."
-./tests                                                                 || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
