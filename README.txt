@@ -1,15 +1,17 @@
 
 # Spaghettis
 
-    Yet another (AT YOUR OWN RISK) fork of Pure Data < http://msp.ucsd.edu/ >.
+    Yet another fork of Pure Data (in development, alpha).
+    
+    < http://msp.ucsd.edu/ >
 
 Platforms:
 
     Tested on Ubuntu 18.04, macOS 10.15, and Raspbian Buster (RPI4).
-    
+        
 Dependencies:
 
-    On GNU/Linux following packages are required:
+    On Debian-based following packages are required:
     
     - tk8.6
     - tcl8.6
