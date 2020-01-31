@@ -480,7 +480,7 @@
 
 /* Audio / MIDI. */
 
-#if PD_WITH_DUMMY
+#if defined ( PD_BUILDING_TESTS )
 
     #include "system/s_midi_dummy.c"
     #include "system/s_audio_dummy.c"
@@ -510,7 +510,7 @@
     #include "system/s_audio_linux.c"
 #endif
 
-#endif // PD_WITH_DUMMY
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

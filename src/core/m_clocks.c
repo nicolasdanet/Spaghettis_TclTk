@@ -275,7 +275,7 @@ int clocks_clean (t_clocks *x)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_DEADCODE
+#if PD_BUILDING_TESTS
 
 static char clocks_string[CLOCKS_SIZE + 1];     /* Static. */
 
@@ -302,7 +302,7 @@ char *clocks_debug (t_clocks *x, int n)
     return clocks_string;
 }
 
-#endif // PD_WITH_DEADCODE
+#endif // PD_BUILDING_TESTS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

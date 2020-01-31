@@ -95,7 +95,7 @@ static t_closure *closure_fetch (t_gobj *owner, int type)
     return NULL;
 }
 
-#if PD_WITH_DEADCODE
+#if 0
 
 t_space *space_fetch (t_gobj *o)
 {

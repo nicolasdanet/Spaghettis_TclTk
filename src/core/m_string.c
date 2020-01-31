@@ -119,20 +119,20 @@ t_error string_addAtom (char *dest, size_t size, t_atom *a)
     return err;
 }
 
-#if PD_WITH_DEADCODE
+#if PD_BUILDING_TESTS
 
 void string_clear (char *dest, size_t size)
 {
     (void)size; dest[0] = 0;
 }
 
-#endif
+#endif // PD_BUILDING_TESTS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_DEADCODE
+#if 0
 
 static t_error string_escapeCharacter (char *dest, size_t size, char c)
 {
@@ -169,7 +169,7 @@ t_error string_escapeOccurrence (char *dest, size_t size, const char *chars)
     return err;
 }
 
-#endif // PD_WITH_DEADCODE
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -225,7 +225,7 @@ int string_contains (const char *s, const char *isContained)
     return (strstr (s, isContained) != NULL);
 }
 
-#if PD_WITH_DEADCODE
+#if 0
 
 void string_getNumberOfColumnsAndLines (const char *s, int *numberOfColumns, int *numberOfLines)
 {
@@ -251,7 +251,7 @@ void string_getNumberOfColumnsAndLines (const char *s, int *numberOfColumns, int
     *numberOfLines   = n;
 }
 
-#endif // PD_WITH_DEADCODE
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

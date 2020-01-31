@@ -27,7 +27,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_DEADCODE
+#if PD_BUILDING_TESTS
 
 static const int randMT_DeBruijn32[] =      /* Static. */
     {
@@ -60,7 +60,7 @@ static int randMT_uInt32NextPower2Index (uint32_t v)
     }
 }
 
-#endif // PD_WITH_DEADCODE
+#endif // PD_BUILDING_TESTS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ double randMT_getDouble (t_randMT *x)
     return genrand32_res53 (x);
 }
 
-#if PD_WITH_DEADCODE
+#if PD_BUILDING_TESTS
 
 /* < http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/efaq.html > */
 
@@ -102,7 +102,7 @@ long randMT_getInteger (t_randMT *x, long v)
     }
 }
 
-#endif // PD_WITH_DEADCODE
+#endif // PD_BUILDING_TESTS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ long randMT_getInteger (t_randMT *x, long v)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_DEADCODE
+#if PD_BUILDING_TESTS
 
 static const int randMT_DeBruijn64[] =      /* Static. */
     {
@@ -154,7 +154,7 @@ static int randMT_uInt64NextPower2Index (uint64_t v)
     }
 }
 
-#endif // PD_WITH_DEADCODE
+#endif // PD_BUILDING_TESTS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ double randMT_getDouble (t_randMT *x)
     return genrand64_real2 (x);
 }
 
-#if PD_WITH_DEADCODE
+#if PD_BUILDING_TESTS
 
 /* < http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/efaq.html > */
 
@@ -196,7 +196,7 @@ long randMT_getInteger (t_randMT *x, long v)
     }
 }
 
-#endif // PD_WITH_DEADCODE
+#endif // PD_BUILDING_TESTS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
