@@ -134,7 +134,7 @@ int audiodevice_getNumberOfChannelsOut (t_audiodevice *device)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_DEADCODE
+#if 0
 
 int audiodevice_getLatencyProceed (t_audiodevice *device, int isInput)
 {
@@ -191,7 +191,7 @@ int audiodevice_getLatencyOut (t_audiodevice *device)
     return audiodevice_getLatencyProceed (device, 0);
 }
 
-#endif // PD_WITH_DEADCODE
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

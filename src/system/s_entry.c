@@ -21,7 +21,7 @@
 
 int sys_isMainThread (void)
 {
-    #if PD_WITH_MAIN
+    #if defined ( PD_BUILDING_APPLICATION )
     
     static pthread_t main; static int once = 0;
     
@@ -35,14 +35,14 @@ int sys_isMainThread (void)
     
     return 0;
     
-    #endif // PD_WITH_MAIN
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_MAIN
+#if defined ( PD_BUILDING_APPLICATION )
 
 /* Runtime check. */
 
@@ -68,7 +68,7 @@ int main (int argc, char **argv)
     }
 }
 
-#endif // PD_WITH_MAIN
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

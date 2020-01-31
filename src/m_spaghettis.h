@@ -241,12 +241,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if ! ( PD_BUILDING_APPLICATION )   /* Avoid namespace pollution. */
-
-#include <stdint.h>
-#include <stdlib.h>
-
-#else 
+#if defined ( PD_BUILDING_APPLICATION ) || defined ( PD_BUILDING_TESTS )
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -304,14 +299,6 @@
 #define PD_WITH_DEBUG               0                   /* Debug mode. */
 #endif
 
-#ifndef PD_WITH_DEADCODE
-#define PD_WITH_DEADCODE            0                   /* Include unused code. */
-#endif
-
-#ifndef PD_WITH_MAIN
-#define PD_WITH_MAIN                1                   /* Use main entry. */
-#endif
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
@@ -332,7 +319,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#endif // PD_BUILDING_APPLICATION
+#else   /* Avoid namespace pollution. */
+
+#include <stdint.h>
+#include <stdlib.h>
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -445,7 +437,7 @@ enum {
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_BUILDING_APPLICATION
+#if defined ( PD_BUILDING_APPLICATION ) || defined ( PD_BUILDING_TESTS )
 
 struct _abstractions;
 struct _box;
@@ -465,7 +457,7 @@ struct _template;
 struct _vinlet;
 struct _voutlet;
 
-#endif // PD_BUILDING_APPLICATION
+#endif
 
 struct _array;
 struct _chain;
@@ -477,7 +469,7 @@ struct _inlet;
 struct _outlet;
 struct _space;
 
-#if PD_BUILDING_APPLICATION
+#if defined ( PD_BUILDING_APPLICATION ) || defined ( PD_BUILDING_TESTS )
 
 #define t_abstractions              struct _abstractions
 #define t_box                       struct _box
@@ -497,7 +489,7 @@ struct _space;
 #define t_vinlet                    struct _vinlet
 #define t_voutlet                   struct _voutlet
 
-#endif // PD_BUILDING_APPLICATION
+#endif
 
 #define t_array                     struct _array
 #define t_chain                     struct _chain
@@ -624,7 +616,7 @@ typedef void        (*t_initializerfn)  (void *dest, void *src);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_BUILDING_APPLICATION
+#if defined ( PD_BUILDING_APPLICATION )
 
 #if PD_WITH_DEBUG
 
@@ -640,13 +632,19 @@ typedef void        (*t_initializerfn)  (void *dest, void *src);
 
 #endif // PD_WITH_DEBUG
 
+#elif defined ( PD_BUILDING_TESTS )
+
+#define PD_MEMORY_GET(n)                memory_get ((n))
+#define PD_MEMORY_RESIZE(ptr, m, n)     memory_getResize ((ptr), (m), (n))
+#define PD_MEMORY_FREE(ptr)             memory_free ((ptr))
+
 #else
 
 #define PD_MEMORY_GET(n)                memory_getForExternal ((n))
 #define PD_MEMORY_RESIZE(ptr, m, n)     memory_getResizeForExternal ((ptr), (m), (n))
 #define PD_MEMORY_FREE(ptr)             memory_freeForExternal ((ptr))
 
-#endif // PD_BUILDING_APPLICATION
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -1036,7 +1034,7 @@ PD_DLL void     space_setFloat7                 (t_space *space, t_float f);
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_BUILDING_APPLICATION
+#if defined ( PD_BUILDING_APPLICATION ) || defined ( PD_BUILDING_TESTS )
 
 #define class_addDSP(c, m)          class_addMethod ((c), (t_method)(m), sym_dsp, A_CANT, A_NULL)
 #define class_addClick(c, m)        class_addMethod ((c), (t_method)(m), sym_click, A_GIMME, A_NULL)

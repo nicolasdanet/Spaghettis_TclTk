@@ -31,19 +31,19 @@ typedef struct _unop_tilde t_rsqrt_tilde;
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-#if PD_WITH_DEADCODE
+#if PD_BUILDING_TESTS
 
 t_sample rsqrt_tableMantissa[RSQRT_MANTISSA_SIZE];           /* Static. */
 t_sample rsqrt_tableExponential[RSQRT_EXPONENTIAL_SIZE];     /* Static. */
 
-#endif // PD_WITH_DEADCODE
+#endif // PD_BUILDING_TESTS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 void rsqrt_tilde_initialize (void)
 {
-    #if PD_WITH_DEADCODE
+    #if PD_BUILDING_TESTS
     
     int i;
     
@@ -68,7 +68,7 @@ void rsqrt_tilde_initialize (void)
         rsqrt_tableMantissa[i] = (t_sample)(1.0 / sqrt (f));
     }
     
-    #endif // PD_WITH_DEADCODE
+    #endif // PD_BUILDING_TESTS
 }
 
 // -----------------------------------------------------------------------------------------------------------
