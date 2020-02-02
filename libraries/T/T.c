@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <sys/shm.h>
-#include <sys/sysctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -28,6 +27,7 @@
 #if TTT_APPLE
     #include <mach/mach.h>
     #include <mach/mach_time.h>
+    #include <sys/sysctl.h>
 #endif
 
 #if TTT_LINUX
