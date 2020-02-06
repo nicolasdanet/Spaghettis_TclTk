@@ -1,5 +1,5 @@
 pkgname="spaghettis-git"
-pkgdesc="Yet another fork of Pure Data (in development, alpha)"
+pkgdesc="Yet another fork of Pure Data (in development, alpha)."
 pkgver=r5441.75a6d3a1
 pkgrel=1
 epoch=
