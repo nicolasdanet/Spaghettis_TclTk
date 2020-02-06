@@ -7,26 +7,26 @@
 
 Platforms:
 
-    Tested on Ubuntu 18.04, macOS 10.15, and Raspbian Buster (RPI4).
+    Tested on Ubuntu 18.04, macOS 10.15, Manjaro and Raspbian Buster (RPI4).
         
 Dependencies:
 
     On Debian-based following packages are required:
     
-    - tk8.6
-    - tcl8.6
-    - libasound2-dev
-    - libjack-jackd2-dev
+        - tk8.6
+        - tcl8.6
+        - libasound2-dev
+        - libjack-jackd2-dev
+    
+    On Arch-based following packages are required:
+    
+        - tk
+        - jack
 
 Build:
 
     Open a terminal and run the "Spaghettis/build.sh" script.
     Nothing will be installed in your system.
-    Note that a properly set toolchain is required.
-    On macOS the easy way is to get Xcode.
-
-Run:
-
     On GNU/Linux execute "Spaghettis/build/bin/spaghettis".
 
 Residual:
