@@ -72,7 +72,7 @@ static void *textfile_new (t_symbol *s, int argc, t_atom *argv)
     
     x->ql_indexOfMessage = 0;
     x->ql_owner          = instance_contextGetCurrent();
-    x->ql_outletLeft     = outlet_newList (cast_object (x));
+    x->ql_outletLeft     = outlet_newMixed (cast_object (x));
     x->ql_outletMiddle   = outlet_newBang (cast_object (x));
     x->ql_outletRight    = outlet_newBang (cast_object (x));
     
