@@ -24,11 +24,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that the grip size has been kept for compatibility with legacy patches only. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #define IEM_PANEL_DEFAULT_WIDTH     275
 #define IEM_PANEL_DEFAULT_HEIGHT    45
 
@@ -223,18 +218,18 @@ static void panel_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  object_getX (cast_object (z)));
     buffer_appendFloat (b,  object_getY (cast_object (z)));
     buffer_appendSymbol (b, sym_cnv);
-    buffer_appendFloat (b,  x->x_gui.iem_width);
+    buffer_appendFloat (b,  IEM_DEFAULT_SIZE);                  /* Legacy. */
     buffer_appendFloat (b,  x->x_panelWidth);
     buffer_appendFloat (b,  x->x_panelHeight);
     buffer_appendSymbol (b, names.n_unexpandedSend);
     buffer_appendSymbol (b, names.n_unexpandedReceive);
-    buffer_appendSymbol (b, names.n_unexpandedLabel);
-    buffer_appendFloat (b,  x->x_gui.iem_labelX);
-    buffer_appendFloat (b,  x->x_gui.iem_labelY);
-    buffer_appendFloat (b,  iemgui_serializeFontStyle (cast_iem (z)));
-    buffer_appendFloat (b,  x->x_gui.iem_fontSize);
+    buffer_appendSymbol (b, symbol_nil());                      /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
     buffer_appendSymbol (b, colors.c_symColorBackground);
-    buffer_appendSymbol (b, colors.c_symColorLabel);
+    buffer_appendSymbol (b, color_toEncoded (0));               /* Legacy. */
     buffer_appendSemicolon (b);
     
     gobj_saveUniques (z, b, flags);
@@ -347,26 +342,17 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_panel *x = (t_panel *)pd_new (panel_class);
     
-    int gripSize        = IEM_DEFAULT_SIZE;
-    int panelWidth      = IEM_PANEL_DEFAULT_WIDTH;
-    int panelHeight     = IEM_PANEL_DEFAULT_HEIGHT;
-    int labelX          = 0;
-    int labelY          = 0;
-    int labelFontSize   = IEM_DEFAULT_FONT;
+    int panelWidth  = IEM_PANEL_DEFAULT_WIDTH;
+    int panelHeight = IEM_PANEL_DEFAULT_HEIGHT;
         
     if (argc < 12) { iemgui_deserializeDefault (cast_iem (x)); }
     else {
     //
-    gripSize        = (int)atom_getFloatAtIndex (0, argc, argv);
     panelWidth      = (int)atom_getFloatAtIndex (1, argc, argv);
     panelHeight     = (int)atom_getFloatAtIndex (2, argc, argv);
-    labelX          = (int)atom_getFloatAtIndex (6, argc, argv);
-    labelY          = (int)atom_getFloatAtIndex (7, argc, argv);
-    labelFontSize   = (int)atom_getFloatAtIndex (9, argc, argv);
     
     iemgui_deserializeNames (cast_iem (x), 3, argv);
-    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (8, argc, argv));
-    iemgui_deserializeColors (cast_iem (x), argv + 10, NULL, argv + 11);
+    iemgui_deserializeColors (cast_iem (x), argv + 10, NULL);
     //
     }
     
@@ -375,12 +361,6 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_canSend    = symbol_isNil (x->x_gui.iem_send) ? 0 : 1;
     x->x_gui.iem_canReceive = symbol_isNil (x->x_gui.iem_receive) ? 0 : 1;
 
-    x->x_gui.iem_width      = PD_MAX (gripSize, IEM_PANEL_MINIMUM_SIZE);
-    x->x_gui.iem_height     = PD_MAX (gripSize, IEM_PANEL_MINIMUM_SIZE);
-    x->x_gui.iem_labelX     = labelX;
-    x->x_gui.iem_labelY     = labelY;
-    x->x_gui.iem_fontSize   = labelFontSize;
-    
     iemgui_checkSendReceiveLoop (cast_iem (x));
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
@@ -388,9 +368,6 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     x->x_panelWidth  = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
     x->x_panelHeight = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
 
-    SET_FLOAT (&x->x_t[0], 0.0);
-    SET_FLOAT (&x->x_t[1], 0.0);
-    
     return x;
 }
 

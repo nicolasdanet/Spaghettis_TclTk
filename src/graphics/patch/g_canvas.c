@@ -193,7 +193,7 @@ static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     PD_UNUSED (err); PD_ASSERT (!err);
     
-    if (!isGOP) {   /* Allow compatbility with legacy. */
+    if (!isGOP) {   /* Allow compatibility with legacy. */
     
         glist_setBounds (glist, &bounds);
             

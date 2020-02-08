@@ -488,14 +488,14 @@ static void vu_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  x->x_gui.iem_width);
     buffer_appendFloat (b,  x->x_gui.iem_height);
     buffer_appendSymbol (b, names.n_unexpandedReceive);
-    buffer_appendSymbol (b, names.n_unexpandedLabel);
-    buffer_appendFloat (b,  x->x_gui.iem_labelX);
-    buffer_appendFloat (b,  x->x_gui.iem_labelY);
-    buffer_appendFloat (b,  iemgui_serializeFontStyle (cast_iem (z)));
-    buffer_appendFloat (b,  x->x_gui.iem_fontSize);
+    buffer_appendSymbol (b, symbol_nil());                      /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
     buffer_appendSymbol (b, colors.c_symColorBackground);
-    buffer_appendSymbol (b, colors.c_symColorLabel);
-    buffer_appendFloat (b,  x->x_hasScale);
+    buffer_appendSymbol (b, color_toEncoded (0));               /* Legacy. */
+    buffer_appendFloat (b,  0);                                 /* Legacy. */
     buffer_appendFloat (b,  0);
     buffer_appendSemicolon (b);
     
@@ -625,29 +625,20 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_vu *x = (t_vu *)pd_new (vu_class);
 
-    int width           = IEM_DEFAULT_SIZE;
-    int height          = IEM_VUMETER_STEPS * IEM_VUMETER_THICKNESS;
-    int labelX          = 0;
-    int labelY          = 0;
-    int labelFontSize   = IEM_DEFAULT_FONT;
-    int hasScale        = 0;
+    int width       = IEM_DEFAULT_SIZE;
+    int height      = IEM_VUMETER_STEPS * IEM_VUMETER_THICKNESS;
 
     if (argc < 11) { iemgui_deserializeDefault (cast_iem (x)); }
     else {
     //
     width           = (int)atom_getFloatAtIndex (0,  argc, argv);
     height          = (int)atom_getFloatAtIndex (1,  argc, argv);
-    labelX          = (int)atom_getFloatAtIndex (4,  argc, argv);
-    labelY          = (int)atom_getFloatAtIndex (5,  argc, argv);
-    labelFontSize   = (int)atom_getFloatAtIndex (7,  argc, argv);
-    hasScale        = (int)atom_getFloatAtIndex (10, argc, argv);
     
     /* Note that the value of height is pitiably attribute to the send symbol. */
     /* Must be kept for backward compatibility. */
     
     iemgui_deserializeNames (cast_iem (x), 1, argv);
-    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (6, argc, argv));
-    iemgui_deserializeColors (cast_iem (x), argv + 8, NULL, argv + 9);
+    iemgui_deserializeColors (cast_iem (x), argv + 8, NULL);
     //
     }
 
@@ -656,9 +647,6 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_canSend    = 0;
     x->x_gui.iem_canReceive = symbol_isNil (x->x_gui.iem_receive) ? 0 : 1;
     x->x_gui.iem_width      = PD_MAX (width, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_labelX     = labelX;
-    x->x_gui.iem_labelY     = labelY;
-    x->x_gui.iem_fontSize   = labelFontSize;
         
     vu_setHeight (x, height);
     
@@ -666,8 +654,6 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
-    x->x_hasScale = (hasScale != 0);
-    
     inlet_new2 (x, &s_float);
     
     x->x_outletLeft  = outlet_newFloat (cast_object (x));

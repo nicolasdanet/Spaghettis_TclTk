@@ -156,7 +156,6 @@ static inline int string_startWithOneDollarAndOneNumber (const char *s)
 
 #define COLOR_IEM_BACKGROUND        0xffffff    // White.
 #define COLOR_IEM_FOREGROUND        0x000000    // Black.
-#define COLOR_IEM_LABEL             0x000000    // Black.
 #define COLOR_IEM_PANEL             0xcccccc    // Grey.
 
 // -----------------------------------------------------------------------------------------------------------

@@ -61,7 +61,7 @@ static t_color iemgui_colorDecodeFromInteger (int color)
 static t_color iemgui_colorDecode (t_atom *a)
 {
     if (IS_FLOAT (a))  { return iemgui_colorDecodeFromInteger ((int)GET_FLOAT (a)); }
-    if (IS_SYMBOL (a)) { return color_withEncoded (atom_getSymbol (a));       }
+    if (IS_SYMBOL (a)) { return color_withEncoded (atom_getSymbol (a)); }
     
     PD_BUG;
     
@@ -72,24 +72,11 @@ static t_color iemgui_colorDecode (t_atom *a)
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-/* For convenience, for labels only, a float is loaded as integers (mainly in order to enumerate things). */
-/* It is prohibited for send and receive. */
-/* Unused but kept for compatibility. */
+/* Note that legacy patches could contains A_FLOAT. */
 
-static t_symbol *iemgui_fetchName (int i, t_atom *argv, int isNumberAllowed)
+static t_symbol *iemgui_fetchName (int i, t_atom *argv)
 {
-    if (IS_SYMBOL (argv + i))     { return atom_getSymbol (argv + i); }
-    else if (IS_FLOAT (argv + i)) {
-    //
-    if (isNumberAllowed) {
-        char t[PD_STRING] = { 0 };
-        string_sprintf (t, PD_STRING, "%d", (int)atom_getFloat (argv + i));
-        return gensym (t);
-    }
-    //
-    }
-
-    return symbol_nil();
+    if (IS_SYMBOL (argv + i)) { return atom_getSymbol (argv + i); } else { return symbol_nil(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,8 +84,9 @@ static t_symbol *iemgui_fetchName (int i, t_atom *argv, int isNumberAllowed)
 
 /* Unexpanded names cannot be fetch at instantiation due to already substituted arguments. */
 /* Consequently it must be done by looking up again the object's text buffer. */
+/* Note that legacy patches could contains A_FLOAT. */
 
-static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, int isNumberAllowed, t_symbol *fallback)
+static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *fallback)
 {
     if (!*s) {
         t_error err = PD_ERROR;
@@ -106,7 +94,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, int isNumbe
         if (i >= 0 && i < buffer_getSize (b)) {
             char t[PD_STRING] = { 0 };
             t_atom *a = buffer_getAtomAtIndex (b, i);
-            if (isNumberAllowed || !IS_FLOAT (a)) {
+            if (!IS_FLOAT (a)) {
                 if (!(err = atom_toString (a, t, PD_STRING))) { *s = gensym (t); }
             }
         }
@@ -120,13 +108,11 @@ static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 {
     int i = iem->iem_cacheIndex + 1;    /* Buffer start now with the name of the object prepended. */
     
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedSend,    i + 0, 0, iem->iem_send);
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, i + 1, 0, iem->iem_receive);
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedLabel,   i + 2, 1, iem->iem_label);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedSend,    i + 0, iem->iem_send);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, i + 1, iem->iem_receive);
         
     s->n_unexpandedSend    = iem->iem_unexpandedSend;
     s->n_unexpandedReceive = iem->iem_unexpandedReceive;
-    s->n_unexpandedLabel   = iem->iem_unexpandedLabel;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -137,12 +123,6 @@ void iemgui_serializeColors (t_iem *iem, t_iemcolors *c)
 {
     c->c_symColorBackground = color_toEncoded (iem->iem_colorBackground);
     c->c_symColorForeground = color_toEncoded (iem->iem_colorForeground);
-    c->c_symColorLabel      = color_toEncoded (iem->iem_colorLabel);
-}
-
-int iemgui_serializeFontStyle (t_iem *iem)
-{
-    return (int)iem->iem_fontStyle;
 }
 
 int iemgui_serializeLoadbang (t_iem *iem)
@@ -156,13 +136,11 @@ void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
     
     n->n_unexpandedSend    = symbol_dollarToHash (n->n_unexpandedSend);
     n->n_unexpandedReceive = symbol_dollarToHash (n->n_unexpandedReceive);
-    n->n_unexpandedLabel   = symbol_dollarToHash (n->n_unexpandedLabel);
 }
 
-void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foreground, t_atom *label)
+void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foreground)
 {
     iem->iem_colorForeground = COLOR_IEM_FOREGROUND;
-    iem->iem_colorLabel      = COLOR_IEM_LABEL;
     
     if (pd_class (iem) == panel_class) { iem->iem_colorBackground = COLOR_IEM_PANEL; }
     else {
@@ -171,12 +149,6 @@ void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foregroun
     
     if (background) { iem->iem_colorBackground = iemgui_colorDecode (background); }
     if (foreground) { iem->iem_colorForeground = iemgui_colorDecode (foreground); }
-    if (label)      { iem->iem_colorLabel      = iemgui_colorDecode (label);      }
-}
-
-void iemgui_deserializeFontStyle (t_iem *iem, int n)
-{
-    iem->iem_fontStyle = (char)n;
 }
 
 void iemgui_deserializeLoadbang (t_iem *iem, int n)
@@ -186,21 +158,18 @@ void iemgui_deserializeLoadbang (t_iem *iem, int n)
 
 void iemgui_deserializeNames (t_iem *iem, int i, t_atom *argv)
 {
-    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv, 0) : symbol_nil());
-    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv, 0) : symbol_nil());
-    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv, 1) : symbol_nil());
+    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv) : symbol_nil());
+    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv) : symbol_nil());
     
     iem->iem_unexpandedSend    = NULL;
     iem->iem_unexpandedReceive = NULL;
-    iem->iem_unexpandedLabel   = NULL;
     
     iem->iem_cacheIndex = i;    /* Cache this index for later lookup. */
 }
 
 void iemgui_deserializeDefault (t_iem *iem)
 {
-    iemgui_deserializeNames (iem, -PD_INT_MAX, NULL);
-    iemgui_deserializeColors (iem, NULL, NULL, NULL);
+    iemgui_deserializeNames (iem, -PD_INT_MAX, NULL); iemgui_deserializeColors (iem, NULL, NULL);
 }   
 
 // -----------------------------------------------------------------------------------------------------------
@@ -356,8 +325,8 @@ int iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     int canSend                 = 1;
     int canReceive              = 1;
 
-    t_symbol *s1 = symbol_hashToDollar (iemgui_fetchName (7, argv, 0));
-    t_symbol *s2 = symbol_hashToDollar (iemgui_fetchName (8, argv, 0));
+    t_symbol *s1 = symbol_hashToDollar (iemgui_fetchName (7, argv));
+    t_symbol *s2 = symbol_hashToDollar (iemgui_fetchName (8, argv));
 
     iem->iem_unexpandedSend     = s1;
     iem->iem_unexpandedReceive  = s2;

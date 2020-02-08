@@ -522,20 +522,20 @@ static void radio_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  x->x_gui.iem_width);
     if (x->x_mode == sym_multiple) { buffer_appendSymbol (b, x->x_mode); }
     else {
-        buffer_appendFloat (b,  x->x_changed);
+        buffer_appendFloat (b, 1);                          /* Legacy. */
     }
     buffer_appendFloat (b,  iemgui_serializeLoadbang (cast_iem (z)));
     buffer_appendFloat (b,  x->x_numberOfButtons);
     buffer_appendSymbol (b, names.n_unexpandedSend);
     buffer_appendSymbol (b, names.n_unexpandedReceive);
-    buffer_appendSymbol (b, names.n_unexpandedLabel);
-    buffer_appendFloat (b,  x->x_gui.iem_labelX);
-    buffer_appendFloat (b,  x->x_gui.iem_labelY);
-    buffer_appendFloat (b,  iemgui_serializeFontStyle (cast_iem (z)));
-    buffer_appendFloat (b,  x->x_gui.iem_fontSize);
+    buffer_appendSymbol (b, symbol_nil());                  /* Legacy. */
+    buffer_appendFloat (b,  0);                             /* Legacy. */
+    buffer_appendFloat (b,  0);                             /* Legacy. */
+    buffer_appendFloat (b,  0);                             /* Legacy. */
+    buffer_appendFloat (b,  0);                             /* Legacy. */
     buffer_appendSymbol (b, colors.c_symColorBackground);
     buffer_appendSymbol (b, colors.c_symColorForeground);
-    buffer_appendSymbol (b, colors.c_symColorLabel);
+    buffer_appendSymbol (b, color_toEncoded (0));           /* Legacy. */
     buffer_appendFloat (b,  x->x_floatValue);
     if (SAVED_DEEP (flags)) { buffer_appendFloat (b, 1.0); }
     buffer_appendSemicolon (b);
@@ -698,10 +698,6 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     {
     //
     int size            = IEM_DEFAULT_SIZE;
-    int labelX          = 0;
-    int labelY          = 0;
-    int labelFontSize   = IEM_DEFAULT_FONT;
-    int changed         = 1;
     int numberOfButtons = IEM_RADIO_BUTTONS_DEFAULT;
     t_float floatValue  = 0.0;
     t_symbol *mode      = NULL;
@@ -711,19 +707,14 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     else {
     //
     size            = (int)atom_getFloatAtIndex (0, argc,  argv);
-    changed         = (int)atom_getFloatAtIndex (1, argc,  argv);
     numberOfButtons = (int)atom_getFloatAtIndex (3, argc,  argv);
-    labelX          = (int)atom_getFloatAtIndex (7, argc,  argv);
-    labelY          = (int)atom_getFloatAtIndex (8, argc,  argv);
-    labelFontSize   = (int)atom_getFloatAtIndex (10, argc, argv);
     floatValue      = atom_getFloatAtIndex (14, argc, argv);
     mode            = atom_getSymbolAtIndex (1, argc, argv);
     deep            = (argc > 15);
     
     iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (2, argc, argv));
     iemgui_deserializeNames (cast_iem (x), 4, argv);
-    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (9, argc, argv));
-    iemgui_deserializeColors (cast_iem (x), argv + 11, argv + 12, argv + 13);
+    iemgui_deserializeColors (cast_iem (x), argv + 11, argv + 12);
     //
     }
     
@@ -733,15 +724,11 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_canReceive = symbol_isNil (x->x_gui.iem_receive) ? 0 : 1;
     x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_labelX     = labelX;
-    x->x_gui.iem_labelY     = labelY;
-    x->x_gui.iem_fontSize   = labelFontSize;
     
     iemgui_checkSendReceiveLoop (cast_iem (x));
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
-    x->x_changed = (changed != 0);
     x->x_numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_RADIO_BUTTONS_MAXIMUM);
     x->x_floatValue = (deep || x->x_gui.iem_loadbang) ? floatValue : 0;
     x->x_mode = (mode == sym_multiple) ? sym_multiple : sym_single;
