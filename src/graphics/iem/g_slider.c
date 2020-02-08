@@ -555,14 +555,14 @@ static void slider_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  iemgui_serializeLoadbang (cast_iem (z)));
     buffer_appendSymbol (b, names.n_unexpandedSend);
     buffer_appendSymbol (b, names.n_unexpandedReceive);
-    buffer_appendSymbol (b, names.n_unexpandedLabel);
-    buffer_appendFloat (b,  x->x_gui.iem_labelX);
-    buffer_appendFloat (b,  x->x_gui.iem_labelY);
-    buffer_appendFloat (b,  iemgui_serializeFontStyle (cast_iem (z)));
-    buffer_appendFloat (b,  x->x_gui.iem_fontSize);
+    buffer_appendSymbol (b, symbol_nil());                  /* Legacy. */
+    buffer_appendFloat (b,  0);                             /* Legacy. */
+    buffer_appendFloat (b,  0);                             /* Legacy. */
+    buffer_appendFloat (b,  0);                             /* Legacy. */
+    buffer_appendFloat (b,  0);                             /* Legacy. */
     buffer_appendSymbol (b, colors.c_symColorBackground);
     buffer_appendSymbol (b, colors.c_symColorForeground);
-    buffer_appendSymbol (b, colors.c_symColorLabel);
+    buffer_appendSymbol (b, color_toEncoded (0));           /* Legacy. */
     buffer_appendFloat (b,  x->x_position);
     buffer_appendFloat (b,  x->x_isSteadyOnClick);
     if (SAVED_DEEP (flags)) { buffer_appendFloat (b, 1.0); }
@@ -736,10 +736,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     int width           = x->x_isVertical ? IEM_VSLIDER_DEFAULT_WIDTH  : IEM_HSLIDER_DEFAULT_WIDTH;
     int height          = x->x_isVertical ? IEM_VSLIDER_DEFAULT_HEIGHT : IEM_HSLIDER_DEFAULT_HEIGHT;
     int isLogarithmic   = 0;
-    int labelX          = 0;
-    int labelY          = 0;
     int isSteady        = 0;
-    int labelFontSize   = IEM_DEFAULT_FONT;
     double minimum      = 0.0;
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
     t_float position    = 0.0;
@@ -753,9 +750,6 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     minimum         = (double)atom_getFloatAtIndex (2, argc, argv);
     maximum         = (double)atom_getFloatAtIndex (3, argc, argv);
     isLogarithmic   = (int)atom_getFloatAtIndex (4,  argc, argv);
-    labelX          = (int)atom_getFloatAtIndex (9,  argc, argv);
-    labelY          = (int)atom_getFloatAtIndex (10, argc, argv);
-    labelFontSize   = (int)atom_getFloatAtIndex (12, argc, argv);
     position        = atom_getFloatAtIndex (16, argc, argv);
     deep            = (argc > 18);
     
@@ -763,8 +757,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     
     iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (5, argc, argv));
     iemgui_deserializeNames (cast_iem (x), 6, argv);
-    iemgui_deserializeFontStyle (cast_iem (x), (int)atom_getFloatAtIndex (11, argc, argv));
-    iemgui_deserializeColors (cast_iem (x), argv + 13, argv + 14, argv + 15);
+    iemgui_deserializeColors (cast_iem (x), argv + 13, argv + 14);
     //
     }
     
@@ -772,9 +765,6 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_fnDraw     = (t_iemfn)slider_draw;
     x->x_gui.iem_canSend    = symbol_isNil (x->x_gui.iem_send) ? 0 : 1;
     x->x_gui.iem_canReceive = symbol_isNil (x->x_gui.iem_receive) ? 0 : 1;
-    x->x_gui.iem_labelX     = labelX;
-    x->x_gui.iem_labelY     = labelY;
-    x->x_gui.iem_fontSize   = labelFontSize;
 
     slider_setHeight (x, height);
     slider_setWidth (x, width);

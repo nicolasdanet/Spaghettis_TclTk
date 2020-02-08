@@ -28,7 +28,6 @@
 // MARK: -
 
 #define IEM_DEFAULT_SIZE                15
-#define IEM_DEFAULT_FONT                10
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -61,13 +60,11 @@
 typedef struct _iemcolors {
     t_symbol        *c_symColorBackground;
     t_symbol        *c_symColorForeground;
-    t_symbol        *c_symColorLabel;               /* Unused but kept for compatibility. */
     } t_iemcolors;
 
 typedef struct _iemnames {
     t_symbol        *n_unexpandedSend;
     t_symbol        *n_unexpandedReceive;
-    t_symbol        *n_unexpandedLabel;             /* Unused but kept for compatibility. */
     } t_iemnames;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -83,7 +80,6 @@ typedef struct _iem {
     t_object        iem_obj;                        /* MUST be the first. */
     t_glist         *iem_owner;
     t_iemfn         iem_fnDraw;
-    int             iem_fontStyle;                  /* Unused but kept for compatibility. */
     int             iem_canSend;
     int             iem_canReceive;
     int             iem_loadbang;
@@ -91,19 +87,13 @@ typedef struct _iem {
     int             iem_goThrough;
     int             iem_width;
     int             iem_height;
-    int             iem_labelX;                     /* Unused but kept for compatibility. */
-    int             iem_labelY;                     /* Unused but kept for compatibility. */
-    int             iem_fontSize;                   /* Unused but kept for compatibility. */
     t_color         iem_colorBackground;
     t_color         iem_colorForeground;
-    t_color         iem_colorLabel;                 /* Unused but kept for compatibility. */
     int             iem_cacheIndex;
     t_symbol        *iem_send;
     t_symbol        *iem_receive;
-    t_symbol        *iem_label;                     /* Unused but kept for compatibility. */
     t_symbol        *iem_unexpandedSend;
     t_symbol        *iem_unexpandedReceive;
-    t_symbol        *iem_unexpandedLabel;           /* Unused but kept for compatibility. */
     } t_iem;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,7 +103,6 @@ typedef struct _iem {
 typedef struct _bng {
     t_iem           x_gui;                          /* MUST be the first. */
     int             x_flashed;
-    int             x_flashTimeBreak;               /* Unused but kept for compatibility. */
     int             x_flashTime;
     t_outlet        *x_outlet;
     t_clock         *x_clock;
@@ -129,7 +118,6 @@ typedef struct _toggle {
 typedef struct _radio {
     t_iem           x_gui;
     int             x_isVertical;
-    int             x_changed;                      /* Unused but kept for compatibility. */
     int             x_numberOfButtons;
     int64_t         x_state;
     t_float         x_floatValue;
@@ -166,7 +154,6 @@ typedef struct _dial {
     
 typedef struct _vu {
     t_iem           x_gui;
-    int             x_hasScale;                     /* Unused but kept for compatibility. */
     int             x_thickness;
     int             x_peak;
     int             x_decibel;
@@ -178,7 +165,6 @@ typedef struct _vu {
 
 typedef struct _panel {
     t_iem           x_gui;
-    t_atom          x_t[2];
     int             x_panelWidth;
     int             x_panelHeight;
     } t_panel;
@@ -201,12 +187,10 @@ typedef struct _menubutton {
 // MARK: -
 
 void    iemgui_serializeColors              (t_iem *iem, t_iemcolors *c);
-int     iemgui_serializeFontStyle           (t_iem *iem);
 int     iemgui_serializeLoadbang            (t_iem *iem);
 void    iemgui_serializeNames               (t_iem *iem, t_iemnames *n);
 
-void    iemgui_deserializeColors            (t_iem *iem, t_atom *bgrd, t_atom *fgrd, t_atom *label);
-void    iemgui_deserializeFontStyle         (t_iem *iem, int n);
+void    iemgui_deserializeColors            (t_iem *iem, t_atom *bgrd, t_atom *fgrd);
 void    iemgui_deserializeLoadbang          (t_iem *iem, int n);
 void    iemgui_deserializeNames             (t_iem *iem, int i, t_atom *argv);
 
@@ -239,8 +223,8 @@ void    iemgui_dirty                        (t_iem *iem, int isDirty, int isUndo
 // -----------------------------------------------------------------------------------------------------------
 // MARK: -
 
-t_buffer    *iemgui_functionData                (t_gobj *z, int flags);
-void        iemgui_restore                      (t_gobj *x, t_gobj *old);
+t_buffer    *iemgui_functionData            (t_gobj *z, int flags);
+void        iemgui_restore                  (t_gobj *x, t_gobj *old);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

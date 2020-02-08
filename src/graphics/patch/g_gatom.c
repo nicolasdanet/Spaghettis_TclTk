@@ -35,14 +35,11 @@ struct _gatom {
     t_atom          a_atom;
     t_float         a_lowRange;
     t_float         a_highRange;
-    int             a_position;                         /* Unused but kept for compatibility. */
     t_glist         *a_owner;
     t_symbol        *a_send;
     t_symbol        *a_receive;
-    t_symbol        *a_label;                           /* Unused but kept for compatibility. */
     t_symbol        *a_unexpandedSend;
     t_symbol        *a_unexpandedReceive;
-    t_symbol        *a_unexpandedLabel;                 /* Unused but kept for compatibility. */
     t_outlet        *a_outlet;
     };
 
@@ -257,8 +254,8 @@ static void gatom_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  object_getWidth (cast_object (x)));
     buffer_appendFloat (b,  x->a_lowRange);
     buffer_appendFloat (b,  x->a_highRange);
-    buffer_appendFloat (b,  x->a_position);
-    buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedLabel)));
+    buffer_appendFloat (b,  1);                                                                 /* Legacy. */
+    buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (&s_)));                    /* Legacy. */
     buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedReceive)));
     buffer_appendSymbol (b, symbol_dollarToHash (symbol_emptyAsDash (x->a_unexpandedSend)));
     if (SAVED_DEEP (flags)) { buffer_appendAtom (b, &x->a_atom); }
@@ -470,10 +467,9 @@ static void gatom_restore (t_gatom *x)
 
 static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
 {
-    int width    = (int)atom_getFloatAtIndex (2, argc, argv);
-    int position = (int)atom_getFloatAtIndex (5, argc, argv);
+    int width = (int)atom_getFloatAtIndex (2, argc, argv);
 
-    width        = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
+    width     = PD_CLAMP (width, 0, ATOM_WIDTH_MAXIMUM);
     
     object_setX (cast_object (x), atom_getFloatAtIndex (0, argc, argv));
     object_setY (cast_object (x), atom_getFloatAtIndex (1, argc, argv));
@@ -481,13 +477,11 @@ static void gatom_makeObjectFile (t_gatom *x, int argc, t_atom *argv)
 
     x->a_lowRange           = atom_getFloatAtIndex (3, argc, argv);
     x->a_highRange          = atom_getFloatAtIndex (4, argc, argv);
-    x->a_position           = position;
-    x->a_unexpandedLabel    = gatom_parse (atom_getSymbolAtIndex (6, argc, argv));
+    
     x->a_unexpandedReceive  = gatom_parse (atom_getSymbolAtIndex (7, argc, argv));
     x->a_unexpandedSend     = gatom_parse (atom_getSymbolAtIndex (8, argc, argv));
     x->a_send               = dollar_expandSymbol (x->a_unexpandedSend, x->a_owner);
     x->a_receive            = dollar_expandSymbol (x->a_unexpandedReceive, x->a_owner);
-    x->a_label              = dollar_expandSymbol (x->a_unexpandedLabel, x->a_owner);
             
     if (x->a_receive != &s_) { pd_bind (cast_pd (x), x->a_receive); }
     
@@ -528,13 +522,10 @@ static void gatom_makeObjectProceed (t_glist *glist, t_atomtype type, int argc, 
     x->a_owner              = glist;
     x->a_lowRange           = 0;
     x->a_highRange          = 0;
-    x->a_position           = 1;
     x->a_send               = &s_;
     x->a_receive            = &s_;
-    x->a_label              = &s_;
     x->a_unexpandedSend     = &s_;
     x->a_unexpandedReceive  = &s_;
-    x->a_unexpandedLabel    = &s_;
     
     if (type == A_FLOAT) {
         t_atom a;

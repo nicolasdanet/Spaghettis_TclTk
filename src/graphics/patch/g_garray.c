@@ -751,8 +751,10 @@ static t_buffer *garray_functionData (t_gobj *z, int flags)
     buffer_appendFloat (b, 0);
     for (i = 0; i < n; i++) { buffer_appendFloat (b, w_getFloat (GARRAY_AT (i))); }
     
-    buffer_appendComma (b);
-    buffer_appendSymbol (b, sym__restore);
+    if (SAVED_DEEP (flags)) {
+        buffer_appendComma (b);
+        buffer_appendSymbol (b, sym__restore);
+    }
     
     return b;
     //

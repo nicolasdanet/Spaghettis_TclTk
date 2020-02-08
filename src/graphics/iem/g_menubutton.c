@@ -477,10 +477,10 @@ static void menubutton_functionSave (t_gobj *z, t_buffer *b, int flags)
     buffer_appendFloat (b,  iemgui_serializeLoadbang (cast_iem (z)));
     buffer_appendSymbol (b, names.n_unexpandedSend);
     buffer_appendSymbol (b, names.n_unexpandedReceive);
-    buffer_appendSymbol (b, names.n_unexpandedLabel);
+    buffer_appendSymbol (b, symbol_nil());                          /* Legacy. */
     buffer_appendSymbol (b, colors.c_symColorBackground);
     buffer_appendSymbol (b, colors.c_symColorForeground);
-    buffer_appendSymbol (b, colors.c_symColorLabel);
+    buffer_appendSymbol (b, color_toEncoded (0));                   /* Legacy. */
     buffer_appendFloat (b,  (SAVED_DEEP (flags) || x->x_gui.iem_loadbang) ? x->x_index : 0.0);
     buffer_appendSemicolon (b);
     
@@ -677,7 +677,7 @@ static void *menubutton_new (t_symbol *s, int argc, t_atom *argv)
     
     iemgui_deserializeLoadbang (cast_iem (x), (int)atom_getFloatAtIndex (3, argc, argv));
     iemgui_deserializeNames (cast_iem (x), 4, argv);
-    iemgui_deserializeColors (cast_iem (x), argv + 7, argv + 8, argv + 9);
+    iemgui_deserializeColors (cast_iem (x), argv + 7, argv + 8);
     //
     }
     
