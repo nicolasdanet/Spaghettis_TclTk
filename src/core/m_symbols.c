@@ -769,7 +769,6 @@ t_symbol *sym_undotyping;
 t_symbol *sym_unit;
 t_symbol *sym_unpack;
 t_symbol *sym_until;
-t_symbol *sym_updated;
 t_symbol *sym_urn;
 t_symbol *sym_uzi;
 t_symbol *sym_v;
@@ -1550,7 +1549,6 @@ void symbols_initialize (void)
     sym_unit                                    = gensym ("unit");
     sym_unpack                                  = gensym ("unpack");
     sym_until                                   = gensym ("until");
-    sym_updated                                 = gensym ("updated");
     sym_urn                                     = gensym ("urn");
     sym_uzi                                     = gensym ("uzi");
     sym_v                                       = gensym ("v");

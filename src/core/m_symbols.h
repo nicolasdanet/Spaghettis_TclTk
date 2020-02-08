@@ -769,7 +769,6 @@ extern t_symbol *sym_undotyping;
 extern t_symbol *sym_unit;
 extern t_symbol *sym_unpack;
 extern t_symbol *sym_until;
-extern t_symbol *sym_updated;
 extern t_symbol *sym_urn;
 extern t_symbol *sym_uzi;
 extern t_symbol *sym_v;

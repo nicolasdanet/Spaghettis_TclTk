@@ -74,7 +74,7 @@ void textdefine_append (t_textdefine *x, t_symbol *s, int argc, t_atom *argv)
 
 static void textdefine_modified (t_textdefine *x)
 {
-    outlet_symbol (x->x_outlet, sym_updated);
+    outlet_bang (x->x_outlet);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ static void *textdefine_new (t_symbol *s, int argc, t_atom *argv)
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
-    x->x_outlet = outlet_newSymbol (cast_object (x));
+    x->x_outlet = outlet_newBang (cast_object (x));
     
     return x;
 }
