@@ -20,38 +20,32 @@ void snippet_renameArrays (t_buffer *x, t_glist *glist)
     t_atom *atoms = NULL;
     int count;
     
+    t_atom *t1 = NULL;
+    t_atom *t2 = NULL;
+    t_atom *t3 = NULL;
+    
     while ((count = iterator_next (iter, &atoms))) {
     //
-    if (count >= 8) {
-    if (atom_getSymbolAtIndex (0, count, atoms) == sym___hash__N) {
-    if (atom_getSymbolAtIndex (1, count, atoms) == sym_canvas) {
-
-        t_atom *t1  = atoms + 6;
-        t_atom *t2  = NULL;
-        t_atom *t3  = NULL;
-        t_symbol *s = NULL;
-        
-        while ((count = iterator_next (iter, &atoms))) {
-            if ((count > 2) && atom_getSymbolAtIndex (1, count, atoms) == sym_array) {
-                s  = atom_getSymbolOrDollarSymbolAtIndex (2, count, atoms);
-                t2 = atoms + 2;
-            }
-            if ((count > 5) && atom_getSymbolAtIndex (1, count, atoms) == sym_restore) {
-                t3 = atoms + 5;
-                break;
-            }
+    t_symbol *k1 = atom_getSymbolAtIndex (0, count, atoms);
+    t_symbol *k2 = atom_getSymbolAtIndex (1, count, atoms);
+    
+    if (k1 == sym___hash__N) { t1 = t2 = t3 = NULL; }
+    
+    if (count > 6 && k1 == sym___hash__N && k2 == sym_canvas)       { t1 = atoms + 6; }
+    else if (count > 2 && k1 == sym___hash__X && k2 == sym_array)   { t2 = atoms + 2; }
+    else if (count > 5 && k1 == sym___hash__X && k2 == sym_restore) { t3 = atoms + 5; }
+    
+    if (t1 && t2 && t3) {
+        t_symbol *s = atom_getSymbolOrDollarSymbol (t2);
+        PD_ASSERT (atom_areEquals (t1, t2));
+        PD_ASSERT (atom_areEquals (t1, t3));
+        while (symbol_getThingByClass (dollar_expandSymbol (s, glist), garray_class)) {
+            s = symbol_withCopySuffix (s);
+            SET_SYMBOL (t1, s);
+            SET_SYMBOL (t2, s);
+            SET_SYMBOL (t3, s);
         }
-        
-        if (s && t1 && t2 && t3) {
-            while (symbol_getThingByClass (dollar_expandSymbol (s, glist), garray_class)) {
-                s = symbol_withCopySuffix (s);
-                SET_SYMBOL (t1, s);
-                SET_SYMBOL (t2, s);
-                SET_SYMBOL (t3, s);
-            }
-        }
-    }
-    }
+        t1 = t2 = t3 = NULL;
     }
     //
     }
