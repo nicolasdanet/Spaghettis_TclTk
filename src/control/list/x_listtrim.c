@@ -49,7 +49,7 @@ void *listtrim_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_listtrim *x = (t_listtrim *)pd_new (listtrim_class);
     
-    x->x_outlet = outlet_newList (cast_object (x));
+    x->x_outlet = outlet_newMixed (cast_object (x));
     
     if (argc) { warning_unusedArguments (s, argc, argv); }
     
