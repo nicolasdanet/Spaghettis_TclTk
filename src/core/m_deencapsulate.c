@@ -23,7 +23,7 @@ t_undomanager *glist_undoReplaceManager (t_glist *, t_undomanager *);
 
 t_buffer *clipboard_copyProceed (t_glist *, int, int);
 
-int      clipboard_pasteProceed (t_glist *, t_buffer *, t_point *, int);
+int      clipboard_pasteProceed (t_glist *, t_buffer *, t_point *, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ static void encapsulate_deencapsulatePaste (t_glist *parent, t_buffer *b, t_rect
     
     t_point pt = point_make (t1, t2);
     
-    clipboard_pasteProceed (parent, b, &pt, 0);
+    clipboard_pasteProceed (parent, b, &pt, 0, 0);
 }
 
 static void encapsulate_deencapsulateReconnect (t_connecthelper *h1, t_connecthelper *h2)
