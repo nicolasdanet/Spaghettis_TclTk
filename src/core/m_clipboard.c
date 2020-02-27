@@ -172,14 +172,15 @@ void clipboard_pasteProceedLoadbang (t_glist *glist, int alreadyThere)
     }
 }
 
-int clipboard_pasteProceed (t_glist *glist, t_buffer *b, t_point *pt, int moveScalars)
+int clipboard_pasteProceed (t_glist *glist, t_buffer *b, t_point *pt, int moveScalars, int renameArrays)
 {
     int alreadyThere = glist_objectGetNumberOf (glist);
 
     glist_deselectAllProceed (glist, 0);
     
     snippet_addOffsetToLines (b, alreadyThere);
-    snippet_renameArrays (b, glist);
+    
+    if (renameArrays) { snippet_renameArrays (b, glist); }
     
         instance_loadSnippet (glist, b);
     
@@ -222,7 +223,7 @@ void clipboard_pasteRaw (t_glist *glist, int isDuplicate)
     
     if (undoable) { glist_undoAppend (glist, isDuplicate ? undoduplicate_new() : undopaste_new()); }
     
-    isDirty = clipboard_pasteProceed (glist, b, &pt, 1);
+    isDirty = clipboard_pasteProceed (glist, b, &pt, 1, 1);
     
     dsp_resume (state);
     
