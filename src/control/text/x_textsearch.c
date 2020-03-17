@@ -213,7 +213,7 @@ void *textsearch_new (t_symbol *s, int argc, t_atom *argv)
         
         x->x_numberOfKeys = PD_MAX (1, numberOfKeys);
         x->x_keys         = (t_textkey *)PD_MEMORY_GET (x->x_numberOfKeys * sizeof (t_textkey));
-        x->x_outlet       = outlet_newList (cast_object (x));
+        x->x_outlet       = outlet_newFloat (cast_object (x));
          
         if (!numberOfKeys) { x->x_keys[0].k_field = 0; x->x_keys[0].k_type = TEXTSEARCH_EQUAL; }
         else {
