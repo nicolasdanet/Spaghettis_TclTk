@@ -49,7 +49,13 @@ int undomanager_undoNeedToTriggerParent (t_undomanager *x, t_items *i, t_items *
 {
     t_undoaction *a = undomanager_getUndoAction (x);
     
-    if (a && undoaction_getType (a) == UNDO_REMOVE) { return undomanager_undoContainsDelete (x, i, o); }
+    if (a) {
+    //
+    t_undotype type = undoaction_getType (a);
+        
+    if (type == UNDO_ENCAPSULATE || type == UNDO_REMOVE) { return undomanager_undoContainsDelete (x, i, o); }
+    //
+    }
     
     return 0;
 }
@@ -80,7 +86,13 @@ int undomanager_redoNeedToTriggerParent (t_undomanager *x, t_items *i, t_items *
 {
     t_undoaction *a = undomanager_getRedoAction (x);
     
-    if (a && undoaction_getType (a) == UNDO_ADD) { return undomanager_redoContainsCreate (x, i, o); }
+    if (a) {
+    //
+    t_undotype type = undoaction_getType (a);
+    
+    if (type == UNDO_ENCAPSULATE || type == UNDO_ADD) { return undomanager_redoContainsCreate (x, i, o); }
+    //
+    }
     
     return 0;
 }
