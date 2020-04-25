@@ -239,8 +239,8 @@ void textdefine_setup (void)
     
     class_addMethod (c, (t_method)textdefine_clear,     sym_clear,      A_NULL);
     class_addMethod (c, (t_method)textdefine_set,       sym_set,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)textdefine_set,       sym_add,        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)textdefine_set,       sym_append,     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textdefine_add,       sym_add,        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)textdefine_append,    sym_append,     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)textdefine_modified,  sym__modified,  A_NULL);
     class_addMethod (c, (t_method)textdefine_restore,   sym__restore,   A_NULL);
 
