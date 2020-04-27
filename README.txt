@@ -7,7 +7,7 @@
 
 Platforms:
 
-    Tested on Ubuntu 18.04, macOS 10.15, Manjaro and Raspbian Buster (RPI4).
+    Tested on Ubuntu 20.04, macOS 10.15, Manjaro and Raspbian Buster (RPI4).
         
 Dependencies:
 
