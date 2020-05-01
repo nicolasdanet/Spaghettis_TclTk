@@ -30,7 +30,6 @@ export CPUFLAGS
 case "$OSTYPE" in
     solaris*)           echo "SOLARIS" ;;
     darwin*)            ./buildMac.sh ;;
-    linux-gnueabihf)    ./buildRaspbian.sh ;;
     linux*)             ./buildLinux.sh ;;
     bsd*)               echo "BSD" ;;
     *)                  echo "unknown: $OSTYPE" ;;
