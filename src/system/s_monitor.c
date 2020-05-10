@@ -37,6 +37,7 @@ static int monitor_maximumFileDescriptor;   /* Static. */
 
 static int monitor_proceed (int microseconds)
 {
+    t_error err = PD_ERROR_NONE;
     int didSomething = 0;
     struct timeval timeOut;
     t_fdpoll *pollers = NULL;
@@ -57,13 +58,17 @@ static int monitor_proceed (int microseconds)
         FD_SET (pollers->fdp_fd, &rSet);
     }
 
-    select (monitor_maximumFileDescriptor + 1, &rSet, &wSet, &eSet, &timeOut);
+    err = (select (monitor_maximumFileDescriptor + 1, &rSet, &wSet, &eSet, &timeOut) < 0);
     
+    if (!err) {
+    //
     for (i = 0; i < monitor_pollersSize; i++) {
         if (FD_ISSET (monitor_pollers[i].fdp_fd, &rSet)) {
             (*monitor_pollers[i].fdp_fn) (monitor_pollers[i].fdp_p, monitor_pollers[i].fdp_fd);
             didSomething = 1;
         }
+    }
+    //
     }
     
     return didSomething;
