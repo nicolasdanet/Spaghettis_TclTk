@@ -32,18 +32,28 @@ embedded="${rep}/embedded"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-urlTcl="https://github.com/tcltk/tcl.git"
-urlTk="https://github.com/tcltk/tk.git"
+# Get the sources.
 
-tag="release"
+# urlTcl="https://github.com/tcltk/tcl.git"
+# urlTk="https://github.com/tcltk/tk.git"
+
+# tag="release"
+
+# [ -e "${tcl}" ] || { git clone -b "${tag}" --depth 1 "${urlTcl}"; }
+# [ -e "${tk}" ]  || { git clone -b "${tag}" --depth 1 "${urlTk}";  }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 # Get the sources.
 
-[ -e "${tcl}" ] || { git clone -b "${tag}" --depth 1 "${urlTcl}"; }
-[ -e "${tk}" ]  || { git clone -b "${tag}" --depth 1 "${urlTk}";  }
+urlTcl="https://github.com/nicolasdanet/tcl.git"
+urlTk="https://github.com/nicolasdanet/tk.git"
+
+branch="core-8-6-branch"
+
+[ -e "${tcl}" ] || { git clone --depth 1 --single-branch --branch "${branch}" "${urlTcl}"; }
+[ -e "${tk}" ]  || { git clone --depth 1 --single-branch --branch "${branch}" "${urlTk}";  }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
