@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSRequiresAquaSystemAppearance</key>
-	<string>true</string>
 	<key>CFBundleName</key>
 	<string>Spaghettis</string>
 	<key>CFBundleDisplayName</key>
@@ -85,5 +83,9 @@
 	<string>font</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.12.0</string>
+	<key>NSRequiresAquaSystemAppearance</key>
+	<string>true</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Spaghettis requires access to the Microphone.</string>
 </dict>
 </plist>

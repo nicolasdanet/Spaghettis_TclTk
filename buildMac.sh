@@ -113,7 +113,7 @@ cd "${rep}"                                                             || exit 
 echo "Codesign ..."
 
 codesign    --options runtime \
-            --entitlements ./resources/Entitlements.plist \
+            --entitlements ./resources/Spaghettis.entitlements \
             --deep \
             -f -s "-" "${app}"                                          || exit 1
 
