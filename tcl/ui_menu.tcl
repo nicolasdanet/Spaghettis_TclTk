@@ -475,11 +475,11 @@ proc _arrange {m} {
     
     $m add command \
         -label [_ "Bring to Front"] \
-        -accelerator "Shift+${accelerator}+F" \
+        -accelerator "${accelerator}+F" \
         -command { ::ui_menu::_handle 1 _front }
     $m add command \
         -label [_ "Send to Back"] \
-        -accelerator "Shift+${accelerator}+B" \
+        -accelerator "${accelerator}+B" \
         -command { ::ui_menu::_handle 1 _back }
     $m add separator
     
@@ -595,7 +595,7 @@ proc _media {m} {
     
     $m add check \
         -label [_ "Run DSP"] \
-        -accelerator "Shift+${accelerator}+R" \
+        -accelerator "${accelerator}+R" \
         -variable ::var(isDsp) \
         -command { ::ui_interface::pdsend "pd dsp $::var(isDsp)" }
 }
