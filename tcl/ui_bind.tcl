@@ -54,27 +54,16 @@ proc initialize {} {
 
     }
 
-    if {[tk windowingsystem] eq "aqua"} {
-    
-    event add <<BringFront>>                <Shift-$mod-Key-f>
-    event add <<SendBack>>                  <Shift-$mod-Key-b>
-    event add <<SaveAs>>                    <Shift-$mod-Key-s>
-    
-    event add <<RunDSP>>                    <Shift-$mod-Key-r>
-        
-    }
-    
     if {[tk windowingsystem] eq "x11"}  {
     
-    event add <<BringFront>>                <Shift-$mod-Key-F>
-    event add <<SendBack>>                  <Shift-$mod-Key-B>
     event add <<SaveAs>>                    <Shift-$mod-Key-S>
-    event add <<RunDSP>>                    <Shift-$mod-Key-R>
+    
     event delete <<Paste>>                  <$mod-Key-y>
     event delete <<Cut>>                    <$mod-Key-w>
     
     }
     
+    event add <<RunDSP>>                    <$mod-Key-r>
     event add <<Copy>>                      <$mod-Key-c>
     event add <<Duplicate>>                 <$mod-Key-d>
     event add <<SelectAll>>                 <$mod-Key-a>
@@ -82,6 +71,8 @@ proc initialize {} {
     event add <<ClearConsole>>              <$mod-Key-l>
     event add <<Properties>>                <$mod-Key-i>
     event add <<Help>>                      <$mod-Key-u>
+    event add <<BringFront>>                <$mod-Key-f>
+    event add <<SendBack>>                  <$mod-Key-b>
     event add <<Snap>>                      <$mod-Key-y>
     event add <<NewFile>>                   <$mod-Key-n>
     event add <<OpenFile>>                  <$mod-Key-o>
