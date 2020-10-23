@@ -33,7 +33,6 @@ t_buffer *clipboard_copyProceed (t_glist *glist, int copyAll, int isEncapsulate)
     t_buffer *b = buffer_new();
 
     t_gobj *y = NULL;
-    t_outconnect *connection = NULL;
     t_traverser t;
     int flags = isEncapsulate ? SAVE_ENCAPSULATE : SAVE_COPY;
     
@@ -45,7 +44,7 @@ t_buffer *clipboard_copyProceed (t_glist *glist, int copyAll, int isEncapsulate)
     
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     t_gobj *o = cast_gobj (traverser_getSource (&t));
     t_gobj *d = cast_gobj (traverser_getDestination (&t));

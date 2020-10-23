@@ -260,13 +260,12 @@ static void outlethelper_free (t_outlethelper *outlets)
 
 static t_inlethelper *encapsulate_addInletsToSnippetFetch (t_glist *glist)
 {
-    t_inlethelper *inlets    = NULL;
-    t_outconnect *connection = NULL;
+    t_inlethelper *inlets = NULL;
     t_traverser t;
     
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     t_gobj *o = cast_gobj (traverser_getSource (&t));
     t_gobj *d = cast_gobj (traverser_getDestination (&t));
@@ -381,13 +380,12 @@ static void encapsulate_addInletsToSnippetConnect (t_glist *glist, t_inlethelper
 
 static t_outlethelper *encapsulate_addOutletsToSnippetFetch (t_glist *glist)
 {
-    t_outlethelper *outlets  = NULL;
-    t_outconnect *connection = NULL;
+    t_outlethelper *outlets = NULL;
     t_traverser t;
     
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     t_gobj *o = cast_gobj (traverser_getSource (&t));
     t_gobj *d = cast_gobj (traverser_getDestination (&t));

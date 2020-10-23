@@ -641,12 +641,11 @@ static void glist_mouseOverGraph (t_glist *glist, int a, int b, int m, int click
 
 static int glist_mouseHitLines (t_glist *glist, int a, int b, int clicked)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
         
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
         if (cord_hit (traverser_getCord (&t), a, b)) {
             if (clicked) { glist_lineSelect (glist, &t); } return 1;
         }
