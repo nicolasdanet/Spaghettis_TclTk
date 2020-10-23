@@ -132,7 +132,6 @@ static void encapsulate_deencapsulateFetchConnectionsForParent (t_glist *glist,
     t_connecthelper **inParent,
     t_connecthelper **outParent)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
     
     t_connecthelper *inlets  = NULL;
@@ -140,7 +139,7 @@ static void encapsulate_deencapsulateFetchConnectionsForParent (t_glist *glist,
     
     traverser_start (&t, parent);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     t_gobj *o = cast_gobj (traverser_getSource (&t));
     t_gobj *d = cast_gobj (traverser_getDestination (&t));
@@ -161,7 +160,6 @@ static void encapsulate_deencapsulateFetchConnectionsForChild (t_glist *glist,
     t_connecthelper **outChild,
     t_throughhelper **directChild)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
     
     t_connecthelper *inlets  = NULL;
@@ -170,7 +168,7 @@ static void encapsulate_deencapsulateFetchConnectionsForChild (t_glist *glist,
     
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     t_gobj *o = cast_gobj (traverser_getSource (&t));
     t_gobj *d = cast_gobj (traverser_getDestination (&t));

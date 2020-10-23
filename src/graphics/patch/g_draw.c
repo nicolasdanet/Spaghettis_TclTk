@@ -216,12 +216,11 @@ void glist_updateLinesForObject (t_glist *glist, t_object *o)
     //
     if (glist_isOnScreen (glist)) {
     //
-    t_outconnect *connection = NULL;
     t_traverser t;
 
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     if (traverser_getSource (&t) == o || traverser_getDestination (&t) == o) {
         glist_updateLine (glist, traverser_getCord (&t));
@@ -433,12 +432,11 @@ void glist_drawAllLines (t_glist *glist)
     //
     if (glist_isOnScreen (glist)) {
     //
-    t_outconnect *connection = NULL;
     t_traverser t;
 
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) { glist_drawLine (glist, traverser_getCord (&t)); }
+    while (traverser_next (&t)) { glist_drawLine (glist, traverser_getCord (&t)); }
     //
     }
     //

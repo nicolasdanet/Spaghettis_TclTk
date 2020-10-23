@@ -57,12 +57,11 @@ static void glist_serializeObjects (t_glist *glist, t_buffer *b, int flags)
 
 static void glist_serializeLines (t_glist *glist, t_buffer *b)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
     
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     buffer_appendSymbol (b, sym___hash__X);
     buffer_appendSymbol (b, sym_connect);

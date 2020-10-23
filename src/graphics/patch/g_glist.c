@@ -1295,12 +1295,11 @@ t_error glist_objectGetIndexOfByUnique (t_id u, int *n)
 
 void glist_objectDeleteLines (t_glist *glist, t_object *o)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
 
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     int m = (traverser_getSource (&t) == o);
     int n = (traverser_getDestination (&t) == o);
@@ -1316,12 +1315,11 @@ void glist_objectDeleteLines (t_glist *glist, t_object *o)
 
 static void glist_objectDeleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_outlet *outlet)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
 
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     int m = (traverser_getSource (&t) == o && traverser_getOutlet (&t) == outlet);
     int n = (traverser_getDestination (&t) == o && traverser_getInlet (&t) == inlet);
@@ -1610,13 +1608,11 @@ void glist_lineDeselect (t_glist *glist)
 
 int glist_lineExist (t_glist *glist, t_object *o, int m, t_object *i, int n)
 {
-    t_outconnect *connection = NULL;
-    
     t_traverser t;
     
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) { 
+    while (traverser_next (&t)) {
         if (traverser_isLineBetween (&t, o, m, i, n)) {
             return 1; 
         } 
@@ -1703,12 +1699,11 @@ t_error glist_lineDisconnect (t_glist *glist,
     int indexOfObjectIn,
     int indexOfInlet)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
         
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     if ((traverser_getIndexOfOutlet (&t) == indexOfOutlet)) {
         if ((traverser_getIndexOfInlet (&t) == indexOfInlet)) {
@@ -1741,12 +1736,11 @@ t_error glist_lineDisconnectByUnique (t_id u, int indexOfOutlet, t_id v, int ind
     
     if (src && dest) {
     //
-    t_outconnect *connection = NULL;
     t_traverser t;
     
     traverser_start (&t, srcOwner);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     if (indexOfOutlet == traverser_getIndexOfOutlet (&t)) {
     if (indexOfInlet  == traverser_getIndexOfInlet (&t)) {
@@ -1780,12 +1774,11 @@ void glist_lineDeleteSelected (t_glist *glist)
 
 void glist_lineCheck (t_glist *glist, t_object *o)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
 
     traverser_start (&t, glist);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     t_object *o1 = traverser_getSource (&t);
     t_object *o2 = traverser_getDestination (&t);

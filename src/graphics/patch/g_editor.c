@@ -138,14 +138,13 @@ void editor_selectionDeplace (t_editor *x)
 
 void editor_selectionCacheLines (t_editor *x)
 {
-    t_outconnect *connection = NULL;
     t_traverser t;
     
     buffer_clear (x->e_cachedLines);
     
     traverser_start (&t, x->e_owner);
     
-    while ((connection = traverser_next (&t))) {
+    while (traverser_next (&t)) {
     //
     t_gobj *o = cast_gobj (traverser_getSource (&t));
     t_gobj *d = cast_gobj (traverser_getDestination (&t));
