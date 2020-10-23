@@ -231,8 +231,8 @@ static inline double soundfile_getAiff80BitFloat (char *bytes)
         if (e == 0x7FFF) { f = HUGE_VAL; }      /* Infinity or NaN. */
         else {
             e -= 16383;
-            f  = ldexp (UnsignedToFloat (hi), e -= 31);
-            f += ldexp (UnsignedToFloat (lo), e -= 32);
+            e -= 31; f  = ldexp (UnsignedToFloat (hi), e);
+            e -= 32; f += ldexp (UnsignedToFloat (lo), e);
         }
     }
 
