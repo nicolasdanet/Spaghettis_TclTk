@@ -10,7 +10,7 @@ The Pure Data source code has been utterly refactored.
 For me it was a requirement before to think about any improvements.
 During this 4 years the goal was to make it more simple (understandable) and consistent.
 For that, features has been removed and others added.
-The DSP now runs in is own obstruction-free thread. It is supposed to never been blocked.
+The DSP now runs in its own obstruction-free thread. It is supposed to never been blocked.
 Next big step is to use JUCE for the GUI.
 The idea is to be able later to make plugins easiliy from your patches.
 Platforms such Raspberry Pi will be strongly focused (e.g. to hack your own effects unit).
