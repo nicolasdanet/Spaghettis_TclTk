@@ -8,7 +8,7 @@ Yet another fork of [Pure Data](http://msp.ucsd.edu/) (in development, alpha).
 ```
 The Pure Data source code has been utterly refactored.
 For me it was a requirement before to think about any improvements.
-During this 4 years the goal was to make it more simple (understandable) and consistent.
+During all this years the goal was to make it more simple (understandable) and consistent.
 For that, features has been removed and others added.
 The DSP now runs in its own obstruction-free thread. It is supposed to never been blocked.
 Next big step is to use JUCE for the GUI.
@@ -40,6 +40,16 @@ On Arch-based following packages are required:
 - Open a terminal and run the `Spaghettis/build.sh` script.
 - Nothing will be installed in your system.
 - On GNU/Linux execute `Spaghettis/build/bin/spaghettis`.
+
+## Alternate
+
+- On Arch-based you can use the [AUR](https://aur.archlinux.org/packages/spaghettis-git/) from  [Milkii Brewster](https://github.com/mxmilkiib).
+
+## Comments
+
+- Spaghettis uses new filename extensions ***pdpatch*** and ***pdhelp***.
+- You can open the [tutorials](https://github.com/Spaghettis/Tools) for a quick look.
+- Else, copy and rename your Pure Data patches (cross your fingers for compatibility).
 
 ## Residuals
 
