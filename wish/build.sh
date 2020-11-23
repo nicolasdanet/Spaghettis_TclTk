@@ -47,8 +47,8 @@ embedded="${rep}/embedded"
 
 # Get the sources.
 
-urlTcl="https://github.com/nicolasdanet/tcl.git"
-urlTk="https://github.com/nicolasdanet/tk.git"
+urlTcl="https://github.com/Spaghettis/tcl.git"
+urlTk="https://github.com/Spaghettis/tk.git"
 
 branch="core-8-6-branch"
 
