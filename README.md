@@ -19,7 +19,7 @@ Bind it to a script language (Python or Lua) will make it more powerful at last.
 
 ## Platforms
 
-Tested on Ubuntu 20.04, macOS 10.15, Manjaro and Raspbian Buster (RPI4).
+Tested on Ubuntu 20.04, macOS Big Sur (Intel only), Manjaro and Raspbian Buster (RPI4).
         
 ## Dependencies
 

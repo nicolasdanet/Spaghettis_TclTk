@@ -7,11 +7,8 @@ Debug/
 Application/
 *.pdbundle64
 *.pdobject32
-*.mode2v3
-*.pbxuser
 *.sublime-workspace
 xcuserdata/
-xcshareddata/
 tests/tests
 libraries/belle/Belle
 libraries/belle/Resources/MICA/MicaData*.hpp
