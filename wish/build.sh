@@ -34,26 +34,14 @@ embedded="${rep}/embedded"
 
 # Get the sources.
 
-# urlTcl="https://github.com/tcltk/tcl.git"
-# urlTk="https://github.com/tcltk/tk.git"
+urlTcl="https://github.com/tcltk/tcl.git"
+urlTk="https://github.com/tcltk/tk.git"
 
-# tag="release"
+tagTcl="core-8-6-11"
+tagTk="core-8-6-11-1"
 
-# [ -e "${tcl}" ] || { git clone -b "${tag}" --depth 1 "${urlTcl}"; }
-# [ -e "${tk}" ]  || { git clone -b "${tag}" --depth 1 "${urlTk}";  }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Get the sources.
-
-urlTcl="https://github.com/Spaghettis/tcl.git"
-urlTk="https://github.com/Spaghettis/tk.git"
-
-branch="core-8-6-branch"
-
-[ -e "${tcl}" ] || { git clone --depth 1 --single-branch --branch "${branch}" "${urlTcl}"; }
-[ -e "${tk}" ]  || { git clone --depth 1 --single-branch --branch "${branch}" "${urlTk}";  }
+[ -e "${tcl}" ] || { git clone -b "${tagTcl}" --depth 1 "${urlTcl}"; }
+[ -e "${tk}" ]  || { git clone -b "${tagTk}"  --depth 1 "${urlTk}";  }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
