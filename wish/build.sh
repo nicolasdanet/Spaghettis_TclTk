@@ -37,8 +37,8 @@ embedded="${rep}/embedded"
 urlTcl="https://github.com/tcltk/tcl.git"
 urlTk="https://github.com/tcltk/tk.git"
 
-tagTcl="core-8-6-11"
-tagTk="core-8-6-11-1"
+tagTcl="core-8-6-12"
+tagTk="core-8-6-12"
 
 [ -e "${tcl}" ] || { git clone -b "${tagTcl}" --depth 1 "${urlTcl}"; }
 [ -e "${tk}" ]  || { git clone -b "${tagTk}"  --depth 1 "${urlTk}";  }
