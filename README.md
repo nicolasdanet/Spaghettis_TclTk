@@ -3,6 +3,8 @@
 
 Yet another fork of [Pure Data](http://msp.ucsd.edu/) (in development, alpha).
 
+[Spaghettis is dead?](https://github.com/Spaghettis/Spaghettis/discussions/276)
+
 ## Rationale
 
 ```
