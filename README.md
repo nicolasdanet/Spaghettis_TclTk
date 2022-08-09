@@ -1,2 +1,2 @@
 
-Spaghettis is overcooked!
+![Spaghettis](Spaghettis.jpg)
