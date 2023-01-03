@@ -1,2 +1,3 @@
+# Spaghettis is Unmaintained
 
-![Spaghettis](Spaghettis.jpg)
+Spaghettis is no longer being developed (at least in that flavor).
